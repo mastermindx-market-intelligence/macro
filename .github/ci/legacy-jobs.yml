@@ -2460,6 +2460,8 @@ jobs:
       - "lib/procutil.py"
       - "lib/seo.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "scripts/build_ticker_pages.py"
       - "scripts/check_stock_dossier_integrity.py"
       - "scripts/sparse_guard.py"
@@ -3022,8 +3024,6 @@ jobs:
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4776,6 +4776,10 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "config.yml"
       - "tests/conftest.py"
       - "tests/test_intl_performance_records.py"
@@ -4999,10 +5003,6 @@ jobs:
       - "lib/intl_macro_publication.py"
       - "tests/test_intl_macro_mount.py"
       - "tests/test_intl_macro_publication.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -5108,6 +5108,10 @@ jobs:
       - "config/intl_library_catalogue.json"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
       - "config.yml"
@@ -5325,10 +5329,6 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -6530,6 +6530,8 @@ jobs:
       - "lib/options_context.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -6625,8 +6627,6 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6826,6 +6826,7 @@ jobs:
           tests/test_collect_staging_globs.py
           tests/test_capital_structure_compiler.py
           tests/test_capital_structure_contracts.py
+          tests/test_capital_structure_issuer_state_contracts.py
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
@@ -6857,6 +6858,7 @@ jobs:
           tests/test_sec_capital_structure.py
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
+          tests/test_capital_structure_reference_qualification.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
@@ -7222,13 +7224,13 @@ jobs:
       - "lib/config.py"
       - "lib/delisted_symbols.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/seed_china_ths_baskets.py"
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7306,6 +7308,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/_cycle_seed.py"
       - "scripts/build_cycle.py"
@@ -7328,11 +7335,6 @@ jobs:
       - "tests/test_cycle_consistency.py"
       - "tests/test_cycle_ontology.py"
       - "tests/test_cycle_w8_truth.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -7686,6 +7688,8 @@ jobs:
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
@@ -7804,8 +7808,6 @@ jobs:
       # measured-block contract and its episode/stage imports.
       - "collectors/flow_signals.py"
       - "lib/live_flow_event_stage.py"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7965,6 +7967,8 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -7982,8 +7986,6 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -8671,6 +8673,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "scripts/freshness_sentinel.py"
@@ -8682,11 +8689,6 @@ jobs:
       - "site/crypto.html"
       - "site/vector.html"
       - "tests/test_crypto_observations_contract.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -8857,6 +8859,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
       - "scripts/build_transmission.py"
@@ -8894,11 +8901,6 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -10413,6 +10415,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "research/DISLOCATION_VALIDATION.md"
       - "research/HINCL2_PREREG.md"
       - "research/SEASONALITY_BIOCATALYST_INTEGRATION_SEAM.md"
@@ -10476,11 +10483,6 @@ jobs:
       - "templates/spvector.html.j2"
       - "templates/stock_seasonality.html.j2"
       - "templates/stockview.js"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11874,6 +11876,11 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/build_sanctions_map.py"
       - "scripts/gen_worldmap_svg.py"
       - "site/sanctions_map.html"
@@ -11890,11 +11897,6 @@ jobs:
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
       - "tests/test_worldmap_base.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     # Packet A-F02-1: OFAC sanctions map engine + page + nav + worldmap base +
     # collector parser. Zero network; fixtures + committed snapshot only.
     timeout-minutes: 10
@@ -12146,6 +12148,10 @@ jobs:
       - lib/pages.py
       - lib/site_assets.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
       - scripts/__init__.py
@@ -12158,10 +12164,6 @@ jobs:
       - site/factordata/basket_washout_state.json
       - tests/test_intl_market_state.py
       - tests/test_intl_rotation.py
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -12361,6 +12363,8 @@ jobs:
       - lib/config.py
       - lib/dataos/identity.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
       - scripts/__init__.py
       - scripts/build_company_theme_exposure.py
@@ -13224,8 +13228,6 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
       - "lib/live_flow_event_stage.py"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17705,6 +17707,8 @@ jobs:
       - lib/options_context.py
       - lib/pages.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - lib/team_membership.py
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
@@ -17775,8 +17779,6 @@ jobs:
       - templates/methodology.html.j2
       - templates/support.html.j2
       - tests/test_crypto_assistant_context.py
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -18124,6 +18126,8 @@ jobs:
       - lib/pages.py
       - lib/site_assets.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
       - lib/tsx_calendar.py
@@ -18205,8 +18209,6 @@ jobs:
       - tests/test_crypto_t12_contract_invariants.py
       - tests/test_crypto_t15_transition_scaffold.py
       - tests/test_vector_scorecard_gap_semantics.py
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20760,6 +20762,8 @@ jobs:
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "lib/tsx_calendar.py"
@@ -20927,8 +20931,6 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -21183,6 +21185,8 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -21204,8 +21208,6 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25178,6 +25180,8 @@ jobs:
       - "lib/options_context.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -25322,8 +25326,6 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27214,6 +27216,8 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -27336,8 +27340,6 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -27844,6 +27846,11 @@ jobs:
       - "lib/pages.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/_cycle_seed.py"
       - "scripts/build_regime_prior.py"
@@ -27860,11 +27867,6 @@ jobs:
       - "site/marketsdata/markets_engine.js"
       - "site/mm_charts.js"
       - "site/regimedata/regime_prior.js"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28167,6 +28169,11 @@ jobs:
       - "engine/vol_regime.py"
       - "engine/yield_momentum.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
       - "scripts/__init__.py"
       - "scripts/build_price_pressure.py"
@@ -28175,11 +28182,6 @@ jobs:
       - "scripts/research_liquidity_shock_reversal.py"
       - "site/factordata/basket_washout_state.json"
       - "site/factordata/us_standouts.json"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -29093,6 +29095,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/massive_ticker.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
@@ -29104,11 +29111,6 @@ jobs:
       - "scripts/research/risk_radar_displayed_probability_audit.py"
       - "scripts/research/risk_radar_state_ladder_calibration.py"
       - "scripts/validate_regime_fwd.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29185,6 +29187,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/massive_ticker.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
@@ -29210,11 +29217,6 @@ jobs:
       - "research/grey_deer/PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md"
       - "research/grey_deer/pullback_episode_rule_options/EPISODE_RULE_OPTIONS_2026-10-13.json"
       - "research/grey_deer/pullback_floor_projection/FLOOR_PROJECTION_2026-10-13.json"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29413,13 +29415,13 @@ jobs:
       - lib/market_session.py
       - lib/nyse_calendar.py
       - lib/store.py
-      - lib/ticker_aliases.py
-      - lib/tsx_calendar.py
-      - lib/us_cash_calendar.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
       - "lib/stooq.py"
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29538,6 +29540,8 @@ jobs:
     # A20 base injection suite and seven more mutation-sweep suites.
     # INT4 adds further SNI-local DRAFT refusal guards (A01/A03/A10/A31/
     # A33 and kin) plus S2 seal-adjacent pins; rows stay PARTIAL.
+    # INT5 adds DRAFT guards for A02/A07/A12/A14/A16/A18 plus the MUT6
+    # mutation-sweep suites; rows stay PARTIAL.
     # Hermetic: committed bytes, synthetic frames and
     # tmp_path only; no git history, no network. Every authority flag false.
     # Curated exclusive so the sys.path imports cannot widen inference; the
@@ -29657,6 +29661,10 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
@@ -29709,10 +29717,22 @@ jobs:
       - "tests/test_sni_ads_ratio_guard.py"
       - "tests/test_sni_s2_seal_adjacent.py"
       - "tests/test_sni_identity_binding_guard.py"
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
+      - "tests/test_sni_correction_lineage_guard.py"
+      - "tests/test_sni_copy_guard_literals.py"
+      - "tests/test_sni_entitlement_guard.py"
+      - "tests/test_sni_counter_relation_guard.py"
+      - "tests/test_sni_then_known_guard.py"
+      - "tests/test_sni_session_state_guard.py"
+      - "tests/test_sni_mut6_run_s2_cli.py"
+      - "tests/test_sni_mut6_collapse_p04.py"
+      - "tests/test_sni_mut6_common_seal.py"
+      - "tests/test_sni_mut6_seal_full_check_cli.py"
+      - "tests/test_sni_mut6_run_s2_core.py"
+      - "tests/test_sni_mut6_eval_ledger.py"
+      - "tests/test_sni_mut6_stress_set.py"
+      - "tests/test_sni_mut6_run_s1_cli.py"
+      - "tests/test_sni_mut6_run_s1_frames.py"
+      - "tests/test_sni_mut6_scanners.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29722,7 +29742,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: sni acceptance evidence (PARTIAL rows)
-        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py tests/test_sni_correction_lineage_guard.py tests/test_sni_copy_guard_literals.py tests/test_sni_entitlement_guard.py tests/test_sni_counter_relation_guard.py tests/test_sni_then_known_guard.py tests/test_sni_session_state_guard.py tests/test_sni_mut6_run_s2_cli.py tests/test_sni_mut6_collapse_p04.py tests/test_sni_mut6_common_seal.py tests/test_sni_mut6_seal_full_check_cli.py tests/test_sni_mut6_run_s2_core.py tests/test_sni_mut6_eval_ledger.py tests/test_sni_mut6_stress_set.py tests/test_sni_mut6_run_s1_cli.py tests/test_sni_mut6_run_s1_frames.py tests/test_sni_mut6_scanners.py -q -p no:cacheprovider
 
   c19-wp11-reader-pins:
     if: ${{ false }}

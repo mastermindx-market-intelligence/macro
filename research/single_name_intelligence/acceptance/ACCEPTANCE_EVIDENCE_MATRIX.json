@@ -1,6 +1,6 @@
 {
   "schema_version": "sni_acceptance_matrix.v2",
-  "as_of_utc": "2026-10-14T02:58:16Z",
+  "as_of_utc": "2026-10-14T04:15:09Z",
   "sources": {
     "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
     "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
@@ -113,6 +113,16 @@
           "ref": "main",
           "path": "tests/test_sni_dual_counter_property.py",
           "note": "test_dcp_03_relation_permutation_invariant and test_dcp_04_relations_carry_no_minted_ids pin permutation-safe dual-counter relations without minted ids."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_counter_relation_guard.py",
+          "note": "INT5 DRAFT guard: a dual-counter pair binds only through an owner-supplied, sourced, as-of-available listing relation for one issuer; ambiguous, unsourced, issuer-mismatched or undeclared-currency relations are refused. It never creates a relation or listing id."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_counter_relation_guard.py",
+          "note": "Pins RELATION_SET_MISSING, RELATION_NOT_AVAILABLE_AS_OF, AMBIGUOUS_RELATION, ISSUER_MISMATCH and CURRENCY_UNDECLARED on synthetic owner-shaped records."
         }
       ],
       "gap": "C1 relationship contract not on main."
@@ -338,6 +348,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_decomp_infoleak.py",
           "note": "test_mut1c_s1_infoleak_detect_1 and test_mut1c_s1_infoleak_vintage_series_1 pin s1_infoleak mutants that would drop a vintage step."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_then_known_guard.py",
+          "note": "INT5 DRAFT then-known view compiler: a fact enters a view at a cutoff only if published and owner-known by then; owner-known-before-published, retrieved-before-published and supersedes cycles are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_then_known_guard.py",
+          "note": "Pins PUBLISHED_AFTER_CUTOFF, OWNER_KNOWN_BEFORE_PUBLISHED, RETRIEVED_AFTER_CUTOFF_UNVINTAGED and SUPERSEDED_BY_THEN_KNOWN on synthetic four-clock records."
         }
       ],
       "gap": "No then-known compiler test excluding post-cutoff filings or retrieval."
@@ -533,6 +553,16 @@
           "ref": "main",
           "path": "tests/test_sni_s2_seal_adjacent.py",
           "note": "INT4 seal-adjacent pins for the S2 HK half-day session_part and non-finite-close abstain branches the sealed inputs never reach."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_session_state_guard.py",
+          "note": "INT5 DRAFT guard: session state at an instant is read only from an owner-supplied market-calendar day record; missing calendar, owner ref, exact IANA timezone, or inconsistent sessions/halts refuse. It never derives a holiday or session schedule."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_session_state_guard.py",
+          "note": "Pins CALENDAR_MISSING, TIMEZONE_INVALID (exact-case, platform-independent), SESSIONS_INCONSISTENT, HALT_INVALID and AT_OUTSIDE_TRADING_DATE on synthetic HK/US day records."
         }
       ],
       "gap": "M0 owner session-state test unbuilt; halt and live venue state unmodelled."
@@ -613,6 +643,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_branch_copy.py",
           "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A14 collocation."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/acceptance/sni_copy_guard_literals.py",
+          "note": "INT5 DRAFT extension of the A14/A30 markdown copy guard to JSON string values and Python string constants under the SNI tree; reuses the existing rule callables, no forked rule table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard_literals.py",
+          "note": "Pins literal-copy findings in JSON and Python strings on synthetic text; product UI and the rendered site stay out of scope."
         }
       ],
       "gap": "Product UI and rendered site remain unguarded; JSON and Python string literals remain unguarded."
@@ -693,6 +733,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_draft_loaders.py",
           "note": "test_mut4d_p04_v2_draft_loader_validate_draft_1 pins p04_v2_draft_loader mutants on the unregistered draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_correction_lineage_guard.py",
+          "note": "INT5 DRAFT guard: a correction/version history must be append-only; truncation, rewrite, fork, version gaps, non-increasing versions and non-monotone recorded_at are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_correction_lineage_guard.py",
+          "note": "Pins HISTORY_TRUNCATED, HISTORY_REWRITTEN, FORK, VERSION_GAP and RECORDED_AT_NOT_MONOTONE on synthetic version records."
         }
       ],
       "gap": "SNI generation/manifest not implemented; P04 v2 is an unregistered draft; V1 waits on R1."
@@ -743,6 +793,16 @@
           "ref": "main",
           "path": "tests/test_sni_public_exposure.py",
           "note": "test_real_tree_has_no_public_sni_references pins public templates and publish scripts free of SNI paths; it does not test pre-access denial."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_entitlement_guard.py",
+          "note": "INT5 DRAFT guard: full-text access needs an owner entitlement record valid for the account, document and as-of instant; public full text, missing, expired, revoked or not-yet-valid entitlements are refused before access."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_entitlement_guard.py",
+          "note": "Pins PUBLIC_FULL_TEXT_FORBIDDEN, ENTITLEMENT_MISSING, ACCOUNT_MISMATCH, ENTITLEMENT_EXPIRED and ENTITLEMENT_REVOKED on synthetic records; no live Research Vault wiring."
         }
       ],
       "gap": "P0 entitlement gate unbuilt; no pre-access denial test."
@@ -1468,6 +1528,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_branch_copy.py",
           "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A30 collocation."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/acceptance/sni_copy_guard_literals.py",
+          "note": "INT5 DRAFT extension of the A14/A30 markdown copy guard to JSON string values and Python string constants under the SNI tree; reuses the existing rule callables, no forked rule table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard_literals.py",
+          "note": "Pins literal-copy findings in JSON and Python strings on synthetic text; product UI and the rendered site stay out of scope."
         }
       ],
       "gap": "No UI copy test; ledger NO-GO is an R1-gated draft; A1/P2 wait on R1."
