@@ -116,23 +116,71 @@ def _simple_alias_lines(tree: ast.AST) -> dict[str, int]:
     return found
 
 
-def _shadowing_defs(tree: ast.AST) -> set[str]:
-    """def/class names that can really shadow a shell binding.
-
-    ``ast.walk`` also reports the methods declared in a class body, but a
-    def/class whose immediate parent is a ``ClassDef`` binds a *class*
-    attribute, never a module name: ``class _Probe: def readable(self)``
-    cannot shadow the shell's ``readable``. A def nested inside a function or
-    method body IS kept — it shadows the shell name inside its enclosing
-    scope. Parents are recorded from the tree, never by string matching.
-    """
+def _parent_map(tree: ast.AST) -> dict[int, ast.AST]:
+    """``id(child) -> parent`` for every node in the tree."""
     parent_of: dict[int, ast.AST] = {}
     for node in ast.walk(tree):
         for child in ast.iter_child_nodes(node):
             parent_of[id(child)] = node
+    return parent_of
+
+
+def _has_kind_ancestor(
+    node: ast.AST, parent_of: dict[int, ast.AST], kinds: tuple[type, ...]
+) -> bool:
+    ancestor = parent_of.get(id(node))
+    while ancestor is not None:
+        if isinstance(ancestor, kinds):
+            return True
+        ancestor = parent_of.get(id(ancestor))
+    return False
+
+
+_DEF_TYPES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+_FUNCTION_SCOPES = (ast.FunctionDef, ast.AsyncFunctionDef)
+
+
+def _shadowing_defs(tree: ast.AST) -> set[str]:
+    """def/class names that bind a MODULE name — the module-namespace pin.
+
+    Only a direct child of ``Module.body`` or a def/class nested inside
+    module-level compound statements (``if``/``try``/``with``/``for``/
+    ``while``) rebinds ``semiconductor.<name>``, so only those qualify:
+    a node with a ``FunctionDef``/``AsyncFunctionDef``/``ClassDef``
+    anywhere above it is excluded. A def nested inside a function or
+    method body binds a local, never the module name — that case is
+    ``_inner_shadowing_defs``. A def whose immediate parent is a
+    ``ClassDef`` binds a *class* attribute: ``class _Probe: def
+    readable(self)`` cannot shadow the shell's ``readable``. Parents are
+    recorded from the tree, never by string matching.
+    """
+    parent_of = _parent_map(tree)
     found: set[str] = set()
     for node in ast.walk(tree):
-        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        if not isinstance(node, _DEF_TYPES):
+            continue
+        if _has_kind_ancestor(node, parent_of, _DEF_TYPES):
+            continue
+        found.add(node.name)
+    return found
+
+
+def _inner_shadowing_defs(tree: ast.AST) -> set[str]:
+    """def/class names nested inside a function or method body.
+
+    These bind a local of their enclosing function, so they never rebind
+    ``semiconductor.<name>`` — but they do shadow the shell object inside
+    that scope, which the suite pins separately from the module-namespace
+    pin. A def whose immediate parent is a ``ClassDef`` binds a class
+    attribute (a method, even of a class nested in a function) and is
+    excluded here too, exactly as in ``_shadowing_defs``.
+    """
+    parent_of = _parent_map(tree)
+    found: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, _DEF_TYPES):
+            continue
+        if not _has_kind_ancestor(node, parent_of, _FUNCTION_SCOPES):
             continue
         if isinstance(parent_of.get(id(node)), ast.ClassDef):
             continue
@@ -154,17 +202,75 @@ def _assignment_target_names(target: ast.expr) -> list[str]:
     return []
 
 
+_MODULE_COMPOUND_TYPES = (
+    ast.If,
+    ast.For,
+    ast.AsyncFor,
+    ast.While,
+    ast.Try,
+    ast.ExceptHandler,
+    ast.With,
+    ast.AsyncWith,
+)
+_OTHER_SCOPE_TYPES = (
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.ClassDef,
+    ast.Lambda,
+    ast.ListComp,
+    ast.SetComp,
+    ast.DictComp,
+    ast.GeneratorExp,
+)
+
+
+def _walrus_targets(node: ast.AST) -> set[str]:
+    """``ast.NamedExpr`` targets that a walked statement binds at module level.
+
+    The walk covers the statement's own expressions and conditions but
+    stops at ``FunctionDef``/``AsyncFunctionDef``/``ClassDef``, lambdas and
+    comprehensions — those open another scope.
+    """
+    found: set[str] = set()
+    stack: list[ast.AST] = [node]
+    while stack:
+        current = stack.pop()
+        if isinstance(current, _OTHER_SCOPE_TYPES):
+            continue
+        if isinstance(current, ast.NamedExpr) and isinstance(current.target, ast.Name):
+            found.add(current.target.id)
+        stack.extend(ast.iter_child_nodes(current))
+    return found
+
+
 def _module_level_bound_names(tree: ast.AST) -> set[str]:
     """Names the module binds at module level, except its shell re-export block.
 
     The shell ``ImportFrom`` is the re-export this stack is supposed to have;
-    every other module-level binding — assignment target or import alias — is
-    a candidate rebinding of a shell name.
+    every other module-level binding — assignment target, import alias,
+    ``for``/``with`` target or ``ast.NamedExpr`` (walrus) target — is a
+    candidate rebinding of a shell name.
+
+    Walked: the direct children of ``Module.body`` and, nesting-aware, the
+    statements inside module-level compound blocks — ``if`` (its body,
+    ``elif``/``else``), ``try``/``except``/``else``/``finally``,
+    ``with``/``async with``, ``for``/``async for`` and ``while`` bodies and
+    ``else`` clauses — recursing through compounds nested in compounds.
+    Walrus targets are collected from the expressions and conditions of
+    every walked statement.
+
+    Not walked: ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` bodies (a
+    function-local or a class attribute never rebinds the module name),
+    lambdas and comprehensions (another scope), and ``except ... as name``
+    handlers, whose binding Python deletes when the handler exits.
     """
     if not isinstance(tree, ast.Module):
         return set()
     found: set[str] = set()
-    for node in tree.body:
+    stack: list[ast.stmt] = list(tree.body)
+    while stack:
+        node = stack.pop()
+        found.update(_walrus_targets(node))
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
             for target in targets:
@@ -175,6 +281,17 @@ def _module_level_bound_names(tree: ast.AST) -> set[str]:
             )
         elif isinstance(node, ast.ImportFrom) and node.module != SHELL_MODULE:
             found.update(alias.asname or alias.name for alias in node.names)
+        elif isinstance(node, (ast.For, ast.AsyncFor)):
+            found.update(_assignment_target_names(node.target))
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            for item in node.items:
+                if item.optional_vars is not None:
+                    found.update(_assignment_target_names(item.optional_vars))
+        if isinstance(node, _MODULE_COMPOUND_TYPES):
+            stack.extend(
+                child for child in ast.iter_child_nodes(node)
+                if isinstance(child, ast.stmt)
+            )
     return found
 
 
@@ -248,24 +365,46 @@ def test_semiconductor_does_not_redefine_a_shell_alias():
 
 
 def test_semiconductor_does_not_define_a_shell_reexport():
-    """A module-/function-scope def or class shadows the shared object.
+    """A module-namespace def or class shadows the shared object.
 
-    A class-body def is excluded by ``_shadowing_defs``: it binds a class
-    attribute and leaves ``semiconductor.<name>`` pointing at the shell object.
+    ``_shadowing_defs`` keeps only defs/classes that bind a module name: a
+    class-body def binds a class attribute and a function-local def binds
+    its own scope, so neither rebinds ``semiconductor.<name>`` away from
+    the shell object. Function-local shadows are pinned separately by
+    ``test_semiconductor_has_no_inner_shadow_of_a_shell_name``.
     """
     defined = _shadowing_defs(_tree(SEMICONDUCTOR))
     shadowed = sorted(defined & set(MOVED + SHELL_PUBLIC_REEXPORTS))
     assert shadowed == []
 
 
+def test_semiconductor_has_no_inner_shadow_of_a_shell_name():
+    """No def nested in a function or method body reuses a shell name.
+
+    A function-local def binds a local, never ``semiconductor.<name>``, so
+    this is not module shadowing — but reusing a shell name inside a body
+    shadows the shared object for that scope, so it is pinned here.
+    """
+    inner = _inner_shadowing_defs(_tree(SEMICONDUCTOR))
+    shadowed = sorted(inner & set(MOVED + SHELL_PUBLIC_REEXPORTS))
+    assert shadowed == [], f"inner (function-local) shadow of a shell name: {shadowed}"
+
+
 def test_shadowing_defs_scope_table():
-    """A class-body def binds a class attribute; a nested def shadows its scope."""
+    """The module-namespace pin and the inner-shadow pin are split."""
     assert _shadowing_defs(ast.parse("x = 1\n")) == set()
-    assert _shadowing_defs(
-        ast.parse("class _Probe:\n    def readable(self):\n        return 1\n")
-    ) == {"_Probe"}
-    assert "canonical_text" in _shadowing_defs(ast.parse("def canonical_text():\n    pass\n"))
-    assert "within" in _shadowing_defs(ast.parse("def f():\n    def within():\n        pass\n"))
+    probe = ast.parse("class _Probe:\n    def readable(self):\n        return 1\n")
+    assert _shadowing_defs(probe) == {"_Probe"}
+    assert _inner_shadowing_defs(probe) == set()
+    mod_def = ast.parse("def canonical_text():\n    pass\n")
+    assert "canonical_text" in _shadowing_defs(mod_def)
+    assert "canonical_text" not in _inner_shadowing_defs(mod_def)
+    fnested = ast.parse("def f():\n    def within():\n        pass\n")
+    assert "within" not in _shadowing_defs(fnested)
+    assert "within" in _inner_shadowing_defs(fnested)
+    ifnested = ast.parse("if True:\n    def within():\n        pass\n")
+    assert "within" in _shadowing_defs(ifnested)
+    assert "within" not in _inner_shadowing_defs(ifnested)
 
 
 def test_semiconductor_does_not_rebind_a_shell_name():

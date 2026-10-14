@@ -25,19 +25,18 @@ branches, and neither branch is on this tree — each vertical module is
 absent at this commit and on ``origin/main``, Robotics' first carrier
 merged then was reverted the same day
 (``agentos/workstreams/WS-GMI-ROBOTICS.md``, ROB-W1) and nuclear never
-landed. ``correction_lineage`` is the R3-7 family pattern of
+landed. ``_correction_lineage`` is the R3-7 family pattern of
 research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md;
-``review_excluded`` is recorded in the Robotics known-revisions decision
+``_review_excluded`` is recorded in the Robotics known-revisions decision
 and the nuclear implementation handoff. ``collapse_syndicated`` has no
 provenance this tree can show: the token occurs in no ``research/`` or
 ``agentos/`` artifact at this commit — only in this shell, the composer's
 re-export and alias block, and the two shared-shell suites — so it is
 documented here as an unwired proposed form, not as another vertical's
-carried gate.
-They land here unwired: nothing in this tree calls
-them except the shared-shell equality suite, which exercises them
-directly. The semiconductor module binds them in its alias block and never
-invokes them, so no semiconductor response byte depends on them.
+carried gate. They land here unwired: nothing in this tree calls them
+except the shared-shell equality suite, which exercises them directly.
+The semiconductor module binds them in its alias block and never invokes
+them, so no semiconductor response byte depends on them.
 
 What is deliberately NOT here
 -----------------------------
