@@ -959,14 +959,21 @@ def test_cxp3_w3_h_null_context_carries_no_tone_colour(tone, monkeypatch):
     assert "今日暂无背景" in _reading("zh", shelf)
 
 
-@pytest.mark.parametrize("tone,expect", [("up", "pos"), ("down", "neg"), ("flat", "")])
-def test_cxp3_w3_h_context_keeps_its_tone_colour(tone, expect, monkeypatch):
+# H'' (R33): the context line never carries a tone class — pos/neg painted nothing (the muted rule wins)
+# and a later CSS reorder would colour a whole sentence by one embedded sign.
+@pytest.mark.parametrize("context_en,context_zh", [("", ""), ("Basis firm.", "基差坚挺。")])
+@pytest.mark.parametrize("tone", ["up", "down", "flat"])
+def test_cxp4_h_context_line_never_carries_a_tone_class(tone, context_en, context_zh, monkeypatch):
     html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
-                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "Basis firm.", "基差坚挺。")]})
-    assert _w3_complex_class(html) == [expect]
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, context_en, context_zh)]})
+    assert _w3_complex_class(html) == [""]
     shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
-    assert "Basis firm." in _reading("en", shelf)
-    assert "基差坚挺。" in _reading("zh", shelf)
+    assert 'class="complex-context"' in shelf
+    assert "complex-context pos" not in shelf and "complex-context neg" not in shelf
+    if context_en:
+        assert context_en in _reading("en", shelf) and context_zh in _reading("zh", shelf)
+    else:
+        assert "No context on file today" in _reading("en", shelf) and "今日暂无背景" in _reading("zh", shelf)
 
 
 def _w3_board_chip(html: str) -> tuple[str, str, str]:
@@ -997,3 +1004,279 @@ def test_cxp3_w3_n1_one_flat_cut_off_shared_by_label_and_class():
     macro = macro[:macro.index("{%- endmacro %}")]
     assert "FLAT_CHG_PCT" in macro and "0.05" not in macro
     assert 'data-flat="{{ FLAT_CHG_PCT }}"' in src
+
+
+# --- wave 4 (cx-p4, TERMINAL) ------------------------------------------------------------------
+# N1 boundary (R33): the flat cut-off is exact at 0.05 — label and class agree on both sides of it.
+@pytest.mark.parametrize("chg,label,cls", [(0.05, "+0.1%", "up"), (-0.05, "-0.1%", "down"),
+                                           (0.0499, "0.0%", ""), (-0.0499, "0.0%", "")])
+def test_cxp4_n1_flat_cut_off_boundary_is_exact(chg, label, cls, tmp_path, monkeypatch):
+    assert build_crypto._chg_label(chg) == label
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    got_cls, flat, got_label = _w3_board_chip(_render_crypto(tmp_path, monkeypatch, case))
+    assert (got_cls, got_label) == (cls, label)
+    assert flat == "0.05"
+
+
+# L' (R32): /crypto methodology receipts live in the canonical LENS tip (`.qm` + data-tip-*), never
+# at rest on a Tier-1 sensor; observation receipts stay at rest; hover never reveals content.
+_CXP4_METHOD = (
+    ("Fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF "
+     "subscription measurement, not class capitalization.",
+     "基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。"),
+    ("Aggregate circulating supply. A supply change, not a measured ETF subscription.",
+     "汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。"),
+    ("BTC spot-volume percentile is an honest proxy until full class volume accrues.",
+     "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。"),
+    ("An annualized cost needs a qualified interval and source. Predicted funding is not a settled payment.",
+     "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。"),
+    ("ETH/BTC relative trend plus BTC dominance; display context only.",
+     "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。"),
+)
+_CXP4_QM = re.compile(
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r'(?: data-tip-rc-en="[^"]*")?(?: data-tip-rc-zh="[^"]*")?>\?</span>')
+_CXP4_REVEAL = {"display", "opacity", "visibility", "max-height", "height", "content", "clip", "clip-path"}
+
+
+def _cxp4_tips(fragment: str) -> list[tuple[str, str]]:
+    from html import unescape
+
+    return [(unescape(en), unescape(zh)) for en, zh in _CXP4_QM.findall(fragment)]
+
+
+def _cxp4_rules(css: str) -> list[tuple[str, set[str]]]:
+    css = re.sub(r"\{%.*?%\}|\{#.*?#\}|\{\{.*?\}\}|/\*.*?\*/", "", css, flags=re.S)
+    return [(sel.strip(), {d.split(":", 1)[0].strip() for d in body.split(";") if ":" in d})
+            for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css)]
+
+
+def _cxp4_sensors(tmp_path, monkeypatch, case: dict) -> str:
+    return _slice(_render_crypto(tmp_path, monkeypatch, case), 'data-shelf="H3"', 'data-shelf="H5"')
+
+
+def test_cxp4_l_hover_and_focus_rules_never_reveal_content(tmp_path, monkeypatch):
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    own = src[src.index("<style>") + len("<style>"):src.index("</style>")]
+    allowed = {"color", "border-color", "transform", "text-decoration", "outline", "outline-offset",
+               "outline-color", "border-radius"}
+    interactive = [(sel, props) for sel, props in _cxp4_rules(own)
+                   if re.search(r":(hover|focus|focus-visible|focus-within)\b", sel)]
+    assert any(".qm:hover" in sel and ".qm:focus-visible" in sel for sel, _ in interactive)
+    for sel, props in interactive:
+        assert props <= allowed, (sel, props - allowed)
+    # The shared house layer is included at the foot of the page's own <style>; judge it as shipped
+    # (the rendered page), so this job's scope stays the templates it already names.
+    page = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    heads = [m.start() for m in re.finditer(r"body\.crypto-page,\s*body\.page-vector\s*\{", page)]
+    assert len(heads) == 1, heads
+    house = page[heads[0]:page.index("</style>", heads[0])]
+    assert ":hover" in house
+    for sel, props in _cxp4_rules(house):
+        if re.search(r":(hover|focus-within)\b", sel):
+            assert not props & _CXP4_REVEAL, (sel, props & _CXP4_REVEAL)
+
+
+def test_cxp4_l_methodology_lives_in_lens_tips_not_at_rest(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    en, zh = _reading("en", sensors), _reading("zh", sensors)
+    for tip_en, tip_zh in _CXP4_METHOD:
+        assert tip_en not in en and tip_zh not in zh
+    assert sorted(_cxp4_tips(sensors)) == sorted(_CXP4_METHOD)
+    assert sensors.count('class="qm"') == len(_CXP4_METHOD)
+
+
+_R39_RC = re.compile(
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r' data-tip-rc-en="([^"]*)" data-tip-rc-zh="([^"]*)">\?</span>')
+
+
+def test_r39_l_source_names_live_in_the_lens_receipt_line(tmp_path, monkeypatch):
+    from html import unescape
+
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    rc = [tuple(unescape(g) for g in m) for m in _R39_RC.findall(sensors)]
+    assert rc == [
+        (*_CXP4_METHOD[0], "Source: Farside", "来源：Farside"),
+        (*_CXP4_METHOD[1], "Source: DefiLlama", "来源：DefiLlama"),
+    ]
+    assert sensors.count("data-tip-rc-en=") == sensors.count("data-tip-rc-zh=") == 2
+    for en, zh in _cxp4_tips(sensors):
+        for name in ("Farside", "DefiLlama"):
+            assert name not in en and name not in zh, (name, en, zh)
+
+
+def test_cxp4_l_observation_receipts_stay_at_rest(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    flows, heat = case["market"]["flows"], case["market"]["heat"]
+    flows["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0, "state": "Unavailable",
+        "tone": "neutral", "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    flows["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9, "change_30d_pct": -1.6,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    flows["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    heat["open_interest"] = _sensor(value=0.021, state="Normal", percentile=80)
+    heat["volatility"] = _sensor(value=48, state="Normal", percentile=64)
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    import html as _html  # the stale label carries an apostrophe, which autoescape renders as &#39;
+    en, zh = _html.unescape(_reading("en", sensors)), _html.unescape(_reading("zh", sensors))
+    assert en.count(_STALE_EN) == 2 and zh.count(_STALE_ZH) == 2
+    assert en.count("Last on file") == 2 and zh.count("最近在册") == 2
+    assert "-$505M" in en and "-$2.5B" in en and "2026-10-09" in en
+    assert "P82 · BTC spot volume" in en and "P82 · BTC 现货成交量" in zh
+    assert "80th percentile" in en and "80百分位" in zh
+    assert "DVOL · P64" in en and "DVOL · P64" in zh
+
+
+def test_cxp4_l_no_title_attribute_carries_translated_text(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    html = _render_crypto(tmp_path, monkeypatch, case)
+    titles = re.findall(r'\btitle="([^"]*)"', html)
+    assert not [t for t in titles if re.search(r"[　-〿㐀-鿿＀-￯]", t)], titles
+    assert 'title="' not in _slice(html, 'data-shelf="H3"', 'data-shelf="H5"')
+
+
+# M' (R32/R31): each /vector S3 row describes ONE subject — the spark and the micro figure read the
+# same signals column (derived from the row's spark_source), and the row's LENS tip names which member
+# sets the state and which series the chart + figure follow.
+_CXP4_AXIS_SUBJECT = {
+    "trend_momentum": ("momentum", 0.37, "+0.37"),
+    "cycle_valuation": ("cycle_position", 0.42, "42%"),
+    "liquidity_flows": ("stbl_growth", 3.3, "+3.3%"),
+    "leverage_derivatives": ("leverage_stress", 61.0, "61/100"),
+    "network_miners": ("bfi", 73.0, "73/100"),
+    "macro_backdrop": ("global_m2_yoy", 4.4, "+4.4%"),
+}
+_CXP4_DECOYS = {"mvrv_z": 2.9, "etf_flow_z": 1.7, "oi_mcap_ratio": 0.02, "macro_score": 0.55}
+
+
+def _cxp4_sig(drop: tuple[str, ...] = ()) -> pd.DataFrame:
+    import numpy as np
+
+    idx = pd.date_range("2026-05-01", periods=120, freq="D")
+    sig = pd.DataFrame({"close": np.linspace(100.0, 120.0, 120), "alloc_optimal": 0.3}, index=idx)
+    lasts = [(col, last) for col, last, _micro in _CXP4_AXIS_SUBJECT.values()] + list(_CXP4_DECOYS.items())
+    for i, (col, last) in enumerate(lasts):
+        values = np.linspace(0.0, 1.0, 120) * (i + 1)
+        values[-1] = last
+        sig[col] = values
+    return sig.drop(columns=list(drop))
+
+
+def _cxp4_presentations(monkeypatch, sig: pd.DataFrame) -> tuple[dict, list]:
+    seen: list = []
+    real = build_vector._spark_points
+
+    def spy(series, *args, **kwargs):
+        seen.append(series)
+        return real(series, *args, **kwargs)
+
+    monkeypatch.setattr(build_vector, "_spark_points", spy)
+    monkeypatch.setattr(build_vector.store, "read", _none_reader)
+    pres = build_vector._vector_presentations(sig, {}, {}, {})
+    monkeypatch.setattr(build_vector, "_spark_points", real)
+    return pres, seen[:len(build_vector.COCKPIT_AXIS_PRESENTATION)]
+
+
+def test_cxp4_m_spark_and_micro_describe_one_subject(monkeypatch):
+    pres, seen = _cxp4_presentations(monkeypatch, _cxp4_sig())
+    specs = build_vector.COCKPIT_AXIS_PRESENTATION
+    assert [row["id"] for row in pres["axes"]] == [spec["id"] for spec in specs] == list(_CXP4_AXIS_SUBJECT)
+    for row, spec, series in zip(pres["axes"], specs, seen):
+        col, _last, micro = _CXP4_AXIS_SUBJECT[row["id"]]
+        assert spec["spark_source"] == f"signals.{col}", row["id"]
+        assert isinstance(series, pd.Series) and series.name == col, row["id"]
+        assert row["micro"] == micro, row["id"]
+        assert row["spark"], row["id"]
+
+
+def test_cxp4_m_micro_column_has_one_source_of_truth():
+    import inspect
+
+    body = inspect.getsource(build_vector._vector_presentations)
+    for col, _last, _micro in _CXP4_AXIS_SUBJECT.values():
+        assert f'last.get("{col}")' not in body and f"last.get('{col}')" not in body, col
+    for spec in build_vector.COCKPIT_AXIS_PRESENTATION:
+        assert build_vector._axis_source_column(spec) == spec["spark_source"].split(".", 1)[-1]
+    assert set(build_vector.COCKPIT_AXIS_MICRO) == {spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION}
+
+
+def test_cxp4_m_absent_column_degrades_to_a_null_spark_and_a_dash(monkeypatch):
+    ids = [spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION]
+    pres, seen = _cxp4_presentations(monkeypatch, _cxp4_sig(drop=("cycle_position",)))
+    i = ids.index("cycle_valuation")
+    assert isinstance(seen[i], pd.Series) and seen[i].empty
+    assert pres["axes"][i]["spark"] == "" and pres["axes"][i]["micro"] == "—"
+
+
+def test_cxp4_m_s3_tip_names_the_state_member_and_the_charted_series(monkeypatch):
+    pres, _seen = _cxp4_presentations(monkeypatch, _cxp4_sig())
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": pres["axes"], "watch": [], "complex": []})
+    tips = _cxp4_tips(_slice(html, 'data-shelf="S3"', 'data-shelf="S4"'))
+    assert len(tips) == len(pres["axes"]) == 6
+    for row, (en, zh) in zip(pres["axes"], tips):
+        _fmt, _micro_en, _micro_zh, series_en, series_zh = build_vector.COCKPIT_AXIS_MICRO[row["id"]]
+        assert en.startswith(f"Primary: {row['primary']['label_en']} — "), en
+        assert "it sets the row state" in en and f"The chart and figure follow {series_en}." in en, en
+        assert zh.startswith(f"主读数：{row['primary']['label_zh']} — "), zh
+        assert "决定本行状态" in zh and f"图表与数字跟随{series_zh}。" in zh, zh
+
+
+# R39 (M' review repair): the figure follows the series the chart draws. When the newest row has no
+# reading the row prints the column's last valid value and dates it; an all-NaN column keeps the dash.
+def _r39_row(pres: dict, row_id: str) -> dict:
+    return next(row for row in pres["axes"] if row["id"] == row_id)
+
+
+def test_r39_m_figure_follows_the_spark_series_when_the_newest_row_has_no_reading(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig.loc[sig.index[-2], "leverage_stress"] = 58.0
+    sig.loc[sig.index[-1], "leverage_stress"] = np.nan
+    pres, seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "58/100"
+    assert row["micro_en"] == "pressure · as of Aug 27"
+    assert row["micro_zh"] == "压力 · 截至8月27日"
+    assert row["spark"]
+    assert row["receipt_en"].endswith(
+        "final allocation. Figure as of Aug 27; the newest row has no reading."), row["receipt_en"]
+    assert row["receipt_zh"].endswith("最终配置。数字截至8月27日；最新一行无读数。"), row["receipt_zh"]
+    ids = [spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION]
+    assert seen[ids.index("leverage_derivatives")].name == "leverage_stress"
+    for other in pres["axes"]:
+        if other["id"] == "leverage_derivatives":
+            continue
+        _fmt, micro_en, micro_zh, _series_en, _series_zh = build_vector.COCKPIT_AXIS_MICRO[other["id"]]
+        assert (other["micro_en"], other["micro_zh"]) == (micro_en, micro_zh), other["id"]
+        assert "Figure as of" not in other["receipt_en"] and "数字截至" not in other["receipt_zh"], other["id"]
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": pres["axes"], "watch": [], "complex": []})
+    s3 = _slice(html, 'data-shelf="S3"', 'data-shelf="S4"')
+    assert "<b>58/100</b>" in s3
+    assert "pressure · as of Aug 27" in _reading("en", s3)
+    assert "压力 · 截至8月27日" in _reading("zh", s3)
+
+
+def test_r39_m_all_nan_column_keeps_the_dash_and_the_null_spark(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig["leverage_stress"] = np.nan
+    pres, _seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "—" and row["spark"] == ""
+    assert (row["micro_en"], row["micro_zh"]) == ("pressure", "压力")
+    assert "Figure as of" not in row["receipt_en"] and "数字截至" not in row["receipt_zh"]

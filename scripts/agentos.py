@@ -635,7 +635,8 @@ def _resolve_path(entry: str, rec: dict[str, Any]) -> tuple[str, str] | None:
     return _home_repo(rec), entry
 
 
-def _git(*args: str, cwd: Path | None = None) -> str | None:
+def _git(*args: str, cwd: Path | None = None, timeout: int = 60,
+         env: dict[str, str] | None = None, text: bool = True) -> str | bytes | None:
     """Run a git command, returning stdout or None on any failure (fail-open).
 
     Local git only — never a fetch, never a network call.
@@ -645,8 +646,9 @@ def _git(*args: str, cwd: Path | None = None) -> str | None:
             ["git", *args],
             cwd=str(cwd or _ROOT),
             capture_output=True,
-            text=True,
-            timeout=60,
+            text=text,
+            timeout=timeout,
+            env=env,
         )
     except (OSError, subprocess.SubprocessError):
         return None
@@ -807,8 +809,146 @@ def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
 # ---------------------------------------------------------------- per-type checks
 
 
-def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
+# Optional mission-scoped acceptance declarations are knowledge, never grants.
+_ACCEPTANCE_KEYS = frozenset({
+    "commission_id", "commission_ref", "continuity_ref", "original_intent_ref", "proof_contract_ref",
+    "current_intent_revision", "correction_state", "correction_chain",
+    "criteria_objective", "criteria_sources", "original_source_status",
+    "original_proof_contract_ref", "proof_obligations",
+})
+_ACCEPTANCE_OPTIONAL_KEYS = frozenset({"execution_commission_refs"})
+_ACCEPTANCE_REF_KEYS = frozenset({"repository", "commit", "path", "content_sha256"})
+_ACCEPTANCE_CORRECTION_STATES = frozenset({
+    "NO_CORRECTION_DECLARED_AT_THIS_REVISION", "CORRECTIONS_DECLARED_AT_THIS_REVISION",
+    "MISSING", "UNRESOLVED",
+})
+_ACCEPTANCE_SOURCE_STATES = frozenset({
+    "AUTHENTIC_USER_INPUT_CANDIDATE", "AUTHENTIC_USER_INPUT_PROTECTED", "UNKNOWN", "MISSING", "DENIED",
+})
+
+
+def _acceptance_ref_ok(value: Any) -> bool:
+    if not isinstance(value, dict) or set(value) != _ACCEPTANCE_REF_KEYS:
+        return False
+    repository, commit, path, digest = (value.get(k) for k in
+        ("repository", "commit", "path", "content_sha256"))
+    if (not isinstance(repository, str)
+            or repository not in {"mastermindx-market-intelligence/macro", "mastermindx-market-intelligence/Mastermind"}
+            or not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None
+            or not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            or not isinstance(path, str) or len(path) > 300
+            or re.fullmatch(r"[A-Za-z0-9_.\-/]+", path) is None
+            or path.startswith("/") or any(part in {"", ".", ".."} for part in path.split("/"))):
+        return False
+    # These are references only. No arbitrary file, URL, sibling or network read.
+    return (path.startswith("agentos/") if repository.endswith("/macro")
+            else (path == "COMMISSION.md" or (path.startswith("research/") or path.startswith("docs/superpowers/specs/")) and path.endswith(".md")))
+
+
+def _acceptance_contract_problems(rec: dict[str, Any], path: Path) -> list[Problem]:
+    if "acceptance_contracts" not in rec:
+        return []
     out: list[Problem] = []
+    def bad(code: str) -> None:
+        out.append(Problem(path, "bad-acceptance-contract", code, hard=True))
+    contracts = rec["acceptance_contracts"]
+    if not isinstance(contracts, list) or len(contracts) > 16:
+        bad("acceptance_contracts must be a list of at most 16 declarations")
+        return out
+    seen: set[str] = set()
+    for contract in contracts:
+        if (not isinstance(contract, dict) or not _ACCEPTANCE_KEYS <= set(contract)
+                or set(contract) - (_ACCEPTANCE_KEYS | _ACCEPTANCE_OPTIONAL_KEYS)):
+            bad("acceptance declaration has missing or unknown fields")
+            continue
+        ident = contract["commission_id"]
+        if (not isinstance(ident, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", ident) is None
+                or ident in seen):
+            bad("commission_id must be unique and bounded")
+        else:
+            seen.add(ident)
+        for field in ("commission_ref", "continuity_ref", "original_intent_ref", "proof_contract_ref", "original_proof_contract_ref"):
+            if not _acceptance_ref_ok(contract[field]):
+                bad(field + " must be a canonical bounded source reference")
+        ref = contract["continuity_ref"]
+        if isinstance(ref, dict) and (ref.get("repository") != "mastermindx-market-intelligence/macro"
+                or not str(ref.get("path", "")).startswith("agentos/handoffs/")
+                or not str(ref.get("path", "")).endswith(".md")):
+            bad("continuity_ref must name the existing handoff namespace")
+        if isinstance(contract["commission_ref"], dict) and contract["commission_ref"].get("repository") != "mastermindx-market-intelligence/Mastermind":
+            bad("commission_ref must preserve the existing Mastermind commissioning owner")
+        execution_refs = contract.get("execution_commission_refs", [])
+        if (not isinstance(execution_refs, list) or len(execution_refs) > 16
+                or any(not _acceptance_ref_ok(ref) or ref["repository"] != "mastermindx-market-intelligence/Mastermind"
+                       for ref in execution_refs)):
+            bad("execution commissioning associations must be bounded exact Mastermind source references")
+        elif len({json.dumps(ref, sort_keys=True) for ref in execution_refs}) != len(execution_refs):
+            bad("execution commissioning associations must not duplicate a source identity")
+        revision = contract["current_intent_revision"]
+        if not isinstance(revision, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", revision) is None:
+            bad("current_intent_revision must be explicit and bounded")
+        state, chain = contract["correction_state"], contract["correction_chain"]
+        if not isinstance(state, str) or state not in _ACCEPTANCE_CORRECTION_STATES:
+            bad("correction_state must be explicit")
+        if not isinstance(chain, list) or len(chain) > 16 or any(not _acceptance_ref_ok(ref) for ref in chain):
+            bad("correction_chain must be a bounded source-reference list")
+        elif (state == "NO_CORRECTION_DECLARED_AT_THIS_REVISION" and chain
+              or state == "CORRECTIONS_DECLARED_AT_THIS_REVISION" and not chain):
+            bad("correction declaration and chain disagree")
+        objective = contract["criteria_objective"]
+        try:
+            valid_objective = isinstance(objective, str) and bool(objective.strip()) and len(objective.encode("utf-8")) <= 4000
+        except UnicodeError:
+            valid_objective = False
+        if not valid_objective:
+            bad("criteria_objective must be bounded literal text")
+        # The sole Mastermind criterion parser validates the reserved suffix and
+        # derives criterion identities. This compiler never parses that suffix.
+        rows = contract["criteria_sources"]
+        if not isinstance(rows, list) or not 1 <= len(rows) <= 6:
+            bad("criteria_sources must have one to six indexed source anchors")
+        else:
+            for index, row in enumerate(rows):
+                if (not isinstance(row, dict) or set(row) != {"criterion_index", "source_ref", "locators"}
+                        or type(row.get("criterion_index")) is not int or row["criterion_index"] != index
+                        or not _acceptance_ref_ok(row.get("source_ref"))):
+                    bad("criterion source anchor must have exact contiguous index and source reference")
+                    continue
+                locators = row["locators"]
+                if (not isinstance(locators, list) or not 1 <= len(locators) <= 16
+                        or any(not isinstance(value, str) or not value.strip() or value != value.strip()
+                               or len(value) > 200 for value in locators)):
+                    bad("criterion locators must be bounded source section references")
+        obligations = contract["proof_obligations"]
+        if not isinstance(obligations, list) or not 1 <= len(obligations) <= 64:
+            bad("proof_obligations must retain one to 64 literal required source clauses")
+        else:
+            seen_clauses: set[tuple[str, str]] = set()
+            for obligation in obligations:
+                if (not isinstance(obligation, dict)
+                        or set(obligation) != {"source_ref", "section", "label", "required_outcome"}
+                        or not _acceptance_ref_ok(obligation.get("source_ref"))):
+                    bad("proof obligation must have its exact source-row shape")
+                    continue
+                for field, bound in (("section", 80), ("label", 200), ("required_outcome", 4000)):
+                    value = obligation[field]
+                    try:
+                        valid = isinstance(value, str) and bool(value.strip()) and value == value.strip() and len(value.encode("utf-8")) <= bound
+                    except UnicodeError:
+                        valid = False
+                    if not valid:
+                        bad("proof obligation source clause must be bounded nonempty text")
+                identity = (str(obligation["section"]), str(obligation["label"]))
+                if identity in seen_clauses:
+                    bad("proof obligation source rows must be unique")
+                seen_clauses.add(identity)
+        if not isinstance(contract["original_source_status"], str) or contract["original_source_status"] not in _ACCEPTANCE_SOURCE_STATES:
+            bad("original source status must preserve publication and missingness")
+    return out
+
+
+def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
+    out: list[Problem] = _acceptance_contract_problems(rec, path)
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",
@@ -4875,6 +5015,87 @@ def _workstream_excerpt(
 # ------------------------------------------------------------ Phase 3: the walk
 
 
+def _acceptance_record_identity(store: Store, rec: dict[str, Any], path: Path) -> tuple[dict[str, str] | None, str]:
+    """Observe only the selected table-owned WS file and local Git, never references.
+
+    CURRENT means these record bytes match the checked-out commit, not protected
+    publication, user authentication, a runtime grant, or acceptance. Issuance
+    independently revalidates the actual source and caller through its owner.
+    """
+    root = _record_repository_root(store.root)
+    try:
+        relative = path.resolve().relative_to(root.resolve()).as_posix()
+        if not relative.startswith("agentos/workstreams/WS-") or not relative.endswith(".md"):
+            return None, "UNKNOWN"
+        raw = path.read_bytes()
+        fresh, _ = parse_record(path)  # reuse the only record parser
+        if fresh.get("acceptance_contracts") != rec.get("acceptance_contracts"):
+            return None, "STALE"
+        env = dict(os.environ, GIT_NO_LAZY_FETCH="1", GIT_OPTIONAL_LOCKS="0")
+        head = _git("rev-parse", "HEAD", cwd=root, timeout=5, env=env, text=False)
+        if head is None:
+            return None, "UNKNOWN"
+        commit = head.decode("ascii").strip()
+        if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+            return None, "UNKNOWN"
+        committed = _git("show", commit + ":" + relative, cwd=root, timeout=5, env=env, text=False)
+        if path.read_bytes() != raw:
+            return None, "STALE"
+        ref = {"repository": "mastermindx-market-intelligence/macro", "commit": commit,
+               "path": relative, "content_sha256": hashlib.sha256(raw).hexdigest()}
+        return ref, "CURRENT" if committed == raw else "UNPUBLISHED"
+    except PermissionError:
+        return None, "DENIED"
+    except FileNotFoundError:
+        return None, "MISSING"
+    except (OSError, ValueError, UnicodeError, subprocess.SubprocessError):
+        return None, "UNKNOWN"
+
+
+def _compile_acceptance_basis(store: Store, rec: dict[str, Any], path: Path) -> dict[str, Any]:
+    """Index explicit mission declarations; selection/permission stay with callers.
+
+    No newest-handoff selection, source-ref dereference, sibling read, network,
+    criterion parser, criterion-ID derivation, or acceptance takes place here.
+    The literal objective is consumed by the existing Mastermind criterion parser.
+    """
+    result: dict[str, Any] = {"schema": "agentos.acceptance_basis.v1", "authoritative": False,
+                              "by_commission": {}}
+    if not rec.get("acceptance_contracts") or _acceptance_contract_problems(rec, path):
+        return result
+    source_ref, source_state = _acceptance_record_identity(store, rec, path)
+    for contract in rec["acceptance_contracts"]:
+        # Round-trip a fresh copy: observations cannot alias mutable store fields.
+        entry = json.loads(json.dumps(contract, ensure_ascii=False))
+        state = source_state
+        if contract["correction_state"] == "MISSING" or contract["original_source_status"] == "MISSING":
+            state = "MISSING"
+        elif contract["original_source_status"] == "DENIED":
+            state = "DENIED"
+        elif contract["correction_state"] == "UNRESOLVED" or contract["original_source_status"] == "UNKNOWN":
+            state = "UNKNOWN"
+        entry.update(
+            workstream="WS:" + rec["key"], source_state=state,
+            current_intent_ref=dict(source_ref) if source_ref else None,
+            source_record_ref=dict(source_ref) if source_ref else None,
+            current_intent_text=contract["criteria_objective"],
+            criteria_objective_sha256=hashlib.sha256(contract["criteria_objective"].encode("utf-8")).hexdigest(),
+            reference_observation="DECLARED_REFERENCES_NOT_RETRIEVED_OR_AUTHENTICATED_HERE",
+            snapshot_consistency="EXISTING_NON_ATOMIC_RECORD_READ",
+            execution_commission_refs=entry.get("execution_commission_refs", []),
+            execution_commission_state=("ASSOCIATED_SOURCE_REFERENCES_ONLY" if contract.get("execution_commission_refs")
+                                        else "EXECUTION_COMMISSION_NOT_ASSOCIATED"),
+        )
+        entry["proof_obligation_digests"] = [hashlib.sha256(json.dumps(
+            row, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
+        ).encode("utf-8")).hexdigest() for row in entry["proof_obligations"]]
+        entry["acceptance_basis_digest"] = hashlib.sha256(json.dumps(
+            entry, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        result["by_commission"][contract["commission_id"]] = entry
+    return result
+
+
 def compile_bundle(
     store: Store,
     *,
@@ -4946,6 +5167,7 @@ def compile_bundle(
         "omitted_due_to_budget": [],
         "degraded": list(degraded.items),
         "no_answer_reason": target["no_answer_reason"],
+        "acceptance_basis": {"schema": "agentos.acceptance_basis.v1", "authoritative": False, "by_commission": {}},
     }
     if target["key"] is None:
         # Sections stay EMPTY.  A bundle that guessed a workstream and filled itself in
@@ -4960,6 +5182,7 @@ def compile_bundle(
     rec = ws_all[key]
     envelope["target"]["wait"] = _wait_row(rec)
     ws_path = source(f"WS/{key}")
+    envelope["acceptance_basis"] = _compile_acceptance_basis(store, rec, ws_path)
     program = rec.get("program") if isinstance(rec.get("program"), str) else None
     prs = _pr_index(builds)
     # Record-LOCAL hard problems only.  A sibling whose own frontmatter is wrong is a lie
@@ -5370,6 +5593,7 @@ def compile_bundle(
         "omitted_due_to_budget": omitted,
         "degraded": list(degraded.items),
         "candidates": target["candidates"],
+        "acceptance_basis": envelope["acceptance_basis"],
     }, ensure_ascii=False))
     used += tails
     if used > budget:
@@ -5426,6 +5650,15 @@ def render_bundle(bundle: dict[str, Any]) -> str:
         out.append(f"  candidate {candidate['key']} (score {candidate['score']}) — "
                    f"{candidate['title']}")
     if target["candidates"]:
+        out.append("")
+
+    basis = bundle.get("acceptance_basis", {}).get("by_commission", {})
+    if basis:
+        out.append("ACCEPTANCE DECLARATIONS — knowledge only; explicit caller selection required")
+        for ident, entry in sorted(basis.items()):
+            out.append(f"commission: {ident} · source_state: {entry['source_state']}")
+            # Literal canonical text/source clauses are never clipped or inferred.
+            out.append(json.dumps(entry, sort_keys=True, ensure_ascii=False))
         out.append("")
 
     for section in bundle["sections"]:

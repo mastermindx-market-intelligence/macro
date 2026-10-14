@@ -15,6 +15,7 @@ so ``_assert_entity_isolation`` refused every production request with 503.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -32,8 +33,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 _STATEMENTS_PATH = "/api/forensics/v1/financial/statements"
 _REVISIONS_PATH = "/api/forensics/v1/financial/revisions"
+_PACKET_PATH = "/api/forensics/v1/financial/packet"
 _STATEMENT_SCHEMA = "fundamental_forensics.financial_statement_request/v1"
 _REVISION_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
+_PACKET_SCHEMA = "fundamental_forensics.financial_packet_request/v1"
 
 # FY2024 revenue duration as it exists in the staged AAPL ledger
 # (us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax spans).
@@ -128,6 +131,51 @@ def _revisions_body(identity: dict) -> bytes:
     ).encode("utf-8")
 
 
+def _packet_body(identity: dict) -> bytes:
+    """The packet request over the SAME entity/policy/metric/period as
+    ``_revisions_body`` (the packet API schema the packet endpoint tests
+    use: ``fundamental_forensics.financial_packet_request/v1``)."""
+    return json.dumps(
+        {
+            "schema": _PACKET_SCHEMA,
+            "entity_id": identity["entity_id"],
+            "policy": {
+                "selection": "latest_known_as_of",
+                "source_snapshot_at": "2025-12-31T23:59:59Z",
+                "recorded_at": pub.RUN_CLOCK,
+            },
+            "metric_ids": ["revenue"],
+            "periods": [dict(_REVENUE_PERIOD)],
+        },
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+
+def _resolved_revenue_fy2024_cell(packet: dict) -> dict:
+    """The packet's selected/resolved revenue cell for the FY2024 duration.
+
+    The packet's valued/unvalued discriminators are ``value`` (decimal text
+    or null) and ``non_value_state`` (null iff the cell is valued; the
+    unresolved states are ``missing``/``unsupported``) —
+    ``financial_intelligence_packet._cell_states``. A null value or a
+    non-null state fails the caller's assertion.
+    """
+    matches = [
+        cell
+        for cell in packet["cells"]
+        if cell["metric_id"] == "revenue"
+        and cell["period"]["label"] == _REVENUE_PERIOD["label"]
+    ]
+    assert len(matches) == 1, ("revenue FY2024 cell count", len(matches))
+    cell = matches[0]
+    assert cell["period"]["kind"] == _REVENUE_PERIOD["kind"]
+    assert cell["period"]["start"] == _REVENUE_PERIOD["start"]
+    assert cell["period"]["end"] == _REVENUE_PERIOD["end"]
+    assert isinstance(cell["value"], str) and cell["value"], cell
+    assert cell["non_value_state"] is None, cell
+    return cell
+
+
 # ---------------------------------------------------------------------------
 # T1/T2: production mode serves the publisher-built store (D-1 + D-2)
 # ---------------------------------------------------------------------------
@@ -173,6 +221,49 @@ def test_t2_production_revisions_page_shape_returns_200(
     assert payload["entity"]["cik"] == identity["cik"]
     assert isinstance(payload["revisions"], list)
     assert isinstance(payload["packet_ref"]["content_sha256"], str)
+    # A0-h1 (MINOR-3): the envelope must ride the SAME frozen packet the
+    # packet endpoint serves for the identical request. The publisher-built
+    # corpus mints only FILED ledger events (ixbrl_raw_ledger), so its
+    # revision rows are structurally empty and the page's revenue
+    # resolution is pinned through that shared packet (see T2b), never
+    # through a stale or divergent envelope.
+    packet_response = production_client.post(
+        _PACKET_PATH,
+        content=_packet_body(identity),
+        headers={"content-type": "application/json"},
+    )
+    assert packet_response.status_code == 200, packet_response.text
+    assert (
+        payload["packet_ref"]["content_sha256"]
+        == packet_response.json()["content_sha256"]
+    )
+
+
+def test_t2b_production_packet_returns_200_with_resolved_revenue(
+    production_client, production_lane
+) -> None:
+    """A0-h1 (MINOR-3): the production packet endpoint serves the frozen
+    assembler's canonical bytes with a RESOLVED revenue FY2024 cell — the
+    packet_service execute path (occurrence-keyed metadata normalization
+    included) proven on the publisher-built production store."""
+    identity = production_lane["identity"]
+    response = production_client.post(
+        _PACKET_PATH,
+        content=_packet_body(identity),
+        headers={"content-type": "application/json"},
+    )
+    assert response.status_code == 200, response.text
+    packet = response.json()
+    assert packet["schema"] == "financial_intelligence_packet.v1"
+    assert packet["entity"]["entity_id"] == identity["entity_id"]
+    assert packet["entity"]["cik"] == identity["cik"]
+    _resolved_revenue_fy2024_cell(packet)
+    # The endpoint exposes the HTTP-bytes digest (X-FIF-Response-SHA256):
+    # pin the served bytes to it.
+    assert (
+        response.headers["x-fif-response-sha256"]
+        == hashlib.sha256(response.content).hexdigest()
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -262,6 +353,104 @@ def test_t3b_publisher_refuses_package_with_foreign_entity_id(tmp_path, monkeypa
         "admission_refused:issuer_entity_mismatch"
     ]
     assert not pub._latest_json_path(store, identity["entity_id"]).exists()
+
+
+@pytest.mark.parametrize(
+    "present_bad_entity_id",
+    ["", 123, None, ["x"], {"x": 1}],
+    ids=["empty-string", "int", "none", "list", "dict"],
+)
+def test_t3c_publisher_refuses_package_with_present_non_matching_entity_id(
+    tmp_path, monkeypatch, present_bad_entity_id
+) -> None:
+    """A0-h1 (MINOR-1): a retained manifest whose ``entity_id`` key is
+    PRESENT but is not exactly the binding's entity string — an empty
+    string, a non-string, or None — is a DISAGREEING package
+    (``admission_refused:issuer_entity_mismatch``), never one to silently
+    relabel with the binding's entity."""
+    lane = pub._materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = pub._write_contract(tmp_path, identity, None)
+    assert pub._capture_cli(lane, contract) == 0
+
+    real_read = producer.read_retained_fif_packages
+
+    def _entity_claimed_read(archive_root, *, cik, accessions):
+        packages = real_read(archive_root, cik=cik, accessions=accessions)
+        return tuple(
+            type(package)(
+                cik=package.cik,
+                accession=package.accession,
+                manifest={**package.manifest, "entity_id": present_bad_entity_id},
+                index_bytes=package.index_bytes,
+                members=package.members,
+                witness_bytes=package.witness_bytes,
+                package_dir=package.package_dir,
+            )
+            for package in packages
+        )
+
+    monkeypatch.setattr(producer, "read_retained_fif_packages", _entity_claimed_read)
+    store = tmp_path / "store"
+    report_path = tmp_path / "report.json"
+    assert pub._publish_cli(lane, contract, store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert [row["reason"] for row in report["excluded"]] == [
+        "admission_refused:issuer_entity_mismatch"
+    ]
+    assert not pub._latest_json_path(store, identity["entity_id"]).exists()
+    # nothing at all was written for the refused issuer
+    assert not list(store.rglob(f"*{identity['entity_id']}*")) if store.exists() else True
+
+
+def test_t3d_publisher_accepts_package_with_present_equal_entity_id(
+    tmp_path, monkeypatch
+) -> None:
+    """A0-h1 (review F3): a retained manifest whose ``entity_id`` is PRESENT
+    and exactly the binding's entity string is a matching package — it is
+    published, and the publisher does not rewrite its manifest (the stamp
+    is only for an ABSENT key)."""
+    lane = pub._materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = pub._write_contract(tmp_path, identity, None)
+    assert pub._capture_cli(lane, contract) == 0
+
+    real_read = producer.read_retained_fif_packages
+
+    def _entity_claimed_read(archive_root, *, cik, accessions):
+        packages = real_read(archive_root, cik=cik, accessions=accessions)
+        return tuple(
+            type(package)(
+                cik=package.cik,
+                accession=package.accession,
+                manifest={**package.manifest, "entity_id": identity["entity_id"]},
+                index_bytes=package.index_bytes,
+                members=package.members,
+                witness_bytes=package.witness_bytes,
+                package_dir=package.package_dir,
+            )
+            for package in packages
+        )
+
+    real_replace = producer.replace
+    manifest_rewrites: list[object] = []
+
+    def _spy_replace(obj, /, **changes):
+        if "manifest" in changes:
+            manifest_rewrites.append(obj)
+        return real_replace(obj, **changes)
+
+    monkeypatch.setattr(producer, "read_retained_fif_packages", _entity_claimed_read)
+    monkeypatch.setattr(producer, "replace", _spy_replace)
+    store = tmp_path / "store"
+    report_path = tmp_path / "report.json"
+    assert pub._publish_cli(lane, contract, store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["ticker"] for row in report["published"]] == [identity["ticker"]]
+    assert report["excluded"] == []
+    assert pub._latest_json_path(store, identity["entity_id"]).exists()
+    assert manifest_rewrites == []
 
 
 # ---------------------------------------------------------------------------
