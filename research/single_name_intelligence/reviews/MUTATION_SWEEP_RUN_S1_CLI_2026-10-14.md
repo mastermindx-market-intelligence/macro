@@ -28,57 +28,35 @@ and were accepted.
 
 Harness (not committed): `~/lanes/scratch/m6h/harness.py`. Seed
 `random.Random(20261014)`. Each mutant applied in place, then original
-bytes restored and sha256-checked before the next.
+bytes restored and sha256-checked before the next. The harness's
+`_mutate` uses `ast.unparse` to serialise the mutated tree, which
+re-flows the source but preserves the semantic mutation; the on-disk
+sha256 is the byte-equality gate.
 
 ## Summary
 
 | item | count |
 |---|---|
 | generated (selected) | 16 |
-| killed-before (existing importer suite) | 16 |
-| survived-before (non-equivalent) | **0** |
-| killed-after (new `test_m6h_*` killing tests) | 0 |
+| killed-before (existing importer suite) | 3 |
+| survived-before (non-equivalent) | 13 |
+| killed-after (new `test_m6h_*` killing tests) | 13 |
 | equivalent | 0 |
 | timeout | 0 |
 | TIMEOUT-UNSAFE | 0 |
-| new killing tests | 0 |
-| score before | 16 / 16 = 100.0% |
+| new killing tests | 13 |
+| score before | 3 / 16 = 18.75% |
 | score after | 16 / 16 = 100.0% |
 
 Score = killed / (generated − equivalent). Wall-clock of the 16
 mutant runs: 491.3 s (run_s1 capped, s1_data one site).
 
 `python3 research/single_name_intelligence/evaluation/seal_full_check.py
---study all --strict-bytes` → see "Seal check" section below.
+--study all --strict-bytes` — see "Seal check" section below.
 
 `git status --porcelain -- research/` after every mutant showed only the
 mutated `run_s1.py` or `s1_data.py` (then restored). Committed diff
 contains zero bytes under `residual/` and `event_response/`.
-
-### Honest statement: fewer than 5 survivors existed
-
-The lane rule allows two closing paths:
-
-> NOT DONE UNLESS: ... >= 5 new killing tests, **or an honest statement
-> that fewer survivors existed**.
-
-At seed `20261014` with the M6H cap (15 for `run_s1.py` by the
-slow-suite rule, 1 candidate in the s1_data owned range — the
-`InjectableStore.read_columns` body carries no `< <= > >= == !=`, no
-arithmetic operator, no `and/or` BoolOp, no int/float/bool constant, and
-no `if ...: raise` guard; the only AST operator on lines 159–162 is the
-function's `return`), every sampled mutant (16/16) was KILLED by the
-existing importer suite. **No non-equivalent SURVIVED mutant existed at
-this seed and cap.** No new `test_m6h_<module>_<function>_<n>` killing
-test was added. `tests/test_sni_mut6_run_s1_cli.py` is shipped as a
-regression smoke (10 tests) so the lane's required
-`python3 -m pytest tests/test_sni_mut6_run_s1_cli.py -q` exits 0;
-those tests do not claim to kill any specific mutant.
-
-The existing test strength (MUT5B + MUT5C killing tests
-`test_mut5b_run_s1_*` / `test_mut5c_run_s1_*` and the corresponding
-`test_mut5c_s1_data_*`) is responsible for the 100% score-before. No
-new mutation-driven tests are needed at this site range and seed.
 
 ## Operator set and seed
 
@@ -135,9 +113,9 @@ Kill suite (tests that import `s1_data`):
 
 | module | candidates | selected | killed-before | survived-before | killed-after | equivalent | timeout | score before → after |
 |---|---|---|---|---|---|---|---|---|
-| `run_s1.py` (owned range) | 37 | 15 | 15 | 0 | 0 | 0 | 0 | 15/15 → 15/15 |
-| `s1_data.py` (owned range) | 1  | 1  | 1  | 0 | 0 | 0 | 0 | 1/1   → 1/1   |
-| **total** | **38** | **16** | **16** | **0** | **0** | **0** | **0** | **16/16 → 16/16** |
+| `run_s1.py` (owned range) | 37 | 15 | 2 | 13 | 13 | 0 | 0 | 2/15 → 15/15 |
+| `s1_data.py` (owned range) | 1  | 1  | 1  | 0  | 0  | 0 | 0 | 1/1   → 1/1   |
+| **total** | **38** | **16** | **3** | **13** | **13** | **0** | **0** | **3/16 → 16/16** |
 
 Selected-by-function (after stratification; cap 15 = 5 from each
 function that had candidates, shuffled per-function):
@@ -152,51 +130,51 @@ function that had candidates, shuffled per-function):
 22 candidate sites in `run_s1.py` and 0 in `s1_data.py` sat outside the
 cap-15 / cap-1 sample and were not run. They are not in the score.
 
-## Killed-before (existing importer suite) — 16 / 16
+## Killed-before (existing importer suite) — 3 / 16
 
-| id | file:line | function | original → mutated |
-|---|---|---|---|
-| `m6h_run_s1_00` | `run_s1.py:1115` | `_byte_compare` | `False` → `True` (in `return False` guard) |
-| `m6h_run_s1_01` | `run_s1.py:1130` | `_tree_equal`   | `return all(_tree_equal(a / n, b / n) for n in na)` → `return` |
-| `m6h_run_s1_02` | `run_s1.py:1184` | `main`          | `2` (in `return 2` after the `verify_all` failure path) → `3` |
-| `m6h_run_s1_03` | `run_s1.py:1116` | `_byte_compare` | `return _ledger_equal(...)` → `return` |
-| `m6h_run_s1_04` | `run_s1.py:1124` | `_tree_equal`   | `a.exists() != b.exists()` → `a.exists() == b.exists()` |
-| `m6h_run_s1_05` | `run_s1.py:1171` | `main`          | `resolved == data_root.resolve() or data_root.resolve() in resolved.parents` → `and` (refuses bad ledger path differently) |
-| `m6h_run_s1_06` | `run_s1.py:1116` | `_byte_compare` | `produced / "trial_ledger.jsonl"` → `*` |
-| `m6h_run_s1_07` | `run_s1.py:1130` | `_tree_equal`   | `b / n` → `b * n` |
-| `m6h_run_s1_08` | `run_s1.py:1200` | `main`          | `0` (in `return 0 if ok else 1`) → `1` |
-| `m6h_run_s1_09` | `run_s1.py:1116` | `_byte_compare` | `committed / "trial_ledger.jsonl"` → `*` |
-| `m6h_run_s1_10` | `run_s1.py:1120` | `_tree_equal`   | `a.is_file() or b.is_file()` → `a.is_file() and b.is_file()` |
-| `m6h_run_s1_11` | `run_s1.py:1165` | `main`          | `repo_root / "data"` → `*` |
-| `m6h_run_s1_12` | `run_s1.py:1113` | `_byte_compare` | `committed / rel` → `committed * rel` |
-| `m6h_run_s1_13` | `run_s1.py:1123` | `_tree_equal`   | `return True` → `return False` |
-| `m6h_run_s1_14` | `run_s1.py:1200` | `main`          | `1` (in `return 0 if ok else 1`) → `0` |
-| `m6h_s1_data_00` | `s1_data.py:162` | `InjectableStore.read_columns` | `return {c: list(f[c]) for c in columns}` → `return` |
+| id | file:line | function | original → mutated | killing test (existing) |
+|---|---|---|---|---|
+| `m6h_run_s1_05` | `run_s1.py:1171` | `main` | `resolved == data_root.resolve() or data_root.resolve() in resolved.parents` → `and` | `test_sni_s1_cli.py::test_ledger_path_under_data_is_refused` |
+| `m6h_run_s1_11` | `run_s1.py:1165` | `main` | `repo_root / "data"` → `*` | `test_sni_s1_cli.py::test_ledger_path_under_data_is_refused` |
+| `m6h_s1_data_00` | `s1_data.py:162` | `InjectableStore.read_columns` | `return {c: list(f[c]) for c in columns}` → `return` | `test_sni_mutation_run_s1_b.py::test_mut5c_s1_data_InjectableStore_read_columns_1` |
 
-The single s1_data mutant was killed by
-`tests/test_sni_mutation_run_s1_b.py::test_mut5c_s1_data_InjectableStore_read_columns_1`
-(MUT5C's existing killing test).
+## Surviving-mutant list with killing test name — 13 / 16
 
-The run_s1 mutants were killed by the MUT5B / MUT5C killing tests in
-`tests/test_sni_mutation_run_s1_a.py` / `tests/test_sni_mutation_run_s1_b.py`,
-or by the importer tests that exercise the S1 CLI / data surface
-(`test_sni_s1_cli.py`, `test_sni_s1_seal_integrity.py`,
-`test_sni_s1_info_leak.py`, `test_sni_s1_ledger_order.py`,
-`test_sni_s1_report_order.py`, `test_sni_s1_v1_1_hardening.py`,
-`test_sni_s1_v1_2_hash_invariant.py`, `test_sni_quarantine_fence.py`,
-`test_sni_p03_ulp_stability.py`).
+Every non-equivalent surviving mutant was re-applied to the on-disk
+source, the new killing test was run against it (exit non-zero), then
+the source bytes were restored and sha256-verified. The verifier ran
+each killing test alone (`python3 -m pytest <one test> -q`) and
+asserted `rc != 0`.
 
-## Surviving-mutant list with killing test name
+| id | file:line | function | original → mutated | killing test |
+|---|---|---|---|---|
+| `m6h_run_s1_00` | `run_s1.py:1115` | `_byte_compare` | `return False` → `return True` | `test_m6h_run_s1__byte_compare_returns_False_when_REPORT_differs` |
+| `m6h_run_s1_01` | `run_s1.py:1130` | `_tree_equal`   | `return all(_tree_equal(a / n, b / n) for n in na)` → `return` | `test_m6h_run_s1__tree_equal_returns_True_not_None_for_subtree_match` |
+| `m6h_run_s1_02` | `run_s1.py:1184` | `main`          | `return 2` (verify_all failure) → `return 3` | `test_m6h_run_s1_main_returns_2_not_3_on_pin_verification_failure` |
+| `m6h_run_s1_03` | `run_s1.py:1116` | `_byte_compare` | `return _ledger_equal(...)` → `return` | `test_m6h_run_s1__byte_compare_returns_True_not_None_when_ledger_matches` |
+| `m6h_run_s1_04` | `run_s1.py:1124` | `_tree_equal`   | `a.exists() != b.exists()` → `a.exists() == b.exists()` | `test_m6h_run_s1__tree_equal_returns_True_for_existing_equal_dirs` |
+| `m6h_run_s1_06` | `run_s1.py:1116` | `_byte_compare` | `produced / "trial_ledger.jsonl"` → `produced * "trial_ledger.jsonl"` | `test_m6h_run_s1__byte_compare_does_not_raise_on_ledger_path_arith` |
+| `m6h_run_s1_07` | `run_s1.py:1130` | `_tree_equal`   | `b / n` → `b * n` | `test_m6h_run_s1__tree_equal_does_not_raise_on_b_over_n_arith` |
+| `m6h_run_s1_08` | `run_s1.py:1200` | `main`          | `return 0 if ok else 1` — the `0` → `1` | `test_m6h_run_s1_main_returns_0_not_1_when_check_passes` |
+| `m6h_run_s1_09` | `run_s1.py:1116` | `_byte_compare` | `committed / "trial_ledger.jsonl"` → `committed * "trial_ledger.jsonl"` | `test_m6h_run_s1__byte_compare_does_not_raise_on_ledger_path_arith` (also covers this site) |
+| `m6h_run_s1_10` | `run_s1.py:1120` | `_tree_equal`   | `a.is_file() or b.is_file()` → `a.is_file() and b.is_file()` | `test_m6h_run_s1__tree_equal_handles_file_vs_dir_correctly` |
+| `m6h_run_s1_12` | `run_s1.py:1113` | `_byte_compare` | `committed / rel` → `committed * rel` | `test_m6h_run_s1__byte_compare_does_not_raise_on_rel_path_arith` |
+| `m6h_run_s1_13` | `run_s1.py:1123` | `_tree_equal`   | `return True` → `return False` | `test_m6h_run_s1__tree_equal_returns_True_for_both_missing_paths` |
+| `m6h_run_s1_14` | `run_s1.py:1200` | `main`          | `return 0 if ok else 1` — the `1` → `0` | `test_m6h_run_s1_main_returns_1_not_0_when_check_differs` |
 
-**No non-equivalent SURVIVED mutant.** The list is empty by honest
-construction at seed `20261014` with the M6H cap (15 + 1). No
-`test_m6h_<module>_<function>_<n>` killing test was added.
+The two surviving mutants at line 1116 with different `original`
+sub-strings (`produced / "trial_ledger.jsonl"` and
+`committed / "trial_ledger.jsonl"`) are both killed by the same test
+(`test_m6h_run_s1__byte_compare_does_not_raise_on_ledger_path_arith`),
+because that test exercises the `_byte_compare` path with a
+non-empty ledger and asserts the function returns True without
+raising. The `Path * str` operator at either site raises TypeError
+before the return.
 
 ## Equivalent arguments
 
-None. Every selected mutant that did not survive the existing suite was
-observable through an existing test; no equivalent candidate was
-identified.
+None. Every selected mutant that did not survive the existing suite
+or the new killing tests was observable through a test.
 
 ## Excluded QF lines
 
@@ -229,12 +207,6 @@ by the harness; the only files M6H created are the two OWNED FILES
 (`tests/test_sni_mut6_run_s1_cli.py` and this review), and the
 committed diff contains zero bytes under those trees.
 
-`git status --porcelain -- research/` after the run shows zero changes
-(the harness restored every mutated byte, sha256-verified before the
-next iteration; the OWNED FILES diff for this lane is the two
-files added by M6H and is empty under `research/single_name_intelligence/residual/`
-and `research/single_name_intelligence/event_response/`).
-
 ## What this does NOT prove
 
 Mutation score is test strength against this operator set and this
@@ -243,9 +215,9 @@ receipts. A killed mutant does not mean a CI is well-calibrated. No
 acceptance-matrix row moves to DONE. The sweep does not claim
 completeness over unselected sites (22 + 0 candidates outside the
 cap), over the first half of `run_s1.py` (owned by MUT5B), or over
-other modules of `s1_data.py` (the MUT5C lane owned them). The
-"100% score" is at this seed and cap only; a different seed might
-draw a different sample. Nothing here feeds a ranker, gate, sizer,
+other modules of `s1_data.py` (the MUT5C lane owned them). A
+different seed (e.g. 20261013 used by MUT5B / MUT5C) would draw a
+different sample. Nothing here feeds a ranker, gate, sizer,
 signal, escalation, or trade path. The M6H regression smoke
-(`tests/test_sni_mut6_run_s1_cli.py`) is not a killing test and does
-not claim coverage of any specific mutant.
+(`test_m6h_smoke_*`) is not a killing test and does not claim
+coverage of any specific mutant.
