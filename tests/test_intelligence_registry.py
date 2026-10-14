@@ -58,6 +58,7 @@ from engine.intelligence_registry import (
     ledger_shape,
     max_authority,
     partition_artifacts,
+    required_tier,
     placeholder_reason,
     resolve_qual_ladder_ref,
     scan_producer_source,
@@ -1587,3 +1588,135 @@ def test_the_qual_ladder_probe_answers_FILE_IN_THIS_REPO_only(path, expected):
     import scripts.build_intelligence_registry as builder
 
     assert builder._tracked_file_exists(REPO, path) is expected
+
+
+# T12's read-only requirement query uses canonical authority, never path policy.
+def test_required_tier_follows_derived_authority_not_path_name():
+    display = build_registry(synapse=_synapse({"a": _artifact()}))
+    gate = build_registry(synapse=_synapse({"a": _artifact(tier="scored")}))
+    assert required_tier(display, ["engine/a.py"])["required_tier"] == "T1"
+    assert required_tier(gate, ["engine/a.py"])["required_tier"] == "T3"
+    renamed = build_registry(synapse=_synapse({"a": _artifact(producer="other/renamed.py", tier="scored")}))
+    assert required_tier(renamed, ["other/renamed.py"])["required_tier"] == "T3"
+
+
+def test_required_tier_keeps_every_owner_and_distinguishes_partial_coverage():
+    registry = build_registry(synapse=_synapse({
+        "a": _artifact(owner_program="display-owner"),
+        "b": _artifact(owner_program="gate-owner", tier="scored"),
+    }))
+    before = copy.deepcopy(registry)
+    answer = required_tier(registry, ["engine/a.py", "unknown/path.py", "engine/a.py"])
+    assert answer["status"] == "partial"
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] == "T3"
+    assert {row["owner_program"] for row in answer["engines"]} == {"display-owner", "gate-owner"}
+    assert answer["unresolved"] == [{"path": "unknown/path.py", "reason": "unmatched_producer"}]
+    assert answer["scope"] == "exact_registered_producer_paths"
+    assert answer["evaluation_status"] == "not_assessed"
+    assert registry == before
+
+
+@pytest.mark.parametrize("authority_fixture", [
+    {"a": _artifact(scored_path_surfaces=["board_ordering"])},
+    {"a": _artifact(tier="shadow", consumers=["engine/gate.py"]),
+     "b": _artifact(producer="engine/gate.py", tier="scored")},
+])
+def test_required_tier_does_not_invent_unsupported_authority_policy(authority_fixture):
+    registry = build_registry(synapse=_synapse(authority_fixture))
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] is None
+    assert answer["status"] == "unresolved"
+    assert answer["engines"][0]["reason"] == "authority_policy_undefined"
+
+
+@pytest.mark.parametrize("damage", ["null_authority", "missing_evidence", "foreign_artifact", "wrong_rule", "understated_authority", "wrong_identity", "duplicate_identity"])
+def test_required_tier_refuses_unattributed_or_inconsistent_authority(damage):
+    registry = build_registry(synapse=_synapse({"a": _artifact(), "b": _artifact(tier="scored")}))
+    row = registry["engines"][0]
+    if damage == "null_authority":
+        row["authority"] = None
+    elif damage == "missing_evidence":
+        row.pop("authority_evidence")
+    elif damage == "foreign_artifact":
+        row["authority_evidence"]["artifact_ids"] = ["foreign"]
+    elif damage == "wrong_rule":
+        row["authority_evidence"]["rule"] = "d"
+    elif damage == "understated_authority":
+        row["authority"] = "display"
+        row["authority_evidence"].update(rule="d", artifact_ids=["a"])
+    elif damage == "wrong_identity":
+        row["owner_program"] = "different-owner"
+    else:
+        registry["engines"].append(copy.deepcopy(row))
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["maximum_supported_tier"] is None
+    assert answer["status"] == "unresolved"
+
+
+def test_required_tier_exclusions_and_no_changes_are_not_integrity_passes():
+    registry = build_registry(synapse=_synapse({"a": _artifact(producer="<EXTERNAL>")}))
+    excluded = required_tier(registry, ["<EXTERNAL>"])
+    assert excluded["required_tier"] is None
+    assert excluded["unresolved"][0]["reason"] == "excluded_producer"
+    empty = required_tier(registry, [])
+    assert empty["required_tier"] is None
+    assert empty["status"] == "no_changes"
+    assert empty["evaluation_status"] == "not_assessed"
+
+
+def test_required_tier_is_independent_of_metrics_readiness_and_lifecycle():
+    registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored")}))
+    baseline = required_tier(registry, ["engine/a.py"])
+    registry["engines"][0].update(validation_state="validated", graded_by_design=None,
+        output_class=None, evidence_ref=["not-proof"], readiness={"ready": True}, A1_status="green")
+    registry["meta"]["workflow_state"] = "done"
+    assert required_tier(registry, ["engine/a.py"]) == baseline
+
+
+def test_required_tier_missing_registry_does_not_become_unmatched_or_ready():
+    for registry in (None, {}, {"schema": "wrong", "engines": [], "excluded": []}):
+        answer = required_tier(registry, ["engine/a.py"])
+        assert answer["required_tier"] is None
+        assert answer["unresolved"] == [{"path": "engine/a.py", "reason": "registry_unavailable"}]
+
+
+@pytest.mark.parametrize("paths", ["engine/a.py", ["/engine/a.py"], ["engine/../a.py"], ["./engine/a.py"], [None]])
+def test_required_tier_refuses_ambiguous_noncanonical_diff_paths(paths):
+    registry = build_registry(synapse=_synapse({"a": _artifact()}))
+    with pytest.raises(ValueError, match="canonical producer paths"):
+        required_tier(registry, paths)
+
+
+@pytest.mark.parametrize("other_owner", ["engine", "excluded"])
+def test_required_tier_refuses_shared_artifact_identity(other_owner):
+    registry = build_registry(synapse=_synapse({
+        "a": _artifact(),
+        "b": _artifact(producer="engine/other.py" if other_owner == "engine" else "<EXTERNAL>"),
+    }))
+    if other_owner == "engine":
+        other = next(row for row in registry["engines"] if row["producer"] == "engine/other.py")
+        other["artifacts"][0]["id"] = "a"
+        other["authority_evidence"]["artifact_ids"] = ["a"]
+    else:
+        registry["excluded"][0]["artifacts"] = ["a"]
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["status"] == "unresolved"
+
+
+@pytest.mark.parametrize("damage", ["gate_unweighted", "display_weighted", "display_ranked"])
+def test_required_tier_checks_supported_rule_premises(damage):
+    registry = build_registry(synapse=_synapse({"a": _artifact(tier="scored" if damage == "gate_unweighted" else "display")}))
+    artifact = registry["engines"][0]["artifacts"][0]
+    if damage == "gate_unweighted":
+        artifact["tier"] = "display"
+    elif damage == "display_weighted":
+        artifact["tier"] = "scored"
+    else:
+        artifact["scored_path_surfaces"] = ["board_ordering"]
+    answer = required_tier(registry, ["engine/a.py"])
+    assert answer["required_tier"] is None
+    assert answer["status"] == "unresolved"
