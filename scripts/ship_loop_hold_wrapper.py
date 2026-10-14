@@ -319,9 +319,12 @@ def _hold_block(probe: dict[str, Any]) -> dict[str, str] | None:
                 f"{branch}; exact head {str(probe['head'])[:12]} is pushed and clean, "
                 f"but checks are not yet complete ({pending}). Do not rename the branch, "
                 "close/reopen the PR, arm merge-on-green, merge, render, or mutate PR identity. "
-                "Wait for the existing check watcher only — do not re-poll CI to answer this "
-                "block, and do not file SHIP LOOP BLOCKED, because waiting is not a qualifying "
-                "blocker. If checks conclude green this state becomes terminal PARKED; if a "
+                "CI holds release, not independent authorized work. Use an existing verified check observer "
+                "if available; do not re-poll CI to answer this block. This message does not establish "
+                "that a watcher exists. Continue already-authorized, path/dependency-disjoint foreground "
+                "work without changing this held PR or its custody. Do not invent background execution "
+                "or file SHIP LOOP BLOCKED merely for waiting. The Stop/ship hold remains in force. "
+                "If checks conclude green this state becomes terminal PARKED; if a "
                 f"binding check concludes red, repair that check without treating the {identity} "
                 "as the blocker."
             ),
@@ -332,7 +335,10 @@ def _hold_block(probe: dict[str, Any]) -> dict[str, str] | None:
             "decision": "block",
             "reason": (
                 f"HOLD-FOR-SOL CHECKS RED: PR #{probe['number']} remains held and must not merge. "
-                f"Binding checks are red ({red}). Repair the failing check on the same held PR; "
+                f"Binding checks are red ({red}). CI holds release, not independent authorized work. "
+                "Repair the failing check within the assigned scope on the same held PR; an external repair dependency holds "
+                "that lane, not already-authorized, path/dependency-disjoint foreground work. "
+                "This creates no new Stop-hook exit or release permission; "
                 f"do not rename the {identity}, close/reopen the PR, arm merge-on-green, "
                 "or use branch mutation as a ship-loop escape. A new exact head must earn its own "
                 "green binding proof before it can become PARKED."
