@@ -111,6 +111,7 @@ danger_areas:
   - decided_at governs visibility and effective_at governs application; a decision visible but not yet effective is pending and must stay non-retroactive.
   - The slot check reads term name, title and classification only to refuse two live copies of one term; never turn it into a join.
   - Resolution re-runs the T0 closed-candidate assertion on every row; a row that fails it raises rather than resolving.
+prs: [9274]
 ---
 
 # Capital Structure V2 — I0 instrument resolution handoff
