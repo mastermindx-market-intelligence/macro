@@ -1,7 +1,7 @@
 # E0 — Frozen research and outcome protocol (Rates & Inflation Command, e2e 2026-10-13)
 
-Status: **FROZEN** on merge of the PR that adds this file (seat `fc3dfe4b`, task-graph row E0). Revision 2: it applies
-the independent review recorded in §9. Census basis: read-only E0 census of `origin/main` @
+Status: **FROZEN** on merge of the PR that adds this file (seat `fc3dfe4b`, task-graph row E0). Revision 3: it applies
+both independent review rounds recorded in §9. Census basis: read-only E0 census of `origin/main` @
 `1e9364f5ab8c4452820731e87da2c138e53b0571` (verdict PASS-WITH-GAPS, gaps in §8). Acceptance rows served: **A28**
 (finite trials) directly; inputs to M0 (A11, A28, A30), E1 (A09, A31, A32), X0 (A29), E2 (A29, A30, A32, A48).
 Masterplan pin: `research/rates_inflation_command/e2e_20261013/MASTERPLAN.md` @ `fd5c6600` §7, §8, §13.
@@ -102,8 +102,10 @@ evaluated. There is no held-out tuning split because nothing is tuned. Three win
 3. **full 2010-01+**, reported, and used by the falsification rule and the qualification rule.
 
 **Baselines.**
-- `naive_prior` is the **single predeclared** comparator. It is the last observed print (no change), set in
-  `engine/release_forecast.py` and used by the owner's own kill rule (`scripts/build_release_forecast.py:163`).
+- `naive_prior` is the **single predeclared** comparator. It is the last observed print (no change), set at
+  `engine/release_forecast.py:504` (returned as `baseline_naive`), recorded in the forward ledger as
+  `benchmark_naive_prior` (`scripts/build_release_forecast.py:1963`, read back at :2339), and used by the owner's
+  own kill rule (`scripts/build_release_forecast.py:163`).
 - `trailing_3m` and `ar_model` are also first-class owners in the forward ledger. The **strongest** of the three in
   a window (lowest MAE) is used only to qualify a model, never to falsify one. Selecting it after the fact can only
   make a model look worse, so it is a conservative bar for a positive claim and is never used as the reason a claim
@@ -133,8 +135,10 @@ better.
 - **Test (2021+ only).** A Diebold–Mariano statistic `DM = √n · mean(d) / √newey_west_lrvar(d)`, with the owner's
   default lag `newey_west_lag(n)` and a one-sided standard-normal p-value (alternative: mean d < 0). `base` is the
   2021+ strongest baseline. With one-step-ahead forecasts (h = 1) and n ≥ 30, the Harvey–Leybourne–Newbold factor
-  √((n − 1)/n) is ≥ 0.983 and the t(n − 1) tail is within rounding of the normal, so no small-sample correction is
-  applied, and none exists in the owners.
+  √((n − 1)/n) is ≥ 0.983, so the normal p-value is the primary one and no owner carries a small-sample correction.
+  The t(n − 1) tail is not negligible at the Holm threshold, so a contrast whose qualification is borderline (its
+  normal and t(n − 1) p-values fall on opposite sides of its Holm step) reports both p-values and qualifies only if
+  both clear.
 - **Multiplicity.** Holm (`holm_adjust`) at family-wise α = 0.05 across exactly the 13 primary 2021+ p-values. The
   full and current-regime windows are reported and never tested. The H4 contrasts and interval coverage are
   descriptive and are not in the Holm set.
@@ -202,7 +206,10 @@ JavaScript renders is included. P2 is **not** part of H2. If T0, C0 and P1 have 
 **Instrument.**
 - The 24 stems below are frozen **now**: six reference families × 4 stems.
 - After T0, C0 and P1 land, a writer who did not build them fills the stems with live values to make the held-back
-  set. It has 36 questions, six per family, ordered by family. That set is the **primary endpoint**.
+  set. It has 36 questions, six per family, ordered by family. Each family's four stems are instantiated once; then the
+  family's first two stems (in the published numbering) are instantiated a second time, using the next most recent
+  release/period or the next declared tenor not used by the first instance. The filler fixes all 36 before any
+  answer exists. That set is the **primary endpoint**.
 - Each stem lists the error types it can expose.
 
 **Grading.**
@@ -214,10 +221,16 @@ JavaScript renders is included. P2 is **not** part of H2. If T0, C0 and P1 have 
   - `omission` (an available, requested number that is not given)
   - `correct_abstention`
 - Two blinded graders score every answer. A third grader breaks ties.
-- If Cohen's κ < 0.60 between the first two graders, the result is `HOLD`. κ is computed from the agreement table in
-  the E2 result. The rubric is never rewritten after unblinding.
+- κ is computed over every (answer × error-type) binary judgment — one cell per answer for each of the five error
+  types and `correct_abstention` — pooled across arms and agents, with its agreement table in the E2 result. If
+  Cohen's κ < 0.60 between the first two graders, the result is `HOLD`. The rubric is never rewritten after
+  unblinding.
 
-**Primary endpoint.** The primary measure is each question's summed error count, paired by question across arms.
+**Primary endpoint.** Every answer agent answers every question in both arms. A question's count in an arm is the
+mean, over answer agents, of that agent's summed error types (the five error types; `correct_abstention` is not an
+error). The primary measure is that per-question count, paired by question across arms. A question is gradable
+only if every agent produced an answer in both arms; if fewer than 30 questions are gradable, the result is `HOLD`,
+and the set is never topped up after unblinding.
 For the per-question difference x = treatment − baseline, E2 reports
 `block_bootstrap_scalar_ci(x, block=6, draws=10000, seed=20261014)`. With 36 family-ordered items, a block of 6
 approximates resampling one family at a time.
@@ -371,7 +384,7 @@ n ≥ 12, kill n ≥ 24).
 | Train / tune / held-out | expanding walk-forward, `MIN_TRAIN_OBS = 60`, zero tuning; windows 2024+ (direction) / 2021+ (tested) / 2010+ (reported); E1 prospective = post-freeze, `asof_night` < release date only |
 | Ordinary corrections | erratum re-scored as a verdict-free sensitivity; regular revisions never change the first-print target |
 | Baselines | falsify against `naive_prior` only (owner kill comparator); qualify against the strongest of naive_prior / trailing_3m / ar_model per window; Cleveland / Kalshi prospective-only |
-| Allowed trial count | M0 = 13 (`ric_mri_coherent_requal_v1`) + 26 listed non-trial re-scorings; X0 = 8 (`ric_x0_release_reaction_v1`); E1 = 14 model verdicts + ≤ 6 comparators (§5); E2 = 1 confirmatory run; plus the retained 48 + 18 from #7909 |
+| Allowed trial count | M0 = 13 (`ric_mri_coherent_requal_v1`) + 26 listed sensitivities (non-trial re-scorings) + the H4 descriptive contrasts and coverage (trial-free); X0 = 8 (`ric_x0_release_reaction_v1`); E1 = 14 model verdicts + ≤ 6 comparators (§5); E2 = 1 confirmatory run; plus the retained 48 + 18 from #7909 |
 | Meaningful margin / precision | M0 2021+ point R ≤ 0.95 (Holm p < 0.05) and full R < 1.00; ≥ 30 episodes for any verdict; E2 relative reduction ≥ 30% with CI below 0; X0 ≥ 40 episodes per era; interval coverage 80% ± 8 pp |
 | Dependence | headline + core share episodes and are never summed; moving-block bootstrap (6); Newey–West HAC; Holm per family |
 | Accept / hold / no-go | §2 per hypothesis; INSUFFICIENT / NOT_DEMONSTRATED / PENDING are the honest defaults |
@@ -431,18 +444,18 @@ target (A11). That is the F1 ruling recorded with M0.
 
 **Power.** For a one-sided test at the strictest Holm step (α = 0.05 / 13 ≈ 0.0038, z ≈ 2.67) with 80% power
 (z ≈ 0.84), the smallest detectable ratio is `R_detect ≈ 1 − 3.51 · ρ / √n`. Here ρ = sd(d) / MAE_base, the
-loss-differential noise relative to the baseline's error. At n = 68 (2021-01 to 2026-08 monthly):
+loss-differential noise relative to the baseline's error. At n ≈ 66 (the 2021+ monthly episodes through 2026-08):
 
 | ρ | R_detect |
 |---|---|
 | 1.0 | 0.57 |
-| 0.5 | 0.79 |
+| 0.5 | 0.78 |
 | 0.3 | 0.87 |
 
 Absolute-error differentials for models that share most of their signal usually sit at ρ of roughly 0.5 to 1.0. So
 only large true gains are detectable, and **M0 may honestly return every model as `NOT_DEMONSTRATED`, `FALSIFIED` or
-`INSUFFICIENT`.** That is an answer, not a failure of the protocol. The current-regime window (2024+, about 20 to 22
-episodes) is below the 30-episode floor and is reported for direction only. In X0, each era needs at least 40
+`INSUFFICIENT`.** That is an answer, not a failure of the protocol. The current-regime window (2024+, 30
+episodes) sits at the 30-episode floor and is still reported for direction only, by rule. In X0, each era needs at least 40
 episodes, and 2010–2019 has about 115 to 120 per release.
 
 **Stop rules.**
@@ -451,7 +464,8 @@ episodes, and 2010–2019 has about 115 to 120 per release.
 - Prospective E1 runs until the owner's PREREG kill fires (for example, combined_v1 at n ≥ 24) or 24 post-freeze
   episodes accrue, whichever is first. There is no early stopping on a good streak.
 - E2 runs one confirmatory pass.
-- X0 runs once over history, then accrues forward rows through the existing keep-first reaction writer.
+- X0 runs once over history. Forward episodes are recomputed descriptively from the daily `fred` store as new
+  releases mature; no writer changes (§8).
 
 **Escalation.** Any proposal to add a model variant, change a target epoch, add a sensitivity, or reuse a window
 after seeing results requires a superseding E0 revision with a new declared trial budget **before** the run.
@@ -461,7 +475,7 @@ after seeing results requires a superseding E0 revision with a new declared tria
 Two things are allowed without a revision. One is an owner-side bug fix that makes a frozen spec run as written,
 recorded with its commit. The other is a source outage that turns rows into `MISSING_SOURCE`, which are counted.
 Everything else is a deviation. It is recorded in the result document under "DEVIATIONS", and it demotes the
-affected verdict to `NOT_DEMONSTRATED` (H1) or `HOLD` (H2, H3).
+affected verdict to `NOT_DEMONSTRATED` (H1), `HOLD` (H2) or `NOT_IDENTIFIED` (H3), with the deviation recorded.
 
 ## 8. Census gaps carried forward (owners named; not fixed here)
 
@@ -505,3 +519,23 @@ all, in the commit that adds this record:
 | 13 | H2 stems 13–24 unpublished; omission guard degenerate at baseline 0 | Accepted. All 24 stems published; absolute +1 floor on omissions; held-back set of 36 to meet the n ≥ 30 bootstrap floor. |
 | 14 | "Cluster-aware `wilson_ci`" claimed a capability the owner lacks | Accepted. Wilson 95% on episode counts, per family. |
 | 15 | DEC cited the registry at lines 25–32 for the backfill flag | Accepted. The flag is at `config/release_forecast_model_registry.yml:194`; the DEC citation is corrected. |
+
+**Round 2.**
+- Reviewer: glm-5.3 through the Subagent Fabric `review` lane `ric-e0-review-2h` on host ubuntu1.
+- Commit reviewed: `7618d488` (revision 2).
+- Verdict: **ACCEPT-WITH-CHANGES**, with 8 findings (1 major, 7 minors), "fixable by a small superseding revision".
+- Review gaps it declared: the masterplan was read only at pin `fd5c6600`, and the #7909 bytes were carried over
+  from round 1 rather than re-read.
+
+The seat checked each cited line against `origin/main` and accepted all 8. Revision 3 applies them:
+
+| # | Finding (short) | Disposition |
+|---|---|---|
+| 1 | H2 primary endpoint did not say how agents aggregate per question, what κ is computed over, or what happens when items are ungradable | Accepted. Per-question count = mean over agents of summed error types; κ over (answer × error-type) judgments; fewer than 30 gradable questions → `HOLD`, never topped up (§2.H2). |
+| 2 | §6 said X0 accrues through the keep-first reaction writer, contradicting §8 | Accepted. Forward episodes are recomputed descriptively from the `fred` store; no writer changes. |
+| 3 | §6 episode counts wrong (n = 68; 2024+ "about 20 to 22") | Accepted. 2021+ ≈ 66 (table recomputed: ρ = 0.5 → 0.78); 2024+ = 30, at the floor and still direction-only by rule. |
+| 4 | The 24-stem → 36-question expansion rule was not frozen | Accepted. Each stem once, then each family's first two stems a second time on the next unused release/period or tenor, fixed before any answer. |
+| 5 | "t(n − 1) tail within rounding of the normal" overstated at the Holm threshold | Accepted. Normal p is primary; a borderline qualification reports both and qualifies only if both clear. |
+| 6 | §3 inventory row omitted the H4 descriptive contrasts | Accepted. Row now lists 26 sensitivities + H4 descriptive contrasts and coverage (trial-free). |
+| 7 | §7 demoted H3 deviations to `HOLD`, a state H3 does not have | Accepted. H3 deviations demote to `NOT_IDENTIFIED`, with the deviation recorded. |
+| 8 | `naive_prior` cited only to the module, not its definition | Accepted. Cited at `engine/release_forecast.py:504` and the ledger field `benchmark_naive_prior` (`scripts/build_release_forecast.py:1963`, :2339). |
