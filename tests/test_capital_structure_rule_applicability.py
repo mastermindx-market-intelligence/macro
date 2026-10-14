@@ -442,6 +442,306 @@ def test_unknown_outstanding_never_becomes_a_threshold():
 
 def test_gap_report_names_open_l1_debts(pack):
     report = ra.gap_report(pack)
-    assert set(report["open"]) == {"rule_415_and_section_10_a_3_text", "pre_2016_form_editions"}
+    assert set(report["open"]) == {"pre_2016_form_editions"}
     assert all(pack.gaps[g]["owed_by"] == "L1" for g in report["open"])
     assert Decimal(ra.BABY_SHELF_FLOAT_THRESHOLD_USD) == Decimal("75000000")
+
+
+# ---- L1: Rule 415(a)(1)(x)/(a)(4)/(a)(5)/(a)(6), Rule 462(e) and Section 10(a)(3) ----
+
+NEW_RULE_IDS = (
+    "cfr.17.230.415.a.1.x",
+    "cfr.17.230.415.a.4",
+    "cfr.17.230.415.a.5",
+    "cfr.17.230.415.a.6",
+    "cfr.17.230.462.e",
+    "usc.15.77j.a.3",
+)
+CFR_RULE_IDS = tuple(rule_id for rule_id in NEW_RULE_IDS if rule_id.startswith("cfr."))
+# Release 33-8591 item 30.f/30.g ADD (a)(5) and (a)(6) and item 42 ADDS 462(e);
+# item 30.b REVISES (a)(1)(x) and item 30.e REVISES (a)(4), which therefore pre-existed.
+ADDED_RULE_IDS = ("cfr.17.230.415.a.5", "cfr.17.230.415.a.6", "cfr.17.230.462.e")
+REVISED_RULE_IDS = ("cfr.17.230.415.a.1.x", "cfr.17.230.415.a.4")
+RELEASE_DATE = "2005-12-01"   # "EFFECTIVE DATE: December 1, 2005", printed in Release 33-8591
+BASE_EDITION = "2016-11-21"   # earliest point-in-time edition the eCFR versioner serves
+ECFR_EDITION = "2026-10-09"   # title 17 up_to_date_as_of, re-confirmed by the L1 titles.json retrieval
+QUALIFIED_ON = "2026-10-14"   # the eCFR refused full/2026-10-14 with HTTP 404, so there is no point at today
+DATES_415 = ("2016-11-21", "2020-06-01", "2020-08-01", "2021-12-09", "2022-01-31", "2024-07-24", "2024-09-23", ECFR_EDITION)
+DATES_462 = ("2016-11-21", "2020-06-01", "2020-08-01", ECFR_EDITION)
+L1_SOURCE_PREFIXES = ("ecfr_230_415", "ecfr_230_462", "release_33_8591", "usc_15_77j")
+BASE_SPAN = {
+    "cfr.17.230.415.a.1.x": f"ecfr_230_415/{BASE_EDITION}:a_1_x",
+    "cfr.17.230.415.a.4": f"ecfr_230_415/{BASE_EDITION}:a_4",
+    "cfr.17.230.415.a.5": f"ecfr_230_415/{BASE_EDITION}:a_5",
+    "cfr.17.230.415.a.6": f"ecfr_230_415/{BASE_EDITION}:a_6",
+    "cfr.17.230.462.e": f"ecfr_230_462/{BASE_EDITION}:e",
+}
+RELEASE_SPAN = {
+    "cfr.17.230.415.a.1.x": "release_33_8591:rule_415_a_1_x",
+    "cfr.17.230.415.a.4": "release_33_8591:rule_415_a_4",
+    "cfr.17.230.415.a.5": "release_33_8591:rule_415_a_5",
+    "cfr.17.230.415.a.6": "release_33_8591:rule_415_a_6",
+    "cfr.17.230.462.e": "release_33_8591:rule_462_e",
+}
+
+
+def _l1_spans(pack):
+    return [span for span in pack.spans.values() if span.source_id.startswith(L1_SOURCE_PREFIXES)]
+
+
+def test_l1_pack_version_is_1_1_0_and_still_parses(pack, raw):
+    assert raw["version"] == "capital-structure-rule-applicability/1.1.0"
+    assert pack.version == ra.RULE_APPLICABILITY_PACK_VERSION == raw["version"]
+    assert pack.task == "L0" and pack.qualified_on == QUALIFIED_ON
+    assert isinstance(ra.parse_rule_applicability_pack(raw, reference_pack=pack.reference), ra.RuleApplicabilityPack)
+
+
+def test_l1_proposal_exclusion_survives(pack, raw):
+    assert [item["source_id"] for item in raw["excluded"]] == [PROPOSAL]
+    assert PROPOSAL not in pack.sources and PROPOSAL not in pack.rules
+    for source_id in pack.sources:
+        assert not source_id.startswith(L1_SOURCE_PREFIXES) or source_id != PROPOSAL
+    _, _, _, excluded = ra.build_rule_pack(pack, QUALIFIED_ON)
+    assert excluded == (PROPOSAL,)
+
+
+@pytest.mark.parametrize("rule_id", NEW_RULE_IDS)
+def test_l1_rule_shape(pack, rule_id):
+    rule = pack.rule(rule_id)
+    assert rule.binding_class == "binding_rule" and rule.enforceable is True
+    assert (rule.form, rule.instruction, rule.interpretation_date) == (None, None, None)
+    assert rule.reference_span_labels == () and rule.required_issuer_facts == ()
+    assert rule.windows and rule.citation and rule.note
+
+
+def test_l1_rule_415_a_1_x_states(pack):
+    rule_id = "cfr.17.230.415.a.1.x"
+    assert ra.rule_status_as_of(pack, rule_id, ECFR_EDITION).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, RELEASE_DATE).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2010-06-01").state == "bracketed"
+    assert ra.rule_status_as_of(pack, rule_id, "2005-11-30").state == "withheld"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-10").state == "beyond_window"
+    before = ra.rule_status_as_of(pack, rule_id, "2020-07-31")
+    after = ra.rule_status_as_of(pack, rule_id, "2020-08-01")
+    assert (before.state, after.state) == ("verified", "verified")
+    assert before.window.span_id == BASE_SPAN[rule_id] != after.window.span_id
+
+
+def test_l1_rule_415_a_4_states(pack):
+    rule_id = "cfr.17.230.415.a.4"
+    assert ra.rule_status_as_of(pack, rule_id, ECFR_EDITION).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, RELEASE_DATE).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2016-11-20").state == "bracketed"
+    assert ra.rule_status_as_of(pack, rule_id, "2005-11-30").state == "withheld"
+    assert ra.rule_status_as_of(pack, rule_id, "1999-01-01").state == "withheld"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-14").state == "beyond_window"
+
+
+def test_l1_rule_415_a_5_states(pack):
+    rule_id = "cfr.17.230.415.a.5"
+    assert ra.rule_status_as_of(pack, rule_id, ECFR_EDITION).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, RELEASE_DATE).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2008-02-29").state == "bracketed"
+    assert ra.rule_status_as_of(pack, rule_id, "2005-11-30").state == "not_in_force"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-10").state == "beyond_window"
+    assert "three years" in pack.span_text(BASE_SPAN[rule_id])
+
+
+def test_l1_rule_415_a_6_states(pack):
+    rule_id = "cfr.17.230.415.a.6"
+    assert ra.rule_status_as_of(pack, rule_id, ECFR_EDITION).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, RELEASE_DATE).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2012-05-22").state == "bracketed"
+    assert ra.rule_status_as_of(pack, rule_id, "2005-11-30").state == "not_in_force"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-10").state == "beyond_window"
+    before = ra.rule_status_as_of(pack, rule_id, "2022-01-30")
+    after = ra.rule_status_as_of(pack, rule_id, "2022-01-31")
+    assert before.window.span_id == BASE_SPAN[rule_id] != after.window.span_id
+
+
+def test_l1_rule_462_e_states(pack):
+    rule_id = "cfr.17.230.462.e"
+    assert ra.rule_status_as_of(pack, rule_id, ECFR_EDITION).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, RELEASE_DATE).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2011-11-11").state == "bracketed"
+    assert ra.rule_status_as_of(pack, rule_id, "2005-11-30").state == "not_in_force"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-14").state == "beyond_window"
+    assert "effective upon filing with the Commission" in pack.span_text(BASE_SPAN[rule_id])
+
+
+def test_l1_section_10_a_3_states(pack):
+    rule_id = "usc.15.77j.a.3"
+    assert ra.rule_status_as_of(pack, rule_id, QUALIFIED_ON).state == "verified"
+    assert ra.rule_status_as_of(pack, rule_id, "2026-10-15").state == "beyond_window"
+    for as_of in ("2005-11-30", RELEASE_DATE, BASE_EDITION, ECFR_EDITION, "2026-10-13"):
+        status = ra.rule_status_as_of(pack, rule_id, as_of)
+        assert status.state == "withheld"
+        assert "before its first qualified window" in status.condition
+    text = pack.span_text("usc_15_77j:a_3")
+    assert text.startswith("(3) notwithstanding the provisions of paragraphs (1) and (2) of this subsection")
+    assert "more than nine months after the effective date" in text
+    assert "not more than sixteen months prior to such use" in text
+    source = pack.sources["usc_15_77j_2024"]
+    assert (source["source_class"], source["enforceable"]) == ("binding_rule", True)
+    assert source["edition_label"] == "United States Code, 2024 Edition"
+
+
+@pytest.mark.parametrize("rule_id", NEW_RULE_IDS)
+def test_l1_windows_are_ordered_and_pinned_to_their_span(pack, rule_id):
+    rule = pack.rule(rule_id)
+    assert [window.start for window in rule.windows] == sorted(window.start for window in rule.windows)
+    for window in rule.windows:
+        assert window.start <= window.end
+        assert window.span_id in rule.span_ids
+        span = pack.span(window.span_id)
+        assert window.sha256 == span.sha256 == ra._sha(pack.span_text(window.span_id))
+    if rule.before_first_window == "not_in_force":
+        assert rule.not_in_force_before == rule.windows[0].start
+    else:
+        assert rule.before_first_window == "withheld" and rule.not_in_force_before is None
+
+
+@pytest.mark.parametrize("rule_id", CFR_RULE_IDS)
+def test_l1_release_bracket_is_earned_by_a_shared_normalized_digest(pack, rule_id):
+    point, bracket = pack.rule(rule_id).windows[:2]
+    assert (point.kind, point.start, point.end) == ("point", RELEASE_DATE, RELEASE_DATE)
+    assert (bracket.kind, bracket.start, bracket.end) == ("bracket", RELEASE_DATE, BASE_EDITION)
+    assert point.span_id == bracket.span_id == RELEASE_SPAN[rule_id]
+    adopted = pack.span_text(RELEASE_SPAN[rule_id])
+    earliest = pack.span_text(BASE_SPAN[rule_id])
+    assert ra.normalized_digest(adopted) == ra.normalized_digest(earliest)
+    assert adopted.startswith(("(x)", "(4)", "(5)", "(6)", "(e)"))
+
+
+def test_l1_release_text_separates_revision_from_addition(pack):
+    amend_415 = pack.span_text("release_33_8591:amend_230_415")
+    amend_462 = pack.span_text("release_33_8591:amend_230_462")
+    assert amend_415.startswith("30. Amend \u00a7230.415 as follows:")
+    assert "b. Revise paragraph (a)(1)(x)" in amend_415
+    assert "e. Revise paragraph (a)(4) including the undesignated paragraph" in amend_415
+    assert "f. Add paragraph (a)(5); and g. Add paragraph (a)(6)" in amend_415
+    assert amend_462 == "42. Amend \u00a7230.462 by adding paragraphs (e) and (f) to read as follows:"
+    assert pack.span_text("release_33_8591:effective_date") == "EFFECTIVE DATE: December 1, 2005"
+    for rule_id in ADDED_RULE_IDS:
+        rule = pack.rule(rule_id)
+        assert (rule.before_first_window, rule.not_in_force_before) == ("not_in_force", RELEASE_DATE)
+    for rule_id in REVISED_RULE_IDS:
+        rule = pack.rule(rule_id)
+        assert (rule.before_first_window, rule.not_in_force_before) == ("withheld", None)
+    release = pack.sources["release_33_8591"]["release"]
+    assert (release["status"], release["effective_date"]) == ("final", RELEASE_DATE)
+    assert release["file_number"] == "S7-38-04" and release["rin"] == "3235-AI11"
+    assert "33-8591" in release["releases"]
+
+
+def test_l1_span_digests_recompute_from_the_retrieved_bytes(pack):
+    spans = _l1_spans(pack)
+    stored = [span for span in spans if span.text is not None]
+    aliased = [span for span in spans if span.same_as is not None]
+    assert (len(stored), len(aliased)) == (17, 31)
+    for span in spans:
+        text = pack.span_text(span.span_id)
+        assert len(text) == span.chars
+        assert ra._sha(text) == span.sha256
+        assert ra.normalized_digest(text) == span.normalized_sha256
+    for span in aliased:
+        target = pack.span(span.same_as)
+        assert target.text is not None
+        assert (span.chars, span.sha256, span.normalized_sha256) == (
+            target.chars, target.sha256, target.normalized_sha256
+        )
+
+
+def test_l1_every_served_edition_has_its_own_span(pack):
+    for edition in DATES_415:
+        for provision in ("a_1_x", "a_4", "a_5", "a_6"):
+            assert pack.span_text(f"ecfr_230_415/{edition}:{provision}")
+    for edition in DATES_462:
+        assert pack.span_text(f"ecfr_230_462/{edition}:e")
+    old, new = pack.span(f"ecfr_230_415/{BASE_EDITION}:a_1_x"), pack.span("ecfr_230_415/2020-08-01:a_1_x")
+    assert (old.sha256, old.normalized_sha256) != (new.sha256, new.normalized_sha256)
+    assert {pack.span(f"ecfr_230_415/{edition}:a_4").sha256 for edition in DATES_415} == {
+        pack.span(f"ecfr_230_415/{BASE_EDITION}:a_4").sha256}
+    assert len({pack.span(f"ecfr_230_415/{edition}:a_5").sha256 for edition in DATES_415}) == 1
+    assert len({pack.span(f"ecfr_230_462/{edition}:e").sha256 for edition in DATES_462}) == 1
+    assert {
+        pack.span(f"ecfr_230_415/{edition}:a_6").sha256 for edition in DATES_415
+    } == {pack.span(f"ecfr_230_415/{BASE_EDITION}:a_6").sha256, pack.span("ecfr_230_415/2022-01-31:a_6").sha256}
+
+
+def test_l1_version_index_windows_split_only_where_the_text_changed(pack):
+    assert [(w.kind, w.start, w.end) for w in pack.rule("cfr.17.230.415.a.1.x").windows[2:]] == [
+        ("version_index", BASE_EDITION, "2020-07-31"), ("version_index", "2020-08-01", ECFR_EDITION)]
+    assert [(w.kind, w.start, w.end) for w in pack.rule("cfr.17.230.415.a.6").windows[2:]] == [
+        ("version_index", BASE_EDITION, "2022-01-30"), ("version_index", "2022-01-31", ECFR_EDITION)]
+    for rule_id in ("cfr.17.230.415.a.4", "cfr.17.230.415.a.5", "cfr.17.230.462.e"):
+        assert [(w.kind, w.start, w.end) for w in pack.rule(rule_id).windows[2:]] == [
+            ("version_index", BASE_EDITION, ECFR_EDITION)]
+
+
+def test_l1_refused_todays_edition_so_there_is_no_point_at_today(pack, raw):
+    refused = [row for row in raw["request_policy"]["l1_requests"]
+               if row["http_status"] == 404 and "/full/2026-10-14/" in row["url"]]
+    assert len(refused) == 2
+    for rule_id in CFR_RULE_IDS:
+        rule = pack.rule(rule_id)
+        assert max(window.end for window in rule.windows) == ECFR_EDITION
+        assert not any(window.kind == "point" and window.start == QUALIFIED_ON for window in rule.windows)
+        assert ra.rule_status_as_of(pack, rule_id, QUALIFIED_ON).state == "beyond_window"
+
+
+def test_l1_request_log_covers_every_request_including_refusals(raw):
+    policy = raw["request_policy"]
+    rows = policy["l1_requests"]
+    fields = {"url", "http_status", "retrieved_at", "wire_bytes", "bytes",
+              "content_encoding", "content_type", "sha256"}
+    assert len(rows) == 23 and all(fields <= set(row) for row in rows)
+    assert sorted(row["http_status"] for row in rows if row["http_status"] != 200) == [301, 404, 404]
+    assert (policy["requests_made"], policy["refused_requests"]) == (37 + 23, 15 + 3)
+    assert all(row["url"].startswith(("https://www.ecfr.gov/", "https://www.sec.gov/",
+                                     "https://www.govinfo.gov/")) for row in rows)
+    ecfr = [row for row in rows if "ecfr.gov" in row["url"]]
+    assert ecfr and all(row["content_encoding"] == "gzip" for row in ecfr)
+    assert all(row["wire_bytes"] < row["bytes"] for row in ecfr)
+
+
+def test_l1_closes_the_rule_415_and_section_10_a_3_gap(pack):
+    report = ra.gap_report(pack)
+    assert report["closed"] == ["rule_415_and_section_10_a_3_text"]
+    gap = pack.gaps["rule_415_and_section_10_a_3_text"]
+    assert (gap["status"], gap["closed_by"], gap["owed_by"]) == ("closed", "L1", "L1")
+    assert all(pack.rule(rule_id).windows for rule_id in NEW_RULE_IDS)
+
+
+def test_l1_pre_2016_form_edition_gap_stays_open_with_its_attempts(pack):
+    gap = pack.gaps["pre_2016_form_editions"]
+    assert (gap["status"], gap["owed_by"]) == ("open", "L1") and "closed_by" not in gap
+    attempts = gap["attempts"]
+    assert [attempt["url"] for attempt in attempts] == [
+        "https://www.sec.gov/about/forms/forms-3.pdf",
+        "https://www.sec.gov/about/forms/formf-3.pdf",
+        "https://www.sec.gov/about/forms",
+        "https://www.sec.gov/about/forms/",
+    ]
+    for attempt in attempts:
+        assert {"url", "http_status", "retrieved_at", "outcome"} <= set(attempt)
+    assert attempts[0]["sha256"] == pack.sources["form_s3_pdf"]["sha256"]
+    assert attempts[1]["sha256"] == pack.sources["form_f3_pdf"]["sha256"]
+    assert attempts[2]["http_status"] == 301 and attempts[3]["http_status"] == 200
+    assert "Directory Browsing Not Allowed" in attempts[3]["outcome"]
+    form_labels = [source["edition_label"] for source in pack.sources.values()
+                   if source.get("edition_label") and "SEC " in source["edition_label"]]
+    assert form_labels == [pack.sources["form_s3_pdf"]["edition_label"],
+                           pack.sources["form_f3_pdf"]["edition_label"]]
+    assert all("(02-25)" in label for label in form_labels)
+
+
+def test_l1_rules_enter_the_rule_pack_without_guessing(pack):
+    rule_pack, unknowns, conditions, excluded = ra.build_rule_pack(pack, QUALIFIED_ON)
+    assert isinstance(rule_pack, RulePack) and not unknowns and excluded == (PROPOSAL,)
+    assert set(NEW_RULE_IDS) <= {ref.rule_id for ref in rule_pack.rules}
+    assert sum("requalify" in condition for condition in conditions) >= len(CFR_RULE_IDS)
+    _, early_unknowns, _, _ = ra.build_rule_pack(pack, "2005-01-01")
+    affects = {unknown.affects[0] for unknown in early_unknowns}
+    assert set(REVISED_RULE_IDS) | {"usc.15.77j.a.3"} <= affects
+    assert not set(ADDED_RULE_IDS) & affects
