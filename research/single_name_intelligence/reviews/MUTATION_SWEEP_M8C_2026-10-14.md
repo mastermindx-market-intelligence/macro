@@ -19,6 +19,15 @@ base commit `9a2682e4a5f1f9794acf168f512d96d819476b05`.
 
 - Mutation score before: **46/80 = 0.575**
 - Mutation score after: **60/80 = 0.750** (60/60 = 1.000 over non-equivalent mutants)
+- Seat repair (identical-excluded, the M8A convention): 13 of the 80
+  generated mutants are textually identical to the original
+  (`return None` -> `return None`) and are excluded from both
+  denominators. Over the remaining 67: before **46/67 = 0.687**,
+  after **60/67 = 0.896**; the 7 true equivalents (3 falsy, 3
+  keyword-marker, 1 dead `_present`) leave 60/60 = 1.000 on
+  non-equivalent mutants. Per module: denominator 19/32 = 0.594 ->
+  28/32 = 0.875 (8 identicals excluded); comparison 27/35 = 0.771 ->
+  32/35 = 0.914 (5 identicals excluded).
 - Killing tests added: **15** (`tests/test_sni_mut8_c.py`); 14 of them kill
   mutants the existing importer suite missed, 1 anchors the
   all-False module-level `AUTHORITY_FLAGS` contract.
@@ -81,9 +90,9 @@ per-module 40-mutant ceiling, which the frozen method permits.
 ## Surviving-mutant list with killing test name
 
 After re-running the sweep with the new test file included, 20
-non-equivalent-zero mutants remain. All 20 are EQUIVALENT under the
-program law's one-line semantic argument (see "Equivalent arguments"
-below). Each equivalent has a one-line argument; the 14 non-equivalent
+mutants survive; all are equivalent or textually identical (13
+identical, 7 equivalent under the program law's one-line semantic
+argument; see "Equivalent arguments" below). Each equivalent has a one-line argument; the 14 non-equivalent
 survivors were killed by the targeted tests listed below.
 
 ### `sni_denominator_guard.py` (9 killing tests + 12 equivalents)
@@ -115,7 +124,7 @@ survivors were killed by the targeted tests listed below.
 | id | site | original → mutated | EQUIV argument |
 |---|---|---|---|
 | 2 | `_finite_positive:218` | `return False` → `return None` | caller uses `not _finite_positive(...)`; `None` is observationally identical to `False`. |
-| 12 | `check_denominator:290:4` | `*` → `/` (PEP 570 keyword-only marker in `def check_denominator(request, observation, *, as_of=...)`) | no caller passes `as_of=` positionally, so positional-only `as_of` makes no observable difference. |
+| 12 | `check_denominator:290:4` | `*` → `/` (keyword-only marker becomes the PEP 570 positional-only marker in `def check_denominator(request, observation, *, as_of=...)`) | `request`/`observation` become positional-only and `as_of` positional-or-keyword; every caller passes `request`/`observation` positionally and `as_of=` by keyword, and no test asserts a TypeError on a positional `as_of`. |
 | 16 | `_aware_datetime:194` | `return None` → `return None` | no-op: the original line was already a literal `return None`. |
 | 18 | `_finite_positive:223` | `return False` → `return None` | caller uses `not _finite_positive(...)`; `None` is observationally identical to `False`. |
 | 20 | `_as_date:159` | `return None` → `return None` | no-op: the original line was already a literal `return None`. |
@@ -136,32 +145,40 @@ survivors were killed by the targeted tests listed below.
 | 9 | `_as_date:178` | `return None` → `return None` | no-op. |
 | 10 | `_as_datetime:187` | `return None` → `return None` | no-op. |
 | 18 | `_as_aware_datetime:209` | `return None` → `return None` | no-op. |
-| 27 | `check_comparison:317:4` | `*` → `/` (PEP 570 keyword-only marker) | no caller passes `as_of=` positionally. |
-| 36 | `_leg_reasons:238:4` | `*` → `/` (PEP 570 keyword-only marker) | no caller passes `as_of=`/`requested_role=` positionally. |
+| 27 | `check_comparison:317:4` | `*` → `/` (keyword-only marker becomes the PEP 570 positional-only marker) | leading params become positional-only and `as_of` positional-or-keyword; no caller passes a leading param by keyword and no test asserts a TypeError on a positional `as_of`. |
+| 36 | `_leg_reasons:238:4` | `*` → `/` (keyword-only marker becomes the PEP 570 positional-only marker) | `leg` becomes positional-only and `as_of`/`requested_role` positional-or-keyword; no caller passes `leg=` by keyword and no test asserts a TypeError on a positional `as_of`. |
 | 39 | `_as_aware_datetime:205` | `return None` → `return None` | no-op. |
 
 ## Equivalent arguments
 
-The 20 equivalent survivors break down into four equivalence classes:
+The 20 survivors break down into four classes (class 1 is textually
+identical, not equivalent, and is excluded from the identical-excluded
+denominators above):
 
-1. **Textual no-op (`return None` → `return None`)**: 11 of 20
+1. **Textual no-op (`return None` → `return None`)**: 13 of 20
    (ids 16, 20, 22, 25, 32, 33, 35, 36 in denominator; 7, 9, 10, 18, 39
    in comparison). The harness's return-site enumeration picked a line
    whose original value was already `ast.Constant(value=None)`; the
    mutation is a byte-identical no-op.
 
-3. **Falsy-equivalent (`return False` → `return None`)**: 3 of 20
+2. **Falsy-equivalent (`return False` → `return None`)**: 3 of 20
    (denom ids 2, 18, 27). Each call site coerces the return via `not
    …(...)` or `if not …(...)`, where `None` and `False` are
    observationally identical.
 
-5. **Keyword-only-marker (`*` → `/`)**: 3 of 20 (denom id 12, comp
-   ids 27, 36). These tokens sit on `def ...(*, as_of, ...)` /
-   `def ...(..., /, as_of, requested_role)` parameter lists (PEP 570).
-   All callers pass the affected parameters as keyword arguments, so
-   reordering them to positional-only is a no-op at every call site.
+3. **Keyword-only-marker (`*` → `/`)**: 3 of 20 (denom id 12, comp
+   ids 27, 36). The mutation turns `def f(a, b, *, as_of, ...)` into
+   `def f(a, b, /, as_of, ...)` (PEP 570): the LEADING parameters
+   (`request`/`observation`, `leg`) become positional-only and
+   `as_of` (and `requested_role`) become positional-or-keyword. The
+   change is unobservable only because (a) no call site passes a
+   leading parameter by keyword (seat grep over the importer set and
+   the SNI tree: 13 calls pass `as_of=`/`requested_role=` by keyword,
+   none pass `request=`/`observation=`/`leg=`), and (b) no test
+   asserts a TypeError on a positional `as_of`. A future test that
+   pins keyword-only `as_of` would kill all three.
 
-7. **Unreachable / dead (`_present`)** in the comparison module: 1
+4. **Unreachable / dead (`_present`)** in the comparison module: 1
    of 20. `_present` is defined but has no callers in any of the
    SNI modules (verified by grep over the whole tree).
 
@@ -212,3 +229,15 @@ owned site in either target module is a QF fence line.
   -p no:cacheprovider`: all 14 re-runs failed with rc=1 (test FAIL),
   and the module bytes were restored to baseline sha256 between every
   re-application (verified by the same script).
+
+## Seat re-verification
+
+Seat re-verification (2026-10-14, independent of the lane harness): the
+denominator `_finite_positive` L224 (`value > 0` -> `value > 1`) and
+comparison `_text_present` L150 (`value[0]` -> `value[1]`) mutants were
+re-applied to the module bytes; each named killing test failed on the
+mutant and passed on the restored original. Seat repair also corrected
+the class-1 count (11 -> 13 of 20: denominator ids 16, 20, 22, 25, 32,
+33, 35, 36; comparison ids 7, 9, 10, 18, 39), renumbered the classes
+1-4, and restated the PEP 570 argument (the mutation makes the leading
+parameters positional-only, not `as_of`).
