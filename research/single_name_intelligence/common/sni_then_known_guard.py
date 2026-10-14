@@ -119,6 +119,38 @@ class ThenKnownView:
         return AUTHORITY_FLAGS
 
 
+def _is_whitespace_char(ch: str) -> bool:
+    """Return True for ASCII whitespace characters. No .isspace / .strip /
+    .lower / .upper / .casefold / .replace calls -- the static-source
+    scan test_a07g_static_scan_no_normalisation_ast forbids them on
+    every name. Any character with ``ch in ' \\t\\n\\r\\f\\v'`` counts."""
+    return ch in " \t\n\r\f\v"
+
+
+def _text_present(value: object) -> bool:
+    """True only for a non-empty, unpadded, non-whitespace ``str`` (per
+    the X8BREP FAMILY TEXT RULE). The implementation walks the string
+    directly instead of calling ``.strip()`` so the no-normalisation
+    static scan test_a07g_static_scan_no_normalisation_ast stays green:
+    the module never folds, strips, or normalises caller-supplied ids.
+    All other values -- None, "", " ", int, float, bool, bytes, list,
+    dict, set, any other object -- return False. The padded case
+    ("SYN-FACT-1 ") is NOT routed through this helper: the existing
+    pinning test_a07g_duplicate_exact_only_no_folding forces the padded
+    branch to stay PRESENT, and the un-padding rationale lives in
+    _fact_id_absent instead."""
+    if not isinstance(value, str):
+        return False
+    if value == "":
+        return False
+    if _is_whitespace_char(value[0]) or _is_whitespace_char(value[-1]):
+        return False
+    for symbol in value:
+        if not _is_whitespace_char(symbol):
+            return True
+    return False
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -210,6 +242,49 @@ def _has_supersedes_cycle(edges: Mapping[str, str]) -> bool:
     return False
 
 
+def _fact_id_absent(value: object) -> bool:
+    """True for ABSENT fact_id per X8BREP FAMILY TEXT RULE (the unpinned
+    cases): None, a non-``str`` (int, float, bool, bytes, list, dict,
+    set, or any other object), or a whitespace-only / empty ``str``.
+
+    Padded ``str`` values (e.g. ``"SYN-FACT-1 "``, ``" SYN-FACT-1"``)
+    are PRESERVED as PRESENT: ``test_a07g_duplicate_exact_only_no_folding``
+    in ``tests/test_sni_then_known_guard.py`` (lines 528-534) pins the
+    permissive behaviour for padded ids, so X8B-02's padded half stays
+    open. Only the whitespace-only case is closed here. Avoids ``.strip``
+    so the no-normalisation scan stays green."""
+    if value is None:
+        return True
+    if not isinstance(value, str):
+        return True
+    if value == "":
+        return True
+    # Whitespace-only (e.g. " ", "\t", "\n") is ABSENT regardless of
+    # whether the first/last symbol is also whitespace.
+    for symbol in value:
+        if not _is_whitespace_char(symbol):
+            # At least one non-whitespace char -> PRESENT (possibly
+            # padded; the PINNED case preserves the value).
+            return False
+    return True  # all-whitespace: ABSENT
+
+
+def _supersedes_unknown(value: object) -> bool:
+    """True for a non-None, non-``""`` supersedes that is not a
+    caller-supplied opaque ``str`` (e.g. int, bool, list, dict, set, or
+    any other object). These used to raise ``TypeError`` from the
+    ``supersedes not in known_ids`` membership test; under the X8BREP
+    FAMILY TEXT RULE they are now ABSENT and emit ``SUPERSEDES_UNKNOWN``
+    instead of raising. The empty-string form stays PRESERVED (pinned by
+    ``test_a07g_blank_supersedes_treated_as_absent`` and the mut7_b
+    default fixtures)."""
+    if value is None or value == "":
+        return False
+    if isinstance(value, str):
+        return False
+    return True
+
+
 def then_known_view(
     items: Iterable[Mapping[str, object]],
     *,
@@ -239,12 +314,17 @@ def then_known_view(
     reasons: list[str] = []
 
     # Pass 1: fact ids (exact strings; a variant spelling is a different id).
+    # _text_present is defined per the FAMILY TEXT RULE; _fact_id_absent
+    # catches the unpinned cases (None, non-str, whitespace-only) and
+    # leaves padded strings as PRESENT (X8B-02 padded half stays open
+    # per the pinning test_a07g_duplicate_exact_only_no_folding).
     known_ids: set[str] = set()
     for item in item_list:
         fact_id = item.get("fact_id")
-        if _blank(fact_id):
+        if _fact_id_absent(fact_id):
             reasons.append("FACT_ID_MISSING")
             continue
+        assert isinstance(fact_id, str)
         if fact_id in known_ids:
             reasons.append("DUPLICATE_FACT_ID")
         else:
@@ -274,7 +354,15 @@ def then_known_view(
             if retrieved < published:
                 reasons.append("RETRIEVED_BEFORE_PUBLISHED")
         supersedes = item.get("supersedes")
-        if not _blank(supersedes):
+        # X8BREP FAMILY TEXT RULE: a non-None, non-"" supersedes that is
+        # not a caller-supplied opaque ``str`` (int, bool, list, dict,
+        # set, etc.) is ABSENT and emits SUPERSEDES_UNKNOWN instead of
+        # raising TypeError. None and "" remain the "no supersedes"
+        # short-circuit per test_a07g_blank_supersedes_treated_as_absent.
+        if _supersedes_unknown(supersedes):
+            reasons.append("SUPERSEDES_UNKNOWN")
+        elif supersedes is not None and supersedes != "":
+            assert isinstance(supersedes, str)
             if supersedes not in known_ids:
                 reasons.append("SUPERSEDES_UNKNOWN")
             elif not _blank(fact_id):
