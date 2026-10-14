@@ -1292,14 +1292,18 @@ def test_a_phone_card_names_its_identity_state(lang) -> None:
     assert seen == set(words), seen
 
 
-def _unmeasured_case_row() -> dict:
+def _case_document() -> dict:
     fixture = (
         Path(__file__).resolve().parent
         / "fixtures"
         / "finance_case_signal"
         / "synthesis_v0.json"
     )
-    document = json.loads(fixture.read_text(encoding="utf-8"))
+    return json.loads(fixture.read_text(encoding="utf-8"))
+
+
+def _unmeasured_case_row() -> dict:
+    document = _case_document()
     return next(
         row
         for row in document["cases"]
@@ -1309,20 +1313,29 @@ def _unmeasured_case_row() -> dict:
 
 @needs_node
 def test_unmeasured_case_paints_not_yet_evaluable_falsifier() -> None:
-    """Projector output on the harness slice paints NOT_YET_EVALUABLE.
+    """Admitted projector output on the harness slice paints NOT_YET_EVALUABLE.
 
-    A document that never calls the projector keeps the falsifier list blank
-    (the painter clears it when falsifiers is empty).
+    Placement goes through apply_page_signal — the only public placement path.
+    The page carries every slice_id the fixture rows name (card_networks and
+    exchanges_trading_venues), and the painted first-vertical slice is
+    card_networks, the row's own slice. A document that never calls the
+    projector keeps the falsifier list blank (the painter clears it when
+    falsifiers is empty).
     """
-    from engine.sector_intelligence.finance_case_signal import (
-        attach_falsifiers,
-        project_falsifier,
-    )
+    from engine.sector_intelligence.finance_page_signal import apply_page_signal
 
     row = _unmeasured_case_row()
-    falsifier = project_falsifier(row)
+    assert row["slice_id"] == "card_networks"
     doc = copy.deepcopy(VALID_DOC)
-    attach_falsifiers(doc["slices"][0], [falsifier])
+    base = doc["slices"][0]
+    painted_ids = ["card_networks", "exchanges_trading_venues"]
+    doc["slices"] = [base] + [
+        dict(copy.deepcopy(base), slice_id=sid, name_en=f"Finance {sid}",
+             name_zh=f"金融 {sid}", falsifiers=[], rerating=dict(base["rerating"], falsifier_ids=[]))
+        for sid in painted_ids
+    ]
+    doc["coverage"]["first_vertical"]["slice_ids"] = painted_ids
+    apply_page_signal(_case_document(), doc)
     snap = _run({"routes": _route(doc)})
     markup = snap["first"]["dom"]
     assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in markup
@@ -1338,7 +1351,7 @@ def test_page_signal_paints_not_yet_evaluable_on_card_networks() -> None:
 
     The composer's slices[0] is not card_networks. The page paints
     coverage.first_vertical.slice_ids[0], which is card_networks. This test
-    calls apply_page_signal rather than attach_falsifiers on slices[0].
+    calls apply_page_signal rather than the module-private placement helper.
     """
     from engine.sector_intelligence.finance_page_signal import apply_page_signal
     from engine.sector_intelligence.finance_projection import compose_finance_projection
