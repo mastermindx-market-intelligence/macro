@@ -152,6 +152,7 @@ def _cell_without_period() -> dict:
 _SHAPE_ERRORS = [
     pytest.param(_cell_without_period, id="cell-without-period"),
     pytest.param(lambda: _one_release(cells="nope"), id="cells-not-a-list"),
+    pytest.param(lambda: "not-a-case", id="case-not-a-mapping"),
 ]
 
 
@@ -211,11 +212,12 @@ def test_non_iso_period_end_is_refused() -> None:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
 
 
-# A malformed ISO date string is refused with the offending field named, not
-# with ``date.fromisoformat``'s bare message.
+# Refusal shape is documented on ``_with_stated_end``.
 _MALFORMED_ENDS = [
     pytest.param("2026-13-45", id="impossible-month-day"),
     pytest.param("not-a-date", id="not-a-date"),
+    pytest.param("20260703", id="basic-format"),
+    pytest.param("２０２６-０７-０３", id="fullwidth-digits"),
 ]
 
 
