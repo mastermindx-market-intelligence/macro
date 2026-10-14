@@ -7522,18 +7522,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
-      - engine/neuralweb/market_memory_brain_citations.py
       - engine/rates_command_basis.py
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json
-      - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json
-      - engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json
-      - engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json
-      - engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json
-      - engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json
-      - engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -7641,6 +7631,16 @@ jobs:
       - "admin/support_tickets.py"
       - "admin/system.py"
       - "admin/theme_tokens.py"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json
+      - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json
+      - engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json
+      - engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json
+      - engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json
+      - engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json
+      - engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json
       - "admin/trade_memory.py"
       - "admin/umami.py"
       - "admin/uptime_board.py"

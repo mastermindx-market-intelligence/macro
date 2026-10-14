@@ -328,3 +328,32 @@ preserving local26 and applying the bounded correction; ordinary merge only, no
 rebase/force push. Exact source/custody and shared-capacity controls still gate
 publication/new CI. Fresh checks remain mandatory and the incumbent alone owns
 final merge. No second release question or controller replacement is authorized.
+
+
+## 2026-10-14T16:18Z — approved A1 integration and follow-on compatibility
+
+Chris's one-time exception was consumed by ordinary merge7e3157596cdb, parents
+1b7916353dd4 and protected-main50db81266bb8. Qualified local A1b1db2fc7510b
+retains all318 execution definitions and eight A1 suites; full tracked closure
+has zero misses; strict probes135/135/129 jobs pass with measured count135 and
+unchanged weight/pack limits. Focused271 plus theme12 tests passed with zero
+skips. A1 remains unpublished while shared capacity is full. The incumbent alone
+owns final merge. No further manual base integration is authorized.
+
+The separate follow-on now preserves clean compatibility with qualified A1:
+two shared dependency paths align in order, and ten follow-on-only paths move
+after admin/theme_tokens.py. All314 execution definitions, every path multiset,
+limits and runtime bytes are unchanged. Read-only merge preview succeeds at
+tree2a017d659ad9fd4b73b237082de600a72bb0017c. Three affected CI controls pass
+in5.62s, zero failures/errors/skips; fourteen inherited temp-cleanup warnings
+remain recorded. The first proposal was red and never applied. An earlier test
+run on unchanged baseline is excluded from this repair's proof. Root reviewed
+the exact bounded diff; no new independent Fabric PASS is claimed. Evidence:
+research/evidence/eval-os-tier-query-20261014/a1-order-compatibility-20261014/.
+
+At16:13:08 the canonical controller functions counted9 active PR proofs/cap8
+with PR8920 occupying the refresh register. The diagnostic adds one conservative
+reservation for that owner. No A1 publication or new CI producer was admitted.
+The old helper's cached PR base is not current main; its label is corrected and
+future observations read the actual main ref. Original Fabric effects/refusals
+remain frozen. Release, production and real consumer adoption are still owed.
