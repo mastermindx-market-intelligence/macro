@@ -2348,8 +2348,6 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -3024,6 +3022,8 @@ jobs:
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4715,10 +4715,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - "lib/intl_history_mount.py"
       - "tests/test_intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -5003,6 +4999,10 @@ jobs:
       - "lib/intl_macro_publication.py"
       - "tests/test_intl_macro_mount.py"
       - "tests/test_intl_macro_publication.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -5020,10 +5020,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "tests/test_intl_history_mount.py"
@@ -5329,6 +5325,10 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -5848,8 +5848,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -6626,6 +6625,8 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7199,9 +7200,6 @@ jobs:
     # Opaque data traversals do not widen this code job into unrelated ownership.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -7228,6 +7226,9 @@ jobs:
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7249,11 +7250,6 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -7332,6 +7328,11 @@ jobs:
       - "tests/test_cycle_consistency.py"
       - "tests/test_cycle_ontology.py"
       - "tests/test_cycle_w8_truth.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -7546,8 +7547,6 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
       - lib/intl_eod_publication.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
@@ -7805,6 +7804,8 @@ jobs:
       # measured-block contract and its episode/stage imports.
       - "collectors/flow_signals.py"
       - "lib/live_flow_event_stage.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7944,8 +7945,6 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -7983,6 +7982,8 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -8621,11 +8622,6 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - ".github/workflows/**"
       - "scripts/ci/*.sh"
       - "data/**"
@@ -8686,6 +8682,11 @@ jobs:
       - "site/crypto.html"
       - "site/vector.html"
       - "tests/test_crypto_observations_contract.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -8763,11 +8764,6 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "engine/risk_envelope.py"
@@ -8898,6 +8894,11 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -8985,7 +8986,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -8996,6 +8997,7 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_factory_market_memory_evidence.py
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
@@ -9387,6 +9389,18 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-1 case falsifier. Pure projector; the composer still emits [].
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "tests/test_finance_case_signal.py"
+      - "tests/fixtures/finance_case_signal/synthesis_v0.json"
+      # W8-FIN-1 page signal. The review gate writes falsifiers onto the named slice.
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "tests/test_finance_page_signal.py"
+      # FIN-2 witness hints. Closed roster; not an issuer_profiles writer.
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "tests/test_finance_witness_hints.py"
+      # FIN-3 review gate. Descriptive MEASURED is not a cause.
+      - "tests/test_finance_r10_signal_gate.py"
       # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
       # Once §8 is adjudicated the same factory pattern (technology @ #7891)
       # will be applied here.
@@ -9465,7 +9479,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py -q
 
 
   consumer-cyclical-economic-change:
@@ -9482,6 +9496,10 @@ jobs:
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
       - "tests/test_consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "tests/test_consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "tests/test_consumer_cyclical_display.py"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -9521,7 +9539,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -10276,11 +10294,6 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -10463,6 +10476,11 @@ jobs:
       - "templates/spvector.html.j2"
       - "templates/stock_seasonality.html.j2"
       - "templates/stockview.js"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11147,12 +11165,15 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These ten whole-file suites exercise the knowledge compiler and its
+    # These eleven whole-file suites exercise the knowledge compiler and its
     # committed records. Audit: 43 concrete transitive files plus the complete
     # Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
+    # test_agentos_records_draft.py drives scripts/agentos_records_draft.py,
+    # which imports scripts/agentos.py; its git subprocess builds fixture
+    # repositories under tmp_path and reads only this checkout's HEAD.
     scope: exclusive
     paths:
       - agentos/**
@@ -11181,6 +11202,7 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
       - scripts/linear_portfolio_plan.py
@@ -11192,6 +11214,7 @@ jobs:
       - tests/linear_portfolio_plan_live_cases.py
       - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_compile.py
+      - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
@@ -11213,7 +11236,7 @@ jobs:
           # This direct invocation fails when a sparse store would skip pytest.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
+            tests/test_agentos_compile.py tests/test_agentos_records_draft.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
@@ -11826,11 +11849,6 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -11872,6 +11890,11 @@ jobs:
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
       - "tests/test_worldmap_base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     # Packet A-F02-1: OFAC sanctions map engine + page + nav + worldmap base +
     # collector parser. Zero network; fixtures + committed snapshot only.
     timeout-minutes: 10
@@ -11895,10 +11918,6 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -12139,6 +12158,10 @@ jobs:
       - site/factordata/basket_washout_state.json
       - tests/test_intl_market_state.py
       - tests/test_intl_rotation.py
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -12206,8 +12229,6 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -13203,6 +13224,8 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
       - "lib/live_flow_event_stage.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14237,7 +14260,7 @@ jobs:
       # suites with the ingestion/page tests while preserving their full inferred
       # dependency ownership. No extra interpreter is needed.
       - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
-        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -17027,8 +17050,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -17753,6 +17775,8 @@ jobs:
       - templates/methodology.html.j2
       - templates/support.html.j2
       - tests/test_crypto_assistant_context.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -17786,8 +17810,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
       - engine/crypto_market_state.py
       - engine/crypto_universe.py
@@ -18183,6 +18205,8 @@ jobs:
       - tests/test_crypto_t12_contract_invariants.py
       - tests/test_crypto_t15_transition_scaffold.py
       - tests/test_vector_scorecard_gap_semantics.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -19890,7 +19914,7 @@ jobs:
       # progressive-enhancement client, and the date-scoped Release Radar
       # selector join the producer lane that owns the release-forecast estate.
       - name: CPI bridge + official-event live client + Release Radar date selection
-        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py -q
+        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py tests/test_release_radar_ui.py -q
       # Unrun backfill 2026-08-09: Release Radar canonical inflation truth
       # (#5153) landed five suites named by no run: step — the unrun-suite gate
       # reds main on them.  They join the producer lane that owns the
@@ -20044,8 +20068,6 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -20905,6 +20927,8 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -21140,8 +21164,6 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -21182,6 +21204,8 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22438,9 +22462,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "tests/test_foresight_cascade.py"
       - "tests/test_fda_shortages_generation.py"
       - "tests/test_fda_supply_probes.py"
@@ -22452,6 +22473,7 @@ jobs:
       - "tests/test_fda_supply_probes_mixed.py"
       - "tests/test_fda_sweep_duplicate_key_completeness.py"
       - "tests/test_healthcare_dispersion_w0b.py"
+      - "tests/test_healthcare_molecule_gap.py"
       - "collectors/base.py"
       - "collectors/sector_holdings.py"
       - "config/delisted_symbols.yml"
@@ -22466,6 +22488,7 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
+      - "engine/healthcare_molecule_gap.py"
       - "engine/foresight_cascade.py"
       - "scripts/build_foresight.py"
       - "collectors/__init__.py"
@@ -22490,6 +22513,9 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -22507,6 +22533,8 @@ jobs:
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
       - name: Healthcare dispersion history archiver
         run: python -m pytest tests/test_healthcare_dispersion_w0b.py -q
+      - name: Healthcare configured molecules with no rows
+        run: python -m pytest tests/test_healthcare_molecule_gap.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
@@ -24428,8 +24456,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
       - engine/neuralweb/market_memory_operating_cortex.py
@@ -25274,6 +25301,7 @@ jobs:
       - "tests/test_market_memory_population.py"
       - "tests/test_market_memory_retained_context_cohort.py"
       - "tests/test_market_memory_technical_store.py"
+      - "tests/test_market_memory_retained_source_metadata.py"
       - "tests/test_market_memory_trusted.py"
       - "tests/test_options_signal_episode.py"
       - "tests/test_ptse_action_context.py"
@@ -25294,6 +25322,8 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25478,6 +25508,7 @@ jobs:
           tests/test_market_memory_breadth_deploy.py
           tests/test_market_memory_technical_observation.py
           tests/test_market_memory_technical_store.py
+          tests/test_market_memory_retained_source_metadata.py
           tests/test_capture_market_memory_technicals.py
           tests/test_market_memory_technicals_deploy.py
           tests/test_market_memory_experience_accrual.py
@@ -26506,8 +26537,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "lib/stooq.py"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -27306,6 +27336,8 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -27761,11 +27793,6 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -27833,6 +27860,11 @@ jobs:
       - "site/marketsdata/markets_engine.js"
       - "site/mm_charts.js"
       - "site/regimedata/regime_prior.js"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28083,11 +28115,6 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -28148,6 +28175,11 @@ jobs:
       - "scripts/research_liquidity_shock_reversal.py"
       - "site/factordata/basket_washout_state.json"
       - "site/factordata/us_standouts.json"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28534,6 +28566,19 @@ jobs:
       - "tests/test_industrials_financial_dossier.py"
       # IND-T05: edition selection and dossier comparison. Same exclusive job.
       - "tests/test_industrials_source_history.py"
+      # W6-A: stated cell end. A matcher tolerance must not rewrite it.
+      - "engine/company_intelligence/industrials_fiscal.py"
+      - "tests/test_industrials_fiscal_period.py"
+      # W6-B: native SourceDocument editions from the synthetic fixtures.
+      - "engine/company_intelligence/industrials_source_facts.py"
+      - "tests/test_industrials_source_facts.py"
+      # W8-A: stated fiscal label on the native document. Tolerance does not
+      # rewrite the cell end.
+      - "engine/company_intelligence/industrials_period_enrollment.py"
+      - "tests/test_industrials_period_enrollment.py"
+      # W8-B: hold the source-edition section until a selector ruling.
+      - "engine/company_intelligence/industrials_edition_record.py"
+      - "tests/test_industrials_edition_record.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -28551,7 +28596,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py -q
 
   house-law-registry-code:
     if: ${{ false }}
@@ -29005,11 +29050,6 @@ jobs:
     # below therefore replace inference and list the whole import closure.
     timeout-minutes: 10
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "engine/grey_deer_pullback_forward.py"
       - "engine/grey_deer_pullback_forward_grade.py"
       - "scripts/__init__.py"
@@ -29064,6 +29104,11 @@ jobs:
       - "scripts/research/risk_radar_displayed_probability_audit.py"
       - "scripts/research/risk_radar_state_ladder_calibration.py"
       - "scripts/validate_regime_fwd.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29093,11 +29138,6 @@ jobs:
     # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
-      - "lib/ticker_aliases.py"
       - "scripts/research/grey_deer_pullback_stage1.py"
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
@@ -29160,6 +29200,21 @@ jobs:
       - "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "research/grey_deer/pullback_stage1_r1/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "scripts/validate_regime_fwd.py"
+      # W8: readiness-floor projection and episode-rule options diagnosis
+      # (exploratory, draft memo). Both read the committed stage-1/1b results;
+      # tests are synthetic.
+      - "scripts/research/grey_deer_pullback_floor_projection.py"
+      - "scripts/research/grey_deer_pullback_episode_rule_options.py"
+      - "tests/test_grey_deer_pullback_floor_projection.py"
+      - "tests/test_grey_deer_pullback_episode_rule_options.py"
+      - "research/grey_deer/PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md"
+      - "research/grey_deer/pullback_episode_rule_options/EPISODE_RULE_OPTIONS_2026-10-13.json"
+      - "research/grey_deer/pullback_floor_projection/FLOOR_PROJECTION_2026-10-13.json"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29175,6 +29230,8 @@ jobs:
           tests/test_grey_deer_pullback_stage1_schema.py
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
+          tests/test_grey_deer_pullback_floor_projection.py
+          tests/test_grey_deer_pullback_episode_rule_options.py
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_episode_samples.py
@@ -29232,10 +29289,6 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -29363,6 +29416,10 @@ jobs:
       - lib/ticker_aliases.py
       - lib/tsx_calendar.py
       - lib/us_cash_calendar.py
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29490,10 +29547,6 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
-      - "collectors/yahoo.py"
-      - "config/delisted_symbols.yml"
-      - "lib/delisted_symbols.py"
-      - "lib/stooq.py"
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -29656,6 +29709,10 @@ jobs:
       - "tests/test_sni_ads_ratio_guard.py"
       - "tests/test_sni_s2_seal_adjacent.py"
       - "tests/test_sni_identity_binding_guard.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
