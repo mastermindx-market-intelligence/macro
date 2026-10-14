@@ -1,6 +1,6 @@
 {
   "schema": "contagion_links.v1",
-  "built": "2026-10-09T14:40:17.306144+00:00",
+  "built": "2026-10-14T19:06:19.277403+00:00",
   "params": {
     "structural_version": "structural.v1",
     "dy_window": 150,
@@ -452,22 +452,22 @@
   },
   "severity": {
     "us": {
-      "sigma": 0.0685,
-      "dd21": 0.0069,
-      "ret10": 0.0079,
-      "as_of": "2026-10-08"
+      "sigma": 0.0172,
+      "dd21": 0.0017,
+      "ret10": 0.0175,
+      "as_of": "2026-10-13"
     },
     "cn": {
-      "sigma": 0.3548,
-      "dd21": 0.0355,
-      "ret10": -0.0205,
-      "as_of": "2026-10-08"
+      "sigma": 0.6684,
+      "dd21": 0.0468,
+      "ret10": -0.0468,
+      "as_of": "2026-10-14"
     },
     "hk": {
-      "sigma": 0.603,
-      "dd21": 0.0589,
-      "ret10": -0.0422,
-      "as_of": "2026-10-08"
+      "sigma": 0.3083,
+      "dd21": 0.0308,
+      "ret10": -0.0085,
+      "as_of": "2026-10-14"
     },
     "ca": {
       "sigma": 0.3276,
@@ -520,12 +520,22 @@
   },
   "pressure": {
     "us": {
-      "raw": 0.3455,
+      "raw": 0.3649,
       "pct": 0.8056,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — South Korea's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 韩国疲软为主要来源",
+      "line_en": "Pressure from abroad: building — China's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 中国疲软为主要来源",
       "top_exporters": [
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1083,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0724
+        },
         {
           "market": "kr",
           "name_en": "South Korea",
@@ -545,39 +555,19 @@
           "ret10": -0.0157,
           "sigma": 0.3276,
           "contribution": 0.0566
-        },
-        {
-          "market": "gb",
-          "name_en": "United Kingdom",
-          "name_zh": "英国",
-          "weight": 0.1391,
-          "dd21": 0.0346,
-          "ret10": -0.0223,
-          "sigma": 0.3462,
-          "contribution": 0.0481
         }
       ],
       "shadow_state": "caution",
       "incumbent_state": "caution",
-      "incumbent_as_of": "2026-10-08"
+      "incumbent_as_of": "2026-10-13"
     },
     "cn": {
-      "raw": 0.3299,
+      "raw": 0.2841,
       "pct": 0.7837,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — Hong Kong's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 香港疲软为主要来源",
+      "line_en": "Pressure from abroad: building — United Kingdom's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 英国疲软为主要来源",
       "top_exporters": [
-        {
-          "market": "hk",
-          "name_en": "Hong Kong",
-          "name_zh": "香港",
-          "weight": 0.1271,
-          "dd21": 0.0589,
-          "ret10": -0.0422,
-          "sigma": 0.603,
-          "contribution": 0.0766
-        },
         {
           "market": "gb",
           "name_en": "United Kingdom",
@@ -597,19 +587,39 @@
           "ret10": -0.0157,
           "sigma": 0.3276,
           "contribution": 0.0502
+        },
+        {
+          "market": "hk",
+          "name_en": "Hong Kong",
+          "name_zh": "香港",
+          "weight": 0.1271,
+          "dd21": 0.0308,
+          "ret10": -0.0085,
+          "sigma": 0.3083,
+          "contribution": 0.0392
         }
       ],
       "shadow_state": "risk-off",
       "incumbent_state": "risk-off",
-      "incumbent_as_of": "2026-10-08"
+      "incumbent_as_of": "2026-10-14"
     },
     "hk": {
-      "raw": 0.3145,
+      "raw": 0.3561,
       "pct": 0.7758,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — United Kingdom's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 英国疲软为主要来源",
+      "line_en": "Pressure from abroad: building — China's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 中国疲软为主要来源",
       "top_exporters": [
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1509,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.1009
+        },
         {
           "market": "gb",
           "name_en": "United Kingdom",
@@ -619,16 +629,6 @@
           "ret10": -0.0223,
           "sigma": 0.3462,
           "contribution": 0.0629
-        },
-        {
-          "market": "cn",
-          "name_en": "China",
-          "name_zh": "中国",
-          "weight": 0.1509,
-          "dd21": 0.0355,
-          "ret10": -0.0205,
-          "sigma": 0.3548,
-          "contribution": 0.0535
         },
         {
           "market": "in",
@@ -641,12 +641,12 @@
           "contribution": 0.0507
         }
       ],
-      "shadow_state": "risk-off",
-      "incumbent_state": "risk-off",
-      "incumbent_as_of": "2026-10-08"
+      "shadow_state": "caution",
+      "incumbent_state": "caution",
+      "incumbent_as_of": "2026-10-14"
     },
     "ca": {
-      "raw": 0.318,
+      "raw": 0.3274,
       "pct": 0.7798,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — India's weakness is the main source",
@@ -663,6 +663,16 @@
           "contribution": 0.0786
         },
         {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1024,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0685
+        },
+        {
           "market": "kr",
           "name_en": "South Korea",
           "name_zh": "韩国",
@@ -671,16 +681,6 @@
           "ret10": -0.0545,
           "sigma": 0.7783,
           "contribution": 0.0571
-        },
-        {
-          "market": "gb",
-          "name_en": "United Kingdom",
-          "name_zh": "英国",
-          "weight": 0.1264,
-          "dd21": 0.0346,
-          "ret10": -0.0223,
-          "sigma": 0.3462,
-          "contribution": 0.0437
         }
       ],
       "shadow_state": "caution",
@@ -688,12 +688,22 @@
       "incumbent_as_of": "2026-10-08"
     },
     "kr": {
-      "raw": 0.2664,
+      "raw": 0.2743,
       "pct": 0.6667,
       "level": "low",
       "line_en": "Pressure from abroad: low",
       "line_zh": "海外传导压力：低",
       "top_exporters": [
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.0861,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0576
+        },
         {
           "market": "in",
           "name_en": "India",
@@ -713,16 +723,6 @@
           "ret10": 0.0324,
           "sigma": 0.3072,
           "contribution": 0.0499
-        },
-        {
-          "market": "cn",
-          "name_en": "China",
-          "name_zh": "中国",
-          "weight": 0.0861,
-          "dd21": 0.0355,
-          "ret10": -0.0205,
-          "sigma": 0.3548,
-          "contribution": 0.0306
         }
       ],
       "shadow_state": "watch",
@@ -730,7 +730,7 @@
       "incumbent_as_of": "2026-10-08"
     },
     "jp": {
-      "raw": 0.3527,
+      "raw": 0.36,
       "pct": 0.7917,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — South Korea's weakness is the main source",
@@ -757,14 +757,14 @@
           "contribution": 0.0704
         },
         {
-          "market": "gb",
-          "name_en": "United Kingdom",
-          "name_zh": "英国",
-          "weight": 0.1154,
-          "dd21": 0.0346,
-          "ret10": -0.0223,
-          "sigma": 0.3462,
-          "contribution": 0.04
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.0768,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0513
         }
       ],
       "shadow_state": "caution",
@@ -772,7 +772,7 @@
       "incumbent_as_of": "2026-10-09"
     },
     "tw": {
-      "raw": 0.4123,
+      "raw": 0.4244,
       "pct": 0.8294,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — South Korea's weakness is the main source",
@@ -789,6 +789,16 @@
           "contribution": 0.1805
         },
         {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.0924,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0618
+        },
+        {
           "market": "jp",
           "name_en": "Japan",
           "name_zh": "日本",
@@ -797,16 +807,6 @@
           "ret10": 0.0324,
           "sigma": 0.3072,
           "contribution": 0.0488
-        },
-        {
-          "market": "in",
-          "name_en": "India",
-          "name_zh": "印度",
-          "weight": 0.0593,
-          "dd21": 0.0594,
-          "ret10": -0.0518,
-          "sigma": 0.7403,
-          "contribution": 0.0439
         }
       ],
       "shadow_state": "caution",
@@ -814,12 +814,22 @@
       "incumbent_as_of": "2026-10-08"
     },
     "in": {
-      "raw": 0.2846,
+      "raw": 0.294,
       "pct": 0.7857,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — United Kingdom's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 英国疲软为主要来源",
+      "line_en": "Pressure from abroad: building — China's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 中国疲软为主要来源",
       "top_exporters": [
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.0899,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0601
+        },
         {
           "market": "gb",
           "name_en": "United Kingdom",
@@ -839,16 +849,6 @@
           "ret10": -0.0545,
           "sigma": 0.7783,
           "contribution": 0.0512
-        },
-        {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.1285,
-          "dd21": 0.0328,
-          "ret10": -0.0157,
-          "sigma": 0.3276,
-          "contribution": 0.0421
         }
       ],
       "shadow_state": "elevated",
@@ -856,7 +856,7 @@
       "incumbent_as_of": "2026-10-08"
     },
     "au": {
-      "raw": 0.3744,
+      "raw": 0.3998,
       "pct": 0.7976,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — India's weakness is the main source",
@@ -873,6 +873,16 @@
           "contribution": 0.0884
         },
         {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1316,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0879
+        },
+        {
           "market": "ca",
           "name_en": "Canada",
           "name_zh": "加拿大",
@@ -881,16 +891,6 @@
           "ret10": -0.0157,
           "sigma": 0.3276,
           "contribution": 0.0518
-        },
-        {
-          "market": "kr",
-          "name_en": "South Korea",
-          "name_zh": "韩国",
-          "weight": 0.0664,
-          "dd21": 0.0643,
-          "ret10": -0.0545,
-          "sigma": 0.7783,
-          "contribution": 0.0517
         }
       ],
       "shadow_state": "caution",
@@ -898,7 +898,7 @@
       "incumbent_as_of": "2026-10-09"
     },
     "gb": {
-      "raw": 0.3207,
+      "raw": 0.3235,
       "pct": 0.75,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — India's weakness is the main source",
@@ -925,14 +925,14 @@
           "contribution": 0.0468
         },
         {
-          "market": "kr",
-          "name_en": "South Korea",
-          "name_zh": "韩国",
-          "weight": 0.0552,
-          "dd21": 0.0643,
-          "ret10": -0.0545,
-          "sigma": 0.7783,
-          "contribution": 0.043
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.0668,
+          "dd21": 0.0468,
+          "ret10": -0.0468,
+          "sigma": 0.6684,
+          "contribution": 0.0447
         }
       ],
       "shadow_state": "watch",
@@ -940,7 +940,7 @@
       "incumbent_as_of": "2026-10-08"
     },
     "ez": {
-      "raw": 0.342,
+      "raw": 0.3416,
       "pct": 0.7659,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — India's weakness is the main source",
@@ -983,9 +983,9 @@
     }
   },
   "data_sessions": {
-    "us": "2026-10-08",
-    "cn": "2026-10-08",
-    "hk": "2026-10-08",
+    "us": "2026-10-13",
+    "cn": "2026-10-14",
+    "hk": "2026-10-14",
     "ca": "2026-10-08",
     "kr": "2026-10-08",
     "jp": "2026-10-09",
@@ -996,5 +996,5 @@
     "ez": "2026-10-08"
   },
   "gaps": [],
-  "timing_sec": 0.38
+  "timing_sec": 0.37
 }

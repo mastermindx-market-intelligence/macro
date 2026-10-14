@@ -11,6 +11,14 @@ across cells, never a label (``sampler.py`` module docstring).
 The draw replays byte-identically from (tape sha, date bounds, seed,
 sampler version); no clock reads, no random module, no network. Short
 cells are reported short, never padded.
+
+Issuer resolution reads one ledger by default. An optional fallback ledger
+(``--fallback-ledger``) only fills rows the primary ledger leaves unresolved:
+the second pass reads the primary entries plus the fallback entries whose
+tickers the primary ledger does not carry, so a primary refusal (ambiguous or
+not listed at the as-of) stands, and every row the primary ledger resolves keeps
+its issuer, tickers and tags. Without the option every output is byte-identical
+to a run without it (DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER).
 """
 from __future__ import annotations
 
@@ -26,6 +34,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from engine.news_impact.issuer import (
     ABSENCE_REASONS,
+    Ledger,
     Mention,
     canonical_ticker,
     resolve_mention,
@@ -312,6 +321,24 @@ def _resolve_entities(
     return issuer, issuer_ticker, resolved_ciks, preferred_variant_resolved
 
 
+def fill_only_ledger(primary: Any, fallback: Any) -> Ledger:
+    """Primary entries plus the fallback entries for tickers the primary lacks.
+
+    A ticker the primary ledger carries keeps exactly its primary entries, so a
+    primary refusal (ambiguous, not listed at the as-of) is never overridden by
+    the fallback. Both inputs must be :class:`Ledger` objects from ``load_ledger``.
+    """
+    if not isinstance(primary, Ledger) or not isinstance(fallback, Ledger):
+        raise TapeDrawError("fill_only_ledger needs two Ledger objects from load_ledger")
+    entries = {t: fallback[t] for t in fallback if t not in primary}
+    entries.update({t: primary[t] for t in primary})
+    return Ledger(
+        entries,
+        has_validity_dates=primary.has_validity_dates or fallback.has_validity_dates,
+        source=f"{primary.source}+fill:{fallback.source}",
+    )
+
+
 # --- tag and holdout helpers (S8, S9) -----------------------------------------
 
 
@@ -405,8 +432,19 @@ def build_candidates(
     low_value: Callable[..., bool],
     dropped: dict,
     total_rows: int,
+    fallback_ledger: Any = None,
 ) -> CandidateBuild:
-    """Turn load_tape rows into sampler Candidates plus a funnel report."""
+    """Turn load_tape rows into sampler Candidates plus a funnel report.
+
+    With ``fallback_ledger`` a row the primary ledger leaves unresolved is
+    re-resolved against :func:`fill_only_ledger`; the report gains a
+    ``fallback_ledger`` record and ``issuers.fallback_resolved``, and each meta
+    row gains ``issuer_ledger``. Without it the output is unchanged.
+    """
+    combined_ledger = (
+        fill_only_ledger(ledger, fallback_ledger) if fallback_ledger is not None else None
+    )
+    fallback_resolved = 0
     event_log_by_id: dict[str, dict] = {r["event_id"]: r for r in event_log_rows}
     reject_by_id: dict[str, dict] = {r["event_id"]: r for r in reject_rows}
     tape_item_ids = {_text(r.get("item_id")) for r in rows}
@@ -504,6 +542,15 @@ def build_candidates(
         issuer, ticker, resolved_ciks, pv_resolved = _resolve_entities(
             entities, title, d, ledger
         )
+        issuer_ledger: str | None = None if issuer.startswith("unresolved:") else "primary"
+        if combined_ledger is not None and issuer_ledger is None:
+            f_issuer, f_ticker, f_ciks, f_pv = _resolve_entities(
+                entities, title, d, combined_ledger
+            )
+            if not f_issuer.startswith("unresolved:"):
+                issuer, ticker, resolved_ciks, pv_resolved = f_issuer, f_ticker, f_ciks, f_pv
+                issuer_ledger = "fallback"
+                fallback_resolved += 1
         preferred_variant_resolved += pv_resolved
 
         if issuer.startswith("unresolved:"):
@@ -582,6 +629,8 @@ def build_candidates(
             "template": template,
             "proxy_cell": proxy_cell,
         }
+        if combined_ledger is not None:
+            meta["issuer_ledger"] = issuer_ledger
         cand_records.append(
             (cand, meta, {"tape_event_key": tape_event_key, "row": row})
         )
@@ -695,6 +744,16 @@ def build_candidates(
         "drawn_cells": None,
         "manifest_sha256": None,
     }
+    if combined_ledger is not None:
+        report["issuers"]["fallback_resolved"] = fallback_resolved
+        # Inputs are recorded by sha256 only (set in run_draw), never by path,
+        # so the report stays byte-reproducible from any checkout.
+        report["fallback_ledger"] = {
+            "tickers": len(fallback_ledger),
+            "fill_only_tickers": sum(1 for t in fallback_ledger if t not in ledger),
+            "primary_tickers": len(ledger),
+            "sha256": None,
+        }
 
     return CandidateBuild(
         candidates=final_candidates_tuple,
@@ -910,6 +969,7 @@ def run_draw(
     low_value: Callable[..., bool] | None = None,
     body_frame: BodyFrame | None = None,
     gate_frame: GateFrame | None = None,
+    fallback_ledger_path: str | None = None,
 ) -> TapeDrawResult:
     """Run the full tape -> draw pipeline (S12).
 
@@ -918,7 +978,9 @@ def run_draw(
     pre-frame and in-frame cell counts, exclusion reasons). Short cells stay short.
     With ``gate_frame`` (which requires ``body_frame``) the draw further keeps the
     gated-in candidates and the report gains a ``gate_frame`` record; without it the
-    report is unchanged.
+    report is unchanged. With ``fallback_ledger_path`` unresolved rows are re-resolved
+    fill-only (:func:`fill_only_ledger`) and the report records the fallback file's
+    sha256; without it the report is unchanged.
     """
     if not isinstance(seed, int) or isinstance(seed, bool):
         raise TapeDrawError(f"seed must be an int: {seed!r}")
@@ -934,6 +996,7 @@ def run_draw(
     from engine.news_impact.issuer import load_ledger
 
     ledger = load_ledger(ledger_path)
+    fallback_ledger = load_ledger(fallback_ledger_path) if fallback_ledger_path else None
 
     dropped: dict[str, int] = {}
     wide_rows = load_tape(
@@ -958,6 +1021,7 @@ def run_draw(
         low_value=low_value,
         dropped=dropped,
         total_rows=total_rows,
+        fallback_ledger=fallback_ledger,
     )
 
     tape_sha = _read_tape_bytes(tape_path)
@@ -1017,6 +1081,9 @@ def run_draw(
     report["frame"] = frame_record if frame_record is not None else {"kind": "full_pool"}
     if gate_record is not None:
         report["gate_frame"] = gate_record
+    if fallback_ledger_path:
+        with open(fallback_ledger_path, "rb") as f:
+            report["fallback_ledger"]["sha256"] = sha256(f.read()).hexdigest()
 
     return TapeDrawResult(
         draw=draw,
@@ -1110,6 +1177,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--reject-sample", required=True, help="path to reject_sample parquet"
     )
     parser.add_argument("--ledger", required=True, help="path to ticker->CIK ledger json")
+    parser.add_argument(
+        "--fallback-ledger",
+        default=None,
+        help=(
+            "ticker->CIK ledger json consulted only for rows --ledger leaves unresolved, "
+            "and only for tickers --ledger does not carry (report records its sha256)"
+        ),
+    )
     parser.add_argument("--seed", required=True, type=int, help="sampler seed (int)")
     parser.add_argument("--out", required=True, help="output directory (created if missing)")
     parser.add_argument("--window-start", default=None, help="ISO date override")
@@ -1162,6 +1237,7 @@ def main(argv: list[str] | None = None, *, low_value: Callable[..., bool] | None
             low_value=low_value,
             body_frame=body_frame,
             gate_frame=gate_frame,
+            fallback_ledger_path=args.fallback_ledger,
         )
 
         out_dir = args.out
