@@ -28822,8 +28822,6 @@ jobs:
     # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
     # determinism checks, the panel split/calendar adjustment and the stage-1b
     # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
-    # W8 adds the readiness-floor projection and the episode-rule options diagnosis
-    # (exploratory, draft memo). Both read the committed stage-1/1b results; tests are synthetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
@@ -28838,10 +28836,6 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1b_addendum.py"
-      - "scripts/research/grey_deer_pullback_floor_projection.py"
-      - "scripts/research/grey_deer_pullback_episode_rule_options.py"
-      - "tests/test_grey_deer_pullback_floor_projection.py"
-      - "tests/test_grey_deer_pullback_episode_rule_options.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -28890,6 +28884,16 @@ jobs:
       - "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "research/grey_deer/pullback_stage1_r1/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "scripts/validate_regime_fwd.py"
+      # W8: readiness-floor projection and episode-rule options diagnosis
+      # (exploratory, draft memo). Both read the committed stage-1/1b results;
+      # tests are synthetic.
+      - "scripts/research/grey_deer_pullback_floor_projection.py"
+      - "scripts/research/grey_deer_pullback_episode_rule_options.py"
+      - "tests/test_grey_deer_pullback_floor_projection.py"
+      - "tests/test_grey_deer_pullback_episode_rule_options.py"
+      - "research/grey_deer/PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md"
+      - "research/grey_deer/pullback_episode_rule_options/EPISODE_RULE_OPTIONS_2026-10-13.json"
+      - "research/grey_deer/pullback_floor_projection/FLOOR_PROJECTION_2026-10-13.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28905,10 +28909,10 @@ jobs:
           tests/test_grey_deer_pullback_stage1_schema.py
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
-          tests/test_grey_deer_pullback_stage1b.py
-          tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_pullback_floor_projection.py
           tests/test_grey_deer_pullback_episode_rule_options.py
+          tests/test_grey_deer_pullback_stage1b.py
+          tests/test_grey_deer_pullback_stage1b_addendum.py
 
   sni-s1-residual:
     if: ${{ false }}
