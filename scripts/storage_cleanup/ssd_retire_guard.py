@@ -14,6 +14,10 @@ import sys
 from pathlib import Path
 
 PINNED_COMMIT = "6b154e09357300964c0720448cee9654bf2585d0"
+EXPECTED_GIT_BLOBS = {
+    "worktree_gc.py": "044c13d004884883fe5f3012d46c11154da2b7d7",
+    "worktree_gc.json": "10fb866b6e72bb7cd82965bcbe4a77fa8c29cf94",
+}
 GC_RELEASE = Path.home() / ".local/lib/mastermind/storage-cleanup/gc-releases" / PINNED_COMMIT
 REQUIRED_HUMAN_ROOTS = frozenset({
     "/Volumes/Mastermind/worktrees",
@@ -39,7 +43,9 @@ def load_pinned_gc():
     for name in ("worktree_gc.py", "worktree_gc.json"):
         p = GC_RELEASE / name
         expected = m["files"][name]["sha256"]
-        if hashlib.sha256(p.read_bytes()).hexdigest() != expected:
+        data = p.read_bytes()
+        git_blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+        if git_blob != EXPECTED_GIT_BLOBS[name] or hashlib.sha256(data).hexdigest() != expected:
             raise RuntimeError("GC source integrity mismatch: " + name)
     cfg = json.loads((GC_RELEASE / "worktree_gc.json").read_text())
     if not REQUIRED_HUMAN_ROOTS.issubset(set(cfg.get("human_driven_roots") or ())):
