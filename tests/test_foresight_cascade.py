@@ -2189,3 +2189,95 @@ def test_qualified_count_gap_without_complete_or_failure_is_unavailable():
     )
     assert equal["source_status"] == "CURRENT_REPORTED"
     assert equal["freshness"]["capture_incomplete"] is False
+
+
+# ── W15-F: the molecule-gap clause is an optional decoration, not a build dependency ──
+
+def _gap_bearing_scarcity_row():
+    """A computed-shaped FDA row whose summary.coverage measures a real gap.
+
+    Reuses this file's existing FDA fixtures — _summary_row,
+    summarize_supply_for_test and _computed_row_for_summary —
+    and only overwrites summary.coverage so the cascade reaches the clause.
+    """
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    row = _computed_row_for_summary(
+        summarize_supply_for_test([_summary_row(ndc="GAP-A")], now)
+    )
+    coverage = row["summary"]["coverage"]
+    coverage["molecules_checked"] = ["semaglutide", "tirzepatide", "liraglutide"]
+    coverage["molecules_with_rows"] = ["semaglutide"]
+    return row
+
+
+def _glp1_only_kwargs():
+    return dict(
+        bottleneck={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}},
+        revisions={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "breadth": 0.05, "level_state": "FLAT_LOW"}}},
+        demand={"themes": {}}, glut={"themes": {}}, write_ledger=False,
+    )
+
+
+def test_fda_molecule_gap_clause_exception_does_not_kill_the_cascade(monkeypatch, caplog):
+    """W15-F item 1: a raising molecule-gap clause degrades like the chip guard
+    (compute_foresight_cascade logs "fda_scarcity chip format failed
+    for %s: %s" at debug and carries on): the cascade is still produced, the FDA
+    chip is still present, and molecule_gap stays None.
+    """
+    import logging
+
+    import engine.healthcare_molecule_gap as gap_module
+
+    def _boom(*_args):
+        raise RuntimeError("synthetic molecule-gap failure")
+
+    monkeypatch.setattr(gap_module, "molecule_gap_clause", _boom)
+    caplog.set_level(logging.DEBUG, logger="engine.foresight_cascade")
+
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": _gap_bearing_scarcity_row()},
+        **_glp1_only_kwargs(),
+    )
+
+    assert out is not None, "a failing optional clause must not take down the cascade build"
+    row = out["themes"][0]
+    assert row["theme"] == "glp1_obesity"
+    chip = row["theme_feed_summary"]
+    assert chip is not None, "the FDA chip must survive a failing molecule-gap clause"
+    assert chip["source"] == "fda_shortages"
+    assert row["molecule_gap"] is None
+    assert any(rec.levelno == logging.DEBUG and "molecule" in rec.getMessage().lower()
+               for rec in caplog.records), caplog.text
+
+
+def test_fda_molecule_gap_clause_is_built_from_summary_coverage():
+    """W15-F item 2 companion (positive): summary.coverage carrying both lists
+    still produces the clause — the guard and the coverage branch both live."""
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": _gap_bearing_scarcity_row()},
+        **_glp1_only_kwargs(),
+    )
+    gap = out["themes"][0]["molecule_gap"]
+    assert gap is not None, "coverage-measured gap must still render the clause"
+    assert "tirzepatide" in gap["en"] and "liraglutide" in gap["en"]
+    assert "semaglutide" not in gap["en"]
+
+
+def test_top_level_molecule_keys_without_coverage_yield_no_gap_clause():
+    """W15-F item 2: the row-level fallback is dead. No producer writes
+    molecules_with_rows at the top level (engine/fda_scarcity.py writes it only
+    under summary.coverage), so a row naming both lists at
+    the top level with no summary.coverage has not measured coverage and must
+    not get a clause invented from it."""
+    row = {"band": "SHORTAGE_ACTIVE", "source_status": "CURRENT_REPORTED",
+           "freshness": {}, "n_active": 1, "n_resolved": 0, "n_discontinued": 0,
+           "details": ["Synthetic Theme A [Current/Available]"],
+           "rationale": "one regulator record observed",
+           "molecules_checked": ["semaglutide", "tirzepatide", "liraglutide"],
+           "molecules_with_rows": []}
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": row}, **_glp1_only_kwargs(),
+    )
+    assert out["themes"][0]["molecule_gap"] is None

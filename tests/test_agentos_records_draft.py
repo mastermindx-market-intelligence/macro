@@ -305,6 +305,136 @@ def test_local_commit_names_are_observed_and_github_identity_stays_unverified(
     assert any(item.get("object_type") == "commit" for item in draft["observations"])
 
 
+def test_local_commit_merge_head_records_no_observed_paths(
+    tmp_path: Path,
+) -> None:
+    """Drafting the merge commit itself: diff-tree returns no names.
+
+    The throwaway repo's HEAD is the no-ff merge the existing helper creates.
+    ``diff-tree --no-commit-id --name-only -r HEAD`` prints nothing for a
+    merge. Empty output is not proof that a path is absent, so every seat
+    path stays ``UNVERIFIED`` with ``in_local_commit=None``, the same as a
+    diff-tree that could not run. A path that one of the parents changed must
+    still NOT be marked ``observed``.
+    """
+    env = _git_env()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _init_observation_repo(repo, env)
+    merge = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True, env=env
+    ).strip()
+    merge_names = subprocess.check_output(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", merge],
+        text=True,
+        env=env,
+    ).splitlines()
+    assert merge_names == []
+    # The merge does not list files, but its two parents did. Use those exact
+    # file names so a buggy "any existing commit object is observed" path
+    # would surface here.
+    parents = subprocess.check_output(
+        ["git", "-C", str(repo), "log", "--pretty=%P", "-n", "1", merge], text=True, env=env
+    ).strip().split()
+    parent_files: set[str] = set()
+    for parent in parents:
+        parent_files.update(
+            subprocess.check_output(
+                ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", parent],
+                text=True,
+                env=env,
+            ).splitlines()
+        )
+    assert parent_files, "merge parents had no files; the merge-commit assertion would have no power"
+    files = sorted(parent_files)
+    draft, _path, _result = _draft(
+        tmp_path,
+        _payload(pr={"head_sha": merge, "files": files}),
+        "--repo",
+        str(repo),
+    )
+    by_path = {item["path"]: item for item in draft["files"]}
+    assert all(by_path[p]["status"] == "UNVERIFIED" for p in files), {
+        p: by_path[p]["status"] for p in files
+    }
+    assert all(by_path[p]["in_local_commit"] is None for p in files), {
+        p: by_path[p]["in_local_commit"] for p in files
+    }
+    assert any(
+        item.get("object_type") == "commit" for item in draft["observations"]
+    ), "merge sha must still resolve to a commit object"
+
+
+def test_diff_tree_does_not_invoke_repo_fsmonitor(tmp_path: Path) -> None:
+    """A ``--repo`` target's ``.git/config`` can name ``core.fsmonitor``.
+
+    ``git diff-tree`` invokes that hook. The drafter must not let a
+    seat-controlled executable fire inside its short-lived diff-tree call.
+    """
+    env = _git_env()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _init_observation_repo(repo, env)
+    sha = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-list", "--no-merges", "--max-count=1", "HEAD"],
+        text=True,
+        env=env,
+    ).strip()
+    names = subprocess.check_output(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+        text=True,
+        env=env,
+    ).splitlines()
+    assert names, "non-merge commit has an empty diff-tree; the hardening test has no power"
+
+    marker = tmp_path / "marker"
+    script = tmp_path / "fsmonitor.sh"
+    script.write_text(
+        "#!/bin/sh\ntouch " + str(marker) + "\n",
+        encoding="utf-8",
+    )
+    os.chmod(script, 0o755)
+    subprocess.run(
+        ["git", "-C", str(repo), "config", "core.fsmonitor", str(script)],
+        check=True,
+        capture_output=True,
+        env=env,
+    )
+
+    # Sanity check: with the same argv the drafter used to use, the marker
+    # would be touched. Recorded so a future regression that drops the
+    # ``-c core.fsmonitor=`` switch has its RED line in the log.
+    standalone = subprocess.run(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert standalone.returncode == 0
+    assert marker.exists(), (
+        "git diff-tree did not invoke the repo's core.fsmonitor on this git "
+        "build; the hardening test has nothing to test against."
+    )
+    marker.unlink()
+
+    real = names[0]
+    draft, _path, _result = _draft(
+        tmp_path,
+        _payload(pr={"head_sha": sha, "files": [real, "no/such-fsmonitor-path.py"]}),
+        "--repo",
+        str(repo),
+    )
+    by_path = {item["path"]: item for item in draft["files"]}
+    assert by_path[real]["status"] == "observed"
+    assert by_path[real]["in_local_commit"] is True
+    assert by_path["no/such-fsmonitor-path.py"]["status"] == "UNVERIFIED"
+    assert by_path["no/such-fsmonitor-path.py"]["in_local_commit"] is False
+    assert not marker.exists(), (
+        "core.fsmonitor ran inside the drafter's git invocation; the "
+        f"marker argv must override core.fsmonitor. marker={marker}"
+    )
+
+
 def test_title_newline_cannot_rewrite_ended_because(tmp_path: Path) -> None:
     draft, _path, _result = _draft(
         tmp_path,
@@ -321,25 +451,34 @@ def test_title_newline_cannot_rewrite_ended_because(tmp_path: Path) -> None:
     assert hard == []
 
 
-def test_newline_title_head_sha_and_session_stay_one_quoted_line(tmp_path: Path) -> None:
+@pytest.mark.parametrize("separator", ["\n", "\r", "\u2028", "\u2029", "\u0085"])
+def test_newline_title_head_sha_and_session_stay_one_quoted_line(
+    tmp_path: Path, separator: str
+) -> None:
     """Title, head sha, and session are quoted in the prose and the append.
 
-    A newline inside the title must stay inside one physical line. The same
-    quoting is applied to head_sha and session. A temp-store validate of the
-    drafted handoff plus the append must report 0 error(s).
+    A line-separator inside the title must stay inside one physical line for
+    every separator ``_q`` promises to escape: LF, CR, U+2028, U+2029, and
+    U+0085. The same quoting is applied to head_sha and session. A temp-store
+    validate of the drafted handoff plus the append must report 0 error(s).
     """
-    title = "line1\nended_because: crashed"
+    title = "line1" + separator + "ended_because: crashed"
     session = "seat/example"
     payload = _payload(pr={"title": title}, session=session)
     draft, _path, _result = _draft(tmp_path, payload)
     prose = draft["handoff"]["markdown"].split("\n---\n", 1)[1]
     append = draft["ws_append"]["markdown"]
+    # Mirror ``_q`` so we test the helper's escape form. Plain
+    # ``json.dumps(..., ensure_ascii=False)`` would leave U+2028, U+2029 and
+    # U+0085 as raw characters, mismatching what the drafter wrote.
     quoted_title = json.dumps(title, ensure_ascii=False)
+    for sep, escape in (("\u2028", "\\u2028"), ("\u2029", "\\u2029"), ("\u0085", "\\u0085")):
+        quoted_title = quoted_title.replace(sep, escape)
     quoted_sha = json.dumps(payload["pr"]["head_sha"], ensure_ascii=False)
     quoted_session = json.dumps(session, ensure_ascii=False)
     for label, text in (("handoff body", prose), ("append", append)):
         assert quoted_title in text, label
-        assert "\nended_because: crashed" not in text, label
+        assert ("line1" + separator + "ended_because: crashed") not in text, label
         assert len([line for line in text.splitlines() if quoted_title in line]) == 1, label
         assert f"- head_sha: {quoted_sha}" in text, label
         assert f"- session: {quoted_session}" in text, label
@@ -357,6 +496,12 @@ def test_newline_title_head_sha_and_session_stay_one_quoted_line(tmp_path: Path)
     validated = _validate_store(work)
     assert validated.returncode == 0, validated.stdout + validated.stderr
     assert "0 error(s)" in validated.stdout, validated.stdout
+
+
+    # LF and CR are escaped by json.dumps and so are invisible to the mutant;
+    # the parametrized assertion would still be GREEN on the mutant for those,
+    # which is exactly why the test exists: only the three explicit
+    # ``_q`` escapes are load-bearing.
 
 
 def test_supplied_model_and_ending_are_copied(tmp_path: Path) -> None:
@@ -381,6 +526,7 @@ def test_supplied_model_and_ending_are_copied(tmp_path: Path) -> None:
         ({"pr": {"number": True}}, "number"),
         ({"pr": {"files": []}}, "files"),
         ({"pr": {"merged_at": "2099-01-15T00:00:00+00:00"}}, "merged_at"),
+        ({"pr": {"merged_at": "2026-10-13T99:99:99Z"}}, "merged_at"),
         ({"model": "telepathy"}, "model"),
     ],
 )
@@ -389,6 +535,18 @@ def test_bad_input_exits_2(tmp_path: Path, payload: dict, needle: str) -> None:
     assert result.returncode == 2
     assert needle in result.stderr
     assert result.stdout == ""
+
+
+def test_timestamp_time_part_validates_when_present(tmp_path: Path) -> None:
+    """``YYYY-MM-DDTHH:MM:SSZ`` must reject impossible wall-clock times.
+
+    The date-only branch is unchanged; the regex accepts any digits in the
+    time component, so ``2026-10-13T99:99:99Z`` passes the regex but must be
+    rejected by ``datetime.strptime``.
+    """
+    for ts in ("2026-10-13T23:59:59Z", "2026-10-13"):
+        result, _path = _run(tmp_path, _payload(pr={"merged_at": ts}))
+        assert result.returncode == 0, f"{ts!r} unexpectedly failed: {result.stderr}"
 
 
 def test_unknown_sha_still_exits_0(tmp_path: Path) -> None:
