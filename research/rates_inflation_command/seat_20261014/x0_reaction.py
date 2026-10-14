@@ -33,7 +33,7 @@ if str(_REPO) not in sys.path:
 from collectors.fred import load_vintages  # noqa: E402
 from engine.challenger_spa_comparison import newey_west_lrvar  # noqa: E402
 from engine.desk_placebo import holm_adjust  # noqa: E402
-from engine.event_window import _FOMC_ANNOUNCEMENT_DATES  # noqa: E402
+from engine.event_window import _fomc_announcement_dates  # noqa: E402
 from engine.grading_stats import wilson_ci  # noqa: E402
 from engine.release_target_truth import (  # noqa: E402
     default_vintage_path,
@@ -179,7 +179,7 @@ def default_tier1_dates_loader(
             "PCE": rt_dates("PCEPI"),
             "PPI": ppi,
             "GDP_ADVANCE": gdp,
-            "FOMC": set(_FOMC_ANNOUNCEMENT_DATES),
+            "FOMC": set(_fomc_announcement_dates()),
         }
 
     return load

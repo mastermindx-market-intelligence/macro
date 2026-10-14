@@ -1227,7 +1227,7 @@ def test_cli_main_roundtrip(tmp_path, monkeypatch):
 
 
 def test_ppi_disagreements_listed(tmp_path, monkeypatch):
-    from engine.event_window import _FOMC_ANNOUNCEMENT_DATES
+    from engine.event_window import _fomc_announcement_dates
 
     def _ts(days):
         return [pd.Timestamp(d) for d in days]
@@ -1283,7 +1283,7 @@ def test_ppi_disagreements_listed(tmp_path, monkeypatch):
     assert tier1["PPI"] == {"2010-01-06", "2010-02-10",
                             "2010-03-09", "2010-03-10"}
     assert tier1["GDP_ADVANCE"] == {"2020-01-30", "2013-04-26", "2013-04-27"}
-    assert tier1["FOMC"] == set(_FOMC_ANNOUNCEMENT_DATES)
+    assert tier1["FOMC"] == set(_fomc_announcement_dates())
 
     # end to end: the receipt lists the receipt's own disagreement rows
     world = _big_world()
