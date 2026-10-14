@@ -47,3 +47,35 @@ for(const event of ['SIGNED_OUT','SIGNED_IN'])test('newer '+event+' wins over pe
 test('initial session result cannot reclaim finance from page owner',async()=>{
  const f=restorationRace();f.window.__govrevFirstInvestor.owned=true;f.resolve({data:{session:{user:{id:'restored'}}}});await flush();assert.equal(f.loads,0);
 });
+
+function actualInvestorRestoration(){
+ let user=null,session={user:{id:'restored'},access_token:'fixture-token'},listeners=[],requests=[];
+ const document={documentElement:{getAttribute:()=> 'en'},getElementById:()=>null,createElement:()=>({setAttribute(){}}),head:{appendChild:s=>queueMicrotask(()=>s.onload())}};
+ const window={document,location:{href:'https://local.test/government_revenue.html'},addEventListener:(name,cb)=>{if(name==='mdx-auth')listeners.push(cb)},fetch:()=>new Promise(resolve=>requests.push(resolve))};
+ window.MDXAuth={enabled:()=>true,user:()=>user,onChange:cb=>window.addEventListener('mdx-auth',e=>cb(e.detail.user,e.detail.event)),client:()=>Promise.resolve({auth:{getSession:()=>Promise.resolve({data:{session}})}})};
+ const ctx={window,document,Promise,URL,Date,console};vm.createContext(ctx);
+ vm.runInContext(fs.readFileSync(root+'/templates/government-revenue-investor.js','utf8'),ctx);
+ vm.runInContext(fs.readFileSync(root+'/templates/government-revenue-investor-start.js','utf8'),ctx);
+ return {window,requests,emit(next,event){user=next;session=next?{user:next,access_token:'fixture-token'}:null;listeners.forEach(cb=>cb({detail:{user:next,event}}))},complete(index,status=200){requests[index]({ok:status===200,status,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(root+'/tests/fixtures/defense_economics.json','utf8')))})}};
+}
+for(const eventBeforeResponse of [false,true])test('actual investor retains restored subject when matching INITIAL_SESSION arrives '+(eventBeforeResponse?'during':'after')+' its finance read',async()=>{
+ const f=actualInvestorRestoration();await flush();assert.equal(f.requests.length,1);
+ const initial=f.window.__govrevFirstInvestor;
+ if(eventBeforeResponse)f.emit({id:'restored'},'INITIAL_SESSION');
+ f.complete(0);await initial.promise;
+ assert.equal(initial.ui.state().status,'ready');const identity=initial.ui.state().content_id;assert.ok(identity);
+ if(!eventBeforeResponse)f.emit({id:'restored'},'INITIAL_SESSION');
+ assert.equal(initial.ui.state().status,'ready');assert.equal(initial.ui.state().content_id,identity);assert.equal(f.requests.length,1);
+});
+test('actual investor drops early restored finance on a later sign-out',async()=>{
+ const f=actualInvestorRestoration();await flush();const initial=f.window.__govrevFirstInvestor,old=initial.promise;
+ f.emit(null,'SIGNED_OUT');await flush();assert.equal(f.requests.length,2);
+ f.complete(0);await old;assert.equal(initial.ui.state().content_id,null);
+ f.complete(1,403);await initial.promise;assert.equal(initial.ui.state().status,'locked');assert.equal(initial.ui.state().content_id,null);
+});
+test('actual investor rejects the old restored response after an account change',async()=>{
+ const f=actualInvestorRestoration();await flush();const initial=f.window.__govrevFirstInvestor,old=initial.promise;
+ f.emit({id:'other-subject'},'SIGNED_IN');await flush();assert.equal(f.requests.length,2);
+ f.complete(0);await old;assert.equal(initial.ui.state().content_id,null);
+ f.complete(1);await initial.promise;assert.equal(initial.ui.state().status,'ready');assert.equal(initial.subject,'other-subject');
+});

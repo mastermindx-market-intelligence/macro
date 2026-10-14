@@ -1003,3 +1003,50 @@ push this original PR #9066 once, obtain exact-head CI/protected merge, then per
 fresh financial CAS and natural publication in their existing gated order. Installed
 identity, two entitled subjects, Terminal #778 and independent acceptance remain
 outstanding. No production or financial-owner write has occurred in this phase.
+
+
+### October 14 V10 actual-session regression repair
+
+V9 qualification was materially invalidated by direct inspection of the actual
+investor component: an SDK restoration before MDXAuth's notification left its
+internal subject empty. A later matching INITIAL_SESSION could clear its finance
+read while startup coalescing skipped replacement; sign-out could also coalesce
+with the old request. Three tests using the actual component reproduced these
+failures. V10 supplies the early restored subject until page takeover. Forty
+affected component/sequencing tests now pass, including delayed notification,
+sign-out and account-change cases; eighteen packaging/priority checks pass.
+
+The V9 Fabric review returned only an incomplete tail. It is not accepted. Its
+same-carrier current-output read was refused as original_current_output_unconfirmed;
+no retry or alternative retrieval was attempted. A new review of the materially
+changed V10 source, including the full actual component and page handover, is
+running as defense-v10-subject-review-01a13300-a through the existing Fabric's
+artifact-return path (bailian/qwen3.8-max, ubuntu2). Do not infer acceptance from
+process success or the old partial conclusion.
+
+Protected main advanced to 2fafe10e05968b1f193361926224250aa71387b0 after the
+08c7b93db54a push. Merge 58307ed08b46c2a1726b6caf56241fd05f40ef13 preserves both
+parents' additive CI path lists. Thirteen sealed source dependencies changed,
+so the earlier 2a4d4fa0 proof remains historical and requires a new complete run.
+The new-main closure census has zero gaps and zero unwired suites. Additive Defense
+paths were moved to the end of the same existing path lists to reduce recurring
+prefix conflicts; exact path multisets and every other parsed job field are
+unchanged. The existing matcher is order-insensitive.
+
+V10 preserves the same October14 03:12:45 canonical generation, financial/theme
+inputs and ledger. Ten fresh-context mobile samples all pass: median 2787.35 ms,
+maximum/p95 2838.30 ms under the original 3000 ms criterion. The 24-cell browser
+matrix, eleven density/program cases and two RTX deep-link/back cases pass.
+The first matrix invocation used a page URL in a base-origin argument and got404;
+that harness-input failure is retained beside the corrected invocation. The ASGI
+shutdown hook now retained its journal: 1,975 HTTP200, one304, and that one404.
+This is local test-principal evidence, not installed entitlement or customer proof.
+Current artifacts: combined_generation_v10_proof and mockups/evidence/defense-v10-local.
+
+Next: seal the complete candidate proof on the committed V10 source, consume the
+same V10 review, and continue this existing PR9066 through protected CI and release.
+All original financial CAS, publication, installed identity, second entitled subject,
+Terminal custody and independent acceptance obligations remain. No financial-owner
+or production write occurred. The next T0/A21 capacity source packet remains staged
+outside the frozen generation; its availability clocks were conservatively
+reconciled to completed retrieval without changing original acquisition receipts.

@@ -2345,11 +2345,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -3024,6 +3019,11 @@ jobs:
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3506,10 +3506,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
       - "engine/ledger_lane.py"
@@ -3604,6 +3600,11 @@ jobs:
       - "engine/theme_graph/identity.py"
       - "lib/evidence_foundation.py"
       - "lib/pages.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3633,14 +3634,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "site/government-revenue-data/research-state.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -4210,6 +4203,13 @@ jobs:
       - "engine/qbus_news_universe.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5855,32 +5855,6 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "site/government-revenue-data/research-state.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "collectors/dod_budget_live.py"
-      - "config/government_revenue/program_theme_assignments.v1.json"
-      - "engine/government_revenue/budget_allocation_context.py"
-      - "engine/government_revenue/program_ontology.py"
-      - "engine/government_revenue/program_theme_context.py"
-      - "engine/government_revenue/program_theme_disclosure.py"
-      - "engine/government_revenue/program_theme_publication.py"
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "collectors/sbir_awards.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/government_revenue/candidate_grader.py"
-      - "engine/government_revenue/defense_economics.py"
-      - "engine/government_revenue/defense_interpretation.py"
-      - "engine/government_revenue/defense_government_context.py"
-      - "engine/government_revenue/research_state.py"
-      - "engine/government_revenue/sbir_progression.py"
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -6658,6 +6632,31 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "site/government-revenue-data/research-state.json"
+      - "collectors/dod_budget_live.py"
+      - "config/government_revenue/program_theme_assignments.v1.json"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/program_ontology.py"
+      - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_disclosure.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "collectors/sbir_awards.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/government_revenue/candidate_grader.py"
+      - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "engine/government_revenue/defense_government_context.py"
+      - "engine/government_revenue/research_state.py"
+      - "engine/government_revenue/sbir_progression.py"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12218,11 +12217,6 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -13218,6 +13212,11 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
       - "lib/live_flow_event_stage.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14348,14 +14347,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "site/government-revenue-data/research-state.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -14959,6 +14950,13 @@ jobs:
       - "site/neuralwebdata/theme_state.json"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -15076,14 +15074,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "site/government-revenue-data/research-state.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -15500,6 +15490,13 @@ jobs:
       - "site/neuralwebdata/theme_state.json"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -17061,29 +17058,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "collectors/dod_budget_live.py"
-      - "collectors/sbir_awards.py"
-      - "config/government_revenue/program_theme_assignments.v1.json"
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/government_revenue/budget_allocation_context.py"
-      - "engine/government_revenue/candidate_grader.py"
-      - "engine/government_revenue/defense_economics.py"
-      - "engine/government_revenue/defense_interpretation.py"
-      - "engine/government_revenue/program_ontology.py"
-      - "engine/government_revenue/program_theme_context.py"
-      - "engine/government_revenue/program_theme_disclosure.py"
-      - "engine/government_revenue/program_theme_publication.py"
-      - "engine/government_revenue/research_state.py"
-      - "engine/government_revenue/sbir_progression.py"
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/research-state.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -17809,6 +17783,30 @@ jobs:
       - templates/methodology.html.j2
       - templates/support.html.j2
       - tests/test_crypto_assistant_context.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "collectors/dod_budget_live.py"
+      - "collectors/sbir_awards.py"
+      - "config/government_revenue/program_theme_assignments.v1.json"
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/candidate_grader.py"
+      - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "engine/government_revenue/program_ontology.py"
+      - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_disclosure.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "engine/government_revenue/research_state.py"
+      - "engine/government_revenue/sbir_progression.py"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -18601,66 +18599,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/close_pass/__init__.py"
-      - "engine/close_pass/board.py"
-      - "engine/close_pass/massive_close.py"
-      - "engine/close_pass/massive_split_evidence.py"
-      - "engine/close_pass/reconcile.py"
-      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
-      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
-      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
-      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
-      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
-      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
-      - "scripts/check_template_site_sync.py"
-      - "scripts/grey_deer_pullback_nightly.py"
-      - "scripts/optimize_assets.py"
-      - "scripts/research/grey_deer_pullback_stage1.py"
-      - "scripts/research/risk_radar_displayed_probability_audit.py"
-      - "scripts/research/risk_radar_state_ladder_calibration.py"
-      - "site/government-revenue-critical-theme.css"
-      - "site/government-revenue-data/research-state.json"
-      - "site/government-revenue-data/workspace.json"
-      - "site/government-revenue-investor-start.js"
-      - "site/government-revenue-page.js"
-      - "site/supabase.js"
-      - "site/theme.js"
-      - "templates/government-revenue-parity.css"
-      - "templates/product-nav-icons.css"
-      - "templates/supabase.js"
-      - "templates/theme.css"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "engine/cycle_pattern/imce_prospective.py"
-      - "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json"
-      - "research/imce/IMCE_A4P_ORDER_SOFTNESS_STATE_CONSTRUCTION_V1.md"
-      - "research/imce/IMCE_HB0_SOURCE_DEFINITION_CENSUS_V1.md"
-      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
-      - "scripts/build_cycle_pattern_imce_prospective.py"
-      - "scripts/ci/push_retry.sh"
-      - "scripts/curate_government_program_ontology.py"
-      - "scripts/publish_r2.py"
-      - "site/government-revenue-briefcase-ui.js"
-      - "site/government-revenue-briefcase.js"
-      - "site/government-revenue-candidate-radar.js"
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      - "site/government-revenue-dossiers.js"
-      - "site/government-revenue-investor.css"
-      - "site/government-revenue-investor.js"
-      - "site/government-revenue-parity.css"
-      - "site/government-revenue-sbir.css"
-      - "site/government-revenue-sbir.js"
-      - "tests/test_company_intelligence_workspace_chain.py"
-      - "tests/test_refresh_event_workspaces.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/signal_foundry/results.py"
-      - "engine/signal_foundry/spec.py"
-      - "engine/signal_foundry/transforms.py"
-      - "scripts/publish_company_intelligence_r2.py"
-      - "scripts/refresh_event_workspaces.py"
-      - "site/government-revenue-data/candidates.json"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
@@ -18676,17 +18614,6 @@ jobs:
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
       - "tests/test_fms_ui.py"
-      - "tests/test_government_revenue_sbir_consumer.py"
-      - "tests/test_government_revenue_program_filters.py"
-      - "tests/test_government_revenue_filter_url.py"
-      - "tests/test_government_revenue_defense_economics.py"
-      - "tests/test_government_revenue_sbir_ui.js"
-      - "tests/fixtures/government_revenue_sbir_ui/**"
-      - "templates/government-revenue-sbir.js"
-      - "templates/government-revenue-sbir.css"
-      - "tests/test_sbir_awards.py"
-      - "tests/test_sbir_source_schemas.py"
-      - "scripts/build_government_revenue.py"
       - "tests/fixtures/fms/**"
       - "tests/fixtures/dod_budget/**"
       - "data/government_revenue/fms_staged_objects/**"
@@ -18796,6 +18723,76 @@ jobs:
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
       # Exact source/import closure measured by PR #9066 contract-delta.
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/close_pass/__init__.py"
+      - "engine/close_pass/board.py"
+      - "engine/close_pass/massive_close.py"
+      - "engine/close_pass/massive_split_evidence.py"
+      - "engine/close_pass/reconcile.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/grey_deer_pullback_nightly.py"
+      - "scripts/optimize_assets.py"
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "site/government-revenue-critical-theme.css"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/workspace.json"
+      - "site/government-revenue-investor-start.js"
+      - "site/government-revenue-page.js"
+      - "site/supabase.js"
+      - "site/theme.js"
+      - "templates/government-revenue-parity.css"
+      - "templates/product-nav-icons.css"
+      - "templates/supabase.js"
+      - "templates/theme.css"
+      - "engine/cycle_pattern/imce_prospective.py"
+      - "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json"
+      - "research/imce/IMCE_A4P_ORDER_SOFTNESS_STATE_CONSTRUCTION_V1.md"
+      - "research/imce/IMCE_HB0_SOURCE_DEFINITION_CENSUS_V1.md"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "scripts/build_cycle_pattern_imce_prospective.py"
+      - "scripts/ci/push_retry.sh"
+      - "scripts/curate_government_program_ontology.py"
+      - "scripts/publish_r2.py"
+      - "site/government-revenue-briefcase-ui.js"
+      - "site/government-revenue-briefcase.js"
+      - "site/government-revenue-candidate-radar.js"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/government-revenue-dossiers.js"
+      - "site/government-revenue-investor.css"
+      - "site/government-revenue-investor.js"
+      - "site/government-revenue-parity.css"
+      - "site/government-revenue-sbir.css"
+      - "site/government-revenue-sbir.js"
+      - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_refresh_event_workspaces.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "site/government-revenue-data/candidates.json"
+      - "tests/test_government_revenue_sbir_consumer.py"
+      - "tests/test_government_revenue_program_filters.py"
+      - "tests/test_government_revenue_filter_url.py"
+      - "tests/test_government_revenue_defense_economics.py"
+      - "tests/test_government_revenue_sbir_ui.js"
+      - "tests/fixtures/government_revenue_sbir_ui/**"
+      - "templates/government-revenue-sbir.js"
+      - "templates/government-revenue-sbir.css"
+      - "tests/test_sbir_awards.py"
+      - "tests/test_sbir_source_schemas.py"
+      - "scripts/build_government_revenue.py"
       - "research/ORACLE_TAPE_ONSET_TIER_REGISTRATION.md"
       - "research/signal_engine/confluence.py"
       - "scripts/_narrative_epoch.py"
@@ -19238,6 +19235,7 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
@@ -19357,10 +19355,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/group_pulse.py"
-      - "site/basketdata/pulse.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -19777,6 +19771,10 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/group_pulse.py"
+      - "site/basketdata/pulse.json"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -20446,10 +20444,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -21309,6 +21303,11 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -21692,11 +21691,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
@@ -22670,6 +22664,11 @@ jobs:
       - "site/chinabasketdata/narrative_emergence.json"
       - "site/neuralwebdata/theme_state.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -22925,13 +22924,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/industrial_sources.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/company_intelligence/noc_adverse_profile.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -22974,6 +22966,13 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "tests/earnings_economic_fixtures.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/industrial_sources.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/noc_adverse_profile.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -22999,11 +22998,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -23073,6 +23067,11 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "tests/earnings_economic_interpretation_fixtures.py"
       - "tests/test_earnings_economic_interpretation.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -24376,10 +24375,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/group_pulse.py"
-      - "site/basketdata/pulse.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -24792,6 +24787,10 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/group_pulse.py"
+      - "site/basketdata/pulse.json"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -24857,29 +24856,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "collectors/dod_budget_live.py"
-      - "collectors/sbir_awards.py"
-      - "config/government_revenue/program_theme_assignments.v1.json"
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/government_revenue/budget_allocation_context.py"
-      - "engine/government_revenue/candidate_grader.py"
-      - "engine/government_revenue/defense_economics.py"
-      - "engine/government_revenue/defense_interpretation.py"
-      - "engine/government_revenue/program_ontology.py"
-      - "engine/government_revenue/program_theme_context.py"
-      - "engine/government_revenue/program_theme_disclosure.py"
-      - "engine/government_revenue/program_theme_publication.py"
-      - "engine/government_revenue/research_state.py"
-      - "engine/government_revenue/sbir_progression.py"
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/research-state.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
@@ -25746,6 +25722,30 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "collectors/dod_budget_live.py"
+      - "collectors/sbir_awards.py"
+      - "config/government_revenue/program_theme_assignments.v1.json"
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/candidate_grader.py"
+      - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "engine/government_revenue/program_ontology.py"
+      - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_disclosure.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "engine/government_revenue/research_state.py"
+      - "engine/government_revenue/sbir_progression.py"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26257,12 +26257,6 @@ jobs:
       - engine/falsifier_tripwires.py
       - engine/i18n.py
       - engine/thesis_condition_monitor.py
-      - engine/government_revenue/workspace.py
-      - engine/government_revenue/award_events.py
-      - contracts/government_revenue/government_procurement_event.v2.schema.json
-      - contracts/government_revenue/government_procurement_workspace.v2.schema.json
-      - contracts/government_revenue/government_entity_coverage.v1.schema.json
-      - contracts/government_revenue/government_recipient_resolution_coverage.v1.schema.json
       - engine/top_maturation.py
       - scripts/build_top_maturation.py
       - scripts/build_vector.py
@@ -26275,13 +26269,20 @@ jobs:
       - tests/test_massive_local_staleness.py
       - tests/test_price_pressure.py
       - tests/test_thesis_condition_monitor.py
-      - tests/fixtures/government_revenue_monitor_workspace.json
       - tests/test_top_anatomy.py
       - tests/test_top_anatomy_oot_receipt.py
       - tests/test_top_maturation.py
       - tests/test_winner_health_design_freeze.py
       - tests/test_winner_health_page.py
       - templates/winner_health.html.j2
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - engine/government_revenue/workspace.py
+      - engine/government_revenue/award_events.py
+      - contracts/government_revenue/government_procurement_event.v2.schema.json
+      - contracts/government_revenue/government_procurement_workspace.v2.schema.json
+      - contracts/government_revenue/government_entity_coverage.v1.schema.json
+      - contracts/government_revenue/government_recipient_resolution_coverage.v1.schema.json
+      - tests/fixtures/government_revenue_monitor_workspace.json
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -26967,32 +26968,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "site/government-revenue-data/research-state.json"
-      # Defense consumer closure: exact newly reached dependencies (2026-10-13).
-      - "collectors/dod_budget_live.py"
-      - "config/government_revenue/program_theme_assignments.v1.json"
-      - "engine/government_revenue/budget_allocation_context.py"
-      - "engine/government_revenue/program_ontology.py"
-      - "engine/government_revenue/program_theme_context.py"
-      - "engine/government_revenue/program_theme_disclosure.py"
-      - "engine/government_revenue/program_theme_publication.py"
-      - "site/government-revenue-data/defense-economics.json"
-      - "site/government-revenue-data/program-theme-context.json"
-      - "site/government-revenue-data/sbir-progression.json"
-      - "site/government-revenue-data/theme-context.json"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "collectors/sbir_awards.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/government_revenue/candidate_grader.py"
-      - "engine/government_revenue/defense_economics.py"
-      - "engine/government_revenue/defense_interpretation.py"
-      - "engine/government_revenue/defense_government_context.py"
-      - "engine/government_revenue/research_state.py"
-      - "engine/government_revenue/sbir_progression.py"
-      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -27792,6 +27767,31 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "site/government-revenue-data/research-state.json"
+      - "collectors/dod_budget_live.py"
+      - "config/government_revenue/program_theme_assignments.v1.json"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/program_ontology.py"
+      - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_disclosure.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "collectors/sbir_awards.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/government_revenue/candidate_grader.py"
+      - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "engine/government_revenue/defense_government_context.py"
+      - "engine/government_revenue/research_state.py"
+      - "engine/government_revenue/sbir_progression.py"
+      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -28725,11 +28725,6 @@ jobs:
     # tests/** catch-all.
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "lib/exchange_holidays.py"
@@ -28809,6 +28804,11 @@ jobs:
       - "tests/test_options_payoff_lab.py"
       - "tests/test_payoff_lab_launchd.py"
       - "tests/test_options_skew_backfill.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28858,10 +28858,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/issuer_supplements.py"
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
@@ -28928,6 +28924,11 @@ jobs:
       # T07 evidence-drawer review pin and date-only cutoff. Closure of
       # tests/test_mining_updates.py adds no path this job does not already list.
       - "tests/test_mining_updates.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/issuer_supplements.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28960,13 +28961,6 @@ jobs:
     scope: exclusive
     paths:
       # Exact consumer import closure after current-main integration.
-      - "engine/company_intelligence/defense_cash_profiles.py"
-      # Exact import closure introduced by Defense owner/research consumers.
-      - "engine/company_intelligence/defense_profiles.py"
-      - "engine/company_intelligence/gd_profile.py"
-      - "engine/company_intelligence/industrial_sources.py"
-      - "engine/company_intelligence/issuer_supplements.py"
-      - "engine/company_intelligence/noc_adverse_profile.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -29042,6 +29036,13 @@ jobs:
       # W8-B: hold the source-edition section until a selector ruling.
       - "engine/company_intelligence/industrials_edition_record.py"
       - "tests/test_industrials_edition_record.py"
+      # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/industrial_sources.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/noc_adverse_profile.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
