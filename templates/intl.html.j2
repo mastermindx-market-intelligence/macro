@@ -1833,6 +1833,11 @@
           <div>
             <div class="ird-frag-country">{{ t(c.get('name_en', c.get('cc','')), c.get('name_zh', c.get('cc',''))) }}</div>
             <span class="ird-frag-desc">{{ t(c.get('desc_en',''), c.get('desc_zh','')) }}</span>
+            <div class="ird-frag-tags">
+              {%- for tag in c.get('tags', []) %}
+              <span class="chip warn" style="font-size:10px;padding:1px 6px;">{{ t(tag.get('en',''), tag.get('zh','')) }}</span>
+              {%- endfor %}
+            </div>
           </div>
         </div>
         {%- endfor %}
@@ -1855,7 +1860,7 @@
     {%- else %}
       {{ t('Latest year within each country: Unavailable', '各国所含的最新年份：不可用') }}
     {%- endif %}
-    {{ t('Underlying values can have different years and include projections. This is not a publication date.', '底层数据年份可能不同，也可能包含预测值。这不是发布日期期。') }}
+    {{ t('Underlying values can have different years and include projections. This is not a publication date.', '底层数据年份可能不同，也可能包含预测值。这不是发布日期。') }}
   </p>
 </div><!-- /fragility -->
 

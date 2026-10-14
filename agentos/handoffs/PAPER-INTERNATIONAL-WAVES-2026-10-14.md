@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_fragility_disclosure_render.py; tests/intl_workspace_page.test.cjs
+  what: Preserve per-country warning details in expanded Fragility rows and correct a duplicated Chinese character; source only.
 - path: templates/intl.html.j2; tests/test_intl_fragility_scope_render.py; tests/intl_workspace_page.test.cjs
   what: Preserve Fragility country coverage and field-year scope without all-clear or delivery promises; restore native heading focus.
 - path: templates/intl.html.j2; tests/intl_workspace_page.test.cjs
@@ -189,6 +191,8 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Fragility disclosure4render cases and4browser cases across8width states pass, with8canonical and8expanded source views.
+  command: python3 -m pytest -q tests/test_intl_fragility_disclosure_render.py; node --test --test-name-pattern="^Fragility disclosure warning details" tests/intl_workspace_page.test.cjs
 - claim: Fragility partial and flagged source samples preserve supplied coverage and honest years.
   command: pytest tests/test_intl_fragility_scope_render.py; node --test --test-name-pattern="Fragility supplied scope" tests/intl_workspace_page.test.cjs; fragility-coverage-scope capture.py and inspect_partial.py/inspect_flagged.py
   result: 9finalrenderPASS14warnings;8finalbrowserPASS16widthjourneys;8finalcanonical and8focusedparentviews. Initial candidate and final copy runs overlap. Source owner bytes unchanged.
@@ -625,3 +629,5 @@ Connectedness: actual owner spillover and normalized-matrix counterexamples repr
 Contagion keyboard: original Enter left BODY focused, then heading-only repair exposed missing keyboard contribution controls. Final four bilingual dual-theme browser cases pass across320/1440, with eight affected render cases. Native help owner is reused, no shared JS/CSS change. Four initial tooltip images caught opening animation and remain retained; four settled replacements were actually viewed alongside the four valid destination images. `CONTAGION_KEYBOARD_ACCEPTANCE.json` binds source proof. Next: Discriminate Fragility absent/partial coverage and date claims against the existing owner; repair only reproduced presentation mismatch without new acquisition, qualification or market assertions.
 
 Fragility coverage: actual owner can return a partially populated unflagged row and summarizes latest input year per country, including projection fallback. Nine causal render failures and one native-focus failure are repaired without owner or enrichment edits. Final nine render and eight browser cases pass; eight canonical and eight focused parent images were refreshed after plain-language copy refinement. `FRAGILITY_COVERAGE_SCOPE_ACCEPTANCE.json` retains exact source limits. Contagion preceding commit83e027b initially met remote commit_refs technical failure; exact branch ref remained854a and one same-origin nonforce recovery succeeded. No CI status inferred. Resume the original live Library-to-Stock return only after Chris completes or dismisses its recorded Chrome extension UI; otherwise assess genuinely new owner qualification, Compare/Saved contract or review input without replaying accepted source cases or polling held surfaces.
+
+Fragility disclosure continuation: actual vulnerability_table over synthetic distinct IMF inputs reproduces the fourth/fifth-country missing warning details. Existing tag markup restores those details without changing any engine, flags or enrichment. Three initial render selector errors remain separate from the corrected two causal missing-tag failures and independent browser failure. Receipt FRAGILITY_DISCLOSURE_ACCEPTANCE.json binds source/captures; independent review pending and source not deployed.

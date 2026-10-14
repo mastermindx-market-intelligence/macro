@@ -54,6 +54,42 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Fragility disclosure warning details ${theme} ${lang}`,async()=>{
+    const fixture=JSON.parse(execFileSync('python3',['-c',"import json; from tests.test_intl_fragility_disclosure_render import disclosure_fixture; from tests.test_intl_workspace_integration import render_fixture; p=disclosure_fixture(); print(json.dumps({'html':render_fixture(risk_desk=p),'countries':p['vulnerability']['countries']}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-structural-fragility');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const panel=page.locator('#intl-structural-fragility').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const disclosure=panel.locator('details');const summary=disclosure.locator('summary');
+        const hiddenRows=disclosure.locator('.ird-frag-row');assert.equal(await hiddenRows.count(),2);
+        assert.equal(await hiddenRows.first().isVisible(),false);
+        await summary.focus();await page.keyboard.press('Enter');
+        assert.equal(await disclosure.getAttribute('open'),'');
+        const rows=panel.locator('.ird-frag-row');assert.equal(await rows.count(),5);
+        for(let i=0;i<fixture.countries.length;i++) {
+          const expected=fixture.countries[i];const row=rows.nth(i);
+          assert.equal(await row.isVisible(),true);
+          assert.ok((await row.innerText()).includes(expected['name_'+lang]));
+          assert.deepEqual(await row.locator('.ird-frag-tags .chip').allInnerTexts(),expected.tags.map(t=>t[lang]),expected.iso3);
+          assert.equal(await row.locator('.ird-frag-tags .chip').evaluateAll(nodes=>nodes.every(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&n.scrollWidth<=n.clientWidth+1;})),true,'warning text stays readable within the viewport');
+        }
+        assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+        await page.keyboard.press('Space');assert.equal(await disclosure.getAttribute('open'),null);
+        assert.equal(await hiddenRows.first().isVisible(),false);
+        assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+        await page.keyboard.press('Space');assert.equal(await hiddenRows.last().isVisible(),true);
+        await page.keyboard.press('Enter');assert.equal(await hiddenRows.last().isVisible(),false);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+      }
+    },{htmlOverride:fixture.html,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-structural-fragility'});
+  });
+}
+
 for (const scenario of ['partial','flagged']) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Fragility supplied scope ${scenario} ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',`from tests.test_intl_fragility_scope_render import fragility_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=fragility_fixture('${scenario}')))`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
