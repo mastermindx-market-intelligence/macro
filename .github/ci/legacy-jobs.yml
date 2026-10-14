@@ -28958,6 +28958,7 @@ jobs:
       - "tests/test_news_impact_*.py"
       - "tests/fixtures/news_impact/**"
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
+      - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/AMENDMENTS_W1C.cases.json"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
