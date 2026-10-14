@@ -11530,6 +11530,80 @@ jobs:
       - name: leadership rotation measured-product contract
         run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
 
+  leadership-rotation-science:
+    if: ${{ false }}
+    gate: code
+    # LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the pre-registered study harness for
+    # research/LEADERSHIP_ROTATION_PREREG_V1.md — loader/arms/outcomes, zig-zag episodes,
+    # clustered paired bootstrap + Holm, group/family composer, P0 synthetic grid + size audit.
+    # DEVELOPMENT HARNESS: synthetic arrays and tmp git fixtures only; no data/ read in CI.
+    # scope: exclusive — paths = the union of scripts.ci_scope_dependencies.suite_dependency_closure
+    # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
+    scope: exclusive
+    paths:
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/hazard_score.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "scripts/__init__.py"
+      - "scripts/leadership_rotation_episodes.py"
+      - "scripts/leadership_rotation_inference.py"
+      - "scripts/leadership_rotation_p0.py"
+      - "scripts/leadership_rotation_run.py"
+      - "scripts/leadership_rotation_study.py"
+      - "tests/test_leadership_rotation_episodes.py"
+      - "tests/test_leadership_rotation_inference.py"
+      - "tests/test_leadership_rotation_p0.py"
+      - "tests/test_leadership_rotation_run.py"
+      - "tests/test_leadership_rotation_study.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
+      - name: leadership rotation pre-registered study harness
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+
   hk-confirming-turn:
     if: ${{ false }}
     gate: code
