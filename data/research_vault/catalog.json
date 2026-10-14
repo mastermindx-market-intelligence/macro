@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T16:11:00.282261+00:00",
-  "count": 2906,
+  "generated_at": "2026-10-14T17:11:10.365982+00:00",
+  "count": 2910,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,7 @@
     "The Punchline",
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
+    "U.S. Department of Agriculture, National Agricultural Statistics Service",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -111,6 +112,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vkqr7ns1tbk-88ffc3",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T14:14:12Z",
+      "summary_points": [
+        "Quality Factor Momentum Overextension: GSP1QUAL up 20% in 3 months (12m high), RSI 83, driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names (GSX1BFQS 105% call at 1.38%, 25d).",
+        "Crisis-Driven Quality Flight: GSP1QUAL outperforms USGG10YR during crises (Covid/Regional Banking), capital flows to quality as rates price risk-off sentiment.",
+        "Critical Quality-Momentum Risk: Negative correlation (-0.6433) between GSP1QUAL and AI/momentum/beta trades signals potential underperformance in quality portfolios during momentum regimes, requiring strategic adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pk35lyapk08-713b6b",
       "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
@@ -531,6 +551,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-vwvc6q8j2nr-66921c",
+      "title": "JPM Semiconductors Semi",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:56:40Z",
+      "summary_points": [
+        "GPU Supply Constraint: Supply constraints (not demand) gate near-term growth, favoring AVGO, MRVL, and NVDA amid sustained AI infrastructure investment and acute supply tightness.",
+        "AI Cloud Capex Surge: Consensus cloud capex at $950B/$1.42T/$1.55T (CY26/CY27/CY28; +97%/+47%/+99% Y/Y), with key risk being CY27+ supply-chain sustainability (foundry, HBM, packaging).",
+        "Memory SCA/LTA Framework: 26 SCAs with $150B RPO and >75% FY27 output committed re-anchor through-cycle GM floor, driving upside despite valuation disconnect.",
+        "Critical EPS Deviations: AMAT Q3 EPS 13.8% below consensus (material negative), QNT Q3 estimate 29.7% below consensus (severe downside risk), AMKR Q4 estimate 15.4% above consensus (strong positive).",
+        "DC SSD Catalyst: MU’s F4Q26 DC SSD revenue ~$10B (10x Y/Y, two-thirds of NAND) marks step-change in NAND profitability, accelerating data center SSD growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4jeodyhnzx9-2cc2b7",
       "title": "JPM Equity Strategy Q3 P",
       "institution": "J.P. Morgan",
@@ -756,6 +797,36 @@
       "needs_metadata": false
     },
     {
+      "id": "usda-nass-2026-10-13-crop-progress",
+      "title": "Crop Progress, October 13, 2026",
+      "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+        "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+        "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+        "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+        "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+        "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+        "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+        "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+      ],
+      "tags": [
+        "agriculture",
+        "corn",
+        "soybeans",
+        "harvest",
+        "crop-condition"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vwu0m6jvedw-616840",
       "title": "weekly 12oct26",
       "institution": "Ashmore",
@@ -955,6 +1026,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbvpc1qbqzo-090bad",
+      "title": "UBS Equity Preference List UK 2026 10 12",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:56:05Z",
+      "summary_points": [
+        "UK Equity Fundamentals: Attractive 12x forward P/E (vs 12.8x median) with robust earnings growth, though lagging global peers; near-term rate risk offset by resilient activity (e.g., energy prices supporting earnings).",
+        "Anglo American Copper Pivot: Strategic shift to copper via asset spin-offs (Valterra, nickel) and Teck merger (62% stake), targeting 30%+ copper volume growth by 2030; key catalysts include $4.5bn dividend and Quellaveco/Woodsmith projects.",
+        "China Demand Risk: Systemic threat across holdings (e.g., 13% revenue exposure for key firms); slower industrial metals demand or Teck merger delays could negatively impact outlook.",
+        "GBP Policy Exposure: All holdings GBP-denominated; critical to monitor UK interest rates, fiscal policies, and Brexit impacts on energy/finance sectors amid currency volatility.",
+        "Sector Growth Catalysts: Favor cyclical/structural areas (Eurozone IT, industrials, banks) via \"European Leaders\" theme; energy transition tailwinds (copper for EVs) and high-margin oncology assets (13% CAGR) drive growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
