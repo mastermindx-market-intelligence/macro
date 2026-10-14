@@ -1031,10 +1031,10 @@ def _cpi_basis(item: dict, release_meta: dict, cutoff: Any) -> dict | None:
         return None
     if item.get("release_type") not in {"cpi_headline", "cpi_core"}:
         return None
-    # The frozen gate is the artefact's MoM SA target string (the producer
-    # emits "mom_sa_pct"; the lane spec spells it "Mom_sa_pct" — both are
-    # accepted, byte-exact, and every other spelling stays unqualified).
-    if item.get("target") not in ("mom_sa_pct", "Mom_sa_pct"):
+    # The frozen gate is the producer's byte-exact MoM SA target string
+    # "mom_sa_pct"; every other spelling (case or whitespace variants
+    # included) leaves the unit UNKNOWN, so no basis is attached.
+    if item.get("target") != "mom_sa_pct":
         return None
     artefact = release_meta if isinstance(release_meta, dict) else {}
     basis_cutoff = _t0b_basis_cutoff(cutoff, artefact.get("asof"))
