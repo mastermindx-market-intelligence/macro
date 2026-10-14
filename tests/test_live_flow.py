@@ -1207,6 +1207,44 @@ class TestUnknownExpiry:
         assert enrich["dte_bucket"] == "1_7d"
         assert enrich["zerodte"] is False
 
+    @pytest.mark.parametrize(
+        "expiration",
+        [
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_tz_aware_is_readable(self, expiration):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == (10, "8_30d")
+
+    @pytest.mark.parametrize(
+        ("expiration", "expected"),
+        [
+            pytest.param(None, (None, "unknown"), id="none"),
+            pytest.param(float("nan"), (None, "unknown"), id="nan-float"),
+            pytest.param("", (None, "unknown"), id="empty"),
+            pytest.param("nan", (None, "unknown"), id="nan-str"),
+            pytest.param("None", (None, "unknown"), id="none-str"),
+            pytest.param("not-a-date", (None, "unknown"), id="junk"),
+            pytest.param("2026-07-01", (None, "unknown"), id="past"),
+            pytest.param(20260705.0, (None, "unknown"), id="float-yyyymmdd"),
+            pytest.param(pd.NaT, (None, "unknown"), id="nat"),
+            pytest.param(1, (None, "unknown"), id="int-one"),
+            pytest.param(b"2026-07-05", (None, "unknown"), id="bytes"),
+            pytest.param(object(), (None, "unknown"), id="object"),
+            pytest.param("2026-07-02", (0, "0d"), id="same-day"),
+            pytest.param("20260705", (3, "1_7d"), id="compact-str"),
+            pytest.param(20260705, (3, "1_7d"), id="compact-int"),
+            pytest.param(pd.Timestamp("2026-07-12"), (10, "8_30d"), id="timestamp-naive"),
+            pytest.param("2026-07-12 16:00", (10, "8_30d"), id="datetime-str"),
+            pytest.param("9999-12-31", (2912260, "90p"), id="far-future"),
+            pytest.param(pd.Timestamp("2026-07-12", tz="UTC"), (10, "8_30d"), id="timestamp-utc"),
+            pytest.param("2026-07-12T00:00:00Z", (10, "8_30d"), id="iso-zulu"),
+        ],
+    )
+    def test_classify_expiry_never_raises(self, expiration, expected):
+        assert lf._classify_expiry(expiration, SESSION_DATE) == expected
+
     def test_unknown_minutes_survive_consecutive_batches(self):
         """Two refused rows in two minutes both remain under ``dte_tide["unknown"]``.
 
