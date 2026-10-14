@@ -6,6 +6,7 @@
     macro: null,
     symbol: null,
     ticker: 'AAPL',
+    latestRaw: 'AAPL',
     macroRequest: 0,
     symbolRequest: 0,
     macroAuthBlocked: false,
@@ -75,11 +76,32 @@
     });
   }
 
+  function syncIntent(patch) {
+    if (!window.MarketMemoryIntent) return true; // Existing standalone legacy client.
+    var result = window.MarketMemoryIntent.syncReturn(patch);
+    if (result.ok) return true;
+    // Clear a stale auth destination on invalid/oversize intent. No source data is stored.
+    try { var url = new URL(location.href); url.searchParams.delete('ret'); history.replaceState(history.state, '', url.pathname + '?' + url.searchParams.toString()); } catch (error) { /* no-op */ }
+    return false;
+  }
+  function signinHref() {
+    if (!window.MarketMemoryIntent) return '#mm-symbol-form';
+    var result = window.MarketMemoryIntent.signinHref();
+    return result.ok ? result.href : '#mm-symbol-form';
+  }
+  function invalidTickerFeedback() {
+    ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
+    ui.gridList.innerHTML = '';
+  }
+
   function empty(titleEn, titleZh, bodyEn, bodyZh, error) {
     var action = '';
     var upgradeRequired = error && (error.status === 402 || error.status === 403);
     if (error && error.status === 401) {
-      action = ' <a href="plans.html" data-mm-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>';
+      action = ' <a href="' + esc(signinHref()) + '" data-mm-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>';
+      if (window.MarketMemoryIntent && !window.MarketMemoryIntent.oauthPreservation().ok) {
+        action += ' ' + esc(copy('This tab cannot preserve your selection through Google sign-in.', '此标签页无法在 Google 登录后保留当前选择。'));
+      }
     } else if (upgradeRequired) {
       action = ' <a href="plans.html">' + esc(copy('View plans', '查看方案')) + ' →</a>';
     }
@@ -316,23 +338,28 @@
   function loadSymbol(raw) {
     var requestId = ++state.symbolRequest;
     state.symbol = null;  // A new intent invalidates evidence before validation or loading.
+    state.latestRaw = raw === null || raw === undefined ? '' : String(raw);
+    var intentSaved = syncIntent({ issuerInput: state.latestRaw, language: isZh() ? 'zh' : 'en' });
     var ticker = normalizeTicker(raw);
     state.ticker = ticker;  // Empty means the latest submitted intent cannot be retried.
     state.symbolAuthBlocked = false;
-    if (!ticker) {
-      ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
-      ui.gridList.innerHTML = '';
+    if (!intentSaved) {
+      state.ticker = ''; ui.gridList.innerHTML = '';
+      ui.symbolSummary.innerHTML = empty('Cannot preserve this link', '无法保留此链接', 'Shorten the input or correct the page reference before signing in.', '请缩短输入或修正页面引用，然后登录。');
       return;
     }
+    if (!ticker) { invalidTickerFeedback(); return; }
     ui.symbolInput.value = ticker;
     ui.symbolSummary.innerHTML = '<div class="mm-skeleton mm-skeleton-query"></div>';
     ui.gridList.innerHTML = '<div class="mm-skeleton"></div><div class="mm-skeleton"></div><div class="mm-skeleton"></div>';
     try { localStorage.setItem('market_memory_ticker', ticker); } catch (error) { /* no-op */ }
-    try {
-      var url = new URL(location.href);
-      url.searchParams.set('ticker', ticker);
-      history.replaceState(null, '', url.pathname + '?' + url.searchParams.toString());
-    } catch (error) { /* old browser fallback */ }
+    if (window.MarketMemoryIntent) syncIntent({ticker: ticker});
+    else {
+      try {
+        var url = new URL(location.href); url.searchParams.set('ticker', ticker);
+        history.replaceState(null, '', url.pathname + '?' + url.searchParams.toString());
+      } catch (error) { /* standalone legacy client */ }
+    }
 
     request('/symbol/' + encodeURIComponent(ticker)).then(function (payload) {
       if (requestId !== state.symbolRequest) return;
@@ -370,7 +397,8 @@
     });
     document.addEventListener('click', function (event) {
       var action = event.target && event.target.closest && event.target.closest('[data-mm-action="signin"]');
-      if (!action) return;
+      if (!action || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (!syncIntent({issuerInput: state.latestRaw, language: isZh() ? 'zh' : 'en'})) { event.preventDefault(); return; }
       if (window.MDXAuth && typeof window.MDXAuth.open === 'function') {
         event.preventDefault();
         window.MDXAuth.open('signin');
@@ -385,17 +413,49 @@
         var retryMacro = state.macroAuthBlocked;
         var retrySymbol = state.symbolAuthBlocked;
         if (retryMacro) loadMacro();
-        if (retrySymbol) loadSymbol(state.ticker);
+        if (retrySymbol && state.ticker) loadSymbol(state.latestRaw);
       });
     }
     document.addEventListener('langchange', function () {
       if (state.macro) renderMacro();
       if (state.symbol) renderSymbol();
+      else if (!state.ticker) invalidTickerFeedback();
+      syncIntent({language: isZh() ? 'zh' : 'en'});
     });
 
-    var initial = '';
-    try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
-    initial = normalizeTicker(initial) || 'AAPL';
+    var initial = '', explicitInput = false;
+    if (window.MarketMemoryIntent) {
+      var resumed = window.MarketMemoryIntent.resumeStatus();
+      if (!resumed.ok) {
+        state.ticker = '';
+        ui.symbolSummary.innerHTML = empty('Selection unavailable after sign-in', '登录后无法恢复选择',
+          'This tab could not restore the previous selection. Choose a ticker or saved capture again.',
+          '此标签页无法恢复先前选择。请重新选择代码或已保存记录。');
+        ui.gridList.innerHTML = '';
+        return;
+      }
+      var restored = window.MarketMemoryIntent.read();
+      if (!restored.ok) {
+        state.ticker = ''; invalidTickerFeedback(); syncIntent(); return;
+      }
+      if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
+      explicitInput = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput');
+      if (explicitInput) initial = restored.intent.issuerInput;
+    }
+    if (!explicitInput) {
+      try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
+      initial = normalizeTicker(initial) || 'AAPL';
+    }
+    ui.symbolInput.value = initial;
+    window.addEventListener('popstate', function () {
+      if (!window.MarketMemoryIntent) return;
+      var restored = window.MarketMemoryIntent.read();
+      if (!restored.ok) { ++state.symbolRequest; state.ticker = ''; state.symbol = null; invalidTickerFeedback(); return; }
+      if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
+      var raw = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput') ? restored.intent.issuerInput : (restored.intent.ticker || '');
+      ui.symbolInput.value = raw; loadSymbol(raw);
+    });
+
     loadMacro();
     loadSymbol(initial);
   }

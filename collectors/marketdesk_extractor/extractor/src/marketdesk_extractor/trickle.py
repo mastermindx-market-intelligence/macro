@@ -598,7 +598,10 @@ def _refresh_queue(
         return
     if since_hours is None:
         since_hours = cfg.new_window_hours + 24  # a little older than the new window
-    kwargs = {} if heal_limit is None else {"heal_limit": heal_limit}
+    # Only the explicit wide healing pass opts into bounded optional work.
+    kwargs = {} if heal_limit is None else {
+        "heal_limit": heal_limit, "heal_budget_s": 60.0,
+    }
     if limit is not None:
         kwargs["limit"] = limit
     try:

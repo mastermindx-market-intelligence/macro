@@ -9323,6 +9323,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   .rr-track-table td{padding:2px 5px;font-variant-numeric:tabular-nums;
     border-bottom:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
   .rr-empty{font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0}
+  .rr-tr-note{font-size:11.5px;color:var(--muted);line-height:1.45;margin:0 0 8px}
+  .rr-tr-line{font-size:11.5px;color:var(--muted);line-height:1.45}
+  .rr-tr-foot{font-size:11px;color:var(--muted);margin-top:6px}
   /* general */
   .rr-placeholder{color:var(--muted);font-size:12px;font-style:italic;padding:8px 0}
   .rr-asof{font-size:10px;color:var(--muted);margin-top:10px}
@@ -9745,45 +9748,144 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       return '<div class="rr-policy">'+items.join('')+'</div>';
     }
 
-    /* scoreboard sub-block */
-    function scoreboardBlock(lastScored){
-      if (!lastScored || !Array.isArray(lastScored) || !lastScored.length) {
-        return '<div class="rr-scoreboard">'
-          +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
+    function rrTrackMiss(v){
+      if (v == null || !isFinite(Number(v))) return '—';
+      var n = Number(v);
+      return Math.abs(n) >= 10 ? n.toFixed(1) : n.toFixed(2);
+    }
+    function rrTrackMissCi(e){
+      var ci = e && e.mae_ours_ci;
+      if (e == null || e.mae_ours == null || !Array.isArray(ci) || ci.length !== 2) return '—';
+      return rrTrackMiss(e.mae_ours)+' ('+rrTrackMiss(ci[0])+'–'+rrTrackMiss(ci[1])+')';
+    }
+    function rrTrackEarly(e, tr){
+      var n = String(e.clean_n);
+      if (e.early) return {en:'Early, n = '+n, zh:'早期，n = '+n};
+      return {en:'n = '+n+', verdict pending', zh:'n = '+n+'，结论待定'};
+    }
+    function rrTrackRecordBlock(tr){
+      var title = '<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-scoreboard">'+title
           +'<div class="rr-empty">'
-          +'<span class="l-en">Forward accrual began 2026-07 — no scored prints yet.</span>'
-          +'<span class="l-zh">自2026年7月起正向评分积累中，暂无已评分数据。</span>'
-          +'</div>'
+          +'<span class="l-en">Scored history isn\'t in this build yet.</span>'
+          +'<span class="l-zh">本次构建暂无评分记录。</span>'
+          +'</div></div>';
+      }
+      var withheld = (tr.accuracy_claim === 'withheld_until_clean_aligned_forward_evidence');
+      var noteEn = withheld
+        ? 'Accuracy isn\'t claimed yet. Each release shows how many forecasts were scored against the official first print.'
+        : 'Each release shows how many forecasts were scored against the official first print.';
+      var noteZh = withheld
+        ? '暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。'
+        : '每项数据显示按官方首次公布值评分的预测次数。';
+      var out = '<div class="rr-scoreboard">'+title
+        +'<div class="rr-tr-note">'
+        +'<span class="l-en">'+esc(noteEn)+'</span>'
+        +'<span class="l-zh">'+esc(noteZh)+'</span>'
+        +'</div>';
+      if (!tr.releases.length) {
+        out += '<div class="rr-empty">'
+          +'<span class="l-en">No release has been scored yet.</span>'
+          +'<span class="l-zh">暂无已评分的数据。</span>'
+          +'</div>';
+      } else {
+        var thead = '<tr>'
+          +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
+          +'<th><span class="l-en">Scored</span><span class="l-zh">已评分</span></th>'
+          +'<th><span class="l-en">Vs first print</span><span class="l-zh">对照首次公布值</span></th>'
+          +'<th><span class="l-en">Avg miss (95% range)</span><span class="l-zh">平均误差（95%区间）</span></th>'
+          +'<th><span class="l-en">No-change miss</span><span class="l-zh">不变假设误差</span></th>'
+          +'<th><span class="l-en">Status</span><span class="l-zh">状态</span></th>'
+          +'</tr>';
+        var statusFor = function(st){
+          if (st === 'no_clean_scores') return {en:'No clean scores', zh:'暂无有效评分'};
+          if (st === 'benchmark_only') return {en:'Benchmark only', zh:'仅基准'};
+          if (st === 'proxy_or_mixed_target') return {en:'Not comparable yet', zh:'尚不可比'};
+          if (st === 'accruing') return {en:'Accruing '+tr.display_min_n, zh:'积累中'};
+          if (st === 'interval_pending') return {en:'Range pending', zh:'误差区间待定'};
+          return {en:'—', zh:'—'};
+        };
+        var rows = tr.releases.map(function(e){
+          var st = statusFor(e.display_state);
+          var statusEn = st.en;
+          var statusZh = st.zh;
+          if (e.display_state === 'accruing') {
+            statusEn = 'Accruing '+e.clean_n+'/'+tr.display_min_n;
+            statusZh = '积累中 '+e.clean_n+'/'+tr.display_min_n;
+          }
+          if (e.display_state === 'display_only') {
+            var lab = rrTrackEarly(e, tr);
+            statusEn = lab.en;
+            statusZh = lab.zh;
+          }
+          return '<tr><td>'+relName(e.release,'')+'</td>'
+            +'<td>'+esc(String(e.clean_n))+'</td>'
+            +'<td>'+esc(String(e.first_print_matched_n))+'</td>'
+            +'<td>'+esc(rrTrackMissCi(e))+'</td>'
+            +'<td>'+esc(rrTrackMiss(e.mae_naive_prior))+'</td>'
+            +'<td><span class="l-en">'+esc(statusEn)+'</span><span class="l-zh">'+esc(statusZh)+'</span></td></tr>';
+        }).join('');
+        out += '<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>';
+      }
+      if (tr.score_receipts && tr.score_receipts.superseded_n > 0) {
+        var sn = tr.score_receipts.superseded_n;
+        out += '<div class="rr-tr-foot">'
+          +'<span class="l-en">'+esc(String(sn))+' earlier scores are kept as superseded, not erased.</span>'
+          +'<span class="l-zh">'+esc(String(sn))+'条早期评分已保留为已取代记录，未删除。</span>'
           +'</div>';
       }
-      var byRel = {};
-      lastScored.forEach(function(row){
-        var k = (row.release||'other').toLowerCase();
-        if (!byRel[k]) byRel[k] = {n:0, mae_ours:0, mae_naive:0, skew_hits:0};
-        byRel[k].n += 1;
-        if (row.our_mae != null) byRel[k].mae_ours += Number(row.our_mae);
-        if (row.naive_mae != null) byRel[k].mae_naive += Number(row.naive_mae);
-        if (row.skew_hit) byRel[k].skew_hits += 1;
-      });
-      var thead = '<tr>'
-        +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
-        +'<th><span class="l-en">n</span><span class="l-zh">n</span></th>'
-        +'<th><span class="l-en">MAE ours</span><span class="l-zh">本方MAE</span></th>'
-        +'<th><span class="l-en">MAE naive</span><span class="l-zh">朴素MAE</span></th>'
-        +'<th><span class="l-en">Skew hit%</span><span class="l-zh">偏态命中%</span></th>'
-        +'</tr>';
-      var rows = Object.keys(byRel).map(function(k){
-        var g = byRel[k];
-        var maeO = g.n ? (g.mae_ours/g.n).toFixed(3) : '—';
-        var maeN = g.n ? (g.mae_naive/g.n).toFixed(3) : '—';
-        var skhit = g.n ? (g.skew_hits/g.n*100).toFixed(0)+'%' : '—';
-        return '<tr><td>'+relName(k,'')+'</td><td>'+g.n+'</td>'
-          +'<td>'+esc(maeO)+'</td><td>'+esc(maeN)+'</td><td>'+esc(skhit)+'</td></tr>';
-      }).join('');
-      return '<div class="rr-scoreboard">'
-        +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
-        +'<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>'
-        +'</div>';
+      return out+'</div>';
+    }
+    function rrTrackRecordLine(tr, releaseType){
+      var rel = releaseType || '';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var entry = null;
+      for (var i = 0; i < tr.releases.length; i++) {
+        if (tr.releases[i].release === rel) { entry = tr.releases[i]; break; }
+      }
+      if (!entry) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var st = entry.display_state;
+      if (st === 'no_clean_scores') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No clean scores yet. Earlier scores used an inconsistent target and are kept as superseded.</span>'
+          +'<span class="l-zh">暂无有效评分。早期评分口径不一致，已保留为已取代记录。</span></div>';
+      }
+      if (st === 'benchmark_only') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">Benchmark only: '+esc(String(entry.clean_n))+' prints scored, no house forecast to grade.</span>'
+          +'<span class="l-zh">仅基准：已评分'+esc(String(entry.clean_n))+'次，无本方预测可评。</span></div>';
+      }
+      if (st === 'proxy_or_mixed_target') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored, '+esc(String(entry.first_print_matched_n))+' against the official first print. Not comparable yet.</span>'
+          +'<span class="l-zh">已评分'+esc(String(entry.clean_n))+'次，其中'+esc(String(entry.first_print_matched_n))+'次对照官方首次公布值。尚不可比。</span></div>';
+      }
+      if (st === 'accruing') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' of '+esc(String(tr.display_min_n))+' scored against the official first print. The error and its range show from '+esc(String(tr.display_min_n))+'; a verdict needs '+esc(String(tr.verdict_min_n))+'.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'/'+esc(String(tr.display_min_n))+'次。满'+esc(String(tr.display_min_n))+'次显示误差及其区间，满'+esc(String(tr.verdict_min_n))+'次方下结论。</span></div>';
+      }
+      if (st === 'interval_pending') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored against the official first print. The error shows once its range is computed.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'次。误差区间计算完成后显示误差。</span></div>';
+      }
+      if (st === 'display_only') {
+        var lab = rrTrackEarly(entry, tr);
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(lab.en)+', scored against the official first print. Average miss '+esc(rrTrackMissCi(entry))+' vs '+esc(rrTrackMiss(entry.mae_naive_prior))+' for a no-change guess. Not a verdict.</span>'
+          +'<span class="l-zh">'+esc(lab.zh)+'，对照官方首次公布值评分。平均误差'+esc(rrTrackMissCi(entry))+'，不变假设为'+esc(rrTrackMiss(entry.mae_naive_prior))+'。非结论。</span></div>';
+      }
+      return '<div class="rr-tr-line"><span class="l-en">—</span><span class="l-zh">—</span></div>';
     }
 
     /* component breakdown bar — reads contribution_pp (cpi_bridge schema) or contrib_pp (legacy) */
@@ -10689,10 +10791,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         tab3 += '<div class="rr-grp"><div class="rr-grp-label">'
           +'<span class="l-en">Track record</span><span class="l-zh">历史评分</span>'
           +'</div>'
-          +'<div class="rr-empty">'
-          +'<span class="l-en">Accruing — first scored prints land this month.</span>'
-          +'<span class="l-zh">积累中 — 本月首批评分数据到来。</span>'
-          +'</div>'
+          + rrTrackRecordLine(_rrTrackRecord, item.release_type || '')
           +'</div>';
         /* NFP revision context */
         if (isNfp && item.revision_context){
@@ -10879,6 +10978,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     /* ---- modal open / close / tab switching ---- */
     var _rrItems = [];
     var _captureHealth = null;
+    var _rrTrackRecord = null;
 
     /* ---- modal open / close ---- */
     function _rrPeriodLabels(period){
@@ -11263,6 +11363,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       _rrItems = Array.isArray(d.upcoming) ? d.upcoming : [];
       _captureHealth = d.capture_health || null;
+      _rrTrackRecord = (d && d.track_record && typeof d.track_record === 'object') ? d.track_record : null;
       var lastScored = Array.isArray(d.last_scored) ? d.last_scored : [];
       var asof = d.asof || '';
 
@@ -11370,10 +11471,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           smBtn.closest('[data-lang]') || void 0;
         });
       }
-      /* MRI-R39a: populate track-record overlay with scoreboardBlock data */
+      /* MRI-R39a: populate track-record overlay from track_record summary */
       var RR_TR_BODY = document.getElementById('rr-tr-body');
       if (RR_TR_BODY) {
-        RR_TR_BODY.innerHTML = scoreboardBlock(lastScored);
+        RR_TR_BODY.innerHTML = rrTrackRecordBlock(_rrTrackRecord);
       }
       /* wire dlg-events calendar cards as the inline radar selector + auto-select default */
       wireCalendarCards();
@@ -16194,6 +16295,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
     {{ pv.pv_css(setup_detail=true) }}
+    <style>{% include "_prophet_workspace.css.j2" %}</style>
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
