@@ -21,7 +21,7 @@ enlarges the facts the read can cite. See research/DATA_SIGNAL_EXPANSION_2026.md
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -31,6 +31,22 @@ from lib import config, store
 log = logging.getLogger(__name__)
 
 _QUARTER = 0.25  # one 25bp move
+
+# A strip older than this (calendar days before `asof`) is labelled stale in the
+# source metadata — pinned by test to collectors.rate_futures.RateFuturesAdapter.
+STRIP_STALE_AFTER_DAYS = 5
+
+# --- implied_source_meta vocabulary (RIC D0, B0 freeze rates_command_basis.v1) -- #
+_SOURCE_META_SCHEMA = "fed_path_source_meta.v1"
+_KNOWN_PRICE_TYPES = {"settlement", "last_trade", "vendor_daily_close"}
+_KNOWN_RIGHTS = {"public_official", "redistribution_limited", "display_only", "unknown"}
+_PARTICIPANT_NOTE = ("participant appropriate-policy projection, not a committee "
+                     "promise or probability")
+_LEGACY_SOFR_NOTE = ("legacy implied_* values are a compounded-SOFR substitute, "
+                     "not an EFFR/fed-funds path")
+_SELECTED_BASIS = {"zq": "zq_effr_monthly_average", "sofr": "sr3_compounded_sofr",
+                   "zq_front": "zq_front_effr_30d", None: None}
+_SELECTED_IS_EFFR = {"zq": True, "zq_front": True, "sofr": False, None: None}
 
 
 def _cfg() -> dict:
@@ -95,15 +111,35 @@ def _lean(gap_bp: float | None) -> tuple[str, str]:
 
 def compute(*, asof, policy_rate, target_low, target_high, dot_series,
             zq_path_row, sofr_path_row, zq_front_implied,
-            ntfs, curve_tp_adj, rate_exp_proxy, cfg=None) -> dict | None:
+            ntfs, curve_tp_adj, rate_exp_proxy, cfg=None,
+            metadata=None, cutoff=None) -> dict | None:
     """PURE — assemble the policy-path display block from already-extracted inputs.
 
     `zq_path_row` / `sofr_path_row` are the latest implied-path rows (dicts keyed
     ``m{H}``) from collectors/rate_futures.py; `dot_series` is the raw FEDTARMD
-    series. Returns None only when there is genuinely nothing to show."""
+    series. Returns None only when there is genuinely nothing to show.
+
+    D0 provenance (additive): `metadata` (strip/dot provenance per §2.2 schema)
+    adds ONE key `implied_source_meta`; `cutoff` (ISO date, day precision) treats
+    any input whose evidence time is later than — or unknown at — the cutoff as
+    ABSENT before the legacy logic runs, so no refused number can leak. With
+    neither keyword the legacy dict comes back byte-identical, new key included
+    never. The legacy output is untouched in every mode."""
     cfg = cfg if cfg is not None else _cfg()
     horizons = list(cfg.get("horizons_m", [1, 3, 6, 12]))
     asof_ts = pd.Timestamp(asof)
+
+    want_meta = metadata is not None or cutoff is not None
+    if cutoff is not None:
+        # withhold pre-evidence inputs BEFORE the legacy logic: a refused strip
+        # falls through selection exactly as if missing; refused dots vanish.
+        zq_row_in, sofr_row_in, front_in, dots_in = (
+            zq_path_row, sofr_path_row, zq_front_implied, dot_series)
+        zq_path_row, sofr_path_row, zq_front_implied, dot_series = _apply_cutoff(
+            metadata, cutoff, zq_path_row, sofr_path_row, zq_front_implied, dot_series)
+    else:
+        zq_row_in, sofr_row_in, front_in, dots_in = (
+            zq_path_row, sofr_path_row, zq_front_implied, dot_series)
 
     tmid = None
     if target_low is not None and target_high is not None:
@@ -206,7 +242,327 @@ def compute(*, asof, policy_rate, target_low, target_high, dot_series,
     if (out["policy_rate"] is None and not dots and not path_row
             and zq_front_implied is None):
         return None
+    if want_meta:
+        out["implied_source_meta"] = _implied_source_meta(
+            asof_ts, metadata, cutoff, zq_row_in, sofr_row_in, front_in, dots_in, out)
     return out
+
+
+# --------------------------------------------------------------------------- #
+# D0 provenance — cutoff admission + the implied_source_meta assembly. These are
+# display-side only: they never alter a legacy value, and the rate_futures
+# helpers are imported LAZILY so fed_path stays importable without yfinance.
+# --------------------------------------------------------------------------- #
+def _as_date(v):
+    """Best-effort day-precision date, or None when unknown."""
+    if isinstance(v, (datetime, date, pd.Timestamp)):
+        return pd.Timestamp(v).date()
+    try:
+        return datetime.strptime(str(v)[:10], "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _evidence_later(evidence, precision: str | None, cutoff) -> bool | None:
+    """Is `evidence` STRICTLY later than `cutoff`?
+
+    Compared at the coarser of the evidence precision and day: month precision
+    compares year-month only, and an equal month is NOT later. None (unknown
+    evidence time) means the caller must withhold, not refuse."""
+    if evidence is None or str(evidence).strip() == "":
+        return None
+    if precision not in ("day", "month"):
+        precision = "month" if len(str(evidence)) == 7 else "day"
+    try:
+        cparts = [int(x) for x in str(cutoff).split("-")]
+        eparts = [int(x) for x in str(evidence).split("-")]
+    except (TypeError, ValueError):
+        return None
+    if len(cparts) < 2 or len(eparts) < 2:
+        return None
+    if precision == "month" or len(eparts) == 2:
+        return (eparts[0], eparts[1]) > (cparts[0], cparts[1])
+    return (eparts[0], eparts[1], eparts[2]) > (cparts[0], cparts[1], cparts[2])
+
+
+def _apply_cutoff(metadata, cutoff, zq_row, sofr_row, front, dot_series):
+    """Null every input whose evidence time is later than, or unknown at, the
+    cutoff, so the legacy logic treats it exactly as missing."""
+    md = metadata if isinstance(metadata, dict) else {}
+
+    def admissible(entry) -> bool:
+        obs = entry.get("observation_date") if isinstance(entry, dict) else None
+        return _evidence_later(obs, "day", cutoff) is False
+
+    if not admissible(md.get("zq")):
+        zq_row = None
+    if not admissible(md.get("sofr")):
+        sofr_row = None
+    if not admissible(md.get("zq_front")):
+        front = None
+    dmd = md.get("dots")
+    dev = dmd.get("release_date") if isinstance(dmd, dict) else None
+    dprec = dmd.get("release_precision") if isinstance(dmd, dict) else None
+    if _evidence_later(dev, dprec, cutoff) is not False:
+        dot_series = None
+    return zq_row, sofr_row, front, dot_series
+
+
+def _selected_strip(out: dict) -> str | None:
+    """The strip the legacy selection ACTUALLY used (post-cutoff)."""
+    src = out.get("implied_source_en")
+    return {"ZQ fed-funds futures": "zq", "SR3 SOFR futures": "sofr",
+            "ZQ front (30d) only": "zq_front"}.get(src)
+
+
+def _strip_value_state(row, obs_raw, cutoff, asof_ts):
+    """(value_state, limitation-or-None, quality-flag-or-None) per §2.3 order:
+    missing → refused/withheld (mode 3) → stale → present."""
+    present_row = bool(row) and any(v is not None for v in row.values())
+    if not present_row:
+        return "missing", None, None
+    if cutoff is not None:
+        later = _evidence_later(obs_raw, "day", cutoff)
+        if later is True:
+            return "refused", "after_cutoff", None
+        if later is None:
+            return "withheld", "evidence_time_unknown", None
+    obs = _as_date(obs_raw)
+    if obs is not None and (asof_ts - pd.Timestamp(obs)).days > STRIP_STALE_AFTER_DAYS:
+        return "stale", None, "stale"
+    if obs is None:
+        return "present", "observation_time_unknown", None
+    return "present", None, None
+
+
+def _strip_meta(basis_key: str, row, md_entry, asof_ts, cutoff, selected):
+    """Per-strip provenance <S> — basis is ALWAYS this strip's own, its dates are
+    ALWAYS its own, and an unknown contract identity is never filled."""
+    from collectors import rate_futures as rf  # lazy — no yfinance needed to import
+    root = "ZQ" if basis_key == "zq" else "SR3"
+    basis = rf.STRIP_BASIS[root]
+    md = md_entry if isinstance(md_entry, dict) else {}
+    obs_raw = md.get("observation_date")
+    obs = _as_date(obs_raw)
+
+    state, lim, qflag = _strip_value_state(row, obs_raw, cutoff, asof_ts)
+    limitations = [lim] if lim else []
+    quality = [qflag] if qflag else []
+    if basis_key == "sofr" and selected == "sofr":
+        quality.append("fallback_strip")
+    # a missing strip has nothing observed — never dress it in a metadata date
+    obs_known = obs is not None and state != "missing"
+
+    price_type = md.get("price_type")
+    vintage = None
+    if price_type == "settlement":
+        vintage = obs_raw if obs_known else None
+    elif price_type == "last_trade":
+        limitations.append("last_trade_not_settlement")
+    elif price_type == "vendor_daily_close":
+        limitations.append("vendor_close_not_exchange_settlement")
+    else:
+        price_type = None
+        limitations.append("price_type_unknown")
+
+    rights = md.get("rights")
+    if rights not in _KNOWN_RIGHTS:
+        rights = "unknown"
+
+    contracts = None
+    raw_contracts = md.get("contracts")
+    if raw_contracts is None:
+        limitations.append("contract_reference_unknown")
+    else:
+        contracts = []
+        for sym in raw_contracts:
+            p = rf.parse_contract_symbol(str(sym))
+            if p is None:
+                contracts.append({"vendor_symbol": sym, "contract_code": None,
+                                  "exchange_suffix": None, "listing_exchange": None,
+                                  "reference_start": None, "reference_end": None,
+                                  "centre_months": None})
+                limitations.append("contract_reference_unknown")
+                continue
+            start, end = rf.contract_reference_period(
+                p["year"], p["month"], basis["cadence"])
+            centre = (None if not obs_known else
+                      rf._months_diff(p["year"], p["month"], obs.year, obs.month)
+                      + rf._CENTRE_OFFSET[basis["cadence"]])
+            contracts.append({"vendor_symbol": p["vendor_symbol"],
+                              "contract_code": p["contract_code"],
+                              "exchange_suffix": p["exchange_suffix"],
+                              "listing_exchange": p["listing_exchange"],
+                              "reference_start": start, "reference_end": end,
+                              "centre_months": centre})
+
+    return {
+        "source": f"rate_futures:{root}",
+        "evidence_class": "market_implied_expectation",
+        "rate_index": basis["rate_index"],
+        "averaging_law": basis["averaging_law"],
+        "target": basis["target"],
+        "basket_or_index": basis["basket_or_index"],
+        "vendor": md.get("vendor"),
+        "price_type": price_type,
+        "observation_time": obs_raw if obs_known else None,
+        "observation_precision": "day" if obs_known else "unknown",
+        "vintage": vintage,
+        "rights": rights,
+        "source_version": md.get("source_version"),
+        "value_state": state,
+        "quality": quality,
+        "limitations": limitations,
+        "contracts": contracts,
+    }
+
+
+def _front_meta(front, md_entry, asof_ts, cutoff):
+    md = md_entry if isinstance(md_entry, dict) else {}
+    obs_raw = md.get("observation_date")
+    state, lim, _ = _strip_value_state(
+        {"v": front} if front is not None else None, obs_raw, cutoff, asof_ts)
+    limitations = [lim] if lim else []
+    limitations.append("contract_reference_unknown")
+    obs = _as_date(obs_raw)
+    obs_known = obs is not None and state != "missing"
+    return {
+        "source": "zq_front_30d",
+        "evidence_class": "market_implied_expectation",
+        "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+        "reference_start": None,
+        "reference_end": None,
+        "observation_time": obs_raw if obs_known else None,
+        "observation_precision": "day" if obs_known else "unknown",
+        "value_state": state,
+        "limitations": limitations,
+    }
+
+
+def _dots_meta(md_entry, cutoff, out):
+    md = md_entry if isinstance(md_entry, dict) else {}
+    release = md.get("release_date")
+    precision = md.get("release_precision")
+    limitations = []
+    dots = out.get("dots") or []
+    if dots:
+        state = "present"
+    else:
+        later = _evidence_later(release, precision, cutoff) if cutoff is not None else None
+        if later is True:
+            state = "refused"
+            limitations.append("after_cutoff")
+        elif cutoff is not None and later is None:
+            state = "withheld"
+            limitations.append("evidence_time_unknown")
+        else:
+            state = "missing"
+    if release is None:
+        limitations.append("sep_release_date_unknown")
+    limitations.append(_PARTICIPANT_NOTE)
+    year = dots[0]["year"] if dots else None
+    y = f"{year:04d}" if year else None
+    return {
+        "source": "fred:FEDTARMD",
+        "evidence_class": "survey_participant_projection",
+        "target": "sep_fed_funds_year_end_median",
+        "subject": f"sep_median_{y}" if y else None,
+        "target_epoch": f"{y}-12-31" if y else None,
+        "reference_start": f"{y}-12-01" if y else None,
+        "reference_end": f"{y}-12-31" if y else None,
+        "vintage": release,
+        "first_public_evidence": release,
+        "first_public_precision": precision if precision in ("day", "month") else "unknown",
+        "rights": "public_official",
+        "source_version": md.get("source_version"),
+        "value_state": state,
+        "limitations": limitations,
+    }
+
+
+def _gap_meta(out, strips, dots_meta, selected):
+    """SEP-vs-market comparability verdict <G> — the legacy `gap` is never altered."""
+    legacy_gap = out.get("gap")
+    if legacy_gap is None or selected is None or selected not in strips:
+        return None
+    strip = strips[selected]
+    status = reason = transform = None
+    limitations: list[str] = []
+    start = end = None
+    horizon = legacy_gap["horizon_months"]
+    dot_year = (out.get("dots") or [{}])[0].get("year")
+
+    if dots_meta["value_state"] != "present":
+        status, reason = "unavailable", f"operand_{dots_meta['value_state']}:left"
+    elif strip["value_state"] != "present":
+        status, reason = "unavailable", f"operand_{strip['value_state']}:right"
+    elif strip["rate_index"] != "EFFR":
+        status, reason = "not_comparable", "basis_mismatch:rate_index"
+    else:
+        parsed = [c for c in (strip["contracts"] or [])
+                  if c.get("reference_start") and c.get("centre_months") is not None]
+        if strip["observation_time"] is None or not parsed:
+            status, reason = "not_comparable", "unknown_basis:reference_end"
+        else:
+            lower = upper = None
+            for c in parsed:
+                cm = c["centre_months"]
+                if cm <= horizon and (lower is None or cm > lower["centre_months"]):
+                    lower = c
+                if cm >= horizon and (upper is None or cm < upper["centre_months"]):
+                    upper = c
+            if lower is None or upper is None:
+                status, reason = "not_comparable", "unknown_basis:reference_end"
+            else:
+                start, end = lower["reference_start"], upper["reference_end"]
+                if not (start <= f"{dot_year}-12-01" and end >= f"{dot_year}-12-31"):
+                    status, reason = "not_comparable", "basis_mismatch:reference_end"
+                else:
+                    status = "comparable_after_transformation"
+                    transform = "year_end_interval_match"
+                    limitations.append(_PARTICIPANT_NOTE)
+    return {
+        "rule_id": "sep_vs_market_year_end.v1",
+        "left": "dots",
+        "right": selected,
+        "status": status,
+        "reason": reason,
+        "transform": transform,
+        "limitations": limitations,
+        "market_horizon_months": horizon,
+        "market_reference_start": start,
+        "market_reference_end": end,
+    }
+
+
+def _implied_source_meta(asof_ts, metadata, cutoff, zq_row, sofr_row, front,
+                         dot_series, out):
+    """The D0 provenance block — mirrors the legacy selection, classifies every
+    operand, and answers the SEP-vs-market comparability question under §2.3a."""
+    md = metadata if isinstance(metadata, dict) else {}
+    selected = _selected_strip(out)
+    strips = {
+        "zq": _strip_meta("zq", zq_row, md.get("zq"), asof_ts, cutoff, selected),
+        "sofr": _strip_meta("sofr", sofr_row, md.get("sofr"), asof_ts, cutoff, selected),
+        "zq_front": _front_meta(front, md.get("zq_front"), asof_ts, cutoff),
+    }
+    dots_meta = _dots_meta(md.get("dots"), cutoff, out)
+    is_effr = _SELECTED_IS_EFFR.get(selected)
+    return {
+        "schema": _SOURCE_META_SCHEMA,
+        "authority": "display_only",
+        "cutoff": cutoff,
+        "selected_strip": selected,
+        "strips": strips,
+        "dots": dots_meta,
+        "gap": _gap_meta(out, strips, dots_meta, selected),
+        "selected_basis": _SELECTED_BASIS.get(selected),
+        "selected_is_effr": is_effr,
+        "missing_source": [k for k in ("zq", "sofr", "zq_front")
+                           if strips[k]["value_state"] in ("missing", "refused", "withheld")],
+        "legacy_value_basis_note": _LEGACY_SOFR_NOTE if is_effr is False else None,
+    }
 
 
 def _read_path_row(store_key: str) -> tuple[dict | None, str | None]:
@@ -243,11 +599,45 @@ def snapshot(f: pd.DataFrame, cfg: dict | None = None) -> dict | None:
     if dot_series is None and "fed_dot_median" in f:  # frame fallback (single dot)
         dot_series = f["fed_dot_median"].dropna()
 
-    zq_row, _ = _read_path_row("zq_path")
-    sofr_row, _ = _read_path_row("sofr_path")
+    zq_row, zq_asof = _read_path_row("zq_path")
+    sofr_row, sofr_asof = _read_path_row("sofr_path")
 
     return compute(asof=asof, policy_rate=policy_rate, target_low=target_low,
                    target_high=target_high, dot_series=dot_series,
                    zq_path_row=zq_row, sofr_path_row=sofr_row,
                    zq_front_implied=zq_front_implied, ntfs=ntfs,
-                   curve_tp_adj=curve_tp_adj, rate_exp_proxy=rate_exp_proxy, cfg=cfg)
+                   curve_tp_adj=curve_tp_adj, rate_exp_proxy=rate_exp_proxy, cfg=cfg,
+                   metadata=_live_source_metadata(zq_asof, sofr_asof), cutoff=None)
+
+
+def _contracts_at(asof: str | None, store_key: str) -> list[str] | None:
+    """Vendor symbols non-null on the contracts frame at the path's OWN asof —
+    the contracts that were actually live when the path row printed."""
+    if asof is None:
+        return None
+    try:
+        cf = store.read("rate_futures", store_key)
+        if cf is None or cf.empty:
+            return None
+        ts = pd.Timestamp(asof)
+        if ts not in cf.index:
+            return None
+        row = cf.loc[ts]
+        kept = [c for c in cf.columns if not pd.isna(row[c])]
+        return kept or None
+    except Exception:  # noqa: BLE001 — provenance must never fail the snapshot
+        return None
+
+
+def _live_source_metadata(zq_asof: str | None, sofr_asof: str | None) -> dict:
+    """Strip provenance from the live store: each strip's own path asof + the
+    exact vendor symbols live at that date. No dots release date is known."""
+    from collectors import rate_futures as rf  # lazy
+
+    meta = {}
+    for key, asof in (("zq", zq_asof), ("sofr", sofr_asof)):
+        meta[key] = {"observation_date": asof,
+                     "contracts": _contracts_at(asof, f"{key}_contracts"),
+                     "price_type": rf.PRICE_TYPE, "vendor": rf.VENDOR,
+                     "rights": rf.RIGHTS}
+    return meta
