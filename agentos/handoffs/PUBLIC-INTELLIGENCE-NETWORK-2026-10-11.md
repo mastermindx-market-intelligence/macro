@@ -2449,3 +2449,66 @@ local_context_probe.json,public_source_screen.json}. Replay local qualification:
 Continue admitted9209 protected landing/install, then SAME reviewed follow-on PR
 and31installed groups. Existing CVS dossier/Terminal return proof is unchanged.
 The existing heartbeat carries attention; the controller retains release authority.
+
+## 2026-10-14 10:12 wake — #9209 requires corrective integration, not automatic refresh
+
+Main baseline38542393269/eb7cae75 is SUCCESS at09:47:38Z. Full controller38547774186
+clears the main-red breaker but explicitly refuses9209 at8f705cb3: the path-prune
+failure signature differs from exact-base evidence and authority_changed=true.
+Waiting for a controller refresh cannot resolve that refusal. The failing
+CI38508325200 merge-ref includes the SNI absolute-path prune already fixed on
+protected main by9227/a806d09e and9234/80df7978.9288 is already merged, not pending.
+
+Root visibly disarmed9209 in comment6166146515 after exact-head/no-lease read.
+The original mmx-press-current-event checkout and its three dirty accounting
+histories are preserved byte-identically, with private full backups. The approved
+SSD helper created sibling pr-9209-e751140594fddb64 from the exact PR ref.
+Conflict-free integration of protected main785295e9 is c99ee6cfdde62f00ac1a94c5918f298a43277fd9.
+All313main jobs and24Press source hashes remain; only the existing Press test-list
+addition differs from main. No follow-on application source enters9209.
+
+Selected Python tests:803passed/1existing sparse-site skip plus1missing-real-data
+failure; the unchanged failed assertion then PASSes on exact committed artifacts
+(15facts, inputs unchanged). Existing shared authentication return fix passes17
+Node checks.58generatedHTML/XML files match committed output under the incumbent
+normalization. Three page hashes changed only through shared-asset versions;
+#9228 source changes were reviewed and acceptance hashes rebound. Require fresh
+functional browser verification after installation; no new design approval or
+new signup/follow write is claimed. Contract-delta completed once:0introduced/0inherited in820.5s. Probes135/134/129jobs
+and5684/5485/5447weights stay under inherited protected-main ceilings.
+
+At10:39:27 capacity is10active PR proofs/cap8, noleases.9209remains OPEN8f705cb3,
+disarmed/merge-blocked. Local correction is not bindingCI,merge orinstallation.
+The repaired source/evidence are pushed at a18ec9825dd9756fcdc1421c466bb5c769a69883
+on claude/ssd-pr-9209-e751140594fddb64 (noPR). Fresh-fence
+capacity/head/lease and push to the SAME9209 branch when admitted. Complete exact
+CI/protected landing/normal updater/installed checks/browser. Then integrate landed
+main into the SAME reviewed follow-on and ship its31portable groups. Follow-on
+application8eb467112b83,429tests+1real-data/31groups remains unchanged; nofollow-onPR.
+
+Original daily engine115696591645 is now CANCELLED at09:35:15Z. Its retrieved
+log was empty, so this does not establish cancellation cause or all push effects.
+Previously proved installed Oct13input bytes at04028b30 remain actual evidence.
+Tail's GH001 and held8042/8756/9256/original8748effects remain unreplayed.
+
+Seven additional primary source screens are retained in
+source_qualification_20261014_1012/public_source_screen.json. WhiteHouseAlaska
+recaps old events; SEC Brown release dates the judgmentSept27 and concerns former
+VORB. DOE TVA and WFC public earnings are leads only, lacking qualified admission
+and relevant own receipts. No new writer, provider, draft edit, source admission
+or publication. Preserve previous exclusions, original effect and refused issuer
+review. Publication/cutoverfalse,credit0/10. The existing heartbeat retains attention.
+
+verified: original repair checkout current_event_phase/main_repair_20261014_1012/
+contains exact controller/old-CI logs, integration review, tests, render proof and
+accounting hashes; original private backups are under
+/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1012/.
+
+
+Final10:39pre-push fence:10activeproofs/cap8,no leases,9209disarmed at8f705.
+No binding CI was created above capacity. Fresh main35b3683b adds leadership-measured-read
+andsevenunrelatedCIscopes;24Presssources/sharedassetsareunchanged. The tested integration
+preserves313jobs atbase785295e9; do not claim it contains all314jobs in newer main.
+Shared-page browser acceptance at1440/390 is now bound to stableinstalled255ccbec
+and exactHTTP/site/site.served hashes; calculator50shares/$100risk/$2500value passes.
+This is prerequisite/shared-page proof, never9209installation,OAuth exchange ornewfollowwrite.
