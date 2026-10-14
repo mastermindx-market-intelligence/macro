@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D78 2026-10-14T03:05Z snapshot.) Rows superseding older rows below:
+(D79 2026-10-14T03:21Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| #985 OATRUTH (+N02-U2) / #983 M03T | PRODUCTION_PROOF. #985 merged 2026-10-14T03:03:16Z `5fa856bf`. The git-gated release `--target-sha 5fa856bfad4819f5befc7af66488965abdc01c75` (forward from live `afae6020`) ended DONE/healthy at 03:17:28Z. Identity triple agrees (`.deployment-id`, `.gitsrc` HEAD, wire `data-dpl-id`). Edge chunks carry the new literals and not the removed ones. CI e2e at three viewports ran on byte-identical trees. Proof comments 6160113742 (#985) and 6160113968 (#983). ACCEPTANCE stays open on one operator step: the entitled, signed-in real-data render (D79) |
 | F02-Q2 (live flow unknown expiry) | PARKED, BLOCKED-EXTERNAL. The lane ended rc=1 at 02:53:32Z on a Grok 402 `Grok Build usage balance exhausted`, after 34 calls. Red-test commit `42415b1a` was pushed to `origin/claude/f02q2-unknown-expiry-not-0dte-20261013` as a recovery copy. The partial classifier is saved as `leads/F02Q2/partial.diff`. Not moved to another carrier; resumes on its original carrier after the operator tops up the balance (D78) |
 | Grok carrier (all hosts) | EXHAUSTED: the same 402 on ubuntu3 (lane), ubuntu1 and mb (one-turn probes, 02:57–02:58Z). New lanes go through normal Fabric routing until the balance is restored (D78) |
 | D04-A2 (status source clocks strict) | Commission FROZEN `leads/D04A2/commission.md`. Waiting for #8923 to merge. Fabric placement; PR goes up with `hold`; merge only outside weekday 15–19Z, after the live source-clock measurement (D78) |
@@ -1839,3 +1840,34 @@ NEXT:
 2. #8923 watcher `b6y5c7v9y` event → on MERGED: overlap scans, then launch R04-B1 and D04-A2 through the Fabric per ruling 2.
 3. #8920 merged → R04-B2 and the M04 red specs (M04 is also gated on #8684).
 4. Operator-only: top up the Grok Build balance. Then F02-Q2 resumes per ruling 1.
+
+### D79 (2026-10-14T03:21Z) — #985 and #983 released by the git-gated deploy and at PRODUCTION_PROOF; the entitled render stays an operator step
+
+Facts observed this cycle (each read from the host, GitHub, the edge or the artifact, not from memory):
+- #985 MERGED 2026-10-14T03:03:16Z as `5fa856bfad4819f5befc7af66488965abdc01c75`. It carries #983 (`ba29ba3b`, merged 02:11:40Z). Live before the release was `afae6020`, an ancestor of `5fa856bf`, so the release is forward, not a rollback.
+- Release: `/opt/terminal/terminal-build.sh --target-sha 5fa856bfad4819f5befc7af66488965abdc01c75` (pid 1470606, log `deploy-fable-985.log`). One watcher read the process to exit: `[build] DONE — live = origin/master @ 5fa856bfad48 (app + runtime code, git-gated, healthy)`. The `terminal` unit became active at 03:17:28Z.
+- Identity triple, read after the swap: `/opt/terminal/terminal/.deployment-id` = `git -C /opt/terminal/.gitsrc rev-parse HEAD` = the raw-wire `data-dpl-id` on a cache-busted `/terminal` = `5fa856bfad48…`. Local `/terminal` returns 200. Local `/login` returns 307 to `/terminal?signin=1`, which is the designed redirect.
+- #985 edge proof:
+  - the built chunk `1cjur7cehmfyu.js`, fetched through the edge (HTTP/2 200, `eo-cache-status: MISS`), contains both new strings once each ("No receipt entry exists for this candidate"; "No formed candidates in this run, and no abstention was recorded either");
+  - the removed string "abstentions explain why" is in no built chunk on the box and 0 times in the edge chunk;
+  - before the swap, the removed string was in `3e2wz4247ce8i.js` and the new string was in no chunk. That is the falsifier: the check would have failed on the old build.
+- #983 edge proof: chunk `0tbrm-dk3n7eq.js` (edge 200 MISS) contains the new scenario-grid convention text ("not a probability interval; the Wilson…") once. The removed "the IV axis is gamma-only" is in no built chunk.
+- CI on byte-identical trees:
+  - #985: the merged tree `751e27f5` equals the tested head `ff1655df`. Run 38499984163: six e2e shards green at desktop 1440×900, tablet 820×1180 and mobile 390×844. The only flaky test is `market-ontology-context.spec.ts:410`, outside #985's files.
+  - #983: tree `61e280f4` equals the tested head `650d7005`, run 38496643758.
+  - `e2e/options-alpha-candidate-truth.spec.ts` and `e2e/options-scenario-truth.spec.ts` are inside the Playwright `testDir`, neither ignored nor skipped, and run in every project.
+- Proof comments: #985 issuecomment-6160113742 and #983 issuecomment-6160113968.
+- Not observed: the entitled, signed-in Options view with real data. Anonymous production shows the paywall. The built-in browser has no session, and `list_connected_browsers` returned no Chrome. The seat does not sign in or enter credentials to obtain it.
+
+Rulings:
+1. #985 (with N02-U2) and #983 reach PRODUCTION_PROOF. They do not yet reach ACCEPTANCE. The single open step is operator-only: open `/options?tab=prophet` (Options Alpha) and the Market Structure scenario grid on an entitled account at 1440×900, 820×1180 and 390×844, in EN and ZH. Check four things: no raw enum tokens outside the disclosure; plain-language receipt and abstention reasons; an honest empty state when nothing formed; and the scenario-grid convention note.
+2. DO_NOT_REDO: the `5fa856bf` release, `proof_985.sh` as acceptance evidence, and the two proof comments. A later release that supersedes `5fa856bf` does not invalidate this proof unless it touches the files that #985 or #983 own.
+3. #723 is untouched: `git diff --name-only afae6020 5fa856bf` lists 13 files (`components/prophet/*`, `components/msc/*`, `lib/marketStructure.ts`, their tests and the two e2e specs), and none of them is among #723's 455 changed files (paginated API, 03:2xZ). #723 stays OPEN at the coordinator's `bd76f2c9`; its merge and release stay with root `01a10340`.
+
+NEXT:
+1. #8923 watcher `b6y5c7v9y` event → on MERGED: read `pool hosts` eligibility at launch, run the overlap scans, then launch R04-B1 and D04-A2 (D78 ruling 2). If no host is eligible, the seat does the work directly and records the exception.
+2. Wed 2026-10-14 15–19Z: read-only measurement of the `/live/flow_pulse.json` `source_asof` and `/live/intraday_quotes.json` `meta.source_asof` ages (D04-A2 release precondition).
+3. #8920 watcher `bqitfw30c` event → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+4. Operator-only:
+   - the entitled render (ruling 1);
+   - top up the Grok Build balance, after which F02-Q2 resumes (D78 ruling 1).
