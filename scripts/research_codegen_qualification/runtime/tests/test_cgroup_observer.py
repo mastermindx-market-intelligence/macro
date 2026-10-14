@@ -39,7 +39,9 @@ def test_tighter_ancestors_unknown_root_and_proof_flags(tree):
     root, parent, leaf, fd, expected, observe = tree
     result = observe()
     limits = result["configured_visible_ancestor_limits"]
-    assert limits["cpu.max"] == {"observed_minimum": [1, 4], "unknown_level_present": True}
+    assert limits["cpu.max"] == {"observed_minimum": {"numerator": 1, "denominator": 4},
+                                 "unit": "cpu_seconds_per_second", "source_depths": [1],
+                                 "visible_level_absent": True, "summary_is_complete": False}
     assert limits["memory.max"]["observed_minimum"] == 134217728
     assert limits["memory.swap.max"]["observed_minimum"] == 0
     assert limits["pids.max"]["observed_minimum"] == 32
@@ -55,7 +57,8 @@ def test_complete_visible_max_is_not_effective_limit_proof(tree):
     for directory in (root, parent, leaf):
         controls(directory)
     result = observe()
-    assert all(x == {"observed_minimum": None, "unknown_level_present": False}
+    assert all(x["observed_minimum"] is None and x["source_depths"] == []
+               and x["visible_level_absent"] is False and x["summary_is_complete"] is False
                for x in result["configured_visible_ancestor_limits"].values())
     assert result["effective_enforcement_proven"] is False
 
@@ -170,19 +173,25 @@ def test_resource_and_identity_bounds(tree, monkeypatch, kind):
 def test_helper_descriptors_closed_caller_preserved(tree, monkeypatch, failure):
     _, _, leaf, fd, expected, observe = tree
     if failure: (leaf / "pids.max").write_text("broken")
-    opened = []
-    real_open, real_dup = c.os.open, c.os.dup
+    opened = []; active = set()
+    real_open, real_dup, real_close = c.os.open, c.os.dup, c.os.close
     def track_open(*a, **k):
-        n = real_open(*a, **k); opened.append(n); return n
+        n = real_open(*a, **k); opened.append(n); active.add(n); return n
     def track_dup(*a, **k):
-        n = real_dup(*a, **k); opened.append(n); return n
+        n = real_dup(*a, **k); opened.append(n); active.add(n); return n
+    def track_close(n):
+        assert n != fd  # The caller's descriptor is never owned by the helper.
+        real_close(n)
+        active.remove(n) # Only a successful close settles this acquisition.
     with monkeypatch.context() as ctx:
         ctx.setattr(c.os, "open", track_open); ctx.setattr(c.os, "dup", track_dup)
+        ctx.setattr(c.os, "close", track_close)
         if failure:
-            with pytest.raises(c.ObservationRefused): observe()
+            try: observe()
+            except c.ObservationRefused: pass
+            else: pytest.fail("expected refusal")
         else: observe()
-    for n in set(opened):
-        with pytest.raises(OSError): os.fstat(n)
+    assert opened and not active
     assert c.identity(os.fstat(fd)) == expected
 
 

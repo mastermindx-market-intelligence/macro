@@ -31,12 +31,13 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Consume and adjudicate the exact archive-order source review; then finalize
-  the distinct corrected v4 commission and delivery packet through normal Fabric
-  admission. Original v3 recovery is closed and its failure remains unaccepted.
-  Preserve original effects. The original CI9077 terminal failure needs the
-  incumbent guard owner's legitimate diagnostic path; no refused log retry.
-  Continue existing protected release controls.
+next_action: Consume and adjudicate the exact archive-order source review, verify the
+  installed delivery contract, then finalize the distinct corrected v4 commission
+  through normal Fabric admission. Original v3 recovery is closed. CI9077 has a
+  recorded hosted-runner communication failure and missing pack-0 evidence; retain
+  its failed proof and use the existing release controller and capacity limits.
+  Cgroup review is consumed, its root repairs pass source checks, and host
+  qualification remains unproven. Preserve original effects and continue delivery.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -63,6 +64,18 @@ landmines:
   denial remains closed. User directed continuation with a documented gap and actual
   execution/publisher separation.
 ---
+
+## Current continuation — 2026-10-14 17:39 UTC
+
+The original cgroup review returned 128761 bytes (SHA256 `376f7167e6e3baf0d0710f558c3190268c6b8497158b160a7d8fb2608301b6b6`). Root adjudicated all seven findings, preserved the original REJECT_REPAIRS_REQUIRED verdict, and accepted the bounded review through its existing Fabric owner. Version 2 reports explicit units and source depths and makes incomplete hierarchy and mid-read stability limits explicit. Missing-control traceback context is suppressed. Three reproduced failures are repaired; 64 affected checks pass. The integrated runtime suite passes 617 tests and 67 subtests with three Linux-only skips in 4.27 seconds. This is source verification, not independent approval of the successor or live host qualification.
+
+The mount-table helper and calendar compatibility record were committed and pushed at `210e2a632cca` on the existing combined carrier. Original mount-table worker output remains unaccepted; its separate root repair passed 80 inert checks. The external US-calendar candidate composes with PR8721 head `1f93cf99d4cfabaec91c4646c8856e6d242b6f04` while preserving CN provenance and every non-US behavior. No held branch or canonical calendar source was edited. Complete 2010–2013 annual notice coverage remains missing.
+
+PR9077 CI38590887162 at exact head `9c9189d933e2d376a2c650cfbdd597d0e7fefbef` ended in runner communication loss during ci-pack-0 execution, according to GitHub's job annotation. Its fragment and job log are absent; 11 other packs passed. The retained gate classifies 277 steps as passed and 16 as unknown. No failing source assertion, source exoneration or CI acceptance follows. The first log read hit a 300-second anti-waste guard. After source inspection and substantive independent work, one unchanged same-CLI read was admitted and returned the ordinary missing-log error; local cache analysis and targeted job metadata established this frontier. No guard/state edit, alternate refused-log route, manual rerun, artificial push or capacity override occurred. Earlier permanent-freeze wording was overbroad and is corrected here. Genuine refusals on other operations remain closed.
+
+The archive-order repair passes extraction and on-disk verification of all six actual pinned release members in a private local fixture without command or binary execution, bundle publication or Docker changes. The first fixture's UID/GID callback assumption failure remains retained. Original independent archive review `rf-archive-order-review-01a1333c-v1` is pending on its original carrier. The distinct v4 draft contains 25 bound files and nine precheck tests; no dispatch has occurred. Capsule SHA256 remains `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`; process, cgroup and mount helpers remain excluded. Finalization must verify the current installed artifact framing contract and consume the original archive review.
+
+Fresh main `b337ad670065d6d75967bbaf4745e10055dc33ad` combined without conflicts with pre-mountinfo head `6f0a8aec46853c42e4c05349ba04b6d868a851dc` in a non-checkout merge-tree. Actual dependency landing and integration remain pending under the existing release controller. The programme remains active under Chairman Chris's end-to-end commission and original root `01a1333c-a475-7052-95a8-72a88eb8c17b`; root retains sole Git integration ownership. This checkpoint is continuity, not completion or an execution grant. Historical sections below preserve earlier observations and do not supersede this current frontier.
 
 ## V3 recovery closed; archive repair prepared — 2026-10-14
 

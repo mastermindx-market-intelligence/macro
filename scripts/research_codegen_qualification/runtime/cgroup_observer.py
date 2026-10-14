@@ -98,7 +98,8 @@ class _Read:
             fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
                          | os.O_NONBLOCK, dir_fd=directory)
         except FileNotFoundError:
-            require(optional_root, "required_control_missing")
+            if not optional_root:
+                raise ObservationRefused("required_control_missing") from None
             return {"state": "ABSENT_UNKNOWN", "identity": None, "value": None}
         try:
             before = os.fstat(fd)
@@ -116,6 +117,8 @@ class _Read:
                     break
                 chunks.append(data)
             after = os.fstat(fd)
+            # Advisory metadata consistency only: kernfs metadata is not a data
+            # version, and two matching reads cannot exclude changes or ABA.
             require(identity(before) == identity(after)
                     and before.st_mtime_ns == after.st_mtime_ns
                     and before.st_size == after.st_size, "control_changed")
@@ -190,19 +193,28 @@ def observe(root_fd, parts, *, expected_root_identity, deadline, clock=time.mono
     summaries = {}
     for name in LIMIT_FILES:
         entries = [level["limits"][name] for level in first["levels"]]
-        known = [x["value"] for x in entries if x["state"] == "OBSERVED"]
+        known = [(depth, row["value"]) for depth, row in enumerate(entries)
+                 if row["state"] == "OBSERVED"]
         if name == "cpu.max":
-            finite = [Fraction(x["quota"], x["period"]) for x in known if x["quota"] is not None]
-            value = min(finite) if finite else None
-            minimum = [value.numerator, value.denominator] if value is not None else None
+            finite = [(depth, Fraction(value["quota"], value["period"]))
+                      for depth, value in known if value["quota"] is not None]
+            unit = "cpu_seconds_per_second"
         else:
-            finite = [x for x in known if x is not None]
-            minimum = min(finite) if finite else None
-        summaries[name] = {"observed_minimum": minimum,
-                           "unknown_level_present": any(x["state"] != "OBSERVED" for x in entries)}
+            finite = [(depth, value) for depth, value in known if value is not None]
+            unit = "tasks" if name == "pids.max" else "bytes"
+        value = min(v for _, v in finite) if finite else None
+        minimum = ({"numerator": value.numerator, "denominator": value.denominator}
+                   if name == "cpu.max" and value is not None else value)
+        summaries[name] = {
+            "observed_minimum": minimum, "unit": unit,
+            "source_depths": [depth for depth, v in finite if v == value],
+            "visible_level_absent": any(x["state"] != "OBSERVED" for x in entries),
+            "summary_is_complete": False,
+        }
     reader.time_check()
-    return {"schema": "rf.cgroup_v2_observation.v1", "observation": first,
+    return {"schema": "rf.cgroup_v2_observation.v2", "observation": first,
             "configured_visible_ancestor_limits": summaries, "raw_bytes_read": reader.used,
+            "ancestors_above_root_observed": False, "mid_read_stability_proven": False,
             "host_trust_proven": False, "container_association_proven": False,
             "effective_enforcement_proven": False, "complete_helper_census": False,
             "cleanup_proven": False, "candidate_admission": False, "containment_qualified": False}
