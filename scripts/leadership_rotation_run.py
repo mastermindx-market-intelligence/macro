@@ -37,6 +37,10 @@ __all__ = [
     "evaluate_pair",
     "evaluate_group",
     "evaluate_family",
+    "SizeGateNotPassed",
+    "assert_size_gate_passed",
+    "count_prior_looks",
+    "record_look",
     "run_p1",
     "falsifier_controls",
 ]
@@ -1272,7 +1276,17 @@ def evaluate_family(
     start: int,
     end: int,
     partition: str,
+    look_count: int = 0,
 ) -> dict:
+    """Evaluate the six-hypothesis family.
+
+    ``look_count`` is the number of counted development looks this evaluation
+    is (V1 §2: "P1 = counted development looks"). The default 0 is the P0
+    synthetic call, which is not a counted look; ``run_p1`` always passes the
+    real committed-ledger count plus one.
+    """
+    if isinstance(look_count, bool) or not isinstance(look_count, int) or look_count < 0:
+        raise ValueError(f"look_count must be a non-negative int, got {look_count!r}")
     n_calendar = max((len(ps.spy) for plist in groups.values() for ps in plist), default=0)
     W = inf.stationary_bootstrap_weights(n_calendar) if n_calendar else np.zeros((0, 0))
     group_results: Dict[str, dict] = {}
@@ -1318,7 +1332,7 @@ def evaluate_family(
                 "v2_blob": st.PREREG_V2_BLOB_SHA,
             },
             "partition": partition,
-            "look_count": 0,
+            "look_count": look_count,
             "groups": group_results,
             "holm": {"order": order, "raw": raw_ps, "adjusted": adjusted},
             "verdicts": verdicts,
@@ -1352,8 +1366,375 @@ def build_groups(
     return groups
 
 
-def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dict:
+SIZE_GATE_REASONS: Tuple[str, ...] = (
+    "SIZE_GATE_ARTIFACT_ABSENT",
+    "SIZE_GATE_UNPARSEABLE",
+    "SIZE_GATE_RULE_MISMATCH",
+    "SIZE_GATE_NOT_SIZED",
+    "SIZE_GATE_CELL_MISSING",
+    "SIZE_GATE_M_BELOW_MIN",
+    "SIZE_GATE_ROW_NOT_SIZED",
+    "SIZE_GATE_NULL_METHOD_MISMATCH",
+    "SIZE_GATE_PREREG_PIN_MISMATCH",
+    "SIZE_GATE_HARNESS_DRIFT",
+)
+
+# The seven gated rows of prereg V2 §3 item 3: each (hypothesis, group) row
+# plus the any-of-6 family row.
+_SIZE_GATE_ROW_NAMES: Tuple[str, ...] = (
+    "defensive_sector/H1",
+    "defensive_sector/H2",
+    "defensive_sector/H3",
+    "broadening_proxy/H1",
+    "broadening_proxy/H2",
+    "broadening_proxy/H3",
+    "family_any",
+)
+
+_SIZE_GATE_SCHEMA = "leadership_rotation.size_gate.v1"
+
+
+class SizeGateNotPassed(RuntimeError):
+    """The committed size-gate artifact does not prove the V2 §3 rule PASSED.
+
+    ``reason`` is always one of ``SIZE_GATE_REASONS`` and ``detail`` names the
+    offending cell / row / path / value, so a refusal is actionable without a
+    second read of the artifact.
+    """
+
+    def __init__(self, reason: str, detail: str) -> None:
+        assert reason in SIZE_GATE_REASONS, f"unknown size-gate reason {reason!r}"
+        super().__init__(f"{reason}: {detail}")
+        self.reason = reason
+        self.detail = detail
+
+
+def _git_blob_sha(data: bytes) -> str:
+    """``git hash-object`` for in-memory bytes: sha1 over the blob header."""
+    import hashlib
+
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def _git_show(repo: str, commit: str, path: str) -> Optional[bytes]:
+    """Committed bytes of ``commit:path``, or None when git cannot show them.
+
+    Reads the commit, never the working tree: the size-gate proof and the look
+    ledger both travel with the commit being read.
+    """
+    import subprocess
+
+    proc = subprocess.run(
+        ["git", "-C", str(repo), "show", f"{commit}:{path}"],
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        return None
+    return proc.stdout
+
+
+def _resolve_commit(repo: str, commit: str) -> str:
+    """Full 40-hex sha for ``commit``; ``ValueError`` when it is not one."""
+    import subprocess
+
+    proc = subprocess.run(
+        ["git", "-C", str(repo), "rev-parse", "--verify", f"{commit}^{{commit}}"],
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        raise ValueError(
+            f"not a commit in {repo}: {commit!r} ({proc.stderr.strip()})"
+        )
+    return proc.stdout.strip()
+
+
+def _wilson_lower(passes: int, m: int) -> float:
+    """Wilson 95 % score lower bound of ``passes / m``.
+
+    Byte-for-byte the ``wilson_interval`` formula of
+    ``scripts/leadership_rotation_p0.py`` (z = 1.959963984540054, ``max(0.0,
+    ...)`` clip included). p0 is NOT imported here: p0 imports this module, so
+    an import in this direction would be circular.
+    """
+    if m <= 0:
+        return float("nan")
+    z = 1.959963984540054
+    phat = passes / m
+    z2 = z * z
+    denom = 1.0 + z2 / m
+    center = (phat + z2 / (2 * m)) / denom
+    margin = z * math.sqrt((phat * (1 - phat) / m + z2 / (4 * m * m))) / denom
+    lo = max(0.0, center - margin)
+    return lo
+
+
+def assert_size_gate_passed(
+    repo: str,
+    *,
+    commit: str = "HEAD",
+    path: str = SIZE_GATE_PATH,
+    runtime_root: Optional[str] = None,
+) -> dict:
+    """Refuse unless the committed artifact proves the V2 §3 gate PASSED.
+
+    Seat ruling T19 F9: protocol landing alone does not authorise a P1
+    real-data read. The committed size-gate artifact must show the prereg V2
+    §3 two-part rule SIZED for every required delta = 0 cell, under the exact
+    harness bytes that will run the read. Checks run in a fixed order and the
+    first failure raises ``SizeGateNotPassed``:
+
+    1. artifact present at ``commit:path``; 2. parses to an object;
+    3. schema/rule/alpha are the registered ones; 4. ``sized is True``;
+    5. every required cell carries all seven rows; 6. every required-cell row
+    ran ``M >= SIZE_GATE_MIN_M`` sims; 7. EVERY row is SIZED by both recorded
+    parts AND by recomputation from its own counts (this is what stops a
+    hand-edited ``flag`` from passing); 8. the H1 null method is the V2 one;
+    9. the prereg blobs match the frozen pins; 10. the recorded harness blobs
+    match both the reading commit's bytes and the runtime bytes.
+
+    Returns the gate identity that ``run_p1`` records in its result.
+    """
+    raw = _git_show(repo, commit, path)
+    if raw is None:
+        raise SizeGateNotPassed(
+            "SIZE_GATE_ARTIFACT_ABSENT",
+            f"no size-gate artifact at {commit}:{path} in {repo}",
+        )
+    try:
+        obj = json.loads(raw.decode("utf-8", "replace"))
+    except ValueError as exc:
+        raise SizeGateNotPassed("SIZE_GATE_UNPARSEABLE", f"{path}: {exc}") from exc
+    if not isinstance(obj, dict):
+        raise SizeGateNotPassed(
+            "SIZE_GATE_UNPARSEABLE",
+            f"{path}: top level is {type(obj).__name__}, expected an object",
+        )
+
+    schema = obj.get("schema")
+    rule = obj.get("rule")
+    alpha = obj.get("alpha")
+    if schema != _SIZE_GATE_SCHEMA or rule != SIZE_GATE_RULE or alpha != 0.025:
+        raise SizeGateNotPassed(
+            "SIZE_GATE_RULE_MISMATCH",
+            f"{path}: schema={schema!r} (want {_SIZE_GATE_SCHEMA!r}), rule={rule!r} "
+            f"(want {SIZE_GATE_RULE!r}), alpha={alpha!r} (want 0.025)",
+        )
+
+    if obj.get("sized") is not True:
+        raise SizeGateNotPassed(
+            "SIZE_GATE_NOT_SIZED",
+            f"{path}: sized={obj.get('sized')!r} is not True",
+        )
+
+    raw_rows = obj.get("rows")
+    rows: List[Any] = raw_rows if isinstance(raw_rows, list) else []
+
+    for cid in SIZE_GATE_REQUIRED_CELLS:
+        present = {
+            r.get("row") for r in rows if isinstance(r, dict) and r.get("cell_id") == cid
+        }
+        missing = [name for name in _SIZE_GATE_ROW_NAMES if name not in present]
+        if missing:
+            raise SizeGateNotPassed(
+                "SIZE_GATE_CELL_MISSING",
+                f"{path}: cell {cid} (delta = 0) is missing row(s) {', '.join(missing)}",
+            )
+
+    for row in rows:
+        if not isinstance(row, dict) or row.get("cell_id") not in SIZE_GATE_REQUIRED_CELLS:
+            continue
+        m = row.get("m")
+        if not isinstance(m, int) or isinstance(m, bool) or m < SIZE_GATE_MIN_M:
+            raise SizeGateNotPassed(
+                "SIZE_GATE_M_BELOW_MIN",
+                f"{path}: cell {row.get('cell_id')} row {row.get('row')!r} ran m={m!r}, "
+                f"need an int >= {SIZE_GATE_MIN_M}",
+            )
+
+    for row in rows:
+        if not isinstance(row, dict):
+            raise SizeGateNotPassed(
+                "SIZE_GATE_ROW_NOT_SIZED", f"{path}: row entry {row!r} is not an object"
+            )
+        where = f"cell {row.get('cell_id')} row {row.get('row')!r}"
+        passes = row.get("passes")
+        m = row.get("m")
+        counts_ok = (
+            isinstance(passes, int)
+            and not isinstance(passes, bool)
+            and isinstance(m, int)
+            and not isinstance(m, bool)
+            and m > 0
+        )
+        wilson: Optional[float] = None
+        rate: Optional[float] = None
+        envelope: Optional[float] = None
+        if counts_ok:
+            wilson = _wilson_lower(passes, m)
+            rate = passes / m
+            envelope = 0.025 + 2 * math.sqrt(0.025 * 0.975 / m)
+        recomputed_ok = bool(counts_ok) and wilson <= 0.025 and rate <= envelope
+        if not (
+            row.get("flag") == "SIZED"
+            and row.get("part_i_ok") is True
+            and row.get("part_ii_ok") is True
+            and recomputed_ok
+        ):
+            raise SizeGateNotPassed(
+                "SIZE_GATE_ROW_NOT_SIZED",
+                f"{path}: {where} fails the V2 §3 two-part rule "
+                f"(flag={row.get('flag')!r}, part_i_ok={row.get('part_i_ok')!r}, "
+                f"part_ii_ok={row.get('part_ii_ok')!r}, passes={passes!r}, m={m!r}; "
+                f"recomputed wilson_lower={wilson!r} must be <= 0.025 and "
+                f"pass_rate={rate!r} must be <= envelope={envelope!r})",
+            )
+
+    if obj.get("h1_null_method") != SIZE_GATE_H1_NULL_METHOD:
+        raise SizeGateNotPassed(
+            "SIZE_GATE_NULL_METHOD_MISMATCH",
+            f"{path}: h1_null_method={obj.get('h1_null_method')!r}, "
+            f"expected {SIZE_GATE_H1_NULL_METHOD!r}",
+        )
+
+    expected_prereg = {
+        "v1_blob": st.PREREG_BLOB_SHA,
+        "v2_blob": st.PREREG_V2_BLOB_SHA,
+        "v2_1_blob": st.PREREG_V2_1_BLOB_SHA,
+    }
+    prereg = obj.get("prereg")
+    pinned = prereg if isinstance(prereg, dict) else {}
+    for key, want in expected_prereg.items():
+        got = pinned.get(key)
+        if got != want:
+            raise SizeGateNotPassed(
+                "SIZE_GATE_PREREG_PIN_MISMATCH",
+                f"{path}: prereg.{key}={got!r}, expected frozen {want!r}",
+            )
+
+    harness = obj.get("harness")
+    raw_blobs = harness.get("blobs") if isinstance(harness, dict) else None
+    blobs = raw_blobs if isinstance(raw_blobs, dict) else {}
+    if set(blobs) != set(HARNESS_MODULES):
+        raise SizeGateNotPassed(
+            "SIZE_GATE_HARNESS_DRIFT",
+            f"{path}: harness.blobs covers {sorted(blobs)}, expected exactly "
+            f"{sorted(HARNESS_MODULES)}",
+        )
+    import subprocess
+
+    root = Path(runtime_root) if runtime_root else Path(__file__).resolve().parents[1]
+    for mod in HARNESS_MODULES:
+        want = blobs[mod]
+        probe = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", f"{commit}:{mod}"],
+            capture_output=True,
+            text=True,
+        )
+        commit_blob = probe.stdout.strip() if probe.returncode == 0 else None
+        if commit_blob != want:
+            raise SizeGateNotPassed(
+                "SIZE_GATE_HARNESS_DRIFT",
+                f"{path}: harness blob for {mod} is {want!r} but the commit side "
+                f"({commit}:{mod}) is {commit_blob or 'absent'}",
+            )
+        try:
+            runtime_blob: Optional[str] = _git_blob_sha((root / mod).read_bytes())
+        except OSError:
+            runtime_blob = None
+        if runtime_blob != want:
+            raise SizeGateNotPassed(
+                "SIZE_GATE_HARNESS_DRIFT",
+                f"{path}: harness blob for {mod} is {want!r} but the runtime side "
+                f"({root / mod}) is {runtime_blob or 'absent'}",
+            )
+
+    return {
+        "path": path,
+        "commit": _resolve_commit(repo, commit),
+        "artifact_blob": _git_blob_sha(raw),
+        "rule": rule,
+        "required_cells": list(SIZE_GATE_REQUIRED_CELLS),
+        "min_m": SIZE_GATE_MIN_M,
+        "h1_null_method": obj["h1_null_method"],
+        "harness_head": harness["head"],
+    }
+
+
+def count_prior_looks(
+    repo: str,
+    *,
+    commit: str = "HEAD",
+    partition: str = "P1",
+    path: str = LOOK_LEDGER_PATH,
+) -> int:
+    """Number of COMMITTED prior looks for ``partition`` at ``commit``.
+
+    An absent ledger is zero looks. A ledger that cannot be read fails closed
+    with ``ValueError`` -- an unreadable ledger must never under-count, because
+    this count is what makes a P1 read a *counted* development look (V1 §2)
+    rather than an unrecorded one.
+    """
+    raw = _git_show(repo, commit, path)
+    if raw is None:
+        return 0
+    count = 0
+    for n, line in enumerate(raw.decode("utf-8", "replace").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            entry = json.loads(line)
+        except ValueError as exc:
+            raise ValueError(f"LOOK_LEDGER_UNPARSEABLE line {n}") from exc
+        if not isinstance(entry, dict):
+            raise ValueError(f"LOOK_LEDGER_UNPARSEABLE line {n}")
+        if entry.get("partition") == partition:
+            count += 1
+    return count
+
+
+def record_look(repo: str, entry: dict, *, path: str = LOOK_LEDGER_PATH) -> Path:
+    """Append one look entry to the ledger in ``repo`` and return its path.
+
+    This is a working-tree append only. The ledger is COUNTED at a commit
+    (``count_prior_looks`` reads ``commit:path`` through git), so a recorded
+    look becomes a prior look for the next read only once it is committed --
+    an uncommitted append changes nothing about the next read's index.
+    """
+    dest = Path(repo, path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with dest.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, sort_keys=True) + "\n")
+    return dest
+
+
+def run_p1(
+    repo: str,
+    *,
+    commit: str = "HEAD",
+    out: Optional[str] = None,
+    record: bool = True,
+) -> dict:
+    """The only P1 real-data reader. Order is binding: refuse before loading.
+
+    Protocol landing (V1 + V2 blobs at the reading head), then the V2.1
+    amendment blob, then the prereg V2 §3 two-part size gate (T19 F9), then
+    the committed look count -- and only then is a single byte of market data
+    read. The result carries the gate identity and the look index, and the
+    look is appended to the ledger unless ``record`` is False.
+    """
+    from datetime import datetime, timezone
+
+    import hashlib
+
     st.assert_protocol_landed(repo, head=commit)
+    st.assert_prereg_landed(
+        repo, head=commit, path=st.PREREG_V2_1_PATH, blob_sha=st.PREREG_V2_1_BLOB_SHA
+    )
+    gate = assert_size_gate_passed(repo, commit=commit)
+    prior = count_prior_looks(repo, commit=commit, partition="P1")
+    look_count = prior + 1
+
     symbols = sorted({s for _id, (_g, num, den) in st.PAIRS.items() for s in (num, den)} | {"SPY"})
     closes, identity = st.load_closes_from_git(repo, commit, symbols)
     calendar = st.session_calendar(closes["SPY"])
@@ -1363,8 +1744,36 @@ def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dic
     aligned = {sym: st.align(closes[sym], calendar) for sym in symbols}
     spy = aligned["SPY"]
     groups = build_groups(aligned, spy, "P1")
-    result = evaluate_family(groups, start=start, end=end, partition="P1")
+    result = evaluate_family(
+        groups, start=start, end=end, partition="P1", look_count=look_count
+    )
     result["inputs"] = identity
+    result["size_gate"] = gate
+    result["look"] = {
+        "index": look_count,
+        "prior_looks": prior,
+        "ledger_path": LOOK_LEDGER_PATH,
+        "ledger_commit": gate["commit"],
+    }
+    if record:
+        payload = json.dumps(
+            _json_sanitize({k: v for k, v in result.items() if k != "look"}),
+            sort_keys=True,
+        )
+        record_look(
+            repo,
+            {
+                "partition": "P1",
+                "look_index": look_count,
+                "commit": gate["commit"],
+                "size_gate_blob": gate["artifact_blob"],
+                "prereg_v2_1_blob": st.PREREG_V2_1_BLOB_SHA,
+                "utc": datetime.now(timezone.utc)
+                .isoformat(timespec="seconds")
+                .replace("+00:00", "Z"),
+                "result_sha256": hashlib.sha256(payload.encode("utf-8")).hexdigest(),
+            },
+        )
     if out:
         Path(out).write_text(json.dumps(_json_sanitize(result), indent=2))
     return result
@@ -1591,13 +2000,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     p1.add_argument("--repo", required=True)
     p1.add_argument("--commit", default="HEAD")
     p1.add_argument("--out")
+    p1.add_argument(
+        "--no-record",
+        action="store_true",
+        help="do not append this read to the look ledger (still counted as a look)",
+    )
     args = parser.parse_args(argv)
     if args.cmd == "controls":
         results = falsifier_controls()
         print(json.dumps(_json_sanitize(results), indent=2))
         return 0 if all(r["passed"] for r in results.values()) else 1
     if args.cmd == "p1":
-        run_p1(args.repo, commit=args.commit, out=args.out)
+        run_p1(args.repo, commit=args.commit, out=args.out, record=not args.no_record)
         return 0
     parser.print_help()
     return 2
