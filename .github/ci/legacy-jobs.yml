@@ -11474,6 +11474,32 @@ jobs:
       - name: ratio lens test suite
         run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
 
+  leadership-rotation-contract:
+    if: ${{ false }}
+    gate: code
+    # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
+    # engine/leadership_rotation_context.py — a stateless display-only projection over the
+    # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
+    timeout-minutes: 10
+    paths:
+      - "engine/leadership_rotation_context.py"
+      - "engine/leadership_receipt.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_events.py"
+      - "engine/sector_cycles.py"
+      - "lib/nyse_calendar.py"
+      - "tests/test_leadership_rotation_contract.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
+      - name: leadership rotation measured-product contract
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
+
   hk-confirming-turn:
     if: ${{ false }}
     gate: code
