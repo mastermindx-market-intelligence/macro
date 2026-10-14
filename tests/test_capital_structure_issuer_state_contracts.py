@@ -865,6 +865,55 @@ def test_financials_bind_per_item_observations_and_corrections_stay_not_built():
         c.GenerationBinding("corrections", None, "unavailable")
 
 
+def test_bound_financials_validate_against_the_state_schema():
+    schema = "capital_structure.financial_item_observation.v1"
+    binding = c.GenerationBinding("financials", schema, "partial", generation_id="gen:fif-cells-2026-10-14")
+    c.validate_state_record("generation_binding", binding.as_record())
+    fact = {"schema": schema, "item_id": "fin:unrestricted_cash:0000000001:2026-06-30", "item_kind": "unrestricted_cash"}
+    c.validate_state_record("capital_inputs", c.CapitalInputs(bindings=(binding,), financials=(fact,)).as_record())
+    refused = {"input_family": "corrections", "schema": schema, "support": "partial", "generation_id": GEN, "artifact_sha256": None, "as_of": None}
+    with pytest.raises(c.ContractViolation, match="not_built"):
+        c.validate_state_record("generation_binding", refused)
+
+
+def _corporate_action(stage, **over):
+    record = {
+        "schema": "capital_structure.corporate_action_observation.v1",
+        "observation_id": f"ca:0000000001:rs-2026-03:{stage}",
+        "action_id": "ca:0000000001:rs-2026-03",
+        "issuer_id": "cik:0000000001",
+        "action_kind": "reverse_split",
+        "stage": stage,
+        "security_class_id": "sec:0000000001:common",
+        "ratio": {"new_shares": "1", "old_shares": "10"},
+        "effective_date": "2026-03-02",
+        "state": {"disposition": "observed", "reason": None},
+        "filing": {"accession": "0000000001-26-000010", "form": "8-K", "filing_date": "2026-02-27"},
+        "evidence": [{"manifest_id": "manifest:0000000001-26-000010", "span_id": f"span:{stage}", "text_sha256": "a" * 64}],
+        "point_in_time": {"available_at": "2026-02-27T21:05:00Z"},
+        "authority": {"selects_denominator": False, "is_context_only": True},
+    }
+    record.update(over)
+    return record
+
+
+def test_corporate_action_observations_bind_as_corporate_actions():
+    schema = "capital_structure.corporate_action_observation.v1"
+    generation = "gen:corporate-actions-2026-10-14"
+    assert c.COMPATIBLE_INPUT_SCHEMAS["corporate_actions"] == (schema,)
+    binding = c.GenerationBinding("corporate_actions", schema, "partial", generation_id=generation)
+    c.validate_state_record("generation_binding", binding.as_record())
+    stages = ("authorization", "vote", "effective", "exchange_adjustment")
+    inputs = c.CorporateActionInputs(binding=binding, actions=tuple(_corporate_action(stage) for stage in stages))
+    assert [action["stage"] for action in inputs.actions] == list(stages)
+    with pytest.raises(c.ContractViolation, match="differs from binding"):
+        c.CorporateActionInputs(binding=binding, actions=(_corporate_action("effective", schema="capital_structure.corporate_action_observation.v2"),))
+    with pytest.raises(c.ContractViolation, match="forbidden property name"):
+        c.CorporateActionInputs(binding=binding, actions=(_corporate_action("effective", probability="0.9"),))
+    with pytest.raises(c.ContractViolation, match="not compatible"):
+        c.GenerationBinding("corporate_actions", "capital_structure.corporate_action_observation.v2", "partial", generation_id=generation)
+
+
 def test_interface_ownership_matches_masterplan_section_nine():
     expected = {
         "engine/capital_structure/issuer_state.py": ("compile_issuer_state", ("StateRequest", "CapitalInputs"), "CapitalState"),
