@@ -739,3 +739,32 @@ merged9150/9152 do not substitute for the real installed owner generation.
 Next: push saved proof/repair to originalPR9066, conclude exact-head gates and
 carry protected release through natural publisher observation and fresh CAS.
 Continue fixture UI/independent acceptance preparation while hosted CI runs.
+
+
+### October14 V14 conflict reconciliation and current owners
+
+PR9066 head1e599 had only authority CI; an actual merge-tree diagnosed six
+generated asset/proof conflicts. Integration now uses protected mainbe8a29c43973.
+Existing builders regenerated GovRev and Research Screener HTML and theme.js;
+the only served delta is the shared assistant's new cache key and corresponding
+theme references. GovRev canonical inputs/generation are unchanged. The new
+shared key invalidated loaded-asset hashes, so both existing HK/CA browser
+verifiers ran again:128cases pass,16screenshots unchanged;136affected tests and
+same-diff closure pass. Old evidence remains retained.20proof dependencies did
+change in protected main; a fresh full Government Revenue proof is required now.
+
+The oversight UI worker returned a terminal provider quota refusal with no patch;
+no retry or replacement. Direct parent preparation is saved separately at26c3539c0152:
+118tests,3scope checks and16synthetic captures pass; absolute packing failures are
+identical before/after at its older baseline. No canonical fact, source access,
+production or independent acceptance is implied. GAO access hold remains pending.
+
+Read-only installed identity-owner inspection found the exact same legacy Oct11
+receipt, stable SHA256d96591309fe348ff410b77a24ef74657fb53ef81b962bdc3b7a4d1a9f0f3d68f,
+without publication/identity-observation seals. Existing owner must supply the
+qualified generation; no DataOS implementation or timestamp invention.
+Original P2 native coordinator is completed, and its previously accepted logout
+repair matches current source; no duplicate implementation. Original capacity
+reviews, P2/Q3 Fabric effects, Terminal778 custody and second entitled subject
+remain as recorded. Next: full proof on this source, samePR exact-head gates,
+then existing protected merge/natural publisher/fresh CAS/release order.
