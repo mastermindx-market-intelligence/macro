@@ -90,6 +90,7 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_projection.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_lineage.py
       - engine/neuralweb/market_memory_trusted.py
       - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
@@ -5840,6 +5841,7 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -7358,7 +7360,7 @@ jobs:
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
         run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
-      # Share one pytest session across the three existing offline EDGAR suites.
+      # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
@@ -12084,6 +12086,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -14072,13 +14075,11 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
-      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
-      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
-      # below stays a single-writer edit point for concurrent research-vault PRs.
-      - name: research vault blank-text typing (F3)
-        run: python -m pytest tests/test_research_vault_blank_text.py -q
-      - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+      # F3/F5-M share LocalStore and seeded-PDF fixtures. One invocation runs both
+      # suites with the ingestion/page tests while preserving their full inferred
+      # dependency ownership. No extra interpreter is needed.
+      - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -16709,12 +16710,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests
-      - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
-        run: python -m pytest tests/test_press_validators.py -q
-      - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
-      - name: press admin panel + workflow shape
-        run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
+      - name: press validator, planner, writer, orchestrator, admin and property suites
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -16731,8 +16728,6 @@ jobs:
       # This job does NOT run `--check`: the trees do not exist yet, so the check
       # would be red on arrival. Wiring it is a follow-up for the session that
       # generates and commits them.
-      - name: press properties + cutover pairing guard
-        run: python -m pytest tests/test_press_properties.py -q
       # Derived-tree drift guard: the committed properties/ trees must byte-match
       # a fresh rebuild from templates + config + ledger. A template or config
       # edit that forgets `python -m scripts.build_press_properties` goes red
@@ -16849,6 +16844,7 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
       - app/account_actions.py
       - app/account_prefs.py
@@ -19852,6 +19848,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -24220,6 +24217,8 @@ jobs:
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - tests/test_market_memory_operating_cortex_service.py
       - tests/test_market_memory_retained_consumer.py
+      - engine/neuralweb/market_memory_lineage.py
+      - tests/test_market_memory_lineage.py
       - "config/intelligence_workspace/**"
       - "engine/prophet_lab/**"
       - "research/research_panels/**"
@@ -25113,7 +25112,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -26292,6 +26291,7 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
