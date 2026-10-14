@@ -25219,6 +25219,7 @@ jobs:
       - "tests/test_market_memory_population.py"
       - "tests/test_market_memory_retained_context_cohort.py"
       - "tests/test_market_memory_technical_store.py"
+      - "tests/test_market_memory_retained_source_metadata.py"
       - "tests/test_market_memory_trusted.py"
       - "tests/test_options_signal_episode.py"
       - "tests/test_ptse_action_context.py"
@@ -25423,6 +25424,7 @@ jobs:
           tests/test_market_memory_breadth_deploy.py
           tests/test_market_memory_technical_observation.py
           tests/test_market_memory_technical_store.py
+          tests/test_market_memory_retained_source_metadata.py
           tests/test_capture_market_memory_technicals.py
           tests/test_market_memory_technicals_deploy.py
           tests/test_market_memory_experience_accrual.py
