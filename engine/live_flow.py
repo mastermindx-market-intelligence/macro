@@ -1502,21 +1502,46 @@ def _accumulate_tide(
 
 
 def _detect_sweeps(combined: pd.DataFrame, sweep_clusters: dict) -> dict:
-    """Return {contract_key: True} for contracts qualifying as sweep-like.
+    """Return {(exp, strike, right): True} for sweep-like contracts in this batch.
 
-    A contract is sweep-like in this batch if, across all recorded prints
-    (current batch + sweep_clusters state):
-      - >= 3 prints
-      - >= 2 distinct exchanges
-      - all prints within a 2-second window
+    Reads ``combined`` only. ``sweep_clusters`` is not read. Prints from earlier
+    batches are not included, so cross-batch sweeps are not detected (GAP).
 
-    Returns a mapping from (exp, strike, right) tuples (as str keys matching
-    the format used in process_batch) to True.
+    A qualifying print has a parseable ``trade_timestamp``
+    (``pd.to_datetime(..., errors="coerce")`` is not NaT) and a non-missing
+    exchange. Missing is None, NaN/NA, or a string that is empty or whitespace
+    after ``strip()``. Venues are compared by that stripped string. The code
+    ``0`` (int or ``"0"``) is not treated as missing.
+
+    A contract is sweep-like iff its qualifying prints have all of:
+      - at least 3 qualifying prints
+      - at least 2 distinct exchanges
+      - a timestamp span of at most 2.0 seconds
+
+    The flag key is ``(exp_str, float(strike), right)``. ``exp_str`` is the
+    grouped expiration parsed with ``pd.to_datetime`` and formatted
+    ``%Y-%m-%d``, or the raw grouped string if that parse fails. ``right`` is
+    the uppercased first character. ``process_batch`` looks the flag up with
+    ``str(expiration)`` on the coalesced row. Frames that reach that lookup
+    already carry canonical ``YYYY-MM-DD`` expiration strings, and
+    ``_coalesce_batch`` writes the same ``%Y-%m-%d`` form back.
 
     This is a LABELED HEURISTIC — not a directional indicator or edge claim.
     """
     if combined.empty or "exchange" not in combined.columns:
         return {}
+
+    def _sweep_venue_token(value: Any) -> str | None:
+        """Stripped exchange, or None when the venue is missing."""
+        if value is None:
+            return None
+        try:
+            if value is pd.NA or bool(pd.isna(value)):
+                return None
+        except (TypeError, ValueError):
+            return None
+        token = value.strip() if isinstance(value, str) else str(value).strip()
+        return token or None
 
     flags: dict = {}
 
@@ -1536,25 +1561,30 @@ def _detect_sweeps(combined: pd.DataFrame, sweep_clusters: dict) -> dict:
         except Exception:  # noqa: BLE001
             exp_str = exp_raw
 
-        n_prints = len(grp)
-        if n_prints < 3:
+        if "trade_timestamp" not in grp.columns:
             continue
-
-        exchanges = set(grp["exchange"].astype(str).tolist())
-        if len(exchanges) < 2:
-            continue
-
-        # Check timestamp span <= 2s
-        if "trade_timestamp" in grp.columns:
-            try:
-                ts_vals = pd.to_datetime(grp["trade_timestamp"], errors="coerce").dropna()
-                if len(ts_vals) >= 3:
-                    span = (ts_vals.max() - ts_vals.min()).total_seconds()
-                    if span <= 2.0:
-                        ckey = (exp_str, strike_v, right_v)
-                        flags[ckey] = True
-            except Exception:  # noqa: BLE001
-                pass
+        try:
+            ts_vals = pd.to_datetime(grp["trade_timestamp"], errors="coerce")
+            venues = grp["exchange"].map(_sweep_venue_token)
+            qualified = ts_vals.notna() & venues.map(
+                lambda token: isinstance(token, str) and bool(token)
+            )
+            if int(qualified.sum()) < 3:
+                continue
+            venue_set = {
+                token for token in venues.loc[qualified].tolist()
+                if isinstance(token, str) and token
+            }
+            if len(venue_set) < 2:
+                continue
+            span = (
+                ts_vals.loc[qualified].max() - ts_vals.loc[qualified].min()
+            ).total_seconds()
+            if span <= 2.0:
+                ckey = (exp_str, strike_v, right_v)
+                flags[ckey] = True
+        except Exception:  # noqa: BLE001
+            pass
 
     return flags
 

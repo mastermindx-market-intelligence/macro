@@ -18,7 +18,7 @@ body.page-vector::before{opacity:.46}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub::after{left:auto;right:100%}
 .vector-wrap{width:min(1320px,calc(100% - 48px));margin:0 auto;padding:4px 0 76px}
 .vector-sectionbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border-bottom:1px solid var(--line)}
-.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none}
+.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-padding-inline:12px}
 .vector-tabs::-webkit-scrollbar{display:none}
 .vector-tabs a{position:relative;display:flex;align-items:center;min-height:48px;color:var(--muted);
   font-size:12.5px;font-weight:560;text-decoration:none;white-space:nowrap}
@@ -165,7 +165,7 @@ a{color:var(--ink-link, var(--link))}
 .complex-name{margin-top:5px;font-weight:680;font-size:12px}
 .complex-value{font:740 13px/1 var(--num);font-variant-numeric:tabular-nums;white-space:nowrap}
 .complex-chart{margin:7px 0 3px}
-.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}
+.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}.complex-null{grid-column:1/-1;margin:0;padding:16px;color:var(--muted);font-size:12.5px;line-height:1.5}
 
 /* S6 — study shelf */
 .study-list{border-top:1px solid var(--line)}
@@ -268,7 +268,7 @@ a{color:var(--ink-link, var(--link))}
 }
 @media(max-width:780px){
   .vector-wrap{width:min(100% - 24px,1320px)}.shelf-inner{padding:18px 0}
-  .vector-tabs{gap:20px}
+  .vector-tabs{gap:20px;padding-inline-end:28px;-webkit-mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent)}
   .hero{padding:22px 0}.hero-read{grid-template-columns:1fr;gap:20px}
   .hero-position{border-left:none;border-top:1px solid var(--line);padding:18px 0 0}
   .overview-instrument{grid-template-columns:1fr}.overview-side{display:grid;grid-template-columns:repeat(2,1fr);align-items:start}
