@@ -3571,6 +3571,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -17210,6 +17211,7 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
       - engine/company_intelligence/issuer_disclosures.py
+      - engine/company_intelligence/communications_profiles.py
       - engine/company_intelligence/issuer_profiles.py
       - engine/company_intelligence/pg_envelope.py
       - engine/company_intelligence/pg_profile.py
@@ -20167,6 +20169,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -24651,6 +24654,7 @@ jobs:
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
       - "engine/company_intelligence/issuer_disclosures.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -28338,6 +28342,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/mining_issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
