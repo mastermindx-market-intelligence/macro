@@ -1,0 +1,16 @@
+[Unit]
+Description=Mastermind preemptible local inference resource envelope
+Before=slices.target
+
+[Slice]
+CPUAccounting=true
+MemoryAccounting=true
+IOAccounting=true
+TasksAccounting=true
+CPUQuota=400%
+CPUQuotaPeriodSec=100ms
+CPUWeight=10
+IOWeight=10
+MemoryHigh=12G
+MemoryMax=16G
+MemorySwapMax=2G
