@@ -581,10 +581,14 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D76 snapshot.) Rows superseding older rows below:
+(D77 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | RUNNING on mmx-ubuntu3, lane `f02-q2`, pid 2372466, from 2026-10-14T02:24:03Z. Base `a0fa9004`; branch `claude/f02q2-unknown-expiry-not-0dte-20261013`. Overlap scan of 704 open PRs: 0 hits. One watcher. PR is the seat's, after artifact judgment (D77) |
+| #985 OATRUTH (+N02-U2) | Refreshed to `ff1655df` (merge with #983 `ba29ba3b`, tree `751e27f5` = prediction). CI run 38499984163 in progress; one watcher. Deploy plus live verify follow its merge (D77) |
+| #983 | MERGED 2026-10-14T02:11:40Z `ba29ba3b`. Deploys with #985's master tip (D77) |
+| Macro #9094 | MERGED 2026-10-13T19:52:51Z `091c1fb6` (D77) |
 | N02-U2 (latent) | ALREADY CARRIED by the seat's own #985 (OATRUTH): `asDisposition` returns `degraded` for an unknown value at head `9c5a244d`, and test `OATRUTH disposition default › R5` pins it through `normalizeCandidateFeed`. No new lane; it ships with #985 (D76) |
 | #948 | PRODUCTION_PROOF (D75): merged `afae6020`; `.deployment-id`, `.gitsrc` HEAD and public `data-dpl-id` agree; edge chunk `1304p4nhxan10.js` carries `usRegularSessionWindow(...)` and has 0 hits for `l>=570&&l<960`; the quote-hub restart at 01:52:59Z serves master hashes; proof comment 6159152201. DO_NOT_REDO the proof or the comment |
 | CENSUS wave 3 | all 12 judged (D75). F03, F04, U03, U04 and N02 transitions: NO-BUILD. M04: red specs FROZEN, gated on #8684/#8920. V03-A03: reclassified PROVEN-BY-RECEIPT, because the #781 engine sha256 `5e1a5259…` equals the 10-02 Fraction-oracle engine (5948959305). #781 finding comment 6159214546. Deferred upgrades are listed in D75 |
@@ -1775,3 +1779,30 @@ The check behind the retraction was an open-PR sweep of `terminal/components/pro
 N02 upgrade 1 (a plain sentence for each reason code) is also inside #985's scope ("Plain reasons … for every one of the ten producer codes").
 
 So no new lane is needed: the N02 upgrade work ships when #985 merges and deploys. Remaining NEXT: #985/#983 merge, then the git-gated deploy and live verify; Macro D04-A2 after #8923 merges; M04 red specs after #8684/#8920 land.
+
+### D77 (2026-10-14T02:30Z) — #983 merged; #985 refreshed onto it; F02-Q2 launched on ubuntu3 after a clean 704-PR overlap scan
+
+Facts observed this cycle (each read from GitHub or the host, not from memory):
+- Terminal #983 MERGED at 2026-10-14T02:11:40Z as `ba29ba3bb5aed9d40a0b495943e414ed6a42c298`.
+- Terminal #985 (OATRUTH, carries N02-U2) was BEHIND strict master. It was refreshed server-side with the user token (`PUT …/pulls/985/update-branch`, `expected_head_sha` = `9c5a244d`). New head `ff1655dfbace07cc300f637cf1e1bf3daa6f6907` = merge of `9c5a244d` + `ba29ba3b`, tree `751e27f5`, which equals the `git merge-tree` prediction. CI run 38499984163 (`pull_request`) is in progress; one watcher (`w_985_ff1655_d77`) is armed. Its deploy follows its merge (git-gated, `--target-sha` = the master tip carrying #983 and #985).
+- Macro #9094 (OA-3 excluded records keep contract identity) MERGED 2026-10-13T19:52:51Z as `091c1fb6`; not previously recorded.
+- Macro #8920, #9079, #9083 and #8923 are still OPEN with `merge-on-green`. They are controller-owned, and the seat does not touch them. #8920 is carrying `merge-refresh-in-flight`.
+- Terminal #723 is OPEN at the coordinator head `bd76f2c9`. Its writer is the Codex coordinator; monitored only.
+
+F02-Q2 (frozen at D59; unreadable or past expiry → `unknown`, never 0DTE):
+- Gates: #9080 MERGED 2026-10-13T16:45:37Z (`f1fc07bf`); F02-Q2T (#986) is live. Both gates are met.
+- Overlap scan (O.1): all 704 open Macro PRs were listed through REST. Each PR's full file list was paginated. No PR touches `engine/live_flow.py`, `tests/test_live_flow.py` or `tests/test_flow_enrich.py`. 675 PRs were OK on the first pass; 29 network timeouts were retried and returned OK. Zero hits. Output: `$S/macro_overlap_scan.txt` and `$S/macro_overlap_scan_retry.txt`.
+- Snapshot refresh: origin/main had moved to `a0fa900488db2f9270a2ce5cda6f7418a87eb86f`. No commit between `c035cf75` and `a0fa9004` touches the owned or consumer files. The frozen snapshots predated #9080, which changed only the sweep heuristic and none of the F02-Q2 functions. They were replaced with `a0fa9004` content; the old copies are kept in `src_pre9080/`. The commission text itself is unchanged.
+- Launch: Grok lane `f02-q2` on mmx-ubuntu3 (`pool hosts minimax` ELIGIBLE, score 0.9160). Worktree `/home/ubuntu3/lanes/wt/f02-q2`, branch `claude/f02q2-unknown-expiry-not-0dte-20261013` at `a0fa9004`, grok-4.7, 190 turns, 18000 s. LAUNCHED at 2026-10-14T02:24:03Z, pid 2372466. One watcher (`watch_lane.sh … 19000 300`) is armed. The lane pushes only; the seat opens the Macro PR after judging the artifact.
+
+Host table snapshot (`pool hosts minimax`, 02:23Z):
+- ubuntu3 ELIGIBLE 0.9160;
+- ubuntu0 ELIGIBLE 0.7571;
+- ubuntu2 ELIGIBLE 0.6461;
+- pc INELIGIBLE (ssh_unreachable, stale 261967 s). This is a refusal, not routed around.
+
+NEXT:
+1. #985 watcher event → if MERGED, git-gated deploy of the master tip and live verify at 1440×900, 820×1180 and 390×844. Check #723's release state first so the two do not overlap.
+2. F02-Q2 watcher event → judge by artifact (RED-at-base table, gates, hunks). Then open a Macro PR, label only.
+3. After #8923 merges: D04-A2 and R04-B1.
+4. After #8920 merges: R04-B2, plus the M04 red specs (also gated on #8684).
