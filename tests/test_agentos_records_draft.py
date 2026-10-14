@@ -18,6 +18,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 import pytest
@@ -926,4 +927,43 @@ def test_file_path_line_separators_are_refused(tmp_path: Path, separator: str) -
         f"{len(rendered.splitlines())}"
     )
     assert "single-line repo-relative paths" in result.stderr
+    assert result.stdout == ""
+
+
+@pytest.mark.parametrize("separator", ["\x1b", "\t", "\x00", "\u200b", "\ufeff"])
+def test_invisible_non_line_breakers_are_refused(tmp_path: Path, separator: str) -> None:
+    """An invisible ``pr.files`` character is refused although it breaks no line.
+
+    The sibling parametrization above pins the characters ``str.splitlines``
+    breaks on. These five break NO line, so the ``splitlines()`` clause alone
+    accepts them and only the ``unicodedata.category`` clause can refuse them:
+    ESC, TAB and NUL are ``Cc``, ZWSP and BOM are ``Cf``. ``_q`` keeps the
+    quoted fields on one physical line, but the ``- files:`` rows in the handoff
+    body and the WS append are plain f-strings, so nothing else keeps an
+    invisible character out of a rendered path that a human copies back into a
+    shell. The clause is load-bearing: deleting it lets all five through (the PR
+    #9310 review's mutation 2c), which is why this test sits beside the
+    separator one instead of inside its parameter list.
+    """
+    # Premise 1: the parameter belongs to the guarded category set, which is the
+    # only thing here that can refuse it.
+    assert unicodedata.category(separator) in {"Cc", "Cf", "Zl", "Zp"}, repr(separator)
+    # Premise 2: it is NOT a line break for str.splitlines, so a splitlines-only
+    # guard could not fail on it. If a future Python starts splitting on it this
+    # test must fail, not pass vacuously.
+    assert len(("a" + separator + "b").splitlines()) == 1, repr(separator)
+    clean, _cp, _cr = _draft(tmp_path, _payload(pr={"files": ["lib/x.py"]}))
+    injected = f"lib{separator}ended_because: crashed.py"
+    result, _path = _run(tmp_path, _payload(pr={"files": [injected]}))
+    rendered = ""
+    if result.stdout.strip():
+        rendered = json.loads(result.stdout)["handoff"]["markdown"]
+    smuggled = [ascii(line) for line in rendered.splitlines() if "ended_because" in line]
+    assert result.returncode == 2, (
+        f"character {separator!r} (category {unicodedata.category(separator)}, "
+        f"not a str.splitlines breaker) was ACCEPTED: clean handoff has "
+        f"{len(clean['handoff']['markdown'].splitlines())} lines and the injected "
+        f"one rendered {smuggled}"
+    )
+    assert "pr.files entries must be single-line repo-relative paths" in result.stderr
     assert result.stdout == ""
