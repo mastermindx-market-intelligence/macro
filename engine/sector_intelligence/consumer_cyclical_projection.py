@@ -887,6 +887,28 @@ def _result_provenance(
     return out
 
 
+def _envelope_side_contradicts(side: Any) -> bool:
+    """Does one period-fact envelope contradict the stated definition?
+
+    The per-side logic of ``_stated_definition_contradicted``'s side loop,
+    factored out (W15-F-FUY item 1) so the ``_emit_result`` backstop checks
+    BOTH envelope sides with the SAME comparisons instead of duplicating
+    them. A non-Mapping side cannot contradict: the envelope is simply
+    absent, and the predicate shares that behaviour -- it treats an absent
+    side as non-contradicting. The ``_emit_result`` BACKSTOP is
+    deliberately stricter on the CURRENT side only: it withholds a
+    non-``_pct`` row whose ``current_period_fact`` is not a Mapping at
+    all, because ``main`` read that missing side's quantum as ``None`` and
+    withheld the row. An absent PRIOR side stays non-contradicting in the
+    backstop too.
+    """
+    return isinstance(side, Mapping) and (
+        side.get("unit") != _STATED_DEFINITION_UNIT
+        or side.get("scale_power10") != _STATED_DEFINITION_SCALE
+        or side.get("display_quantum") != _STATED_DEFINITION_QUANTUM
+    )
+
+
 def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     """Project an internal result envelope onto the contract's closed shape.
 
@@ -925,16 +947,53 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         result, basis=basis, definition=definition, display_quantum=quantum
     )
     if not key.endswith("_pct") and not filled.get("withheld_reason"):
+        # BACKSTOP: ``_screen_stated_definition`` has already withheld every
+        # contradicting row in ``project_economic_change`` before the
+        # availability verdict and the explanation lead were computed, so a
+        # row reaching this branch with no ``withheld_reason`` matches the
+        # stated definition and the check no-ops; it is kept as a
+        # no-op-safe guard for this emit path itself.
         # The USD-thousands family only. The ratio describes itself as a
-        # percentage and says nothing about a currency, so it is unaffected.
-        source = filled.get("current_period_fact")
-        source_quantum = (
-            source.get("display_quantum") if isinstance(source, Mapping) else None
-        )
+        # percentage and says nothing about a currency, so it is unaffected
+        # -- the ``not key.endswith("_pct")`` guard above exempts it exactly
+        # as ``_screen_stated_definition`` skips it.
+        # Both envelope sides are now checked with the predicate's own
+        # per-side logic (W15-F-FUY item 1): the old trigger read only the
+        # CURRENT side's quantum, so the backstop itself still carried
+        # defect D2's prior-side asymmetry -- a row with an EUR /
+        # ``scale_power10`` 6 / ``1_million`` PRIOR envelope published
+        # through this path alone. Behaviour-neutral through
+        # ``project_economic_change``: the screen runs the predicate on
+        # both sides first, and the ``not filled.get("withheld_reason")``
+        # guard above keeps any existing reason.
+        # RESTORED STRICTNESS (W15-F-G, PR #9343 review): the predicate
+        # and ``_envelope_side_contradicts`` treat an ABSENT envelope side
+        # as non-contradicting -- a side that is simply not there cannot
+        # make a claim that conflicts with the stated definition. This
+        # backstop is deliberately stricter on the CURRENT side: a
+        # non-``_pct`` row whose ``current_period_fact`` is not a Mapping
+        # is withheld, exactly as on ``main``, where the trigger read the
+        # missing side's ``display_quantum`` as ``None`` and compared that
+        # against the stated quantum. An absent PRIOR side stays
+        # non-contradicting: ``main`` never read the prior side, so
+        # withholding for its absence would be a new tightening beyond
+        # the restored baseline.
         if (
             filled.get("unit") != _STATED_DEFINITION_UNIT
             or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
-            or source_quantum != _STATED_DEFINITION_QUANTUM
+            or not isinstance(filled.get("current_period_fact"), Mapping)
+            or _envelope_side_contradicts(filled.get("current_period_fact"))
+            or _envelope_side_contradicts(filled.get("prior_period_fact"))
+            # Row-level mirror of ``_stated_definition_contradicted``'s
+            # defensive clause (#9318 review nit 4, W15-F-FUR item 4): a
+            # row that ARRIVES pre-stamped with a ``display_quantum``
+            # differing from the stated-definition quantum contradicts just
+            # like an envelope. Behaviour-neutral for every reachable input
+            # -- for internal rows the ``setdefault`` in
+            # ``_result_provenance`` has just minted the key's canonical
+            # quantum (``1_thousand`` for this non-``_pct`` family) into
+            # ``filled`` a few lines above, so this comparison no-ops.
+            or filled.get("display_quantum") != _STATED_DEFINITION_QUANTUM
         ):
             filled["value_text"] = None
             filled["withheld_reason"] = _DEFINITION_CONTRADICTED
@@ -946,6 +1005,112 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     if isinstance(refs, list):
         filled["input_refs"] = list(dict.fromkeys(refs))
     return {k: v for k, v in filled.items() if k in _CONTRACT_RESULT_KEYS}
+
+
+def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
+    """Does one USD-thousands result contradict the definition it states?
+
+    The row's own ``unit`` / ``scale_power10`` against the stated-definition
+    constants, AND BOTH envelope sides -- ``current_period_fact`` and
+    ``prior_period_fact``, each built by ``_fact_to_envelope`` and carrying
+    ``unit``, ``scale_power10`` and ``display_quantum``. The trigger that
+    lived only in ``_emit_result`` read only the current side, so a
+    prior-side contradiction published (independent PR #9285 review,
+    defect D2); the row's own ``display_quantum`` is minted per key only
+    at emit time (see ``_screen_stated_definition``), so the quantum
+    claim is checked on the envelopes -- plus one defensive clause: a
+    row that itself carries a ``display_quantum`` differing from the
+    stated-definition quantum contradicts, exactly like an envelope.
+
+    ``_pct`` keys are exempt: the ratio describes itself as a percentage
+    and says nothing about a currency, so a ``_pct`` key returns False
+    unconditionally -- mirroring the ``key.endswith("_pct")`` skip in
+    ``_screen_stated_definition`` (which stays in place) so the predicate
+    is SELF-SUFFICIENT for a direct caller. Before this mirror the
+    exemption lived only in the screen, and a direct call on a ratio row
+    stamped ``"0.01_percent"`` -- the quantum ``_emit_result`` mints for
+    every ``_pct`` key -- contradicted on the defensive row-level clause
+    (#9318 independent review, nit 3; W15-F-FUR item 3).
+    """
+    if str(result.get("key") or "").endswith("_pct"):
+        return False
+    if (
+        result.get("unit") != _STATED_DEFINITION_UNIT
+        or result.get("scale_power10") != _STATED_DEFINITION_SCALE
+    ):
+        return True
+    if "display_quantum" in result and (
+        result.get("display_quantum") != _STATED_DEFINITION_QUANTUM
+    ):
+        # Defensive: no internal row carries display_quantum when the
+        # screen runs -- it is minted afterwards by the setdefault in
+        # _result_provenance -- so this clause is behaviour-neutral for
+        # every reachable input today. If a pre-stamped row ever reaches
+        # the screen, its own quantum contradicts like an envelope does.
+        return True
+    for side_key in ("current_period_fact", "prior_period_fact"):
+        if _envelope_side_contradicts(result.get(side_key)):
+            return True
+    return False
+
+
+def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
+    """Withhold contradicting internal results IN PLACE, before the verdicts.
+
+    Sets the module's existing withheld state literal ``"WITHHELD"`` (the
+    one ``_withheld_result`` builds), ``value_text``/``value_decimal`` to
+    ``None`` and the existing ``_DEFINITION_CONTRADICTED`` reason -- no new
+    vocabulary. The ``_pct`` ratio stays exempt exactly as the check in
+    ``_emit_result`` exempted it (the ratio describes itself as a
+    percentage and says nothing about a currency); which ratio cases
+    withhold does not change. A row already withheld keeps its own reason.
+
+    The screened rows are INTERNAL envelopes, and the row's own
+    ``display_quantum`` is absent on every internal row when this screen
+    runs: it is filled only afterwards, at emit time, by the
+    ``out.setdefault("display_quantum", display_quantum)`` in
+    ``_result_provenance`` that ``_emit_result`` calls. So the quantum
+    claim of the stated definition is checked on the two envelope sides,
+    ``current_period_fact`` and ``prior_period_fact``, each of which
+    carries ``display_quantum`` from fact ingestion. The predicate keeps
+    one defensive clause -- a row that itself arrives with a
+    ``display_quantum`` differing from the stated-definition quantum is
+    withheld exactly like an envelope contradiction -- but no reachable
+    input triggers it today.
+
+    ``advertising_net_change`` is arithmetic on the two advertising change
+    ROWS: when one of them is withheld here while the net row's own
+    envelopes are clean, the net value derives from a withheld row and
+    cannot publish. It is then withheld with the build branch's own
+    existing reason, ``dependency_suppressed`` -- the same verdict the net
+    derivation reaches when a constituent is not READY at build time
+    (review defect D1: the emitted expense row was withheld while ``-4``
+    computed from it still published).
+    """
+    for result in results:
+        key = str(result.get("key") or "")
+        if key.endswith("_pct") or result.get("withheld_reason"):
+            continue
+        if _stated_definition_contradicted(result):
+            result["state"] = "WITHHELD"
+            result["value_text"] = None
+            result["value_decimal"] = None
+            result["withheld_reason"] = _DEFINITION_CONTRADICTED
+
+    by_key = {str(r.get("key")): r for r in results}
+    net = by_key.get(RESULT_KEY_ADVERTISING_NET_CHANGE)
+    if net is not None and not net.get("withheld_reason"):
+        for constituent_key in (
+            RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+            RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        ):
+            constituent = by_key.get(constituent_key)
+            if constituent is not None and constituent.get("withheld_reason"):
+                net["state"] = "WITHHELD"
+                net["value_text"] = None
+                net["value_decimal"] = None
+                net["withheld_reason"] = "dependency_suppressed"
+                break
 
 
 def _make_change_result(
@@ -1699,6 +1864,14 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     all_results: list[dict[str, Any]] = [
         results_by_key[k] for k in sorted(results_by_key.keys())
     ]
+
+    # ---- Stated-definition screen ---------------------------------------
+    # Runs on the internal rows AFTER all derived rows are built and BEFORE
+    # the availability verdict and the explanation below are computed from
+    # ``state``, so availability, the lead and the emitted rows agree
+    # (independent PR #9285 review, defects D1/D2: the check used to live
+    # only inside ``_emit_result``, which runs after both).
+    _screen_stated_definition(all_results)
 
     # ---- Availability ----------------------------------------------------
     has_any_ready = any(r.get("state") == "READY" for r in all_results)

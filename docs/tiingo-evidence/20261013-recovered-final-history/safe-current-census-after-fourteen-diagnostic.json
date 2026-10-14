@@ -1,0 +1,53 @@
+{
+  "schema": "tiingo.current_qualified_census_with_actual_later_repair/v1",
+  "projected_rows_across_receipts": 100627197,
+  "later_repair_result_sha256": "6a58cb292c0e70108eb52b5020ce9608e7b6e913cb28b5593fe30d515bc25a60",
+  "all_this_repair_qualification_effects_accepted": true,
+  "accepted_receipts": 47716,
+  "observed_at_utc": "2026-10-14T05:03:29.148093+00:00",
+  "canonical_identity_admitted": false,
+  "candidate_capture_status_counts": {
+    "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 47564,
+    "CAPTURED_EMPTY_RESPONSE": 117,
+    "UNCAPTURED_CATALOGUE_WINDOW": 5,
+    "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+  },
+  "failed_vendor_requests_not_retried": false,
+  "pit_backtest_eligible": false,
+  "known_uncaptured_attempted_candidates": [
+    {
+      "ticker": "DTV_1",
+      "outcome": "HTTP_404_SOURCE_NOT_ADMITTED"
+    },
+    {
+      "ticker": "DVVDF",
+      "outcome": "HTTP_403_SOURCE_NOT_ADMITTED"
+    },
+    {
+      "ticker": "DVXB",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    },
+    {
+      "ticker": "DVYA",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    },
+    {
+      "ticker": "EA",
+      "outcome": "HTTP_403_DURING_INCORRECT_CREDENTIAL_ARGUMENT_HELD_NO_RETRY"
+    }
+  ],
+  "accepted_distinct_bars": 100626945,
+  "accepted_nonempty_ticker_histories": 47564,
+  "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+  "missing_candidate_count": 8,
+  "all_this_repair_raw_operations_settled": true,
+  "original_failed_attempts_retained": true,
+  "full_programme_acceptance": false,
+  "original_census_sha256": "c54a2c3c070d14c2a98ad5bd874de919e1704d177bcf0723ed203af67d03ea96",
+  "current_census_sha256": "e28d1918ed3d0ed2446c3bdb2849bcb60890243415257f7193e843139798fd2b",
+  "original_census_file": "eod-qualified-current-census-after-eleven-later-repair01.json",
+  "historical_predecessor_eleven_later_repair_result_sha256": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+  "historical_original4392_fact": "4381 valid + 1 source-quality quarantine + 10 attempted failures + 0 never admitted; retained unchanged. The later repair is separate.",
+  "historical_original14_failed_attempts_preserved": true,
+  "original90730_terminal_unknown_not_reconstructed": true
+}

@@ -4,11 +4,12 @@ A later page can mount this packet. It copies the explanation lead,
 ``advertising_net_change`` and the document's ``availability`` verdict from
 ``project_economic_change`` and records whether the shared curation contract
 is importable. An ``unavailable`` document stays ``unavailable`` on the
-packet, and a withheld advertising row is reported as withheld, not absent. The packet is the
-synthetic fixture's reading: ``filing_claim`` is false, ``provenance`` is
-``synthetic_fixture``, and a fact with ``native_admitted`` true raises a
-Cyclical-owned refusal instead of returning a packet. This module does
-not present that lead as a filing, and the projection does not import it.
+packet, and a withheld advertising row is reported as withheld, not absent.
+The packet is the synthetic fixture's reading: ``filing_claim`` is false,
+``provenance`` is ``synthetic_fixture``, and a fact with ``native_admitted``
+true raises a Cyclical-owned refusal instead of returning a packet. This
+module does not present that lead as a filing, and the projection does not
+import it.
 """
 
 from __future__ import annotations

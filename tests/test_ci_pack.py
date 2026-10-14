@@ -4300,6 +4300,9 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
+    # exclusive scope is its measured literal closure (no fallback smear).
+    "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
@@ -4795,6 +4798,20 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-14: rotation AST/render fallback curation; retain full static
+    # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
+    # 2026-10-14 RIC E0 (#9282): the M0/X0 retrospective-runner suites reach
+    # the release-forecast stack, whose collector and neuralweb imports made
+    # inference select the job on the build_free_content probe (135 > 134
+    # jobs, check_contract_delta: 1 introduced). scope: exclusive pins it to
+    # its declared static import closure; ceilings stay fixed.
+    "ric-e0-retrospective-runners",
+    # 2026-10-14 LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the prereg
+    # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
+    # scope: exclusive pins the job to its measured suite_dependency_closure.
+    "leadership-rotation-science",
 }
 
 
@@ -5003,9 +5020,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 129, 5_600),
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5013,6 +5030,38 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
+    ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
+    Hosted contract-delta run 38568750084 / job 115868075914 measured
+    published 1b7916353dd4 on tested merge 7c610b6d8a77, base b4a515dcbab3:
+    eval-os-a1 is the sole entrant on that probe; no job leaves.
+    This job is already exclusive, and its builder dependency is real:
+    test_admin_server -> admin/server -> admin/press -> desk_planner ->
+    research_triage -> validators -> scripts/build_free_content._validate.
+    The other owners of the generic server/response suites are DATA-gated;
+    removing those suites would lose the required ordinary-PR proof.
+
+    On that exact tested merge, after adding the five missing A1 inputs,
+    canonical full-closure and packing measurements at 2026-10-14T14:25Z:
+
+        templates/index.html          135 jobs / 5,684 weight / 10 packs
+        scripts/build_free_content.py 135 jobs / 5,502 weight / 10 packs
+        engine/prophet/plan_book.py   129 jobs / 5,445 weight / 10 packs
+
+    A1 selects only the middle probe. Its closure is complete; the sole
+    remaining closure miss is leadership-rotation-science's inherited
+    rates input, already repaired separately on current main. Re-base only
+    the middle JOB ceiling to its exact measurement, without padding.
+    Current main 190311584167 already owns the neighboring 136/130 job
+    ceilings from the Market Memory / Leadership Rotation decision. Preserve
+    those exact protected-main values in the final integration; this
+    introduces no new baseline decision for either probe. All WEIGHT/PACK
+    ceilings, all eight A1 suites, existing job definitions and the selector
+    stay unchanged. Full source,
+    measurement and corrected advisory-review evidence lives under
+    research/evidence/eval-os-20261012/a1-ci-delta-20261014/.
+    Fresh checks of the final containing source remain mandatory.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
@@ -5685,6 +5734,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     In the same run, build_free_content was already at 5,602 against its
     5,600 ceiling on the base. That was reported as inherited, not
     introduced, and is left for a separate heal.
+
+    2026-10-14 (Market Memory UI integration with Leadership Rotation):
+    hosted run 38530236436 on merge 2d524d3e1 of b3f9739 into
+    703477f0 reproduced two JOB-only breaches. Full inference on current
+    main union 44cc567d1edf (base 05bcc762fb16; all 313 jobs retained)
+    measures 136 / 134 / 130 jobs and 5,678 / 5,475 / 5,441 weight,
+    with ten packs for every probe. The two genuine main entrants are
+    lr-rotation-evidence-modes on templates/index.html (its imported
+    sector-cycle suites conservatively own templates/**), and
+    leadership-rotation-contract on plan_book.py (engine/** fallback).
+    Each weighs four; neither selects build_free_content.py.
+
+    Fund only those measured counts: 135 -> 136 and 129 -> 130.
+    Keep every suite and conservative dependency claim, the build-script
+    count ceiling 134, all weight ceilings, and the ten-pack limit.
+    Narrowing either job without a complete closure audit would discard
+    coverage, while padding counts beyond the exact measured entrants
+    would hide the next change. No selector or runtime source is edited.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
@@ -6589,3 +6656,388 @@ def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_
         assert "unowned path" not in reason, reason
     selected, reason = PACK.select_jobs(jobs, ["tests/test_dataos_price.py"])  # ci-trigger-closure: data — synthetic diff
     assert not selected, reason
+
+
+# ---------------------------------------------------------------------------
+# W15-F-AIC lane — REPORT-ONLY ancestor-init census for curated-exclusive jobs.
+#
+# Importing a module executes every ancestor package's ``__init__.py``, but the
+# closure the curator audits is literal paths: a non-declared ``__init__.py``
+# is exactly the silent scope gap the curated tier exists to prevent. These
+# tests pin the pure census function and the ``--ancestor-init-census`` report
+# flag. Building the manifest, inits, and paths under ``tmp_path`` keeps the
+# suite hermetic from HEAD's manifest and any other branch's history. The
+# isolation mechanism is EXPLICIT, not the location of ``tmp_path``: the
+# pure-function tests pass ``repo_root=tmp_path`` directly, and the CLI test
+# runs its subprocess with ``GIT_CEILING_DIRECTORIES`` set to the fixture's
+# PARENT so the git discovery inside ``_find_repo_root`` cannot chdir up out
+# of the fixture tree (git never excludes the cwd itself, only the dirs it
+# would chdir up into). Without that ceiling, a ``--basetemp`` placed inside
+# a checkout makes the census resolve against the enclosing checkout and
+# silently print ``pairs=0`` instead of the fixture's pairs.
+# ---------------------------------------------------------------------------
+
+
+def _aic_manifest(tmp_path: Path, *, job_id: str, paths: list[str]) -> Path:
+    """Write a one-job legacy manifest declaring ``paths`` literally."""
+    workflow = tmp_path / "legacy.yml"
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    job_id: {
+                        "if": PACK.DISABLED_IF,
+                        "runs-on": "ubuntu-latest",
+                        "scope": "exclusive",
+                        "paths": list(paths),
+                        "steps": [
+                            {
+                                "name": "ancestor-init fixture",
+                                "run": "echo fixture",
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    return workflow
+
+
+def _aic_optional_init(directory: Path, *, body: bytes = b"") -> None:
+    """Materialise ``__init__.py`` in ``directory`` with ``len(body)`` bytes."""
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "__init__.py").write_bytes(body)
+
+
+def _aic_load(workflow: Path) -> list[PACK.LegacyJob]:
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert len(jobs) == 1 and jobs[0].exclusive, [j.job_id for j in jobs]
+    return jobs
+
+
+def test_ancestor_init_census_two_inits_with_right_bytes(tmp_path: Path) -> None:
+    """(a) two inits neither declared — exactly two findings, right bytes."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-a", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package pkg\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    assert len(findings) == 2, findings
+    by_init = {f.init_path: f for f in findings}
+    assert by_init["pkg/__init__.py"].init_bytes == 14
+    assert by_init["pkg/sub/__init__.py"].init_bytes == 0
+    assert {f.job for f in findings} == {"c-a"}
+    assert {f.declared_path for f in findings} == {"pkg/sub/mod.py"}
+
+
+def test_ancestor_init_census_both_inits_declared_literally(tmp_path: Path) -> None:
+    """(b) both inits declared literally ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-b",
+        paths=[
+            "pkg/sub/mod.py",
+            "pkg/__init__.py",
+            "pkg/sub/__init__.py",
+        ],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_declared_glob_covers_inits(tmp_path: Path) -> None:
+    """(c) a glob covering both inits ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-c",
+        paths=["pkg/**"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_allowlist_suppresses_both_inits(
+    tmp_path: Path,
+) -> None:
+    """(d) both inits in the allow-list ⇒ 0 findings."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-d", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(
+        jobs,
+        repo_root=tmp_path,
+        allowlist=frozenset({"pkg/__init__.py", "pkg/sub/__init__.py"}),
+    )
+
+    assert findings == ()
+
+
+def test_ancestor_init_census_namespace_subinit_omitted(tmp_path: Path) -> None:
+    """(e) ``pkg/sub/__init__.py`` absent (namespace) ⇒ only the ``pkg`` finding."""
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-e", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    # NOTE: pkg/sub/__init__.py is intentionally NOT created.
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    assert len(findings) == 1, findings
+    assert findings[0].init_path == "pkg/__init__.py"
+    assert findings[0].init_bytes > 0
+
+
+def test_ancestor_init_census_glob_only_declaration_emits_nothing(
+    tmp_path: Path,
+) -> None:
+    """(f) a glob-only declared path list contributes no findings."""
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-f",
+        paths=["pkg/**", "pkg/sub/**"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_ignores_non_exclusive_jobs(tmp_path: Path) -> None:
+    """(g) a non-exclusive job is ignored even if its paths leave inits undeclared."""
+    workflow = tmp_path / "legacy.yml"
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "not-curated": {
+                        "if": PACK.DISABLED_IF,
+                        "runs-on": "ubuntu-latest",
+                        "paths": ["pkg/sub/mod.py"],
+                        "steps": [
+                            {
+                                "name": "non-exclusive fixture",
+                                "run": "echo fixture",
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert len(jobs) == 1 and not jobs[0].exclusive
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_dedupes_per_job_init(tmp_path: Path) -> None:
+    """(h) two declared files under ``pkg/`` ⇒ one ``pkg/__init__.py`` finding.
+
+    Dedupe keeps the lex first ``declared_path``: ``pkg/a.py`` (over ``pkg/b.py``).
+    """
+    workflow = _aic_manifest(
+        tmp_path,
+        job_id="c-h",
+        paths=["pkg/b.py", "pkg/a.py", "pkg/sub/mod.py"],
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    by_init: dict[str, PACK.AncestorInitFinding] = {}
+    for finding in findings:
+        # (job, init_path) uniqueness ⇒ each init_path appears once per job.
+        assert finding.init_path not in by_init, finding
+        by_init[finding.init_path] = finding
+    assert set(by_init) == {"pkg/__init__.py", "pkg/sub/__init__.py"}
+    assert by_init["pkg/__init__.py"].declared_path == "pkg/a.py"
+    assert by_init["pkg/sub/__init__.py"].declared_path == "pkg/sub/mod.py"
+
+
+def test_ancestor_init_census_glob_entry_ancestors_not_walked(tmp_path: Path) -> None:
+    """(j) a glob whose OWN ancestors are not covered by it emits nothing.
+
+    ``tests/test_x_*.py`` sits under ``tests/``, and ``tests/__init__.py`` is
+    neither declared literally nor matched by the glob. Only the rule that
+    lexical ancestors of GLOB entries are not walked keeps this at zero
+    findings — dropping the ``if _has_glob(declared): continue`` guard
+    (mutant m2) walks ``test_x_*.py`` upward, finds the uncovered init, and
+    turns this test RED.
+    """
+    workflow = _aic_manifest(tmp_path, job_id="c-j", paths=["tests/test_x_*.py"])
+    _aic_optional_init(tmp_path / "tests", body=b"# tests package\n")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_glob_covered_init_suppresses_literal(
+    tmp_path: Path,
+) -> None:
+    """(k) literal path + covering glob ⇒ 0 findings for both ancestors.
+
+    ``pkg/**`` matches ``pkg/__init__.py`` and ``pkg/sub/__init__.py`` (verified
+    against ``_glob_to_regex``: ``**`` crosses ``/``), so the ancestors walked
+    from the literal ``pkg/sub/mod.py`` are suppressed by the glob-coverage
+    check. Dropping ``if _matches_any(job.paths, init_path): continue``
+    (mutant m3) emits both pairs and turns this test RED. The glob entry itself
+    is still never walked — (j) pins that half.
+    """
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-k", paths=["pkg/sub/mod.py", "pkg/**"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_findings_sorted_by_job_then_init(
+    tmp_path: Path,
+) -> None:
+    """(l) return order is sorted by ``(job, init_path)``, not discovery order.
+
+    Two jobs, two inits each, and the manifest lists ``z-job`` FIRST, so raw
+    discovery would emit ``z-job`` findings before ``a-job`` ones. The census
+    contract is the sorted tuple: reversing the return (mutant m6) puts
+    ``z-job`` first and turns the exact-order assertion RED; dropping the sort
+    altogether does the same.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "z-job": {**job_block, "paths": ["zsub/deep/mod.py"]},
+                    "a-job": {**job_block, "paths": ["asub/deep/mod.py"]},
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "zsub", body=b"# z\n")
+    _aic_optional_init(tmp_path / "zsub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "asub", body=b"# a\n")
+    _aic_optional_init(tmp_path / "asub" / "deep", body=b"")
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert [j.job_id for j in jobs] == ["z-job", "a-job"], "discovery order"
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    order = [(f.job, f.init_path) for f in findings]
+    assert order == [
+        ("a-job", "asub/__init__.py"),
+        ("a-job", "asub/deep/__init__.py"),
+        ("z-job", "zsub/__init__.py"),
+        ("z-job", "zsub/deep/__init__.py"),
+    ], order
+    assert {f.declared_path for f in findings} == {
+        "zsub/deep/mod.py",
+        "asub/deep/mod.py",
+    }
+
+
+def test_ancestor_init_census_cli_flag_prints_summary_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """(i) ``--ancestor-init-census`` on a tmp manifest exits 0 with summary line.
+
+    ``GIT_CEILING_DIRECTORIES`` pins git discovery to the fixture tree, so the
+    assertion holds whether pytest's ``--basetemp`` sits outside any checkout or
+    inside this repository's worktree.
+    """
+    workflow = _aic_manifest(
+        tmp_path, job_id="cli-fixture", paths=["pkg/sub/mod.py"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package pkg\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"# sub\n")
+    script = ROOT / "scripts" / "run_ci_pack.py"
+    # The ceiling must name the PARENT of the fixture dir: observed with git
+    # 2.43.0, ``GIT_CEILING_DIRECTORIES=<cwd itself>`` still discovered the
+    # enclosing checkout (rc=0, the cwd is never excluded), while
+    # ``GIT_CEILING_DIRECTORIES=<cwd's parent>`` stopped the walk-up with
+    # ``fatal: not a git repository`` (rc=128). Blocked discovery makes
+    # ``_find_repo_root`` fall back to ``workflow.parent`` == ``tmp_path``,
+    # so the fixture census prints ``pairs=2`` under any ``--basetemp``.
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--workflow",
+            str(workflow),
+            "--ancestor-init-census",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=str(tmp_path),
+        env={**os.environ, "GIT_CEILING_DIRECTORIES": str(tmp_path.resolve().parent)},
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    out_lines = proc.stdout.strip().splitlines()
+    summary = out_lines[0]
+    assert summary.startswith("ANCESTOR_INIT_CENSUS pairs=2 jobs=1/1 "), summary
+    rest = summary[len("ANCESTOR_INIT_CENSUS "):]
+    parts = dict(
+        token.split("=", 1) for token in rest.split() if "=" in token
+    )
+    assert parts["pairs"] == "2"
+    assert parts["jobs"] == "1/1"
+    assert parts["nonempty_pairs"] == "2"
+    assert parts["distinct_inits"] == "2"
+    init_lines = out_lines[1:]
+    assert len(init_lines) == 2, init_lines
+    parsed = [tuple(line.split()) for line in init_lines]
+    assert parsed == [
+        ("pkg/__init__.py", "bytes=14", "jobs=1"),
+        ("pkg/sub/__init__.py", "bytes=6", "jobs=1"),
+    ], parsed
+
+
+@pytest.mark.parametrize(
+    "other_flag", ["--execute", "--validate-only", "--plan-only"]
+)
+def test_ancestor_init_census_refuses_ambiguous_modes(other_flag: str) -> None:
+    """(n) the census is terminal: pairing it with another mode exits 2 at parse.
+
+    Before this refusal ``--ancestor-init-census`` silently WON the dispatch
+    in ``main`` (observed rc=0 with the paired flag ignored). ``parse_args``
+    must now reject the combination the same way it rejects
+    ``--execute``/``--validate-only`` — a usage error, exit code 2.
+    """
+    with pytest.raises(SystemExit) as excinfo:
+        PACK.parse_args(
+            ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
+        )
+    assert excinfo.value.code == 2

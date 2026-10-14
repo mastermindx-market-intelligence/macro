@@ -102,3 +102,24 @@ PR #6651 remains the sole held draft carrier. Its historical recovery operation 
 Latest delta: published213d5f29 source/browser/resource review is accepted. Its hosted CI found16 missing dependency-path entries across7 curated jobs; the same predicate failed contract-delta and pack0 while11 packs passed. Current main595a8927 was integrated cleanly, exact coverage was repaired without changing job commands/gates, and both affected controls pass locally. All21 qualified nonmanifest application/test hashes remain unchanged. Real200% browser zoom and observed reduced motion now pass their named scoped checks; the42-state matrix is unchanged. The repaired published head still requires concluded hosted CI and the existing reserved release/live/operator gates. See the current frontier at the top of the acceptance record for chronology and the original daily collector-versus-workflow distinction.
 
 The current source consumes bounded, dated owner readiness and recorded display-only confluence findings. Exact unique T4 paths associate context with canonical engines; unknown/ambiguous rows and unavailable numeric verification stay visible. Final malformed-row, null, fraction and partial-empty controls pass. Existing shared API/UI writer custody transferred explicitly to root after all product test sessions reconciled. Independent source-bound synthetic browser acceptance now passes all eight theme/language/viewport contexts and42 actual states; the65-file canonical bundle has zero receipt/manifest findings. Whole-corpus-sized647-artifact local synthetic capacity is qualified at446MiB maximumRSS, preserving a1.293s cache metadata cost; VPS/client latency remains unproved. Held-PR current-head CI/review, reserved release and normal authenticated production/operator acceptance remain pending. See research/EVAL_OS_ACCEPTANCE_RECORD_2026-10-12.md, mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml and the continuation; no authority or completion flag changed.
+
+
+## Approved one-time base integration — 2026-10-14T15:57Z
+
+Chris directly approved one ordinary integration of current main into the same
+PR6651 carrier, followed by the accepted source correction and fresh checks.
+This resolves the demonstrated orchestration loop: semantic/current contract-delta
+red exits the incumbent before base refresh, irrespective of capacity. The controller
+is not changed or bypassed and continues to own final merge. Source-bound diagnostic
+and the original retained Fabric audit are preserved with reviewer corrections.
+
+The published1b head integrated observed main50db81266bb88a93d8c0ec318389548c7939d4be
+cleanly. The bounded repair adds five missing eval-os-a1 input paths, preserves all318
+execution definitions/order/prior paths and all eight A1 suites, and adjusts only the
+measured build_free_content job ceiling134->135 with existing136/130 neighbors.
+Weight, pack and shared capacity limits remain unchanged. Original local26 remains
+preserved on its branch; its17 source evidence records are copied byte-for-byte.
+Fresh integrated-source qualification is pending and no publication is claimed.
+The15:55 census9/cap8 and PR8920 refresh register prevent a new hosted producer;
+local source preparation creates none. Completion, release and production flags
+remain false. See research/evidence/eval-os-20261012/approved-base-repair-20261014/.

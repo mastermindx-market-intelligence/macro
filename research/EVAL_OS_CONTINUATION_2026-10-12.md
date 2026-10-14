@@ -79,3 +79,24 @@ Same-id Fabric inspection at2026-10-13T07:52 reports eval-experience-01a1335a-a1
 The canonical browser bundle at mockups/evidence/intelligence-os-a1-20261012 contains42 actual source-bound states and independent dual-theme EN/ZH judgement. All65 copied files match their source hashes; full canonical receipt/manifest validation has zero findings. Parent representative pixel readback is retained separately.
 
 A28 now has actual local real-_derive differential evidence at the observed104.58MB claims/76.73MB grades transport sizes and647 synthetic artifacts/369producers/102owners. Source and fixture hashes remain unchanged, grade/readiness computation attempts are zero, and existing locking serializes forced callers. MaximumA1RSS468107264B, baseline454213632B; cold9.044s/cache1.293s/force12.810s/two serial25.607s within the declared1GiB/60s probe limits. Cache still pays registry metadata parsing/stat cost, so the earlier one-artifact submillisecond cache result is not estate-scale latency. These receipts qualify local synthetic scale only; VPS latency/full content complexity/current headroom/production concurrence remain unproved until the gated real path. No new production service, data or scheduler was created.
+
+
+## Approved one-time base integration — 2026-10-14T15:57Z
+
+Chris directly approved one ordinary integration of current main into the same
+PR6651 carrier, followed by the accepted source correction and fresh checks.
+This resolves the demonstrated orchestration loop: semantic/current contract-delta
+red exits the incumbent before base refresh, irrespective of capacity. The controller
+is not changed or bypassed and continues to own final merge. Source-bound diagnostic
+and the original retained Fabric audit are preserved with reviewer corrections.
+
+The published1b head integrated observed main50db81266bb88a93d8c0ec318389548c7939d4be
+cleanly. The bounded repair adds five missing eval-os-a1 input paths, preserves all318
+execution definitions/order/prior paths and all eight A1 suites, and adjusts only the
+measured build_free_content job ceiling134->135 with existing136/130 neighbors.
+Weight, pack and shared capacity limits remain unchanged. Original local26 remains
+preserved on its branch; its17 source evidence records are copied byte-for-byte.
+Fresh integrated-source qualification is pending and no publication is claimed.
+The15:55 census9/cap8 and PR8920 refresh register prevent a new hosted producer;
+local source preparation creates none. Completion, release and production flags
+remain false. See research/evidence/eval-os-20261012/approved-base-repair-20261014/.
