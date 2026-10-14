@@ -1,6 +1,7 @@
 """Tests for engine/rates_command_basis.py (B0 seat ruling para-8)."""
 
 import json
+from datetime import date
 from pathlib import Path
 
 import jsonschema
@@ -8,8 +9,10 @@ import pytest
 
 from engine.rates_command_basis import (
     NA,
+    ComparisonResult,
     ComparisonRule,
     PathAssumptions,
+    PathIdentification,
     PathStatus,
     QualifiedObservation,
     RULES,
@@ -207,10 +210,6 @@ def test_monthly_average_two_paths_same_average_nonunique():
     # canonical witness (A16/A17): 30-day month, 15d @4.50 + 15d @4.00
     average = (4.50 * 15 + 4.00 * 15) / 30.0
     assert average == pytest.approx(4.25)
-    average_change_bp = (average - 4.50) * 100.0
-    level_change_bp = (4.00 - 4.50) * 100.0
-    assert average_change_bp == pytest.approx(-25.0)
-    assert level_change_bp == pytest.approx(-50.0)
     obs = _zq_obs(value=average)
     result = solve_reference_average(
         (obs,),
@@ -226,6 +225,42 @@ def test_monthly_average_two_paths_same_average_nonunique():
         and p["end_rate"] == pytest.approx(4.00)
         for p in result.alternatives
     )
+    # module-derived witness (B0-FIX D4): the -25 bp average and -50 bp level
+    # changes are read off the module's own alternatives, not recomputed from
+    # local constants. Segment convention (module docstring): segment i spans
+    # [b_i, b_{i+1}) calendar days and the FINAL segment carries the
+    # month-end day itself, so its length is the remainder of the month.
+    n_days = 30
+
+    def path_average(path):
+        segs = path["segments"]
+        days = [
+            (date.fromisoformat(segs[i + 1][0]) - date.fromisoformat(segs[i][0])).days
+            for i in range(len(segs) - 1)
+        ]
+        days.append(n_days - sum(days))
+        assert len(days) == len(segs)
+        assert sum(days) == n_days
+        return sum(s[2] * d for s, d in zip(segs, days)) / n_days
+
+    for path in result.alternatives:
+        assert path_average(path) == pytest.approx(4.25, abs=1e-9)
+    canonical = next(
+        p
+        for p in result.alternatives
+        if p["segments"][0][1] == "2026-09-16"
+        and p["segments"][0][2] == pytest.approx(4.50)
+    )
+    pre_change_rate = 4.50
+    # every alternative path re-averages to 4.25: a -25 bp AVERAGE change
+    assert (path_average(canonical) - pre_change_rate) * 100.0 == pytest.approx(-25.0)
+    # the canonical 15/15 path's month-end rate is the -50 bp LEVEL change
+    assert canonical["end_rate"] - pre_change_rate == pytest.approx(-0.50)
+    # non-uniqueness: the feasible month-end rates are not all one value
+    end_rates = {p["end_rate"] for p in result.alternatives}
+    assert len(end_rates) >= 2
+    assert result.end_rate_range is not None
+    assert result.end_rate_range[0] < result.end_rate_range[1]
 
 
 def test_one_meeting_identified_conditional_with_pre_rate():
@@ -702,3 +737,111 @@ def test_multi_segment_paths_fit_average():
             total += seg[2] * 10
         assert days == 30
         assert total / 30.0 == pytest.approx(4.25)
+
+
+class TestB0CutoffLawRepair:
+    """B0-FIX (A06): the cutoff law is time-zone exact and fail-closed.
+
+    A number whose evidence time is after -- or cannot be shown to be at or
+    before -- its publication cutoff is NEVER present, whatever time zone,
+    precision or garbage encoding carries it.
+    """
+
+    META = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+    )
+
+    def _q(self, stamp, cutoff):
+        return qualify_observation(
+            4.25,
+            dict(self.META, observation_time=stamp, first_public_evidence=stamp),
+            cutoff,
+        )
+
+    def test_tz_offset_after_cutoff_refused(self):
+        # 2026-10-13T23:00-05:00 == 2026-10-14T04:00Z: four hours AFTER cutoff
+        refused = self._q("2026-10-13T23:00-05:00", "2026-10-14T00:00+00:00")
+        assert refused.value_state == "refused"
+        assert refused.value is None
+        assert "after_cutoff" in refused.limitations
+        # 2026-10-13T18:00-05:00 == 2026-10-13T23:00Z: one hour BEFORE cutoff
+        early = self._q("2026-10-13T18:00-05:00", "2026-10-14T00:00+00:00")
+        assert early.value_state == "present"
+        assert early.value == pytest.approx(4.25)
+
+    def test_second_precision_compared_exactly(self):
+        late = self._q("2026-10-14T03:00:59Z", "2026-10-14T03:00:30Z")
+        assert late.value_state == "refused"
+        assert late.value is None
+        assert "after_cutoff" in late.limitations
+        early = self._q("2026-10-14T03:00:29Z", "2026-10-14T03:00:30Z")
+        assert early.value_state == "present"
+        assert early.value == pytest.approx(4.25)
+
+    def test_cross_zone_day_compare_fail_closed(self):
+        # cutoff instant 2026-10-13T22:00-05:00 == 2026-10-14T03:00Z; its
+        # literal day key is 10-13, so a 10-14 day stamp cannot be shown at
+        # or before it and must refuse
+        refused = self._q("2026-10-14", "2026-10-13T22:00-05:00")
+        assert refused.value_state == "refused"
+        assert refused.value is None
+        assert "after_cutoff" in refused.limitations
+
+    def test_unparsable_cutoff_refuses_never_raises(self):
+        refused = self._q("2026-10-14", "garbage")
+        assert refused.value_state == "refused"
+        assert refused.value is None
+        assert "cutoff_unparsable" in refused.limitations
+        with pytest.raises(ValueError):
+            self._q("2026-10-14", "")
+        with pytest.raises(ValueError):
+            self._q("2026-10-14", None)
+
+    def test_unparsable_evidence_refused(self):
+        refused = self._q("14/10/2026", "2026-10-01")
+        assert refused.value_state == "refused"
+        assert refused.value is None
+        assert "evidence_time_unparsable" in refused.limitations
+
+    def test_none_evidence_time_stays_admitted(self):
+        # freeze rule: unknown (None) evidence time stays admitted
+        obs = qualify_observation(4.25, self.META, "2026-10-14T00:00+00:00")
+        assert obs.value_state == "present"
+        assert obs.value == pytest.approx(4.25)
+        assert obs.observation_time is None
+        assert obs.first_public_evidence is None
+
+    def test_post_init_rejects_present_leak(self):
+        present = _obs(value=0.2)
+        assert QualifiedObservation.from_dict(present.to_dict()) == present
+        tampered = dict(present.to_dict())
+        tampered["observation_time"] = "2026-10-20T09:00"  # edited past cutoff
+        with pytest.raises(ValueError):
+            QualifiedObservation.from_dict(tampered)
+
+    def test_from_dict_rejects_unknown_keys(self):
+        good_obs = _obs(value=0.2)
+        with pytest.raises(ValueError, match="bogus"):
+            QualifiedObservation.from_dict(dict(good_obs.to_dict(), bogus=1))
+        result = compare_qualified(
+            _obs(value=0.2), _obs(value=0.3), RULES["same_basis_level_change.v1"]
+        )
+        with pytest.raises(ValueError, match="bogus"):
+            ComparisonResult.from_dict(dict(result.to_dict(), bogus=1))
+        paths = solve_reference_average(
+            (_zq_obs(value=4.25),),
+            PathAssumptions("2026-09-01", "2026-09-30", rate_step_bp=50.0),
+        )
+        with pytest.raises(ValueError, match="bogus"):
+            PathIdentification.from_dict(dict(paths.to_dict(), bogus=1))
+
+    def test_boundary_equality_admitted(self):
+        assert (
+            self._q("2026-10-14T00:00:00Z", "2026-10-14T00:00:00Z").value_state
+            == "present"
+        )
+        assert self._q("2026-10-14", "2026-10-14").value_state == "present"
+        assert self._q("2026-10", "2026-10").value_state == "present"

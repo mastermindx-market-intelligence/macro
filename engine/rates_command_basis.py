@@ -21,8 +21,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, fields as dc_fields, replace
-from datetime import date, datetime, timedelta
+from dataclasses import dataclass, fields as dc_fields
+from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
@@ -107,50 +107,113 @@ def _digest16(payload: Mapping[str, Any]) -> str:
     return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()[:16]
 
 
-_GRANULARITY_RANK = {"month": 0, "day": 1, "minute": 2}
+_COARSER_GRANULARITY = {"month": 0, "day": 1, "instant": 2}
 
 
-def _stamp_granularity(stamp: Any) -> Optional[str]:
-    """Inherent granularity of an ISO stamp: month / day / minute (None if unusable)."""
-    if not isinstance(stamp, str) or len(stamp) < 7:
-        return None
-    try:
-        date.fromisoformat(stamp[:7] + "-01")
-    except ValueError:
+@dataclass(frozen=True)
+class _Stamp:
+    """One parsed publication stamp (private parser state).
+
+    ``granularity`` is ``month`` (``YYYY-MM``), ``day`` (``YYYY-MM-DD``) or
+    ``instant`` (any ISO datetime). ``utc`` is the exact aware-UTC instant
+    for ``instant`` stamps and None for month/day stamps. A naive datetime
+    is interpreted as UTC -- the house convention for this contract
+    (FREEZE-QUESTION: naive stamps = UTC).
+    """
+
+    granularity: str
+    text: str
+    utc: Optional[datetime] = None
+
+
+def _parse_stamp(stamp: Any) -> Optional[_Stamp]:
+    """Parse ``YYYY-MM``, ``YYYY-MM-DD`` or an ISO datetime; None otherwise.
+
+    A trailing ``Z`` is explicitly rewritten to ``+00:00`` before parsing so
+    the accepted forms do not depend on the Python minor version. A naive
+    datetime is interpreted as UTC (house convention).
+    """
+    if not isinstance(stamp, str) or not stamp:
         return None
     if len(stamp) == 7:
-        return "month"
+        try:
+            date.fromisoformat(stamp + "-01")
+        except ValueError:
+            return None
+        return _Stamp("month", stamp)
     if len(stamp) == 10:
         try:
             date.fromisoformat(stamp)
         except ValueError:
             return None
-        return "day"
+        return _Stamp("day", stamp)
+    text = stamp[:-1] + "+00:00" if stamp.endswith("Z") else stamp
     try:
-        datetime.fromisoformat(stamp)
+        parsed = datetime.fromisoformat(text)
     except ValueError:
         return None
-    return "minute"
+    if parsed.tzinfo is None:
+        return _Stamp("instant", stamp, parsed.replace(tzinfo=timezone.utc))
+    return _Stamp("instant", stamp, parsed.astimezone(timezone.utc))
 
 
-def _stamp_key(stamp: str, granularity: str) -> str:
-    if granularity == "month":
-        return stamp[:7]
-    if granularity == "day":
-        return stamp[:10]
-    return stamp[:16]
+def _stamp_keys(stamp: _Stamp, granularity: str) -> frozenset:
+    """Calendar keys ``stamp`` could denote at ``granularity`` (month/day).
+
+    Each stamp contributes its literal key (the text truncated to the
+    comparison width) and, for an aware instant, also the key of its UTC
+    instant, so a comparison can never be flattered by a time-zone shift.
+    """
+    width = 7 if granularity == "month" else 10
+    keys = {stamp.text[:width]}
+    if stamp.granularity == "instant":
+        keys.add(stamp.utc.date().isoformat()[:width])
+    return frozenset(keys)
 
 
 def _not_after_cutoff(stamp: Any, cutoff: str) -> bool:
-    """True when `stamp` does not fall after `cutoff`, compared at the coarser
-    of the two stamps' inherent granularities. An unparsable stamp is not
-    evidence of a cutoff violation."""
-    g1 = _stamp_granularity(stamp)
-    g2 = _stamp_granularity(cutoff)
-    if g1 is None or g2 is None:
-        return True
-    coarse = min((g1, g2), key=lambda g: _GRANULARITY_RANK[g])
-    return _stamp_key(stamp, coarse) <= _stamp_key(cutoff, coarse)
+    """True when `stamp` can be shown at or before `cutoff`.
+
+    Two instants compare exactly on their aware-UTC datetimes (seconds and
+    microseconds included). Any coarser pairing compares at the coarser
+    granularity, fail-closed across time zones: each side contributes every
+    calendar key it could denote (its literal key, plus the UTC-instant key
+    when aware), and the stamp is admitted only when its latest possible key
+    is at or before the cutoff's earliest possible key. An unparsable side
+    can never be shown to be at or before the cutoff, so it is not
+    admissible here.
+    """
+    parsed = _parse_stamp(stamp)
+    parsed_cutoff = _parse_stamp(cutoff)
+    if parsed is None or parsed_cutoff is None:
+        return False
+    if parsed.granularity == "instant" and parsed_cutoff.granularity == "instant":
+        return parsed.utc <= parsed_cutoff.utc
+    coarse = min(
+        (parsed.granularity, parsed_cutoff.granularity),
+        key=lambda g: _COARSER_GRANULARITY[g],
+    )
+    return max(_stamp_keys(parsed, coarse)) <= min(_stamp_keys(parsed_cutoff, coarse))
+
+
+def _cutoff_violation(cutoff: Any, *stamps: Any) -> Optional[str]:
+    """First cutoff-law violation among `cutoff` and the evidence `stamps`.
+
+    Returns the limitation string naming it -- ``cutoff_unparsable``,
+    ``evidence_time_unparsable`` or ``after_cutoff`` -- or None when the
+    cutoff parses, every non-None stamp parses, and every non-None stamp can
+    be shown at or before the cutoff. None evidence stamps stay UNKNOWN and
+    admitted (freeze rule; FREEZE-QUESTION: unknown evidence time admitted).
+    """
+    if _parse_stamp(cutoff) is None:
+        return "cutoff_unparsable"
+    for stamp in stamps:
+        if stamp is not None and _parse_stamp(stamp) is None:
+            return "evidence_time_unparsable"
+    for stamp in stamps:
+        if stamp is not None and not _not_after_cutoff(stamp, cutoff):
+            return "after_cutoff"
+    return None
 
 
 def _glob_match(value: str, pattern: str) -> bool:
@@ -249,6 +312,13 @@ class QualifiedObservation:
             raise ValueError("value_state present requires a value")
         if self.value_state != ValueState.PRESENT and self.value is not None:
             raise ValueError("value must be None unless value_state is present")
+        if self.value_state == ValueState.PRESENT and _cutoff_violation(
+            self.cutoff, self.first_public_evidence, self.observation_time
+        ) is not None:
+            raise ValueError(
+                "present value cannot be shown at or before its publication "
+                "cutoff (cutoff law); refusing to construct a leaked number"
+            )
         payload = {f.name: getattr(self, f.name) for f in dc_fields(self) if f.name != "obs_id"}
         object.__setattr__(self, "obs_id", _digest16(payload))
 
@@ -258,7 +328,13 @@ class QualifiedObservation:
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> "QualifiedObservation":
         known = {f.name for f in dc_fields(cls)}
-        return cls(**{k: v for k, v in dict(raw).items() if k in known})
+        unknown = sorted(k for k in dict(raw) if k not in known)
+        if unknown:
+            raise ValueError(
+                "unknown %s keys (schema is closed): %s"
+                % (cls.__name__, ", ".join(unknown))
+            )
+        return cls(**dict(raw))
 
 
 def qualify_observation(
@@ -271,14 +347,25 @@ def qualify_observation(
     explicitly supplies 'withheld' / 'stale' / 'refused'. An evidence
     timestamp (first_public_evidence or observation_time) after the cutoff
     refuses the value with limitation 'after_cutoff' -- the number never
-    leaks past its cutoff.
+    leaks past its cutoff. A cutoff or evidence stamp that cannot be parsed
+    refuses the value ('cutoff_unparsable' / 'evidence_time_unparsable')
+    rather than admitting it: a number that cannot be shown to be at or
+    before its publication cutoff is never present. The refusal is decided
+    BEFORE the record is constructed, so a tampered record carrying a leaked
+    number is rejected by the constructor itself.
     """
     meta = dict(metadata or {})
     state_raw = meta.get("value_state")
     blank = value is None or (isinstance(value, float) and value != value) or value == ""
-    if state_raw in ("withheld", "stale", "refused"):
-        value_state = ValueState(state_raw)
+    violation = _cutoff_violation(
+        cutoff, meta.get("first_public_evidence"), meta.get("observation_time")
+    )
+    if violation is not None:
+        value_state = ValueState.REFUSED
         value_out: Optional[float] = None
+    elif state_raw in ("withheld", "stale", "refused"):
+        value_state = ValueState(state_raw)
+        value_out = None
     elif blank:
         value_state = ValueState.MISSING
         value_out = None
@@ -317,16 +404,9 @@ def qualify_observation(
         vintage=meta.get("vintage"),
         rights=meta.get("rights", "unknown"),
         quality=tuple(quality),
-        limitations=tuple(meta.get("limitations") or ()),
+        limitations=tuple(meta.get("limitations") or ())
+        + ((violation,) if violation is not None else ()),
     )
-    for stamp in (obs.first_public_evidence, obs.observation_time):
-        if stamp is not None and not _not_after_cutoff(stamp, cutoff):
-            return replace(
-                obs,
-                value=None,
-                value_state=ValueState.REFUSED,
-                limitations=tuple(obs.limitations) + ("after_cutoff",),
-            )
     return obs
 
 
@@ -386,7 +466,13 @@ class ComparisonResult:
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> "ComparisonResult":
         known = {f.name for f in dc_fields(cls)}
-        return cls(**{k: v for k, v in dict(raw).items() if k in known})
+        unknown = sorted(k for k in dict(raw) if k not in known)
+        if unknown:
+            raise ValueError(
+                "unknown %s keys (schema is closed): %s"
+                % (cls.__name__, ", ".join(unknown))
+            )
+        return cls(**dict(raw))
 
 
 def compare_qualified(
@@ -793,7 +879,13 @@ class PathIdentification:
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> "PathIdentification":
         known = {f.name for f in dc_fields(cls)}
-        return cls(**{k: v for k, v in dict(raw).items() if k in known})
+        unknown = sorted(k for k in dict(raw) if k not in known)
+        if unknown:
+            raise ValueError(
+                "unknown %s keys (schema is closed): %s"
+                % (cls.__name__, ", ".join(unknown))
+            )
+        return cls(**dict(raw))
 
 
 _GRID_OFFSETS = (-2.0, -1.0, 0.0, 1.0, 2.0)
