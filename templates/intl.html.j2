@@ -2068,17 +2068,20 @@
 <div class="panel">
   <h2>{{ t('Where each economy ranks', '各经济体排名') }}</h2>
   <div class="ranks">
-    {# ---- mom20 momentum ranking (prepended, guarded) ---- #}
+    {# Owner-supplied display score; no reconstruction of missing windows. #}
     {% if rotation_ranks is defined and rotation_ranks %}
-    <div>
-      <h3 id="intl-leadership-rotation">{{ t('20d momentum — rotation rank', '20日动能 — 轮动排名') }}</h3>
-      {% for rr in rotation_ranks %}
-        <div class="rb"><span class="flg">{{ rr.flag if rr.flag is defined else '' }}</span><span style="width:54px" class="muted">{{ rr.cc }}</span>
-          <span class="bar"><span class="bf" style="width:{{ '%.0f'|format([[rr.score, 0]|max, 3]|min / 3 * 100) }}%;background:{{ 'var(--down)' if rr.gov is defined and rr.gov < 1 else 'var(--link)' }}"></span></span>
-          <span class="v">#{{ rr.rank }}</span>
-          {% if rr.note_en is defined and rr.note_en %}<span class="muted small" style="margin-left:4px"><span class="l-en">{{ rr.note_en }}</span><span class="l-zh">{{ rr.note_zh if rr.note_zh is defined else rr.note_en }}</span></span>{% endif %}
-        </div>
-      {% endfor %}
+    <div class="rotation-reading" style="grid-column:1 / -1;min-width:0">
+      <h3 id="intl-leadership-rotation" tabindex="-1">{{ t('Leadership rotation — Composite score', '领涨轮动 — 综合分数') }} {{ help('Weights are 50% for 20 sessions, 30% for 10 and 20% for 5. The owner uses changes in the price/benchmark ratio when a benchmark is supplied, otherwise absolute price momentum. State multipliers and overbought / recent bearish MACD penalties adjust the weighted score. Ranking is descending among supplied markets. Window coverage and the benchmark basis of each row are not separately reported here.', '20期权重50%，10期30%，5期20%。提供基准时，模型采用价格与基准比值的变化；否则采用价格绝对动能。状态乘数及超买／近期看跌MACD惩罚调整加权分数。所供市场按分数降序排名。此处未单独报告各行的窗口覆盖和基准口径。') }}</h3>
+      <p class="muted small">{{ t('Composite score, not a return. Missing windows enter the model as zero; a zero score does not prove flat prices or complete history.', '综合分数并非收益率。缺失窗口在模型中按零计入；零分不能证明价格持平或历史完整。') }}</p>
+      <div class="heatwrap" data-rotation-scroll tabindex="0" role="region" aria-labelledby="intl-leadership-rotation">
+        <table class="sb">
+          <thead><tr><th scope="col">{{ t('Rank','排名') }}</th><th scope="col" class="l">{{ t('Market','市场') }}</th><th scope="col">{{ t('Score','分数') }}</th><th scope="col" class="l">{{ t('Owner note','模型备注') }}</th></tr></thead>
+          <tbody>{% for rr in rotation_ranks %}
+          <tr data-rotation-market="{{ rr.cc|e }}"><td>{{ rr.rank }}</td><th scope="row" class="l">{{ rr.flag|default('')|e }} {{ rr.cc|e }} · {{ t(rr.name|default(rr.cc)|e, rr.name_zh|default(rr.cc)|e) }}</th><td data-rotation-score>{{ '%.3f'|format(rr.score) }}</td><td class="l">{% if rr.note_en|default(none) %}{{ t(rr.note_en|e, rr.note_zh|default(rr.note_en,true)|e) }}{% else %}{{ t('No note supplied','未提供备注') }}{% endif %}</td></tr>
+          {% endfor %}</tbody>
+        </table>
+      </div>
+      <p class="caveat">{{ t('Display-only ranking of supplied markets; no capital-flow or trade-sizing authority.', '仅展示所供市场的排名；不代表资金流，也不具备交易仓位权限。') }}</p>
     </div>
     {% endif %}
     {% for key in ['recession_score','drawdown_risk','real_yield','yield_10y'] %}

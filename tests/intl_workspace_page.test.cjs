@@ -55,6 +55,35 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Leadership composite reading keyboard ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_rotation_reading_render import rotation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rotation_ranks=rotation_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]');const query=lang==='zh'?'轮动':'rotation';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-leadership-rotation"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-leadership-rotation');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('..');const region=panel.locator('[data-rotation-scroll]');
+        assert.deepEqual(await panel.locator('[data-rotation-market]').evaluateAll(ns=>ns.map(n=>n.dataset.rotationMarket)),['JP','KR','IN','TW']);
+        const scores=await panel.locator('[data-rotation-score]').allTextContents();assert.equal(scores[2],'0.000');assert.equal(scores[3],'-6.600');assert.ok(Number(scores[0])>Number(scores[1])&&Number(scores[1])>3);
+        assert.ok((await panel.innerText()).includes(lang==='zh'?'缺失窗口在模型中按零计入':'Missing windows enter the model as zero'));
+        await page.keyboard.press('Tab');const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});
+        const method=await lens.innerText();for(const term of ['50%','30%','20%','MACD'])assert.ok(method.includes(term),method);
+        assert.ok(method.includes(lang==='zh'?'基准':'benchmark'));assert.ok(method.includes(lang==='zh'?'绝对':'absolute'));
+        await page.keyboard.press('Escape');await region.focus();assert.equal(await region.evaluate(n=>n===document.activeElement),true);
+        if(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1)){await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('[data-rotation-scroll]').scrollLeft>0);}
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
+        for(const [key,value] of [['market','JP'],['horizon','3m'],['basis','local']])assert.equal(new URL(page.url()).searchParams.get(key),value);
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Correlation availability keyboard journey ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf={'correlation':correlation_fixture()}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
     await pageFixture(async page=>{
