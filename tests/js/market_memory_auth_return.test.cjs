@@ -7,16 +7,16 @@ function setup(query, capsule) {
  const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list'];
  const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',events:{},addEventListener(t,f){this.events[t]=f;}}]));
  const events={},windowEvents={},pending=[],stored={market_memory_ticker:'AAPL'};
- let lang='en',authChanged,opened=0;
+ let lang='en',authChanged,opened=0,capsuleWrites=0;
  const location=new URL('https://mastermind-x.com/market_memory.html'+query);
  const history={state:{},replaceState(_a,_b,url){location.href=new URL(url,location).href;}};
  const document={readyState:'complete',documentElement:{getAttribute:()=>lang},getElementById:id=>elements[id],addEventListener(t,f){events[t]=f;}};
  const saved=capsule||{};
- const sessionStorage={getItem:k=>saved[k]||null,setItem:(k,v)=>{saved[k]=v;},removeItem:k=>{delete saved[k];}};
+ const sessionStorage={getItem:k=>saved[k]||null,setItem:(k,v)=>{capsuleWrites++;saved[k]=v;},removeItem:k=>{delete saved[k];}};
  const window={location,history,sessionStorage,addEventListener(t,f){windowEvents[t]=f;},setLang(v){lang=v;},MDXAuth:{onChange(f){authChanged=f;},open(){opened++;}}};
  const context={window,document,location,history,URL,URLSearchParams,console,localStorage:{getItem:k=>stored[k],setItem(k,v){stored[k]=v;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve}))};
  vm.createContext(context);vm.runInContext(script('market_memory_intent.js'),context);vm.runInContext(script('market_memory.js'),context);
- return {elements,events,pending,stored,window,location,saved,auth:u=>authChanged(u),get opened(){return opened;},setLang(v){lang=v;events.langchange();},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
+ return {elements,events,pending,stored,window,location,saved,auth:u=>authChanged(u),get opened(){return opened;},get capsuleWrites(){return capsuleWrites;},setLang(v){lang=v;events.langchange();},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
 }
 for (const raw of ['', 'a/b', 'A APL']) test('explicit latest invalid input survives login destination: '+JSON.stringify(raw),async()=>{
  const x=setup('?ticker=AAPL&mm_issuer_input='+encodeURIComponent(raw)+'&mm_lang=zh');await tick();
@@ -124,4 +124,69 @@ for(const edge of ['error','timeout'])test('Settings lazy '+edge+' fallback reta
 test('Settings cannot reuse an older capsule when the current source is ambiguous',()=>{
  const x=settingsEntryHarness('?mm_query=first&mm_query=second',true);assert.equal(x.expected.ok,false);
  assert.equal(Object.keys(x.saved).length,0);assert.equal(x.opens.length,0);
+});
+
+
+// Actual Chinese sign-out -> English left the expanded legacy panels in Chinese.
+// Exercise the complete client with its real intent/capsule codec.
+function replyLegacy(item, status, payload={}) {
+ item.resolve({ok:status===200,status,json:()=>Promise.resolve(payload)});
+}
+function assertLegacySigninTarget(x, language) {
+ for(const id of ['mm-macro-query','mm-symbol-summary']) {
+  const href=x.elements[id].innerHTML.match(/href="([^"]+)"/)[1].replaceAll('&amp;','&');
+  const ret=new URL(new URL(href,x.location).searchParams.get('ret'),x.location);
+  for(const key of ['mm_mode','mm_query','mm_context','mm_gen','mm_gen_sha','mm_source_field','mm_source_context','mm_issuer_input']) {
+   assert.equal(ret.searchParams.get(key),x.location.searchParams.get(key),key);
+  }
+  assert.equal(ret.searchParams.get('mm_lang'),language);
+ }
+}
+const legacyLocaleQuery='?ticker=SPY&mm_issuer_input=spy&mm_mode=historical&mm_query=query-exact&mm_context=context-exact&mm_gen=generation-exact&mm_gen_sha='+('b'.repeat(64))+'&mm_source_field=growth_score&mm_source_context=context-exact&mm_lang=zh';
+test('legacy sign-out notices translate both ways without reads, private revival, or extra capsule writes',async()=>{
+ const x=setup(legacyLocaleQuery);await tick();
+ const before=x.pending.length;x.auth(null);
+ for(const language of ['en','zh','en']) {
+  const writes=x.capsuleWrites;x.setLang(language);await tick();
+  assert.equal(x.pending.length,before);
+  assert.equal(x.capsuleWrites-writes,1,'only existing language intent sync writes');
+  assert.match(x.elements['mm-macro-state'].textContent,language==='zh'?/需要登录/:/Sign in required/);
+  assert.match(x.elements['mm-macro-query'].innerHTML,language==='zh'?/退出登录后/:/cleared when you sign out/);
+  assert.match(x.elements['mm-macro-note'].textContent,language==='zh'?/未保留历史载荷/:/No historical payload/);
+  assert.match(x.elements['mm-symbol-summary'].innerHTML,language==='zh'?/退出登录后/:/cleared when you sign out/);
+  assertLegacySigninTarget(x,language);
+ }
+ // Pending successful responses from before sign-out must remain retired.
+ for(const item of x.pending) replyLegacy(item,200,{ticker:'PRIVATE_OLD',as_of:'PRIVATE_OLD',context_note:'PRIVATE_OLD',query:{},grids:{}});
+ await tick();x.setLang('zh');
+ assert.equal(x.elements['mm-macro-episodes'].innerHTML,'');assert.equal(x.elements['mm-grid-list'].innerHTML,'');
+ assert.equal(JSON.stringify(x.elements).includes('PRIVATE_OLD'),false);
+ x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,before+2,'sign-in retries only the two blocked reads');
+});
+for(const status of [401,402,403,404,503])test('legacy '+status+' notices redraw current language without refetch or stale payload',async()=>{
+ const x=setup(legacyLocaleQuery);await tick();
+ for(const item of x.pending)replyLegacy(item,status,{detail:'PRIVATE_ERROR'});
+ await tick();const before=x.pending.length;
+ for(const language of ['en','zh']) {
+  const writes=x.capsuleWrites;x.setLang(language);await tick();
+  assert.equal(x.pending.length,before);assert.equal(x.capsuleWrites-writes,1);
+  assert.match(x.elements['mm-macro-state'].textContent,language==='zh'?/记忆暂不可用/:/Memory unavailable/);
+  assert.match(x.elements['mm-macro-query'].innerHTML,language==='zh'?/宏观记忆暂不可用|登录以打开市场记忆/:/Macro memory unavailable|Sign in to open Market Memory/);
+  assert.match(x.elements['mm-symbol-summary'].innerHTML,language==='zh'?/暂无记忆|个股记忆暂不可用|登录以打开个股记忆/:/No memory for SPY|Symbol memory unavailable|Sign in to open symbol memory/);
+  assert.equal(JSON.stringify(x.elements).includes('PRIVATE_ERROR'),false);
+  if(status===401)assertLegacySigninTarget(x,language);
+  if(status===402||status===403)assert.match(x.elements['mm-symbol-summary'].innerHTML,language==='zh'?/查看方案/:/View plans/);
+ }
+ x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,before+(status===401?2:0));
+});
+test('legacy invalid and unpreservable intent notices retain their cause through language changes',async()=>{
+ const x=setup('?ticker=AAPL');await tick();
+ x.submit('x'.repeat(2049));const before=x.pending.length;x.setLang('zh');
+ assert.match(x.elements['mm-symbol-summary'].innerHTML,/无法保留此链接/);
+ x.submit('!');x.setLang('en');assert.match(x.elements['mm-symbol-summary'].innerHTML,/Check the ticker/);
+ x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,before);
+});
+test('missing OAuth selection keeps its specific notice after locale changes with no private reads',async()=>{
+ const x=setup('?onboard=resume');await tick();x.setLang('zh');
+ assert.equal(x.pending.length,0);assert.match(x.elements['mm-symbol-summary'].innerHTML,/登录后无法恢复选择/);
 });
