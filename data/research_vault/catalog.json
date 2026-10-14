@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T06:54:28.021325+00:00",
-  "count": 2878,
+  "generated_at": "2026-10-14T09:24:56.871356+00:00",
+  "count": 2885,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -87,6 +87,7 @@
     "Standard Chartered",
     "State Street",
     "Std Chartered",
+    "Syz",
     "TCW",
     "TS Lombard",
     "Talos",
@@ -101,6 +102,7 @@
     "WGC",
     "Westpac",
     "William Blair",
+    "WisdomTree",
     "Wolfe Research",
     "World Gold Council",
     "ZKB",
@@ -226,6 +228,68 @@
       "tickers": [],
       "top_pick": true,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-l0fedbsnrqv-a1e3b8",
+      "title": "Investor Positioning and Flows Oct 13",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:05:41Z",
+      "summary_points": [
+        "Tech Rotation Overextended: MCG & Tech ratio breached 14.2% annual growth trend (since 2016) and 10% volatility band, signaling inverted risk-reward (4pp upside vs 16pp downside) with 5th top of long-run trend channel.",
+        "Asymmetric Sector Positioning: Tech remains overweight (positive positioning score) while Financials/Industrials/Materials are underweight (Financials at 17% percentile), driven by negative catalysts and rotation dynamics.",
+        "Regional Tech Exposure Impact: Rotation away from Tech favors Europe (9% exposure) over US (40%) and Asia (30%), with Tech exposure as key return determinant across regions.",
+        "Earnings Rotation Mechanics: MCG & Tech outperforms S&P 500 Ex-MCG & Tech by 38.1% during rotations into Tech vs 32.9%, but underperforms by 16.6% during rotations away (vs -17.9% for rest).",
+        "Consumer Cyclicals Overallocation: Current 80% percentile (Figure 19) signals significant overbought conditions and near-term correction risk for large-cap cyclicals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 54,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oaxnrqnwjao-dd397c",
+      "title": "Orsted A S (ORSTED.CO) Downgrading to Neutral",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:45:04Z",
+      "summary_points": [
+        "Sovereign Risk & Earnings Miss: Rising EU/US sovereign rates (+50-65 bp since August) and underwhelming Q3 results driving earnings revisions, invalidating prior bullish thesis on US offshore wind policy.",
+        "EBITDA Growth Deceleration: Actual 39.7% EBITDA growth (12/25) vs. projected 10.2% (12/26E), signaling operational slowdown and consensus estimate downgrades (-7% by 2030E).",
+        "Cash Flow Erosion: Projected net cash flow plunging from 29,921.0 (12/26E) to 16,338.4 (12/28E), indicating severe liquidity risk despite historical strength.",
+        "Valuation Discount Under Pressure: Trading at double-digit discount to peers (2026E EV/EBITDA: 8.9x vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hmzfc6mgzvb-b024da",
+      "title": "J.P. Morgan Chase & Co. (JPM) 3Q26 First Take In line results, much stronger NII guide, lower buybacks",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:58Z",
+      "summary_points": [
+        "NII Guidance Upgrade: JPM raised 2026 total NII outlook to $106.2bn (vs.",
+        "$105.5bn) and 2027 NII ex Markets to $107bn (+10% YoY), driven by stronger loan growth, deposit trends, and 2bps higher NIM (7bps loan yields, 1bp securities yields).",
+        "Capital Allocation Shift: Gross buybacks fell to $1.1bn (85% QoQ decline), with SLR at 5.5% (above 4.5% minimum), signaling prioritization of balance sheet growth over capital returns amid higher interest rates.",
+        "Credit Risk Build: Credit reserves increased to $539mn (vs.",
+        "$404mn Street estimate), indicating macro-driven reserve concerns, with Goldman Sachs highlighting deteriorating credit conditions as a key downside risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -472,6 +536,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2nhuzlcogbm-dffe57",
+      "title": "Siegel Weekly Commentary for 10.12.26",
+      "institution": "WisdomTree",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:29:56Z",
+      "summary_points": [
+        "Equity Return Upside: Long-term real equity returns upgraded to 5.5%-6.5% driven by rising real rates signaling stronger growth (S&P 500 at 19x earnings, inverse P/E implies 5.5% return); higher rates not bearish if productivity-led.",
+        "Fed Policy Stance: Rates held unless inflation surprises; yield curve steepening and bank deposits growth (exceeding 2-3% inflation) confirm no near-term easing.",
+        "Key Risk Factors: Tech disruption (data centers/compute) monitored but absent; AI infrastructure borrowing crowding out housing demand, pressuring lower-end markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-idbjwvtdzxk-85a47f",
       "title": "TDAGeneric US",
       "institution": "Other",
@@ -510,6 +593,48 @@
       "tickers": [],
       "top_pick": true,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rvwxzqre28i-18e7d9",
+      "title": "1791583993771",
+      "institution": "Syz",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:14:26Z",
+      "summary_points": [
+        "Money Market Fund Inflows Surge: $166.4B weekly inflow (largest since April 2020), reversing $118B quarter-end outflow, lifting assets to $8T (from $5T in 2023), signaling cash preference over stocks post-September Fed hike.",
+        "SP500 Breadth Crisis: 15 consecutive days of new lows exceeding new highs, indicating extreme risk concentration and market fragmentation between growth/earnings optimism and tightening financial conditions.",
+        "AI Proxies Dominate Performance: Mag7 (+7.7%) significantly outperforms S&P 500 (+2.6%) and equal-weight S&P 500 (-3%) since Aug 3, driving sector rotation toward AI-driven stocks.",
+        "Equal-Weight Index Weakness: Equal-weight S&P 500 remains >5% below peak (record for index), signaling uneven performance and sustainability risks in broader market.",
+        "S&P 500 Winner Concentration: 23% of S&P 500 stocks beat the index over 10 years (lowest in two decades), with top 2,000 names at 22%—halved since 2008 crisis, indicating index returns reliant on narrow outperformers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 81,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ucvm8ntl5sa-77d786",
+      "title": "Utilities Outlook US 9.30.26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-12T23:01:17Z",
+      "summary_points": [
+        "Data-Center Investment Tailwinds: $1T data-center investment (2023-2026) and AI-driven demand (55% of 166 GW peak demand by 2030) create structural growth, with hyperscalers (MSFT, META, GOOG, AMZN) planning >$800B annual capex, accelerating electricity demand (2% annual sales growth, EIA).",
+        "NextEra-Dominion Merger Impact: $420B merger targets 9%+ EPS growth via $22.3B Project Star (6.47 GW gas) and 10 GW Texas/Pennsylvania expansion, boosting regulated utility/data-center exposure and long-term growth.",
+        "EPS Growth Resilience: Utilities sustain 7% EPS growth (2025) despite 5.29% 10-yr Treasury yield, with median dividend growth (5.4%) and 16.5x 2027 earnings valuation supporting 9-11% total returns.",
+        "Regulatory ROE Lag Risk: Authorized ROEs lag capital market shifts (6–11 month rate cases), with regulatory reluctance to raise rates during affordability crises, creating valuation risks and margin pressure.",
+        "Texas Data-Center Policy Shift: ERCOT pauses 474-GW interconnections but Texas remains key (91-GW summer demand), with utilities like Entergy targeting 13% EPS growth via Meta/Amazon data centers ($27B campus, 5 GW power)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
@@ -655,6 +780,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-olsjyzwqkvu-24d877",
+      "title": "Americas Retail Specialty Hardlines Updating estimates for Lithia Motors and Boyd Group ahead of earnings",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:11:06Z",
+      "summary_points": [
+        "Lithia Motors downgraded: Price target cut to $362 (from $415) due to revised 3Q26 EPS ($9.90 vs.",
+        "$10.65) from softer new vehicle sales (-1% SAAR), aftersales deferral, and affordability pressures (monthly payments ~$800).",
+        "Boyd Group valuation discount: Trades at 7.0x NTM EV/EBITDA (below 10.5x 3-yr avg), 66%+ upside potential, and 12.3x EV/EBITDA vs. peer avg 7.8x, signaling significant undervaluation in collision repair sector.",
+        "Affordability crisis: Near-term demand threatened by incentive spend below historical averages, monthly payments approaching $800, and used retail volumes falling 3% y/y (Aug), suppressing sales growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },

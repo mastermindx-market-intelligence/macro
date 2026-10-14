@@ -5834,6 +5834,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -6816,6 +6819,7 @@ jobs:
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
+          tests/test_capital_structure_term_integration.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
           tests/test_capital_structure_graph.py
@@ -11504,6 +11508,95 @@ jobs:
       - name: ratio lens test suite
         run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
 
+  leadership-rotation-contract:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Static closure plus observed runtime config/test-support reads and package
+    # initializers; AST/render fallbacks do not make the packing probes inputs.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config.yml"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/conditions.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/desk_ledger.py"
+      - "engine/gdelt_client.py"
+      - "engine/hazard_score.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/leadership_receipt.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/master_brain.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/worktree_sparse.py"
+      - "tests/__init__.py"
+      - "tests/test_leadership_rotation_contract.py"
+    # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
+    # engine/leadership_rotation_context.py — a stateless display-only projection over the
+    # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
+      - name: leadership rotation measured-product contract
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
+
   hk-confirming-turn:
     if: ${{ false }}
     gate: code
@@ -13237,6 +13330,122 @@ jobs:
       - name: SA-W4 standout review test suite
         run: python -m pytest tests/test_standout_review.py -v
 
+  lr-rotation-evidence-modes:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Static closure plus observed runtime config/test-support reads and package
+    # initializers; AST/render fallbacks do not make the packing probes inputs.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/holdings.py"
+      - "config.yml"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/conditions.py"
+      - "engine/cycle_forward_log.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/desk_ledger.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/falsifier_tripwires.py"
+      - "engine/gdelt_client.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/master_brain.py"
+      - "engine/mtf_monitor.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/read.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycles_payload.py"
+      - "scripts/_narrative_epoch.py"
+      - "scripts/_narrative_ttl.py"
+      - "scripts/build_sector_cycles.py"
+      - "scripts/validate_regime_fwd.py"
+      - "scripts/worktree_sparse.py"
+      - "tests/__init__.py"
+      - "tests/test_rotation_events.py"
+      - "tests/test_rotation_evidence_modes.py"
+      - "tests/test_sector_cycles.py"
+    # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
+    # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
+    # as_of) and never built from later prices; retained ledger receipts are never rewritten
+    # or deduplicated; reconstructed and retained vocabularies stay disjoint.
+    # Network-free: synthetic panels + temp ledgers.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy scipy pyyaml pyarrow jinja2
+      - name: LR-T06 rotation evidence-mode fences
+        run: python -m pytest tests/test_rotation_evidence_modes.py -q
+
   rc-r14-china-rotation-events:
     if: ${{ false }}
     gate: code
@@ -13254,7 +13463,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: RC-R14 China + HK rotation events test suite
-        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v
+        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v tests/test_rotation_replay_isolation.py
 
   codex-research-engine:
     if: ${{ false }}
@@ -17034,6 +17243,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -22942,7 +23154,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       # test_factor_universe_hold.py (2026-08-06) — the DNR:HOLD-FACTOR-UNIVERSE-WIDENING
       # tripwire. engine/equity_factors.py was strictly dark: no `run:` step named its
       # suite and no ci.yml path named the module, so the board tiebreak's own source
@@ -22990,6 +23202,16 @@ jobs:
       # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
       - name: E1c4 regime-outlook publication beside the rates command board
         run: python -m pytest tests/test_build_rates_command_outlook.py -q
+      # RIC B0 (Rates & Inflation Command e2e, 2026-10-14): engine/rates_command_basis.py is the
+      # pure basis-aware comparison contract rates_command_basis.v1 (A06: no numerical gap unless
+      # basket/index/reference interval/unit/vintage and calculation rule support it). Its first
+      # consumer is the Rates Command board whose suite, tests/test_rates_command.py, is governed
+      # here, so it rides this job. Its own step so a contract regression is named rather than
+      # masked by the panel step. jsonschema joins the install line above because
+      # test_schema_round_trip_validates checks round-tripped objects against the committed
+      # contracts/rates_command_basis.v1.schema.json. Paths widened for the suite, module, contract.
+      - name: RIC B0 basis-aware comparison contract (rates_command_basis.v1)
+        run: python -m pytest tests/test_rates_command_basis.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -23023,6 +23245,9 @@ jobs:
       - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
       - "tests/test_build_rates_command_outlook.py"
+      - "tests/test_rates_command_basis.py"
+      - "engine/rates_command_basis.py"
+      - "contracts/rates_command_basis.v1.schema.json"
       - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
@@ -24448,6 +24673,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - scripts/initialize_market_memory_w1a.py
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
+      - tests/test_market_memory_retained_catalog.py
+      - tests/test_market_memory_retained_saved.py
+      - tests/test_market_memory_retained_saved_api.py
+      - tests/test_market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
@@ -25355,7 +25588,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_lineage.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -26527,6 +26760,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -28899,6 +29135,7 @@ jobs:
       - "tests/test_news_impact_*.py"
       - "tests/fixtures/news_impact/**"
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
+      - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/AMENDMENTS_W1C.cases.json"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
