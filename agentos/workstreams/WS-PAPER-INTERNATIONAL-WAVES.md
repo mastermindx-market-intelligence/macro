@@ -140,10 +140,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Investigate known Dollar regime method wording and observation scope using the existing owner fields.
-  Credit clocks and unavailable Dollar states now have bounded source proof; do not repeat accepted cases.
-  Do not invent causal market claims, dates, freshness flags or contracts; all review, release, browser and IW2 holds persist.
+next_action: Repair the reproduced Dollar Funding summary gap from actual owner counterexamples.
+  Missing corridor data is not Calm, a triggered corridor is not normal, and swap-line availability is independent.
+  Preserve thresholds, caveats, units and absent clocks; do not invent qualification or cross any retained hold.
 artifacts:
+- research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CREDIT_OBSERVATION_DATES_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_UNAVAILABLE_REGIME_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_CLOCKS_ACCEPTANCE.json

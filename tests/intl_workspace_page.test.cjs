@@ -55,6 +55,63 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Dollar five-day flag shows index points ${theme} ${lang}`,async()=>{
+    const dollarHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_dollar_method_render import five_day_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=five_day_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const tags=[page.locator('.ird-hchip').nth(2).locator('.ird-safety-tag'),page.locator('.ird-dollar-card .ird-safety-tag')];
+        for(const tag of tags) {
+          const text=await tag.innerText();
+          assert.ok(text.includes(lang==='zh'?'+1.2点':'+1.2 pts') && !text.includes('1.2%'));
+          assert.ok(text.includes(lang==='zh'?'5日标志':'Five-day flag'));
+          assert.ok(!/today|今日/.test(text));
+          assert.ok(await tag.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'five-day tag fits');
+        }
+        assert.ok((await page.locator('.ird-dollar-card').innerText()).includes(lang==='zh'?'残差在区间内':'Within residual band'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:dollarHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-dollar-conditions'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Dollar method and build clock retain their scope ${theme} ${lang}`,async()=>{
+    const dollarHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_dollar_method_render import method_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=method_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const chip=page.locator('.ird-hchip').nth(2), card=page.locator('.ird-dollar-card');
+        for(const el of [chip,card]) {
+          const text=await el.innerText();
+          assert.ok(text.includes(lang==='zh'?'残差在区间内':'Within residual band'));
+          assert.ok(!/not fear|flight to safety|主因|避险资产被买入/.test(text));
+          assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1 && n.scrollHeight<=n.clientHeight+1),'model explanation fits');
+        }
+        const panel=page.locator('#intl-dollar-conditions').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const clock=panel.locator('.ird-asof'), text=await clock.innerText();
+        assert.ok(text.includes(lang==='zh'?'模型生成：':'Model built:'));
+        assert.ok(text.includes('2026-10-12T04:05:06Z') && !text.includes('2026-10-14'));
+        assert.ok(text.includes(lang==='zh'?'观测日：不可用':'Observation date: Unavailable'));
+        assert.ok(await clock.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'clock fits');
+        const tip=await panel.locator('.tip').textContent();
+        assert.ok(tip.includes('120-observation') && tip.includes('60-observation'));
+        assert.ok(!tip.includes('Dual-window confirmed') && !tip.includes('DXY vs VIX'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:dollarHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-dollar-conditions'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Dollar unavailable owner never becomes a mixed read ${theme} ${lang}`,async()=>{
     const dollarHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_dollar_absence_render import dollar_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=dollar_fixture()))"],

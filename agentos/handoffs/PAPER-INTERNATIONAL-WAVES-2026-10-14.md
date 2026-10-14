@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_dollar_method_render.py; tests/test_intl_dollar_absence_render.py; tests/intl_workspace_page.test.cjs
+  what: Correct Dollar residual-model explanations, computation versus observation clocks, and the separate five-day flag index-point units while preserving owner calculations and fields.
+- path: research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json; mockups/evidence/paper-international-library/dollar-method-scope/
+  what: Bind actual-owner counterexamples, causal red/green tests and final bilingual dual-theme source renders; independent review and live acceptance remain pending.
 - path: templates/intl.html.j2; tests/test_intl_credit_dates_render.py; tests/test_intl_dollar_absence_render.py; tests/intl_workspace_page.test.cjs
   what: Expose independent Credit observation clocks and keep unavailable Dollar owner regimes neutral; preserve valid enums, separate safety bid and supplied values.
 - path: research/paper_international_wave1_wave2/CREDIT_OBSERVATION_DATES_ACCEPTANCE.json; research/paper_international_wave1_wave2/DOLLAR_UNAVAILABLE_REGIME_ACCEPTANCE.json; mockups/evidence/paper-international-library/credit-observation-dates/; mockups/evidence/paper-international-library/dollar-unavailable-regime/
@@ -163,6 +167,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Dollar model categories, clock scope and separate five-day units follow their actual owner fields.
+  command: pytest tests/test_intl_dollar_method_render.py tests/test_intl_dollar_absence_render.py; selected Dollar Node cases; dollar-method-scope-20261014-r1/capture.py and inspect_cards.py
+  result: 24uniquePython cases covered by22PASS then4targetedPASS with14inheritedwarnings per run;12browser cases24widthstates PASS;8finalcanonicalcaptures12focusedviews including4LENS Enter/Escape interactions. Counts overlap. Source fixtures only.
 - claim: Credit dates remain scoped and absent Dollar regimes no longer become mixed reads or promised nightly delivery.
   command: pytest tests/test_intl_credit_dates_render.py tests/test_intl_credit_velocity_render.py tests/test_intl_credit_absence_render.py; pytest tests/test_intl_dollar_absence_render.py; selected Node Credit and Dollar cases; two package capture.py and inspect_cards.py scripts
   result: Credit19PythonPASS14warnings;12unique browsercases covered after initial10PASS2visible-element timeouts and2targeted unchanged passes. Dollar11PythonPASS14warnings and4new browserPASS. Each package has8canonical captures;4Credit and8Dollar focused parent views. Counts overlap; fixture proof only.
@@ -538,3 +545,8 @@ Next independent source gap: current Credit footer shows only EM HY date, while 
 ## Credit clocks and unavailable Dollar regimes — 2026-10-14
 
 Both bounded repairs reuse the existing carrier and owner contracts. Credit clock absence/escaping and Dollar actual-owner failure returns are recorded in the two new acceptance receipts. Known-regime interpretation remains a distinct source gap: inherited VIX/dual-window/causal wording and a build timestamp do not match the inspected owner method/clock scope. Continue from the retained NEXT_DOLLAR_SEMANTICS.json before any further source adjudication. Source not deployed; independent review pending; CI unobserved; all original holds and IW2 custody retained.
+
+
+## Dollar model scope and units — 2026-10-14
+
+Actual smile_decomp counterexamples refute causal dominance and dual-window confirmation wording. Build time and observation time remain distinct, and the independent two-tier flag supplies index-point change, not percent return. DOLLAR_METHOD_SCOPE_ACCEPTANCE.json binds the source repair and evidence. The prior unavailable tooltip retained a nightly promise; this change removes it explicitly. NEXT_DOLLAR_FUNDING.json now reproduces missing-corridor Calm and triggered-corridor normal-spread contradictions through actual owner fixtures. Continue that distinct bounded repair without changing owner thresholds or fabricating dates/qualification. Review, live, CI and all retained holds remain open.

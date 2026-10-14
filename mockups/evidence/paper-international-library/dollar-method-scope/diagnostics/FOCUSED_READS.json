@@ -1,0 +1,254 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en.png",
+    "sha256": "f1bd204b50d2d40cebb35ad654112dd82bbf83eb9259f2f0742f5c898792c561",
+    "cells": [
+      "Within residual band\nThe cumulative residual is within one trailing standard deviation of zero (|z| < 1). This classification does not establish the cause of the dollar move.\n\u26a0 Five-day flag : DXY +1.2 pts while 2yr fell 4.5 bp 5-day signal \u00b7 not structural",
+      "Model built: 2026-10-12T04:05:06Z\nObservation date: Unavailable"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 258.90625,
+        "width": 673,
+        "height": 283.578125,
+        "top": 258.90625,
+        "right": 1400,
+        "bottom": 542.484375,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "method-1440-dark-en.png",
+    "sha256": "ead8f54c70b3e45afd4a59381764bef2239c775f9f3e7680fadf3c6232f322ad",
+    "text": "120-observation rolling regression of daily DXY log returns on changes in the US-minus-foreign rate spread. The score is the 20-observation residual sum divided by its trailing, up-to-252-observation standard deviation, without subtracting the mean. The 60-observation normalization is a separate sensitivity check, not confirmation. The five-day flag is separate. Actual available-basket weights, not causal contributions: {'eur2y': 1.0}. GBP uses a short-rate proxy; basket coverage and tenors differ.",
+    "geometry": {
+      "x": 811,
+      "y": 303,
+      "width": 300,
+      "height": 265
+    },
+    "interaction": "existing help focused; native Enter opens LENS; Escape closes"
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "header-1440-dark-en.png",
+    "sha256": "d71f667da37c7abb234757630c62c32cd00750b2ef025c9b8695e9661ab10766",
+    "text": "DOLLAR\nWithin residual band\nModel residual score: |z| < 1\n\u26a0 Five-day flag (DXY +1.2 pts, 2yr -4.5 bp)\nModel classification \u00b7 not a causal verdict",
+    "class": "ird-hchip state-caut",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "chip": {
+        "x": 725,
+        "y": 386.40625,
+        "width": 321,
+        "height": 127.890625,
+        "top": 386.40625,
+        "right": 1046,
+        "bottom": 514.296875,
+        "left": 725
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en.png",
+    "sha256": "56fa20deed59492fab63e9f7aeeb7fee34d640c9a9596facd7d3042816e3ce8a",
+    "cells": [
+      "Within residual band\nThe cumulative residual is within one trailing standard deviation of zero (|z| < 1). This classification does not establish the cause of the dollar move.\n\u26a0 Five-day flag : DXY +1.2 pts while 2yr fell 4.5 bp 5-day signal \u00b7 not structural",
+      "Model built: 2026-10-12T04:05:06Z\nObservation date: Unavailable"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 258.90625,
+        "width": 673,
+        "height": 283.578125,
+        "top": 258.90625,
+        "right": 1400,
+        "bottom": 542.484375,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "method-1440-light-en.png",
+    "sha256": "95d74c8d44145858238f2bd5f4f055c855ff800f699651e0e992c3724680ad20",
+    "text": "120-observation rolling regression of daily DXY log returns on changes in the US-minus-foreign rate spread. The score is the 20-observation residual sum divided by its trailing, up-to-252-observation standard deviation, without subtracting the mean. The 60-observation normalization is a separate sensitivity check, not confirmation. The five-day flag is separate. Actual available-basket weights, not causal contributions: {'eur2y': 1.0}. GBP uses a short-rate proxy; basket coverage and tenors differ.",
+    "geometry": {
+      "x": 811,
+      "y": 303,
+      "width": 300,
+      "height": 265
+    },
+    "interaction": "existing help focused; native Enter opens LENS; Escape closes"
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "header-1440-light-en.png",
+    "sha256": "ad991a1e9d2faf8888709bdae3bd38139cd1acc0da67d3e6b62c7ecfcd8677da",
+    "text": "DOLLAR\nWithin residual band\nModel residual score: |z| < 1\n\u26a0 Five-day flag (DXY +1.2 pts, 2yr -4.5 bp)\nModel classification \u00b7 not a causal verdict",
+    "class": "ird-hchip state-caut",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "chip": {
+        "x": 725,
+        "y": 386.40625,
+        "width": 321,
+        "height": 127.890625,
+        "top": 386.40625,
+        "right": 1046,
+        "bottom": 514.296875,
+        "left": 725
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh.png",
+    "sha256": "41d6bdcae9fb60e12fc41aa62b70e4ab674dfcc184659f68de8ae3cabe65f757",
+    "cells": [
+      "\u6b8b\u5dee\u5728\u533a\u95f4\u5185\n\u7d2f\u8ba1\u6b8b\u5dee\u5728\u96f6\u503c\u4e0a\u4e0b\u4e00\u4e2a\u5386\u53f2\u6807\u51c6\u5dee\u4ee5\u5185\uff08|z| < 1\uff09\u3002\u6b64\u5206\u7c7b\u4e0d\u80fd\u786e\u5b9a\u7f8e\u5143\u8d70\u52bf\u7684\u539f\u56e0\u3002\n\u26a0 5\u65e5\u6807\u5fd7 \uff1aDXY +1.2\u70b9\uff0c2\u5e74\u671f\u4e0b\u964d4.5 bp 5\u65e5\u4fe1\u53f7\u00b7\u975e\u7ed3\u6784\u6027",
+      "\u6a21\u578b\u751f\u6210\uff1a2026-10-12T04:05:06Z\n\u89c2\u6d4b\u65e5\uff1a\u4e0d\u53ef\u7528"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 25.96875,
+        "width": 350,
+        "height": 336.421875,
+        "top": 25.96875,
+        "right": 370,
+        "bottom": 362.390625,
+        "left": 20
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "method-390-dark-zh.png",
+    "sha256": "9b29be98288bcd448cf11d81b4834b24c9b3554ae60aa3904b1d4b796d414d16",
+    "text": "\u2715\n\u4ee5120\u4e2a\u89c2\u6d4b\u503c\u6eda\u52a8\u56de\u5f52\u6bcf\u65e5DXY\u5bf9\u6570\u6536\u76ca\u4e0e\u7f8e\u56fd\u51cf\u5916\u56fd\u5229\u5dee\u7684\u53d8\u52a8\u3002\u5206\u6570\u4e3a20\u4e2a\u89c2\u6d4b\u503c\u7684\u6b8b\u5dee\u4e4b\u548c\uff0c\u9664\u4ee5\u6700\u591a252\u4e2a\u5386\u53f2\u89c2\u6d4b\u503c\u7684\u6807\u51c6\u5dee\uff0c\u5206\u5b50\u4e0d\u51cf\u5747\u503c\u300260\u4e2a\u89c2\u6d4b\u503c\u7684\u6807\u51c6\u5316\u662f\u72ec\u7acb\u654f\u611f\u6027\u68c0\u67e5\uff0c\u5e76\u975e\u786e\u8ba4\u30025\u65e5\u6807\u5fd7\u72ec\u7acb\u3002\u53ef\u7528\u5229\u7387\u7bee\u5b50\u7684\u5b9e\u9645\u6743\u91cd\uff0c\u5e76\u975e\u56e0\u679c\u8d21\u732e\uff1a{'eur2y': 1.0}\u3002\u82f1\u56fd\u4f7f\u7528\u77ed\u671f\u5229\u7387\u4ee3\u7406\uff0c\u7bee\u5b50\u8986\u76d6\u8303\u56f4\u4e0e\u671f\u9650\u4e0d\u540c\u3002",
+    "geometry": {
+      "x": 0,
+      "y": 731.21875,
+      "width": 390,
+      "height": 168.78125
+    },
+    "interaction": "existing help focused; native Enter opens LENS; Escape closes"
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "header-390-dark-zh.png",
+    "sha256": "03dedcfe35df293c82f3410f28bfee0298fe62f2e95a9979aac76cb329608291",
+    "text": "\u7f8e\u5143\n\u6b8b\u5dee\u5728\u533a\u95f4\u5185\n\u6a21\u578b\u6b8b\u5dee\u5206\u6570\uff1a|z| < 1\n\u26a0 5\u65e5\u6807\u5fd7 \uff08DXY +1.2\u70b9\uff0c2\u5e74\u671f -4.5 bp\uff09\n\u6a21\u578b\u5206\u7c7b\u00b7\u4e0d\u4ee3\u8868\u56e0\u679c\u7ed3\u8bba",
+    "class": "ird-hchip state-caut",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "chip": {
+        "x": 43,
+        "y": 386.265625,
+        "width": 304,
+        "height": 127.890625,
+        "top": 386.265625,
+        "right": 347,
+        "bottom": 514.15625,
+        "left": 43
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh.png",
+    "sha256": "6083e7c80f2436089c1a6e4e6664c762891a76eee37aee89dfb13eb69a0a931e",
+    "cells": [
+      "\u6b8b\u5dee\u5728\u533a\u95f4\u5185\n\u7d2f\u8ba1\u6b8b\u5dee\u5728\u96f6\u503c\u4e0a\u4e0b\u4e00\u4e2a\u5386\u53f2\u6807\u51c6\u5dee\u4ee5\u5185\uff08|z| < 1\uff09\u3002\u6b64\u5206\u7c7b\u4e0d\u80fd\u786e\u5b9a\u7f8e\u5143\u8d70\u52bf\u7684\u539f\u56e0\u3002\n\u26a0 5\u65e5\u6807\u5fd7 \uff1aDXY +1.2\u70b9\uff0c2\u5e74\u671f\u4e0b\u964d4.5 bp 5\u65e5\u4fe1\u53f7\u00b7\u975e\u7ed3\u6784\u6027",
+      "\u6a21\u578b\u751f\u6210\uff1a2026-10-12T04:05:06Z\n\u89c2\u6d4b\u65e5\uff1a\u4e0d\u53ef\u7528"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 25.96875,
+        "width": 350,
+        "height": 336.421875,
+        "top": 25.96875,
+        "right": 370,
+        "bottom": 362.390625,
+        "left": 20
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "method-390-light-zh.png",
+    "sha256": "9d09a1025386242e2d822204449542aecb9f9fe32d470bbdde74f1976726379f",
+    "text": "\u2715\n\u4ee5120\u4e2a\u89c2\u6d4b\u503c\u6eda\u52a8\u56de\u5f52\u6bcf\u65e5DXY\u5bf9\u6570\u6536\u76ca\u4e0e\u7f8e\u56fd\u51cf\u5916\u56fd\u5229\u5dee\u7684\u53d8\u52a8\u3002\u5206\u6570\u4e3a20\u4e2a\u89c2\u6d4b\u503c\u7684\u6b8b\u5dee\u4e4b\u548c\uff0c\u9664\u4ee5\u6700\u591a252\u4e2a\u5386\u53f2\u89c2\u6d4b\u503c\u7684\u6807\u51c6\u5dee\uff0c\u5206\u5b50\u4e0d\u51cf\u5747\u503c\u300260\u4e2a\u89c2\u6d4b\u503c\u7684\u6807\u51c6\u5316\u662f\u72ec\u7acb\u654f\u611f\u6027\u68c0\u67e5\uff0c\u5e76\u975e\u786e\u8ba4\u30025\u65e5\u6807\u5fd7\u72ec\u7acb\u3002\u53ef\u7528\u5229\u7387\u7bee\u5b50\u7684\u5b9e\u9645\u6743\u91cd\uff0c\u5e76\u975e\u56e0\u679c\u8d21\u732e\uff1a{'eur2y': 1.0}\u3002\u82f1\u56fd\u4f7f\u7528\u77ed\u671f\u5229\u7387\u4ee3\u7406\uff0c\u7bee\u5b50\u8986\u76d6\u8303\u56f4\u4e0e\u671f\u9650\u4e0d\u540c\u3002",
+    "geometry": {
+      "x": 0,
+      "y": 731.21875,
+      "width": 390,
+      "height": 168.78125
+    },
+    "interaction": "existing help focused; native Enter opens LENS; Escape closes"
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "header-390-light-zh.png",
+    "sha256": "b4ba30540e4ff7ccaeeb5b1a18411583f4657b1b70ad7e12441fe715e886d6d8",
+    "text": "\u7f8e\u5143\n\u6b8b\u5dee\u5728\u533a\u95f4\u5185\n\u6a21\u578b\u6b8b\u5dee\u5206\u6570\uff1a|z| < 1\n\u26a0 5\u65e5\u6807\u5fd7 \uff08DXY +1.2\u70b9\uff0c2\u5e74\u671f -4.5 bp\uff09\n\u6a21\u578b\u5206\u7c7b\u00b7\u4e0d\u4ee3\u8868\u56e0\u679c\u7ed3\u8bba",
+    "class": "ird-hchip state-caut",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "chip": {
+        "x": 43,
+        "y": 386.265625,
+        "width": 304,
+        "height": 127.890625,
+        "top": 386.265625,
+        "right": 347,
+        "bottom": 514.15625,
+        "left": 43
+      }
+    }
+  }
+]

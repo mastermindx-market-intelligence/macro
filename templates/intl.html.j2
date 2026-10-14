@@ -1413,10 +1413,10 @@
     <div class="ird-hchip state-{{ 'caut' if safety_bid else 'ok' if sm_regime_known else 'unknown' }}">
       <div class="hc-lbl">{{ t('Dollar', '美元') }}</div>
       {%- if sm_regime_known %}
-        {%- set regime_label_en = 'Dollar moving on rate differences, not fear' if SM.get('regime') == 'rates-driven' else 'Dollar being bought as shelter' if SM.get('regime') == 'safety-driven' else 'Mixed picture' %}
-        {%- set regime_label_zh = '受利差驱动' if SM.get('regime') == 'rates-driven' else '避险买入' if SM.get('regime') == 'safety-driven' else '信号混合' %}
-        {%- set regime_detail_en = 'Rate gaps, not fear, explain recent moves' if SM.get('regime') == 'rates-driven' else 'Investors are paying up for dollar safety' if SM.get('regime') == 'safety-driven' else 'Rate gaps and risk mood both in play' %}
-        {%- set regime_detail_zh = '近期走势由利差主导，非恐慌驱动' if SM.get('regime') == 'rates-driven' else '投资者正为美元避险支付溢价' if SM.get('regime') == 'safety-driven' else '利差与风险情绪均有影响' %}
+        {%- set regime_label_en = 'Within residual band' if SM.get('regime') == 'rates-driven' else 'Above rate model' if SM.get('regime') == 'safety-driven' else 'Below rate model' %}
+        {%- set regime_label_zh = '残差在区间内' if SM.get('regime') == 'rates-driven' else '高于利差模型' if SM.get('regime') == 'safety-driven' else '低于利差模型' %}
+        {%- set regime_detail_en = 'Model residual score: |z| < 1' if SM.get('regime') == 'rates-driven' else 'Model residual score: z ≥ 1' if SM.get('regime') == 'safety-driven' else 'Model residual score: z ≤ −1' %}
+        {%- set regime_detail_zh = '模型残差分数：|z| < 1' if SM.get('regime') == 'rates-driven' else '模型残差分数：z ≥ 1' if SM.get('regime') == 'safety-driven' else '模型残差分数：z ≤ −1' %}
         <div class="hc-state info">{{ t(regime_label_en, regime_label_zh) }}</div>
         <div class="hc-detail">{{ t(regime_detail_en, regime_detail_zh) }}</div>
       {%- else %}
@@ -1425,13 +1425,13 @@
       {%- endif %}
       {%- if safety_bid %}
         <div class="ird-safety-tag">
-          ⚠ {{ t('Safety bid today', '今日避险需求') }}
+          ⚠ {{ t('Five-day flag', '5日标志') }}
           {%- if dxy5d is not none and dgs2_5d is not none %}
-            {{ t(' (DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + ', 2yr ' + ('%+.1f bp' | format(dgs2_5d)) + ')', '（DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + '，2年期 ' + ('%+.1f bp' | format(dgs2_5d)) + '）') }}
+            {{ t(' (DXY ' + ('+%.1f pts' | format(dxy5d) if dxy5d >= 0 else '%.1f pts' | format(dxy5d)) + ', 2yr ' + ('%+.1f bp' | format(dgs2_5d)) + ')', '（DXY ' + ('+%.1f点' | format(dxy5d) if dxy5d >= 0 else '%.1f点' | format(dxy5d)) + '，2年期 ' + ('%+.1f bp' | format(dgs2_5d)) + '）') }}
           {%- endif %}
         </div>
       {%- endif %}
-      <div class="hc-stance" style="margin-top:5px;"><b>{{ t('Watch — don\'t chase', '观望，勿追入') }}</b> {{ t('dollar strength', '美元强势') }}</div>
+      <div class="hc-stance" style="margin-top:5px;">{{ t('Model classification · not a causal verdict', '模型分类·不代表因果结论') }}</div>
     </div>
 
     {# CHIP 4: Dollar Funding (swap lines + money-market corridor) #}
@@ -1747,35 +1747,35 @@
     <!-- WHAT'S DRIVING THE DOLLAR -->
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-dollar-conditions">{{ t('What\'s driving the dollar?', '美元走势的驱动因素') }}
+        <h2 id="intl-dollar-conditions">{{ t('Dollar rate-model read', '美元利差模型读数') }}
           {%- if sm_regime_known %}
-            {{ help('Dollar regime uses a 120-day rolling window. Rate-differential weight: how much of the DXY move correlates with the US-vs-world short-rate spread. Risk-off weight: DXY vs VIX co-movement. Residual: unexplained. Dual-window confirmed over both 5d and 20d. Weights used: ' + (SM.get('weights_used')|string if SM.get('weights_used') else 'standard') + '. Window-sensitive: regime may shift with a different window.', '美元制度使用120日滚动窗口。利差权重：DXY走势与美国对全球短期利差的相关程度。避险权重：DXY与VIX的同步走势。残差：不可解释部分。双窗口在5日和20日均已确认。使用权重：' + (SM.get('weights_used')|string if SM.get('weights_used') else '标准') + '。窗口敏感：不同窗口下制度判断可能不同。') }}
+            {{ help(('120-observation rolling regression of daily DXY log returns on changes in the US-minus-foreign rate spread. The score is the 20-observation residual sum divided by its trailing, up-to-252-observation standard deviation, without subtracting the mean. The 60-observation normalization is a separate sensitivity check, not confirmation. The five-day flag is separate. Actual available-basket weights, not causal contributions: ' + (SM.get('weights_used')|string if SM.get('weights_used') else 'Unavailable') + '. GBP uses a short-rate proxy; basket coverage and tenors differ.')|e, ('以120个观测值滚动回归每日DXY对数收益与美国减外国利差的变动。分数为20个观测值的残差之和，除以最多252个历史观测值的标准差，分子不减均值。60个观测值的标准化是独立敏感性检查，并非确认。5日标志独立。可用利率篮子的实际权重，并非因果贡献：' + (SM.get('weights_used')|string if SM.get('weights_used') else '不可用') + '。英国使用短期利率代理，篮子覆盖范围与期限不同。')|e) }}
           {%- else %}
-            {{ help('Dollar read updates nightly from the forex desk. The regime is determined by a 120-day rolling decomposition comparing rate-differential vs risk-off vs residual drivers. When data is fresh, this panel shows the dominant regime and a one-sentence explanation.', '美元读数每晚从外汇台更新。制度由120日滚动分解确定，比较利差、避险与残差驱动因素。数据刷新后，本面板显示主导制度及一句话说明。') }}
+            {{ help('No supported regime was supplied. A page build or a separate five-day signal cannot supply the missing model read or observation date.', '未提供可用制度读数。页面生成时间或独立5日信号不能补足缺失的模型读数或观测日。') }}
           {%- endif %}
         </h2>
-        <span class="sub">{{ t('Watch — don\'t chase dollar strength until the read is fresh', '等待最新读数后再追美元强势') }}</span>
+        <span class="sub">{{ t('Residual model · separate from the five-day signal', '残差模型·与5日信号分开解读') }}</span>
       </div>
 
       <div class="ird-dollar-card">
         {%- if sm_regime_known %}
           {%- set regime = SM.get('regime', '') %}
           {%- if regime == 'rates-driven' %}
-            <div class="regime-word">{{ t('Rate-driven', '利差驱动') }}</div>
-            <div class="regime-sentence">{{ t('Rate differences between the US and other major economies explain the recent dollar move — not a flight to safety.', '美国与其他主要经济体之间的利差是近期美元走势的主因，而非避险需求。') }}</div>
+            <div class="regime-word">{{ t('Within residual band', '残差在区间内') }}</div>
+            <div class="regime-sentence">{{ t('The cumulative residual is within one trailing standard deviation of zero (|z| < 1). This classification does not establish the cause of the dollar move.', '累计残差在零值上下一个历史标准差以内（|z| < 1）。此分类不能确定美元走势的原因。') }}</div>
           {%- elif regime == 'safety-driven' %}
-            <div class="regime-word">{{ t('Safety-driven', '避险驱动') }}</div>
-            <div class="regime-sentence">{{ t('The dollar is being bought as a safe haven — investors are moving to safety, not chasing rate differentials.', '美元正作为避险资产被买入——投资者在避险，而非追逐利差。') }}</div>
+            <div class="regime-word">{{ t('Above rate model', '高于利差模型') }}</div>
+            <div class="regime-sentence">{{ t('The cumulative residual is positive and at least one trailing standard deviation (z ≥ 1). This classification does not establish the cause of the dollar move.', '累计残差为正，且至少达到一个历史标准差（z ≥ 1）。此分类不能确定美元走势的原因。') }}</div>
           {%- else %}
-            <div class="regime-word">{{ t('Mixed picture', '信号混合') }}</div>
-            <div class="regime-sentence">{{ t('No single driver dominates the dollar\'s recent move — both rate differences and risk sentiment are playing a role.', '近期美元走势无单一主导因素——利差与风险情绪均有作用。') }}</div>
+            <div class="regime-word">{{ t('Below rate model', '低于利差模型') }}</div>
+            <div class="regime-sentence">{{ t('The cumulative residual is negative and at least one trailing standard deviation in magnitude (z ≤ −1). This classification does not establish the cause of the dollar move.', '累计残差为负，且绝对值至少达到一个历史标准差（z ≤ −1）。此分类不能确定美元走势的原因。') }}</div>
           {%- endif %}
           {%- if safety_bid %}
           <div style="margin-bottom:10px;">
             <span class="ird-safety-tag">
-              ⚠ {{ t('Safety bid today', '今日避险需求') }}
+              ⚠ {{ t('Five-day flag', '5日标志') }}
               {%- if dxy5d is not none and dgs2_5d is not none %}
-                {{ t(': DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + ' while 2yr fell ' + ('%.1f bp' | format(dgs2_5d|abs)), '：DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + '，2年期下降' + ('%.1f bp' | format(dgs2_5d|abs))) }}
+                {{ t(': DXY ' + ('+%.1f pts' | format(dxy5d) if dxy5d >= 0 else '%.1f pts' | format(dxy5d)) + ' while 2yr fell ' + ('%.1f bp' | format(dgs2_5d|abs)), '：DXY ' + ('+%.1f点' | format(dxy5d) if dxy5d >= 0 else '%.1f点' | format(dxy5d)) + '，2年期下降' + ('%.1f bp' | format(dgs2_5d|abs))) }}
               {%- endif %}
             </span>
             <span class="small muted" style="margin-left:8px;">{{ t('5-day signal · not structural', '5日信号·非结构性') }}</span>
@@ -1789,19 +1789,20 @@
           {%- if safety_bid %}
           <div style="margin-top:10px;">
             <span class="ird-safety-tag">
-              ⚠ {{ t('Safety bid today', '今日避险需求') }}
+              ⚠ {{ t('Five-day flag', '5日标志') }}
               {%- if dxy5d is not none and dgs2_5d is not none %}
-                {{ t(': DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + ' while 2yr fell ' + ('%.1f bp' | format(dgs2_5d|abs)), '：DXY ' + ('+%.1f%%' | format(dxy5d) if dxy5d >= 0 else '%.1f%%' | format(dxy5d)) + '，2年期下降' + ('%.1f bp' | format(dgs2_5d|abs))) }}
+                {{ t(': DXY ' + ('+%.1f pts' | format(dxy5d) if dxy5d >= 0 else '%.1f pts' | format(dxy5d)) + ' while 2yr fell ' + ('%.1f bp' | format(dgs2_5d|abs)), '：DXY ' + ('+%.1f点' | format(dxy5d) if dxy5d >= 0 else '%.1f点' | format(dxy5d)) + '，2年期下降' + ('%.1f bp' | format(dgs2_5d|abs))) }}
               {%- endif %}
             </span>
-            <div class="small muted" style="margin-top:6px;">{{ t('DXY rose while 2-year yields fell over the past 5 days — consistent with safe-haven demand, not rate arbitrage. This is a 5-day observation, not a regime call.', '过去5天内DXY上涨而2年期收益率下降——与避险需求一致，而非利率套利。这是5日观察，非制度判断。') }}</div>
+            <div class="small muted" style="margin-top:6px;">{{ t('DXY rose while US 2-year yields fell over the past 5 days. This separate observation does not establish a cause or confirm a regime.', '过去5天内DXY上涨而美国2年期收益率下降。此独立观察不能确定原因，也不代表制度确认。') }}</div>
           </div>
           {%- endif %}
         {%- endif %}
       </div>
       <p class="caveat ird-asof">
         {%- if sm_regime_known %}
-          {{ t('120-day rolling window · As of ' + (RD.get('built','')[:10] or ''), '120日滚动窗口 · 截至' + (RD.get('built','')[:10] or '')) }}
+          {{ t('Model built: ' + ((SM.get('built') or 'Unavailable')|string|e), '模型生成：' + ((SM.get('built') or '不可用')|string|e)) }}<br>
+          {{ t('Observation date: Unavailable', '观测日：不可用') }}
         {%- else %}
           {{ t('Dollar regime unavailable in supplied data.', '所提供数据中的美元制度不可用。') }}
         {%- endif %}

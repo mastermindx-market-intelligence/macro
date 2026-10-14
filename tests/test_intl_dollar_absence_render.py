@@ -49,7 +49,7 @@ def test_unavailable_dollar_owner_is_never_a_mixed_read(kind):
     assert payload == original
 
 
-@pytest.mark.parametrize('regime,word', [('rates-driven', 'Rate-driven'), ('safety-driven', 'Safety-driven'), ('mixed', 'Mixed picture')])
+@pytest.mark.parametrize('regime,word', [('rates-driven', 'Within residual band'), ('safety-driven', 'Above rate model'), ('mixed', 'Below rate model')])
 def test_known_dollar_regime_remains_available(regime, word):
     _, panel = dollar_surfaces({'smile': {'regime': regime, 'display_only': True}})
     assert word in panel.select_one('.regime-word').get_text()
@@ -60,4 +60,4 @@ def test_independent_safety_bid_is_not_lost_when_regime_unavailable():
     payload['two_tier'] = {'safety_bid': True}
     chip, panel = dollar_surfaces(payload)
     assert 'Unavailable' in chip.get_text()
-    assert 'Safety bid today' in panel.get_text()
+    assert 'Five-day flag' in panel.get_text()
