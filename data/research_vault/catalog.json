@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T03:39:02.805441+00:00",
-  "count": 2859,
+  "generated_at": "2026-10-14T03:54:01.731713+00:00",
+  "count": 2860,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -284,6 +284,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yuv6zaxfamj-d20647",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:30:44Z",
+      "summary_points": [
+        "Earnings Momentum: 11/11 sectors show positive revenue/earnings growth (rare since 21Q2), with 26Q3 rev growth at 12.4% and EPS growth at 29.6%, signaling sustained outperformance despite AI uncertainty.",
+        "Consumer Sector Stress: Consumer Discretionary (92% down ≥10%) and Staples (91% down ≥10%) show severe weakness, aligning with recession signals from energy cost pressures and high price sensitivity.",
+        "Geopolitical Energy Volatility: Ukraine/Russia ceasefire uncertainty and Trump’s Russian diesel deal drive WTI +119bps and NatGas -252bps, directly impacting energy market positioning.",
+        "AI Theme Pressure: Semis/Memory underperforming (SOX near inflection point) and AI credit fears threaten the rally, requiring vigilance ahead of earnings and CPI data.",
+        "Midterm Election Alpha: Historical SPX post-midterm rally (+5.4% to +14.7%) and JPM’s JP9DEMP Index showing ~170% annualized returns vs S&P 500 signal election dynamics as key alpha driver."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
