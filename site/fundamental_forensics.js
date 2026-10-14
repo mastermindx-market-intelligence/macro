@@ -1979,6 +1979,10 @@
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      // X2-b+c r3 R3-3b: reconcile FIRST — a view another tab unpinned,
+      // changed or deleted while this tab's pinned fetch was in flight must
+      // be refused before the backfill can write anything against it.
+      reconcileSavedActive();
       backfillSavedAgainst();
       renderSavedUI();
     }).catch(function (error) {
@@ -2571,11 +2575,14 @@
     });
   }
 
-  // X2-b r2 MINOR-1 + X2-b+c r2 MAJOR-1: another tab can delete or break the
-  // active view, CHANGE it (unpin it, re-cut its request), or break the whole
-  // store. The next read notices every one: the view turns into its own
-  // refusal ('store' for a read-only store, 'changed' for an edit), so the
-  // notice shows, no badge renders, and no stale pinned bytes are served.
+  // X2-b r2 MINOR-1 + X2-b+c r2 MAJOR-1, r3 R3-3/R3-4: another tab can
+  // delete or break the active view, CHANGE it (unpin it, re-cut its
+  // request), or break the whole store. The next read notices every one: the
+  // view turns into its own refusal ('store' for a read-only store, 'changed'
+  // for an edit), so the notice shows, no badge renders, no stale pinned
+  // bytes are served, Export returns no body while the refusal is active
+  // (exportQueryBody), and the resolve-path backfill writes nothing against a
+  // capture the store no longer matches.
   function reconcileSavedActive() {
     if (!savedBriefcase || !state.savedActiveId || state.savedRefusal) return;
     if (savedBriefcase.readOnly()) {
@@ -2589,15 +2596,19 @@
       state.pinnedRequest = null;
       return;
     }
-    // MAJOR-1: compare what this tab is serving against what the store now
-    // holds — the loaded view's pinned flag, and its canonical request bytes
-    // (a canonical request carries a fixed key order, so JSON.stringify IS
-    // its canonical JSON). Any mismatch — pinned->latest, latest->pinned, a
-    // changed request — refuses as 'changed'; never silently re-derived.
+    // MAJOR-1 + r3 R3-4: compare what this tab is serving against what the
+    // store now holds — the loaded view's pinned flag, and its canonical
+    // request bytes measured with the briefcase's own canonicalJson (the
+    // same sorted-key, key-order-blind notion of equality the store and the
+    // manifest use; JSON.stringify would let a same-content request with
+    // reordered keys refuse). Any mismatch — pinned->latest, latest->pinned,
+    // a changed request — refuses as 'changed'; never silently re-derived.
     var view = result.view;
     var servingPinned = !!state.pinnedRequest;
+    var storedBytes = window.FifSavedBriefcase.canonicalJson(view.request);
+    var servingBytes = window.FifSavedBriefcase.canonicalJson(state.pinnedRequest);
     if (view.pinned !== servingPinned ||
-      (servingPinned && JSON.stringify(view.request) !== JSON.stringify(state.pinnedRequest))) {
+      (servingPinned && storedBytes !== servingBytes)) {
       state.savedRefusal = 'changed';
       state.pinnedRequest = null;
     }
@@ -2616,8 +2627,20 @@
   }
 
   function backfillSavedAgainst() {
+    // X2-b+c r3 R3-3b: reconcile before any write (the fetch-resolve path
+    // reconciles first too; this seam stays safe when driven directly), then
+    // write only when no refusal is active, the active view is still the
+    // PINNED view this desk captured, and its canonical request bytes still
+    // equal the captured pinned body — a digest from a fetch this desk no
+    // longer serves never lands in a view another tab edited.
+    reconcileSavedActive();
     var view = savedActiveView();
-    if (!view || view.pinned) return;
+    if (!view || !view.pinned) return;
+    var captured = state.pinnedRequest;
+    if (!captured) return;
+    var storedBytes = window.FifSavedBriefcase.canonicalJson(view.request);
+    var capturedBytes = window.FifSavedBriefcase.canonicalJson(captured);
+    if (storedBytes === null || capturedBytes === null || storedBytes !== capturedBytes) return;
     var digest = state.financial && state.financial.responseSha256 || '';
     if (!digest || view.saved_against.response_sha256 === digest) return;
     savedBriefcase.update(view.id, {
@@ -2864,6 +2887,13 @@
   var XLSX_MEDIA_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
   function exportQueryBody() {
+    // X2-b+c r3 R3-3a: while a saved-view refusal is active the desk still
+    // holds the stale pinned query body; Export must not re-POST it. The
+    // refusal copy already tells the reader to reopen the view, so Export
+    // gets no body at all, whatever the phase. The reconcile-on-read makes
+    // the guard hold even when the edit in the other tab is not yet noticed.
+    reconcileSavedActive();
+    if (state.savedRefusal) return null;
     if (state.financial && state.financial.queryBody && state.financial.phase === 'ready') {
       return state.financial.queryBody;
     }

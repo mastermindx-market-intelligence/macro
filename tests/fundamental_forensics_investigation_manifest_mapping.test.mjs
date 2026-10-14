@@ -783,15 +783,25 @@ test('T-M7 r2: the manifest size cap (py :169, sql :93)', () => {
   assertNoNetwork(Briefcase);
 });
 
-test('T-M7 r2: the NUL code and the per-code-point order (py :42-47, ts :143-157)', () => {
+test('T-M7 r3: the NUL code and the corrected per-code-point order (py :39-48, ts :143-157)', () => {
   const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
   assert.equal(snapshot.text_checks.nul_code, 'unsupported_code_point');
+  // r3 R3-5: the corrected order — empty_text runs on the whole string BEFORE
+  // any code point (py :41 ahead of the loop at :42-46), and invalid_control
+  // is a whole-string scan AFTER the per-code-point loop (py :47-48).
   sameJson(snapshot.text_checks.per_code_point_order,
-    ['invalid_unicode', 'unsupported_code_point', 'text_too_long', 'invalid_control']);
-  assert.ok(snapshot.text_checks.source.includes('investigation_contracts.py:42-47'));
+    ['empty_text', 'invalid_unicode', 'unsupported_code_point', 'text_too_long', 'invalid_control']);
+  assert.ok(snapshot.text_checks.source.includes('investigation_contracts.py:39-48'));
 
   const Briefcase = freshBriefcase(memoryStorage(), 0);
   const NUL = String.fromCharCode(0);
+  // Refused case: an empty string gives empty_text before anything else, even
+  // when another field would refuse too (the title check runs first).
+  const blankName = fixtureView('saved_single_issuer.json');
+  blankName.name = '';
+  blankName.issuer.entity_id = 'ISS:x' + NUL;
+  sameJson(Briefcase.emitInvestigationManifestV2(blankName),
+    { ok: false, reason: 'empty_text', path: '$.intent.title' });
   // Refused case: NUL reports Terminal's code, not invalid_control.
   const nulName = fixtureView('saved_single_issuer.json');
   nulName.name = 'Apple' + NUL + 'baseline';
@@ -801,6 +811,79 @@ test('T-M7 r2: the NUL code and the per-code-point order (py :42-47, ts :143-157
   const cleanName = fixtureView('saved_single_issuer.json');
   cleanName.name = 'Apple baseline';
   assert.ok(Briefcase.emitInvestigationManifestV2(cleanName).ok);
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r3: the emitter follows the Python checker\'s refusal order — known divergences (r3 R3-5)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  // The snapshot states exactly which checker's order the emitter follows.
+  assert.equal(snapshot.emitter_refusal_order.follows, 'api/investigation_contracts.py');
+  assert.ok(Array.isArray(snapshot.known_divergences) && snapshot.known_divergences.length >= 3,
+    'the divergence set is recorded, never implied by an "exact mirror" claim');
+  for (const entry of snapshot.known_divergences) {
+    assert.ok(entry.source, 'every divergence entry carries a source citation');
+  }
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const byAspect = (aspect) => snapshot.known_divergences.find((entry) => entry.aspect === aspect);
+
+  // Divergence 1 — the TypeScript checker runs the size cap FIRST
+  // (investigationContracts.ts:277-283), so a manifest that is BOTH over
+  // 131072 bytes AND over the evidence cap is manifest_too_large there; py
+  // checks the field first (:161 before :169) and so does the emitter. The
+  // emitter must return the entry's Python-side code.
+  const bigId = (index) => '字'.repeat(250) + String(index).padStart(6, '0'); // 256 code points, ~756 UTF-8 octets, unique per ref
+  const refsOf = (count) => Array.from({ length: count }, (_, index) => ({
+    accession: 'A' + index,
+    occurrence_id: bigId(index),
+    source_span: [index, index + 1]
+  }));
+  // Guard: at 128 refs (within the cap) the same ids already exceed the byte
+  // cap, so the 129-ref case below trips BOTH conditions and only the check
+  // ORDER decides the code.
+  const atCapBytes = fixtureView('saved_with_evidence.json');
+  atCapBytes.evidence_refs = refsOf(128);
+  sameJson(Briefcase.emitInvestigationManifestV2(atCapBytes),
+    { ok: false, reason: 'manifest_too_large', path: '$' },
+    'guard: 128 refs of 768-octet ids already exceed 131072 bytes');
+  const oversized = fixtureView('saved_with_evidence.json');
+  oversized.evidence_refs = refsOf(129);
+  const divergenceSize = byAspect('size cap ordering');
+  const emittedSize = Briefcase.emitInvestigationManifestV2(oversized);
+  sameJson(emittedSize, { ok: false, reason: divergenceSize.python.code, path: divergenceSize.python.path });
+  assert.equal(divergenceSize.typescript.code, 'manifest_too_large');
+  assert.equal(divergenceSize.typescript.path, '$');
+
+  // Divergence 2 — the TypeScript checker runs the combined
+  // too_many_references check (investigationContracts.ts:250) BEFORE the
+  // per-list checks (:258-260), so 129 evidence refs is '$
+  // too_many_references' there; py :161 fires first and the emitter agrees.
+  const over = fixtureView('saved_with_evidence.json');
+  over.evidence_refs = Array.from({ length: 129 }, (_, index) => ({
+    accession: 'A' + index,
+    occurrence_id: 'occurrence-' + index,
+    source_span: [index, index + 1]
+  }));
+  const divergenceRefs = byAspect('combined reference total ordering');
+  const emittedRefs = Briefcase.emitInvestigationManifestV2(over);
+  sameJson(emittedRefs, { ok: false, reason: divergenceRefs.python.code, path: divergenceRefs.python.path });
+  assert.equal(divergenceRefs.typescript.code, 'too_many_references');
+  assert.equal(divergenceRefs.typescript.path, '$');
+
+  // Divergence 3 — the size-measure number rendering: the emitter can never
+  // emit a non-integer (Math.trunc over finite guards,
+  // fif_saved_briefcase.js:315-316/:296-297) but it can emit an
+  // integer-valued float >= 1e21, which the emitter and py render as 1e+300
+  // and the sql jsonb canonical text renders as 1e300.
+  const divergenceNumbers = byAspect('size-measure number rendering');
+  assert.equal(divergenceNumbers.emitter_and_python_render, '1e+300');
+  assert.equal(divergenceNumbers.sql_renders, '1e300');
+  const hugePeerN = fixtureView('saved_single_issuer.json');
+  hugePeerN.peers.peer_n = 1e300;
+  const emittedHuge = Briefcase.emitInvestigationManifestV2(hugePeerN);
+  assert.ok(emittedHuge.ok, 'the exponent-form integer-valued float still emits');
+  assert.ok(canon(emittedHuge.manifest).includes('"peer_n":1e+300'),
+    'the emitter\'s canonical bytes render the number the way py json.dumps does');
   assertNoNetwork(Briefcase);
 });
 

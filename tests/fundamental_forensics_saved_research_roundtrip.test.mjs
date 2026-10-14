@@ -1634,3 +1634,388 @@ test('T-NIT2-store: a stored row carrying an unknown key stays listed but refuse
   // The refused row stays deletable.
   sameJson(store.remove(row.id), { ok: true, deleted: true });
 });
+
+// ── X2-b+c r3 R3-1: values the UI can save must also export — the emitter's
+// own checker runs at save/update time, with the emitter's code and path ─────
+
+const CTRL = String.fromCharCode(1);
+const NUL = String.fromCharCode(0);
+const LONE = String.fromCharCode(0xd800);
+
+function r3Store() {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  return { Briefcase: Briefcase, store: Briefcase.create({ now: () => '2026-10-12T00:00:00Z' }) };
+}
+
+test('T-R3-1-name-save: control characters and NUL in a name refuse at save with the emitter\'s code and path', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const cases = [
+    ['\t', 'invalid_control'],
+    ['\n', 'invalid_control'],
+    [CTRL, 'invalid_control'],
+    [NUL, 'unsupported_code_point']
+  ];
+  for (const [character, reason] of cases) {
+    const { store } = r3Store();
+    const refused = store.save(Object.assign({}, base, { name: 'a' + character + 'b' }));
+    assert.equal(refused.ok, false, 'a name holding U+' + character.charCodeAt(0).toString(16).padStart(4, '0') + ' refuses');
+    assert.equal(refused.reason, reason);
+    assert.equal(refused.path, '$.intent.title', 'the refusal carries the emitter\'s own path');
+    assert.equal(store.list().length, 0, 'nothing is stored');
+  }
+});
+
+test('T-R3-1-name-update: the same refusals on rename, and the stored name never changes', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  for (const [character, reason] of [['\t', 'invalid_control'], [NUL, 'unsupported_code_point'], [CTRL, 'invalid_control']]) {
+    const { store } = r3Store();
+    const saved = store.save(Object.assign({}, base));
+    assert.equal(saved.ok, true, saved.reason || 'the base view saves');
+    const before = store.load(saved.view.id).view.name;
+    const refused = store.update(saved.view.id, { name: 'a' + character + 'b' });
+    assert.equal(refused.ok, false, 'a rename holding U+' + character.charCodeAt(0).toString(16).padStart(4, '0') + ' refuses');
+    assert.equal(refused.reason, reason);
+    assert.equal(refused.path, '$.intent.title');
+    assert.equal(store.load(saved.view.id).view.name, before, 'the stored name is unchanged');
+  }
+});
+
+test('T-R3-1-ids: an entity_id or occurrence_id carrying U+0001 refuses with the emitter\'s code and path', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const { store } = r3Store();
+  const refusedIssuer = store.save(Object.assign({}, base, {
+    issuer: { entity_id: 'ISS:x' + CTRL + 'y', cik: base.issuer.cik, ticker: base.issuer.ticker }
+  }));
+  assert.equal(refusedIssuer.ok, false);
+  assert.equal(refusedIssuer.reason, 'invalid_control');
+  assert.equal(refusedIssuer.path, '$.intent.subjects[0].object_id');
+  const refusedOccurrence = store.save(Object.assign({}, base, {
+    evidence_refs: [{ accession: 'A', occurrence_id: 'occ' + CTRL, source_span: [0, 1] }]
+  }));
+  assert.equal(refusedOccurrence.ok, false);
+  assert.equal(refusedOccurrence.reason, 'invalid_control');
+  assert.equal(refusedOccurrence.path, '$.evidence_refs[0].object_id');
+  assert.equal(store.list().length, 0, 'nothing is stored');
+});
+
+test('T-R3-1-pinned-date: a pinned view whose snapshot cutoff is not a real calendar date refuses as the emitter would', () => {
+  const base = fixtureContainer('saved_pinned.json').saved_views[0];
+  for (const clock of ['garbage', '2026-13-01T00:00:00Z', '2026-02-30T00:00:00Z']) {
+    const { store } = r3Store();
+    const revised = JSON.parse(JSON.stringify(base.request));
+    revised.policy.source_snapshot_at = clock;
+    const refused = store.save(Object.assign({}, base, { request: revised }));
+    assert.equal(refused.ok, false, 'the ' + clock + ' cutoff refuses');
+    assert.equal(refused.reason, 'invalid_date');
+    assert.equal(refused.path, '$.intent.research_as_of');
+    assert.equal(store.list().length, 0, 'nothing is stored');
+  }
+  // The same gate holds on the update path, and the calendar fixture still saves.
+  const { store } = r3Store();
+  const saved = store.save(Object.assign({}, base));
+  assert.equal(saved.ok, true, saved.reason || 'the calendar cutoff saves');
+  const revised = JSON.parse(JSON.stringify(base.request));
+  revised.policy.source_snapshot_at = '2026-02-30T00:00:00Z';
+  const refusedUpdate = store.update(saved.view.id, { request: revised });
+  assert.equal(refusedUpdate.ok, false, 'an impossible snapshot date refuses on update');
+  assert.equal(refusedUpdate.reason, 'invalid_date');
+  // recorded_at is never emitted: an impossible recorded date alone still saves.
+  const revisedRecorded = JSON.parse(JSON.stringify(base.request));
+  revisedRecorded.policy.recorded_at = '2026-02-30T00:00:00Z';
+  assert.equal(store.update(saved.view.id, { request: revisedRecorded }).ok, true,
+    'recorded_at is not projected, so it keeps the plain request law');
+});
+
+test('T-R3-1-duplicate-refs: two evidence refs the emitter would dedup refuse at save', () => {
+  const base = fixtureContainer('saved_with_evidence.json').saved_views[0];
+  const { store } = r3Store();
+  const refused = store.save(Object.assign({}, base, {
+    evidence_refs: [
+      { accession: 'A', occurrence_id: 'same-occurrence', source_span: [0, 1] },
+      { accession: 'A', occurrence_id: 'same-occurrence', source_span: [2, 3] }
+    ]
+  }));
+  assert.equal(refused.ok, false, 'the repeated Terminal identity tuple refuses');
+  assert.equal(refused.reason, 'duplicate_reference');
+  assert.equal(refused.path, '$.evidence_refs[1]');
+  assert.equal(store.list().length, 0, 'nothing is stored');
+});
+
+test('T-R3-1-surtex: a lone surrogate in a field the emitter never emits refuses and nothing is stored', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const cases = [
+    [{ peers: { cohort: 'c' + LONE, peer_metric: null, align: 'exclude', peer_n: 3, peer_tol: 45 } }, 'peers.cohort'],
+    [{ saved_against: { generation_id: 'g', admitted_at: 'a' + LONE, response_sha256: '' } }, 'saved_against.admitted_at'],
+    [{ view: { tab: 'radar', finding: 'f' + LONE } }, 'view.finding']
+  ];
+  for (const [patch] of cases) {
+    const { store } = r3Store();
+    const refused = store.save(Object.assign({}, base, patch));
+    assert.equal(refused.ok, false, 'a lone surrogate never stores');
+    assert.equal(refused.reason, 'invalid_unicode');
+    assert.equal(store.list().length, 0, 'nothing is stored');
+  }
+});
+
+// The property the whole finding rides on: over the fixture inputs (every
+// committed fixture crossed with the repro value variations), every value set
+// the store ACCEPTS also exports through the emitter.
+test('T-R3-1-property: every value set for which save returns ok also emits ok', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const emoji = String.fromCodePoint(0x1f600);
+  const bases = [
+    'saved_single_issuer.json', 'saved_cohort.json', 'saved_pinned.json',
+    'saved_latest.json', 'saved_with_evidence.json', 'saved_with_finding.json'
+  ].map((name) => fixtureContainer(name).saved_views[0]);
+  const nameValues = ['ok name', 'a\tb', 'a' + CTRL + 'b', 'a' + NUL + 'b', 'x' + LONE + 'y',
+    'a'.repeat(120), 'a'.repeat(121), 'a'.repeat(119) + emoji, ' padded ', ' '];
+  const issuerValues = [
+    { entity_id: 'ISS:US-XNAS-AAPL', cik: '0000320193', ticker: 'AAPL' },
+    { entity_id: 'I'.repeat(160), cik: 'c'.repeat(32), ticker: 't'.repeat(32) },
+    { entity_id: 'I'.repeat(161), cik: 'c'.repeat(33), ticker: 'AAPL' },
+    { entity_id: 'e' + CTRL, cik: '0000320193', ticker: 'AAPL' },
+    { entity_id: 'e' + LONE, cik: '0000320193', ticker: 'AAPL' },
+    { entity_id: '', cik: '0000320193', ticker: 'AAPL' }
+  ];
+  const againstValues = [
+    null,
+    { generation_id: null, admitted_at: null, response_sha256: null },
+    { generation_id: 'g'.repeat(128), admitted_at: 'a'.repeat(80), response_sha256: 'c9f2ab0451de6933ba7f1c0d4e5f60718293a4b5c6d7e8f9a1b2c3d4e5f60712' },
+    { generation_id: 'g'.repeat(129), admitted_at: '', response_sha256: '' },
+    { generation_id: 'g' + LONE, admitted_at: 'x', response_sha256: '' }
+  ];
+  const refValues = [
+    [],
+    [{ accession: 'A', occurrence_id: 'occ', source_span: [0, 1] }],
+    [{ accession: 'a'.repeat(64), occurrence_id: 'o'.repeat(128), source_span: [0, 1] }],
+    [{ accession: 'a'.repeat(65), occurrence_id: 'o', source_span: [0, 1] }],
+    [{ accession: '', occurrence_id: '', source_span: [0, 1] }],
+    [{ accession: 'A', occurrence_id: 'o' + CTRL, source_span: [0, 1] }],
+    [{ accession: 'A', occurrence_id: 'occ', source_span: [0, 1] }, { accession: 'A', occurrence_id: 'occ', source_span: [2, 3] }],
+    [{ accession: '', occurrence_id: 'fallback-id', source_span: [0, 1] }]
+  ];
+  const clockValues = ['2026-09-30T23:59:59Z', 'garbage', '2026-02-30T00:00:00Z'];
+  let accepted = 0;
+  let refused = 0;
+  const check = (input, label) => {
+    const store = Briefcase.create({ now: () => '2026-10-12T00:00:00Z', storage: memoryStorage() });
+    const saved = store.save(input);
+    if (!saved.ok) {
+      refused += 1;
+      assert.equal(store.list().length, 0, label + ': a refused save stores nothing');
+      return;
+    }
+    accepted += 1;
+    const emitted = Briefcase.emitInvestigationManifestV2(saved.view);
+    assert.equal(emitted.ok, true,
+      label + ': the stored view must export (got ' + emitted.reason + ' at ' + emitted.path + ')');
+  };
+  const vary = (base, patch) => {
+    const input = Object.assign({}, base, patch);
+    input.issuer = patch.issuer || base.issuer;
+    input.request = patch.request || base.request;
+    input.saved_against = 'saved_against' in patch ? patch.saved_against : base.saved_against;
+    input.evidence_refs = 'evidence_refs' in patch ? patch.evidence_refs : base.evidence_refs;
+    return input;
+  };
+  for (const base of bases) {
+    const label = base.name.slice(0, 18);
+    check(vary(base, {}), label + ' pristine');
+    for (const name of nameValues) check(vary(base, { name: name }), label + ' name');
+    for (const issuer of issuerValues) check(vary(base, { issuer: issuer }), label + ' issuer');
+    for (const against of againstValues) check(vary(base, { saved_against: against }), label + ' saved_against');
+    for (const refs of refValues) check(vary(base, { evidence_refs: refs }), label + ' refs');
+    for (const clock of clockValues) {
+      const revised = JSON.parse(JSON.stringify(base.request));
+      revised.policy.source_snapshot_at = clock;
+      check(vary(base, { request: revised }), label + ' clock ' + clock);
+    }
+    // Deterministic cross-sample (LCG): pairs of variations at a time.
+    let state = 42;
+    const next = (list) => list[(state = (state * 1103515245 + 12345) % 2147483648) % list.length];
+    for (let round = 0; round < 40; round += 1) {
+      check(vary(base, { name: next(nameValues), issuer: next(issuerValues) }), label + ' cross' + round);
+      check(vary(base, { saved_against: next(againstValues), evidence_refs: next(refValues) }), label + ' cross-b' + round);
+    }
+  }
+  // The update path keeps the same property for the one emitted field it can
+  // change: every accepted rename still exports.
+  const store = Briefcase.create({ now: () => '2026-10-12T00:00:00Z' });
+  const saved = store.save(Object.assign({}, bases[0]));
+  assert.equal(saved.ok, true, saved.reason || 'the base view saves');
+  for (const name of nameValues) {
+    const renamed = store.update(saved.view.id, { name: name });
+    if (renamed.ok) {
+      assert.ok(Briefcase.emitInvestigationManifestV2(renamed.view).ok,
+        'the accepted rename ' + JSON.stringify(name) + ' must export');
+    } else {
+      assert.equal(renamed.reason === 'invalid_unicode' || renamed.reason === 'invalid_control' ||
+        renamed.reason === 'unsupported_code_point' || renamed.reason === 'name', true,
+        'the refused rename uses an emitter code or the name code');
+    }
+  }
+  assert.ok(accepted > 100 && refused > 100, 'the sweep covered both sides (accepted ' + accepted + ', refused ' + refused + ')');
+});
+
+// ── X2-b+c r3 R3-2: identifiers are NEVER cut — over-limit or lone-surrogate
+// ids refuse typed and nothing is stored ──────────────────────────────────────
+
+test('T-R3-2-ids: generation_id, cik and ticker are never cut', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const refuseCase = (label, patch, reason) => {
+    const { store } = r3Store();
+    const refused = store.save(Object.assign({}, base, patch));
+    assert.equal(refused.ok, false, label + ' refuses');
+    assert.equal(refused.reason, reason, label + ' uses ' + reason);
+    assert.equal(store.list().length, 0, label + ': nothing is stored');
+  };
+  refuseCase('a 200-character generation_id', {
+    saved_against: { generation_id: 'g'.repeat(200), admitted_at: '', response_sha256: '' }
+  }, 'text_too_long');
+  refuseCase('a 129-character generation_id', {
+    saved_against: { generation_id: 'g'.repeat(129), admitted_at: '', response_sha256: '' }
+  }, 'text_too_long');
+  refuseCase('a 33-character cik', {
+    issuer: { entity_id: base.issuer.entity_id, cik: 'c'.repeat(33), ticker: 'AAPL' }
+  }, 'text_too_long');
+  refuseCase('a 33-character ticker', {
+    issuer: { entity_id: base.issuer.entity_id, cik: '0000320193', ticker: 't'.repeat(33) }
+  }, 'text_too_long');
+  // Values at the limit are accepted UNCHANGED — never trimmed to fit.
+  const { store } = r3Store();
+  const saved = store.save(Object.assign({}, base, {
+    issuer: { entity_id: base.issuer.entity_id, cik: 'c'.repeat(32), ticker: 't'.repeat(32) },
+    saved_against: { generation_id: 'g'.repeat(128), admitted_at: '', response_sha256: '' }
+  }));
+  assert.equal(saved.ok, true, saved.reason || 'the at-limit identifiers save');
+  assert.equal(saved.view.issuer.cik, 'c'.repeat(32));
+  assert.equal(saved.view.issuer.ticker, 't'.repeat(32));
+  assert.equal(saved.view.saved_against.generation_id, 'g'.repeat(128));
+  // The update path (the backfill shape) refuses the same over-limit id.
+  const updated = store.update(saved.view.id, {
+    saved_against: { generation_id: 'g'.repeat(129), admitted_at: '', response_sha256: '' }
+  });
+  assert.equal(updated.ok, false);
+  assert.equal(updated.reason, 'text_too_long');
+  assert.equal(store.load(saved.view.id).view.saved_against.generation_id, 'g'.repeat(128),
+    'the stored generation_id is unchanged');
+});
+
+// ── X2-b+c r3 R3-3: no stale pinned export, no stale backfill ────────────────
+
+async function restoredPinnedSettledDrive() {
+  const { drive, row } = restoredPinnedDrive();
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.financial.phase, 'ready', 'the pinned fetch settled');
+  assert.ok(drive.api.state.financial.queryBody, 'the pinned body is the ready query body');
+  return { drive: drive, row: row };
+}
+
+test('T-R3-3-export: exportQueryBody returns null while a saved-view refusal is active', async () => {
+  // changed
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view');
+    drive.api.renderSavedUI();
+    assert.equal(drive.api.state.savedRefusal, 'changed');
+    assert.equal(drive.api.state.financial.phase, 'ready', 'the stale results stay rendered');
+    assert.equal(drive.api.exportQueryBody(), null, 'Export gets no body under the changed refusal');
+  }
+  // missing
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    sameJson(tabB.remove(row.id), { ok: true, deleted: true });
+    drive.api.renderSavedUI();
+    assert.equal(drive.api.state.savedRefusal, 'missing');
+    assert.equal(drive.api.exportQueryBody(), null, 'Export gets no body under the missing refusal');
+  }
+  // store
+  {
+    const { drive } = await restoredPinnedSettledDrive();
+    drive.storage.setItem(STORE_KEY, '{"contract":');
+    drive.api.renderSavedUI();
+    assert.equal(drive.api.state.savedRefusal, 'store');
+    assert.equal(drive.api.exportQueryBody(), null, 'Export gets no body under the store refusal');
+  }
+  // The same edit is noticed even without a render first: the export seam
+  // reconciles on its own, so a click can never re-POST unnoticed stale bytes.
+  {
+    const { drive, row } = await restoredPinnedSettledDrive();
+    const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view');
+    assert.equal(drive.api.state.savedRefusal, '', 'the edit is not yet noticed');
+    assert.equal(drive.api.exportQueryBody(), null, 'the export seam notices on its own');
+    assert.equal(drive.api.state.savedRefusal, 'changed');
+  }
+});
+
+test('T-R3-3-race: a view unpinned in another tab mid-flight gets no stale digest backfill', async () => {
+  const container = fixtureContainer('saved_pinned.json');
+  const row = container.saved_views[0];
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  assert.equal(drive.api.restoreSavedView(row.id).ok, true, 'the pinned restore starts the fetch');
+  // The fetch is in flight (its resolve rides microtasks): the "other tab"
+  // unpins the view BEFORE the resolve handler runs.
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view mid-flight');
+  const afterEdit = drive.storage.getItem(STORE_KEY);
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.savedRefusal, 'changed', 'the resolve path refuses the unpinned view');
+  assert.equal(drive.storage.getItem(STORE_KEY), afterEdit,
+    'no stale saved_against digest landed in the edited view');
+  const stored = JSON.parse(drive.storage.getItem(STORE_KEY)).saved_views[0];
+  assert.equal(stored.saved_against.response_sha256, row.saved_against.response_sha256,
+    'the stored digest is still the one the other tab left');
+});
+
+test('T-R3-3-control: with no edit in another tab the same resolve backfills the verified digest', async () => {
+  const { drive, row } = await restoredPinnedSettledDrive();
+  assert.equal(drive.api.state.savedRefusal, '', 'no refusal is active');
+  const stored = JSON.parse(drive.storage.getItem(STORE_KEY)).saved_views[0];
+  assert.equal(stored.saved_against.response_sha256, RECORDED_SHA,
+    'the still-pinned view whose bytes equal the capture records the verified digest');
+  assert.equal(drive.api.state.financial.responseSha256, RECORDED_SHA);
+});
+
+// ── X2-b+c r3 R3-4: the reconcile compare uses the store's own notion of
+// equality (canonical bytes), never JSON.stringify's key order ────────────────
+
+test('T-R3-4-canonical: a same-content reordered request is not refused; a content-different one still is', () => {
+  // Same content, reordered keys (the Postgres jsonb order another writer
+  // could leave behind): NOT a change.
+  const container = fixtureContainer('saved_pinned.json');
+  const row = container.saved_views[0];
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  assert.equal(drive.api.restoreSavedView(row.id).ok, true, 'the pinned fixture view restores');
+  const reordered = JSON.parse(drive.storage.getItem(STORE_KEY));
+  const reverseKeys = (value) => {
+    if (Array.isArray(value)) return value.map(reverseKeys);
+    if (value && typeof value === 'object') {
+      const out = {};
+      Object.keys(value).reverse().forEach((key) => { out[key] = reverseKeys(value[key]); });
+      return out;
+    }
+    return value;
+  };
+  reordered.saved_views[0] = reverseKeys(reordered.saved_views[0]);
+  drive.storage.setItem(STORE_KEY, JSON.stringify(reordered));
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, '', 'a reordered request with the same content is not a change');
+  const served = drive.api.activePinnedRequest();
+  assert.ok(served, 'the pinned bytes are still served');
+
+  // A request that differs in content still refuses.
+  const edited = JSON.parse(drive.storage.getItem(STORE_KEY));
+  edited.saved_views[0].request.metric_ids = edited.saved_views[0].request.metric_ids.slice();
+  edited.saved_views[0].request.metric_ids[0] = 'revenue_changed';
+  drive.storage.setItem(STORE_KEY, JSON.stringify(edited));
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, 'changed', 'a content-different request refuses');
+  assert.equal(drive.api.activePinnedRequest(), null);
+});

@@ -130,6 +130,15 @@
     return { ok: true, value: trimmed };
   }
 
+  // X2-b+c r3 R3-1: a field the emitter never emits keeps its cut rule, but
+  // a cut value holding a lone surrogate refuses (invalid_unicode) — the
+  // store never persists one.
+  function storedText(value, limit) {
+    var cut = text(value, limit);
+    if (codePoints(cut) < 0) return { ok: false, reason: 'invalid_unicode' };
+    return { ok: true, value: cut };
+  }
+
   function exactKeys(value, keys) {
     if (!object(value)) return false;
     var present = Object.keys(value);
@@ -314,9 +323,13 @@
     value = object(value) ? value : {};
     var peerN = Number.isFinite(value.peer_n) && value.peer_n >= 0 ? Math.trunc(value.peer_n) : 3;
     var peerTol = Number.isFinite(value.peer_tol) && value.peer_tol >= 0 ? Math.trunc(value.peer_tol) : 45;
+    var cohort = storedText(value.cohort, 128);
+    if (!cohort.ok) return cohort;
+    var peerMetric = storedText(value.peer_metric, 128);
+    if (!peerMetric.ok) return peerMetric;
     return {
-      cohort: text(value.cohort, 128) || null,
-      peer_metric: text(value.peer_metric, 128) || null,
+      cohort: cohort.value || null,
+      peer_metric: peerMetric.value || null,
       align: value.align === 'shift_labeled' ? 'shift_labeled' : 'exclude',
       peer_n: peerN,
       peer_tol: peerTol
@@ -325,27 +338,44 @@
 
   function normalSavedAgainst(value) {
     value = object(value) ? value : {};
+    // X2-b+c r3 R3-2: generation_id is an identifier and is NEVER cut — an
+    // over-limit or lone-surrogate id refuses typed and nothing is stored.
+    var generationId = idText(value.generation_id, 128);
+    if (!generationId.ok) return generationId;
+    var admittedAt = storedText(value.admitted_at, 80);
+    if (!admittedAt.ok) return admittedAt;
     return {
-      generation_id: text(value.generation_id, 128) || null,
-      admitted_at: text(value.admitted_at, 80) || null,
-      response_sha256: /^[a-f0-9]{64}$/.test(text(value.response_sha256, 80)) ? text(value.response_sha256, 80) : null
+      ok: true,
+      value: {
+        generation_id: generationId.value || null,
+        admitted_at: admittedAt.value || null,
+        response_sha256: /^[a-f0-9]{64}$/.test(text(value.response_sha256, 80)) ? text(value.response_sha256, 80) : null
+      }
     };
   }
 
   function normalIssuer(value) {
     value = object(value) ? value : {};
     // Display/index metadata only; the query identity is request.entity_id
-    // and is never inferred from the ticker. The entity id is an identifier
-    // (r2 MINOR-2b): never cut — an over-limit or lone-surrogate id refuses
-    // typed and nothing is stored.
-    var entityId = idText(value.entity_id, 160);
-    if (!entityId.ok) return entityId;
+    // and is never inferred from the ticker. The entity id IS the manifest
+    // subject (intent.subjects[0].object_id): the emitter's own checker runs
+    // here with its path (r3 R3-1) and the store's 160-code-point limit
+    // (stricter than the emitter's 256, so a stored id always exports).
+    // cik/ticker are identifiers the emitter never emits — never cut either
+    // (r3 R3-2), refusing with idText's typed codes.
+    var entityIdSource = typeof value.entity_id === 'string' ? value.entity_id.trim() : value.entity_id;
+    var entityId = manifestTextRefusal(entityIdSource, '$.intent.subjects[0].object_id', 160);
+    if (entityId) return entityId;
+    var cik = idText(value.cik, 32);
+    if (!cik.ok) return cik;
+    var ticker = idText(value.ticker, 32);
+    if (!ticker.ok) return ticker;
     return {
       ok: true,
       value: {
-        entity_id: entityId.value || null,
-        cik: text(value.cik, 32) || null,
-        ticker: text(value.ticker, 32) || null
+        entity_id: entityIdSource,
+        cik: cik.value || null,
+        ticker: ticker.value || null
       }
     };
   }
@@ -354,7 +384,9 @@
     value = object(value) ? value : {};
     var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
     var tab = allowed.indexOf(value.tab) >= 0 ? value.tab : 'radar';
-    return { tab: tab, finding: text(value.finding, 128) || null };
+    var finding = storedText(value.finding, 128);
+    if (!finding.ok) return finding;
+    return { tab: tab, finding: finding.value || null };
   }
 
   // ── Container (GovRev discipline: contract-checked; an unreadable store
@@ -589,17 +621,52 @@
       // already contains one refuses invalid_unicode and nothing is stored.
       var name = freeText(input.name, MAX_NAME_LENGTH);
       if (!name) return { ok: false, reason: 'name' };
-      if (codePoints(name) < 0) return { ok: false, reason: 'invalid_unicode' };
+      // X2-b+c r3 R3-1: the name IS the emitter's intent.title — the
+      // emitter's own checker runs on the cut value with its path and its
+      // limit (null there: the title cut owns length, and the cut above
+      // already happened), so a name that would refuse at export refuses at
+      // save with the same code and path, and nothing is stored.
+      var nameRefusal = manifestTextRefusal(name, '$.intent.title', null);
+      if (nameRefusal) return nameRefusal;
       var request = canonicalRequest(input.request);
       if (!request) return { ok: false, reason: 'request' };
       var issuer = normalIssuer(input.issuer);
-      if (!issuer.ok) return { ok: false, reason: issuer.reason };
-      var evidenceRefs = normalEvidenceRefs(input.evidence_refs);
-      if (!evidenceRefs.ok) return { ok: false, reason: evidenceRefs.reason };
+      if (!issuer.ok) return issuer;
       var pinned = input.pinned === true;
+      var evidenceRefs = normalEvidenceRefs(input.evidence_refs);
+      if (!evidenceRefs.ok) return evidenceRefs;
+      // X2-b+c r3 R3-1: the emitter's own projection decides what stores —
+      // every evidence ref is re-run through manifestEvidenceRef (its
+      // checker, its paths, its limits; the store's 64/128-code-point limits
+      // above are stricter, so this adds the blank/NUL/control laws) and its
+      // Terminal identity tuple is deduped exactly as the emitter dedups, so
+      // a stored view always exports.
+      var seenIdentities = {};
+      for (var refIndex = 0; refIndex < evidenceRefs.value.length; refIndex += 1) {
+        var refPath = '$.evidence_refs[' + refIndex + ']';
+        var projection = manifestEvidenceRef(evidenceRefs.value[refIndex], refPath, pinned);
+        if (!projection.ok) return projection;
+        var identity = evidenceIdentity(projection.value);
+        if (Object.prototype.hasOwnProperty.call(seenIdentities, identity)) {
+          return manifestRefusal('duplicate_reference', refPath);
+        }
+        seenIdentities[identity] = true;
+      }
       if (pinned && (!request.policy.source_snapshot_at || !request.policy.recorded_at)) {
         return { ok: false, reason: 'pinned_cutoffs' };
       }
+      // X2-b+c r3 R3-1: a pinned view's cutoff is the emitter's
+      // intent.research_as_of — a snapshot that is not a real calendar date
+      // would refuse invalid_date at export, so it refuses here first.
+      if (pinned && calendarDate(request.policy.source_snapshot_at) === null) {
+        return manifestRefusal('invalid_date', '$.intent.research_as_of');
+      }
+      var peers = normalPeers(input.peers);
+      if (peers && peers.ok === false) return peers;
+      var viewMeta = normalViewMeta(input.view);
+      if (viewMeta && viewMeta.ok === false) return viewMeta;
+      var savedAgainst = normalSavedAgainst(input.saved_against);
+      if (!savedAgainst.ok) return savedAgainst;
       var stamped = stamp();
       var view = {
         schema: SAVED_SCHEMA,
@@ -610,10 +677,10 @@
         updated_at: stamped,
         issuer: issuer.value,
         request: request,
-        peers: normalPeers(input.peers),
-        view: normalViewMeta(input.view),
+        peers: peers,
+        view: viewMeta,
         pinned: pinned,
-        saved_against: normalSavedAgainst(input.saved_against),
+        saved_against: savedAgainst.value,
         evidence_refs: evidenceRefs.value,
         watch: { issuer: input.watch && object(input.watch) ? input.watch.issuer === true : false }
       };
@@ -645,7 +712,10 @@
         // lone surrogate refuses invalid_unicode and the row is unchanged.
         var name = freeText(input.name, MAX_NAME_LENGTH);
         if (!name) return { ok: false, reason: 'name' };
-        if (codePoints(name) < 0) return { ok: false, reason: 'invalid_unicode' };
+        // X2-b+c r3 R3-1: the rename is the emitter's intent.title too — the
+        // emitter's checker runs on the cut value with its code and path.
+        var nameRefusal = manifestTextRefusal(name, '$.intent.title', null);
+        if (nameRefusal) return nameRefusal;
         next.name = name;
       }
       var pinned = Object.prototype.hasOwnProperty.call(input, 'pinned')
@@ -659,9 +729,18 @@
       if (pinned && (!nextPolicy || !nextPolicy.source_snapshot_at || !nextPolicy.recorded_at)) {
         return { ok: false, reason: 'pinned_cutoffs' };
       }
+      // X2-b+c r3 R3-1: the pinned-cutoff gate on update — a snapshot that
+      // is not a real calendar date would refuse invalid_date at export.
+      if (pinned && calendarDate(nextPolicy.source_snapshot_at) === null) {
+        return manifestRefusal('invalid_date', '$.intent.research_as_of');
+      }
       next.pinned = pinned;
       if (Object.prototype.hasOwnProperty.call(input, 'saved_against')) {
-        next.saved_against = normalSavedAgainst(input.saved_against);
+        // X2-b+c r3 R3-2: generation_id is never cut here either — an
+        // over-limit or lone-surrogate id refuses typed, row unchanged.
+        var savedAgainst = normalSavedAgainst(input.saved_against);
+        if (!savedAgainst.ok) return savedAgainst;
+        next.saved_against = savedAgainst.value;
       }
       var checked = checkView(next);
       if (!checked.ok) return { ok: false, reason: checked.reason };
@@ -1080,6 +1159,10 @@
     CARRIER_KEY: CARRIER_KEY,
     REFUSAL_REASONS: REFUSAL_REASONS,
     MANIFEST_REFUSAL_REASONS: MANIFEST_REFUSAL_REASONS,
+    // X2-b+c r3 R3-4: the store's own notion of equality — key-order-blind
+    // canonical bytes — exported for the page's reconcile compare. The
+    // function itself is unchanged.
+    canonicalJson: canonicalJson,
     create: createFifSavedBriefcase,
     emitInvestigationManifestV2: emitInvestigationManifestV2,
     toInvestigationManifestV2: toInvestigationManifestV2,
