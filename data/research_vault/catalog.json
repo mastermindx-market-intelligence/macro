@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T04:40:01.668660+00:00",
-  "count": 2862,
+  "generated_at": "2026-10-14T04:54:07.304124+00:00",
+  "count": 2863,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -14,6 +14,7 @@
     "Axioma",
     "BNP Paribas",
     "BTIG",
+    "Bank Earnings Previews",
     "Bank of America",
     "Barclays",
     "Bear Traps",
@@ -263,6 +264,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lzmltel3teb-9a2d70",
+      "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:17Z",
+      "summary_points": [
+        "Q3 2026 Crypto Broker Outperformance: Digital-asset-skewed firms outperformed retail brokers (11% vs S&P 500), driven by structural crypto growth and favorable fall seasonality; crypto earnings estimates near mid-cycle.",
+        "Attractive Crypto Valuation Discrepancy: Digital-asset firms trade at <5th %ile multiples (highly attractive), while retail brokers at ~21.5x P/E (fair vs 5-year context).",
+        "SEC Regulatory Catalysts: Proposed Regulation Crypto Assets (targeted relief for smaller issuances), tokenized equities exemption, and CFTC’s no-action position for self-custodial protocols boost liquidity and long-tail crypto growth.",
+        "Critical Risk Factors: ETOR’s 19% adj.",
+        "EBITDA miss vs consensus and BTGO’s -317% negative bias highlight severe execution risks for crypto-heavy brokers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 47,
       "language": "en",
       "needs_metadata": false
     },
