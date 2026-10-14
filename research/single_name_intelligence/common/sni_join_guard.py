@@ -310,8 +310,19 @@ def _add_eq_mismatch(
     right: Mapping[str, object],
     key: str,
     code: str,
+    *,
+    type_strict: bool = False,
 ) -> None:
-    if _present(left, key) and _present(right, key) and left.get(key) != right.get(key):
+    if not (_present(left, key) and _present(right, key)):
+        return
+    left_value = left.get(key)
+    right_value = right.get(key)
+    # X7-08: with type_strict, the type rides along with the value so a bool
+    # never equals an int (True == 1 in Python); 0 vs "0" still refuses.
+    if type_strict:
+        if (type(left_value), left_value) != (type(right_value), right_value):
+            reasons.append(code)
+    elif left_value != right_value:
         reasons.append(code)
 
 
@@ -328,10 +339,11 @@ def _add_segment_rules(
     if join_kind == "ratio":
         if left_set and right_set and left_seg != right_seg:
             reasons.append("SEGMENT_MISMATCH")
-        if left_set and right_set:
-            _add_eq_mismatch(
-                reasons, left, right, "segment_scheme_version", "SEGMENT_SCHEME_MISMATCH"
-            )
+        # X7-04: scheme versions are compared whenever both sides carry one,
+        # independent of segment presence (matches the same_fact elif below).
+        _add_eq_mismatch(
+            reasons, left, right, "segment_scheme_version", "SEGMENT_SCHEME_MISMATCH"
+        )
         return
     if left_set or right_set:
         if left_seg != right_seg:
@@ -406,6 +418,10 @@ def check_join(
     _add_eq_mismatch(reasons, left, right, "period_type", "PERIOD_TYPE_MISMATCH")
     if join_kind != "time_series":
         period_hit = False
+        # X7-03: a one-sided period_start (present here, blank there) is a
+        # mismatch, not a silent pass; two blank sides stay allowed.
+        if _present(left, "period_start") != _present(right, "period_start"):
+            period_hit = True
         if (
             _present(left, "period_start")
             and _present(right, "period_start")
@@ -428,7 +444,9 @@ def check_join(
         and left.get("currency") != right.get("currency")
     ):
         reasons.append("CURRENCY_MISMATCH")
-    _add_eq_mismatch(reasons, left, right, "scale", "SCALE_MISMATCH")
+    _add_eq_mismatch(
+        reasons, left, right, "scale", "SCALE_MISMATCH", type_strict=True
+    )
     _add_segment_rules(reasons, left, right, join_kind)
     _add_eq_mismatch(
         reasons, left, right, "share_denominator", "DENOMINATOR_MISMATCH"

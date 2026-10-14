@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T03:54:01.731713+00:00",
-  "count": 2860,
+  "generated_at": "2026-10-14T05:24:19.008132+00:00",
+  "count": 2864,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -14,6 +14,7 @@
     "Axioma",
     "BNP Paribas",
     "BTIG",
+    "Bank Earnings Previews",
     "Bank of America",
     "Barclays",
     "Bear Traps",
@@ -128,6 +129,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mvobzo6ysbg-8fb904",
+      "title": "FSA FI Daily Commentary 13 October 2026",
+      "institution": "Safra",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:40:40Z",
+      "summary_points": [
+        "US Rates Flat, EM Bonds & Equities Surge: UST yields unchanged; EM sovereign bonds +2.99% YTD, US equities (S&P +15.06%, NASDAQ +17.77%) and WTI oil +63.35% YTD signal strong risk-on flows and EM outperformance.",
+        "Credit Markets Split: US High Yield +0.31% YTD vs.",
+        "EUR IG -0.89% YTD; Asian USD HY Corp +3.43% YTD vs.",
+        "Global Corporate -3.16% YTD, highlighting divergent regional credit dynamics.",
+        "Fed Policy & India CPI Shift: Markets price Fed terminal rate 4.69% by Sept 2027; India’s Sep CPI rose to 5.5% y-o-y (core 4.3%), triggering RBI rupee rule tightening—critical for EM capital flows and global rate sensitivity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-60kies6hqgh-b50195",
       "title": "JPM US Market Intelligence Afternoon Briefing Oct 13",
       "institution": "J.P. Morgan",
@@ -187,6 +209,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yzhyfari9wt-013b93",
+      "title": "Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:15Z",
+      "summary_points": [
+        "Visa Organic Growth: Visa's organic growth at 12–13% (vs consensus) driven by resilient core payments (7.5–8.5% growth) and accelerating VAS (low-twenties growth), positioning for LDD top-line growth despite lapping major events.",
+        "UAE Partnership Revenue Impact: Mastercard’s UAE \"Jaywan\" partnership (Al Etihad Payments) adds ~0.5% to 2027 VASS revenues and $80M+ incremental annual revenue, leveraging UAE’s 90% cashless target and domestic debit volumes.",
+        "GLBE Shopify Opportunity: GLBE’s Shopify partnership targets $34B volume opportunity (30%+ growth) with managed markets adoption, accelerating GMV growth to $6.6B by 2027E (from $3.8B in 2025), capturing ~5% of Shopify’s cross-border GMV.",
+        "Valuation Discrepancy: Large Cap Payments (V, MA, FIS) trade at compressed EPS multiples (bottom deciles of S&P 500) despite higher 2026 EPS growth expectations, creating a significant valuation disconnect.",
+        "Visa Regulatory Tailwinds: US midterms reduce likelihood of major payment legislation, favoring Visa over Mastercard due to greater US exposure and favorable regulatory sentiment amid reduced disruption risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 34,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-i2kdffan2hz-88e4fd",
       "title": "Americas Fintech 3Q26 Preview Weighing key investor debates and near term earnings setups",
       "institution": "Goldman Sachs",
@@ -242,6 +285,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lzmltel3teb-9a2d70",
+      "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:17Z",
+      "summary_points": [
+        "Q3 2026 Crypto Broker Outperformance: Digital-asset-skewed firms outperformed retail brokers (11% vs S&P 500), driven by structural crypto growth and favorable fall seasonality; crypto earnings estimates near mid-cycle.",
+        "Attractive Crypto Valuation Discrepancy: Digital-asset firms trade at <5th %ile multiples (highly attractive), while retail brokers at ~21.5x P/E (fair vs 5-year context).",
+        "SEC Regulatory Catalysts: Proposed Regulation Crypto Assets (targeted relief for smaller issuances), tokenized equities exemption, and CFTC’s no-action position for self-custodial protocols boost liquidity and long-tail crypto growth.",
+        "Critical Risk Factors: ETOR’s 19% adj.",
+        "EBITDA miss vs consensus and BTGO’s -317% negative bias highlight severe execution risks for crypto-heavy brokers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 47,
       "language": "en",
       "needs_metadata": false
     },
@@ -346,6 +410,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-toe1m5eqpj6-664576",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T07:15:29Z",
+      "summary_points": [
+        "Russia-Ukraine Ceasefire Fragility: Unconfirmed ceasefire claims, energy infrastructure strikes (Kharkiv), US diesel pivot tightening supply – high risk of failed agreement, energy market volatility - US CPI/PPI Data Cluster: September CPI (Wed, +0.57% MoM expected), PPI (Thu), import prices (Fri) critical for Fed’s October FOMC policy decisions and market positioning - Geopolitical Oil Supply Risks: Middle East escalation (Riyadh airport strikes, Houthi conflict) + Russia-Ukraine diesel waiver create upside tail risks for oil/shipping costs (Brent at $104.72/bbl) - Fed Policy Catalyst: CPI/PPI data cluster dominates Fed’s October 28 decision; Chair Warsh’s IMF comments critical amid Q3 earnings (S&P 500 34% YoY growth vs. 27% consensus)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
