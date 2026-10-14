@@ -251,9 +251,10 @@ def check_counter_relation(
         reasons.append("RELATION_NOT_AVAILABLE_AS_OF")
 
     relation_id = relation.get("relation_id")
-    if _blank(relation_id):
+    if not isinstance(relation_id, str) or _blank(relation_id):
         reasons.append("RELATION_ID_MISSING")
-    if _blank(relation.get("source_ref")):
+    source_ref = relation.get("source_ref")
+    if not isinstance(source_ref, str) or _blank(source_ref):
         reasons.append("RELATION_UNSOURCED")
     if relation.get("issuer_id") != request.get("issuer_id"):
         reasons.append("ISSUER_MISMATCH")
@@ -267,7 +268,8 @@ def check_counter_relation(
             seen.append(listing_id)
         if member.get("counter_kind") not in _COUNTER_KIND_SET:
             reasons.append("COUNTER_KIND_UNKNOWN")
-        if _blank(member.get("currency")):
+        currency = member.get("currency")
+        if not isinstance(currency, str) or _blank(currency):
             reasons.append("CURRENCY_UNDECLARED")
 
     frozen = _freeze_reasons(reasons)

@@ -123,7 +123,8 @@ def _blank(value: object) -> bool:
 
 
 def _present(body: Mapping[str, object], key: str) -> bool:
-    return not _blank(body.get(key))
+    value = body.get(key)
+    return isinstance(value, str) and not _blank(value)
 
 
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
@@ -242,7 +243,12 @@ def gate_access(
         else:
             if not _present(entitlement, "entitlement_ref"):
                 reasons.append("ENTITLEMENT_REF_MISSING")
-            if _blank(account_id) or account_id != entitlement.get("account_id"):
+            entitlement_account_id = entitlement.get("account_id")
+            if (
+                not isinstance(account_id, str)
+                or not isinstance(entitlement_account_id, str)
+                or account_id != entitlement_account_id
+            ):
                 reasons.append("ACCOUNT_MISMATCH")
             if not _document_entitled(document_id, entitlement.get("document_ids")):
                 reasons.append("DOCUMENT_NOT_ENTITLED")
