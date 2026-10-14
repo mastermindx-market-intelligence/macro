@@ -19,12 +19,15 @@ falsifier: >
   current contract would refute this. Any of them makes the disputes below labeler errors
   instead of a contract gap.
 so_what: >
-  Per-share dividend T1 slots will always dispute or misencode, so they can never pass the
-  case gate. Score them as contract_gap, never as labeler error, and keep them out of
-  labeler-accuracy claims. Fixing the gap needs an owner ruling on a contract or guide
-  change, because the contract is frozen by DEC:NEWS-IMPACT-PHASE0-FREEZE. Raise it before
-  the 600-case continuation, or the continuation re-measures the same gap. The
-  "increase up to $X" wording needs one guide sentence.
+  Under guide-v1 and v1.1, per-share dividend T1 slots dispute or misencode, so score the
+  w2 slots as contract_gap, never as labeler error, and keep them out of labeler-accuracy
+  claims. Annotation guide-v1.2 section 5.4 rule 5 (DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES)
+  now labels them lawfully in the frozen contract: a per-share-only dividend is an absence
+  with reason stated_without_number, detail "per-share amount only", and a template_defect
+  note, so prompt-v1.2 waves can agree on them. The per-share value itself still has no
+  home; a per_share basis is a candidate for the next contract version, never an edit to
+  v1 (DEC:NEWS-IMPACT-PHASE0-FREEZE). Rules 3 and 4 settle the "increase up to $X"
+  reading: a new total, with the increment stated_without_number and an ambiguity note.
 kind: constraint
 verified_at: 2026-10-14
 verified_by: >
@@ -47,4 +50,5 @@ confidence: verified
 The T1 headline slot is fixed to an incremental basis with an ISO currency unit, so a
 per-share dividend amount has no valid value. In the w2 audit, 5 of the 20 disputed slots
 landed on this gap, 3 of them judged pure contract gaps. These are contract findings, not
-labeler errors, and they need an owner ruling before the 600-case continuation.
+labeler errors. Guide-v1.2 now gives them one lawful label for the 600-case continuation;
+the per-share value waits for a later contract version.
