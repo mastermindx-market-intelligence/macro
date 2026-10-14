@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume the controller-admitted healed-main refresh for PR 9209 after repair 9227, complete protected landing and install, then integrate and ship the reviewed validator/writer/DOJ follow-on through one PR. Use its current 24-source bundle and 15 portable control groups. Preserve the optional issuer prototype and failed review separately; continue relevant source qualification without receipt padding.
+next_action: Complete controller-admitted repair refresh and protected installation of PR 9209, then ship the same reviewed validator/writer/DOJ/Research-intake follow-on using its 24-source bundle and 24 portable control groups. Continue corroborating newly reachable source candidates; preserve held history and the refused issuer review.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -449,3 +449,62 @@ local_doj_source_probe.json, local_staging_integrity_probe.json,
 wrong_manifest_control.json, page_identity.json, ci_manifest_validation.txt,
 trigger_closure.txt, release_admission.json and pr9209_observation.json;
 release_scope_binding.json records exact accepted-byte and archive hashes.
+
+## 2026-10-14 05:27 UTC — Research intake repaired and independently accepted
+
+Application commit `2c23601ff0f5492b0a4d0dd7f663ab7bf4dca3e9` fixes a real Research candidate starvation defect.
+The installed read-only census at05:12 found161 in-window reports; all first8
+ranked reports were held or source-review excluded, so the planner returned0
+slots even though later reports were unblocked. A new October13 JPM briefing
+was at rank12. The planner now removes already-blocked refs before applying its
+unchanged8-candidate inspection budget. Ranking, original held records,
+freshness, lexicons, Research1/day, dark ResearchNote0 and publication gates
+remain unchanged. No report is qualified merely by becoming reachable.
+
+Six regressions failed before repair (published/staged/explicit exclusions x
+ranked/fallback); after repair218 planner/triage tests passed. One additional
+existing test requires omitted sparse data: it passed separately, unedited,
+against original-workspace engine inputs with unchanged hashes. Independent
+Fabric run `mmx-press-research-pool-review-20261014-001` completed on admitted
+MiniMax/ubuntu1; same-root result was consumed and accepted through the adapter.
+Runtime hash e366e6bccd93ac9bc73e38aa8c66bcf8fef2f487e63f3bede380bd173479c3f7
+is exactly reviewed. A test-only follow-up now checks the complete fixture file
+inventory;243 triage/runner tests pass with1existing sparse-site skip in10.62s.
+This is a separate intake review, not a retry/replacement of failed issuer review.
+
+The SAME follow-on bundle now binds24 sources: only desk_planner changes from
+the previously reviewed24-source release. New portable intake probe passes9
+historical groups; prior10integrity+5DOJ groups pass on that manifest. Wrong-hash
+input refuses before import.3reviewed pages are unchanged. All is LOCAL code and
+fixture proof; no protected follow-on PR, CI, merge, installation or publication.
+
+Original PR9209's single wake read remainedOPEN at8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI38508325200 terminalFAILURE on inherited path-prune pack4;11otherpacks passed.
+Existing repair9227 is merged. At05:09 admission observed36active PR proofs
+againstcap8, populated8920lease register, no openleaseissue, and mainbaseline
+38513588951 inprogress. No refresh, label mutation, extraCI or controller bypass.
+Normal updater reached15bc4a7b392f152518c9fb8b822bd336ddc108b5 during installed
+source discovery; that is NOT9209 landing/installation proof.
+
+New JPM lead `research_vault:marketdesk-60kies6hqgh-b50195` is retained unedited.
+Browser2 refused its coverage-page navigation with ERR_BLOCKED_BY_CLIENT; no
+retry or alternate fetch of that report occurred. Separate public issuer PDFs
+were retained and hash-bound: JPM's reported combined card-sales growth10% is
+corroborated; Citi's measure scopes and near-term RoTCE goal do not establish all
+summary wording. The New York Fed2027 policy claim remains unverified, not
+adjudicated false. The whole candidate remainsHOLD, no writer attempt. No
+producer rewrite, borrowed earnings credentials, first-party relabel or source
+rights/publication grant. Original BAC/Research drafts and accounting unchanged.
+
+Next: let the existing controller admit repaired-main refresh and finish9209
+exact-head CI/protected landing/install. Then integrate landed main into this
+same reviewed follow-on, preserve all accepted hashes, create ONE PR, and run
+its installed24-source checks plus24portable groups (10+5+9) after protected
+landing. Continue source corroboration without replaying held attempts.
+Publication/cutover false; D14credit0/10; originalOct11 12:07 EFFECT_UNKNOWN,
+Commission19,Catalyst8678 and shared accounting preserved.
+
+verified: research_intake_phase/{installed_discovery.json,regression_red.txt,
+affected_tests.txt,preserved_input_hygiene.txt,reviewed_tests.txt,review_binding.json,
+review_status.json,local_pool_probe.json,local_integrity_probe.json,local_doj_probe.json,
+wrong_manifest_control.json,release_admission.json,jpm_source_corroboration.json}.

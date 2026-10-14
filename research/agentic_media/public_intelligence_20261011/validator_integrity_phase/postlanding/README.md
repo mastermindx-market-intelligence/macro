@@ -1,18 +1,22 @@
-# Reviewed validator, writer and DOJ source release acceptance
+# Reviewed validator, writer, DOJ source and Research intake acceptance
 
 Prepared only; no production acceptance claimed. The active manifest binds24
-sources. Relative to the earlier558ca bundle,22 hashes remain unchanged and the
-official planner/staging entrypoint are rebound to exact bytes independently
-accepted at70d9b7e08337. All four reviewed source/test hashes match the retained
-review binding. See `../../doj_source_phase/release_scope_binding.json`.
+sources. Relative to the earlier558ca bundle,21 hashes remain unchanged. The
+official planner/staging entrypoint use exact bytes independently accepted at
+70d9b7e08337, and desk_planner uses the accepted Research intake repair. All four
+DOJ source/test hashes still match their retained review binding. See
+`../../doj_source_phase/release_scope_binding.json` and
+`../../research_intake_phase/review_binding.json`.
 The same three reviewed page hashes remain byte-identical.
 
 The optional historical issuer-context implementation is deferred, retained at
 1989dd890273 and in a hash-bound patch with its original unaccepted review run.
 It contributes no active code or tests to this release. Its candidate28-source
 manifest and portable issuer probe are historical and must not be used here.
-The only source/CI change beyond reviewed70d9 is beautifulsoup4 added to the
-existing Press job's minimal dependency install, matching the runtime requirement.
+Beyond reviewed70d9, the existing CI dependency list adds beautifulsoup4 and the
+independently accepted Research intake repair filters held sources before its
+unchanged candidate-pool limit. See ../../research_intake_phase/review_binding.json.
+The24-source manifest changes only the desk_planner hash relative to9ab1cf7.
 
 After the follow-on protected PR actually lands, supply its verified merge SHA
 and stable observed installed HEAD to prepare-ancestry.py using full canonical
@@ -33,3 +37,11 @@ scoped browser proof, never a new article, signup/follow write or D14 credit.
 Current local validation:335 affected tests passed,1 existing sparse-site skip;
 305-job manifest valid, packing totals5435/5435; trigger closure0gaps. Those local
 checks do not replace fresh protected-PR CI or installed verification.
+
+
+October14 intake acceptance addition: run
+../../research_intake_phase/installed_research_pool_probe.py with the same root
+and24-source manifest. Its9historical groups preserve the inspection/cadence,
+clock and held-record boundaries. Together with10integrity+5DOJ controls this is
+24portable groups, all locally passed. A wrong-manifest control fails before
+imports. No probe has been run against production for this unmerged follow-on.
