@@ -1051,9 +1051,11 @@ _HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_
                                       'mag7_organ_causality_2026-07-11',
                                       'mag7_flow_calibration_2026-07-11',
                                       'mag7_narrative_denominator_2026-07-11',
+                                      "fomc_qt_clock_2024-05-01",
                                       })
 _HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
 _HISTORICAL_TEXT_SOURCES = frozenset({
+    "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
     "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
     "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
     "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
@@ -1085,7 +1087,7 @@ def historical_text_digest(meta: dict) -> str:
 def _historical_text_case_error(case: dict, root: Path) -> str | None:
     """Validate the optional frozen text contract before any answer/judge call.
 
-    Reads only the eight named canonical documents, bounded and regular-file-only. Full
+    Reads only the named canonical documents, bounded and regular-file-only. Full
     bytes and exact excerpts bind input and adjudication separately. No historical
     stores, model defaults, rights escalation or claim/grade reads are involved.
     """

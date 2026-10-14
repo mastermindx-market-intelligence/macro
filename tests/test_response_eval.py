@@ -1097,6 +1097,7 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_mag7_organ_causality_2026-07-11.json",
     "benchmark_mag7_flow_calibration_2026-07-11.json",
     "benchmark_mag7_narrative_denominator_2026-07-11.json",
+    "benchmark_fomc_qt_clock_2024-05-01.json",
 ]
 
 
@@ -1197,3 +1198,17 @@ def test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models(m
     result = ev.run_benchmark(ROOT, name=name)
     assert result["ok"] is False and result["error"] == "historical_case_metadata_invalid"
     assert result["scope_limits"]
+
+
+def test_fomc_announcement_is_not_a_future_realized_observation(monkeypatch):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark("benchmark_fomc_qt_clock_2024-05-01.json"))
+    # The announcement may describe a future rule, but a later observed fact is
+    # outside this supplied cutoff and must not reach either model callback.
+    case["historical_case"]["input_facts"][0]["event_date"] = "2024-06-01"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args):
+        pytest.fail("a later realized observation reached a callback")
+    result = ev.run_benchmark(ROOT, forbidden, forbidden, name="benchmark_fomc_qt_clock_2024-05-01.json")
+    assert result["ok"] is False
+    assert result["error"] == "historical_case_fact_date_invalid"

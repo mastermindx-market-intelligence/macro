@@ -3622,6 +3622,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -5846,6 +5847,7 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -7514,9 +7516,11 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json
       - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json
+      - engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json
       - engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json
       - engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json
       - engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json
@@ -16734,6 +16738,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -17464,6 +17469,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -19451,6 +19457,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -20981,6 +20988,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -21403,6 +21411,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -26435,6 +26444,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -26922,6 +26932,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -29020,6 +29031,7 @@ jobs:
     scope: exclusive
     paths:
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
