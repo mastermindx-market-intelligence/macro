@@ -7049,6 +7049,13 @@ def test_ancestor_init_census_honours_gate_flag(
         pytest.param("--plan-only", None, id="--plan-only"),
         pytest.param("--plan-json", "/nonexistent/plan.json", id="--plan-json"),
         pytest.param("--emit-plan-json", "-", id="--emit-plan-json"),
+        pytest.param("--emit-plan-json", "", id="--emit-plan-json-empty"),
+        pytest.param("--emit-changed-files", "/nonexistent/x.json", id="--emit-changed-files"),
+        pytest.param("--emit-changed-files", "", id="--emit-changed-files-empty"),
+        pytest.param("--changed-files-file", "/nonexistent/x.json", id="--changed-files-file"),
+        pytest.param("--expect-plan-sha", "0" * 40, id="--expect-plan-sha"),
+        pytest.param("--emit-semantic-fragment", "x", id="--emit-semantic-fragment"),
+        pytest.param("--emit-timing-observations", "x", id="--emit-timing-observations"),
     ],
 )
 def test_ancestor_init_census_refuses_ambiguous_modes(
@@ -7065,7 +7072,9 @@ def test_ancestor_init_census_refuses_ambiguous_modes(
     (``default=None``) are the remaining silent-win class: they are NOT
     ``store_true``, so a plain truthiness loop misses them and the valueless
     tokens cannot be passed bare — the pair is (flag, value) and the refusal
-    keys on ``is not None``.
+    keys on ``is not None``. Five more ``default=None`` flags join that class.
+    The empty-value pins kill a truthiness mutant (``""`` is falsy); an empty
+    ``--plan-json`` could not, because ``Path("")`` is ``PosixPath('.')``.
 
     rc 2 alone does not say WHICH refusal fired — any later ``parser.error``
     would do. The exact message is part of the contract (a renamed string is

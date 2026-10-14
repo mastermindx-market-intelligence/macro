@@ -289,12 +289,17 @@ _PARSE_REFUSED_ENDS = [
 def _raw_end_of(param: object) -> str:
     """The end string carried by a ``_SHAPE_REFUSED_ENDS`` entry.
 
-    Entries are ``pytest.param`` objects today. A bare string is read too, so an
-    append of either shape joins the derived guard instead of dropping out when
-    the attribute probe misses.
+    Entries are ``pytest.param`` objects today (``object.values`` is a tuple);
+    bare strings are read too, so an append of either shape joins the derived
+    guard instead of dropping out when the attribute probe misses. An entry
+    exposing a non-sequence ``.values`` (e.g. a dict, whose ``.values`` is the
+    bound method ``dict.values``) is read as a bare entry -- the guard below
+    keeps such a non-str entry from being subscripted and crashing collection.
     """
     values = getattr(param, "values", None)
-    return param if values is None else values[0]
+    if not isinstance(values, (tuple, list)):
+        return param
+    return values[0]
 
 
 def _parser_admits(raw_end: str) -> bool:
@@ -417,16 +422,40 @@ def test_parser_admitted_subset_of_shape_refused_forms_meets_the_floor() -> None
 
 
 def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
-    """``_parser_admits`` must not crash collection on a non-str entry.
+    """Pin exactly the four forms asserted below.
 
-    ``_raw_end_of`` deliberately reads bare (non-``pytest.param``) entries, so a
-    future non-str entry -- ``None`` or the int ``20260703`` -- reaches
-    ``date.fromisoformat``, which raises ``TypeError`` (measured on this 3.12.3:
-    "fromisoformat: argument must be str"). ``except ValueError`` alone let that
-    TypeError escape and failed the whole module at import/collection time, so
-    both non-str forms are asserted ``False`` here. The compact form as a STR is
-    version-bound: 3.11+ admits ``20260703``, earlier interpreters refuse it.
+    ``None`` and the int ``20260703`` reach ``date.fromisoformat`` as non-str
+    and raise ``TypeError`` (measured on this 3.12.3: "fromisoformat: argument
+    must be str"). The dict-shaped entry ``{"a": 1}`` is read by ``_raw_end_of``
+    as a bare entry -- its ``.values`` is the bound method ``dict.values``, not
+    a sequence, so the guard in ``_raw_end_of`` returns the dict unchanged and
+    it reaches ``date.fromisoformat`` as a non-str. The compact form ``"20260703"``
+    as a STR is version-bound: 3.11+ admits it, earlier interpreters refuse it
+    with ``ValueError``. Each non-str form is asserted ``False`` here; the
+    version-bound str form surfaces whatever this interpreter's parser decides.
     """
     assert _parser_admits(None) is False
     assert _parser_admits(20260703) is False
+    assert _parser_admits(_raw_end_of({"a": 1})) is False
     assert _parser_admits("20260703") == (sys.version_info >= (3, 11))
+
+
+def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``_parser_admits`` must not catch exceptions broader than (TypeError, ValueError).
+
+    Replaces the local ``date`` binding in THIS module with a stub whose
+    ``fromisoformat`` raises ``RuntimeError``. The handler in ``_parser_admits``
+    is scoped to ``(TypeError, ValueError)``, so the ``RuntimeError`` propagates
+    out of the call. A regression that broadens the handler (e.g.
+    ``except Exception:``) swallows the probe here and fails this test.
+    """
+    class _ProbeDate:
+        @staticmethod
+        def fromisoformat(value: object) -> object:
+            raise RuntimeError("probe")
+
+    monkeypatch.setattr(sys.modules[__name__], "date", _ProbeDate)
+    with pytest.raises(RuntimeError, match="probe"):
+        _parser_admits("2026-07-03")

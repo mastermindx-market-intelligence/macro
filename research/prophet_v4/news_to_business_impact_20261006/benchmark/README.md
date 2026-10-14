@@ -124,6 +124,13 @@ ledger resolves to a CIK, which is the event-ledger owner's problem rather than 
 fetch's. The 113 open windows close by 2026-10-19, so a v2 re-run with `--as-of` on or
 after 2026-10-20 settles them.
 
+Update, 2026-10-14: the benchmark no longer waits on the owner for the issuer lever. A
+fill-only fallback built from the SEC owner's cached ticker list resolves 256 of the 1,271
+(unknown ticker 357 to 101; the 914 rows that name no ticker are untouched). Its rows reach
+bodies only through a new draw, gated_v3, whose one fetch at `--as-of` on or after
+2026-10-20 also settles the open windows. See `issuer_fallback/README.md` and
+`DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER`.
+
 ### Reproduce (v2)
 
 ```
