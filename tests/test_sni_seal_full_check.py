@@ -39,6 +39,7 @@ from seal_full_check import (  # noqa: E402
     ulp_equivalent,
     walk_compare,
 )
+from seal_full_check import S1_BUILD_SEAL_MODULE, _load_s1_build_seal  # noqa: E402
 
 INPUT_REF = INPUT_REF_DEFAULT
 
@@ -250,3 +251,74 @@ def test_schk_08_walk_compare_tolerance_is_opt_in_and_text_only(tmp_path: Path) 
 
     via_exc = walk_compare(committed, produced, {"obs.json": _refuse}, ulp_tolerant=True)
     assert (KIND_DIFFER, "obs.json") in {(d.kind, d.relpath) for d in via_exc}
+
+
+def test_schk_09_s1_builder_survives_event_response_shadowing() -> None:
+    """residual/ and event_response/ both ship build_seal.py. A caller that put
+    event_response/ ahead on sys.path (test_sni_missing_not_zero does) used to
+    make regenerate_s1's bare `import build_seal` bind the S2 builder and die
+    with `no attribute 'build_all'`. The loader binds residual/ by file path."""
+    sni = ROOT / "research" / "single_name_intelligence"
+    event_dir = str(sni / "event_response")
+    saved_path = list(sys.path)
+    saved_bare = sys.modules.pop("build_seal", None)
+    saved_s1 = sys.modules.pop(S1_BUILD_SEAL_MODULE, None)
+    try:
+        # the real failure order: residual/ present, event_response/ ahead of it
+        sys.path.insert(0, str(sni / "residual"))
+        sys.path.insert(0, event_dir)
+        import build_seal as shadow  # noqa: WPS433
+
+        assert Path(shadow.__file__).resolve().parent == (sni / "event_response").resolve()
+        mod = _load_s1_build_seal(ROOT)
+        assert hasattr(mod, "build_all")
+        assert Path(mod.__file__).resolve() == (sni / "residual" / "build_seal.py").resolve()
+        assert sys.modules["build_seal"] is shadow  # the bare name is left alone
+        assert _load_s1_build_seal(ROOT) is mod  # cached under its private name
+    finally:
+        sys.path[:] = saved_path
+        sys.modules.pop("build_seal", None)
+        sys.modules.pop(S1_BUILD_SEAL_MODULE, None)
+        if saved_bare is not None:
+            sys.modules["build_seal"] = saved_bare
+        if saved_s1 is not None:
+            sys.modules[S1_BUILD_SEAL_MODULE] = saved_s1
+
+
+S1_RESIDUAL_REL = "research/single_name_intelligence/residual"
+
+
+def _collect_key(node, key: str, out: set[str]) -> None:
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k == key and isinstance(v, str):
+                out.add(v)
+            _collect_key(v, key, out)
+    elif isinstance(node, list):
+        for v in node:
+            _collect_key(v, key, out)
+
+
+def test_schk_10_residual_tree_is_the_sealed_v1_1_runner() -> None:
+    """S1 receipts stamp code_tree_sha = HEAD:residual/ (run_s1.code_tree_sha),
+    so ANY committed edit under residual/ makes v1.1 regeneration differ in
+    every results/P0x.json and REPORT.md. The runner is sealed code: a change
+    to it is a new registered version with its own seal (v1 -> v1.1 moved the
+    stamp 44377b14 -> f9f4bf64), never an edit beneath a sealed run. Fast,
+    git-local, and needs no input_ref, so it fires where schk_05 skips."""
+    stamps: set[str] = set()
+    for p in sorted((ROOT / S1_V1_1_REL / "results").glob("*.json")):
+        _collect_key(json.loads(p.read_text(encoding="utf-8")), "code_tree_sha", stamps)
+    assert len(stamps) == 1, f"sealed v1.1 results carry {sorted(stamps)}"
+    proc = subprocess.run(
+        ["git", "-C", str(ROOT), "rev-parse", f"HEAD:{S1_RESIDUAL_REL}"],
+        capture_output=True, text=True,
+    )
+    if proc.returncode != 0:
+        pytest.skip("not a git checkout; HEAD:residual unresolvable")
+    sealed = next(iter(stamps))
+    assert proc.stdout.strip() == sealed, (
+        f"HEAD:{S1_RESIDUAL_REL} is {proc.stdout.strip()} but sealed v1.1 "
+        f"receipts stamp {sealed}: the S1 runner is sealed — register a new "
+        "version instead of editing residual/ under the v1.1 seal"
+    )
