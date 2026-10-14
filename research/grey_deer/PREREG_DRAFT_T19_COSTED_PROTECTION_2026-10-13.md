@@ -42,7 +42,7 @@ Every row is an input, a clock, or an explicit non-input that a reader could mis
 | I23 | Cash-carry day count inside the engine | `engine/validation.py:83-86` | Calendar days between bars, divided by 365, times the annualized yield divided by 100 | Imported with I17. The yield series is prepared under §6 before the call |
 | I24 | Companion return-block bootstrap | `engine/validation.py:455-480` `block_bootstrap_ci` | Operates on a return series the executing lane has already built. Default block 21, default `B` 5000, default seed 7, default `ann` 365 | Companion display only, called with the overrides in §10. The primary uncertainty is §10 |
 | I25 | Issued-warning duration display | `research/grey_deer/RISK_RADAR_ISSUED_WARNING_DURATION_2026-09-24.md:13-16` and `:34-48` | Counts consecutive issued NYSE sessions on I4 | Non-input. Display fact. The staged policy's 5-session step is a separate literal (§5) and does not read this feature |
-| I26 | T12 matched-sample builder | Path named by the lane packet: `scripts/research/grey_deer_episode_samples.py` | Present on this base as the T12 episode and negative-control sample builder, but it does not export `matched_protection_masks` yet. Lane GD-W7-T12MASK builds that function against the B2 contract in §10 | Baseline B2. While the function is absent the baseline status is `BLOCKED_BUILDER_ABSENT` |
+| I26 | T12 matched-sample builder | Path named by the lane packet: `scripts/research/grey_deer_episode_samples.py` | The T12 episode and negative-control sample builder. It exports `matched_protection_masks`, built by lane GD-W7-T12MASK against the B2 contract in §10 | Baseline B2 |
 | I27 | Pullback stage-1 scripts | `scripts/research/grey_deer_pullback_stage1.py:2334` imports `state_series` | Those scripts are frozen for this lane. A search of `scripts/research/grey_deer_*.py` finds no `backtest_core`, `cost_bps`, or `shift(1)` | Non-input. They are not a protection-policy harness |
 | I28 | Collection-advance limit recorded by the continuation handoff | `research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md:70` F2 | That note's verified newest US collection label on main is the 2026-10-09 collection | A bound on how far I4 can extend in the commit the handoff inspected. This draft does not re-measure the log. The executing lane's slice ends at the log's last `asof` |
 
@@ -187,7 +187,7 @@ Episode window used inside (2): the live protection run, extended through 21 NYS
 
 **B1. Volatility targeting.** Import `engine.vol_managed.vol_scalar` with `target=0.12`, `cap=1.0`, `floor=0.0`, `short=21`, `long=63`. The scalar ignores the warning. `cap=1.0` is the research helper's de-risk-only default (`engine/vol_managed.py:11-12`). The live conditions cap of `1.5` (I19) is not used, so B1 does not borrow. Pass the scalar series through I17 at `L = 1` and `cost_bps = 3.0`, with the same cash-yield preparation as every other row. B1's own protection sessions are the sessions whose live scalar is below 1.
 
-**B2. Random timing with matched time in protection.** Built by `scripts/research/grey_deer_episode_samples.py` (I26). The module is on this base, but the function below is not in it yet. The contract below is the rule a later builder has to meet. The executing lane imports this function and does not ship a private substitute:
+**B2. Random timing with matched time in protection.** Built by `scripts/research/grey_deer_episode_samples.py` (I26). The function below is in that module (lane GD-W7-T12MASK). It returns `list[tuple[bool, ...]]`; a tuple is a `Sequence[bool]`, so it meets the contract below. The executing lane imports this function and does not ship a private substitute:
 
 ```
 def matched_protection_masks(
@@ -330,7 +330,7 @@ Further exposures, as statements about this drafting session:
 - The half-spread `0.0015` is assumed.
 - The one-way cost `3.0` bps is the equity-allocation harness default, not a measured SPY spread from this work.
 - B1's scalar and the radar warning are different mechanisms. Beating B1 is part of the gate for that reason.
-- I26 does not export `matched_protection_masks` yet, so B2 cannot be built on this base.
+- I26's `matched_protection_masks` keeps every run whole and draws the run order and the gap composition uniformly (stars and bars) instead of rejecting and redrawing. Both give each legal placement the same probability. Its spec is `research/grey_deer/EPISODE_SAMPLE_SPEC_2026-10-13.md` § Matched protection masks.
 
 ## 15. What this draft does not do
 
