@@ -102,7 +102,7 @@ unresolved:
     implemented F1 directly under the continuation law (accepted by the seat).
 next_actions:
   - Merge F1 by hand with --match-head-commit on concluded green after checking reviewDecision; verify landing by blob comparison.
-  - After #9278 lands, consumers may schema-validate CapitalInputs carrying financials.
+  - '#9278 landed (05bcc762) before F1 opened; F1 is rebased onto it and test_consumed_financial_facts_are_admissible_capital_inputs_records validates CapitalInputs carrying the consumed financials against the C0 schema.'
   - Consumers of a funding schedule read FundingSchedule; they never recompute cash, burn or liquidity.
 do_not_redo:
   - Use net loss as burn or as a fallback for an absent operating cash flow.

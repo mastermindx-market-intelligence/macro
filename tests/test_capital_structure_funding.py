@@ -44,6 +44,7 @@ from engine.capital_structure.issuer_state_contracts import (
     FORBIDDEN_PROPERTY_PATTERN,
     ActionSelection,
     CalculationReceipt,
+    CapitalInputs,
     CapitalState,
     CommitmentInputs,
     ContractViolation,
@@ -944,6 +945,15 @@ def test_schedule_state_id_is_an_input_identity_never_an_issuer_state_id() -> No
     assert joined.state_id == state.state_id
     validate_state_record("funding_schedule", joined.as_record())
     assert joined.receipt == schedule.receipt
+
+
+def test_consumed_financial_facts_are_admissible_capital_inputs_records() -> None:
+    """The facts F1 consumes validate as C0 ``capital_inputs.financials`` (schema fix in #9278)."""
+    revolver = fact("revolver-1", "revolver_availability", "2000000", measured_at=H0, condition="no default")
+    fin = financials(*base_facts(), revolver, obligation("dm-1", "debt_maturity", "750000", "2026-11-15"))
+    capital_inputs = CapitalInputs(bindings=(fin.binding,), financials=fin.facts)
+    validate_state_record("capital_inputs", capital_inputs.as_record())
+    project_funding(fin, covenants(covenant("cov-min-1", "1000000")), scenario())
 
 
 def test_wrong_argument_types_are_refused() -> None:
