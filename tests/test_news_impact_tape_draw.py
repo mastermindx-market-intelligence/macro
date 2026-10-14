@@ -1618,3 +1618,213 @@ def test_routing_gates_source_has_no_clock_network_or_proxy_cell_read():
     for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
                    '"proxy_cell"', "'proxy_cell'"):
         assert needle not in text, f"forbidden source fragment: {needle!r}"
+
+
+# --- routing gates 2 (DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH item 3) ---------------
+# Synthetic headlines and filing text only: no real issuer, no headline from the w2 pool,
+# no dollar figure (DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE).
+
+from engine.news_impact import routing_gates_2 as RG2
+
+
+def _status2(title, template, ticker, docs):
+    return RG2.classify(title, template, ticker, docs).status()
+
+
+@pytest.mark.parametrize(
+    "title,code",
+    [
+        ("Nasdaq and S&P 500 edge higher as robot stocks rally", "g1_market_report"),
+        ("Stocks, futures slip as investors weigh rate path", "g1_market_report"),
+        ("Analyst Opinions on Zentrix Robotics", "g1_quote_page"),
+        ("Investors Who Lost Money on Zentrix Robotics Should Contact the Firm", "g1_solicitation"),
+        ("Law firm announces investigation on behalf of Zentrix Robotics shareholders", "g1_solicitation"),
+    ],
+)
+def test_gates2_g1_widenings_catch_shapes_gates1_missed(title, code):
+    assert RG.non_event_code(title) is None  # the widening, not the gates-1 rule, catches it
+    assert RG2.non_event_code(title) == code
+    assert _status2(title, "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == f"gated_out:{code}"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Zentrix Robotics declares quarterly dividend",
+        "Zentrix Robotics declares special dividend: here's what investors need to know",
+    ],
+)
+def test_gates2_event_headlines_pass_g1(title):
+    assert RG2.non_event_code(title) is None
+    assert _status2(title, "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == "gated_in"
+
+
+def test_gates2_keeps_every_gates1_non_event_code():
+    for title in (
+        "Industrial Robot Market Size Report 2026-2032",
+        "ZNTX Stock Quote and News",
+        "SHAREHOLDER ALERT: Investors in Zentrix Robotics urged to contact the firm",
+        "3 Robotics Stocks to Buy Before Year End",
+    ):
+        assert RG2.non_event_code(title) == RG.non_event_code(title) is not None
+
+
+def test_gates2_t1_offering_needs_a_capital_sense():
+    title = "Zentrix Robotics expands its service offering for warehouses"
+    product = _gdoc("Item 8.01 Other Events. The Company announced a new service offering for warehouse customers.")
+    assert _status(title, "T1", "ZNTX", [product]) == "gated_in"  # gates-1 reads the family word only
+    assert _status2(title, "T1", "ZNTX", [product]) == "gated_out:g3_template_sense"
+    capital = _gdoc(
+        "Item 8.01 Other Events. The Company entered into an underwriting agreement for a public offering of common stock."
+    )
+    assert _status2(title, "T1", "ZNTX", [capital]) == "gated_in"
+    assert _status2("Zentrix Robotics prices public offering of common stock", "T1", "ZNTX", [product]) == "gated_in"
+
+
+def test_gates2_t1_share_sale_reads_a_trading_plan_as_the_event():
+    body = _gdoc(
+        "Item 8.01 Other Events. The founder adopted a Rule 10b5-1 trading plan for a share sale of company stock."
+    )
+    assert _status2("Zentrix Robotics founder plans share sale", "T1", "ZNTX", [body]) == "gated_in"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Zentrix Robotics unveils fleet performance for August",
+        "Zentrix Robotics launches proxy fight",
+        "Zentrix Robotics enters equity distribution agreement",
+    ],
+)
+def test_gates2_t3_template_sense(title):
+    docs = [_gdoc(_COLLAB, items=("1.01",))]
+    assert _status(title, "T3", "ZNTX", docs) == "gated_in"
+    assert _status2(title, "T3", "ZNTX", docs) == "gated_out:g3_template_sense"
+
+
+def test_gates2_t3_product_launch_is_gated_in():
+    docs = [_gdoc("Item 8.01 Other Events. The Company launched a new warehouse robot, now available to customers.")]
+    assert _status2("Zentrix Robotics launches new warehouse robot", "T3", "ZNTX", docs) == "gated_in"
+
+
+def test_gates2_t3_results_only_filing_is_an_event_mismatch():
+    title = "Zentrix Robotics launches new warehouse robot"
+    docs = [
+        _gdoc(
+            "Item 2.02 Results of Operations. The Company reported quarterly results and launched a new warehouse robot.",
+            items=("2.02", "9.01"),
+        )
+    ]
+    assert _status(title, "T3", "ZNTX", docs) == "gated_in"
+    assert _status2(title, "T3", "ZNTX", docs) == "gated_out:g3_event_mismatch"
+
+
+def test_gates2_body_must_report_the_headline_event():
+    title = "Zentrix Robotics announces share buyback"
+    docs = [_gdoc(_DIVIDEND)]
+    assert _status(title, "T1", "ZNTX", docs) == "gated_in"  # a dividend body carries T1 language
+    assert _status2(title, "T1", "ZNTX", docs) == "gated_out:g3_event_mismatch"
+    buyback = _gdoc("Item 8.01 Other Events. The Board of Directors authorized a share repurchase program.")
+    assert _status2(title, "T1", "ZNTX", [buyback]) == "gated_in"
+
+
+def test_gates2_t2_guidance_relaxation_needs_item_202():
+    title = "Zentrix Robotics lifts outlook"
+    furnished = "Item 2.02 Results of Operations. The Company furnished a press release as Exhibit 99.1."
+    with_202 = [_gdoc(furnished, items=("2.02",))]
+    assert _status(title, "T2", "ZNTX", with_202) == "gated_out:g3_no_family_language"
+    assert _status2(title, "T2", "ZNTX", with_202) == "gated_in"
+    assert _status2("Zentrix Robotics beats estimates and lifts outlook", "T2", "ZNTX", with_202) == "gated_in"
+    regfd = [_gdoc("Item 7.01 Regulation FD Disclosure. The Company furnished a presentation.", items=("7.01",))]
+    assert _status2(title, "T2", "ZNTX", regfd) == "gated_out:g3_no_family_language"
+
+
+def test_gates2_t2_results_headline_still_needs_item_202():
+    docs = [_gdoc("Item 1.01 Entry into a Material Definitive Agreement. The Company signed a supply arrangement.", items=("1.01",))]
+    title = "Zentrix Robotics beats estimates on warehouse contract"
+    assert _status2(title, "T2", "ZNTX", docs) == "gated_out:g3_results_without_202"
+
+
+def test_gates2_t2_contract_relaxation_needs_item_101():
+    title = "Zentrix Robotics wins warehouse contract"
+    text = (
+        "Item 1.01 Entry into a Material Definitive Agreement. "
+        "The Company entered into a supply arrangement with a logistics customer."
+    )
+    assert _status(title, "T2", "ZNTX", [_gdoc(text, items=("1.01",))]) == "gated_out:g3_no_family_language"
+    assert _status2(title, "T2", "ZNTX", [_gdoc(text, items=("1.01",))]) == "gated_in"
+    assert _status2(title, "T2", "ZNTX", [_gdoc(text, items=("8.01",))]) == "gated_out:g3_no_family_language"
+
+
+def test_gates2_keeps_gates1_issuer_guard():
+    docs = [_gdoc(_DIVIDEND, cover=_FORDHAM_COVER)]
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs) == _status(
+        "Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs
+    )
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs).startswith("gated_out:g2_")
+
+
+def test_gates2_versions_and_codes_are_separate():
+    assert RG.GATES_VERSION == "ni-routing-gates-1"
+    assert RG2.GATES_VERSION == "ni-routing-gates-2"
+    assert set(RG.CODES) < set(RG2.CODES)
+    assert set(RG2.CODES) - set(RG.CODES) == {"g3_template_sense", "g3_event_mismatch"}
+    assert all(RG2.CODES[c] == g for c, g in RG.CODES.items())
+
+
+def test_gates2_every_code_is_a_valid_gate_status():
+    assert RG2.STATUS_RE is TD.GATE_STATUS_RE
+    assert RG2.STATUS_RE.fullmatch(RG2.GATED_IN)
+    for code, gate in RG2.CODES.items():
+        assert RG2.STATUS_RE.fullmatch(f"gated_out:{code}")
+        assert gate in {"G0", "G1", "G2", "G3"}
+        verdict = RG2.GateVerdict(code)
+        assert not verdict.gated_in and verdict.gate == gate and verdict.status() == f"gated_out:{code}"
+    assert RG2.GateVerdict(None).gated_in and RG2.GateVerdict(None).status() == RG2.GATED_IN
+
+
+def test_gates2_no_documents_is_no_body_and_bad_inputs_raise():
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", []) == "gated_out:no_body"
+    with pytest.raises(RG2.RoutingGateError):
+        RG2.classify("Zentrix Robotics declares quarterly dividend", "T9", "ZNTX", [_gdoc(_DIVIDEND)])
+    for ticker in (None, ""):
+        with pytest.raises(RG2.RoutingGateError):
+            RG2.classify("Zentrix Robotics declares quarterly dividend", "T1", ticker, [_gdoc(_DIVIDEND)])
+
+
+def test_gates2_build_gate_map_and_cli_write_ids_and_codes_only(tmp_path):
+    import hashlib
+
+    candidates, bodies, texts = _gate_inputs(tmp_path)
+    by_id = {b["item_id"]: b for b in bodies}
+    assert RG2.build_gate_map(candidates, by_id, texts) == RG.build_gate_map(candidates, by_id, texts)
+    with pytest.raises(RG2.RoutingGateError):
+        RG2.build_gate_map(candidates + [candidates[0]], by_id, texts)
+    cand_path = tmp_path / "candidates.jsonl"
+    cand_path.write_text("".join(json.dumps(c) + "\n" for c in candidates))
+    bodies_path = tmp_path / "bodies.jsonl"
+    bodies_path.write_text("".join(json.dumps(b) + "\n" for b in bodies))
+    out, report = tmp_path / "gate_map.json", tmp_path / "gate_report.json"
+    argv = ["--candidates", str(cand_path), "--bodies", str(bodies_path), "--texts", str(texts),
+            "--out", str(out), "--report", str(report)]
+    assert RG2.main(argv) == 0
+    summary = json.loads(report.read_text())
+    assert summary["gates_version"] == "ni-routing-gates-2"
+    assert summary["n_candidates"] == 5 and summary["n_gated_in"] == 1
+    assert summary["gate_map_sha256"] == hashlib.sha256(out.read_bytes()).hexdigest()
+    assert summary["candidates_sha256"] == hashlib.sha256(cand_path.read_bytes()).hexdigest()
+    for path in (out, report):
+        blob = path.read_bytes().lower()
+        for word in (b"zentrix", b"robotics", b"dividend", b"payout"):
+            assert word not in blob
+    cand_path.write_text("not json\n")
+    assert RG2.main(argv) == 2
+    cand_path.write_text(json.dumps({"item_id": "c3", "title": "x", "ticker": "ZNTX"}) + "\n")
+    assert RG2.main(argv) == 2
+
+
+def test_gates2_source_has_no_clock_network_or_proxy_cell_read():
+    text = Path(RG2.__file__).read_text()
+    for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
+                   '"proxy_cell"', "'proxy_cell'"):
+        assert needle not in text, f"forbidden source fragment: {needle!r}"
