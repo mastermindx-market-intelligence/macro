@@ -102,6 +102,8 @@
       "us30y",
       "us5y_real",
       "us10y_real",
+      "breakeven_10y",
+      "breakeven_5y5y",
       "term_premium_10y",
       "effr",
       "sofr"
@@ -208,7 +210,7 @@
       },
       {
         "component_id": "breakeven_10y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year node (breakeven_10y)",
           "zh": "10-year节点（breakeven_10y）"
@@ -216,11 +218,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-08",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "breakeven_5y5y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year, 5-year forward node (breakeven_5y5y)",
           "zh": "5-year, 5-year forward节点（breakeven_5y5y）"
@@ -228,7 +230,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-08",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "term_premium_10y",
@@ -387,7 +389,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "rates_curves-US-5601dfd23de8932d"
+    "predecessor_generation_id": "rates_curves-US-8eef40507df43192"
   },
   "drivers": {
     "balance_sheet": [
@@ -522,11 +524,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-13T06:57:13Z",
+    "built_at": "2026-10-14T06:19:54Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "8847cfc6de330b36595e3793010e6599845adc2f",
-    "content_sha256": "8eef40507df431922151db11367d81c46a53bc01840087756528272537093bb8",
-    "generation_id": "rates_curves-US-8eef40507df43192",
+    "code_version": "bcf999b1431069915c91a6a9a059beb8e268d93a",
+    "content_sha256": "eaeb0907b896c3b52ac08512040c735b28e771beb05e4813aef3c4ab72e234a2",
+    "generation_id": "rates_curves-US-eaeb0907b896c3b5",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },
@@ -1263,7 +1265,7 @@
         "definition_id": "fred.T10YIE.breakeven_10y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_inflation_priced",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "breakeven_10y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1299,7 +1301,7 @@
         "definition_id": "fred.T5YIFR.breakeven_5y5y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_inflation_priced",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "breakeven_5y5y_level",
         "model_version": "rates_curves.compose.v1",
@@ -5043,7 +5045,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year (T10YIE, via FRED)",
           "zh": "10-year（T10YIE，经FRED）"
@@ -5064,7 +5066,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year, 5-year forward (T5YIFR, via FRED)",
           "zh": "5-year, 5-year forward（T5YIFR，经FRED）"
