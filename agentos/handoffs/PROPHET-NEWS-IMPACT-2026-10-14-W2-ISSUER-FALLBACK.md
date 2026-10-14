@@ -5,7 +5,7 @@ model: opus
 ended_because: ci_handoff
 decisions: ["DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER"]
 discoveries: ["DSC:NEWS-IMPACT-ISSUER-FALLBACK-COUNTS", "DSC:NEWS-IMPACT-V2-QUEUE-SCORING"]
-prs: [9373, PR_NUMBER]
+prs: [9373, 9381]
 mission: >
   Widen the benchmark frame past its issuer-resolution gap without editing the event-ledger
   owner's files or reopening any accepted draw, freeze the next draw (gated_v3) before any
