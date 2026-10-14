@@ -269,7 +269,10 @@ def check_counter_relation(
     source_ref = relation.get("source_ref")
     if not _text_present(source_ref):
         reasons.append("RELATION_UNSOURCED")
-    if relation.get("issuer_id") != request.get("issuer_id"):
+    # FAMILY TEXT RULE v2: equality only between two present values (X9-04).
+    rel_issuer, req_issuer = relation.get("issuer_id"), request.get("issuer_id")
+    if not (_text_present(rel_issuer) and _text_present(req_issuer)
+            and rel_issuer == req_issuer):
         reasons.append("ISSUER_MISMATCH")
 
     seen: list[object] = []

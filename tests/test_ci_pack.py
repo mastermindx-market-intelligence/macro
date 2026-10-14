@@ -4800,6 +4800,12 @@ CURATED_EXCLUSIVE = {
     # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
     "leadership-rotation-contract",
     "lr-rotation-evidence-modes",
+    # 2026-10-14 RIC E0 (#9282): the M0/X0 retrospective-runner suites reach
+    # the release-forecast stack, whose collector and neuralweb imports made
+    # inference select the job on the build_free_content probe (135 > 134
+    # jobs, check_contract_delta: 1 introduced). scope: exclusive pins it to
+    # its declared static import closure; ceilings stay fixed.
+    "ric-e0-retrospective-runners",
     # 2026-10-14 LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the prereg
     # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
     # scope: exclusive pins the job to its measured suite_dependency_closure.

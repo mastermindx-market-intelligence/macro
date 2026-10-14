@@ -120,3 +120,22 @@ test('catalog missing fields follow owner unavailable enum',()=>{
  assert.equal(h.normalizeEntry(e).fieldsPresent.growth_score,false);
  e.field_status.growth_score='missing';assert.throws(()=>h.normalizeEntry(e));
 });
+
+// Real edge response: Caddy keeps the packet digest and adds its encoding suffix.
+for (const encoding of ['gzip','zstd']) test('saved output accepts exact '+encoding+' representation tag',()=>{
+ const {e,entry,i}=savedPair();
+ const etag='"'+entry.packetSha256+'-'+encoding+'"';
+ const v=h.normalizePlayback(entry,e.body,etag,i,encoding);
+ assert.equal(v.contextId,i.context);assert.deepEqual(clone(v.state),e.body.feature_projection.state);
+ const wrong=clone(e.body);wrong.exact_refs.packet.sha256='f'.repeat(64);
+ assert.throws(()=>h.normalizePlayback(entry,wrong,etag,i,encoding),e=>e.contractCode==='saved_original_refs');
+});
+for(const [suffix,encoding] of [['gzip',null],['gzip','zstd'],['zstd','gzip'],['gzip','gzip, br'],['br','br'],['gzip-extra','gzip']])test('reject nonmatching encoded saved validator '+suffix+'/'+encoding,()=>{
+ const {e,entry,i}=savedPair();
+ assert.throws(()=>h.normalizePlayback(entry,e.body,'"'+entry.packetSha256+'-'+suffix+'"',i,encoding),e=>e.contractCode==='saved_etag');
+});
+test('encoding cannot excuse a different digest or weak/malformed validator',()=>{
+ const {e,entry,i}=savedPair();
+ for(const etag of ['"'+('f'.repeat(64))+'-gzip"','W/"'+entry.packetSha256+'-gzip"',entry.packetSha256+'-gzip','"'+entry.packetSha256+'-gzip", "other"'])
+  assert.throws(()=>h.normalizePlayback(entry,e.body,etag,i,'gzip'),e=>e.contractCode==='saved_etag');
+});

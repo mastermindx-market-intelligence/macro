@@ -34,6 +34,8 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     SCHEMA_VERSION,
     _FORBIDDEN_BARE_KEYS,
+    _LEAD_FULL,
+    _LEAD_GENERIC,
     _assert_document_matches_contract_shape,
     _assert_no_forbidden_authority_keys,
     _check_explanation_for_forbidden,
@@ -2036,3 +2038,207 @@ def test_result_envelope_contradiction_withholds_advertising_net_change(
             row["withheld_reason"] != "result_envelope_contradicts_stated_definition"
         ), row
         assert row["value_text"] == "-4", row
+
+
+# ---------------------------------------------------------------------------
+# Stated-definition screen vs the verdicts (W15-F: PR #9285 review D1/D2)
+# ---------------------------------------------------------------------------
+#
+# The stated-definition check used to run ONLY inside ``_emit_result`` -- after
+# every derived row had been built, after the ``availability`` verdict and
+# after the explanation lead had been selected from the internal
+# ``state == "READY"`` set. A contradicting fact therefore withheld its row
+# from the emitted document while the document still read ``availability:
+# ready`` with the full economic lead naming the withheld row, and the rows
+# derived from it kept publishing values computed from withheld input.
+
+
+_WITHHELD_REASON = "result_envelope_contradicts_stated_definition"
+
+
+def _contradict(
+    facts: list[dict[str, Any]],
+    fact_key: str,
+    field: str,
+    value: Any,
+) -> None:
+    """Mutate one envelope field of exactly one fact, proving the target exists."""
+    hit = [fact for fact in facts if fact["key"] == fact_key]
+    assert len(hit) == 1, (
+        f"the synthetic factory no longer carries exactly one "
+        f"{fact_key!r} fact -- this case proves nothing"
+    )
+    hit[0][field] = value
+
+
+def test_d1_expense_current_quantum_contradiction_withholds_net_row_too() -> None:
+    """Withholding advertising_expense_change must withhold its derived net row.
+
+    Built from the file's existing helpers: ``_plnt_facts`` supplies the
+    six-fact case, ``_plnt_case`` wraps it with subject and source records,
+    ``_result_by_key`` reads the emitted row. Only the advertising-EXPENSE
+    CURRENT fact's ``display_quantum`` contradicts the stated definition.
+    """
+    facts = [dict(fact) for fact in _plnt_facts()]
+    _contradict(
+        facts,
+        FACT_KEY_ADVERTISING_EXPENSE + "_current",
+        "display_quantum",
+        "5_thousand",
+    )
+    document = project_economic_change(_plnt_case(facts=facts))
+
+    expense = _result_by_key(document, RESULT_KEY_ADVERTISING_EXPENSE_CHANGE)
+    assert expense["value_text"] is None, expense
+    assert expense["withheld_reason"] == _WITHHELD_REASON, expense
+
+    net = _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)
+    assert net["value_text"] is None, net
+    # The honest reason for THIS case: advertising_net_change's own
+    # prior_period_fact IS the contradicting advertising-expense current
+    # fact envelope (the net derivation takes the expense row's current
+    # envelope as the net row's prior side), so the
+    # net row itself fails the stated-definition screen with the
+    # contradiction reason rather than the generic dependency_suppressed.
+    assert net["withheld_reason"] == _WITHHELD_REASON, net
+
+    # The clean-environment rows still publish their golden values.
+    assert (
+        _result_by_key(document, RESULT_KEY_TOTAL_REVENUE_CHANGE)["value_text"]
+        == "24344"
+    )
+    assert (
+        _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)[
+            "value_text"
+        ]
+        == "10141"
+    )
+
+
+def test_d2_revenue_prior_quantum_contradiction_withholds_change_and_net() -> None:
+    """The screen must read BOTH envelope sides, not only current_period_fact.
+
+    The old trigger inspected only the current side, so contradicting the
+    advertising-revenue PRIOR fact left every row publishing -- including
+    advertising_revenue_change itself, whose stated definition claims USD
+    thousands over a fact envelope the prior side refutes.
+    """
+    facts = [dict(fact) for fact in _plnt_facts()]
+    _contradict(
+        facts,
+        FACT_KEY_ADVERTISING_REVENUE + "_prior",
+        "display_quantum",
+        "5_thousand",
+    )
+    document = project_economic_change(_plnt_case(facts=facts))
+
+    revenue = _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)
+    assert revenue["value_text"] is None, revenue
+    assert revenue["withheld_reason"] == _WITHHELD_REASON, revenue
+
+    net = _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)
+    assert net["value_text"] is None, net
+    # The net row's own envelopes are clean in THIS case; it fails because
+    # its advertising_revenue_change constituent was just withheld. The
+    # existing vocabulary for exactly that is the build branch's own
+    # "dependency_suppressed", which the build branch of the net
+    # derivation uses when a constituent row is not READY.
+    assert net["withheld_reason"] == "dependency_suppressed", net
+
+
+def _mutate_clean(facts: list[dict[str, Any]]) -> None:
+    """The golden case, untouched."""
+
+
+def _mutate_expense_current_quantum(facts: list[dict[str, Any]]) -> None:
+    _contradict(
+        facts,
+        FACT_KEY_ADVERTISING_EXPENSE + "_current",
+        "display_quantum",
+        "5_thousand",
+    )
+
+
+def _mutate_revenue_prior_quantum(facts: list[dict[str, Any]]) -> None:
+    _contradict(
+        facts,
+        FACT_KEY_ADVERTISING_REVENUE + "_prior",
+        "display_quantum",
+        "5_thousand",
+    )
+
+
+def _mutate_total_revenue_unit(facts: list[dict[str, Any]]) -> None:
+    # BOTH sides of the pair, exactly as the existing trigger parametrization
+    # does: the pairing rule requires the sides to share unit, so mutating
+    # one side alone would collapse the pair for a reason unrelated to the
+    # stated definition.
+    hit = [f for f in facts if f["metric"] == FACT_KEY_TOTAL_REVENUE]
+    assert len(hit) == 2, "no total_revenue pair to contradict"
+    for fact in hit:
+        fact["unit"] = "EUR"
+
+
+def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
+    hit = [f for f in facts if f["metric"] == FACT_KEY_TOTAL_REVENUE]
+    assert len(hit) == 2, "no total_revenue pair to contradict"
+    for fact in hit:
+        fact["scale_power10"] = 6
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        _mutate_clean,
+        _mutate_expense_current_quantum,
+        _mutate_revenue_prior_quantum,
+        _mutate_total_revenue_unit,
+        _mutate_total_revenue_scale,
+    ],
+    ids=[
+        "clean_golden",
+        "d1_expense_current_quantum",
+        "d2_revenue_prior_quantum",
+        "total_revenue_unit_eur",
+        "total_revenue_scale_6",
+    ],
+)
+def test_availability_lead_and_emitted_rows_agree_under_contradictions(
+    mutate,
+) -> None:
+    """The verdicts and the emitted rows must read from one truth.
+
+    (a) availability is "ready" exactly when at least one emitted result
+    actually carries a value; (b) the full economic lead may be claimed only
+    when the three change rows it names all publish a value. The lead is
+    asserted against the module's own constants, never a hand-copied string.
+    """
+    facts = [dict(fact) for fact in _plnt_facts()]
+    mutate(facts)
+    document = project_economic_change(_plnt_case(facts=facts))
+
+    any_published = any(
+        r["value_text"] is not None for r in document["results"]
+    )
+    assert (document["availability"] == "ready") == any_published, (
+        f"availability={document['availability']!r} but published rows="
+        f"{[r['key'] for r in document['results'] if r['value_text'] is not None]}"
+    )
+
+    primary_keys = (
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    )
+    all_primary_publish = all(
+        _result_by_key(document, key)["value_text"] is not None
+        for key in primary_keys
+    )
+    lead = document["explanation"]["lead"]
+    assert lead in (_LEAD_FULL, _LEAD_GENERIC)
+    if lead == _LEAD_FULL:
+        assert all_primary_publish, (
+            "the full lead names the total, advertising-revenue and "
+            "advertising-expense changes, but at least one of them emitted "
+            "no value"
+        )

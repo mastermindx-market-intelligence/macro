@@ -185,14 +185,27 @@ def test_fixture_cpi_has_shadows():
     assert "cpi_bridge" in shadows, "CPI headline missing shadows.cpi_bridge"
 
 
-def test_fixture_nfp_v3_shadow_has_warning():
-    """NFP v3_factor shadow carries a warning string."""
+def test_fixture_nfp_v3_shadow_claim_withdrawn():
+    """RIC-M0: the NFP v3_factor claim is withdrawn — no point, no interval."""
     d = _fixture()
     nfp = next((i for i in d["upcoming"] if i.get("release_type") == "nfp"), None)
     assert nfp is not None
     v3 = (nfp.get("shadows") or {}).get("v3_factor")
-    assert v3 is not None, "NFP missing shadows.v3_factor"
-    assert v3.get("warning"), "NFP v3_factor shadow missing warning"
+    assert v3 is not None, "NFP missing shadows.v3_factor withdrawal block"
+    assert v3["claim_withdrawn"]["verdict"] == "FALSIFIED_UNDER_COHERENT_TARGET"
+    for key in ("point", "p10", "p25", "p50", "p75", "p90", "confidence"):
+        assert key not in v3, f"withdrawn NFP v3_factor must not carry {key}"
+
+
+def test_dashboard_renders_no_number_for_a_withdrawn_shadow_claim():
+    """The v3 row short-circuits on claim_withdrawn before any point/interval markup."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    start = src.index("function v3FactorRow(v3, isClaims, isNfp){")
+    body = src[start:src.index("/* ---- MRI-R39a", start)]
+    branch = body[body.index("if (v3.claim_withdrawn){"):body.index("var useK")]
+    assert "intervalBar" not in branch and "v3.point" not in branch
+    assert 'class="l-en"' in branch and 'class="l-zh"' in branch
+    assert "falsif" not in branch.lower() and "证伪" not in branch
 
 
 def test_fixture_coverage_flags_present_on_cpi():
@@ -506,8 +519,9 @@ def test_r24_v3_shadow_warning_rendered():
     """v3FactorRow renders the warning field when present."""
     src = _rr_section_src()
     fn_start = src.find("function v3FactorRow(")
-    # Use a large window to cover the full function body
-    fn_body = src[fn_start:fn_start + 1200] if fn_start >= 0 else ""
+    # Bound to the full function body (RIC-M0 added a withdrawal branch at its top)
+    fn_end = src.find("/* ---- MRI-R39a", fn_start) if fn_start >= 0 else -1
+    fn_body = src[fn_start:fn_end] if fn_end > fn_start else ""
     assert "warning" in fn_body, "v3FactorRow must render the warning field"
     assert "rr-shadow-warn" in fn_body, "v3FactorRow must use rr-shadow-warn CSS class"
 

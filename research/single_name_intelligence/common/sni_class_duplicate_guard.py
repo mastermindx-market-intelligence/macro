@@ -152,7 +152,7 @@ def _pair_shape_ok(sids: object) -> bool:
     if len(sids) != 2:
         return False
     for sid in sids:
-        if not isinstance(sid, str) or _blank(sid):
+        if not _text_present(sid):
             return False
     return sids[0] != sids[1]
 
