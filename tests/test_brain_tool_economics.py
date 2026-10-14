@@ -853,6 +853,28 @@ def test_fast_qualified_single_family_surfaces_are_exact(quiet_grounding, questi
     assert _visible_names(client.create_kwargs[0]) == expected
 
 
+@pytest.mark.parametrize("caller", ["guest", "denied_member", "entitled_member"])
+def test_fast_macro_visibility_preserves_entitlement_narrowing(caller):
+    from fastapi import HTTPException
+
+    allowed = caller == "entitled_member"
+    denied = None if allowed else HTTPException(status_code=403, detail="site-full required")
+    with patch("app.paywall.enforce_site_full", side_effect=denied) as check:
+        full = gw._all_brain_tool_schemas(
+            _root(), user_id=None if caller == "guest" else "visibility-member",
+        )
+    assert check.call_count == (0 if caller == "guest" else 1)
+    full_names = {schema["name"] for schema in full}
+    assert ("get_retained_market_context" in full_names) is allowed
+    visible = gw._fast_visible_tool_schemas(
+        full, "Why is the yield curve steepening today?", None,
+        lane="fast", mode="chat", page="", internals_allowed=False,
+    )
+    expected = _MACRO_VISIBLE | ({"get_retained_market_context"} if allowed else set())
+    assert {schema["name"] for schema in visible} == expected
+    assert all(schema in full for schema in visible)
+
+
 def test_fast_visibility_schema_drift_fails_open_instead_of_partial_narrowing():
     root = _root()
     full = gw._all_brain_tool_schemas(root)

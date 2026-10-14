@@ -84,8 +84,13 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
-      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_lineage.py
       - engine/neuralweb/market_memory_trusted.py
       - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
@@ -3621,6 +3626,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -6580,6 +6586,7 @@ jobs:
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
+      - "tests/test_us_candidate_episode_identity_retry.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -6624,7 +6631,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
@@ -6959,6 +6966,14 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - config/market_memory_retained_use.v1.json
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_retained_use.py
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
@@ -8477,14 +8492,10 @@ jobs:
         run: python3 scripts/check_factor_boundaries.py
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
-      - name: synapse read-gate unit tests
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
-      - name: factor deescalation shadow + boundary guard tests
-        run: python -m pytest tests/test_factor_deescalation_shadow.py -q
+      - name: synapse owning contracts in one pytest session
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
-      - name: EDGAR item, counterparty, quarterly, universe and first-request guards in one pytest session
-        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py -q
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
       # dollar leg, the "primary document" selector was reading the EDGAR submission
@@ -8504,15 +8515,11 @@ jobs:
       # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
       # the install line above (pandas + pyarrow for the parquet write, pyyaml via
       # lib.config). 24 tests, 1.8 s measured locally.
-      - name: S&P 1500 point-in-time sector substrate — CIK-only leaver labels, SIC map, cache (no network)
-        run: python -m pytest tests/test_sp1500_pit_sectors.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
           tests/test_symbol_directory.py
           tests/test_symbol_directory_completion_receipts.py -q
-      - name: winner autopsy B-family feature column tests (LHB-W3)
-        run: python -m pytest tests/test_winner_autopsy.py -q
 
   neural-web:
     if: ${{ false }}
@@ -12043,6 +12050,7 @@ jobs:
       - scripts/worktree_gc_liveness.py
       - tests/test_agent_worktree_roots.py
       - tests/test_agentos_compile.py
+      - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
@@ -12219,27 +12227,85 @@ jobs:
             --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
-      - name: agent-os record contract (schema fail-closed, join fail-open)
-        # ORDERED LAST IN THIS JOB, deliberately. `run_ci_pack.py:_run_job` returns on
-        # the FIRST nonzero step, so any step placed before `self-mod-fence live check`
-        # can make that fence never run — the F2 fence would go dark for the PR while
-        # the job reports a failure that has nothing to do with self-modification.
-        # A knowledge-plane record check must never be able to blind a security fence,
-        # so it sits behind every fence step in this job.
-        #
-        # Folded in as a STEP, not a new job, also deliberately: the manifest sits at
-        # the narrow-diff ceiling (test_representative_narrow_diffs_skip_at_least_one
-        # _quarter_of_jobs asserts selected <= len(jobs)*4//5), so adding a job can red
-        # an unrelated pack, and a `paths:` scope cannot fix it — infer_job_scopes()
-        # UNIONS declared paths with inferred ones, so a declaration only ever WIDENS.
-        # Keeping the job COUNT fixed keeps that arithmetic still.
+      - name: agent-os record and broad integration checks
+        # Remains after every security-fence step. The scoped knowledge suites
+        # below cannot prevent the live self-modification check from running.
         run: |
-          # Direct invocation FIRST and deliberately: the pytest suite skips itself
-          # when agentos/ is outside a sparse cone, so a store that failed to check
-          # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
-          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py tests/test_agentos_ship_capture.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
+          python -m pytest tests/test_agentos_ship_capture.py tests/test_f01_fx_commodity_source_rights.py -q
+
+  agentos-knowledge-contracts:
+    # ci.yml executes this manifest through scripts/run_ci_pack.py. The false
+    # sentinel is required by that runner; it prevents duplicate GitHub jobs.
+    if: ${{ false }}
+    gate: code
+    # These ten whole-file suites exercise the knowledge compiler and its
+    # committed records. Audit: 43 concrete transitive files plus the complete
+    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # glob edges use temporary fixture repositories or those same declared
+    # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
+    # No suite or security step is removed; no packing ceiling is raised.
+    scope: exclusive
+    paths:
+      - agentos/**
+      - research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md
+      - config/compiled_kill_registry.yml
+      - config/context_index.yml
+      - config/mastermind_programs.yml
+      - config/pr_linkage_rules.v1.json
+      - config/ruling_graph.yml
+      - config/synapse.yml
+      - engine/context_index/fusion.py
+      - engine/context_index/gitinfo.py
+      - engine/context_index/lexical.py
+      - engine/context_index/packet.py
+      - engine/context_index/structured.py
+      - lib/__init__.py
+      - lib/pr_linkage_validator.py
+      - research/DO_NOT_REBUILD.md
+      - research/linear_portfolio_p0/linear_snapshot_2026-08-25.json
+      - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F02_OWNER_SOURCE_RIGHTS_MAP_2026-09-05.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
+      - research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md
+      - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
+      - scripts/__init__.py
+      - scripts/agentos.py
+      - scripts/agentos_ship_capture.py
+      - scripts/audit_stranded_work.py
+      - scripts/linear_portfolio_plan.py
+      - templates/_navlinks.html.j2
+      - templates/intelligence_hub.html.j2
+      - tests/__init__.py
+      - tests/agent_eval_continuity_cases.py
+      - tests/linear_portfolio_plan_cases.py
+      - tests/linear_portfolio_plan_live_cases.py
+      - tests/test_agentos_acceptance_basis.py
+      - tests/test_agentos_compile.py
+      - tests/test_agentos_schema.py
+      - tests/test_agentos_status.py
+      - tests/test_b_rec2_wave_boundary_records.py
+      - tests/test_b_rec3_wave_boundary_records.py
+      - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_f02_owner_map_receipts.py
+      - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
+      - tests/test_w9b_rec_ns.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: validate actual store and run complete knowledge suites
+        run: |
+          # This direct invocation fails when a sparse store would skip pytest.
+          python3 scripts/agentos.py validate
+          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
+            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
@@ -13223,6 +13289,17 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - config/market_memory_canary.v1.json
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
       - lib/us_pullback_observation.py
       - collectors/tushare_client.py
       - collectors/tushare_index_daily.py
@@ -14933,6 +15010,11 @@ jobs:
       - "tests/fixtures/global_liquidity_transmission_wliq1_window.json"
       - "tests/test_global_liquidity.py"
       - "tests/test_global_liquidity_transmission.py"
+      - "tests/test_global_liquidity_transmission_liveness_v2.py"
+      - ".github/workflows/daily.yml"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
+      - "site/liquiditydata/global_liquidity_transmission.json"
+      - "engine/market_os/macro_workspaces/liquidity_central_banks.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -14941,9 +15023,39 @@ jobs:
         with:
           python-version: "3.12"
       - name: install state-producer test dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
-        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
+        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
+
+  global-liquidity-transmission-contracts:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # GLT T03–T05 contract suites (offline, synthetic inputs): the v2 source
+    # manifest and its lag/rights rows, the knowledge-time (point-in-time
+    # availability) rules, and the monetary-accounting identities the W-LIQ.1
+    # producer above consumes. A sibling job rather than extra steps on the
+    # producer so the two lanes can evolve without editing each other's step
+    # list. No trading, alerting, routing, or downstream transmission authority.
+    paths:
+      - "config/global_liquidity_sources_v2.yml"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "engine/global_liquidity_accounting.py"
+      - "engine/global_liquidity_knowledge_time.py"
+      - "engine/global_liquidity_transmission.py"
+      - "tests/test_global_liquidity_accounting.py"
+      - "tests/test_global_liquidity_knowledge_time.py"
+      - "tests/test_global_liquidity_sources_v2.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install GLT contract test dependencies
+        run: pip install pytest pandas numpy pyyaml
+      - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
 
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -15310,6 +15422,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -16028,6 +16141,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -18003,6 +18117,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/market_memory_retained_use.v1.json
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_retained_use.py
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
       - app/account_actions.py
@@ -19510,6 +19632,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -19923,6 +20046,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -21006,6 +21130,17 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - config/market_memory_canary.v1.json
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
       - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
@@ -24903,6 +25038,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -25378,6 +25514,15 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/market_memory_retained_use.v1.json
+      - engine/neuralweb/market_memory_forward.py
+      - engine/neuralweb/market_memory_operating_cortex.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retrieval.py
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      - tests/test_market_memory_operating_cortex_service.py
+      - tests/test_market_memory_retained_consumer.py
       - engine/neuralweb/market_memory_lineage.py
       - tests/test_market_memory_lineage.py
       - "config/intelligence_workspace/**"
@@ -26274,8 +26419,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py
-          tests/test_market_memory_lineage.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -27446,6 +27590,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/market_memory_retained_use.v1.json
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_retained_use.py
+      - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
@@ -29908,6 +30060,90 @@ jobs:
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
 
+  grey-deer-pullback-forward:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Grey Deer W5 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback forward lane - the
+    # prospective prereg writer, its grader, the nightly entry point and the
+    # readiness reporter. Hermetic: synthetic series and tmp_path logs only; the
+    # writer/grader identity env is monkeypatched by the tests, never set here.
+    # Curated exclusive (like grey-deer-pullback-stage1): the lane imports the
+    # frozen stage-1 runner, whose lazy risk_radar closure would otherwise pull
+    # this job into ordinary code PRs past the packing-probe ceilings. paths:
+    # below therefore replace inference and list the whole import closure.
+    timeout-minutes: 10
+    paths:
+      - "engine/grey_deer_pullback_forward.py"
+      - "engine/grey_deer_pullback_forward_grade.py"
+      - "scripts/__init__.py"
+      - "scripts/grey_deer_pullback_nightly.py"
+      - "scripts/research/grey_deer_pullback_readiness.py"
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_pullback_forward.py"
+      - "tests/test_grey_deer_pullback_forward_grade.py"
+      - "tests/test_grey_deer_pullback_nightly.py"
+      - "tests/test_grey_deer_pullback_readiness.py"
+      - "lib/observed_moves.py"
+      - "engine/vol_forecast.py"
+      - "lib/nyse_calendar.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "engine/__init__.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/election_cycle.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/validate_regime_fwd.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml requests
+      - name: pullback forward writer, grader, nightly and readiness tests
+        run: >-
+          python -m pytest -q
+          tests/test_grey_deer_pullback_forward.py
+          tests/test_grey_deer_pullback_forward_grade.py
+          tests/test_grey_deer_pullback_nightly.py
+          tests/test_grey_deer_pullback_readiness.py
+
   grey-deer-pullback-stage1:
     if: ${{ false }}
     gate: code
@@ -29918,17 +30154,23 @@ jobs:
     # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
     # determinism checks, the panel split/calendar adjustment and the stage-1b
     # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
+    # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
       - "scripts/research/grey_deer_pullback_stage1b.py"
+      - "scripts/research/grey_deer_pullback_stage1b_addendum.py"
+      - "research/grey_deer/pullback_stage1b/**"
       - "tests/test_grey_deer_pullback_stage1.py"
       - "tests/test_grey_deer_panel_adjust.py"
       - "tests/test_grey_deer_pullback_stage1_determinism.py"
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
+      - "tests/test_grey_deer_pullback_stage1b_addendum.py"
+      - "scripts/research/grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_episode_samples.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -29993,6 +30235,8 @@ jobs:
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
           tests/test_grey_deer_pullback_stage1b.py
+          tests/test_grey_deer_pullback_stage1b_addendum.py
+          tests/test_grey_deer_episode_samples.py
 
   sni-s1-residual:
     if: ${{ false }}
@@ -30271,6 +30515,201 @@ jobs:
       - name: sni public-exposure scan
         run: python -m pytest tests/test_sni_public_exposure.py -q -p no:cacheprovider
 
+  sni-acceptance-evidence:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT2 (2026-10-13): SNI-local acceptance evidence that moves rows only
+    # to PARTIAL (owner contracts stay R1-gated): then-known exclusion (A07),
+    # missing-not-zero (A10), identity refusals (A03/A04), clock-law sessions
+    # (A12), the A14/A30 copy guard, the A33 reference-evidence checker, the
+    # A36 ticker-branch scan, the A39 lane-receipts ledger, P03 ULP stability,
+    # register consistency, the A01/A02 dual-counter properties, the A08
+    # three-clock census, the independent v1.1 reproduction, the eval-ledger
+    # seeded properties and the four mutation-sweep suites that kill the
+    # surviving mutants in inference/seal, S1 stats/direction, S1
+    # decomposition/info-leak and S2 event-response/US-stress. INT3 adds the
+    # A12 half-day clock law, identity-refusal hardening, A20 injection
+    # extension, the IRP gap-4 bootstrap reproduction, the A09 DRAFT join
+    # guard, S2 non-finite abstain and nine further mutation-sweep suites;
+    # INT3b adds the A11 denominator and A13 comparison DRAFT guards, the
+    # A20 base injection suite and seven more mutation-sweep suites.
+    # Hermetic: committed bytes, synthetic frames and
+    # tmp_path only; no git history, no network. Every authority flag false.
+    # Curated exclusive so the sys.path imports cannot widen inference; the
+    # paths are the measured import closure (the A36 scan names S1/S2 module
+    # paths it reads as AST text, so the analyzer follows their engine,
+    # collectors and lib imports too), checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
+    timeout-minutes: 20
+    paths:
+      - "research/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "config/single_name_intelligence/**"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/equity_earnings.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/__init__.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/grading_stats.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/passport.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/regime_vector.py"
+      - "engine/session_anchor.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/test_sni_a07_then_known_exclusion.py"
+      - "tests/test_sni_a33_reference_evidence.py"
+      - "tests/test_sni_a39_receipts_ledger.py"
+      - "tests/test_sni_clocklaw_sessions.py"
+      - "tests/test_sni_copy_guard.py"
+      - "tests/test_sni_dual_counter_property.py"
+      - "tests/test_sni_eval_ledger_property.py"
+      - "tests/test_sni_identity_refusals.py"
+      - "tests/test_sni_independent_repro.py"
+      - "tests/test_sni_missing_not_zero.py"
+      - "tests/test_sni_no_ticker_branches.py"
+      - "tests/test_sni_p03_ulp_stability.py"
+      - "tests/test_sni_register_consistency.py"
+      - "tests/test_sni_three_clock_census.py"
+      - "tests/test_sni_mutation_common.py"
+      - "tests/test_sni_mutation_decomp_infoleak.py"
+      - "tests/test_sni_mutation_event_stress.py"
+      - "tests/test_sni_mutation_stats_direction.py"
+      - "tests/test_sni_clocklaw_half_days.py"
+      - "tests/test_sni_identity_refusals_hardening.py"
+      - "tests/test_sni_injection_safety_ext.py"
+      - "tests/test_sni_irp_gap4_bootstrap_repro.py"
+      - "tests/test_sni_join_guard.py"
+      - "tests/test_sni_mutation_a33_matrix.py"
+      - "tests/test_sni_mutation_branch_copy.py"
+      - "tests/test_sni_mutation_build_seal.py"
+      - "tests/test_sni_mutation_draft_loaders.py"
+      - "tests/test_sni_mutation_ledger_seal.py"
+      - "tests/test_sni_mutation_manifest_synth.py"
+      - "tests/test_sni_mutation_prereg_challenger.py"
+      - "tests/test_sni_mutation_report_s2seal.py"
+      - "tests/test_sni_mutation_s2_state_loaders.py"
+      - "tests/test_sni_s2_nonfinite_abstain.py"
+      - "tests/test_sni_mutation_join_guard.py"
+      - "tests/test_sni_mutation_run_s2_a.py"
+      - "tests/test_sni_mutation_stress_post_idrfix.py"
+      - "tests/test_sni_mutation_run_s1_a.py"
+      - "tests/test_sni_mutation_run_s1_b.py"
+      - "tests/test_sni_mutation_run_s2_b.py"
+      - "tests/test_sni_mutation_clocklaw_outcomes.py"
+      - "tests/test_sni_denominator_guard.py"
+      - "tests/test_sni_comparison_guard.py"
+      - "tests/test_sni_injection_safety.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: sni acceptance evidence (PARTIAL rows)
+        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py -q -p no:cacheprovider
+
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
@@ -30351,6 +30790,35 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+
+  grey-deer-pboc-liquidity:
+    # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.
+    # Pure and stdlib-only. Its own job rather than a step in
+    # china-native-collectors: that job is selected on templates/index.html and
+    # scripts/build_free_content.py through fallback claims, so a step there
+    # moved both packing probes (5,799 -> 5,816 against 5,800). scope: exclusive
+    # with the import closure below; no ceiling moves.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/china_pboc_liquidity.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_pboc_liquidity.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: china PBOC liquidity state classifier tests (Grey Deer GD-4C)
+        run: python -m pytest tests/test_china_pboc_liquidity.py -q -p no:cacheprovider
+
   c19-short-pressure-availability:
     if: ${{ false }}
     gate: code
