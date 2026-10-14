@@ -11679,15 +11679,20 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "research/LEADERSHIP_ROTATION_LOOK_LEDGER.jsonl"
       - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
+      - "research/LEADERSHIP_ROTATION_PREREG_V2_1.md"
+      - "research/LEADERSHIP_ROTATION_STUDY_T12R_2026-10-14.size_gate.json"
       - "scripts/__init__.py"
       - "scripts/leadership_rotation_episodes.py"
       - "scripts/leadership_rotation_inference.py"
+      - "scripts/leadership_rotation_null.py"
       - "scripts/leadership_rotation_p0.py"
       - "scripts/leadership_rotation_run.py"
       - "scripts/leadership_rotation_study.py"
       - "tests/test_leadership_rotation_episodes.py"
       - "tests/test_leadership_rotation_inference.py"
+      - "tests/test_leadership_rotation_null.py"
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
@@ -11701,7 +11706,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation pre-registered study harness
-        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py tests/test_leadership_rotation_null.py -q -p no:cacheprovider
 
   leadership-measured-read:
     if: ${{ false }}
@@ -29461,6 +29466,9 @@ jobs:
       # W8-B: hold the source-edition section until a selector ruling.
       - "engine/company_intelligence/industrials_edition_record.py"
       - "tests/test_industrials_edition_record.py"
+      # W10-C: chronology-section dict the dossier renders until a ruling.
+      - "engine/company_intelligence/industrials_chronology_section.py"
+      - "tests/test_industrials_chronology_section.py"
       # IND-R206: a revenue_share_pct cell is refused unless its
       # segment/denominator pair is one of the two synthetic pairs.
       - "engine/fundamental_forensics/industrials_denominator_guard.py"
@@ -29487,7 +29495,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py -q
 
   house-law-registry-code:
     if: ${{ false }}
