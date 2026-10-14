@@ -6,12 +6,12 @@ HISTORICAL-DESCRIPTIVE only: rank_authority, gate_authority, size_authority,
 signal_authority, escalation_authority and trade_authority stay literal
 False. Fixtures are synthetic.
 
-This module pins the DESIRED behaviour for each X9 finding. Today the
-underlying guards misbehave (currency `!=` on absent values; `level`
-unhashable raises; `issuer_id` Python-equality collisions; `_pair_shape_ok`
-admits whitespace), so every open finding test is marked strict-xfail. Each
-plain PIN test asserts an attack that the guards refute today AND should
-continue to refute after the eventual repair.
+This module pins the repaired behaviour for each X9 finding (currency `!=`
+on absent values; `level` unhashable raised; `issuer_id` Python-equality
+collisions; `_pair_shape_ok` admitted whitespace). X9-02 was closed by the
+JGP-01 join-guard fix; X9-01/03/04/05 by FAMILY TEXT RULE v2 equality
+(only between two text-present values). Each plain PIN test asserts an
+attack the guards refute and must keep refuting.
 
 This module does not register, validate, or feed a ranker, gate, sizer,
 signal, escalation, or trade path.
@@ -82,7 +82,6 @@ def _identity_bind_inputs(currency_request, currency_listing):
     )
 
 
-@pytest.mark.xfail(strict=True, reason="X9-01 open")
 def test_x9_01_identity_binding_currency_untext_equal() -> None:
     """Both currencies must be text-present for the equality check to apply.
 
@@ -97,7 +96,6 @@ def test_x9_01_identity_binding_currency_untext_equal() -> None:
     )
 
 
-@pytest.mark.xfail(strict=True, reason="X9-01 open")
 def test_x9_01b_identity_binding_currency_bool_int_equal() -> None:
     """`True == 1` collision under Python equality must be refused."""
     inputs = _identity_bind_inputs(True, 1)
@@ -124,7 +122,6 @@ _BASE_FACT = dict(
 )
 
 
-@pytest.mark.xfail(strict=True, reason="X9-02 open")
 def test_x9_02_join_guard_level_unhashable_raises() -> None:
     """`level=["issuer"]` must not raise; today it raises TypeError."""
     bad = {**_BASE_FACT, "level": ["issuer"]}
@@ -153,7 +150,6 @@ def _ads_inputs(request_issuer, rec_issuer):
     )
 
 
-@pytest.mark.xfail(strict=True, reason="X9-03 open")
 def test_x9_03_ads_ratio_issuer_id_untext_equal() -> None:
     """`request.issuer_id=1 (int)` and `rec.issuer_id=1 (int)` are NOT
     text-present; today the guard lets the cover match silently."""
@@ -188,7 +184,6 @@ def _cr_inputs(req_issuer, rel_issuer):
     )
 
 
-@pytest.mark.xfail(strict=True, reason="X9-04 open")
 def test_x9_04_counter_relation_issuer_id_untext_equal() -> None:
     """`True == 1` issuer_id collision must refuse with ISSUER_MISMATCH."""
     v = check_counter_relation(**_cr_inputs(True, 1))
@@ -202,7 +197,6 @@ def test_x9_04_counter_relation_issuer_id_untext_equal() -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="X9-05 open")
 def test_x9_05_pair_shape_ok_accepts_whitespace() -> None:
     """`_pair_shape_ok((" ", "X"))` must be False; today it's True.
 
@@ -256,18 +250,9 @@ def test_x9_pin_ads_issuer_match_str_str_allowed() -> None:
 def test_x9_pin_join_unhashable_dict_level() -> None:
     """`level={}` (dict) must also surface as LEVEL_UNKNOWN, never raise."""
     bad = {**_BASE_FACT, "level": {}}
-    # An internal fix would change this branch from raising to returning
-    # `LEVEL_UNKNOWN`; today it raises TypeError. The pin asserts the
-    # desired outcome.
-    try:
-        out = validate_fact(bad)
-    except TypeError:
-        out = "RAISED"
-    # Accept either: we want the seat to fix it to LEVEL_UNKNOWN. While
-    # today this raises, the family rule mandates the unhashable branch
-    # be normalised; the test currently PASSES because we accept "RAISED"
-    # as the present-day canonical (and report it via the xfail sibling).
-    assert out == "RAISED" or "LEVEL_UNKNOWN" in out
+    # JGP-01 gates membership on isinstance(str), so this refuses, never raises.
+    out = validate_fact(bad)
+    assert "LEVEL_UNKNOWN" in out
 
 
 def test_x9_pin_identity_binding_currency_match_str_str() -> None:

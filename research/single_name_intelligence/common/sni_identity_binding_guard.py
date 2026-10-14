@@ -351,7 +351,7 @@ def bind_identity(
         if request_issuer_id is not None and not _id_pair_equal(request_issuer_id, sec_issuer_id):
             reasons.append("REQUEST_ISSUER_MISMATCH")
     if listing is not None:
-        if request.get("currency") != listing.get("currency"):
+        if not _id_pair_equal(request.get("currency"), listing.get("currency")):
             reasons.append("CURRENCY_MISMATCH")
 
     for record in (listing, security, issuer):
