@@ -39,7 +39,9 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     _assert_document_matches_contract_shape,
     _assert_no_forbidden_authority_keys,
     _check_explanation_for_forbidden,
+    _emit_result,
     _screen_stated_definition,
+    _stated_definition_contradicted,
     project_economic_change,
 )
 
@@ -2152,14 +2154,20 @@ def test_screen_defensive_own_display_quantum_contradiction_withholds() -> None:
 
     No internal row reaches ``_screen_stated_definition`` with a
     ``display_quantum`` today -- the field is minted later, at emit time,
-    by the ``setdefault`` in ``_result_provenance`` -- a HEAD driver over
-    the full corpus counted 608 rows entering the screen and 0 carrying
-    the key, so the defensive clause is behaviour-neutral for every
-    reachable input. This test feeds the screen the reachable-tomorrow
-    input the clause exists for: BOTH envelopes clean (USD, 10**3,
-    ``1_thousand``) while the row's own ``display_quantum`` states
-    ``5_thousand``. An envelope with that quantum contradicts the stated
-    definition; so must the row itself.
+    by the ``setdefault`` in ``_result_provenance``. Measured with a
+    capture driver wrapping the screen across the four owning suites
+    (W15-F-FUR, seed 479e2c69): 609 rows enter the screen in total, 608
+    of them reached from inside ``project_economic_change``, and 0 of
+    those 608 carry ``display_quantum``. The single row that does carry
+    it (value ``'5_thousand'``) is fed by THIS test's own direct call
+    below -- the 608/0 count is therefore the scoped claim for rows
+    produced inside the projection, not for the whole screen corpus.
+    Either way the defensive clause is behaviour-neutral for every
+    reachable internal input. This test feeds the screen the
+    reachable-tomorrow input the clause exists for: BOTH envelopes clean
+    (USD, 10**3, ``1_thousand``) while the row's own ``display_quantum``
+    states ``5_thousand``. An envelope with that quantum contradicts the
+    stated definition; so must the row itself.
     """
     row = {
         "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
@@ -2185,6 +2193,87 @@ def test_screen_defensive_own_display_quantum_contradiction_withholds() -> None:
     assert row["value_text"] is None, row
     assert row["withheld_reason"] == _WITHHELD_REASON, row
     assert row["state"] == "WITHHELD", row
+
+
+def test_predicate_exempts_pct_row_on_direct_call() -> None:
+    """W15-F-FUR item 3: the ``_pct`` exemption must live in the predicate.
+
+    On the seed the exemption lived ONLY in ``_screen_stated_definition``'s
+    ``key.endswith("_pct")`` skip, so a direct call on
+    ``_stated_definition_contradicted`` with a ratio row carrying its own
+    minted ``"0.01_percent"`` quantum -- the value ``_emit_result`` stamps
+    for every ``_pct`` key at emit time -- contradicted on the defensive
+    row-level clause. The predicate must be self-sufficient: a ``_pct``
+    key returns False regardless of the row-level quantum, because the
+    ratio describes itself as a percentage and says nothing about a
+    currency, exactly as the screen reasons (#9318 review nit 3). The
+    screen's skip is kept untouched; this only makes a direct caller of
+    the predicate agree with the screen.
+    """
+    row = {
+        "key": RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+        "state": "READY",
+        "value_text": "62.35",
+        "value_decimal": Decimal("0.6235"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "prior_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "display_quantum": "0.01_percent",
+    }
+    assert _stated_definition_contradicted(row) is False, row
+
+
+def test_emit_result_backstop_withholds_row_level_quantum_contradiction() -> None:
+    """W15-F-FUR item 4: mirror the row-level clause into ``_emit_result``.
+
+    The ``_emit_result`` BACKSTOP re-checked ``unit``, ``scale_power10``
+    and the CURRENT-side envelope quantum, but not the row-level
+    ``display_quantum`` clause that ``_stated_definition_contradicted``
+    carries (#9318). So a pre-stamped contradicting row pushed through
+    ``_emit_result`` ALONE published its value on the seed. It must
+    withhold, for the same reason literal, with ``_pct`` exempted exactly
+    as the screen exempts it (the guard's ``not key.endswith("_pct")``).
+    Behaviour-neutral for every reachable input: for internal rows the
+    ``setdefault`` in ``_result_provenance`` has just minted the key's
+    canonical ``1_thousand`` a few lines above, so the new comparison
+    no-ops; only a row that ARRIVES pre-stamped with a contradicting
+    quantum trips it -- and the capture driver over the four owning
+    suites counted 0 projection rows carrying ``display_quantum`` at the
+    screen, hence 0 pre-stamped rows reaching this path today.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "prior_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "display_quantum": "5_thousand",
+    }
+    emitted = _emit_result(row)
+    assert emitted["value_text"] is None, emitted
+    assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
 
 
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
@@ -2227,9 +2316,27 @@ def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
         fact["scale_power10"] = 6
 
 
+#: The PLNT golden case emits exactly this closed set of result keys at
+#: EVERY contradiction param: the stated-definition screen blanks values,
+#: it never drops a row, and dropping is the ``inputs_present`` emit
+#: filter's job -- which none of these mutations touches. Measured on
+#: seed 479e2c69: all five params emit the identical six-key set
+#: (W15-F-FUR item 2), hence ONE shared constant instead of per-param
+#: sets. Pinned so a row silently omitted by that filter fails HERE,
+#: instead of passing with a shrunken ``withheld_keys`` derived from
+#: ``document[\"results\"]``.
+_EXPECTED_EMITTED_KEYS = {
+    RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+    RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    RESULT_KEY_ADVERTISING_NET_CHANGE,
+    RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+}
+
 # Each case pins the EXACT withheld set (result keys whose emitted row
-# carries ``value_text`` None) and the withheld_reason of every withheld
-# row. The sets and reasons were derived by running the code on HEAD
+# carries ``value_text`` None), the EXACT emitted key set, and the
+# withheld_reason of every withheld row. The sets and reasons were derived by running the code on HEAD
 # (f98fe270) and reading the output, not guessed. They make this test
 # discriminating: the old form only cross-checked availability and the
 # lead against the rows, so a screen that silently stopped withholding a
@@ -2303,11 +2410,21 @@ def test_availability_lead_and_emitted_rows_agree_under_contradictions(
     asserted against the module's own constants, never a hand-copied string.
     (c) the withheld set is pinned exactly, and every withheld row carries
     the expected reason, so a screen that stops doing its job fails even
-    when the remaining verdicts stay internally consistent.
+    when the remaining verdicts stay internally consistent. (d) the
+    EMITTED key set is pinned exactly: ``withheld_keys`` is read from
+    ``document[\"results\"]``, so without (d) a row silently dropped by
+    the ``inputs_present`` emit filter would satisfy ``withheld_keys ==
+    expected`` by being absent, not by being withheld.
     """
     facts = [dict(fact) for fact in _plnt_facts()]
     mutate(facts)
     document = project_economic_change(_plnt_case(facts=facts))
+
+    emitted_keys = {r["key"] for r in document["results"]}
+    assert emitted_keys == _EXPECTED_EMITTED_KEYS, (
+        f"emitted set {sorted(emitted_keys)} != expected "
+        f"{sorted(_EXPECTED_EMITTED_KEYS)}"
+    )
 
     withheld_keys = {
         r["key"] for r in document["results"] if r["value_text"] is None
