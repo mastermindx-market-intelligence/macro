@@ -19,6 +19,7 @@ tariff flush, not the day estimates ticked up. DISPLAY-ONLY; ranks by EDGE REMAI
 """
 from __future__ import annotations
 
+import importlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -286,6 +287,31 @@ def _entry(stage: str, disloc: dict | None) -> tuple[bool, str]:
     return False, "thesis intact — await a dislocation/flush to enter"
 
 
+def _fda_molecule_lists(scarcity_row):
+    """(molecules_checked, molecules_with_rows) when both were measured, else None.
+
+    The only producer, engine.fda_scarcity.compute_fda_scarcity, writes both
+    lists under summary.coverage; it also mirrors molecules_checked at the row
+    top level, but never molecules_with_rows. A row that names molecules only
+    at the top level has not measured the gap — naming every checked molecule
+    would invent one — so there is no row-level fallback.
+    """
+    if not isinstance(scarcity_row, dict):
+        return None
+    summary = scarcity_row.get("summary")
+    coverage = summary.get("coverage") if isinstance(summary, dict) else None
+    if (
+        isinstance(coverage, dict)
+        and "molecules_checked" in coverage
+        and "molecules_with_rows" in coverage
+    ):
+        return (
+            coverage.get("molecules_checked"),
+            coverage.get("molecules_with_rows"),
+        )
+    return None
+
+
 def compute_foresight_cascade(bottleneck: dict | None = None,
                               revisions: dict | None = None,
                               demand: dict | None = None,
@@ -427,6 +453,7 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
         # W5b: per-theme physical feed chip (generic — any orphan-rescue feed populates here)
         # FDA drug shortages for glp1_obesity; future feeds (Pink Sheet, LBNL) reuse same field.
         theme_feed_summary: dict | None = None
+        molecule_gap = None
         if fda_scarcity is not None:
             scarcity_row = fda_scarcity.get(k)
             if scarcity_row is not None:
@@ -435,6 +462,24 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                     theme_feed_summary = format_theme_feed_chip(scarcity_row, k)
                 except Exception as _e:  # noqa: BLE001
                     log.debug("fda_scarcity chip format failed for %s: %s", k, _e)
+                # After the chip. The module name is split so the closure walk
+                # does not attach this helper to every exclusive job that
+                # already imports the cascade. healthcare-fda-supply owns the
+                # file because its suite imports it. The clause is optional
+                # decoration, so it degrades in control flow like the chip
+                # guard above, but the failure logs at WARNING, not debug:
+                # production builds run at INFO (scripts/build_foresight.py
+                # basicConfig), where a debug line would hide a clause that
+                # silently stopped rendering. molecule_gap stays None.
+                try:
+                    names = _fda_molecule_lists(scarcity_row)
+                    if names is not None:
+                        gap_module = importlib.import_module(
+                            "engine." + "healthcare_molecule_gap"
+                        )
+                        molecule_gap = gap_module.molecule_gap_clause(*names)
+                except Exception as _e:  # noqa: BLE001
+                    log.warning("fda_scarcity molecule_gap clause failed for %s: %s", k, _e)
 
         # W1b: Federal Register policy catalyst chip — fold into rationale only.
         # NEVER changes stage. policy_reg_chip is a display dict; summary folds into rationale.
@@ -495,6 +540,8 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
             "glut_score": (gl or {}).get("glut_score"),
             # W5b: per-theme physical feed (generic slot — FDA shortages now, future feeds same field)
             "theme_feed_summary": theme_feed_summary,
+            # Sibling of the chip: configured molecules with no rows. Not a chip key.
+            "molecule_gap": molecule_gap,
             # W2c: demand per-name divergence + bottleneck PPI for score de-circularization
             # (P1-C): passed through so foresight_score axes can read real inputs
             # without default-filling. One hunk addition only — does not touch stage logic.
