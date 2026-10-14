@@ -429,7 +429,16 @@ def _write_stage_file(path: Path, body: bytes) -> None:
     try:
         fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         try:
-            with os.fdopen(fd, "wb", closefd=True) as handle:
+            try:
+                handle = os.fdopen(fd, "wb", closefd=True)
+            except OSError:
+                # fd is ours until fdopen binds it; this close must not mask the refusal.
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+                raise
+            with handle:
                 handle.write(body)
                 handle.flush()
                 os.fsync(handle.fileno())

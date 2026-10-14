@@ -1320,7 +1320,7 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
     assert written["wrote"] is True
 
 
-@pytest.mark.parametrize("fail_on", ("open", "fdopen", "replace", "records"))
+@pytest.mark.parametrize("fail_on", ("open", "fdopen", "replace", "records", "latest"))
 def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fail_on: str,
 ) -> None:
@@ -1341,7 +1341,10 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     ``records`` param denies only the final ``os.replace`` onto
     ``records/<slug>.json`` (private_economic_stage.py:584-587); its temp lands
     outside ``native/``, so the stage-wide ``.*`` scan is the only probe that
-    reaches it.
+    reaches it. The ``latest`` param denies the other final target, the
+    ``os.replace`` onto ``native/latest.json`` (engine:583). The fdopen arm
+    leaves ``fd`` to the engine (item-1 ruling): on Linux the gated call must
+    not leak one descriptor.
     """
     import errno as errno_module
     import os as os_module
@@ -1351,7 +1354,7 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     class _WriteGate:
         """Every ``os`` attribute delegates; only ``fail_on`` denies a stage write.
 
-        ``records`` narrows the denial to ``os.replace`` onto the records dir.
+        ``records`` and ``latest`` narrow ``os.replace`` to their final target.
         """
 
         def __init__(self, real: object, fail_on: str, stage: Path) -> None:
@@ -1381,12 +1384,8 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
 
         def fdopen(self, fd, *args, **kwargs):
             if self._fail_on == "fdopen" and fd in self._stage_fds:
-                # _deny raises, so fdopen never takes ownership of this fd;
-                # the engine's finally only unlinks the temp path. Close it
-                # here and drop it from the bookkeeping set, or every run of
-                # this param leaks one raw descriptor.
-                self._stage_fds.discard(fd)
-                self._real.close(fd)
+                # The engine owns fd from os.open until fdopen binds it; a
+                # test-side close here would mask an engine descriptor leak.
                 self._deny(f"fd={fd}")
             return self._real.fdopen(fd, *args, **kwargs)
 
@@ -1399,10 +1398,20 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
                 and Path(str(dst)).parts[-2] == "records"
             ):
                 self._deny(str(dst))
+            if (
+                self._fail_on == "latest"
+                and self._in_stage(dst)
+                and Path(str(dst)).parts[-2] == "native"
+                and Path(str(dst)).name == "latest.json"
+            ):
+                self._deny(str(dst))
             return self._real.replace(src, dst, *args, **kwargs)
 
-    def _file_names(root: Path, pattern: str) -> list[str]:
-        return sorted(str(path) for path in root.rglob(pattern) if path.is_file())
+    def _file_names(root: Path, pattern: str, skip_hidden: bool = False) -> list[str]:
+        return sorted(
+            str(path) for path in root.rglob(pattern)
+            if path.is_file() and not (skip_hidden and path.name.startswith("."))
+        )
 
     _permit(monkeypatch, tmp_path)
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
@@ -1414,18 +1423,25 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     shutil.copytree(baseline, stage)
 
     gate = _WriteGate(os_module, fail_on, stage)
+    fd_probe = Path("/proc/self/fd")
+    fd_gate = fail_on == "fdopen" and fd_probe.exists()
+    fd_before = len(os_module.listdir(fd_probe)) if fd_gate else 0
     with monkeypatch.context() as patch:
         patch.setattr(stage_module, "os", gate)
         with pytest.raises(PrivateEconomicStageError) as raised:
             augment_private_stage(
                 stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
             )
+    if fd_gate:
+        fd_delta = len(os_module.listdir(fd_probe)) - fd_before
+        assert fd_delta == 0, "the refused write leaked a file descriptor"
     assert raised.value.reason == "unreadable_stage_file"
-    denied_via = "replace" if fail_on == "records" else fail_on
+    denied_via = "replace" if fail_on in ("records", "latest") else fail_on
     assert gate.denied, f"the write block never called os.{denied_via}"
     residue = _file_names(stage, ".*")
     assert residue == [], f"the refusal left temp residue in the stage: {residue}"
-    laid = _file_names(stage / "native", "*")
+    # residue owns dotfiles, laid owns real bytes: the scans are disjoint.
+    laid = _file_names(stage / "native", "*", skip_hidden=True)
     if fail_on == "records":
         # The denial lands on the final write (engine:584-587); the native
         # chain legitimately landed first (engine:526-554, latest.json :583).
@@ -1436,6 +1452,27 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
         assert refused.read_bytes() == baseline_bytes, (
             "the denied records write still laid bytes"
         )
+    elif fail_on == "latest":
+        # The denial lands on the final native write (engine:583); the chain
+        # legitimately landed first (engine:526-554). _reset_native (engine:641)
+        # wiped the baseline latest.json before the refusal, so the only way
+        # this target carries bytes is if the denied write laid them.
+        refused = Path(gate.denied[0])
+        assert refused.parts[-2] == "native", f"denied target not in native: {refused}"
+        assert refused.name == "latest.json", f"denied target not latest: {refused}"
+        assert laid, f"the chain never landed before the latest denial: {laid}"
+        landed_dirs = {Path(p).parts[-2] for p in laid}
+        assert {"workspaces", "documents"} <= landed_dirs, (
+            f"chain members missing at the latest denial: {sorted(landed_dirs)}"
+        )
+        assert not (stage / "native" / "latest.json").exists(), (
+            "the denied latest write still laid bytes"
+        )
+        for record in (baseline / "records").glob("*.json"):
+            kept = (stage / "records" / record.name).read_bytes()
+            assert kept == record.read_bytes(), (
+                "the run aborted at latest yet laid the downstream record"
+            )
     else:
         assert laid == [], f"the denied write still laid bytes: {laid}"
 
