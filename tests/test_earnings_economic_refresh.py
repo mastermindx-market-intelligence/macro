@@ -648,7 +648,9 @@ def test_hostile_document_id_cannot_dedup_away_a_newly_prepared_document(
         observed_at=LATER_OBSERVED_AT,
     )
     assert written["wrote"] is True
-    assert forged["chain"]._negative_reads == 2, "the forged stored id never reached the same_document comparison"
+    assert forged["chain"]._negative_reads == 2, (
+        "the forged stored id never reached the same_document comparison"
+    )
     links = _links(stage, slug)
     assert len(links) == 2, f"hostile __eq__ silently dropped the prepared document: links={links}"
     assert links[-1]["document"] != links[0]["document"]
@@ -1215,3 +1217,190 @@ def test_stage_refuses_a_hardlinked_stage_file(tmp_path: Path, monkeypatch: pyte
     assert record.read_bytes() == original
     assert json.loads(record.read_bytes())["slug"] == slug
     assert not [path for path in stage.rglob(".*") if path.is_file()], "temp residue left in the stage"
+
+
+def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusals(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``_write_stage_file`` must refuse every ``OSError``, not just a missing file.
+
+    Independent review W15-V-9105c on 5951818e: the probe's own ``os.lstat``
+    catch (private_economic_stage.py:419-421) maps only ``FileNotFoundError``
+    to "absent", so a ``PermissionError`` on a ``native/workspaces/<id>.json``
+    or ``native/latest.json`` target escaped raw — the reviewer observed
+    ``PermissionError: [Errno 13] Permission denied`` past the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850. The probe now appends an
+    ``except OSError`` mapped to ``unreadable_stage_file`` (FileNotFoundError
+    still matches first), the same code the source-body probe already uses
+    (private_economic_stage.py:535-536), and the ``os.open``/``os.fdopen``/
+    ``os.replace`` write block maps its ``OSError`` to the same code.
+    """
+    import os as os_module
+
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    class _LstatGate:
+        """Every ``os`` attribute delegates; only ``lstat`` on the needle is denied."""
+
+        def __init__(self, real: object, needle: str) -> None:
+            self._real = real
+            self._needle = needle
+            self.denied: list[str] = []
+
+        def __getattr__(self, name: str):
+            return getattr(self._real, name)
+
+        def lstat(self, path, *args, **kwargs):
+            as_text = os_module.fspath(path)
+            if self._needle in as_text:
+                self.denied.append(as_text)
+                raise PermissionError(13, "Permission denied", as_text)
+            return self._real.lstat(path, *args, **kwargs)
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    generation_id = closure["chain"][-1]["workspace"]["generation_id"]
+    baseline = tmp_path / "stage-path-lstat-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    for needle, expected_tail in (
+        ("native/workspaces", f"{generation_id}.json"),
+        ("native/latest.json", "latest.json"),
+    ):
+        stage = tmp_path / f"stage-path-lstat-{needle.rsplit('/', 1)[-1]}"
+        shutil.copytree(baseline, stage)
+        gate = _LstatGate(os_module, needle)
+        monkeypatch.setattr(stage_module, "os", gate)
+        with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
+            augment_private_stage(
+                stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+            )
+        monkeypatch.undo()
+        assert gate.denied, f"the write probe never reached {needle}"
+        assert gate.denied[0].endswith(expected_tail)
+        assert not (stage / "native" / "latest.json").exists()
+
+    # CONTROL: with the real ``os`` the same replay still writes.
+    control = tmp_path / "stage-path-lstat-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+
+def test_stage_refuses_a_non_dict_document_on_an_older_chain_item(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Every chain item's document must be a dict before any writer touches it.
+
+    Only the newest item's document is dereferenced by the pre-flight guards;
+    older items reach ``item["document"].get("content_sha256")``
+    (private_economic_stage.py:527) unchecked, so a forged older item carrying
+    ``document = 7`` leaked a bare ``AttributeError: 'int' object has no
+    attribute 'get'`` past the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850 (review W15-V-9105c on 5951818e).
+    ``_write_stage`` now requires ``type(item["document"]) is dict`` for every
+    chain item at the top of the function, refusing with ``malformed_prior``,
+    the code the module already uses for a malformed prior chain.
+    """
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    newest = closure["chain"][-1]
+    baseline = tmp_path / "older-doc-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    older = copy.deepcopy(newest)
+    older["workspace"]["generation_id"] = sha256(b"forged-document").hexdigest()[:24]
+    older["document"] = 7
+    forged = copy.deepcopy(closure)
+    forged["chain"] = [older, copy.deepcopy(newest)]
+    stage = tmp_path / "stage-older-doc-hostile"
+    shutil.copytree(baseline, stage)
+    with pytest.raises(PrivateEconomicStageError, match="malformed_prior"):
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+        )
+    def _native_tree(root: Path) -> dict[str, bytes]:
+        native = root / "native"
+        return {
+            str(rel.relative_to(native)): rel.read_bytes()
+            for rel in sorted(native.rglob("*"))
+            if rel.is_file()
+        }
+
+    assert _native_tree(stage) == _native_tree(baseline), (
+        "the pre-write refusal still wrote under native/"
+    )
+
+    # CONTROL: the same two-item chain with dict documents still writes.
+    honest_older = copy.deepcopy(newest)
+    honest_older["workspace"]["generation_id"] = sha256(b"control-doc-item").hexdigest()[:24]
+    control_closure = copy.deepcopy(closure)
+    control_closure["chain"] = [honest_older, copy.deepcopy(newest)]
+    control = tmp_path / "stage-older-doc-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=control_closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+
+def test_stage_refuses_a_non_dict_workspace_on_an_older_chain_item(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``_admit_chain_paths`` may not subscript a caller-owned non-dict workspace.
+
+    ``_admit_chain_paths`` reads ``item["workspace"]["generation_id"]`` for every
+    chain item (private_economic_stage.py:452) and the path admission happens
+    before any write, so an older forged item carrying ``workspace = 7`` leaked a
+    bare ``TypeError: 'int' object is not subscriptable`` past the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850 (review W15-V-9105c on 5951818e).
+    The same top-of-``_write_stage`` type gate as the document case refuses
+    with ``malformed_prior`` before ``_admit_chain_paths`` ever sees a non-dict.
+    """
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    newest = closure["chain"][-1]
+    baseline = tmp_path / "older-workspace-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    older = copy.deepcopy(newest)
+    older["workspace"] = 7
+    forged = copy.deepcopy(closure)
+    forged["chain"] = [older, copy.deepcopy(newest)]
+    stage = tmp_path / "stage-older-workspace-hostile"
+    shutil.copytree(baseline, stage)
+    with pytest.raises(PrivateEconomicStageError, match="malformed_prior"):
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+        )
+    def _native_tree(root: Path) -> dict[str, bytes]:
+        native = root / "native"
+        return {
+            str(rel.relative_to(native)): rel.read_bytes()
+            for rel in sorted(native.rglob("*"))
+            if rel.is_file()
+        }
+
+    assert _native_tree(stage) == _native_tree(baseline), (
+        "the pre-write refusal still wrote under native/"
+    )
+
+    # CONTROL: the same two-item chain with dict workspaces still writes.
+    honest_older = copy.deepcopy(newest)
+    honest_older["workspace"]["generation_id"] = sha256(b"control-workspace-item").hexdigest()[:24]
+    control_closure = copy.deepcopy(closure)
+    control_closure["chain"] = [honest_older, copy.deepcopy(newest)]
+    control = tmp_path / "stage-older-workspace-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=control_closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True

@@ -419,20 +419,25 @@ def _write_stage_file(path: Path, body: bytes) -> None:
         status = os.lstat(path)
     except FileNotFoundError:
         status = None
+    except OSError as exc:
+        raise PrivateEconomicStageError("unreadable_stage_file") from exc
     if status is not None and (
         stat.S_ISLNK(status.st_mode) or status.st_nlink > 1
     ):
         raise PrivateEconomicStageError("hardlinked_stage_file")
     temp = path.parent / f".{path.name}.tmp-{os.getpid()}-{os.urandom(4).hex()}"
-    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
-        with os.fdopen(fd, "wb", closefd=True) as handle:
-            handle.write(body)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(temp, path)
-    finally:
-        temp.unlink(missing_ok=True)
+        fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            with os.fdopen(fd, "wb", closefd=True) as handle:
+                handle.write(body)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp, path)
+        finally:
+            temp.unlink(missing_ok=True)
+    except OSError as exc:
+        raise PrivateEconomicStageError("unreadable_stage_file") from exc
 
 
 def _confined_file(stage_root: Path, directory: Path, name: str) -> Path:
@@ -469,6 +474,9 @@ def _write_stage(
         raise PrivateEconomicStageError("preparation_refused")
     if len(chain) > MAX_NATIVE_CHAIN:
         raise PrivateEconomicStageError("over_limit")
+    for item in chain:
+        if type(item["workspace"]) is not dict or type(item["document"]) is not dict:
+            raise PrivateEconomicStageError("malformed_prior")
     newest = chain[-1]
     workspace = newest["workspace"]
     document = newest["document"]
