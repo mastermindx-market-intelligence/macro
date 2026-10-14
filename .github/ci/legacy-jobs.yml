@@ -13942,6 +13942,26 @@ jobs:
       - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
         run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
 
+  ric-d0-fed-path-provenance:
+    if: ${{ false }}
+    gate: code
+    # RIC D0 (A14/A15/A19, 2026-10-14): engine/fed_path.py records futures + SEP provenance and the SR3 basis identity (basis=sr3_compounded_sofr; fed-funds slot absent; missing_source:zq) through a keyword-only interface; omitted keywords stay byte-identical (golden control). tests/test_fed_path.py was previously unwired. Hermetic: monkeypatched store, synthetic frames, no data/ reads or writes, no network. The compute rule pin is governed by regime-outlook-mapping.
+    timeout-minutes: 10
+    paths:
+      - "engine/fed_path.py"
+      - "collectors/rate_futures.py"
+      - "tests/test_fed_path.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: ric-d0-fed-path-provenance
+        run: python -m pytest tests/test_fed_path.py -q -p no:cacheprovider
+
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -14054,6 +14074,17 @@ jobs:
       - "lib/store.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      # 2026-10-14 RIC D0 #9252 (contract-delta on head 0061be7a): engine/fed_path.py now lazily
+      # imports collectors.rate_futures for futures/SEP provenance, so the closure reaches the
+      # collector and its calendar/session libs. Declared exactly, widening only; ceilings unchanged.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/rate_futures.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
