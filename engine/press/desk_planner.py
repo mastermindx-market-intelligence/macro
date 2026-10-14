@@ -58,6 +58,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import re
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -621,14 +622,47 @@ def _risk_radar_facts(rows: list[dict], rel: str) -> list[dict]:
     row = next((r for r in reversed(rows) if isinstance(r, dict) and r.get("state")), None)
     if row is None:
         return []
-    dd = row.get("drawdown_prob") or {}
+    text = (f"The risk radar is in `{row['state']}` with {row.get('dominant_scare')} the "
+            f"dominant scare (score {row.get('top_score')}) as of {row.get('asof')}.")
+    values = [row.get("top_score")]
+    if row.get("authority_tier") == "advisory" and row.get("can_force") is False:
+        text += " This is an advisory reading."
+    # A bare probability omits both its loss target and its calibration limits.
+    # Consume only the producer's recognized evidence contract; older or
+    # incomplete rows still supply the state, never an unqualified probability.
+    dd = row.get("drawdown_prob")
+    evidence = dd.get("calibration_evidence") if isinstance(dd, dict) else None
+    if isinstance(evidence, dict):
+        target = evidence.get("target")
+        horizons = evidence.get("horizons")
+        cell = horizons.get("h21") if isinstance(horizons, dict) else None
+        probability = dd.get("h21")
+        qualified = (
+            evidence.get("schema") == "risk_radar_probability_evidence.v1"
+            and evidence.get("evidence_class") == "reconstructed_historical"
+            and evidence.get("precision_grade") is False
+            and isinstance(target, dict)
+            and target.get("depth") == 0.05
+            and target.get("price_path") == "native SPY closing observations"
+            and isinstance(target.get("horizons"), list)
+            and 21 in target["horizons"]
+            and isinstance(cell, dict) and cell.get("matched") is True
+            and type(probability) in (int, float)
+            and 0 <= probability <= 1 and math.isfinite(probability)
+            and type(cell.get("displayed_probability")) in (int, float)
+            and cell["displayed_probability"] == probability
+        )
+        if qualified:
+            text += (f" Its modelled 21-session probability {probability} concerns a fall "
+                     "of at least 5% in SPY closing prices. Calibration uses reconstructed "
+                     "historical evidence: overlapping windows are not independent episodes "
+                     "and the estimate is not precision-grade.")
+            values.extend([probability, 5])
     return [_fact(
         "risk_radar",
-        f"The risk radar is in `{row['state']}` with {row.get('dominant_scare')} the "
-        f"dominant scare (score {row.get('top_score')}); modelled 21-session "
-        f"drawdown probability {dd.get('h21')} as of {row.get('asof')}.",
+        text,
         ref=f"artifact:{rel}", tier="first_party", dated=row.get("asof"),
-        values=[row.get("top_score"), dd.get("h21"), dd.get("h10"), dd.get("h5")],
+        values=values,
         source_name="Mastermind risk radar",
     )]
 

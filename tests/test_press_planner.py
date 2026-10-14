@@ -7,9 +7,12 @@ synthetic repo root under tmp_path (MM_DATA_GUARD law).
 from __future__ import annotations
 
 import json
+import copy
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
@@ -17,6 +20,76 @@ if str(_REPO) not in sys.path:
 
 from engine.press import desk_planner as P  # noqa: E402
 from tests import press_fixtures as F  # noqa: E402
+
+
+def _qualified_radar_row():
+    return {
+        "asof": "2026-10-12", "state": "caution", "dominant_scare": "rates",
+        "top_score": 70.3, "can_force": False, "authority_tier": "advisory",
+        "drawdown_prob": {
+            "h21": 0.19, "h10": 0.1, "h5": 0.042,
+            "calibration_evidence": {
+                "schema": "risk_radar_probability_evidence.v1",
+                "evidence_class": "reconstructed_historical", "precision_grade": False,
+                "target": {"depth": 0.05, "horizons": [5, 10, 21],
+                           "price_path": "native SPY closing observations"},
+                "horizons": {"h21": {"matched": True, "displayed_probability": 0.19}},
+            },
+        },
+    }
+
+
+def test_radar_receipt_preserves_probability_target_and_calibration_limits():
+    row = _qualified_radar_row()
+    before = copy.deepcopy(row)
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "at least 5%" in fact["text"] and "SPY closing prices" in fact["text"]
+    assert "21-session" in fact["text"] and "0.19" in fact["text"]
+    assert "reconstructed historical" in fact["text"]
+    assert "not precision-grade" in fact["text"]
+    assert "not independent episodes" in fact["text"]
+    assert "advisory" in fact["text"]
+    assert "0.1" not in fact["values"] and "0.042" not in fact["values"]
+    assert fact["tier"] == "first_party" and fact["dated"] == "2026-10-12"
+    assert P._press_safe(fact["text"])
+    assert row == before
+
+
+@pytest.mark.parametrize("path,value", [
+    (("drawdown_prob",), None),
+    (("drawdown_prob",), []),
+    (("drawdown_prob", "calibration_evidence"), None),
+    (("drawdown_prob", "calibration_evidence", "schema"), "unknown"),
+    (("drawdown_prob", "calibration_evidence", "evidence_class"), "unknown"),
+    (("drawdown_prob", "calibration_evidence", "precision_grade"), True),
+    (("drawdown_prob", "calibration_evidence", "target", "depth"), 0.1),
+    (("drawdown_prob", "calibration_evidence", "target", "horizons"), [5, 10]),
+    (("drawdown_prob", "calibration_evidence", "target", "price_path"), "QQQ intraday lows"),
+    (("drawdown_prob", "calibration_evidence", "horizons", "h21", "matched"), False),
+    (("drawdown_prob", "calibration_evidence", "horizons", "h21", "displayed_probability"), 0.2),
+    (("drawdown_prob", "h21"), True),
+    (("drawdown_prob", "h21"), float("nan")),
+    (("drawdown_prob", "h21"), -0.1),
+    (("drawdown_prob", "h21"), 1.1),
+])
+def test_radar_receipt_omits_unqualified_probabilities_without_losing_state(path, value):
+    row = _qualified_radar_row()
+    cursor = row
+    for key in path[:-1]:
+        cursor = cursor[key]
+    cursor[path[-1]] = value
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "probability" not in fact["text"]
+    assert "caution" in fact["text"] and "70.3" in fact["text"]
+    assert fact["values"] == ["70.3"]
+
+
+def test_radar_receipt_accepts_explicit_zero_probability():
+    row = _qualified_radar_row()
+    row["drawdown_prob"]["h21"] = 0
+    row["drawdown_prob"]["calibration_evidence"]["horizons"]["h21"]["displayed_probability"] = 0
+    fact, = P._risk_radar_facts([row], "data/risk_radar/forward_log.jsonl")
+    assert "probability 0" in fact["text"]
 
 
 def _cfg(root):
