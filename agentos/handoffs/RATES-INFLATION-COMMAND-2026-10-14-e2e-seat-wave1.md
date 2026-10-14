@@ -50,11 +50,12 @@ verified:
   - claim: The T0 merge carries its own bytes, not only a PR state.
     command: land_check against the T0 head and merge commit, then git grep for _rate_path_rights in origin/main
     result: Landed; _rate_path_rights is present in engine/rates_inflation_command.py on main.
+  - claim: The F1 first-print track record is live on www.mastermind-x.com macro.html.
+    command: curl -s https://www.mastermind-x.com/macro.html | grep -c "against the official first print"
+    result: 6 matches at 2026-10-14 10:5xZ, after render 38518460036 (head 818a571b) pushed 57e1bba1 at 10:38Z.
 unverified:
-  - claim: The wave-1 board changes are visible on www.mastermind-x.com macro.html.
-    what_would_verify: A successful render covering 2f0cf411 (the F1 render 38530684032 was cancelled; a covering render was reported in flight), then a live read of the Rates Command rows for the not_identified gap state and the row basis.
-  - claim: The served numbers are current.
-    what_would_verify: The nightly data lane has been stale since cdab77c4 (2026-10-09); the prophet-outage issue #9050 is owned elsewhere. Current numbers need a successful nightly; never dispatch daily.yml from this programme.
+  - claim: The T0 board fields (no default policy-rate gap, per-row basis and rights, qualified CPI row) are served.
+    what_would_verify: The Rates Command artifact is built only by daily.yml (scripts.build_rates_command). The 2026-10-14 nightly (ddfadfeb, 09:28Z) ran before the T0 merge (10:13Z), so data/rates_command/latest.json has no qualified_comparisons key and no row basis yet. The first nightly after the merge (2026-10-15) must write them; then read latest.json on main and the live Fed Path card. Never dispatch daily.yml from this programme.
   - claim: M0/X0 retrospective runs are merged.
     what_would_verify: PR #9282 merged at head 2dd2f856 after concluded-green CI, then a land check.
 unresolved:
