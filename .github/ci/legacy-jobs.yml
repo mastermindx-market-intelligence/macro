@@ -29123,7 +29123,8 @@ jobs:
   # binding, F3 basis consts) and its owner-payload conformance (documents.py /
   # events.py minted spans, absences and fiscal periods), plus the Phase 1
   # engine/news_impact leaf: semantic validator + hostile corpus, sampler,
-  # cluster adapter, issuer resolver.
+  # cluster adapter, issuer resolver, and the W2 benchmark tools (tape draw
+  # with the body-available frame, EDGAR body fetch; hermetic, no network).
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -29140,6 +29141,25 @@ jobs:
       - "engine/__init__.py"
       - "lib/__init__.py"
       - "lib/config.py"
+      - "collectors/base.py"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fred.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_request_pacer.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/gdelt_client.py"
+      - "engine/macro_surprise.py"
+      - "engine/news_common.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "tests/test_news_impact_*.py"
       - "tests/fixtures/news_impact/**"
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
@@ -29152,13 +29172,15 @@ jobs:
         with:
           python-version: "3.12"
       - name: install news impact contract test dependencies
-        run: pip install pytest jsonschema pyyaml pandas pyarrow
+        run: pip install pytest jsonschema pyyaml pandas pyarrow requests
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
         run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
       - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement)
         run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py -q
+      - name: news impact w2 benchmark (tape draw, edgar body)
+        run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
