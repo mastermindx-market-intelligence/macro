@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_regime_map_absence_render.py; tests/intl_workspace_page.test.cjs
+  what: Keep missing Regime-map axes unplotted, preserve real zero and partial coordinates, and restore native Library focus with a keyboard disclosure.
 - path: templates/intl.html.j2; tests/test_intl_trade_pressure_method_render.py; tests/intl_workspace_page.test.cjs
   what: Scope Trade model explanations to actual owner construction and restore native keyboard access; distinguish rebound pressure and linkage weights from causal shares.
 - path: templates/intl.html.j2; tests/test_intl_trade_pressure_absence_render.py; tests/intl_workspace_page.test.cjs
@@ -195,6 +197,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Regime map eleven unique render and four browser cases pass across eight width states; eight canonical and eight focused views are source-fixture proof only.
+  command: python3 -m pytest -q tests/test_intl_regime_map_absence_render.py; targeted owner-text escaping; node --test --test-name-pattern="Regime map missing coordinate journey" tests/intl_workspace_page.test.cjs
+  result: regime-map-absence-20261014-r1 GREEN_RENDER, GREEN_BROWSER and ESCAPING_TEST logs; REGIME_MAP_ABSENCE_ACCEPTANCE.json. Captured fixture HTML unchanged after text escaping.
 - claim: Trade method has five unique render and four browser cases across eight width states; actual owner calculations unchanged and source not deployed.
   command: python3 -m pytest -q tests/test_intl_trade_pressure_method_render.py; targeted -k method_explains; node --test --test-name-pattern="Trade method keyboard read" tests/intl_workspace_page.test.cjs; targeted Chinese cases.
   result: trade-pressure-method-20261014-r1/GREEN_RENDER.log and GREEN_RENDER_TARGETED.log; node --test --test-name-pattern="Trade method keyboard read" tests/intl_workspace_page.test.cjs plus targeted Chinese passes; OWNER_PRESERVATION.json and TRADE_PRESSURE_METHOD_ACCEPTANCE.json. Initial selector and substring harness failures retained; counts overlap.

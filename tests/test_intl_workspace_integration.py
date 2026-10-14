@@ -55,13 +55,15 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None, risk_desk=None):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None, risk_desk=None, heatmap=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
           "built": "fixture", "records": [], "summary": summary, "rankings": {},
           "heatmap": [], "periphery": None, "sector_board": [], "setups": {},
           "global_regime_html": '<section id="fixture-owner-fragment">Existing research</section>'}
+    if heatmap is not None:
+        vm["heatmap"] = heatmap
     if perf is not None:
         vm["perf"] = perf
     if cgl is not None:

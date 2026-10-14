@@ -55,6 +55,39 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Regime map missing coordinate journey ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_regime_map_absence_render import map_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(heatmap=map_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]');const query=lang==='zh'?'增长':'growth';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-growth-inflation"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-growth-inflation');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        assert.equal(await panel.locator('.scatter .pt').count(),3);
+        assert.deepEqual(await panel.locator('.scatter .pt .n').allTextContents(),['JP','CA','AU']);
+        assert.ok((await panel.locator('[data-regime-coverage]').innerText()).includes('3 / 7'));
+        const details=panel.locator('[data-regime-missing]');const summary=details.locator('summary');
+        assert.equal(await details.getAttribute('open'),null);await summary.focus();await page.keyboard.press('Enter');
+        assert.equal(await details.getAttribute('open'),'');assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await panel.locator('[data-regime-unplotted]:visible').count(),4);
+        const text=await details.innerText();for(const term of ['GB','KR','TW','IN','0.3','-0.2','-0.5',lang==='zh'?'不可用':'Unavailable'])assert.ok(text.includes(term),text);
+        const rows=details.locator('[data-regime-unplotted]');
+        assert.equal(await rows.evaluateAll(ns=>ns.every(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&n.scrollWidth<=n.clientWidth+1;})),true);
+        await page.keyboard.press('Space');assert.equal(await details.getAttribute('open'),null);
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
+        assert.equal(new URL(page.url()).searchParams.get('market'),'JP');assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');assert.equal(new URL(page.url()).searchParams.get('basis'),'local');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Trade method keyboard read ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_trade_pressure_method_render import method_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(cgl=method_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
     await pageFixture(async page=>{

@@ -1975,22 +1975,50 @@
 <details class="ref-fold">
   <summary><span class="rf-t">{{ t('Regimes, correlations & rankings', '周期、相关性与排名') }}</span><span class="rf-s">{{ t('Growth × inflation map · correlation heatmap · league tables', '增长×通胀图 · 相关性热力图 · 排行榜') }}</span><span class="rf-caret" aria-hidden="true">▾</span></summary>
 <!-- ===== Growth × inflation regime map ===== -->
+{% set regime_pairs = namespace(plotted=[], missing=[]) %}
+{% for h in heatmap | default([], true) %}
+  {% set growth_ok = h.growth is number and h.growth is not boolean and -1 <= h.growth <= 1 %}
+  {% set inflation_ok = h.inflation is number and h.inflation is not boolean and -1 <= h.inflation <= 1 %}
+  {% if growth_ok and inflation_ok %}
+    {% set regime_pairs.plotted = regime_pairs.plotted + [h] %}
+  {% else %}
+    {% set regime_pairs.missing = regime_pairs.missing + [h] %}
+  {% endif %}
+{% endfor %}
 <div class="panel">
-  <h2 id="intl-growth-inflation">{{ t('Regime map — growth × inflation', '周期图 — 增长 × 通胀') }} {{ help('Places each economy on the growth/inflation clock. Right side = better growth; top = more inflation pressure.', '把每个经济体放在增长/通胀时钟上。右侧增长更好；上方通胀压力更高。') }}</h2>
+  <h2 id="intl-growth-inflation" tabindex="-1">{{ t('Regime map — growth × inflation', '周期图 — 增长 × 通胀') }} {{ help('Places economies with both supplied growth and inflation scores on the clock. Right side = better growth; top = more inflation pressure. Incomplete or invalid coordinate pairs are listed separately, not plotted as zero.', '将同时提供增长与通胀分数的经济体放在周期时钟上。右侧增长更好；上方通胀压力更高。缺失或无效的坐标对单独列出，不按零值绘制。') }}</h2>
+  <p class="caveat" data-regime-coverage>
+    {{ regime_pairs.plotted | length }} / {{ (heatmap | default([], true)) | length }} {{ t('supplied economies plotted. Missing coordinates are not zero.', '个所供经济体已绘制。缺失坐标不等于零。') }}
+  </p>
   <div class="scatter">
     <div class="axx"></div><div class="axy"></div>
     <div class="ql" style="left:8px;top:8px">↖ {{ t('Stagflation', '滞胀') }}</div>
     <div class="ql" style="right:8px;top:8px">{{ t('Reflation', '再通胀') }} ↗</div>
     <div class="ql" style="left:8px;bottom:8px">↙ {{ t('Growth-scare', '增长恐慌') }}</div>
     <div class="ql" style="right:8px;bottom:8px">{{ t('Goldilocks', '金发女孩') }} ↘</div>
-    {% for h in heatmap %}
-      {% set gx = 13 + ([[h.growth or 0, -1]|max, 1]|min + 1) / 2 * 74 %}
-      {% set iy = 13 + (1 - ([[h.inflation or 0, -1]|max, 1]|min + 1) / 2) * 74 %}
+    {% for h in regime_pairs.plotted %}
+      {% set gx = 13 + (h.growth + 1) / 2 * 74 %}
+      {% set iy = 13 + (1 - (h.inflation + 1) / 2) * 74 %}
       <div class="pt" style="left:{{ '%.1f'|format(gx) }}%;top:{{ '%.1f'|format(iy) }}%" title="{{ h.name }}: g={{ h.growth }} i={{ h.inflation }}">
         <div class="e">{{ h.flag }}</div><div class="n">{{ h.cc }}</div>
       </div>
     {% endfor %}
   </div>
+  {% if not heatmap | default([], true) %}
+  <p class="caveat">{{ t('No supplied growth/inflation pairs.', '暂无所供增长与通胀坐标对。') }}</p>
+  {% endif %}
+  {% if regime_pairs.missing %}
+  <details data-regime-missing>
+    <summary>{{ t('Not plotted — missing or invalid coordinates', '未绘制 — 坐标缺失或无效') }} ({{ regime_pairs.missing | length }})</summary>
+    <ul class="caveat">
+    {% for h in regime_pairs.missing %}
+      {% set growth_ok = h.growth is number and h.growth is not boolean and -1 <= h.growth <= 1 %}
+      {% set inflation_ok = h.inflation is number and h.inflation is not boolean and -1 <= h.inflation <= 1 %}
+      <li data-regime-unplotted="{{ h.cc | e }}">{{ h.flag | e }} {{ h.name | e }} ({{ h.cc | e }}) · {{ t('Growth', '增长') }}: {% if growth_ok %}{{ h.growth }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %} · {{ t('Inflation', '通胀') }}: {% if inflation_ok %}{{ h.inflation }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %}</li>
+    {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
   <p class="caveat" style="margin-top:8px">{{ t('Snapshot only, not a forecast.', '仅快照，非预测。') }}</p>
 </div>
 
