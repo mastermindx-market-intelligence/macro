@@ -945,11 +945,12 @@
       state.authBlocked = true;
       ui.status.setAttribute('data-mmr-state', 'error');
       ui.status.textContent = copy('Sign in required', '需要登录');
+      var signInTarget = retainedSigninHref();
       ui.resultBody.innerHTML = banner('auth_required',
         'Sign in to open saved evidence', '登录以查看已保存依据',
         'Use your existing account to continue.' + oauthStorageWarning(false),
         '请使用现有账户继续。' + oauthStorageWarning(true),
-        '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(retainedSigninHref()) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
+        '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(signInTarget) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
       return;
     }
     ui.status.setAttribute('data-mmr-state', 'error');

@@ -60,7 +60,7 @@ test('OAuth resume restores only the latest same-tab intent and keeps SDK contro
  const after=setup('?onboard=resume&code=synthetic-code#access_token=synthetic-token',before.saved);
  assert.equal(after.api.resumeStatus().ok,true);assert.equal(after.api.resumeStatus().restored,true);
  assert.equal(after.api.read().intent.issuerInput,' nvda ');assert.equal(after.api.read().intent.gen,'exact-generation');
- assert.equal(after.api.read().intent.cutoff,'2026-10-13T12:00:00.123456Z');assert.equal(before.saved[CAPSULE],undefined);
+ assert.equal(after.api.read().intent.cutoff,'2026-10-13T12:00:00.123456Z');assert.equal(JSON.parse(before.saved[CAPSULE]).target,capsule.target);
  after.api.syncReturn();const url=new URL(after.location.href);assert.equal(url.searchParams.get('code'),'synthetic-code');assert.equal(url.searchParams.get('onboard'),'resume');assert.equal(url.hash,'#access_token=synthetic-token');
  const stored=before.saved[CAPSULE];assert.equal(stored.includes('synthetic-code'),false);assert.equal(stored.includes('synthetic-token'),false);assert.equal(stored.includes('onboard'),false);
  const ret=url.searchParams.get('ret');assert.equal(ret.includes('code='),false);assert.equal(ret.includes('#'),false);
@@ -91,3 +91,12 @@ test('reload of already restored callback uses current exact URL without stale r
  const query=new URL(y.location.href).search;const z=setup(query,{});assert.equal(z.api.resumeStatus().ok,true);assert.equal(z.api.resumeStatus().restored,false);assert.equal(z.api.read().intent.ticker,'NVDA');assert.equal(z.history.calls.length,0);
 });
 process.stdout.write(count+' final intent and OAuth tests passed\n');
+
+test('empty restored selection remains explicit and survives callback reload',()=>{const x=setup();x.api.syncReturn();const y=setup('?onboard=resume',x.saved);const z=setup(new URL(y.location.href).search,{});assert.equal(z.api.resumeStatus().ok,true);});
+test('successful restoration renews only its exact intent for another same-tab sign-in',()=>{const x=setup('?ticker=NVDA&mm_mode=saved');x.api.syncReturn();const y=setup('?onboard=resume&code=first-synthetic',x.saved);assert.equal(y.api.oauthPreservation().ok,true);const z=setup('?onboard=resume&code=second-synthetic',x.saved);assert.equal(z.api.resumeStatus().ok,true);assert.equal(z.api.read().intent.ticker,'NVDA');assert.equal(x.saved[CAPSULE].includes('synthetic'),false);});
+test('fallback signin link preserves latest intent even without earlier URL sync',()=>{const x=setup('?ticker=NVDA');assert.equal(x.api.signinHref().ok,true);assert.ok(x.saved[CAPSULE]);});
+process.stdout.write(count+' reviewed intent and OAuth tests passed\n');
+
+test('provider-preserved ret must match the capsule and may never substitute another selection',()=>{const x=setup('?ticker=NVDA');x.api.syncReturn();const target=x.api.target().target;const y=setup('?onboard=resume&ret='+encodeURIComponent(target),x.saved);assert.equal(y.api.resumeStatus().ok,true);const z=setup('?onboard=resume&ret='+encodeURIComponent('/market_memory.html?ticker=AAPL'),x.saved);assert.equal(z.api.resumeStatus().ok,false);});
+
+console.log('29 reviewed intent and OAuth tests passed');

@@ -120,14 +120,16 @@
     if (current.pathname !== ROUTE || !current.searchParams.getAll('onboard').includes('resume')) return;
     resume = {ok:false, restored:false, active:true, reason:'intent_oauth_return_unavailable'};
     var incoming = read(current.href);
-    if (current.searchParams.getAll('onboard').length !== 1 || !incoming.ok) { clearCapsule(); return; }
-    if (Object.keys(incoming.intent).length) {
+    if (current.searchParams.getAll('onboard').length !== 1
+        || current.searchParams.getAll('ret').length > 1 || !incoming.ok) { clearCapsule(); return; }
+    if (Object.keys(incoming.intent).length || current.searchParams.get('ret') === ROUTE) {
       // A reload after restoration has explicit owned state plus its exact ret.
       // Use that current URL, never a stale capsule or a conflicting selection.
       var explicit = targetFor(incoming.intent);
       if (explicit.ok && current.searchParams.getAll('ret').length === 1
           && current.searchParams.get('ret') === explicit.target) {
         resume = {ok:true, restored:false, active:true};
+        saveCapsule(explicit);
       } else { clearCapsule(); }
       return;
     }
@@ -150,6 +152,7 @@
       if (!decoded.ok) return;
       var rebuilt = targetFor(decoded.intent);
       if (!rebuilt.ok || rebuilt.target !== value.target) return;
+      if (current.searchParams.has('ret') && current.searchParams.get('ret') !== rebuilt.target) return;
       // The callback may carry only auth controls. An explicit page selection
       // alongside it is ambiguous and must not be silently overwritten.
       target.searchParams.set('ret', rebuilt.target);
@@ -158,6 +161,7 @@
       if (liveTarget.length > MAX_CURRENT) return;
       window.history.replaceState(window.history.state, '', liveTarget);
       resume = {ok:true, restored:true, active:true};
+      saveCapsule(rebuilt);
     } catch (error) { /* Keep an explicit unavailable result, never choose a new capture. */ }
   }
   function syncReturn(patch) {
@@ -178,12 +182,14 @@
   function signinHref(patch) {
     var result = canonical(patch);
     if (!result.ok) { saveCapsule(result); return result; }
+    saveCapsule(result);
     var params = new URLSearchParams();
     params.set('signin', '1');
     params.set('ret', result.target);
     result.href = '/?' + params.toString();
     return result;
   }
+  restoreOAuthResume(); // Finish restoration before exposing the page API.
   window.MarketMemoryIntent = {
     read: read, replace: syncReturn, syncReturn: syncReturn, signinHref: signinHref,
     target: canonical,
@@ -191,5 +197,4 @@
     oauthPreservation: function () { return {ok:preservation.ok, reason:preservation.reason}; },
     limits: { target: MAX_TARGET, current: MAX_CURRENT, issuer: MAX_ISSUER, value: MAX_VALUE }
   };
-  restoreOAuthResume(); // Runs before both page clients and the lazy onboard callback.
 }(window));
