@@ -1241,7 +1241,7 @@ RENDER.overview = async () => {
   const serviceValue = !sv.available || typeof sv.healthy !== "boolean" ? "Unavailable"
     : sv.healthy ? "Running normally" : "Needs attention";
   const serverValue = sys.available && Number.isFinite(mem.used_pct) ? `${mem.used_pct}% memory` : "Unavailable";
-  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used` : "Host metrics are not available in this environment";
+  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used · ${fmtBytes(disk.free)} free` : "Host metrics are not available in this environment";
   const costValue = Number.isFinite(cost.monthly_usd) ? `${fmtUSD(cost.monthly_usd)} /mo` : "Unavailable";
   const costDetail = Number.isFinite(cost.effective_daily_usd) ? `${fmtUSD(cost.effective_daily_usd)} /day · estimate, not billed spend` : "No current cost estimate";
   const alerts = s.key_alerts && Array.isArray(s.key_alerts.items) ? s.key_alerts.items.length : null;
@@ -2793,7 +2793,7 @@ RENDER.system = async () => {
         ${meter("CPU load (last 1 min)", cpu.load1_pct, (cpu.load1 != null ? cpu.load1.toFixed(2) : "—") + ` / ${cpu.count} cores`)}
         ${meter("Memory", mem.used_pct, fmtBytes(mem.used) + " / " + fmtBytes(mem.total))}
         ${swap ? meter("Swap", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
-        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total))}
+        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total) + " · " + fmtBytes(disk.free) + " free")}
         <div class="sub">running for ${up} · load 5m/15m ${cpu.load5 != null ? cpu.load5.toFixed(2) : "—"} / ${cpu.load15 != null ? cpu.load15.toFixed(2) : "—"}</div>
         ` : `<div class="sub">Server stats are only available when this console is running on the server itself.</div>`}
       </div>
