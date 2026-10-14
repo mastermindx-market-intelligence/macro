@@ -140,15 +140,15 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Continue on existing draft Macro PR8754 after accepted base integration, Library announcement/reflow
-  and compass wrapping. Repair absent risk reading falsely displayed as Neutral/half gauge; then qualify genuinely
-  new admitted CI. Native zoom and complete served journeys remain open. Preserve all release, rights, qualification,
-  Saved, frozen-effect holds and IW2 exclusive Terminal PR804 custody.
+next_action: Publish the locally verified compass wrapping and unavailable-reading repairs on held Macro PR8754.
+  Independent unavailable-reading review is pending after a prelaunch policy mismatch; continue the next History/Back
+  full journey with synthetic scope while retaining all release, rights, Saved, frozen-effect and IW2 custody holds.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 - research/paper_international_wave1_wave2/J07_RESET_ROLLBACK_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/COMPASS_REFLOW_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COMPASS_UNAVAILABLE_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.

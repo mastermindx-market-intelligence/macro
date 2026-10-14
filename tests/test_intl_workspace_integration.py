@@ -6,6 +6,7 @@ import sys
 
 import pandas as pd
 import pytest
+from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
 from engine import i18n, intl_inputs
@@ -54,13 +55,15 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown"):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
           "built": "fixture", "records": [], "summary": summary, "rankings": {},
           "heatmap": [], "periphery": None, "sector_board": [], "setups": {},
           "global_regime_html": '<section id="fixture-owner-fragment">Existing research</section>'}
+    if perf is not None:
+        vm["perf"] = perf
     if workspace:
         vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
@@ -192,6 +195,65 @@ def test_synthetic_denial_exercises_slot_only_presentation():
     html = render_fixture(state="denied")
     assert html.count("data-im-market-denied") == 7
     assert "synthetic:visual-fixture" not in html and "Nikkei 225" not in html
+
+
+def _compass_risk():
+    return {"score": 54, "label_en": "Neutral", "label_zh": "中性", "tone": "flat",
+            "coverage_pct": 100., "n_available": 10, "breadth_above_200d": "7/10",
+            "median_mom_3m": 3.9, "top_drags": [
+                {"flag": "🇺🇸", "name": "United States", "name_zh": "美国"}]}
+
+
+def _render_compass(risk):
+    perf = {"risk_appetite": deepcopy(risk), "global_read": None, "rrg": None,
+            "correlation": None, "leaderboard": []}
+    return render_fixture(perf=perf)
+
+
+@pytest.mark.parametrize("missing", ["perf", "risk", "empty", "score", "score_key"])
+def test_missing_world_risk_reading_is_unavailable_not_neutral(missing):
+    risk = _compass_risk()
+    if missing == "perf":
+        html = render_fixture()
+    else:
+        if missing == "risk":
+            risk = None
+        elif missing == "empty":
+            risk = {}
+        else:
+            # Retained labels/coverage cannot turn an absent reading into a signal.
+            risk["score"] = None
+            risk["top_drags"] = []
+            if missing == "score_key":
+                risk.pop("score")
+        html = _render_compass(risk)
+    compass = BeautifulSoup(html, "html.parser").select_one(".wc-left")
+    assert compass.select_one(".wc-verdict .l-en").get_text() == "Unavailable"
+    assert compass.select_one(".wc-verdict .l-zh").get_text() == "暂无数据"
+    assert compass.select_one(".wc-gnum").get_text() == "—"
+    assert compass.select_one(".wc-gauge-fill") is None
+    assert compass.select_one(".wc-gauge svg")["aria-label"] == "World risk appetite unavailable"
+    assert compass.select_one(".wc-substance") is None
+    assert not compass.select_one(".wc-gside").has_attr("data-tip-en")
+
+
+@pytest.mark.parametrize("score,label_en,label_zh,tone", [
+    (0, "Risk-off", "风险规避", "down"),
+    (54, "Neutral", "中性", "flat"),
+    (72, "Split tape", "市场分化", "warn"),
+])
+def test_real_world_risk_readings_preserve_engine_verdict(score, label_en, label_zh, tone):
+    risk = _compass_risk()
+    risk.update(score=score, label_en=label_en, label_zh=label_zh, tone=tone)
+    html = _render_compass(risk)
+    compass = BeautifulSoup(html, "html.parser").select_one(".wc-left")
+    assert compass.select_one(".wc-verdict .l-en").get_text() == label_en
+    assert compass.select_one(".wc-verdict .l-zh").get_text() == label_zh
+    assert compass.select_one(".wc-gnum").get_text() == str(score)
+    assert compass.select_one(".wc-gauge-fill") is not None
+    assert compass.select_one(".wc-gauge svg")["aria-label"] == f"World risk appetite {score} of 100"
+    assert "Dragged by" in compass.select_one(".wc-substance").get_text()
+    assert "Weighs 10 markets" in compass.select_one(".wc-gside")["data-tip-en"]
 
 
 if __name__ == "__main__":

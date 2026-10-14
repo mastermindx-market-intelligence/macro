@@ -41,6 +41,12 @@ changed:
 - path: research/paper_international_wave1_wave2/COMPASS_REFLOW_ACCEPTANCE.json
   what: Bind one-property source fix, red/green/rendered evidence and verified Terra fallback review after Fabric
     declined before launch.
+- path: templates/intl.html.j2 and tests/test_intl_workspace_integration.py
+  what: Show an unavailable compass without an invented half gauge or retained signal when reading is absent; preserve
+    genuine zero/neutral/engine labels.
+- path: research/paper_international_wave1_wave2/COMPASS_UNAVAILABLE_ACCEPTANCE.json
+  what: Bind5 red cases,20 integration tests,4 browser tests/40 states,18 renders and original prelaunch review
+    refusal.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -118,6 +124,11 @@ verified:
   command: compass-reflow-20261014-r1/launcher_probe.py against fresh synthetic EOD render.
   result: 1440EN geometric overlap and320ZH2 hit-tested text overlaps clear on browser scroll; all result lines
     can be exposed and method disclosure clicked. Shared launcher unchanged; no whole-product visual acceptance.
+- claim: Absent compass readings are explicitly unavailable in local actual-template renders.
+  command: python3 -m pytest -q tests/test_intl_workspace_integration.py; node --test --test-name-pattern=Compass
+    tests/intl_workspace_page.test.cjs; compass-unavailable-20261014-r1/render_acceptance.py.
+  result: 5 fail-before absence cases,3 unchanged positive controls.20 integration and4 focused browser tests pass;18
+    renders pass with26 bound assets. Counts overlap; no native zoom or deployed proof.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -136,17 +147,17 @@ unresolved:
   unknown; no timer or alternate-carrier retry.
 - New J08 source review paper-01a1101f-j08-announcement-review-20261014-r1 completed rc0/REMOTE_CLEANED; bounded
   parent review accepts the source conclusion with explicit corrections. Usage receipt missing.
-- Compass clipping source accepted. Missing risk input still reads Neutral and paints a half gauge; separate semantic
-  repair required.
 - Native Chrome zoom attempt stopped by changed foreground-window control; no zoom change, local server closed.
   Transient shared launcher overlap remains a usability observation, not a demonstrated content trap.
+- 'Compass unavailable-reading independent review did not execute: original paper-01a1101f-compass-unavailable-review-20261014-r1
+  reports TERMINAL_FAILURE/prelaunch_failure75, ROUTING_CRITICAL_POLICY_MISMATCH and SUPPORT_PUBLICATION_REFUSED.
+  No retry, replacement, result acceptance or manual release.'
 next_actions:
-- 'Repair newly verified absent-risk presentation: no reading must not appear Neutral or draw an invented half gauge;
-  preserve genuine zero/neutral and engine-owned labels.'
-- Publish on same Macro carrier; observe genuinely new admitted exact-head CI only. Preserve all release and IW2
-  custody limits.
-- Continue remaining full journeys and native browser zoom when foreground control is available; do not re-run accepted
-  unchanged packages.
+- Publish both compass repairs on the same held Macro carrier and qualify genuinely new admitted exact-head CI only.
+- Advance the next independent full journey, including retained History/source absence and Back/context; do not
+  treat pending CI or review as a reason to idle.
+- Resume independent unavailable-reading review only through a newly admitted lawful path after the original policy
+  mismatch is resolved; preserve the exact failed run. Native zoom still needs uninterrupted permitted browser control.
 do_not_redo:
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
@@ -179,3 +190,5 @@ represented as a completely warning-free repository.
 Additional J08 evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j08-legacy-reflow-20261014-r1` and sibling `j08-search-announcement-20261014-r1`.
 
 Compass evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-reflow-20261014-r1`.
+
+Unavailable-reading evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-unavailable-20261014-r1`.
