@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D75 snapshot.) Rows superseding older rows below:
+(D76 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| N02-U2 (latent) | ALREADY CARRIED by the seat's own #985 (OATRUTH): `asDisposition` returns `degraded` for an unknown value at head `9c5a244d`, and test `OATRUTH disposition default › R5` pins it through `normalizeCandidateFeed`. No new lane; it ships with #985 (D76) |
 | #948 | PRODUCTION_PROOF (D75): merged `afae6020`; `.deployment-id`, `.gitsrc` HEAD and public `data-dpl-id` agree; edge chunk `1304p4nhxan10.js` carries `usRegularSessionWindow(...)` and has 0 hits for `l>=570&&l<960`; the quote-hub restart at 01:52:59Z serves master hashes; proof comment 6159152201. DO_NOT_REDO the proof or the comment |
 | CENSUS wave 3 | all 12 judged (D75). F03, F04, U03, U04 and N02 transitions: NO-BUILD. M04: red specs FROZEN, gated on #8684/#8920. V03-A03: reclassified PROVEN-BY-RECEIPT, because the #781 engine sha256 `5e1a5259…` equals the 10-02 Fraction-oracle engine (5948959305). #781 finding comment 6159214546. Deferred upgrades are listed in D75 |
 | N02-U2 (latent) | the Terminal `asDisposition` fails OPEN: unknown → `research_candidate`, and the server verifier does not check the enum. It is unreachable while F04 is inactive. Candidate small fix (fail to `degraded` + vitest), decided in D75 |
@@ -1762,3 +1763,15 @@ Census outcome: of the 12 wave-3 packages, none needs a new build lane today. On
 2. #985/#983: merge, then the git-gated deploy and live verify.
 3. Macro D04-A2 after #8923 merges.
 4. M04 red specs after #8684/#8920 land.
+
+### D76 (2026-10-14T02:10Z) — correction to D75 NEXT 1: N02-U2 is already carried by #985
+
+D75 NEXT 1 proposed a new lane for the fail-open `asDisposition`. That proposal is retracted.
+
+The check behind the retraction was an open-PR sweep of `terminal/components/prophet/optionsAlphaCandidateFeed.ts`. Only #985 touches the file, and #985 is the seat's own PR (OATRUTH, head `9c5a244d`). It already:
+- changes the default to `degraded`, with the comment "An unrecognised state must not be promoted to the strongest disposition";
+- adds `lib/__tests__/optionsAlphaCandidateFeed.test.ts` › `OATRUTH disposition default` › `R5 maps an unrecognised disposition through normalizeCandidateFeed to degraded`, asserting both `state` and `current_disposition.state`.
+
+N02 upgrade 1 (a plain sentence for each reason code) is also inside #985's scope ("Plain reasons … for every one of the ten producer codes").
+
+So no new lane is needed: the N02 upgrade work ships when #985 merges and deploys. Remaining NEXT: #985/#983 merge, then the git-gated deploy and live verify; Macro D04-A2 after #8923 merges; M04 red specs after #8684/#8920 land.
