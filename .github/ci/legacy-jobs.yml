@@ -11503,6 +11503,7 @@ jobs:
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_events_v2.py"
       - "tests/test_rotation_flow_pit.py"
+      - "tests/test_rotation_role_retention.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11512,7 +11513,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
 
   leadership-rotation-contract:
     if: ${{ false }}
