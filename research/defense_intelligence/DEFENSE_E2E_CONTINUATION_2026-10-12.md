@@ -811,3 +811,32 @@ were omitted from the proof source seal. The broader nested-fixture inventory
 includes those actual bytes; source closure is updated without rewriting any
 of the33 original failed-publication reconciliation records. The executable
 mutation guard is being verified against the repaired inventory.
+
+
+### October14 02:46 UTC main integration and bounded FMS correction
+
+Protected main a0fa900488db2f9270a2ce5cda6f7418a87eb86f is integrated as
+02709fac3ad48c34db04417d40bc9ce0d3411e33. Both additive CI dependency paths
+are retained, the normal build will refresh generated cache stamps, and all
+2630 path-filtered suite closures pass. The33 original publisher reconciliation
+records remain unchanged.
+
+The root accepted the Spain25-104 contractor parser correction against the
+original staged HTML SHA2566be5c6c6407aaf54457d4d660d25218caeba031d9a33b0abddde786eae3d24f2.
+A missing test-fixture packaging defect failed once at integration; adding the
+exact retained bytes and provenance yields9 passed/101 deselected. The original
+94 observation rows remain an exact169753-byte prefix. One explicit corrected
+interpretation is known only at2026-10-14T02:33:08.231760+00:00, preserving
+original acquisition/observation clocks. No new acquisition or receipt occurred.
+
+The incumbent projector reproduces the original graph exactly before applying
+the correction. Among68 cases only Spain's contractors and observation history
+change; coverage, scope, stage, authority and notification amount do not. Root
+explicitly reviewed the six selected references in NATO/FMS and fleet sustainment,
+preserving37 unrelated fingerprints and prior reviewer history. Contractor
+identity remains not_reviewed with null issuer_ref. Evidence is committed under
+research/defense_intelligence/e2e_20261011/fms_normalizer_correction_20261014.
+
+The next ready phase is the normal combined v3 generation, inspection of actual
+theme states, full frozen proof, and the ten-sample cold timing/24-cell visual
+acceptance. This local correction is not publication or installed acceptance.
