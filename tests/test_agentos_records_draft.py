@@ -14,6 +14,7 @@ import ast
 import importlib.util
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -1121,6 +1122,16 @@ _SEAT_FIELD_PARAMS = [
         id="pr.files",
     ),
     pytest.param(
+        # Entry in the two-space bullet shape the handoff/append render
+        # themselves (accepted by ``_pr_fields`` today); the bare-value
+        # mutant then produces a line equal to the value that still
+        # starts with "  - ", so the third positional clause is what
+        # fails. Chosen as its own param so the id reads standalone.
+        "pr.files", lambda h: _payload(pr={"files": [f"  - lib/x{h}.py"]}),
+        "mixed", "pr.files entries must be single-line repo-relative paths",
+        id="pr.files-bullet-form",
+    ),
+    pytest.param(
         "model", lambda h: _payload(model=f"opus{h}"),
         "refused", "model must be one of",
         id="model",
@@ -1226,23 +1237,65 @@ def test_seat_string_fields_are_refused_or_quoted(
             assert not any(line.startswith("```") for line in lines), case
             if record_key in ("handoff", "ws_append") or field_id == "title":
                 if field_id == "pr.files":
-                    # (v), positional. ``pr.files`` entries are the only
-                    # seat strings rendered RAW into record bodies (module
-                    # :562 handoff, :611 ws_append), so a substring test is
-                    # vacuous there: the path survives on SOME line whether
-                    # or not its "  - " bullet prefix does. Pin the shape
-                    # instead. Occurrences INSIDE a double-quoted scalar
-                    # (``- path: "..."``, ``result: "...absent: ..."``)
-                    # ride ``_q`` and keep (i)-(iv); positional law binds
-                    # the raw occurrences: every line with a not-inside-
-                    # quotes occurrence starts with the two-space bullet,
-                    # at least one such line exists, and no line equals
-                    # the bare value.
+                    # (v), positional. Every seat string rendered RAW into a
+                    # record body, with the guard that keeps each safe:
+                    #   pr.files entry, module :562/:611 -- no single regex:
+                    #     ``_pr_fields`` refuses a multi-line entry :265, an
+                    #     unsafe Unicode category :266-268, a leading "/" or
+                    #     "\" :269 and a ".." part :272. These files rows are
+                    #     unpinned, so a substring test is vacuous there: the
+                    #     path survives on SOME line whether or not its "  - "
+                    #     bullet prefix does.
+                    #   pr.merged_at, :556/:605 -- ``_MERGED_RE`` :73, an
+                    #     ``re.ASCII`` fullmatch.
+                    #   workstream key, :565/:566/:602 -- ``_WS_RE`` :65 pins
+                    #     it to ``[A-Z0-9]+(?:-[A-Z0-9]+)*``.
+                    #   pr day, :566 -- ``_MERGED_RE.group(1)`` :305, so ASCII
+                    #     digits and hyphens only.
+                    # Pin the shape instead. Occurrences INSIDE a
+                    # double-quoted scalar (``- path: "..."``,
+                    # ``result: "...absent: ..."``) ride ``_q`` and keep
+                    # (i)-(iv); positional law binds the raw occurrences:
+                    # every line with an occurrence outside the quotes
+                    # starts with the two-space bullet, at least one such
+                    # line exists, no line equals the bare value, AND
+                    # (v.1) on any rendered line whose first non-space token
+                    # is a YAML key (``<key>:``, optionally after ``- ``) the
+                    # value does not occur outside quotes.
                     def _raw_has_value(line: str) -> bool:
-                        parts = line.split('"')
-                        return any(
-                            value in part for part in parts[0::2]
-                        )
+                        # Escape-aware: ``_q`` renders a literal double quote
+                        # inside a quoted scalar as \" and a literal backslash
+                        # as \\. A one-character lookbehind cannot tell \"
+                        # (an escaped quote, still inside) from \\" (an
+                        # escaped backslash, then the real closing quote), so
+                        # it flips the inside/outside parity for every later
+                        # occurrence on the same line. Rule: a ``"`` is a
+                        # boundary only when the run of backslashes right
+                        # before it has EVEN length. Each outside segment is
+                        # tested on its own, so a match never spans a quoted
+                        # scalar.
+                        outside: list[str] = []
+                        in_quotes = False
+                        pos = 0
+                        for m in re.finditer(r'(\\*)"', line):
+                            if len(m.group(1)) % 2:
+                                continue
+                            if not in_quotes:
+                                outside.append(line[pos:m.end() - 1])
+                            in_quotes = not in_quotes
+                            pos = m.end()
+                        if not in_quotes:
+                            outside.append(line[pos:])
+                        return any(value in segment for segment in outside)
+
+                    def _is_yaml_key_line(line: str) -> bool:
+                        # Structural: the first non-space token is ``<key>:``
+                        # or ``- <key>:``. ``\w`` excludes ``/``, so a raw
+                        # path such as ``lib/x.py`` is not a key line. No
+                        # module wording is pinned.
+                        return re.match(
+                            r"^\s*(?:-\s+)?[A-Za-z_]\w*:", line
+                        ) is not None
 
                     raw_lines = [
                         line for line in lines
@@ -1257,6 +1310,14 @@ def test_seat_string_fields_are_refused_or_quoted(
                     ), f"{case}: {record_key} unbulleted line {raw_lines!r}"
                     assert value not in lines, (
                         f"{case}: {record_key} renders a bare-value line"
+                    )
+                    yaml_key_offenders = [
+                        line for line in lines
+                        if _is_yaml_key_line(line) and _raw_has_value(line)
+                    ]
+                    assert not yaml_key_offenders, (
+                        f"{case}: {record_key} value occurs outside quotes "
+                        f"on a YAML key line {yaml_key_offenders!r}"
                     )
                 else:
                     assert _escaped_form(value) in text, (
