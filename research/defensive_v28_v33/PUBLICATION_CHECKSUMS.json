@@ -1,0 +1,39 @@
+{
+  "schema": "mmx.defensive.v28_v33.publication.v1",
+  "date": "2026-10-13",
+  "source_prices_end": "2026-10-08",
+  "status": "RESEARCH_ONLY_NO_LIVE_SIGNAL_OR_ALPHA_ACCEPTANCE",
+  "archive_sha256": "0a34168f89976f4646a95faa3fd9d3a19e6a468ae4a9c15843af1619fa755f7b",
+  "archive_bytes": 10201730,
+  "github_blob_sha": "b11e8264b3ea8f1477659202d5f54678cb702972",
+  "report_sha256": "5e94ea12e982c28fea55582ff5ba49753d5e63a48ca2563b67832e7e201e9a87",
+  "readme_sha256": "61eaa913ad5ddd31925626f7cad0fc954f685a23c47b0b9caf87491983adb25f",
+  "tables_sha256": {
+    "V28_Daily_Stoch_on_2D_Crossover.csv": "17153c99b131755378c22407db0826696c5ed10d767d5a257119eede216492f6",
+    "V29_Stop_and_Spaced_Entry_Audit.csv": "6a783819f4752761404ad3019bf93926f7cfcfc5ec5e8c117a63437b3cfb9411",
+    "V30_Fixed_Master_Watch_Policies.csv": "49270733d3cbab1899c831acf83a0f4606873b2d3c67fb952a48196e38fa4b4a",
+    "V31_Fixed_Sleeve_Account_Portfolios.csv": "8d43b9f4276185f888d5a56b0ffc11128404f3dd1839e951274d0918867529d6",
+    "V32_Corrected_SPY_Reserve_Portfolios.csv": "ac7c4cb85f69437a1b46d1b3af608186640b4df8ad37d589f5a203b192986881",
+    "V33_Head_to_Head_Episode_Intervals.csv": "b7f658206fc46cf5644ec686c2a0f489e4d1129afd244a5334fa794ec00536d9"
+  },
+  "mechanical_tests": {
+    "v28": 8,
+    "v29": 9,
+    "v30": 10,
+    "v31": 6,
+    "v32": 5,
+    "v33": 8
+  },
+  "v11_v12_reconciled_accounts": 54,
+  "original_unique_W2W_watch_episodes": 198,
+  "independent_trading_and_broker_changes": false,
+  "raw_vendor_market_data_included": false,
+  "related_research_prs": [
+    9034,
+    9064,
+    9129,
+    9174,
+    9176,
+    9180
+  ]
+}
