@@ -2115,3 +2115,206 @@ def test_qualified_true_incomplete_failure_without_complete_key_is_unavailable()
         _computed_row_for_summary(retained), "glp1_obesity",
     )
     assert retained_chip["n_active"] == 1
+
+
+def test_qualified_count_gap_without_complete_or_failure_is_unavailable():
+    """qualified=True, complete and failure_code omitted, unequal counts is incomplete.
+
+    Two present integers that differ (raw_count != reported_total) publish
+    UNAVAILABLE and chip n_active 0. _capture() omits raw_count and stays
+    CURRENT_REPORTED. FIRST_PAGE_OUTAGE with no count keys stays
+    CURRENT_REPORTED (T01R-B2). Equal counts stay CURRENT_REPORTED.
+    """
+    from engine.fda_scarcity import format_theme_feed_chip, summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "raw_count": 40,
+            "reported_total": 100,
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert out["source_status"] == "UNAVAILABLE"
+    assert out["freshness"]["capture_incomplete"] is True
+    assert out["freshness"]["capture_qualified"] is False
+    assert out["counts"]["current"] == 1
+    chip = format_theme_feed_chip(_computed_row_for_summary(out), "glp1_obesity")
+    assert chip["n_active"] == 0
+    assert chip["source_status"] == "UNAVAILABLE"
+
+    omitted = summarize_supply(
+        [_d1_row()],
+        capture=_capture(now),
+        now=now,
+        max_capture_age=None,
+    )
+    assert omitted["source_status"] == "CURRENT_REPORTED"
+    assert omitted["freshness"]["capture_incomplete"] is False
+
+    retained = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "failure_code": "FIRST_PAGE_OUTAGE",
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert retained["source_status"] == "CURRENT_REPORTED"
+    assert retained["freshness"]["capture_incomplete"] is False
+    retained_chip = format_theme_feed_chip(
+        _computed_row_for_summary(retained), "glp1_obesity",
+    )
+    assert retained_chip["n_active"] == 1
+
+    equal = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "raw_count": 40,
+            "reported_total": 40,
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert equal["source_status"] == "CURRENT_REPORTED"
+    assert equal["freshness"]["capture_incomplete"] is False
+
+
+# ── W15-F: the molecule-gap clause is an optional decoration, not a build dependency ──
+
+def _gap_bearing_scarcity_row():
+    """A computed-shaped FDA row whose summary.coverage measures a real gap.
+
+    Reuses this file's existing FDA fixtures — _summary_row,
+    summarize_supply_for_test and _computed_row_for_summary —
+    and only overwrites summary.coverage so the cascade reaches the clause.
+    """
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    row = _computed_row_for_summary(
+        summarize_supply_for_test([_summary_row(ndc="GAP-A")], now)
+    )
+    coverage = row["summary"]["coverage"]
+    coverage["molecules_checked"] = ["semaglutide", "tirzepatide", "liraglutide"]
+    coverage["molecules_with_rows"] = ["semaglutide"]
+    return row
+
+
+def _glp1_only_kwargs():
+    return dict(
+        bottleneck={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}},
+        revisions={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "breadth": 0.05, "level_state": "FLAT_LOW"}}},
+        demand={"themes": {}}, glut={"themes": {}}, write_ledger=False,
+    )
+
+
+def test_fda_molecule_gap_clause_exception_does_not_kill_the_cascade(monkeypatch, caplog):
+    """W15-F item 1: a raising molecule-gap clause degrades in control flow
+    like the chip guard (the cascade is still produced, the FDA chip is still
+    present, molecule_gap stays None), but it logs at WARNING, not the chip
+    guard's debug: production builds run at INFO, so a clause that starts
+    raising on real data must not vanish from the page silently.
+    """
+    import logging
+
+    import engine.healthcare_molecule_gap as gap_module
+
+    def _boom(*_args):
+        raise RuntimeError("synthetic molecule-gap failure")
+
+    monkeypatch.setattr(gap_module, "molecule_gap_clause", _boom)
+    caplog.set_level(logging.DEBUG, logger="engine.foresight_cascade")
+
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": _gap_bearing_scarcity_row()},
+        **_glp1_only_kwargs(),
+    )
+
+    assert out is not None, "a failing optional clause must not take down the cascade build"
+    row = out["themes"][0]
+    assert row["theme"] == "glp1_obesity"
+    chip = row["theme_feed_summary"]
+    assert chip is not None, "the FDA chip must survive a failing molecule-gap clause"
+    assert chip["source"] == "fda_shortages"
+    assert row["molecule_gap"] is None
+    assert any(rec.levelno == logging.WARNING
+               and rec.name == "engine.foresight_cascade"
+               and "molecule" in rec.getMessage().lower()
+               for rec in caplog.records), caplog.text
+
+
+def test_fda_molecule_gap_clause_is_built_from_summary_coverage():
+    """W15-F item 2 companion (positive): summary.coverage carrying both lists
+    still produces the clause — the guard and the coverage branch both live."""
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": _gap_bearing_scarcity_row()},
+        **_glp1_only_kwargs(),
+    )
+    gap = out["themes"][0]["molecule_gap"]
+    assert gap is not None, "coverage-measured gap must still render the clause"
+    assert "tirzepatide" in gap["en"] and "liraglutide" in gap["en"]
+    assert "semaglutide" not in gap["en"]
+
+
+def test_top_level_molecule_keys_without_coverage_yield_no_gap_clause():
+    """W15-F item 2: the row-level fallback is dead. No producer writes
+    molecules_with_rows at the top level (engine/fda_scarcity.py writes it only
+    under summary.coverage), so a row naming both lists at
+    the top level with no summary.coverage has not measured coverage and must
+    not get a clause invented from it."""
+    row = {"band": "SHORTAGE_ACTIVE", "source_status": "CURRENT_REPORTED",
+           "freshness": {}, "n_active": 1, "n_resolved": 0, "n_discontinued": 0,
+           "details": ["Synthetic Theme A [Current/Available]"],
+           "rationale": "one regulator record observed",
+           "molecules_checked": ["semaglutide", "tirzepatide", "liraglutide"],
+           "molecules_with_rows": []}
+    out = fc.compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": row}, **_glp1_only_kwargs(),
+    )
+    assert out["themes"][0]["molecule_gap"] is None
+
+
+def test_real_producer_row_pins_the_coverage_only_with_rows_shape(monkeypatch):
+    """W15-F item 3 (producer pin): the no-row-level-fallback rule in
+    _fda_molecule_lists' docstring is only safe while the real producer's
+    shape holds. Pin the SHAPE of a row built by the real
+    engine.fda_scarcity.compute_fda_scarcity: molecules_with_rows must stay
+    absent at the row top level (a top-level mirror would make the dead
+    fallback look restorable) while summary.coverage keeps both lists.
+    Key shape only — the producer reads the wall clock, so ages/dates here
+    would drift. Reuses this file's _summary_row/_capture fixtures and the
+    monkeypatched-MOLECULE_THEME_MAP pattern of the status-correction test.
+    The ``assert "molecules_checked" in row`` below pins the top-level
+    mirror that ``format_theme_feed_chip`` reads live in engine/fda_scarcity.py
+    (``"molecules_checked": scarcity_row.get("molecules_checked")``), which
+    ``compute_foresight_cascade`` in engine/foresight_cascade.py calls, so the
+    mirror is a consumer contract, not merely the shape the producer emits.
+    """
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    frame = pd.DataFrame([_summary_row()])
+    frame.attrs["fda_observation"] = {
+        "capture": _capture(now),
+        "last_refresh": {"qualified": True, "failure_code": None,
+                         "attempted_at": now.isoformat()},
+        "legacy": False, "inconsistent": False, "failed_refresh": False,
+    }
+    row = compute_fda_scarcity(frame)["glp1_obesity"]
+    assert "molecules_with_rows" not in row
+    assert "molecules_checked" in row
+    assert {"molecules_checked", "molecules_with_rows"} <= set(row["summary"]["coverage"])
