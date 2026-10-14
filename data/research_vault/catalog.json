@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T17:11:10.365982+00:00",
-  "count": 2910,
+  "generated_at": "2026-10-14T17:41:13.133036+00:00",
+  "count": 2912,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,7 @@
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
     "U.S. Department of Agriculture, National Agricultural Statistics Service",
+    "U.S. International Trade Commission",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -736,6 +737,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2rk8r0eb4ch-4ee2fe",
+      "title": "Americas Insurance 3Q26 Preview Expect Mixed Results as The Cycle Softens Further",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:25Z",
+      "summary_points": [
+        "Middle East conflict risk: ACGL, AIG, CB, HIG, RNR, PLGO face commercial loss ratio misses and pricing pressures; TRV Sell rating linked to Street expectations and reporting deceleration.",
+        "Pricing deterioration: IVANS data shows sequential pricing decline (-50bps QTD avg), led by Commercial Auto (-110bps) and General Liability (-85bps), signaling significant rate compression risk.",
+        "AIG underwriting strength: AIG's underlying combined ratio at 88.1% (Q22E) with marginal YoY improvement (-0.1%) indicates strong core underwriting performance amid sector headwinds.",
+        "EPS consensus divergence: GS vs. consensus EPS estimates reveal material misalignment (e.g., AIG P&C: 5.4% diff, ALL: 12.4% upward revision), signaling potential re-rating opportunities for key names."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 65,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-lzmltel3teb-9a2d70",
       "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
       "institution": "Bank Earnings Previews",
@@ -823,6 +844,36 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usitc-2026-10-13-337-ta-1473",
+      "title": "Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "institution": "U.S. International Trade Commission",
+      "side": "independent",
+      "desk": "Industrials",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USITC voted on 2026-10-13 not to review Orders 25 and 26, partially ending specified patent claims in the existing Bobcat complaint against Caterpillar. This notice does not terminate the entire investigation.",
+        "Investigation 337-TA-1473 began on 2026-01-07 following a complaint by Doosan Bobcat North America. Caterpillar is the named respondent. The complaint alleges infringement involving imported construction equipment; the notice is not a finding that infringement occurred.",
+        "Bobcat filed withdrawal motions on 2026-08-31 and 2026-09-04 and said both were unopposed by Caterpillar. The administrative law judge granted them on 2026-09-10. No party petitioned for review of either initial determination.",
+        "The October determination removes claims 3-6 and 11 of patent 8,364,356; claims 3-5 of patent 8,047,760; claims 3 and 15 of patent 10,934,684; and claims 1, 4 and 17-19 of patent 7,831,364.",
+        "The notice separately describes earlier claim withdrawals on 2026-08-26. Those earlier withdrawals must not be counted as a new October determination or confused with the specified claims in Orders 25 and 26.",
+        "The initial determinations found no other written or oral agreements between the parties concerning the investigation and no extraordinary circumstances warranting denial of the withdrawal motions. This does not establish a commercial settlement or licence.",
+        "The Commission vote and notice issue date are both 2026-10-13. The notice supplies no publication time, company revenue impact, share-price response or valuation estimate; none is inferred here."
+      ],
+      "tags": [
+        "industrials",
+        "construction-equipment",
+        "patents",
+        "trade"
+      ],
+      "tickers": [
+        "CAT"
+      ],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
