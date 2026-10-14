@@ -25,6 +25,7 @@ owns_paths:
 depends_on: []
 decisions:
   - DEC:SOL-HOLD-IS-A-MERGE-BARRIER
+  - DEC:LEADERSHIP-ROTATION-PREREG-V2-NOISE-REFERENCED-H1
 landmines:
   - "Three objects are never substitutable: group_measurement, transition_observation, research_estimate."
   - "Reconstructed coordinates carry mode='reconstructed_price_history' and naturally_observed=false; never attached to an original event as if recorded then."
@@ -33,6 +34,11 @@ landmines:
   - "No rotation x cycle confluence, no LLM detection, no connect-flow gating, no parallel schedule (DNR)."
 do_not_redo:
   - "#8470 merged (bb7847a3): accepted; Trend Persistence C2 closed; Flow Observatory V2 complete."
+  - "Wave 1 MERGED+LANDED: #9240 (1b43a994), #9224 (6f566dbd), #9225 (3af7a7be), records #9245, heal #9288 (152f5018)."
+  - "Wave 2 MERGED+LANDED: #9251 T10 prereg V1 (68fc4170), #9250 T07 (77896be1), #9258 T09 (86138988), #9293 T11-T14 harness (f1d83479), prereg V2 #9327 (6e056dc6), fleet heal #9332 (de5587f5), T20 counter-cases #9345 (40568df0)."
+  - "Wave 3 MERGED+LANDED: #9257 T17 (9ab95cb6), #9271 T18 (3e4d7560), Terminal #1000 (87004fe4 on master)."
+  - "Challenge repair packets MERGED+LANDED 2026-10-14: A #9371 (422012b5), B #9372 (0c38aafe), C #9368 (56ea4f18, CI-authority), Terminal D #1003 (73a935e0 on master) with VPS PRODUCTION_PROOF 18:52Z (served data-dpl-id at app.mastermind-x.com/terminal)."
+  - "H1 scientific disposition: P0 DEVELOPMENT_FAIL MIS-SIZED under prereg V1 is a RECORDED result, never re-run to look better; the repair is prereg V2 (noise-referenced surrogate p) + V2.1 clause/class table, then re-size/power under the F9 gate."
   - "Carriers #8412 (replay isolation), #8476 (rs_history.v1), Terminal #881 (journey) are prior drafts: qualify against current main then integrate via programme lanes; never push to their branches."
   - "#8299 / #7976 / #9035 / #7455 are Sol or theme-owner carriers: read-only; their refusals stand. #7060 and #8713 are holds: never arm, ready or merge."
 artifacts:
@@ -42,25 +48,35 @@ artifacts:
 waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation
-    status: in_progress
-    prs: [9224, 9225, 9240]
-    next_action: PRs #9224 (T16), #9225 (T06), #9240 (T03–T05/T08) are READY and armed merge-on-green; on merge blob-verify against origin/main, run ONE main ci.yml baseline over a clear field, close #8412/#8476 as superseded.
+    status: done
+    prs: [9224, 9225, 9240, 9245, 9288]
   - id: LR-W2
     title: T07 early-context receipt + T09–T14 science protocol, baselines, adjudications (O3/O4/O5)
-    status: in_progress
+    status: done
+    prs: [9250, 9251, 9258, 9293, 9327, 9332, 9345]
     depends_on: [LR-W1]
   - id: LR-W3
     title: T17 bounded measured read + T18 journey + T21 asset adoption + T22 access/interface states (O7)
-    status: in_progress
+    status: done
+    prs: [9257, 9271]
     depends_on: [LR-W1]
   - id: LR-W4
-    title: T19/T20/T23 independent challenge + T24 conditional prospective + T25 release/natural consumption + T26 closeout
-    status: todo
+    title: T19/T20/T23 independent challenge + repair packets A–D + independent fabric re-review
+    status: done
+    prs: [9345, 9368, 9371, 9372]
     depends_on: [LR-W2, LR-W3]
+  - id: LR-W5
+    title: V2 §2–§6 harness repair (F9 size gate, real look_count, prereg V2.1 clause/class table) + T12R/T13R re-size/power + T24 conditional + T25 release readback + T26 four-state closeout
+    status: in_progress
+    depends_on: [LR-W4]
+    next_action: Merge the ORCH-REPAIR DRAFT PR on claude/lr-harness-repair-2026-10-14 (exact-head merge; one main baseline if legacy-jobs.yml paths widen), then re-size under V2.1; only then any P1/P2 read. T25 operator readback is a human gap.
 next_action: >
-  Land wave 1 (#9224/#9225/#9240 armed), blob-verify, one main baseline; consume the running
-  wave-2 (science) and wave-3 (product) orchestrator returns; then challenge wave (T19/T20/T23),
-  T24 conditional, T25 release/natural-consumption proof, T26 four-state closeout.
+  Wave 5: land the harness repair PR (F9 gate + look_count + PREREG V2.1), re-run T12R/T13R
+  size/power under V2.1, record the result (V3 ruling if re-size fails); nightly publishes
+  measured_read / meta.rs_history for T18 natural-consumption proof; T25 operator readback;
+  T26 four-state report (MEASURED_PRODUCT_COMPLETE supportable on code pending main baseline
+  38627611213; SCIENTIFIC_DISPOSITION recorded; PREDICTIVE_CAPABILITY NOT qualified;
+  ORIGINAL_PROGRAMME NOT complete).
 ---
 
 # Leadership Migration & Sector/Theme Rotation Intelligence

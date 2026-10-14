@@ -433,6 +433,9 @@ _ENUM_PINS = (
     ("cash_basis", c.CASH_BASES),
     ("cash_effect_kind", c.CASH_EFFECT_KINDS),
     ("price_kind", c.PRICE_KINDS),
+    ("economic_term_name", c.ECONOMIC_TERM_NAMES),
+    ("economic_term_status", c.ECONOMIC_TERM_STATUSES),
+    ("term_fact_origin", c.TERM_FACT_ORIGINS),
 )
 
 

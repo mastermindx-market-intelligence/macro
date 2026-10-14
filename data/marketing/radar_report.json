@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-10-14T09:55:07Z",
+  "produced_at": "2026-10-14T20:27:30Z",
   "tier": "display",
   "as_of": "2026-10-14",
   "feeds": [
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 1958,
+    "n_tickers": 1967,
     "window_plans": 7
   },
   "surplus": [
@@ -131,20 +131,20 @@
       "opportunity_id": "radar-confluence-SW-2026-10-13"
     },
     {
-      "ticker": "ABR",
-      "feed": "movers",
-      "why": "S&P mover -7.1% 1D ()",
-      "as_of": "2026-10-08",
-      "staleness_days": 6,
-      "opportunity_id": "radar-movers-ABR-2026-10-08"
-    },
-    {
       "ticker": "ABSI",
       "feed": "movers",
       "why": "S&P mover +13.6% 1D ()",
       "as_of": "2026-10-08",
       "staleness_days": 6,
       "opportunity_id": "radar-movers-ABSI-2026-10-08"
+    },
+    {
+      "ticker": "AKAM",
+      "feed": "movers",
+      "why": "S&P mover -8.2% 1D (Technology)",
+      "as_of": "2026-10-08",
+      "staleness_days": 6,
+      "opportunity_id": "radar-movers-AKAM-2026-10-08"
     },
     {
       "ticker": "ALHC",
@@ -171,14 +171,6 @@
       "opportunity_id": "radar-movers-AUGO-2026-10-08"
     },
     {
-      "ticker": "BKD",
-      "feed": "movers",
-      "why": "S&P mover -7.1% 1D ()",
-      "as_of": "2026-10-08",
-      "staleness_days": 6,
-      "opportunity_id": "radar-movers-BKD-2026-10-08"
-    },
-    {
       "ticker": "CB",
       "feed": "prophet",
       "why": "active Prophet plan CB-BULL-20261008, phase pre_trigger, conviction 7",
@@ -187,12 +179,36 @@
       "opportunity_id": "radar-prophet-CB-2026-10-08"
     },
     {
+      "ticker": "COHR",
+      "feed": "movers",
+      "why": "S&P mover -8.0% 1D (Technology)",
+      "as_of": "2026-10-08",
+      "staleness_days": 6,
+      "opportunity_id": "radar-movers-COHR-2026-10-08"
+    },
+    {
+      "ticker": "DELL",
+      "feed": "movers",
+      "why": "S&P mover -10.8% 1D (Technology)",
+      "as_of": "2026-10-08",
+      "staleness_days": 6,
+      "opportunity_id": "radar-movers-DELL-2026-10-08"
+    },
+    {
       "ticker": "DOW",
       "feed": "prophet",
       "why": "active Prophet plan DOW-BULL-20261008, phase triggered_pre_t1, conviction 9",
       "as_of": "2026-10-08",
       "staleness_days": 6,
       "opportunity_id": "radar-prophet-DOW-2026-10-08"
+    },
+    {
+      "ticker": "EOSE",
+      "feed": "movers",
+      "why": "S&P mover -8.9% 1D ()",
+      "as_of": "2026-10-08",
+      "staleness_days": 6,
+      "opportunity_id": "radar-movers-EOSE-2026-10-08"
     },
     {
       "ticker": "EQT",
@@ -211,20 +227,20 @@
       "opportunity_id": "radar-prophet-EXK-2026-10-08"
     },
     {
+      "ticker": "FLEX",
+      "feed": "movers",
+      "why": "S&P mover -8.7% 1D (Technology)",
+      "as_of": "2026-10-08",
+      "staleness_days": 6,
+      "opportunity_id": "radar-movers-FLEX-2026-10-08"
+    },
+    {
       "ticker": "HIMS",
       "feed": "movers",
       "why": "S&P mover +10.2% 1D ()",
       "as_of": "2026-10-08",
       "staleness_days": 6,
       "opportunity_id": "radar-movers-HIMS-2026-10-08"
-    },
-    {
-      "ticker": "IOVA",
-      "feed": "movers",
-      "why": "S&P mover +9.8% 1D ()",
-      "as_of": "2026-10-08",
-      "staleness_days": 6,
-      "opportunity_id": "radar-movers-IOVA-2026-10-08"
     },
     {
       "ticker": "LFST",
@@ -257,22 +273,6 @@
       "as_of": "2026-10-08",
       "staleness_days": 6,
       "opportunity_id": "radar-prophet-ODFL-2026-10-08"
-    },
-    {
-      "ticker": "ORCU",
-      "feed": "movers",
-      "why": "S&P mover +9.3% 1D ()",
-      "as_of": "2026-10-08",
-      "staleness_days": 6,
-      "opportunity_id": "radar-movers-ORCU-2026-10-08"
-    },
-    {
-      "ticker": "PLTU",
-      "feed": "movers",
-      "why": "S&P mover +10.2% 1D ()",
-      "as_of": "2026-10-08",
-      "staleness_days": 6,
-      "opportunity_id": "radar-movers-PLTU-2026-10-08"
     },
     {
       "ticker": "STZ",
@@ -364,8 +364,8 @@
     }
   ],
   "queue": {
-    "added": 10,
-    "expired": 13,
+    "added": 0,
+    "expired": 0,
     "total": 501,
     "open": 286,
     "doa_skipped": 19
@@ -373,8 +373,8 @@
   "tiers_summary": {
     "as_of": "2026-10-08",
     "t1": 28,
-    "t2": 456,
-    "t3": 2279
+    "t2": 478,
+    "t3": 2257
   },
   "cadence": {
     "available": true,
