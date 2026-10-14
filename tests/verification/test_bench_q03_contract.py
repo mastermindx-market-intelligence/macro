@@ -111,6 +111,11 @@ def test_fixture_regeneration_matches_frozen_digests(spec, tmp_path):
 
 @pytest.fixture(scope="module")
 def smoke(spec, tmp_path_factory) -> dict:
+    if not Path("/proc/self/io").exists():
+        # The bench driver's read counters come from Linux /proc/self/io. CI's ci-pack runs
+        # ubuntu-latest and enforces every smoke pin there; a macOS developer run reports this
+        # skip with its reason instead of five opaque driver errors.
+        pytest.skip("Q03 smoke needs Linux /proc/self/io (bench read counters); CI runs it on ubuntu-latest")
     out = tmp_path_factory.mktemp("q03smoke") / "smoke.json"
     fixture = tmp_path_factory.mktemp("q03smoke") / "fixture"
     proc = subprocess.run(
