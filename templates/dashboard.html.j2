@@ -14009,10 +14009,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% elif _dfp.headline_zh is defined and _dfp.headline_zh %}
           <span class="l-zh">{{ _dfp.headline_zh }}</span>
           {% else %}
-          {% set _dfp_cuts = (_dfp.implied_cuts_12m if (_dfp.implied_cuts_12m is defined and _dfp.implied_cuts_12m is not none) else 0) %}
-          {% set _dfp_n_zh = (_dfp_cuts | abs) | round(0) | int %}
-          {% set _dfp_dir_zh = '加息' if _dfp_cuts < 0 else ('降息' if _dfp_cuts > 0 else '不变') %}
-          <span class="l-zh">市场隐含利率路径：未来12个月定价约{{ _dfp_n_zh }}次{{ _dfp_dir_zh }}。</span>
+          {% set _dfp_cuts = (_dfp.implied_cuts_12m if (_dfp.implied_cuts_12m is defined and _dfp.implied_cuts_12m is number) else none) %}
+          {% set _dfp_n_zh = ((_dfp_cuts | abs) | round(0) | int) if _dfp_cuts is not none else none %}
+          {% set _dfp_dir_zh = none if _dfp_cuts is none else ('加息' if _dfp_cuts < 0 else ('降息' if _dfp_cuts > 0 else '不变')) %}
+          <span class="l-zh">市场隐含利率路径{% if _dfp.implied_source_zh is defined and _dfp.implied_source_zh %}（{{ _dfp.implied_source_zh }}）{% else %}（来源未记录）{% endif %}{% if _dfp_cuts is not none %}：未来12个月定价约{{ _dfp_n_zh }}次{{ _dfp_dir_zh }}{% endif %}。</span>
           {% endif %}
           {# Gap chip (Fed vs market divergence) #}
           {% if _ch_gap and _ch_gap.lean_en is defined and _ch_gap.gap_bp is defined %}
