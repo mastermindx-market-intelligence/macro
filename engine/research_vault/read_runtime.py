@@ -75,6 +75,7 @@ def build_read_service(**overrides: Any) -> ResearchReadService:
         rio_reader=built["rio_reader"],
         rio_inventory=built["rio_inventory"],
         source_classifier=built["source_classifier"],
+        comparison_owners=built.get("comparison_owners"),
         **clock,
     )
 

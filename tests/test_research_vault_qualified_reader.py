@@ -210,3 +210,19 @@ def test_policy_withdrawn_during_final_fence_read_refuses_delivery(prepared):
     with pytest.raises(SelectedReadUnavailable):
         result.delivery_guard()
     assert owner._selected is None
+
+
+def test_reuse_window_begins_after_real_preparation_but_source_age_never_resets(prepared):
+    owner, store, now, policy = prepared
+    # A full bounded qualification sweep may take longer than the reuse window.
+    # This is a fresh sweep, not renewal of a cached success timestamp.
+    store.midflight = lambda _store: now.__setitem__(0, now[0] + 400)
+    owner.prepare()
+    assert owner.run(lambda: corpus.search(owner.connection(), 'alpha')).value
+    now[0] += 301
+    with pytest.raises(SelectedReadUnavailable):
+        owner.run(lambda: 'body')
+    # Repreparation cannot make a stale producer generation fresh.
+    now[0] = fixture.COMPLETED_AT + owner.max_age_seconds + 1
+    with pytest.raises(SelectedReadUnavailable):
+        owner.prepare()

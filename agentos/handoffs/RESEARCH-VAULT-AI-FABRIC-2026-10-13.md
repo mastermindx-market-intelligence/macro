@@ -241,3 +241,26 @@ The final selected-reader CI curation/packing contracts passed2/2 in172.73s.
 The initial invocation named a nonexistent test file and ran no tests; the corrected
 actual test_ci_pack.py invocation is the accepted result. All affected checks are
 bound to the staged reader/selection source, with no broader CI success claim.
+
+
+## October 14 05:14 UTC integration corrections
+
+Mastermind #1445 is now merged at73dbeb316d0b254505ed235a9a05da5c98b695a7;
+installation remains unperformed. The provider/comparison union subsequently
+passed135 tests and five subtests, zero skips. It preserves explicitly injected
+comparison owners through build_read_service. Its finite reuse window begins
+only after a real new full qualification and SQLite validation finish; source
+completion time and source maximum-age limits remain immutable. One causal test
+proved the earlier start-time reuse window refused a long successful preparation,
+and the repaired test also proves a new preparation cannot freshen a stale source.
+An earlier comparison-factory test overlapped a source edit and passed; it is
+explicitly not red evidence. Actual final integration tests are the accepted proof.
+
+Writer artifact qualification now passes354 tests, zero skips after exact Git PDF,
+workflow and catalog fixtures and the existing assembled dependency environment
+were supplied. Independent review runrv-writer-protocol-review-01a13301-r1 was a
+new bounded scope after the observed Fabric publisher repair. It terminated before
+launch withSUPPORT_POLICY_STALE_ACTIVE_REFUSED on routedUbuntu0; no review ran,
+no retry followed and root's source review is not described as independent review.
+Writer activation still requires all-writer settlement, complete-census runtime
+budget qualification and an independent producer landing before gatedF11.

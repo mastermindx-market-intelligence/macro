@@ -107,6 +107,8 @@ class QualifiedReadProvider:
     SQLite query overhead. The deployment must separately qualify actual memory
     use. A moved fence, expired selection or withdrawn writer policy invalidates
     reuse permanently; only a fresh explicit prepare can replace that selection.
+    The reuse window starts after the real sweep and SQLite qualification finish;
+    producer completion time and the maximum source age are never reset.
     """
     def __init__(self, store, *, expected_producer_commit: str, clock: Callable[[], int],
                  writer_policy: Callable[[], bool] = lambda: False,
@@ -127,6 +129,7 @@ class QualifiedReadProvider:
         self.corpus_byte_budget, self.image_admission_bytes = corpus_byte_budget, image_admission_bytes
         self.catalog_store = _SelectedStore(self)
         self._selected = None
+        self._prepared_at = None
         self._lock = threading.RLock()
         self._prepare_lock = threading.Lock()
         self._inflight_bytes = 0
@@ -142,6 +145,7 @@ class QualifiedReadProvider:
                 if self._active:
                     raise SelectedReadUnavailable("operation_in_progress")
                 self._selected = None
+                self._prepared_at = None
             selected, reason = generation.explained_selection(
                 _LimitedStore(self.store, self.corpus_byte_budget),
                 expected_producer_commit=self.expected_producer_commit,
@@ -154,19 +158,26 @@ class QualifiedReadProvider:
             # Check SQLite capability and byte parity before admitting any reads.
             conn = _open_image(selected)
             conn.close()
+            prepared_at = self.clock()
+            if type(prepared_at) is not int or prepared_at < selected.qualified_at:
+                raise SelectedReadUnavailable("preparation_clock_refused")
             with self._lock:
                 self._selected = selected
+                self._prepared_at = prepared_at
             self._check(selected)
         finally:
             self._prepare_lock.release()
 
     def _check(self, selected):
         try:
+            with self._lock:
+                prepared_at = self._prepared_at
             current = self.clock()
             if (self.writer_policy() is not True or type(current) is not int
+                    or type(prepared_at) is not int or current < prepared_at
                     or current < selected.qualified_at or current < selected.completed_at
                     or current - selected.completed_at > self.max_age_seconds
-                    or current - selected.qualified_at > self.max_reuse_seconds):
+                    or current - prepared_at > self.max_reuse_seconds):
                 raise SelectedReadUnavailable("selection_policy_or_age_refused")
             observed = self.store.get_bytes_strict_bounded_versioned(
                 catalog.CATALOG_KEY, generation.CATALOG_MAX_BYTES)
@@ -181,12 +192,13 @@ class QualifiedReadProvider:
             if (self.writer_policy() is not True or type(latest) is not int
                     or latest < current or latest < selected.qualified_at
                     or latest - selected.completed_at > self.max_age_seconds
-                    or latest - selected.qualified_at > self.max_reuse_seconds):
+                    or latest - prepared_at > self.max_reuse_seconds):
                 raise SelectedReadUnavailable("selection_policy_or_age_refused")
         except Exception as exc:
             with self._lock:
                 if self._selected is selected:
                     self._selected = None
+                    self._prepared_at = None
             if isinstance(exc, SelectedReadUnavailable):
                 raise
             raise SelectedReadUnavailable("selection_fence_unavailable") from None

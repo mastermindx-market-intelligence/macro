@@ -366,3 +366,24 @@ def test_owner_boolean_index_is_not_an_exact_claim_binding(configured):
     got = compare(service, req)
     assert got['state'] == 'UNAVAILABLE' and got['reason'] == 'BASIS_UNQUALIFIED'
     assert not calls['commit']
+
+
+def test_runtime_factory_preserves_explicit_comparison_owner_injection(configured):
+    from engine.research_vault.read_runtime import build_read_service
+    service, owners, records, stored, calls, binding = configured
+    built = build_read_service(
+        catalog_store=service._catalog_store,
+        corpus_connection=service._corpus_connection,
+        preview_selector=service._preview_selector,
+        extracted_text_loader=service._extracted_text_loader,
+        source_digest_reader=service._source_digest_reader,
+        rio_reader=service._rio_reader,
+        clock=lambda: NOW,
+        comparison_owners=owners,
+    )
+    prepared = prepare(built)
+    assert prepared['state'] == 'INPUTS_ONLY'
+    result = compare(built, request(prepared))
+    assert result['state'] == 'AVAILABLE'
+    assert result['comparison']['relation'] == 'DIFFERING_SOURCE_STATEMENTS'
+    assert calls['commit'] == [('fixture-left', 'fixture-right')] * 2
