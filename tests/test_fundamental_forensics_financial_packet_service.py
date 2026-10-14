@@ -803,16 +803,19 @@ def test_t6d_floor_refusal_wins_over_metadata_defect() -> None:
     request's recorded_at: the admission floor's typed refusal (the exception
     enforce_dataset_admission_floor raises in its own tests —
     FinancialQueryUnavailableError) wins, never the helper's raw
-    ValueError."""
+    ValueError. ``__context__ is None`` proves the floor raised outside any
+    except block: a converted helper ValueError would survive as the
+    implicit context even under ``from None``."""
     dataset = _metadata_defect_dataset(
         dataset_admitted_at=datetime(2026, 8, 6, tzinfo=timezone.utc)
     )
     # _t3_latest() records at T3_RECORDED (2026-08-05T12:00:02Z), strictly
     # before the clock above, so the floor excludes the generation.
-    with pytest.raises(FinancialQueryUnavailableError):
+    with pytest.raises(FinancialQueryUnavailableError) as exc_info:
         execute_financial_packet(
             body=_t3_latest(), provider=_StaticPacketProvider(dataset)
         )
+    assert exc_info.value.__context__ is None
 
 
 def test_t6e_metadata_defect_alone_is_typed_unavailable() -> None:

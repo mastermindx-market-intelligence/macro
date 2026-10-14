@@ -21,6 +21,7 @@ from engine.fundamental_forensics.query import (
     FILING_METADATA_SCHEMA,
     PeriodRequest,
     QueryPolicy,
+    QueryValidationError,
 )
 from engine.fundamental_forensics.query_service import (
     CanonicalEntityBinding,
@@ -947,16 +948,20 @@ def test_t6a_floor_refusal_wins_over_metadata_defect() -> None:
     request's recorded_at: the admission floor's typed refusal (the exception
     enforce_dataset_admission_floor raises in its own tests —
     FinancialQueryUnavailableError) wins, never the helper's raw
-    ValueError."""
+    ValueError and never the metric gate's engine refusal. ``__context__ is
+    None`` proves the floor raised outside any except block: a converted
+    ValueError/QueryValidationError would survive as the implicit context
+    even under ``from None``."""
     dataset = _unknown_metadata_key_dataset(
         dataset_admitted_at=datetime(2026, 8, 6, tzinfo=timezone.utc)
     )
     # _t3_latest() records at T3_RECORDED (2026-08-05T12:00:02Z), strictly
     # before the clock above, so the floor excludes the generation.
-    with pytest.raises(FinancialQueryUnavailableError):
+    with pytest.raises(FinancialQueryUnavailableError) as exc_info:
         execute_financial_revisions(
             body=_t3_latest(), provider=_StaticPacketProvider(dataset)
         )
+    assert exc_info.value.__context__ is None
 
 
 def test_t6b_unsupported_metric_refusal_wins_over_metadata_defect() -> None:
@@ -973,6 +978,42 @@ def test_t6b_unsupported_metric_refusal_wins_over_metadata_defect() -> None:
         )
     assert exc_info.value.status_code == 400
     assert exc_info.value.detail == "unsupported metric"
+
+
+def test_t6f_engine_visible_metadata_defect_alone_is_typed_unavailable() -> None:
+    """A0-h1 review F1: an unknown metadata key is visible to the metric
+    gate's engine construction, which refuses it with QueryValidationError.
+    That is a DATASET defect, so revisions answers the typed
+    FinancialQueryUnavailableError (503) — the same answer the packet path
+    gives the same dataset (test_t6e) — never the request-side 400
+    ``request contract violation``."""
+    dataset = _unknown_metadata_key_dataset()
+    with pytest.raises(FinancialQueryUnavailableError) as exc_info:
+        execute_financial_revisions(
+            body=_t3_latest(), provider=_StaticPacketProvider(dataset)
+        )
+    assert not isinstance(exc_info.value, (ValueError, FinancialQueryAdmissionError))
+
+
+def test_t6g_query_matrix_contract_violation_still_400(monkeypatch) -> None:
+    """The F1 split narrows ONLY engine construction: a QueryValidationError
+    raised by ``query_matrix`` (which reads the request's metrics, periods
+    and policy) on a clean dataset keeps its 400 ``request contract
+    violation``."""
+    import engine.fundamental_forensics.revision_service as revision_service_module
+
+    def _refuse(self, **kwargs):
+        raise QueryValidationError("probe: request-side violation")
+
+    monkeypatch.setattr(
+        revision_service_module.BitemporalMetricQueryEngine, "query_matrix", _refuse
+    )
+    with pytest.raises(FinancialQueryAdmissionError) as exc_info:
+        execute_financial_revisions(
+            body=_t3_latest(), provider=_StaticPacketProvider(fip1_packet_dataset(ROOT))
+        )
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "request contract violation"
 
 
 def test_t6c_metadata_defect_alone_is_typed_unavailable() -> None:

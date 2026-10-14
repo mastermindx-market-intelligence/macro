@@ -357,8 +357,8 @@ def test_t3b_publisher_refuses_package_with_foreign_entity_id(tmp_path, monkeypa
 
 @pytest.mark.parametrize(
     "present_bad_entity_id",
-    ["", 123, None],
-    ids=["empty-string", "int", "none"],
+    ["", 123, None, ["x"], {"x": 1}],
+    ids=["empty-string", "int", "none", "list", "dict"],
 )
 def test_t3c_publisher_refuses_package_with_present_non_matching_entity_id(
     tmp_path, monkeypatch, present_bad_entity_id
@@ -402,6 +402,55 @@ def test_t3c_publisher_refuses_package_with_present_non_matching_entity_id(
     assert not pub._latest_json_path(store, identity["entity_id"]).exists()
     # nothing at all was written for the refused issuer
     assert not list(store.rglob(f"*{identity['entity_id']}*")) if store.exists() else True
+
+
+def test_t3d_publisher_accepts_package_with_present_equal_entity_id(
+    tmp_path, monkeypatch
+) -> None:
+    """A0-h1 (review F3): a retained manifest whose ``entity_id`` is PRESENT
+    and exactly the binding's entity string is a matching package — it is
+    published, and the publisher does not rewrite its manifest (the stamp
+    is only for an ABSENT key)."""
+    lane = pub._materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = pub._write_contract(tmp_path, identity, None)
+    assert pub._capture_cli(lane, contract) == 0
+
+    real_read = producer.read_retained_fif_packages
+
+    def _entity_claimed_read(archive_root, *, cik, accessions):
+        packages = real_read(archive_root, cik=cik, accessions=accessions)
+        return tuple(
+            type(package)(
+                cik=package.cik,
+                accession=package.accession,
+                manifest={**package.manifest, "entity_id": identity["entity_id"]},
+                index_bytes=package.index_bytes,
+                members=package.members,
+                witness_bytes=package.witness_bytes,
+                package_dir=package.package_dir,
+            )
+            for package in packages
+        )
+
+    real_replace = producer.replace
+    manifest_rewrites: list[object] = []
+
+    def _spy_replace(obj, /, **changes):
+        if "manifest" in changes:
+            manifest_rewrites.append(obj)
+        return real_replace(obj, **changes)
+
+    monkeypatch.setattr(producer, "read_retained_fif_packages", _entity_claimed_read)
+    monkeypatch.setattr(producer, "replace", _spy_replace)
+    store = tmp_path / "store"
+    report_path = tmp_path / "report.json"
+    assert pub._publish_cli(lane, contract, store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["ticker"] for row in report["published"]] == [identity["ticker"]]
+    assert report["excluded"] == []
+    assert pub._latest_json_path(store, identity["entity_id"]).exists()
+    assert manifest_rewrites == []
 
 
 # ---------------------------------------------------------------------------

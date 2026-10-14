@@ -273,7 +273,17 @@ def _refuse_unsupported_metrics(
     dataset: FinancialPacketDataset,
     query_request: PacketQueryRequest,
 ) -> None:
-    """Reuse the frozen kernel's cutoff-visible metric gate. Do not scan a live catalog."""
+    """Reuse the frozen kernel's cutoff-visible metric gate. Do not scan a live catalog.
+
+    A0-h1 (review F1): engine construction reads ONLY dataset-side inputs
+    (ledger, registry, binding, filing metadata) and fixed bounds, so any
+    refusal there — including the QueryValidationError that
+    ``_freeze_filing_metadata`` raises for an unknown or malformed metadata
+    key — is a dataset defect: typed unavailability, exactly as the packet
+    path answers the same defect. Only ``query_matrix``, which reads the
+    request's metrics/periods/policy, maps QueryValidationError to the
+    request-side 400.
+    """
     try:
         engine = BitemporalMetricQueryEngine(
             ledger=dataset.ledger,
@@ -287,6 +297,9 @@ def _refuse_unsupported_metrics(
                 max_cells=MAX_CELLS,
             ),
         )
+    except Exception:
+        raise FinancialQueryUnavailableError() from None
+    try:
         engine.query_matrix(
             tickers=[binding.ticker],
             metrics=list(query_request.metrics),
@@ -340,9 +353,11 @@ def execute_financial_revisions(
     # the typed admission gates above (floor, unsupported metrics) and
     # immediately before the assembly it feeds — so a request those gates
     # refuse keeps its typed refusal instead of the helper's raw ValueError
-    # winning the race, and a metadata defect (unknown key, conflicting
-    # metadata) surfaces as a typed FinancialQueryUnavailableError from the
-    # service, never a raw ValueError into the API catch-all.
+    # winning the race. A metadata defect surfaces as a typed
+    # FinancialQueryUnavailableError from the service, never a raw
+    # ValueError into the API catch-all: an engine-visible defect (unknown
+    # key) is refused by the metric gate's engine construction above, an
+    # engine-invisible one (raw conflicting double bind) by this helper.
     try:
         filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
         packet = assemble_financial_intelligence_packet(

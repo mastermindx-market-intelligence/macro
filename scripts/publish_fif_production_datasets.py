@@ -1088,11 +1088,13 @@ def _stage_contract_issuers(
                 refusals.append(f"admission_refused:{exc.code}")
                 continue
             # A0 (R-1): bind the admitted package to the staged issuer BEFORE
-            # it can reach the store material. The capture manifest carries
-            # no entity identity, while the served statement path binds at
-            # the issuer level and refuses a package whose manifest
-            # entity_id/cik disagree with the issuer binding — so the binding
-            # is stamped here, once, at the only publisher seam, from the
+            # it can reach the store material. A capture manifest carries an
+            # entity_id only when the capture was handed an identity (the
+            # member capture writes it only as a non-empty string), while the
+            # served statement path binds at the issuer level and refuses a
+            # package whose manifest entity_id/cik disagree with the issuer
+            # binding — so an absent entity_id is stamped here, once, at the
+            # only publisher seam, from the
             # SAME binding the issuer is staged with (never derived from a
             # ticker). A package whose own identity cross-claims another
             # issuer is refused, never relabelled. No digest inside
