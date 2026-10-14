@@ -143,9 +143,9 @@ waves:
       existing source/runtime and client prerequisites, then prove actual authenticated
       ChatGPT and Deep Research discovery, exact citations, correction and denial behavior.
 next_action: >
-  Continue the current #8438 completion frontier from comment 6136837584. Finish source-digest,
-  publication-time and visible-cohort retrieval repairs; qualify and finish existing #8622;
-  prove >=95% qualified materialization before F11 merges. Recover L3/L4 and actual Brain/MCP
+  Continue the current #8438 completion frontier from comment 6136837584. Digest/date source #9062 and materializer #8622 are merged. Finish #9081 intelligence,
+  preserve original visible-cohort/full-document recovery and qualify current-generation materialization;
+  prove >=95% qualified materialization before F11 merges. L3/L4/runtime #1393/#1397/#1403 are merged but not installed. Qualify actual Brain/MCP
   composition, then prove real ChatGPT and Deep Research consumption under the cleared H-00.
   Current execution uses Sol coordinators and the installed M2 shell Fabric adapter; historical
   owner labels are not live writer evidence. Preserve exact active carriers and uncertain effects.
@@ -158,5 +158,13 @@ holds the masterplan chapters, the 2026-10-04 Sol handoff and execution checkpoi
 record is the Agent OS pointer so that seat handoffs on main resolve to a workstream; the
 program narrative stays on the carrier.
 
-Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md` (latest) and
+Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (latest) and
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+
+
+Current dated frontier: the October 14 03:20 UTC continuation update records the
+fifth intelligence canary's semantic refusal, all three recovered original Fabric
+results with unresolved controller/lease state, and resumed M1 discovery without
+fresh publication proof. Root is integrating producer improvements and commissioning
+the bounded Brain comparison consumer; neither source progress nor the old producer
+counters satisfies the required current-generation 95 percent or live-client gates.

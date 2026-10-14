@@ -35,6 +35,8 @@ owns_paths:
   - research/DATA_OS_COMPLETION_CONTINUATION_HANDOFF_2026-10-13.md
 decisions:
   - DEC:DATAOS-D00-SEMANTIC-DECISIONS
+  - DEC:DATAOS-D00-A1-VENUE-CLOCK-UNITS-SCOPE
+  - DEC:DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER
 waves:
   - id: d00-freeze
     title: Freeze the six semantic decisions (D00)
@@ -42,15 +44,18 @@ waves:
     pr: 9133
   - id: identity-time
     title: Identity adoption, reference snapshots, continuity refusal matrix, three read modes, read coherence (G01, I01-I03, T01-T02)
-    status: in_progress
+    status: done
+    pr: [9135, 9136, 9142, 9143, 9144]
     depends_on: [d00-freeze]
   - id: math-registry-rights
     title: Baseline and discriminators, dataset registry matrix, rights/leakage matrix, action projection and split/distribution views (Q00, R00, K01, P01-P04)
-    status: in_progress
+    status: awaiting_ci
+    pr: [9147, 9148, 9150, 9152, 9154, 9156, 9168]
+    next_action: "Heal #9168's own contract-delta red (widen the nine legacy-jobs.yml paths lists whose import closure now reaches lib/dataos/price_views.py), merge at the exact head on concluded green, then dispatch ONE main baseline; every other wave-2 PR is merged and landed."
     depends_on: [d00-freeze]
   - id: consumers
-    title: Retained views, price-ladder opt-in canonical read, coverage, agreement inspector, Terminal / DataWorkspace / basket reads, support matrix (P05, C01-C03, U01-U04, M01)
-    status: todo
+    title: Retained views, D00.A1 venue clock + declared units, price-ladder opt-in canonical read, coverage, agreement inspector, view-contract sidecar emitter, Terminal / DataWorkspace / basket reads, support matrix (P05, P06, C01-C04, U01-U04, M01)
+    status: in_progress
     depends_on: [identity-time, math-registry-rights]
   - id: verification-acceptance
     title: Independent oracle, adversarial access, matched workload, end-to-end journey, corrections, recovery, source review, install and cycle plans (Q01-Q03, F01, A01-A03, R01-R03)
@@ -61,23 +66,28 @@ waves:
     status: todo
     depends_on: [verification-acceptance]
 next_action: >-
-  Consume the identity+time and math+registry orchestrator returns, judge every DRAFT PR
-  by artifact (open the diff, rerun the named pytest command in the lane tree, confirm no
-  unowned path), mark ready, squash-merge on concluded green with the full head oid, verify
-  each landing against freshly fetched origin/main, then commission the consumer wave.
+  Merge the seat export wiring #9168 at its exact head on concluded green, dispatch ONE main
+  ci.yml baseline (preflight for an in-flight run first), then consume the consumer-wave
+  orchestrator return (P05, P06, C01-C03, U03-U04, M01): judge each DRAFT PR by artifact,
+  one watcher per PR, hand-merge at the exact head, verify every landing against freshly
+  fetched origin/main; commission C04 (nightly sidecar emitter) after C01 lands, then
+  commission verification + acceptance (ORCH-4) and run the seat-owned R01-R03 / C00 closeout.
 landmines:
   - "WS:TIINGO-DATA-OS owns lib/dataos/tiingo_*.py, collectors/tiingo_archive.py, scripts/tiingo_*, docs/tiingo-evidence/ and the twenty PROPOSED Tiingo registry rows; this workstream never touches them."
-  - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1); parallel export wiring collides on the shared export list."
+  - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1; the seat from the wave-2 wiring #9168 on); parallel export wiring collides on the shared export list."
   - "engine/price_ladder.py S10 (false ADJUSTED equivalence) is a documented legacy defect; the consumer wave adds an opt-in canonical read and leaves legacy bytes unchanged."
   - "Terminal PR #955 is held and never touched; Terminal release acts and any live/VPS act are seat-only."
   - "DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT: CN limit arithmetic stays RAW; no repricing of historical books anywhere in the programme."
   - "A fabric lane on a claude/* branch inherits the ship-loop Stop hook and will push and arm; lanes run on lane/* branches and only the orchestrator pushes to claude/dataos-<pkg>-2026-10-13."
+  - "R02 m3/m6/m8 (UTC as_at day, undeclared currency, consumer-A venues/basis) are recorded limitations RULED by D00.A1; consumer lanes implement P06 exactly as written, never a local variant."
+  - "Terminal: any edit to terminal/lib/i18n.tsx, terminal/app/globals.css, terminal/components/ChartPanel.tsx or terminal/lib/dataCache.ts turns every pr-crops EVIDENCE.yml lock that pins it RED; reconcile per the house form (dated source-hash-reconciliation comment + new sha256 rows, PNG preserved; real recapture where the surface renders the changed region) and run the FULL npm test shard, never targeted files."
 do_not_redo:
   - "D00 (PR #9133, squash 52af4108676b, 2026-10-13) is accepted and frozen; re-open only on a material invalidator (contradicting evidence, changed contract, explicit authority reversal)."
   - "Identity candidate PR #8637 is adopted by cherry-pick -x in package I01; do not re-author identity continuity or recommission its GMI sidecar changes."
   - "The route proof (G01) is one lane, one round; do not replay a blocked preflight."
 artifacts:
   - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
+  - research/data_os_completion/2026-10-13/D00_A1_AMENDMENT.md
   - research/MASTERMIND_DATA_OS_ARCHITECTURE.md
   - research/MASTERMIND_DATA_OS_V1_IMPLEMENTATION_PLAN.md
   - research/DATA_OS_COMPLETION_CONTINUATION_HANDOFF_2026-10-13.md
