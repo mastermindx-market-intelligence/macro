@@ -310,6 +310,70 @@ event with a filing that reports it. It labels routing only. It re-grades no slo
 - **Not re-scored.** The addendum lives in `audit/sample_routing.json`,
   `audit/routing_verdicts.json` and `audit/routing_check.json` only.
 
+### Routing gates validation addendum
+
+The routing check led to three gates that run, in order, before any case is labeled
+(`engine/news_impact/routing_gates.py`, version `ni-routing-gates-1`, frozen at commit
+`a8f98d21`). This addendum runs the validation `DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES`
+registered before the gates were built. It labels routing only. It re-grades no slot.
+
+- **The gates.** G1 drops a headline that carries no issuer event: a market report, a
+  quote page, a solicitation or commentary. G2 drops a case whose resolved issuer the
+  headline does not name, whose ticker is ambiguous (one letter or a common word, with no
+  registrant name beside it), or whose headline is about someone else. G3 drops a case
+  whose attached filings carry none of the routed template's family language, and a
+  results headline with no attached item 2.02 filing. The gates never read `proxy_cell`.
+- **Pool and sample.** 235 w2 candidates have an attached body. The 43 cases the routing
+  check classed trained the gates and are left out. Of the other 192, the gates keep 97
+  and drop 95. The seat drew 40 gated-in and 20 gated-out cases (seed 20261017) and read
+  them as shuffled cards that did not show gate status (`audit/sample_gates.json`). The
+  classes are the routing check's four (`audit/gate_verdicts.json`).
+- **Bars, fixed before any card was read.** Gated-in: at least 34 of 40 `MATCH`.
+  Gated-out: the estimated share of real events (`MATCH` cases) that the gates drop is
+  0.20 or less.
+- **Gated-in: MISS.** 32 of 40 are `MATCH` (0.80, Wilson 95% [0.652, 0.895]), two short of
+  the bar. Without the gates the routing check found 15 of 40 (0.375). None of the 8
+  misses is `WRONG_ISSUER`:
+  - 2 report an event of another family: a product offering routed to capital allocation,
+    and a launch of something other than a product routed to strategic/product. Neither
+    headline reports an event of its routed family, so both are classed `NO_EVENT`.
+  - 3 are headline shapes G1 does not catch: a market report, a quote page and a
+    solicitation (`NO_EVENT`).
+  - 3 are `OTHER_EVENT`: the attached filing carries the family's language, but about a
+    different event.
+
+  | Template | Gated-in | `MATCH` | `NO_EVENT` | `OTHER_EVENT` |
+  |---|---|---|---|---|
+  | T1 | 13 | 10 | 1 | 2 |
+  | T2 | 22 | 20 | 2 | 0 |
+  | T3 | 5 | 2 | 2 | 1 |
+
+- **Gated-out: PASS.** 3 of 20 are `MATCH`. Weighted by pool size, the gates keep about
+  77.6 real events and drop about 14.2, a share of 0.155. The bound interval [0.054,
+  0.351] combines the two arms' Wilson bounds, so it is wide. All 3 dropped real events
+  are T2 cases cut by `g3_no_family_language`: the filing reports the event in words the
+  family pattern does not match. The other 17 are 6 `NO_EVENT`, 6 `OTHER_EVENT` and 5
+  `WRONG_ISSUER`.
+- **T3 is the weak family.** 2 of 5 gated-in T3 cases are `MATCH`. 3 of the 6 gated-out
+  T3 cases are `OTHER_EVENT`: a real product or partnership event that no attached 8-K
+  reports. No gate can keep those, because the body does not report them.
+- **The frame binds harder than the gates.** The 97 gated-in pool cases are 36 T1, 54 T2
+  and 7 T3. At each family's sampled `MATCH` rate they hold about 28 T1, 49 T2 and 3 T3
+  on-event cases, and the 43 training cases add 7, 7 and 1. Reaching 200 per family on
+  8-K bodies alone therefore needs a frame about 6× wider for T1, 4× for T2 and 50× for
+  T3. The T3 figure rests on 5 sampled cases.
+- **Limit of this audit.** The auditor is the seat, which also wrote the gates. The cards
+  hid each case's gate status, not the auditor's knowledge of the rules. No second auditor
+  read the same 60 cards, because the GLM, Grok and Codex lanes were exhausted.
+- **Ruling.** `ni-routing-gates-1` is not accepted as an on-event guarantee. It stays in
+  the draw as an efficiency filter, and every scored continuation case still carries its
+  own routing verdict. A revised gate set is frozen before a fresh validation on cases no
+  card has shown, under the same bars. T3 cannot reach 200 on 8-K bodies, and its
+  shortfall is printed. See `DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH` and
+  `DSC:NEWS-IMPACT-ROUTING-GATES-1-VALIDATION`.
+- **Not re-scored.** The addendum lives in `audit/sample_gates.json`,
+  `audit/gate_verdicts.json` and `audit/gate_validation.json` only.
+
 ### Eval receipts
 
 There is one `eval_receipt.v1` per family (`eval_receipt_fam_a.json`,
@@ -440,6 +504,9 @@ entries and 1 CORRECTION.
 | `audit/sample_routing.json` | The 40 routing-check cases plus the three motivating cases (ids only) |
 | `audit/routing_verdicts.json` | Seat routing verdicts per case, with paraphrased notes |
 | `audit/routing_check.json` | Routing codes, flags, verdicts, class rates and flag precision and recall |
+| `audit/sample_gates.json` | Gates validation pool counts, the 60 sampled cases with gate status, card order (ids and codes only) |
+| `audit/gate_verdicts.json` | Seat routing verdicts for the 60 gates-validation cases, with paraphrased notes |
+| `audit/gate_validation.json` | Per-case gate status and class, class rates per arm, both bars with PASS or MISS |
 | `tools/build_label_lanes.py` | Builds the labeling lane trees and packets |
 | `tools/label_batch.template.txt` | Lane packet prompt-v1.0 (64 cases per family) |
 | `tools/label_batch.template.v1.1.txt` | Lane packet prompt-v1.1 (93 cases per family) |
@@ -450,6 +517,7 @@ entries and 1 CORRECTION.
 | `tools/build_audit_absent.py` | Draws the addendum sample and runs its positive control |
 | `tools/build_audit_malformed.py` | Period-shape census and counterfactual re-grade of the `malformed_value` slots |
 | `tools/build_routing_check.py` | Draws the routing sample and scores the routing verdicts (needs Python 3.11) |
+| `tools/build_gate_validation.py` | Draws the gates-validation sample and scores its verdicts (needs Python 3.12) |
 | `tools/score_benchmark.py` | Produces `summary.json`, `critical_slots.jsonl` and the receipts |
 
 Registration: sampler `ni-sampler-1`, sampling seed 20261014. Bootstrap 9,999 reps, seed
@@ -486,12 +554,17 @@ PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchm
 PYTHONPATH=. python3.11 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_routing_check.py \
   SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark AUDIT_OUT \
   research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/routing_verdicts.json
+# routing gates validation: recompute gate statuses, draw the sample, score the committed verdicts (Python 3.12)
+PYTHONPATH=. python3.12 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_gate_validation.py \
+  SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/gate_verdicts.json
 ```
 
 `build_audit.py` also writes `batch_*.txt` audit cards, `build_audit_absent.py` writes
 `batch_absent_*.txt` cards, `build_audit_malformed.py` writes `batch_malformed_*.txt`
-cards and `build_routing_check.py` writes `batch_routing_*.txt` cards. All four quote
-headlines or filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
+cards, `build_routing_check.py` writes `batch_routing_*.txt` cards and
+`build_gate_validation.py` writes `batch_gates_*.txt` cards. All five quote headlines or
+filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
 tool's output.
 
 Checked at commit time from the committed tools and the committed `audit/audit.json`:
@@ -501,12 +574,17 @@ receipts byte for byte, and `build_audit.py` reproduces `audit/sample.json` byte
 control reports 40 hits and 0 misses. `build_audit_malformed.py` reproduces
 `audit/regrade_malformed.json` byte for byte. `build_routing_check.py` reproduces
 `audit/sample_routing.json` and `audit/routing_check.json` byte for byte.
+`build_gate_validation.py`, run under Python 3.12 against the frozen gates, reproduces
+`audit/sample_gates.json` and `audit/gate_validation.json` byte for byte.
 
 ## Next
 
-1. Build the three routing gates in the draw (non-event headline filter, issuer-resolution
-   guard, body-to-event match), freeze them, then validate them on a fresh gated-in
-   sample and a gated-out audit as `DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES` registers.
+1. Revise the gates for the failure kinds the validation found: a product sense of
+   "offering" under T1, a launch of something other than a product under T3, the market
+   report, quote page and solicitation shapes G1 missed, a body event that differs from the
+   headline's, and G3 cutting T2 events phrased outside the family pattern. Freeze the
+   revised set before drawing a fresh validation sample, from cases no card has shown and
+   under the same bars (`DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH`).
 2. Run a third family (GLM after 2026-10-19 05:16Z) under prompt-v1.2 and annotation
    guide-v1.2 on the disputed slots of gated-in cases only: set
    `LABEL_TEMPLATE=tools/label_batch.template.v1.2.txt` for `tools/build_label_lanes.py`.
@@ -514,4 +592,6 @@ control reports 40 hits and 0 misses. `build_audit_malformed.py` reproduces
    contract: a per-share basis for a T1 dividend amount, and a total-authorization slot.
 4. Decide per-slot against per-case publication.
 5. Add MiniMax cost capture.
-6. Widen the graded frame toward 600 cases where a body source exists.
+6. Widen the graded frame toward 600 cases inside the existing source owners. On 8-K
+   bodies alone, T1 needs about 6×, T2 about 4× and T3 about 50× the current frame. Print
+   T3's shortfall rather than fill it with off-event cases.
