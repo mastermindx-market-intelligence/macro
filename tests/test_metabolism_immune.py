@@ -345,6 +345,115 @@ def test_lane_health_queue_stuck_ignores_non_queued():
     assert result["found"] is False
 
 
+def test_lane_health_queue_stuck_ignores_ancient_api_projection():
+    ancient = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    runs = [
+        {"id": 111, "name": "ghost-job", "status": "queued", "created_at": ancient},
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is False
+    assert result["ignored_stale_count"] == 1
+
+
+def test_lane_health_queue_stuck_ignores_wrapper_with_active_child():
+    long_ago = (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat()
+    runs = [
+        {
+            "id": 222,
+            "name": "daily",
+            "status": "queued",
+            "created_at": long_ago,
+            "_queue_projection_state": "active_children",
+        },
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is False
+    assert result["ignored_active_count"] == 1
+
+
+def test_lane_health_queue_stuck_keeps_real_queued_child_actionable():
+    long_ago = (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat()
+    runs = [
+        {
+            "id": 333,
+            "name": "engine-render",
+            "status": "queued",
+            "created_at": long_ago,
+            "_queue_projection_state": "queued_children",
+        },
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+
+
+def test_queue_health_annotation_probes_only_actionable_recent_queue():
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    now = datetime.now(timezone.utc)
+    runs = [
+        {
+            "id": 444,
+            "name": "daily",
+            "status": "queued",
+            "created_at": (now - timedelta(minutes=60)).isoformat(),
+        },
+        {
+            "id": 555,
+            "name": "fresh",
+            "status": "queued",
+            "created_at": (now - timedelta(minutes=10)).isoformat(),
+        },
+        {
+            "id": 666,
+            "name": "ancient-ghost",
+            "status": "queued",
+            "created_at": (now - timedelta(days=30)).isoformat(),
+        },
+    ]
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[{"status": "completed"}, {"status": "in_progress"}],
+    ) as job_fetch:
+        annotated = _annotate_queue_health_runs(
+            runs, _MINIMAL_REGISTRY["lane_health"]
+        )
+
+    by_id = {row["id"]: row for row in annotated}
+    assert by_id[444]["_queue_projection_state"] == "active_children"
+    assert "_queue_projection_state" not in by_id[555]
+    assert "_queue_projection_state" not in by_id[666]
+    assert job_fetch.call_count == 1
+    assert "/actions/runs/444/jobs?per_page=100" in job_fetch.call_args.args[0][1]
+
+
+def test_queue_health_annotation_keeps_mixed_queued_child_actionable():
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    run = {
+        "id": 777,
+        "name": "mixed-workflow",
+        "status": "queued",
+        "created_at": (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat(),
+    }
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[
+            {"status": "completed"},
+            {"status": "in_progress"},
+            {"status": "queued"},
+        ],
+    ):
+        annotated = _annotate_queue_health_runs(
+            [run], _MINIMAL_REGISTRY["lane_health"]
+        )
+
+    assert annotated[0]["_queue_projection_state"] == "queued_children"
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+
+
 # ── 12. Lane-health: runner-offline detector ─────────────────────────────────
 
 def test_lane_health_runner_offline_fires():

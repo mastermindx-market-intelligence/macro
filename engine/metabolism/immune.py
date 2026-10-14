@@ -267,27 +267,33 @@ def check_dead_cron(
         return {"found": False, "dead_lanes": [], "summary": f"dead-cron check error: {exc}"}
 
 
+
+QUEUE_PROJECTION_STALE_AFTER_MINUTES = 26 * 60
+# GitHub self-hosted jobs have a 24h queue lifetime. Keep a two-hour grace for
+# API propagation, then treat a still-queued run as a stale platform projection,
+# not fresh runner saturation. The original record remains evidence; this sensor
+# only refuses to turn it into a new operator page forever.
+
+
 def check_queue_stuck(
     runs_list: list[dict[str, Any]],
     cfg: dict[str, Any],
 ) -> dict[str, Any]:
-    """Detect Actions queue saturation (runs queued > queue_stuck_min minutes).
+    """Detect actionable Actions queued work without false saturation alarms.
 
-    Parameters
-    ----------
-    runs_list:
-        Pre-fetched list of workflow run dicts with at minimum:
-          - status      : 'queued'|'in_progress'|'completed'
-          - created_at  : ISO-8601 timestamp
-          - name        : workflow name
-    cfg:
-        Lane-health config dict.
+    The run-list endpoint can retain stale queued projections long after the
+    underlying job is no longer actionable, and a workflow run can report
+    queued while child jobs are already running. Callers may annotate a run
+    with _queue_projection_state after inspecting its child jobs:
 
-    Returns dict with:
-        found: bool
-        stuck_count: int
-        stuck_runs: list[str]   — run names / ids
-        summary: str
+    - active_children   — at least one child is in progress; do not page.
+    - terminal_children — all observed children are terminal; do not page.
+    - queued_children   — at least one child is genuinely queued.
+
+    Unannotated recent queued runs remain conservative/actionable so a failed job
+    detail probe cannot hide a real queue incident. Runs older than the platform
+    queue lifetime plus grace are preserved as stale evidence but excluded here.
+
     NEVER-RAISE.
     """
     try:
@@ -295,6 +301,10 @@ def check_queue_stuck(
         now = datetime.now(timezone.utc)
 
         stuck: list[str] = []
+        ignored_stale = 0
+        ignored_active = 0
+        ignored_terminal = 0
+
         for run in (runs_list or []):
             if str(run.get("status") or "").lower() != "queued":
                 continue
@@ -304,25 +314,56 @@ def check_queue_stuck(
             try:
                 created = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
                 queued_min = (now - created).total_seconds() / 60.0
-                if queued_min > threshold_min:
-                    label = run.get("name") or str(run.get("id") or "unknown")
-                    stuck.append(f"{label} ({queued_min:.0f}m)")
             except Exception:  # noqa: BLE001
                 continue
 
+            # GitHub should have terminalized a real queued job within 24h. A
+            # much older record is an API/history anomaly, not current capacity.
+            if queued_min > QUEUE_PROJECTION_STALE_AFTER_MINUTES:
+                ignored_stale += 1
+                continue
+
+            projection = str(run.get("_queue_projection_state") or "").lower()
+            if projection == "active_children":
+                ignored_active += 1
+                continue
+            if projection == "terminal_children":
+                ignored_terminal += 1
+                continue
+
+            if queued_min > threshold_min:
+                label = run.get("name") or str(run.get("id") or "unknown")
+                stuck.append(f"{label} ({queued_min:.0f}m)")
+
+        ignored = (
+            f"; ignored stale={ignored_stale}, active={ignored_active}, "
+            f"terminal={ignored_terminal}"
+        )
         return {
             "found": bool(stuck),
             "stuck_count": len(stuck),
             "stuck_runs": stuck,
+            "ignored_stale_count": ignored_stale,
+            "ignored_active_count": ignored_active,
+            "ignored_terminal_count": ignored_terminal,
             "summary": (
-                f"queue-stuck: {len(stuck)} run(s) queued >{threshold_min}min: {stuck}"
-                if stuck else f"queue-stuck: no runs queued >{threshold_min}min"
+                f"queue-stuck: {len(stuck)} actionable run(s) queued >{threshold_min}min: "
+                f"{stuck}{ignored}"
+                if stuck
+                else f"queue-stuck: no actionable runs queued >{threshold_min}min{ignored}"
             ),
         }
     except Exception as exc:  # noqa: BLE001
         log.warning("immune.check_queue_stuck: %s", exc)
-        return {"found": False, "stuck_count": 0, "stuck_runs": [], "summary": f"queue-stuck check error: {exc}"}
-
+        return {
+            "found": False,
+            "stuck_count": 0,
+            "stuck_runs": [],
+            "ignored_stale_count": 0,
+            "ignored_active_count": 0,
+            "ignored_terminal_count": 0,
+            "summary": f"queue-stuck check error: {exc}",
+        }
 
 def check_runner_offline(
     runners_list: list[dict[str, Any]],
