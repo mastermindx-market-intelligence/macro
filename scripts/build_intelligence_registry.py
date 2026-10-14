@@ -65,6 +65,12 @@ Usage
 -----
   python3 scripts/build_intelligence_registry.py           # human report on stdout
   python3 scripts/build_intelligence_registry.py --json    # the whole view as JSON
+  python3 scripts/build_intelligence_registry.py --required-tier engine/a.py
+
+The repeatable --required-tier mode returns the read-only T12 query plus the
+existing source-read report. Exit zero means the query executed, including
+partial/unresolved coverage; it never means an evaluation passed or admission
+was granted. Source channels are observations, not immutable revision proof.
 """
 from __future__ import annotations
 
@@ -86,6 +92,7 @@ from engine.intelligence_registry import (  # noqa: E402
     audit_content,
     build_registry,
     partition_artifacts,
+    required_tier,
     placeholder_reason,
     scan_producer_source,
     serialise,
@@ -541,12 +548,34 @@ def build(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--json", action="store_true", help="print the whole view as JSON")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--json", action="store_true", help="print the whole view as JSON")
+    mode.add_argument("--required-tier", action="append", metavar="PRODUCER_PATH",
+                      help="read-only tier query for an exact producer path (repeatable); JSON with source report")
     args = parser.parse_args()
     root: Path = args.root
 
-    registry, report = build(root)
+    if args.required_tier is not None:
+        try:
+            required_tier(None, args.required_tier)  # Validate paths before source I/O.
+        except ValueError as exc:
+            parser.error(str(exc))
+    try:
+        registry, report = build(root)
+    except SynapseUnavailable:
+        if args.required_tier is None:
+            raise
+        print(json.dumps({"schema": "intelligence_registry.required_tier_cli.v1",
+            "query": required_tier(None, args.required_tier), "source_report": None,
+            "source_failure": {"code": "synapse_unavailable", "input": str(SYNAPSE_REL)}},
+            indent=2, sort_keys=True))
+        return 1
 
+    if args.required_tier is not None:
+        print(json.dumps({"schema": "intelligence_registry.required_tier_cli.v1",
+            "query": required_tier(registry, args.required_tier), "source_report": report},
+            indent=2, sort_keys=True))
+        return 0
     if args.json:
         print(serialise(registry), end="")
         return 0

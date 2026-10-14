@@ -1044,3 +1044,67 @@ def test_the_meta_test_can_actually_see_every_live_call_shape():
         f"missed: {sorted(_DETECTOR_EXPECTED - seen)}; "
         f"false positives: {sorted(seen - _DETECTOR_EXPECTED)}"
     )
+
+
+# T12 consumer: use the existing source loader and disclose its real read report.
+def _run_registry_builder(root, *args):
+    return subprocess.run([sys.executable, str(REPO / "scripts/build_intelligence_registry.py"),
+        "--root", str(root), *args], capture_output=True, text=True, check=False)
+
+
+def test_required_tier_cli_uses_canonical_loader_and_repeated_paths(tmp_path):
+    from scripts.build_intelligence_registry import build
+    from engine.intelligence_registry import required_tier
+    root = guard.write_fixture_root(tmp_path / "repo")
+    paths = [guard.FIXTURE_PRODUCER, "unknown/path.py", guard.FIXTURE_PRODUCER]
+    args = [item for path in paths for item in ("--required-tier", path)]
+    result = _run_registry_builder(root, *args)
+    assert result.returncode == 0, result.stderr
+    value = json.loads(result.stdout)
+    registry, report = build(root)
+    assert value["schema"] == "intelligence_registry.required_tier_cli.v1"
+    assert value["query"] == required_tier(registry, paths)
+    assert value["source_report"] == report
+    assert value["query"]["status"] == "partial"
+    assert value["query"]["required_tier"] is None
+    assert value["query"]["evaluation_status"] == "not_assessed"
+
+
+def test_required_tier_cli_reports_claim_blindness_without_erasing_requirement(tmp_path):
+    root = guard.write_fixture_root(tmp_path / "repo", claims="{broken\n")
+    result = _run_registry_builder(root, "--required-tier", guard.FIXTURE_PRODUCER)
+    assert result.returncode == 0, result.stderr
+    value = json.loads(result.stdout)
+    assert value["query"]["required_tier"] == "T3"
+    assert value["source_report"]["inputs_complete"] is False
+    assert value["source_report"]["unreadable_by_plane"]["data"]
+
+
+def test_required_tier_cli_reports_unavailable_synapse_as_source_failure(tmp_path):
+    root = guard.write_fixture_root(tmp_path / "repo", synapse="- not a mapping\n")
+    result = _run_registry_builder(root, "--required-tier", "engine/a.py")
+    assert result.returncode == 1
+    value = json.loads(result.stdout)
+    assert value["query"]["unresolved"] == [{"path": "engine/a.py", "reason": "registry_unavailable"}]
+    assert value["query"]["required_tier"] is None
+    assert value["source_report"] is None
+    assert value["source_failure"] == {"code": "synapse_unavailable", "input": "config/synapse.yml"}
+
+
+@pytest.mark.parametrize("path", ["/engine/a.py", "engine/../a.py", "./engine/a.py"])
+def test_required_tier_cli_rejects_ambiguous_paths_before_loading(tmp_path, path):
+    result = _run_registry_builder(tmp_path / "missing", "--required-tier", path)
+    assert result.returncode == 2
+    assert "canonical producer paths" in result.stderr
+    assert not result.stdout
+
+
+def test_required_tier_cli_preserves_legacy_modes_and_refuses_mixed_modes(tmp_path):
+    from engine.intelligence_registry import SCHEMA
+    root = guard.write_fixture_root(tmp_path / "repo")
+    human = _run_registry_builder(root)
+    assert human.returncode == 0 and human.stdout.startswith("intelligence registry (DERIVED ON DEMAND")
+    whole = _run_registry_builder(root, "--json")
+    assert whole.returncode == 0 and json.loads(whole.stdout)["schema"] == SCHEMA
+    mixed = _run_registry_builder(root, "--json", "--required-tier", guard.FIXTURE_PRODUCER)
+    assert mixed.returncode == 2 and not mixed.stdout
