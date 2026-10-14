@@ -876,7 +876,233 @@ def _t0_countdown(item: dict, release_meta: dict, display_cutoff: Any) -> dict:
     return countdown
 
 
-def _build_rate_path_row(fed_path: dict) -> dict:
+# --------------------------------------------------------------------------- #
+# T0-B basis contract helpers (rates_command_basis.v1).
+#
+# All of this code sits BELOW the f01 line pins (engine lines 557-575), so it
+# must never be moved above them, and the frozen contract module is imported
+# FUNCTION-LOCALLY only — no module-level import of rates_command_basis.
+# --------------------------------------------------------------------------- #
+
+
+def _t0b_number(value: Any) -> float | None:
+    """Coerce a raw board value to a finite float; None for anything else.
+
+    bool is not a number here, NaN/inf are not numbers here, and a numeric
+    string is accepted only via float() inside try. Never raises.
+    """
+    if isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float, str)):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if number != number or number in (float("inf"), float("-inf")):
+        return None
+    return number
+
+
+def _t0b_basis_cutoff(explicit: Any, source_asof: Any) -> str | None:
+    """Publication cutoff for a basis record: explicit, else source asof.
+
+    Build time is NEVER a cutoff; None when neither exists, so the row
+    carries no basis rather than a fabricated one.
+    """
+    if explicit is not None:
+        return str(explicit)
+    if isinstance(source_asof, str) and source_asof:
+        return source_asof
+    return None
+
+
+def _t0b_precision(stamp: Any) -> str:
+    """Precision of an evidence stamp: 'day' only for a YYYY-MM-DD stamp."""
+    if isinstance(stamp, str) and len(stamp) == 10:
+        try:
+            datetime.strptime(stamp, "%Y-%m-%d")
+            return "day"
+        except ValueError:
+            return "unknown"
+    return "unknown"
+
+
+# Exact fed_path implied_source_en labels -> basis source keys. Exact string
+# equality only (never prefix/substring): an unknown label stays UNKNOWN.
+_RATE_SOURCE_BASIS = {
+    "ZQ fed-funds futures": {
+        "source": "rate_futures:ZQ",
+        "target": "effr_monthly_average",
+        "basket_or_index": "EFFR",
+        "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+    },
+    "ZQ front (30d) only": {
+        "source": "rate_futures:ZQ",
+        "target": "effr_monthly_average",
+        "basket_or_index": "EFFR",
+        "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+    },
+    "SR3 SOFR futures": {
+        "source": "rate_futures:SR3",
+        "target": "sofr_compounded_quarter",
+        "basket_or_index": "SOFR",
+        "rate_index": "SOFR",
+        "averaging_law": "compounded_business_day",
+    },
+}
+
+
+def _t0b_basis_contract_version() -> str:
+    """Frozen contract version carried at the artifact top level."""
+    from engine import rates_command_basis as rcb
+
+    return rcb.SCHEMA_VERSION
+
+
+def _rate_path_basis(fed_path: dict, cutoff: Any) -> dict | None:
+    """Qualify the m12 implied-path value as a rates_command_basis.v1 record.
+
+    None when fed_path is not a dict or no basis cutoff exists. The source
+    label decides the basis keys: an unknown label leaves them UNKNOWN
+    (omitted) with limitation `source_unknown` — never a guessed default.
+    """
+    from engine import rates_command_basis as rcb
+
+    if not isinstance(fed_path, dict):
+        return None
+    basis_cutoff = _t0b_basis_cutoff(cutoff, fed_path.get("asof"))
+    if basis_cutoff is None:
+        return None
+    implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
+    label = fed_path.get("implied_source_en")
+    source_keys = _RATE_SOURCE_BASIS.get(label) if isinstance(label, str) else None
+    limitations = [
+        "risk_premium_not_stripped",
+        "implied_bp_12m_is_month12_path_minus_policy_level",
+    ]
+    # Evidence stamps: the fed_path asof only; reference_start/reference_end,
+    # vintage, source_version, content_ref and admitted_at stay UNKNOWN —
+    # never derived from asof+12m.
+    asof = fed_path.get("asof")
+    asof_stamp = asof if isinstance(asof, str) else None
+    meta: dict[str, Any] = {
+        "subject": "fed_path.implied_path.m12",
+        "evidence_class": "market_implied_expectation",
+        "unit": "pct_ann_rate",
+        "seasonal_treatment": rcb.NA,
+        "curve_convention": rcb.NA,
+        "tenor": rcb.NA,
+        "model_id": rcb.NA,
+        "target_epoch": rcb.NA,
+        "observation_time": asof_stamp,
+        "observation_precision": _t0b_precision(asof_stamp),
+        "first_public_evidence": asof_stamp,
+        "first_public_precision": _t0b_precision(asof_stamp),
+        "rights": "redistribution_limited",
+    }
+    if source_keys is None:
+        limitations.append("source_unknown")
+    else:
+        meta.update(source_keys)
+        if label == "ZQ front (30d) only":
+            limitations.append("degraded_front_month_only")
+    meta["limitations"] = tuple(limitations)
+    value = _t0b_number(implied.get("m12"))
+    return rcb.qualify_observation(value, meta, basis_cutoff).to_dict()
+
+
+def _cpi_basis(item: dict, release_meta: dict, cutoff: Any) -> dict | None:
+    """Qualify the nearest-CPI projection point as a basis record.
+
+    None unless the item is a CPI release with a declared MoM SA target and a
+    basis cutoff exists: any other (or missing) target means the unit is
+    UNKNOWN, so the observation cannot be qualified — never assume MoM.
+    """
+    import calendar as _calendar
+
+    from engine import rates_command_basis as rcb
+
+    if not isinstance(item, dict):
+        return None
+    if item.get("release_type") not in {"cpi_headline", "cpi_core"}:
+        return None
+    # The frozen gate is the artefact's MoM SA target string (the producer
+    # emits "mom_sa_pct"; the lane spec spells it "Mom_sa_pct" — both are
+    # accepted, byte-exact, and every other spelling stays unqualified).
+    if item.get("target") not in ("mom_sa_pct", "Mom_sa_pct"):
+        return None
+    artefact = release_meta if isinstance(release_meta, dict) else {}
+    basis_cutoff = _t0b_basis_cutoff(cutoff, artefact.get("asof"))
+    if basis_cutoff is None:
+        return None
+    headline = item.get("release_type") == "cpi_headline"
+    limitations: list[str] = []
+    target = "cpi_u_all_items_mom_sa" if headline else "cpi_u_core_mom_sa"
+    if item.get("first_print_basis") == "first_print":
+        target += "_first_print"
+    else:
+        limitations.append("first_print_basis_undeclared")
+    meta: dict[str, Any] = {
+        "subject": "CPIAUCSL" if headline else "CPILFESL",
+        "evidence_class": "house_estimate",
+        "unit": "pct_mom",
+        "target": target,
+        "basket_or_index": "CPI-U",
+        "seasonal_treatment": "sa",
+        "rate_index": rcb.NA,
+        "averaging_law": rcb.NA,
+        "curve_convention": rcb.NA,
+        "tenor": rcb.NA,
+        "source": "release_forecast",
+        "rights": "display_only",
+    }
+    period = item.get("period")
+    if isinstance(period, str) and len(period) == 7 and period[4] == "-":
+        try:
+            last_day = _calendar.monthrange(int(period[:4]), int(period[5:7]))[1]
+        except ValueError:
+            last_day = None
+        if last_day is not None:
+            meta["reference_start"] = f"{period}-01"
+            meta["reference_end"] = f"{period}-{last_day:02d}"
+    for version_key in ("schema_version", "version"):
+        version_val = artefact.get(version_key)
+        if isinstance(version_val, str) and version_val:
+            meta["source_version"] = version_val
+            break
+    for item_key, meta_key in (("model_epoch", "model_id"), ("target_epoch", "target_epoch")):
+        item_val = item.get(item_key)
+        if isinstance(item_val, str) and item_val:
+            meta[meta_key] = item_val
+    asof = artefact.get("asof")
+    asof_stamp = asof if isinstance(asof, str) else None
+    meta["observation_time"] = asof_stamp
+    meta["observation_precision"] = _t0b_precision(asof_stamp)
+    meta["first_public_evidence"] = asof_stamp
+    meta["first_public_precision"] = _t0b_precision(asof_stamp)
+    # Model status is read exactly where _build_inflation_row reads it.
+    ms = artefact.get("methodology_status")
+    if not isinstance(ms, dict):
+        ms = {}
+    quality: list[str] = []
+    forecast_epoch = ms.get("forecast_epoch")
+    if isinstance(forecast_epoch, str) and "experimental" in forecast_epoch:
+        quality.append("experimental")
+    accuracy_claim = ms.get("accuracy_claim")
+    if isinstance(accuracy_claim, str) and accuracy_claim.startswith("withheld"):
+        quality.append("accuracy_withheld")
+    meta["quality"] = tuple(quality)
+    meta["limitations"] = tuple(limitations)
+    value = _t0b_number(_safe_get(item, "projection", "point"))
+    return rcb.qualify_observation(value, meta, basis_cutoff).to_dict()
+
+
+def _build_rate_path_row(fed_path: dict, *, cutoff: Any = None) -> dict:
     """Build the rate_path display row."""
     if not isinstance(fed_path, dict):
         fed_path = {}
@@ -893,7 +1119,7 @@ def _build_rate_path_row(fed_path: dict) -> dict:
     implied_bp_12m = fed_path.get("implied_bp_12m")
     path_read = _render_cuts(implied_cuts_12m)
 
-    return {
+    row = {
         "asof": fed_path.get("asof"),
         "policy_rate": fed_path.get("policy_rate"),
         "implied_path": {
@@ -914,6 +1140,10 @@ def _build_rate_path_row(fed_path: dict) -> dict:
         "source_en": _t0_text(fed_path.get("implied_source_en")),
         "source_zh": _t0_text(fed_path.get("implied_source_zh")),
     }
+    # The basis key is ALWAYS present; None when the observation cannot be
+    # qualified. The basis never edits the row's display fields.
+    row["basis"] = _rate_path_basis(fed_path, cutoff)
+    return row
 
 
 def _build_inflation_row(
@@ -922,6 +1152,7 @@ def _build_inflation_row(
     *,
     release_meta: dict | None = None,
     display_cutoff: Any = None,
+    cutoff: Any = None,
 ) -> dict:
     """Build the inflation display row."""
     infl = (_safe_get(tx, "state", "inflation") or {})
@@ -967,6 +1198,10 @@ def _build_inflation_row(
                 "first_print_basis": item.get("first_print_basis"),
                 "countdown": _t0_countdown(item, meta, display_cutoff),
             }
+            # The basis key is ALWAYS present on nearest_cpi (None when the
+            # observation cannot be qualified); when nearest_cpi itself is
+            # None there is no basis to add.
+            cpi_proj["basis"] = _cpi_basis(item, release_meta, cutoff)
             break
 
     return {
@@ -1493,9 +1728,10 @@ def build_board(root=None, *, cutoff=None) -> dict:
             break
 
     board = {
-        "rate_path_row": _build_rate_path_row(fed_path),
+        "rate_path_row": _build_rate_path_row(fed_path, cutoff=cutoff),
         "inflation_row": _build_inflation_row(
-            tx, release_items, release_meta=release_latest, display_cutoff=cutoff
+            tx, release_items, release_meta=release_latest, display_cutoff=cutoff,
+            cutoff=cutoff,
         ),
         "risk_row": _build_risk_row(tx),
         "policy_row": _build_policy_row(policy_lever, intel, intel_stale_days),
@@ -1548,6 +1784,11 @@ def build_board(root=None, *, cutoff=None) -> dict:
     # changes + prev_state are added by the builder (build_changes call)
     artifact["changes"] = {"vs_asof": None, "items": []}
     artifact["prev_state"] = {"as_of": None, "state": {}}
+    artifact["basis_contract_version"] = _t0b_basis_contract_version()
+    # qualified_comparisons is filled by the C0 comparison layer; an empty
+    # list means "not yet compared", NOT "no basis gaps" — the gaps live on
+    # each row's own basis record.
+    artifact["qualified_comparisons"] = []
 
     return artifact
 
