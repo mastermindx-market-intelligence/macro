@@ -60,7 +60,7 @@ import shutil
 import sys
 import tempfile
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -78,6 +78,7 @@ from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     AdmittedFilingPackageError,
     admit_retained_filing_package,
 )
+from engine.fundamental_forensics.sec_document_spine import canonical_cik  # noqa: E402
 from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
     DEFAULT_RUN_BUDGET_BYTES,
     RETAINED_PACKAGE_INTEGRITY_CODES,
@@ -1086,6 +1087,45 @@ def _stage_contract_issuers(
             except AdmittedFilingPackageError as exc:
                 refusals.append(f"admission_refused:{exc.code}")
                 continue
+            # A0 (R-1): bind the admitted package to the staged issuer BEFORE
+            # it can reach the store material. A capture manifest carries an
+            # entity_id only when the capture was handed an identity (the
+            # member capture writes it only as a non-empty string), while the
+            # served statement path binds at the issuer level and refuses a
+            # package whose manifest entity_id/cik disagree with the issuer
+            # binding — so an absent entity_id is stamped here, once, at the
+            # only publisher seam, from the
+            # SAME binding the issuer is staged with (never derived from a
+            # ticker). A package whose own identity cross-claims another
+            # issuer is refused, never relabelled. No digest inside
+            # AdmittedFilingPackage covers the manifest mapping (the index,
+            # member, and witness digests bind bytes that this stamp does not
+            # touch), so the frozen-dataclass replace is integrity-neutral.
+            if canonical_cik(admitted_package.manifest.get("cik")) != binding.cik:
+                refusals.append("admission_refused:issuer_cik_mismatch")
+                continue
+            # A0-h1 (MINOR-1): a PRESENT entity_id that is not exactly the
+            # binding's entity string — a foreign string, an empty string,
+            # or any non-string value (None, int, list, dict) — is a
+            # disagreeing package: refused, never relabelled. Only an ABSENT
+            # key is stamped with the binding's entity (the capture manifest
+            # writes entity_id only as a non-empty string, so a
+            # present-but-malformed value never comes from the real capture
+            # path and refusing it costs nothing real). A present value
+            # exactly equal to the binding keeps the package unchanged.
+            if "entity_id" in admitted_package.manifest:
+                manifest_entity_id = admitted_package.manifest["entity_id"]
+                if not (
+                    isinstance(manifest_entity_id, str)
+                    and manifest_entity_id == binding.entity_id
+                ):
+                    refusals.append("admission_refused:issuer_entity_mismatch")
+                    continue
+            else:
+                admitted_package = replace(
+                    admitted_package,
+                    manifest={**admitted_package.manifest, "entity_id": binding.entity_id},
+                )
             # ERRATA-6 rule 1: an admitted 8-K is counted but NEVER passed
             # into the build_production_dataset_store material (the false R6
             # premise: production_datasets._statement_trees_role_payload

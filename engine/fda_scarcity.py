@@ -39,6 +39,27 @@ _MIXED_REPORTED = "MIXED_REPORTED"
 _UNCLASSIFIED = "UNCLASSIFIED"
 _NO_MATCHING_RECORDS = "NO_MATCHING_RECORDS"
 _UNAVAILABLE = "UNAVAILABLE"
+_ABSENT_REPORTED = "ABSENT_REPORTED"
+
+# Sweep failures that mean this capture is not a complete observation.
+# FIRST_PAGE_OUTAGE is deliberately absent: a retained qualified generation
+# is passed to summarize_supply under that code (T01R-B2) and must stay visible.
+_INCOMPLETE_SWEEP_FAILURES = frozenset({
+    "PAGE_FAILED",
+    "CAP_BEFORE_TOTAL",
+    "COUNT_DRIFT",
+    "GENERATION_DRIFT",
+    "MALFORMED_ROW",
+    "KEY_ABSENT",
+    "REPEATED_PAGE",
+    "NO_SOURCE_GENERATION",
+})
+_STATUS_WORDS = {
+    "current": ("current", "当前"),
+    "resolved": ("resolved", "已解决"),
+    "to_be_discontinued": ("discontinued", "停产"),
+    "unrecognized": ("unclassified", "未分类"),
+}
 
 _STATUS_MAP = {
     "current": "current",
@@ -84,6 +105,27 @@ def _finished_at(value):
     return parsed.astimezone(timezone.utc)
 
 
+def _blank(value):
+    if value is None:
+        return True
+    try:
+        if pd.isna(value):
+            return True
+    except (TypeError, ValueError):
+        return False
+    text = str(value).strip()
+    return text == "" or text.casefold() in {"nan", "none", "nat"}
+
+
+def _capture_is_incomplete(capture) -> bool:
+    """True when this capture itself is an unfinished sweep, not a retained generation."""
+    if not capture:
+        return False
+    if capture.get("complete") is False:
+        return True
+    return capture.get("failure_code") in _INCOMPLETE_SWEEP_FAILURES
+
+
 def _closed_rows(rows):
     if isinstance(rows, pd.DataFrame):
         records = rows.to_dict("records")
@@ -96,17 +138,67 @@ def _closed_rows(rows):
             continue
         raw_availability = get("availability")
         availability = "" if pd.isna(raw_availability) else str(raw_availability or "")
+        regulator_status = _normalise_status(get("status"))
+        raw_absent = get("absent_since_generation")
+        absent = not _blank(raw_absent)
+        raw_previous = get("previous_status")
+        previous = None if _blank(raw_previous) else _normalise_status(raw_previous)
+        raw_changed = get("status_changed_generation")
+        changed = None if _blank(raw_changed) else _generation(raw_changed)
+        if previous == regulator_status:
+            previous = None
+            changed = None
         closed.append({
             "package_ndc": str(get("package_ndc") or ""),
             "generic_name": str(get("generic_name") or ""),
-            "regulator_status": _normalise_status(get("status")),
+            "regulator_status": regulator_status,
             "regulator_status_raw": str(get("status") or ""),
             "manufacturer_availability": availability or None,
             "availability_normalized": _normalise_availability(availability),
             "observed_generation": _generation(get("observed_generation") or get("last_observed_generation")),
-            "absent_since_generation": _generation(get("absent_since_generation")),
+            "absent_since_generation": _generation(raw_absent) if absent else None,
+            "absent": absent,
+            "previous_regulator_status": previous,
+            "status_changed_generation": changed,
         })
     return closed
+
+
+def _history_clauses(present, absent_rows):
+    """Visible history for a source status change and for rows not in this generation."""
+    english, chinese = [], []
+    groups = {}
+    for row in present:
+        previous = row.get("previous_regulator_status")
+        if not previous or previous == row.get("regulator_status"):
+            continue
+        generation = row.get("status_changed_generation")
+        groups[(previous, generation)] = groups.get((previous, generation), 0) + 1
+    for previous, generation in sorted(groups, key=lambda item: ((item[1] or ""), item[0])):
+        count = groups[(previous, generation)]
+        english_word, chinese_word = _STATUS_WORDS.get(previous, ("unclassified", "未分类"))
+        noun = "record" if count == 1 else "records"
+        if generation:
+            english.append(f"{count} {noun} status changed from {english_word} at {generation}")
+            chinese.append(f"{count}条记录状态于{generation}由{chinese_word}变更")
+        else:
+            english.append(f"{count} {noun} status changed from {english_word}")
+            chinese.append(f"{count}条记录状态由{chinese_word}变更")
+    if absent_rows:
+        generations = sorted({
+            row.get("absent_since_generation")
+            for row in absent_rows
+            if row.get("absent_since_generation")
+        })
+        count = len(absent_rows)
+        noun = "record" if count == 1 else "records"
+        if len(generations) == 1:
+            english.append(f"{count} {noun} absent since {generations[0]}")
+            chinese.append(f"{count}条记录自{generations[0]}起缺席")
+        else:
+            english.append(f"{count} {noun} absent from the current source generation")
+            chinese.append(f"{count}条记录不在当前来源生成中")
+    return (" · ".join(english) or None, " · ".join(chinese) or None)
 
 
 def _record_count(count):
@@ -123,6 +215,7 @@ def _duration_text(seconds):
 def _label(
     status, counts, generation, capture_qualified, unclassified_rows,
     capture_age_s=None, refresh_failed_at=None, observation_state=None,
+    capture_incomplete=False, trailing_en=None, trailing_zh=None,
 ):
     labels = {
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
@@ -132,6 +225,10 @@ def _label(
         _UNCLASSIFIED: ("FDA: observed, status unclassified ({unrecognized})", "FDA：已观察到，状态未分类（{unrecognized}）"),
         _NO_MATCHING_RECORDS: ("FDA: no matching records", "FDA：无匹配记录"),
         _UNAVAILABLE: ("FDA source unavailable", "FDA来源不可用"),
+        _ABSENT_REPORTED: (
+            "FDA: absent from current source generation ({absent}) — last status retained, not a resolution",
+            "FDA：不在当前来源生成中（{absent}）——保留上次状态，并非解决",
+        ),
     }
     english, chinese = labels[status]
     if status == _MIXED_REPORTED:
@@ -161,6 +258,15 @@ def _label(
         elif observation_state == "UNREADABLE":
             english_parts[0] = "FDA source unavailable — last observation unreadable"
             chinese_parts[0] = "FDA来源不可用——上次观测无法读取"
+        elif capture_incomplete or observation_state == "INCOMPLETE":
+            if generation:
+                english_parts[0] = (
+                    f"FDA source unavailable — source generation {generation}, capture incomplete"
+                )
+                chinese_parts[0] = f"FDA来源不可用——来源生成日期{generation}，采集不完整"
+            else:
+                english_parts[0] = "FDA source unavailable — capture incomplete"
+                chinese_parts[0] = "FDA来源不可用——采集不完整"
         elif generation:
             english_parts[0] = f"FDA source unavailable — last qualified {generation}, refresh failed"
             chinese_parts[0] = f"FDA来源不可用——上次合格为{generation}，刷新失败"
@@ -190,6 +296,10 @@ def _label(
     elif unclassified_rows:
         english_parts.append(f"{unclassified_rows} records unclassified")
         chinese_parts.append(f"{unclassified_rows}条记录未分类")
+    if trailing_en:
+        english_parts.append(trailing_en)
+    if trailing_zh:
+        chinese_parts.append(trailing_zh)
     return " · ".join(english_parts), " · ".join(chinese_parts)
 
 
@@ -211,6 +321,12 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         }
 
     closed = _closed_rows(rows)
+    present = [row for row in closed if not row.get("absent")]
+    absent_rows = [row for row in closed if row.get("absent")]
+    # A failed refresh over a retained generation keeps that generation visible.
+    # An incomplete sweep (complete=False, or a truncation/malformed failure)
+    # must not be relabelled as a qualified current shortage.
+    capture_incomplete = False
     if (
         qualified is False
         and observation.get("observation_state") != "UNREADABLE"
@@ -218,18 +334,37 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         and observation.get("source_generation")
         and closed
     ):
-        qualified = True
-        failed_refresh = {
+        refresh_note = {
             "reason": str(observation.get("failure_code")),
             "failure_code": observation.get("failure_code"),
-            "attempted_at": observation.get("refresh_at"),
+            "attempted_at": observation.get("refresh_at") or observation.get("finished_at"),
         }
+        if _capture_is_incomplete(observation):
+            failed_refresh = refresh_note
+            capture_incomplete = True
+        else:
+            qualified = True
+            failed_refresh = refresh_note
+    elif qualified is False and _capture_is_incomplete(observation):
+        capture_incomplete = True
+    elif qualified is True and _capture_is_incomplete(observation):
+        # An unfinished sweep stays incomplete even when the caller passed
+        # qualified=True. complete=False and an incomplete failure_code both
+        # count. FIRST_PAGE_OUTAGE is outside _INCOMPLETE_SWEEP_FAILURES.
+        capture_incomplete = True
+        qualified = False
     counts = {
-        "current": sum(row["regulator_status"] == "current" for row in closed),
-        "resolved": sum(row["regulator_status"] == "resolved" for row in closed),
-        "discontinued": sum(row["regulator_status"] == "to_be_discontinued" for row in closed),
-        "unrecognized": sum(row["regulator_status"] == "unrecognized" for row in closed),
-        "matched": len(closed),
+        "current": sum(row["regulator_status"] == "current" for row in present),
+        "resolved": sum(row["regulator_status"] == "resolved" for row in present),
+        "discontinued": sum(row["regulator_status"] == "to_be_discontinued" for row in present),
+        "unrecognized": sum(row["regulator_status"] == "unrecognized" for row in present),
+        "matched": len(present),
+        "absent": len(absent_rows),
+        "status_changed": sum(
+            1 for row in present
+            if row.get("previous_regulator_status")
+            and row.get("previous_regulator_status") != row.get("regulator_status")
+        ),
     }
     generation = _generation(observation.get("source_generation"))
     finished = _finished_at(observation.get("finished_at"))
@@ -242,7 +377,9 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
 
     if qualified is False:
         source_status = _UNAVAILABLE
-    elif not closed:
+    elif not present and absent_rows:
+        source_status = _ABSENT_REPORTED
+    elif not present:
         source_status = _NO_MATCHING_RECORDS
     elif counts["current"] and (counts["resolved"] or counts["discontinued"]):
         source_status = _MIXED_REPORTED
@@ -263,10 +400,16 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         if failed_refresh and failed_refresh.get("attempted_at")
         else None
     )
+    if source_status == _ABSENT_REPORTED:
+        trailing_en, trailing_zh = _history_clauses(present, [])
+    else:
+        trailing_en, trailing_zh = _history_clauses(present, absent_rows)
     label, label_zh = _label(
         source_status, counts, generation, qualified, unclassified_rows,
         capture_age_s=capture_age_s, refresh_failed_at=refresh_failed_at,
         observation_state=observation.get("observation_state"),
+        capture_incomplete=capture_incomplete,
+        trailing_en=trailing_en, trailing_zh=trailing_zh,
     )
     return {
         "source_status": source_status,
@@ -275,7 +418,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         "coverage": {
             "molecules_checked": [],
             "molecules_with_rows": [],
-            "matched_rows": len(closed),
+            "matched_rows": counts["matched"],
             "unclassified_rows": unclassified_rows,
         },
         "freshness": {
@@ -286,10 +429,23 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
             "source_generation_age_days": generation_age_days,
             "stale": stale,
             "failed_refresh": failed_refresh,
+            "capture_incomplete": capture_incomplete,
         },
         "label": label,
         "label_zh": label_zh,
     }
+
+
+def _published_n_active(summary, count_key: str = "current") -> int:
+    """Status count on the scarcity row and the chip.
+
+    An incomplete capture publishes 0 for current, resolved and discontinued.
+    counts[count_key] keeps the present-row tally.
+    """
+    freshness = summary.get("freshness") or {}
+    if freshness.get("capture_incomplete"):
+        return 0
+    return summary["counts"][count_key]
 
 
 def _all_themes():
@@ -304,12 +460,14 @@ def _observation_capture(observation, frame=None):
         return None, None
     capture = dict(observation.get("capture") or {})
     last_refresh = observation.get("last_refresh") or {}
+    incomplete = _capture_is_incomplete(capture)
     qualified = (
         bool(capture)
         and not observation.get("inconsistent")
         and not observation.get("legacy")
         and isinstance(capture.get("source_generation"), str)
         and bool(capture.get("source_generation"))
+        and not incomplete
     )
     refresh_failed = (
         observation.get("failed_refresh")
@@ -319,6 +477,8 @@ def _observation_capture(observation, frame=None):
         observation_state = "UNREADABLE"
     elif observation.get("legacy"):
         observation_state = "LEGACY" if frame is not None else "UNREADABLE"
+    elif incomplete:
+        observation_state = "INCOMPLETE"
     elif last_refresh.get("qualified") is False:
         observation_state = "REFRESH_FAILED"
     elif not last_refresh:
@@ -399,11 +559,11 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
         band = SHORTAGE_ACTIVE if status in {_CURRENT_REPORTED, _MIXED_REPORTED} else (
             SHORTAGE_RESOLVED if status == _RESOLVED_REPORTED else BAND_NONE
         )
-        details = [
-            f"{row['generic_name']} [{row['regulator_status_raw']}/"
-            f"{row['manufacturer_availability'] or 'not stated'}]"
-            for row in summary["rows"][:3]
-        ]
+        ordered_rows = (
+            [row for row in summary["rows"] if not row.get("absent")]
+            + [row for row in summary["rows"] if row.get("absent")]
+        )
+        details = [_detail_line(row) for row in ordered_rows[:3]]
         counts = summary["counts"]
         rationale = {
             _CURRENT_REPORTED: f"regulator status: current ({_record_count(counts['current'])}) — supply status only",
@@ -418,6 +578,9 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             _UNCLASSIFIED: "regulator status: observed but unclassified",
             _NO_MATCHING_RECORDS: "source status: no matching records",
             _UNAVAILABLE: "source status: unavailable",
+            _ABSENT_REPORTED: (
+                "regulator status: absent from the current source generation — not a resolution"
+            ),
         }[status]
         if last_refresh and not last_refresh.get("qualified"):
             summary["freshness"]["failed_refresh"] = {
@@ -429,9 +592,9 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             "band": band,
             "source_status": status,
             "summary": summary,
-            "n_active": summary["counts"]["current"],
-            "n_resolved": summary["counts"]["resolved"],
-            "n_discontinued": summary["counts"]["discontinued"],
+            "n_active": _published_n_active(summary),
+            "n_resolved": _published_n_active(summary, "resolved"),
+            "n_discontinued": _published_n_active(summary, "discontinued"),
             "details": details,
             "molecules_checked": molecules,
             "rationale": rationale,
@@ -439,31 +602,67 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
     return result
 
 
+def _detail_line(row):
+    text = (
+        f"{row['generic_name']} [{row['regulator_status_raw']}/"
+        f"{row['manufacturer_availability'] or 'not stated'}]"
+    )
+    if row.get("absent"):
+        when = row.get("absent_since_generation")
+        text += f" absent since {when}" if when else " absent from the current source generation"
+        return text
+    previous = row.get("previous_regulator_status")
+    if previous and previous != row.get("regulator_status"):
+        when = row.get("status_changed_generation")
+        english_word, _chinese_word = _STATUS_WORDS.get(previous, ("unclassified", "未分类"))
+        text += f" status changed from {english_word}"
+        if when:
+            text += f" at {when}"
+    return text
+
+
 def _chip_rationale(status, counts):
     if status == _DISCONTINUATION_REPORTED and counts["resolved"] and counts["discontinued"]:
-        return (
+        text = (
             f"The FDA reports {counts['resolved']} resolved and "
             f"{counts['discontinued']} discontinued formulations."
         )
-    if status == _MIXED_REPORTED:
+    elif status == _MIXED_REPORTED:
         # Same defect as the label: the fixed sentence claimed "current and resolved" even
         # when the mixture was current + discontinued and resolved was 0.
         if counts["resolved"] and counts["discontinued"]:
-            return ("The FDA reports current shortages, resolved shortages and "
+            text = ("The FDA reports current shortages, resolved shortages and "
                     "formulation discontinuations.")
-        if counts["discontinued"]:
-            return "The FDA reports current shortages and formulation discontinuations."
-        return "The FDA reports both current and resolved shortages."
-    rationales = {
-        _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
-        _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
-        _DISCONTINUATION_REPORTED: "The FDA reports a formulation discontinuation.",
-        _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
-        _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
-        _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
-        _UNAVAILABLE: "The FDA source is unavailable.",
-    }
-    return rationales[status]
+        elif counts["discontinued"]:
+            text = "The FDA reports current shortages and formulation discontinuations."
+        else:
+            text = "The FDA reports both current and resolved shortages."
+    else:
+        text = {
+            _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
+            _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
+            _DISCONTINUATION_REPORTED: "The FDA reports a formulation discontinuation.",
+            _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
+            _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
+            _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
+            _UNAVAILABLE: "The FDA source is unavailable.",
+            _ABSENT_REPORTED: (
+                "Matched records are absent from the current source generation. "
+                "Absence is not a resolution."
+            ),
+        }[status]
+    notes = []
+    if counts.get("status_changed"):
+        notes.append(
+            "A prior regulator status is history and is not the current observation."
+        )
+    if counts.get("absent") and status != _ABSENT_REPORTED:
+        notes.append(
+            "Records absent from this generation are omitted from the live counts."
+        )
+    if notes:
+        text += " " + " ".join(notes)
+    return text
 
 
 def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | None:
@@ -535,8 +734,9 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         "label_zh": summary["label_zh"],
         "tone": tone,
         "rationale": rationale,
-        "n_active": summary["counts"]["current"],
-        "n_resolved": summary["counts"]["resolved"],
+        "n_active": _published_n_active(summary),
+        "n_resolved": _published_n_active(summary, "resolved"),
+        "n_discontinued": _published_n_active(summary, "discontinued"),
         "source_status": status,
         "freshness": summary["freshness"],
     }
