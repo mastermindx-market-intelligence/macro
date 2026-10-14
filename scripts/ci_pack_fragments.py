@@ -38,6 +38,7 @@ also be edited into a third shape: when the edit side's separator differs
 from both the base and the moved separator, the merge records ``__order__``
 instead of silently dropping that edit. Job bodies, the preamble, and the
 trailer come from the per-key resolve, so the edit's scalar wins.
+
 The same case is also clean when both sides carry the identical job-key
 permutation and exactly one side is order-only, provided the edit side
 moved every separator the permutation moved: the agreed order applies and
@@ -590,6 +591,7 @@ def _apply_order_and_edits(
     edit_frags: list[Fragment],
     *,
     order_is_ours: bool,
+    edit_side_permuted: bool = False,
 ) -> MergeResult | None:
     """Apply one side's order-only permutation and the other side's text edits.
 
@@ -598,7 +600,23 @@ def _apply_order_and_edits(
     separator that side left unchanged can take the edit. Bodies,
     preamble, and trailer use the per-key resolve, so a one-sided scalar wins.
     ``None`` means this shape is not that case; the caller records ``__order__``.
+
+    ``edit_side_permuted`` declares that the edit side carries the SAME job-key
+    permutation as the order-only side instead of base order, so the guard in
+    ``_moved_separators_agree`` runs here and cannot be forgotten by a caller:
+    a separator the permutation moved must also have moved on the edit side,
+    otherwise mixed glue would let one swap's separator silently outrank the
+    other's and this returns ``None``. The agreed-permutation caller passes it
+    True. The base-order callers (an edit side whose keys stay in base order)
+    must leave it False: hoisting the guard unconditionally turns their clean
+    merge into an ``__order__`` conflict.
     """
+    if edit_side_permuted and not _moved_separators_agree(
+        base_frags,
+        order_frags,
+        edit_frags,
+    ):
+        return None
     base_by = _unique_map(base_frags)
     order_by = _unique_map(order_frags)
     edit_by = _unique_map(edit_frags)
@@ -667,7 +685,9 @@ def _moved_separators_agree(
     slot. ``_apply_order_and_edits`` only rejects a third-shape separator, so
     by itself it would let a positional swap's glue silently outrank a
     whole-fragment swap's; that mixed-glue shape must stay an ``__order__``
-    conflict, so the caller skips the apply for it.
+    conflict, so ``_apply_order_and_edits`` returns ``None`` for it when its
+    ``edit_side_permuted`` argument says the edit side carries this same
+    permutation.
     """
     base_by = _unique_map(base_frags)
     order_by = _unique_map(order_frags)
@@ -772,15 +792,15 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
                     ours_frags,
                     False,
                 )
-            if _moved_separators_agree(base_frags, order_frags, edit_frags):
-                applied = _apply_order_and_edits(
-                    base_frags,
-                    order_frags,
-                    edit_frags,
-                    order_is_ours=order_is_ours,
-                )
-                if applied is not None:
-                    return applied
+            applied = _apply_order_and_edits(
+                base_frags,
+                order_frags,
+                edit_frags,
+                order_is_ours=order_is_ours,
+                edit_side_permuted=True,
+            )
+            if applied is not None:
+                return applied
         return MergeResult(_conflict_block(ours, theirs), (ORDER_KEY,))
 
     dropped: set[str] = set()
