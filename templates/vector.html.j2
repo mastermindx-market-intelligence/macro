@@ -570,7 +570,7 @@ a{color:var(--ink-link, var(--link))}
           <div class="complex-value">{{ c.value }}</div>
         </div>
         <div class="complex-chart">{{ c.chart|safe }}</div>
-        <div class="complex-context {{ ('pos' if c.tone=='up' else ('neg' if c.tone=='down' else '')) if c.context_en else '' }}">{% if c.context_en %}{{ t(c.context_en,c.context_zh) }}{% else %}{{ t('No context on file today','今日暂无背景') }}{% endif %}</div>
+        <div class="complex-context">{% if c.context_en %}{{ t(c.context_en,c.context_zh) }}{% else %}{{ t('No context on file today','今日暂无背景') }}{% endif %}</div>
       </div>
       {% else %}
       <p class="complex-null">{{ t('No context on file today','今日暂无背景') }}</p>
