@@ -415,3 +415,74 @@ def test_reserved_budget_covers_worst_bounded_catalog_acknowledgements(tmp_path)
         w.append("terminal", {"epoch": "x" * 36, "state": "COMPLETE",
                               "catalog_sha256": "b" * 64, "catalog_version": version})
     assert len(read_evidence(p, expected_identity=_identity())) == 5
+
+
+# Capture original fsynced bytes without re-fingerprinting a later file.
+from engine.research_vault import generation_evidence as capture_module
+CAPTURE_IDENTITY = {"source_commit": "a" * 40, "run": "synthetic-original-run"}
+
+def test_capture_is_original_written_bytes_after_close_and_does_not_refingerprint(tmp_path):
+    mod = capture_module
+    path = tmp_path / "original.jsonl"
+    with mod.FileGenerationEvidence.create(path, CAPTURE_IDENTITY) as sink:
+        sink.append("write_intent", {"key": "synthetic", "private": "not for public output"})
+        with pytest.raises(mod.EvidenceUnavailable):
+            _ = sink.capture_sha256
+    original = path.read_bytes()
+    assert sink.capture_sha256 == hashlib.sha256(original).hexdigest()
+    assert mod.read_evidence(path, expected_identity=CAPTURE_IDENTITY, expected_sha256=sink.capture_sha256)
+    path.write_bytes(original.splitlines(keepends=True)[0])
+    assert sink.capture_sha256 == hashlib.sha256(original).hexdigest()
+    with pytest.raises(mod.EvidenceUnavailable):
+        mod.read_evidence(path, expected_identity=CAPTURE_IDENTITY, expected_sha256=sink.capture_sha256)
+    sink.close()
+    assert sink.capture_sha256 == hashlib.sha256(original).hexdigest()
+
+
+def test_budget_refusal_preserves_capture_of_actual_durable_prefix(tmp_path):
+    mod = capture_module
+    path = tmp_path / "original.jsonl"
+    sink = mod.FileGenerationEvidence.create(path, CAPTURE_IDENTITY, max_bytes=512)
+    with pytest.raises(mod.EvidenceUnavailable):
+        sink.append("write_intent", {"too_large": "x" * 600})
+    sink.close()
+    assert sink.capture_sha256 == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert len(mod.read_evidence(path, expected_identity=CAPTURE_IDENTITY, expected_sha256=sink.capture_sha256)) == 1
+
+
+@pytest.mark.parametrize("failure", ["partial_write", "fsync", "close"])
+def test_uncertain_io_cannot_publish_an_original_capture(tmp_path, monkeypatch, failure):
+    mod = capture_module
+    sink = mod.FileGenerationEvidence.create(tmp_path / "original.jsonl", CAPTURE_IDENTITY)
+    fd = sink._fd
+    write, close = os.write, os.close
+    calls = []
+    with monkeypatch.context() as patch:
+        if failure == "partial_write":
+            def broken_write(actual_fd, data):
+                if actual_fd != fd:
+                    return write(actual_fd, data)
+                calls.append(True)
+                if len(calls) == 1:
+                    return write(actual_fd, data[:7])
+                raise OSError("synthetic partial write")
+            patch.setattr(mod.os, "write", broken_write)
+        elif failure == "fsync":
+            patch.setattr(mod.os, "fsync", lambda _: (_ for _ in ()).throw(OSError("synthetic fsync")))
+        else:
+            def broken_close(actual_fd):
+                close(actual_fd)
+                if actual_fd == fd:
+                    calls.append(True)
+                    raise OSError("synthetic close response lost")
+            patch.setattr(mod.os, "close", broken_close)
+        with pytest.raises(mod.EvidenceUnavailable):
+            if failure == "close":
+                sink.close()
+            else:
+                sink.append("write_intent", {"key": "synthetic"})
+    sink.close()
+    with pytest.raises(mod.EvidenceUnavailable):
+        _ = sink.capture_sha256
+    if failure == "close":
+        assert calls == [True]

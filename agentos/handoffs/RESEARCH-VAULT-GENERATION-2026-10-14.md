@@ -39,7 +39,7 @@ danger_areas:
   - "Observed 95.60 percent does not clear F11's qualified-generation release gate."
   - "Never remove the generation marker or restore an old COMPLETE to recover BUILDING. Never replace an uncertain Fabric operation."
   - "Private per-report observation metadata stays in the existing completion evidence root, outside GitHub."
-prs: [8438, 8871, 9081, 9177, 9255, 9302]
+prs: [8438, 8871, 9081, 9177, 9255, 9302, 9311]
 ---
 
 The complete read-only observation retained all 2888 member metadata records at
@@ -65,3 +65,44 @@ Fabric Integration owns the separately reproduced cancellation-test race on its
 Mastermind1459 carrier. Root confirmed no competing edit to that test; production
 slot retention must stay unchanged. The root continues useful Research work while
 the original source and human-controlled boundaries remain in force.
+
+
+## 2026-10-14 consolidated producer continuation
+
+Root disarmed9302 and9311 with visible integration markers, preserved original
+CLI commits by attributed cherry-pick into9311, and integrated mandatory private
+journal/corpus workspace plus original durable capture. Prior9302d5ff0 and9311cd3
+remain historical evidence. A real notice-output failure could mask the ingest
+result/cancellation:10causal tests fail on the preimage, then56candidate cases
+pass. Integrated direct-module core:144pass. Current final-head affected/curation
+results are being recorded before publication; no earlier CI is relabeled.
+
+Actual Linux selected runtime uses Macro2962036f5b73ce39d5c5f7c8023e187c0d6b3399
+and Mastermind3ce894fd625400f7ebc83905d86d31246c002389, exact126file capsule and
+41qualified offline wheels. A149016576byte synthetic SQLite image served actual
+Uvicorn loopbackHTTP. Expired selection read no source; normal30second lifecycle
+refreshed and restored same-service authenticated synthetic search; shutdown
+drained. Process peak523771904bytes. Owned listener/tempdirectory removed.
+ResultSHA256d9c94f8fa9b5e84766577a6a66f10647ea3756455580a703a7d0aab301fdcdf8.
+This does not prove full-cohort latency, real writer adoption, deployed bytes,
+provider grants, public edge, C4orDeepResearchacceptance.
+
+The requested narrow immutable same-invocation recovery review ended on provider
+429/1310quota without a review; retained same-ID failure was consumed, not accepted
+or retried. Generic mutable recovery remains unresolved. Matching current bytes
+cannot invent response settlement, source authority, or an all-writer grant.
+
+
+Final integration qualification:146direct CLI/journal/writer tests pass, including
+five path-disclosure cases (three existing-workspace cases failed before repair).
+The broader exact F3/F5-M invocation passed1035tests and5subtests;2title/SEO
+failures reproduce with the exact0db562b2b58fbase catalog implementation and38
+unchanged loaded source/input files. One retrieval evaluation snapshot is already
+moved and remains explicitly skipped. This is not an all-green claim. The final
+CLI-only privacy repair was rechecked in the146case set. Both CI curation cases
+pass(160.26s);2771trigger closures are reachable with0gaps. Twelve real Linux
+private-filesystem checks pass against journalSHA256
+b645d79e7b0adfc4956d7b80203960f4057ff90238585632f8c9d684225c0278,
+including actual writer-side capture, uncertain fsync refusal and no close retry.
+The first updated fixture reported a stale literal source hash; its receipt is
+not used. The bound fixture was rerun and hashes the actual executed bytes.

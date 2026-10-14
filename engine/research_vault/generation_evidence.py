@@ -73,6 +73,7 @@ class FileGenerationEvidence:
             obj = cls()
             obj._fd, obj._bound, obj._bytes = fd, bound, 0
             obj._sequence, obj._previous, obj._poisoned = 0, None, False
+            obj._capture_hash, obj._capture_sha256 = hashlib.sha256(), None
             obj._identity = identity
             obj._append("header", {"identity": identity})
             # Persist the directory entry too. An incomplete file remains as
@@ -103,6 +104,19 @@ class FileGenerationEvidence:
     @property
     def identity(self):
         return dict(self._identity)
+
+    @property
+    def capture_sha256(self):
+        """Digest of this original process's durable bytes after clean close.
+
+        Retain through the original run's trusted output/custody path. This
+        value authenticates neither the caller/source nor remote settlement,
+        and a partial journal is not evidence that publication completed.
+        It never recomputes a digest from a later, possibly changed file.
+        """
+        if self._capture_sha256 is None:
+            raise EvidenceUnavailable("original capture not closed and durable")
+        return self._capture_sha256
 
     def _append(self, kind, payload, *, reserve_bytes=0):
         if self._fd is None or self._poisoned:
@@ -136,6 +150,7 @@ class FileGenerationEvidence:
         self._sequence += 1
         self._bytes += len(data)
         self._previous = hashlib.sha256(data).hexdigest()
+        self._capture_hash.update(data)
         return sequence
 
     def close(self):
@@ -145,7 +160,10 @@ class FileGenerationEvidence:
             try:
                 os.close(fd)
             except OSError as exc:
+                self._poisoned = True
                 raise EvidenceUnavailable("evidence close uncertain: " + type(exc).__name__) from None
+            if not self._poisoned:
+                self._capture_sha256 = self._capture_hash.hexdigest()
 
     def __enter__(self):
         return self
