@@ -1341,6 +1341,79 @@ function readSyncBlob(listId) {
 
 
 @needs_node
+@pytest.mark.parametrize("server_symbols", [["NVDA", "MSFT"], [], ["NVDA"]])
+def test_membership_refresh_preserves_unconfirmed_outbox_and_sibling_cache(server_symbols):
+    """A read may refresh membership, but cannot acknowledge pending writes."""
+    out = _ws(
+        SYNC_BLOB + """
+        var rows = SERVER_SYMBOLS.map(function (symbol, position) {
+          return {watchlist_id: 'L-P', symbol: symbol, position: position};
+        });
+        var db = makeDb({watchlists: [{id: 'L-P', user_id: 'u1', name: 'Prophet', position: 0}],
+                         watchlist_symbols: rows});
+        WS._setTestSession(USER, db.client);
+        WS._setTestLists({activeId: 'L-P'});
+        var original = {
+          v: 1, updated: '2026-10-14T06:00:00Z',
+          items: [{t: 'NVDA', added: '2026-10-01', note: 'Keep my research note'}],
+          order: ['NVDA'], settings: {compact: true},
+          pendingPushes: {'L-P': {tickers: ['AMZN'], at: '2026-10-14T06:01:00Z'}},
+          pendingInserts: {'L-P': {MSFT: '2026-10-14T06:02:00Z'}},
+          tombstones: {'L-P': {AAPL: '2026-10-14T06:03:00Z'}}
+        };
+        var sibling = JSON.stringify({v: 1, items: [{t: 'NEM'}], order: ['NEM'],
+          pendingInserts: {'L-SIB': {GLD: '2026-10-14T06:04:00Z'}}});
+        localStorage.setItem(WS.cacheKey('L-P'), JSON.stringify(original));
+        localStorage.setItem(WS.cacheKey('L-SIB'), sibling);
+        WS.symbols.list('L-P').then(function () {
+          var after = readSyncBlob('L-P');
+          OUT({original: original, after: after,
+               siblingUnchanged: localStorage.getItem(WS.cacheKey('L-SIB')) === sibling,
+               writes: db.ops.filter(function (op) { return op.kind !== 'select'; }).length});
+        });
+        """,
+        {"USER": USER, "SERVER_SYMBOLS": server_symbols},
+    )
+    assert out["after"]["order"] == server_symbols
+    for field in ("pendingPushes", "pendingInserts", "tombstones", "settings"):
+        assert out["after"][field] == out["original"][field], field
+    if "NVDA" in server_symbols:
+        assert next(item for item in out["after"]["items"] if item["t"] == "NVDA") == out["original"]["items"][0]
+    assert out["siblingUnchanged"] is True
+    assert out["writes"] == 0
+
+
+@needs_node
+def test_confirmed_insert_clears_only_its_own_pending_marker():
+    """The cache write after one INSERT must retain other outstanding work."""
+    out = _ws(
+        SYNC_BLOB + """
+        var db = makeDb({watchlists: [{id: 'L-P', user_id: 'u1', name: 'Prophet', position: 0}],
+                         watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        WS._setTestLists({activeId: 'L-P'});
+        WS.symbols.list('L-P').then(function () {
+          localStorage.setItem(WS.cacheKey('L-P'), JSON.stringify({v: 1, items: [], order: [], settings: {},
+            pendingPushes: {'L-P': {tickers: ['AMZN'], at: '2026-10-14T06:01:00Z'}},
+            pendingInserts: {'L-P': {NVDA: '2026-10-14T06:02:00Z', MSFT: '2026-10-14T06:03:00Z'}},
+            tombstones: {'L-P': {AAPL: '2026-10-14T06:04:00Z'}}}));
+          return WS.symbols.add('L-P', 'NVDA');
+        }).then(function () {
+          OUT({after: readSyncBlob('L-P'), rows: symbolsOf(db, 'L-P'),
+               writes: db.ops.filter(function (op) { return op.kind !== 'select'; })
+                 .map(function (op) { return {table: op.table, kind: op.kind}; })});
+        });
+        """,
+        {"USER": USER},
+    )
+    assert out["after"]["pendingInserts"] == {"L-P": {"MSFT": "2026-10-14T06:03:00Z"}}
+    assert out["after"]["pendingPushes"] == {"L-P": {"tickers": ["AMZN"], "at": "2026-10-14T06:01:00Z"}}
+    assert out["after"]["tombstones"] == {"L-P": {"AAPL": "2026-10-14T06:04:00Z"}}
+    assert out["rows"] == ["NVDA"]
+    assert out["writes"] == [{"table": "watchlist_symbols", "kind": "insert"}]
+
+
+@needs_node
 def test_T1_signed_in_pull_with_no_pending_writes_dispatches_clean_not_saved():
     """D05 Q2 #3: pull() success must dispatch chip `clean`, NOT `saved`. The
     chip copy for `saved` says 'Saved to your Mastermind account' — false on a

@@ -212,7 +212,12 @@
         updated: b.updated || '',
         items: b.items.filter(function (it) { return it && it.t; }),
         order: Array.isArray(b.order) ? b.order : [],
-        settings: (b.settings && typeof b.settings === 'object') ? b.settings : {}
+        settings: (b.settings && typeof b.settings === 'object') ? b.settings : {},
+        // Membership refreshes are not acknowledgments of outstanding writes.
+        // Keep the existing outbox for cacheWrite and its normalizers below.
+        pendingPushes: b.pendingPushes,
+        pendingInserts: b.pendingInserts,
+        tombstones: b.tombstones
       };
     } catch (e) { return empty; }
   }
