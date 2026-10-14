@@ -1336,3 +1336,48 @@ scan.mastermind-x.com {
 	}
 	tls internal
 }
+
+mcp.mastermind-x.com {
+  route {
+    @get {
+      method GET
+      path /os/ /os/auth/callback /workspace/programs/current /workspace/work/current /workspace/mission/current /workspace/mission/v3/current /workspace/result/current /workspace/window/current /os/ /os/assets/Inter-Variable-DiVDrmQJ.woff2 /os/assets/Manrope-Variable-FzEoaBTQ.ttf /os/assets/atelier-office-poIrp4_y.jpg /os/assets/index-DrspFhr6.js /os/assets/index-B0ewcH8_.css /os/licenses/fonts/Inter-OFL.txt /os/licenses/fonts/Manrope-FONTLOG.txt /os/licenses/fonts/Manrope-OFL.txt
+    }
+    handle @get {
+      reverse_proxy 127.0.0.1:49152 {
+        header_up -Forwarded
+        header_up -X-Forwarded-Host
+        header_up -X-Forwarded-Port
+        header_up -X-Real-IP
+        header_up -CF-Connecting-IP
+        header_up -EO-Connecting-IP
+        header_up -EO-Client-IP
+        header_up Host mcp.mastermind-x.com
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-For 127.0.0.1
+      }
+    }
+    @post {
+      method POST
+      path /os/executive/context /os/executive/submit /os/executive/status
+    }
+    handle @post {
+      request_body {
+        max_size 64KB
+      }
+      reverse_proxy 127.0.0.1:49152 {
+        header_up -Forwarded
+        header_up -X-Forwarded-Host
+        header_up -X-Forwarded-Port
+        header_up -X-Real-IP
+        header_up -CF-Connecting-IP
+        header_up -EO-Connecting-IP
+        header_up -EO-Client-IP
+        header_up Host mcp.mastermind-x.com
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-For 127.0.0.1
+      }
+    }
+    abort
+  }
+}
