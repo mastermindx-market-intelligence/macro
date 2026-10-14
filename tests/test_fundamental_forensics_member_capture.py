@@ -431,6 +431,263 @@ def test_statement_roles_minted_from_the_filing_schema(tmp_path) -> None:
         assert mint_statement_roles(schema_bytes) == minted
 
 
+def _schema_with_roles(*roles: tuple[str, str]) -> bytes:
+    """A minimal filing schema declaring ``(role_uri, definition)`` roleTypes."""
+    body = "".join(
+        f'<link:roleType roleURI="{uri}" id="r{index}">'
+        f"<link:definition>{definition}</link:definition>"
+        '<link:usedOn>link:presentationLink</link:usedOn>'
+        "</link:roleType>"
+        for index, (uri, definition) in enumerate(roles)
+    )
+    return (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        '<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" '
+        'xmlns:link="http://www.xbrl.org/2003/linkbase">'
+        f"<xs:annotation><xs:appinfo>{body}</xs:appinfo></xs:annotation>"
+        "</xs:schema>"
+    ).encode("utf-8")
+
+
+def test_statement_roles_titled_results_of_operations_and_financial_position() -> None:
+    # Shaped on an issuer whose statements are "Consolidated Results of
+    # Operations" / "Consolidated Financial Position"; its "Income taxes"
+    # disclosure must not stand in for the income statement.
+    schema = _schema_with_roles(
+        ("http://x.test/role/Cover", "0000001 - Document - Cover Page"),
+        (
+            "http://x.test/role/Results",
+            "0000002 - Statement - Consolidated Results of Operations for the Years Ended December 31",
+        ),
+        (
+            "http://x.test/role/Comprehensive",
+            "0000003 - Statement - Consolidated Comprehensive Income (Loss) for the Years Ended December 31",
+        ),
+        (
+            "http://x.test/role/Position",
+            "0000004 - Statement - Consolidated Financial Position at December 31",
+        ),
+        (
+            "http://x.test/role/PositionParen",
+            "0000005 - Statement - Consolidated Financial Position at December 31 (Parenthetical)",
+        ),
+        (
+            "http://x.test/role/CashFlow",
+            "0000006 - Statement - Consolidated Statement of Cash Flow for the Years Ended December 31",
+        ),
+        ("http://x.test/role/IncomeTaxes", "0000040 - Disclosure - Income taxes"),
+    )
+    minted = mint_statement_roles(schema)
+    assert minted == {
+        "income_statement": {
+            "role_uri": "http://x.test/role/Results",
+            "title": "Consolidated Results of Operations for the Years Ended December 31",
+            "title_search": "Consolidated Results of Operations for the Years Ended December 31",
+        },
+        "balance_sheet": {
+            "role_uri": "http://x.test/role/Position",
+            "title": "Consolidated Financial Position at December 31",
+            "title_search": "Consolidated Financial Position at December 31",
+        },
+        "cash_flow": {
+            "role_uri": "http://x.test/role/CashFlow",
+            "title": "Consolidated Statement of Cash Flow for the Years Ended December 31",
+            "title_search": "Consolidated Statement of Cash Flow for the Years Ended December 31",
+        },
+    }
+
+
+def test_statement_role_outranks_an_earlier_needle_on_a_disclosure() -> None:
+    # "Consolidated Statement of Income" is reached only by the late "INCOME"
+    # needle, while a parent-company disclosure matches the earlier "INCOME
+    # STATEMENT" needle; the issuer's own statement role still wins.
+    schema = _schema_with_roles(
+        (
+            "http://x.test/role/Income",
+            "1000002 - Statement - Consolidated Statement of Income",
+        ),
+        (
+            "http://x.test/role/Comprehensive",
+            "1000003 - Statement - Consolidated Statement of Comprehensive Income",
+        ),
+        (
+            "http://x.test/role/Balance",
+            "1000004 - Statement - Consolidated Balance Sheet",
+        ),
+        (
+            "http://x.test/role/CashFlows",
+            "1000007 - Statement - Consolidated Statement of Cash Flows",
+        ),
+        (
+            "http://x.test/role/ParentIncome",
+            "9952201 - Disclosure - Parent Company Information - Income Statement (Details)",
+        ),
+    )
+    minted = mint_statement_roles(schema)
+    assert minted["income_statement"]["role_uri"] == "http://x.test/role/Income"
+    assert minted["income_statement"]["title_search"] == "Consolidated Statement of Income"
+    assert minted["balance_sheet"]["role_uri"] == "http://x.test/role/Balance"
+    assert minted["cash_flow"]["role_uri"] == "http://x.test/role/CashFlows"
+
+
+def test_statement_of_financial_condition_is_a_balance_sheet() -> None:
+    schema = _schema_with_roles(
+        (
+            "http://x.test/role/Earnings",
+            "2000002 - Statement - Consolidated Statements of Earnings",
+        ),
+        (
+            "http://x.test/role/Condition",
+            "2000004 - Statement - Consolidated Statements of Financial Condition",
+        ),
+        (
+            "http://x.test/role/CashFlows",
+            "2000006 - Statement - Consolidated Statements of Cash Flows",
+        ),
+        ("http://x.test/role/IncomeTaxes", "2000090 - Disclosure - Income Taxes"),
+    )
+    roles = CAP._statement_role_candidates(schema)
+    assert CAP._pick_statement_role(roles, "balance_sheet")["role_uri"] == (
+        "http://x.test/role/Condition"
+    )
+    # "Earnings" names no income needle and the "Income Taxes" disclosure is
+    # never a candidate once the schema categorizes Statements, so the mint is
+    # a typed refusal for the income statement rather than a guessed role.
+    assert CAP._pick_statement_role(roles, "income_statement") is None
+    with pytest.raises(CAP.FifMemberCaptureError) as excinfo:
+        mint_statement_roles(schema)
+    assert excinfo.value.code == "statement_roles_mint_failed"
+
+
+def test_statement_role_search_falls_back_to_every_category() -> None:
+    # A schema whose definitions carry no "Statement" category still mints:
+    # the fallback searches every role, as before.
+    schema = _schema_with_roles(
+        ("http://x.test/role/Ops", "CONSOLIDATED STATEMENTS OF OPERATIONS"),
+        ("http://x.test/role/Balance", "CONSOLIDATED BALANCE SHEETS"),
+        ("http://x.test/role/CashFlows", "CONSOLIDATED STATEMENTS OF CASH FLOWS"),
+    )
+    minted = mint_statement_roles(schema)
+    assert {kind: spec["role_uri"] for kind, spec in minted.items()} == {
+        "income_statement": "http://x.test/role/Ops",
+        "balance_sheet": "http://x.test/role/Balance",
+        "cash_flow": "http://x.test/role/CashFlows",
+    }
+    assert [is_statement for _, _, is_statement in CAP._statement_role_candidates(schema)] == [
+        False,
+        False,
+        False,
+    ]
+
+
+def test_disclosure_naming_financial_position_never_binds_the_balance_sheet() -> None:
+    # A "Statement of Condition" names no balance-sheet needle; a derivatives
+    # disclosure "in Statement of Financial Position" and an MD&A "Financial
+    # Condition" disclosure must not stand in for it.
+    schema = _schema_with_roles(
+        (
+            "http://x.test/role/Income",
+            "0000002 - Statement - Consolidated Statement of Income",
+        ),
+        (
+            "http://x.test/role/Condition",
+            "0000004 - Statement - Consolidated Statement of Condition",
+        ),
+        (
+            "http://x.test/role/CashFlows",
+            "0000006 - Statement - Consolidated Statement of Cash Flows",
+        ),
+        (
+            "http://x.test/role/Deriv",
+            "0000150 - Disclosure - Derivative Financial Instruments - Fair Value of "
+            "Derivatives in Statement of Financial Position (Details)",
+        ),
+        (
+            "http://x.test/role/Reg",
+            "0000160 - Disclosure - Regulatory Matters - Capital and Financial Condition (Details)",
+        ),
+    )
+    roles = CAP._statement_role_candidates(schema)
+    assert CAP._pick_statement_role(roles, "balance_sheet") is None
+    with pytest.raises(CAP.FifMemberCaptureError) as excinfo:
+        mint_statement_roles(schema)
+    assert excinfo.value.code == "statement_roles_mint_failed"
+
+
+def test_category_less_fallback_searches_only_the_original_needles() -> None:
+    # Without any Statement category the search covers every role, but only
+    # with the original needles: a derivatives table titled "... Statement of
+    # Financial Position" is never guessed to be the balance sheet.
+    schema = _schema_with_roles(
+        ("http://x.test/role/Ops", "CONSOLIDATED STATEMENTS OF OPERATIONS"),
+        (
+            "http://x.test/role/Deriv",
+            "FAIR VALUE OF DERIVATIVES IN STATEMENT OF FINANCIAL POSITION (DETAILS)",
+        ),
+        ("http://x.test/role/CashFlows", "CONSOLIDATED STATEMENTS OF CASH FLOWS"),
+    )
+    roles = CAP._statement_role_candidates(schema)
+    assert CAP._pick_statement_role(roles, "income_statement")["role_uri"] == (
+        "http://x.test/role/Ops"
+    )
+    assert CAP._pick_statement_role(roles, "balance_sheet") is None
+
+
+def test_statement_category_survives_wrapped_definition_whitespace() -> None:
+    schema = _schema_with_roles(
+        (
+            "http://x.test/role/IS",
+            "0000002 - Statement -\n  CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        ),
+        (
+            "http://x.test/role/Seg",
+            "0000005 -  Statement - STATEMENTS OF OPERATIONS - SEGMENT",
+        ),
+    )
+    roles = CAP._statement_role_candidates(schema)
+    assert roles == [
+        (
+            "http://x.test/role/IS",
+            "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+            True,
+        ),
+        ("http://x.test/role/Seg", "STATEMENTS OF OPERATIONS - SEGMENT", True),
+    ]
+    picked = CAP._pick_statement_role(roles, "income_statement")
+    assert picked["role_uri"] == "http://x.test/role/IS"
+    assert picked["title_search"] == "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS"
+
+
+def test_original_needles_outrank_the_statement_only_needles() -> None:
+    # Needle-major order: an earlier Statement role reached only by a
+    # statement-only needle loses to a later one reached by an original needle.
+    schema = _schema_with_roles(
+        (
+            "http://x.test/role/SegmentResults",
+            "0000002 - Statement - Segment Results of Operations",
+        ),
+        (
+            "http://x.test/role/SubsidiaryCondition",
+            "0000003 - Statement - Financial Condition of the Insurance Subsidiary",
+        ),
+        (
+            "http://x.test/role/Income",
+            "0000004 - Statement - Consolidated Statement of Income",
+        ),
+        (
+            "http://x.test/role/Balance",
+            "0000005 - Statement - Consolidated Balance Sheets",
+        ),
+    )
+    roles = CAP._statement_role_candidates(schema)
+    assert CAP._pick_statement_role(roles, "income_statement")["role_uri"] == (
+        "http://x.test/role/Income"
+    )
+    assert CAP._pick_statement_role(roles, "balance_sheet")["role_uri"] == (
+        "http://x.test/role/Balance"
+    )
+
+
 def test_already_retained_accession_is_skipped_and_clock_reused(tmp_path) -> None:
     lane = _materialized_lane(tmp_path)
     capture_fif_filing_packages(

@@ -1223,7 +1223,7 @@
     stashSave();
     sbClient().then(function (sb) {
       if (!sb) { showErr(tx("billNotConfigured")); return; }
-      var redirectTo = location.origin + location.pathname + "?onboard=resume";
+      var redirectTo = oauthRedirect();
       sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirectTo } })
         .then(function (r) { if (r && r.error) showErr(r.error.message); });
     });
@@ -2654,6 +2654,29 @@
     return "";
   }
   function loginDest() { return retTarget() || "/start.html"; }
+  function oauthRedirect() {
+    var target = new URL(location.pathname, location.origin);
+    target.searchParams.set("onboard", "resume");
+    var ret = retTarget();
+    try {
+      var checked = new URL(ret, location.origin);
+      if (ret && ret.length <= 4096 && checked.origin === location.origin) {
+        target.searchParams.set("ret", checked.pathname + checked.search + checked.hash);
+      }
+    } catch (e) { /* An invalid return cannot replace the ordinary landing. */ }
+    return target.href;
+  }
+  function resumeSignin() {
+    // Let the incumbent SDK finish the one-time code exchange before navigation.
+    // Navigating first drops the code and can strand a fresh Google sign-in.
+    return sbClient().then(function (sb) {
+      if (!sb) throw new Error("auth-client-unavailable");
+      return sb.auth.getSession();
+    }).then(function (r) {
+      if (r && !r.error && r.data && r.data.session) { location.href = loginDest(); return; }
+      openSheet("signin", {});
+    }).catch(function () { openSheet("signin", {}); });
+  }
   // ── Silent wall-resume (sticky login) ───────────────────────────────────────
   // The registration wall (app/regwall.py) verifies the ~1-hour ACCESS token
   // server-side, but the ~390-day session cookie also carries a REFRESH token the
@@ -3083,7 +3106,7 @@
       // not back in the sheet; a pending-upgrade round-trip resumes the upgrade panel.
       if (intent.resume && resumeStash) {
         if (resumeStash.pendingUpgrade) { stripOnboardParams(); openSheet("upgrade", resumeStash.upgradeOpts || {}); return; }
-        if (resumeStash.mode === "signin") { stripOnboardParams(); location.href = loginDest(); return; }
+        if (resumeStash.mode === "signin") { stripOnboardParams(); resumeSignin(); return; }
       }
       // STICKY LOGIN: a regwall bounce (?signin=1[&ret=…]) with a session cookie
       // present is a returning SIGNED-IN visitor whose access token expired —
