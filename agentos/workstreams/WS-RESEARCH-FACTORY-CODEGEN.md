@@ -27,19 +27,23 @@ waves:
   status: in_progress
 - id: RELEASE
   title: Existing protected carriers, installation and authenticated consumer proof
-  status: awaiting_ci
+  status: in_progress
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
 next_action: Consume and adjudicate the exact archive-order source review; then finalize
   the distinct corrected v4 commission and delivery packet through normal Fabric
   admission. Original v3 recovery is closed and its failure remains unaccepted.
-  Preserve original effects and continue existing protected release controls.
+  Preserve original effects. The original CI9077 terminal failure needs the
+  incumbent guard owner's legitimate diagnostic path; no refused log retry.
+  Continue existing protected release controls.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
 - research/research_factory_codegen/2026-10-14/US_CALENDAR_NOTICE_EVIDENCE.md
 - research/research_factory_codegen/2026-10-14/PROC_OBSERVER_SOURCE_CONTRACT.md
+- research/research_factory_codegen/2026-10-14/CGROUP_OBSERVER_SOURCE_CONTRACT.md
+- research/research_factory_codegen/2026-10-14/MOUNTINFO_SOURCE_CONTRACT.md
 do_not_redo:
 - Original rf-codegen-contracts-impl-01a1333c-v1 remains EFFECT_UNKNOWN; its refused
   artifact read stays closed. Chris authorized quarantining eventual output and a

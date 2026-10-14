@@ -22,3 +22,10 @@ These current public notices do not authenticate historical availability, Yahoo 
 These facts are deliberately separate from the ten complete annual tables. A 2011 press-release reprint found during search listed only Thanksgiving early closes for 2012–2013; that incomplete reprint was not accepted as a complete early-close calendar. European cash-market, Liffe futures and clearing-service calendars were excluded because they describe different markets. Complete 2010–2013 NYSE annual closure coverage remains missing.
 
 Both SEC documents were read through the public web tool. Subsequent direct PDF captures returned HTTP403 and were not retried, so no raw PDF retention/hash is asserted. The prepared runtime patch, immutable legacy calendar and incumbent CN source remain unchanged. No prices, returns, holdout labels or historical collector were accessed.
+
+
+## Compatibility preparation against the incumbent CN source
+
+On2026-10-14, PR8721 remained OPEN/DRAFT at `1f93cf99d4cfabaec91c4646c8856e6d242b6f04`. A new external candidate combines its exact CN calendar source with the previously checked US2014–2023addition. The two textual conflicts were the coverage prose and per-year verification-date mapping; both are resolved only in the external candidate. CN dates retain2026-10-11verification and the US historical rows retain2026-10-14verification. Full coverage dictionaries, yearly tables and daily early-close/EN/ZH names over2010–2030 match the prior US candidate for US and the exact CN owner for all other markets. This is compatibility evidence, not new notice qualification or source-write custody.
+
+Candidate SHA256`a9d5cc2ee56e9472039e94bf9a869d2e551404c0b599c45f3c852ed3debefefc`; patch SHA256`8d76ecc9a0e1e97e638143a76bc069cac276845f888b4f7cb044e04e6920be98`. Reproduction and adjudication are in `methods-review/t01-provenance/prepared-us-calendar-cn-compatible-v1/` under the programme evidence root. The canonical calendar file and PR8721 branch remain unchanged; the historical ChatGPT handoff was not treated as an active source owner.

@@ -1,5 +1,16 @@
 # Research Factory codegen programme continuation — 2026-10-14
 
+
+## Current continuation — 2026-10-14 17:23 UTC
+
+The archive-order repair now passes extraction and on-disk verification of all six actual pinned release members in a new local fixture. No command, binary execution, bundle publication or Docker change occurred. A first fixture attempt exposed only local UID/GID callback assumptions and remains retained. The v4 draft has25boundfiles and9prechecktests; independent original archive review is still pending, so no v4 dispatch has occurred. Its capsule stays `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`.
+
+A new normal-route MiniMax leaf returned the pure mount-table parser. Root reproduced8contract failures, preserved the original unaccepted return and repaired a separate source copy;80inert checks pass. The integrated runtime source suite now passes603tests and67subtests with3Linux-only skips in4.62seconds. This source complements the existing process and cgroup observation preparation, grants no host trust, and is outside the physical capsule. The original cgroup review continues on its existing operation.
+
+PR9077 CI38590887162 at exacthead `9c9189d933e2d376a2c650cfbdd597d0e7fefbef` is now terminalFAILURE in ci-pack-0;11other test packs passed. The first failure-log read was refused by the installed redundant-poll guard. Source-only diagnosis went through the existing Mastermind OS owner to Fabric Integration, which is producing regression evidence. No alternate read, guard edit, state deletion, artificial push or new watcher was used. The programme's source commit below is ordinary substantive work; it does not authorize retrying the refused log.
+
+Fresh main `b337ad670065d6d75967bbaf4745e10055dc33ad` combines with pre-mountinfo head `6f0a8aec46853c42e4c05349ba04b6d868a851dc` in a non-checkout merge-tree without conflicts. Actual dependency landing and integration remain pending. A separate external US-calendar candidate now composes with exactPR8721head `1f93cf99d4cfabaec91c4646c8856e6d242b6f04`, preserving all CN provenance and every non-US behavior; no shared source or held branch was edited. Complete2010–2013annual notice coverage remains missing.
+
 The programme remains active under Chairman Chris's end-to-end commission and original root `01a1333c-a475-7052-95a8-72a88eb8c17b`. This checkpoint is continuity, not an execution grant or completion. Root retains Git integration ownership on `claude/ssd-rf-contracts-fresh-01a1333c-164a62968b85f8c2`.
 
 ## V3 recovery closed; archive repair prepared — 2026-10-14
