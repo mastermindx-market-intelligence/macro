@@ -94,6 +94,7 @@ COMPATIBLE_INPUT_SCHEMAS: dict[str, tuple[str, ...]] = {
         "capital_structure.share_count_observation.v2",
     ),
     "financials": ("capital_structure.financial_item_observation.v1",),
+    "corporate_actions": ("capital_structure.corporate_action_observation.v1",),
     "corrections": (),
 }
 
