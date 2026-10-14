@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T13:27:15.186797+00:00",
-  "count": 2897,
+  "generated_at": "2026-10-14T13:56:50.200380+00:00",
+  "count": 2899,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -96,6 +96,7 @@
     "The PunchLine",
     "The Punchline",
     "Trump Xi Preview",
+    "U.S. Department of Agriculture",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -229,6 +230,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m63trk0wyl9-eca602",
+      "title": "JGB Strategy",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:14:20Z",
+      "summary_points": [
+        "Red Trifecta Election Risk: Republican control of both houses (red trifecta) triggers largest market impact; historical data shows Trump wins (2016/2024) → USD strength, while Dems winning House (2018) or losing (2020) → USD weakness, directly affecting yen rates.",
+        "BOJ Short-Term Distortion: Elevated BOJ ownership in 2y (12.9%) and 5y (10.1%) JGBs distorts short-term yield dynamics, with absorption rates declining to 21.2% (down from 22.9%).",
+        "Tariff Divergence: April 2025 tariffs caused Dollar Index decline post-2024 election, breaking historical pattern of Republican control strengthening USD, making tariffs a critical risk factor for dollar-yen flows.",
+        "Geopolitical Inflation Spillover: Iran war intensifying US inflation prolongs Fed hikes, pressuring yen via 10y UST yield linkage and dollar-yen dynamics, accelerating BOJ rate hikes through 2026.",
+        "Red Trifecta Curve Impact: Fiscal concerns (e.g., Trump’s $5k proposal) weaken dollar vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
@@ -2390,6 +2412,34 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "institution": "U.S. Department of Agriculture",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-09T16:00:00Z",
+      "summary_points": [
+        "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year.",
+        "USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre.",
+        "USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook.",
+        "USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre.",
+        "USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel.",
+        "These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts."
+      ],
+      "tags": [
+        "agriculture",
+        "wheat",
+        "corn",
+        "soybeans",
+        "forecast"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
       "language": "en",
       "needs_metadata": false
     },
