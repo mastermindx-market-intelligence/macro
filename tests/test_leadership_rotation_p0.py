@@ -831,6 +831,48 @@ def test_size_two_part_rejects_constructed_row_the_t11_gate_accepted():
     assert [v["row"] for v in result["violations"]] == ["defensive_sector/H1"]
 
 
+def _t11_gate_sized_verbatim(cell_summaries: list[dict], alpha: float = 0.025) -> bool:
+    """The retired T11 rule: violation iff a δ = 0 row's STORED Wilson lower > α."""
+    for cell in cell_summaries:
+        if float(cell.get("delta", float("nan"))) != 0.0:
+            continue
+        summary = cell.get("summary", {})
+        entries = list(summary.get("by_group_hypothesis", {}).items())
+        fam = summary.get("family_any")
+        if isinstance(fam, dict):
+            entries.append(("family_any", fam))
+        for _name, row in entries:
+            stored = row.get("wilson_95_ok", {}).get("lower", float("nan"))
+            if float(stored) > alpha:
+                return False
+    return True
+
+
+def test_size_gate_refuses_count_consistent_t12_shape_the_t11_gate_accepted():
+    # COUNT-CONSISTENT (no stored-field tampering): the T12 run shape — thin M per
+    # δ = 0 cell and cell 2 UNREACHED (n_ok = 0). The T11 rule calls this SIZED
+    # (a NaN lower bound is never > α); the V2 §3 gate refuses it as not executable.
+    cells = [
+        _size_cell(0, 100, 2),
+        _size_cell(1, 100, 2, n_target=40),
+        _size_cell(2, 0, 0, n_target=80),
+        _size_cell(3, 42, 1, rho=0.8),
+        _size_cell(4, 42, 1, rho=0.8, n_target=40),
+        _size_cell(48, 79, 1, sigma=0.014),
+    ]
+    assert _t11_gate_sized_verbatim(cells) is True
+
+    result = size_check(cells, min_m=400, required_cells=[0, 1, 2, 3, 4, 48])
+    assert result["sized"] is False
+    assert result["violations"] == []
+    assert result["missing_cells"] == []
+    flagged = {r["cell_id"]: r["flag"] for r in result["rows"]}
+    assert set(flagged) == {0, 1, 2, 3, 4, 48}
+    assert set(flagged.values()) == {"SIZE_NOT_EXECUTABLE"}
+    # without the M floor, cell 2's zero OK sims alone still refuse the set (V2.1 §5 F2)
+    assert size_check(cells)["sized"] is False
+
+
 # MUTATION: scripts/leadership_rotation_p0.py:784 envelope as alpha + 1/sqrt(m) (R-H1-3)
 def test_size_envelope_values():
     at_400 = _size_row(size_check([_size_cell(0, 400, 0)]))["envelope"]
