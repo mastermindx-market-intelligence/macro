@@ -1065,6 +1065,119 @@ def test_merge3_same_key_order_different_glue_is_order_conflict() -> None:
     assert same.text == swapped
 
 
+def test_merge3_agreed_order_with_one_sided_body_edit_is_clean() -> None:
+    """Agreed permutation, one order-only side, one body edit: clean merge.
+
+    Base is alpha, beta, gamma, delta. Ours swaps beta and alpha positionally
+    and edits nothing else (order-only). Theirs carries the same key order
+    built the same way plus gamma's run changed to ``echo gamma-v2``. The
+    order is agreed and only one side edited a body, so the merge is theirs'
+    bytes with no conflict.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+            ("delta", "echo delta"),
+        ]
+    )
+    ours = _positional_swap(base, "alpha", "beta")
+    theirs = ours.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+    assert _job_keys(base) == ["alpha", "beta", "gamma", "delta"]
+    assert _job_keys(ours) == _job_keys(theirs)
+    assert _job_keys(theirs) == ["beta", "alpha", "gamma", "delta"]
+
+    result = merge3(base, ours, theirs)
+    assert result.conflicts == ()
+    assert _job_keys(result.text) == ["beta", "alpha", "gamma", "delta"]
+    assert result.text.count("echo gamma-v2") == 1
+    assert result.text == theirs
+    _assert_loadable(result)
+
+
+def test_merge3_agreed_order_mirrored_is_clean() -> None:
+    """The mirror of the test above: the edit side is ours, the order side theirs.
+
+    The same base, permutation, and gamma edit, with the two roles swapped,
+    merge to the same keys and the same single ``gamma-v2`` with no conflict.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+            ("delta", "echo delta"),
+        ]
+    )
+    order = _positional_swap(base, "alpha", "beta")
+    edited = order.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+
+    result = merge3(base, edited, order)
+    assert result.conflicts == ()
+    assert _job_keys(result.text) == ["beta", "alpha", "gamma", "delta"]
+    assert result.text.count("echo gamma-v2") == 1
+    assert result.text == edited
+    _assert_loadable(result)
+
+
+def test_merge3_agreed_keys_different_glue_stays_order_conflict() -> None:
+    """Negative control: same key order, mixed glue, plus an edit.
+
+    Ours is the positional swap (order-only); theirs is the whole-fragment
+    swap of the same pair plus the gamma body edit. The two sides chose
+    different separator glue for the same permutation, and the edit side's
+    base-shape glue is not an edit ``_apply_order_and_edits`` can see past,
+    so the merge still records ``__order__`` in both directions.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+            ("delta", "echo delta"),
+        ]
+    )
+    ours = _positional_swap(base, "alpha", "beta")
+    theirs = _swap_fragments(base, "alpha", "beta").replace(
+        "run: echo gamma\n", "run: echo gamma-v2\n", 1
+    )
+    assert _job_keys(ours) == _job_keys(theirs) == ["beta", "alpha", "gamma", "delta"]
+    assert ours != theirs
+
+    forward = merge3(base, ours, theirs)
+    assert forward.conflicts == ("__order__",)
+    assert forward.text == _conflict_block(ours, theirs)
+    reverse = merge3(base, theirs, ours)
+    assert reverse.conflicts == ("__order__",)
+    assert reverse.text == _conflict_block(theirs, ours)
+
+
+def test_merge3_agreed_permutation_with_two_sided_body_edits_conflicts() -> None:
+    """Negative control: both sides edit gamma differently.
+
+    The permutation is agreed, but neither side is order-only and the two
+    bodies differ from each other and from base. The merge must report a
+    conflict (never a silent pick); it records one ``__order__`` conflict
+    holding both whole texts.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+            ("delta", "echo delta"),
+        ]
+    )
+    perm = _positional_swap(base, "alpha", "beta")
+    ours = perm.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+    theirs = perm.replace("run: echo gamma\n", "run: echo gamma-v3\n", 1)
+
+    result = merge3(base, ours, theirs)
+    assert result.conflicts == ("__order__",)
+    assert result.text == _conflict_block(ours, theirs)
+
+
 def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
     tmp_path: Path,
 ) -> None:
@@ -1137,7 +1250,18 @@ def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
     manifest_keys = _job_keys(manifest)
     manifest_swap = _positional_swap(manifest, manifest_keys[0], manifest_keys[1])
     target, target_fragment, old_runs_on = _single_runs_on_job(manifest)
-    assert target_fragment in manifest_swap
+    # Identity, not substring: a duplicated or detached fragment passes ``in``,
+    # and the positional swap legitimately moves target's leading separator
+    # with the slot, so pin the bytes from the key line and the one entry that
+    # ``split`` maps to target in ``manifest_swap``.
+    target_body = _lead_and_body(
+        next(fragment for fragment in split(manifest) if fragment.key == target)
+    )[1]
+    assert [
+        _lead_and_body(fragment)[1]
+        for fragment in split(manifest_swap)
+        if fragment.key == target
+    ] == [target_body]
     new_runs_on = "    runs-on: ubuntu-22.04\n"
     if old_runs_on == new_runs_on:
         new_runs_on = "    runs-on: ubuntu-24.04\n"

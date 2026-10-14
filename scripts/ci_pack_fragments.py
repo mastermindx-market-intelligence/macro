@@ -38,6 +38,12 @@ also be edited into a third shape: when the edit side's separator differs
 from both the base and the moved separator, the merge records ``__order__``
 instead of silently dropping that edit. Job bodies, the preamble, and the
 trailer come from the per-key resolve, so the edit's scalar wins.
+The same case is also clean when both sides carry the identical job-key
+permutation and exactly one side is order-only, provided the edit side
+moved every separator the permutation moved: the agreed order applies and
+the other side's edited bodies win, while mixed glue (a positional swap
+against a whole-fragment swap of the same pair) stays an ``__order__``
+conflict.
 
 Order-only means the same job keys, the same preamble and trailer bytes, and
 the same bytes from each job's key line through the end of its fragment. A
@@ -649,6 +655,36 @@ def _apply_order_and_edits(
     return MergeResult("".join(pieces), ())
 
 
+def _moved_separators_agree(
+    base_frags: list[Fragment],
+    order_frags: list[Fragment],
+    edit_frags: list[Fragment],
+) -> bool:
+    """True when the edit side moved every separator the permutation moved.
+
+    Both sides share one job-key order, so the edit side's per-key separator
+    is a glue choice for that permutation, not a base separator left in its
+    slot. ``_apply_order_and_edits`` only rejects a third-shape separator, so
+    by itself it would let a positional swap's glue silently outrank a
+    whole-fragment swap's; that mixed-glue shape must stay an ``__order__``
+    conflict, so the caller skips the apply for it.
+    """
+    base_by = _unique_map(base_frags)
+    order_by = _unique_map(order_frags)
+    edit_by = _unique_map(edit_frags)
+    if base_by is None or order_by is None or edit_by is None:
+        return False
+    for key in _job_order(order_frags):
+        if key not in base_by or key not in edit_by:
+            return False
+        base_lead = _lead_and_body(base_by[key])[0]
+        order_lead = _lead_and_body(order_by[key])[0]
+        edit_lead = _lead_and_body(edit_by[key])[0]
+        if order_lead != base_lead and edit_lead != order_lead:
+            return False
+    return True
+
+
 def _fragment_texts(
     base_by: dict[str, Fragment],
     ours_by: dict[str, Fragment],
@@ -723,6 +759,28 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
             )
             if applied is not None:
                 return applied
+        if ours_keys == theirs_keys and ours_only != theirs_only:
+            if ours_only:
+                order_frags, edit_frags, order_is_ours = (
+                    ours_frags,
+                    theirs_frags,
+                    True,
+                )
+            else:
+                order_frags, edit_frags, order_is_ours = (
+                    theirs_frags,
+                    ours_frags,
+                    False,
+                )
+            if _moved_separators_agree(base_frags, order_frags, edit_frags):
+                applied = _apply_order_and_edits(
+                    base_frags,
+                    order_frags,
+                    edit_frags,
+                    order_is_ours=order_is_ours,
+                )
+                if applied is not None:
+                    return applied
         return MergeResult(_conflict_block(ours, theirs), (ORDER_KEY,))
 
     dropped: set[str] = set()
