@@ -554,7 +554,10 @@ def into_strength(
       off_low  : receiver >= min(last bleed_low_lookback) * (1 + into_off_low_min)
       leading  : rs20(receiver) >= into_rel_lead (SPY-relative, FINDING 7)
       ratio    : ratio 20d change >= into_ratio_chg_min  OR  ratio at 20d high
-      breadth  : breadth_recv >= into_breadth_min AND rising AND > breadth_donor
+      breadth  : breadth_recv >= into_breadth_min AND rising AND
+                 > breadth_donor when donor breadth is measured; an unmeasured donor
+                 admits on receiver evidence alone and the receipt reports
+                 breadth_above_donor=None
 
     FINDING 4 fix: ratio 20d high check is the OR-branch; the primary branch is the
     20d ratio change. Both are computed and disclosed in the receipt.
@@ -631,7 +634,10 @@ def into_strength(
         "ratio_20s_high": ratio_20s_high,
         "breadth_above50": round(breadth_recv * 100, 2) if breadth_recv is not None else None,
         "breadth_rising": brd_rising,
-        "breadth_above_donor": bool(breadth_donor is None or breadth_recv > breadth_donor),
+        # T07 A21: an unmeasured donor breadth is "not compared", never a pass/fail.
+        "breadth_above_donor": None if breadth_donor is None else bool(breadth_recv > breadth_donor),
+        "donor_breadth_above50": round(breadth_donor * 100, 2) if breadth_donor is not None else None,
+        "donor_breadth_state": "UNMEASURED" if breadth_donor is None else "MEASURED",
     }
 
 
@@ -1734,6 +1740,42 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
         return out
 
     reasons = set(receipts.get("reason_codes") or [])
+
+    # T07 A18: absolute legs are context only — UNMEASURED ≠ FLAT ≠ zero, a missing
+    # leg is never coerced to 0, and none of this changes state, counts or reasons
+    # other than the additive SHAPE_SIGN_MISMATCH.
+    def _leg_state(value) -> str:
+        if isinstance(value, bool) or not isinstance(value, (float, int)) \
+                or not np.isfinite(value):
+            return "UNMEASURED"
+        if value > 0:
+            return "UP"
+        if value < 0:
+            return "DOWN"
+        return "FLAT"
+
+    def _absolute_direction(recv_state: str, donor_state: str) -> str | None:
+        if recv_state == "UNMEASURED" or donor_state == "UNMEASURED":
+            return None
+        if recv_state == "DOWN" and donor_state == "DOWN":
+            return "both_down"
+        if recv_state == "UP" and donor_state == "UP":
+            return "both_up"
+        return "mixed"
+
+    def _measured_shape(recv_state: str, donor_state: str) -> str:
+        # Same vocabulary engine/oracle/ratio_lens.py::_short_shape emits; mapped
+        # from the MEASURED signs here so a trusted upstream label is never derived.
+        if recv_state == "UP" and donor_state == "UP":
+            return "BOTH_UP"
+        if recv_state == "UP" and donor_state == "DOWN":
+            return "RECEIVER_UP_DONOR_DOWN"
+        if recv_state == "DOWN" and donor_state == "DOWN":
+            return "BOTH_DOWN"
+        if recv_state == "DOWN" and donor_state == "UP":
+            return "RECEIVER_DOWN_DONOR_UP"
+        return "FLAT" if recv_state == "FLAT" and donor_state == "FLAT" else "ONE_LEG_FLAT"
+
     canonical = {}
     conflicts = set()
     for row in receipts["pairs"]:
@@ -1747,10 +1789,15 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
                          or not all(isinstance(code, str) for code in row["reason_codes"])))):
             reasons.add("INVALID_PAIR_OBSERVATION")
             continue
-        key = (row["num"], row["den"])
+        # T07 A20: canonicalise ticker aliases (case/whitespace) so one economic
+        # pair is never counted twice; the emitted row keeps its original strings.
+        norm = {k: str(row[k]).strip().upper() for k in ("num", "den")}
+        key = (norm["num"], norm["den"])
         # Alias names/IDs are transport details, not additional economic evidence.
         try:
-            signature = json.dumps({k: v for k, v in row.items()
+            sig_row = dict(row)
+            sig_row.update(norm)
+            signature = json.dumps({k: v for k, v in sig_row.items()
                                     if k not in ("pair_id", "name_en", "name_zh")},
                                    sort_keys=True, separators=(",", ":"), allow_nan=False)
         except (TypeError, ValueError):
@@ -1770,6 +1817,8 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
     known = False
     roots = set()
     revisions = {}
+    receiver_unmeasured: set = set()
+    donor_unmeasured: set = set()
     for key in sorted(canonical, key=lambda k: (groups.index(canonical[k][1]["context_group"]), k)):
         row = canonical[key][1]
         group = row["context_group"]
@@ -1778,6 +1827,18 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
         window = (row.get("horizons") or {}).get("2s") or {}
         values = [window.get(k) for k in
                   ("numerator_return_pct", "denominator_return_pct", "ratio_return_pct")]
+        recv_state = _leg_state(window.get("numerator_return_pct"))
+        donor_state = _leg_state(window.get("denominator_return_pct"))
+        row["absolute_2s"] = {
+            "receiver_state": recv_state,
+            "donor_state": donor_state,
+            "absolute_direction": _absolute_direction(recv_state, donor_state),
+            "not_claimed": ["absolute_recovery", "measured_inflow", "causal_handoff"],
+        }
+        if recv_state == "UNMEASURED":
+            receiver_unmeasured.add(row["pair_id"])
+        if donor_state == "UNMEASURED":
+            donor_unmeasured.add(row["pair_id"])
         eligible = (key not in conflicts and window.get("eligible") is True
                     and row.get("requested_as_of") == as_of
                     and row.get("value_as_of") == end
@@ -1792,11 +1853,17 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
             relative = window["ratio_return_pct"]
             if relative > 0:
                 counts["positive_2s"] += 1
-                row["interpretation"] = (
-                    "RELATIVE_RESILIENCE" if window.get("shape") == "BOTH_DOWN"
-                    else "DIVERGENT_PRICE_ACTION" if window.get("shape") == "RECEIVER_UP_DONOR_DOWN"
-                    else "EARLY_RELATIVE_STRENGTH"
-                )
+                # T07 A18: derive from the MEASURED signs, never a trusted label.
+                if recv_state == "DOWN" and donor_state == "DOWN":
+                    row["interpretation"] = "RELATIVE_RESILIENCE"
+                elif recv_state == "UP" and donor_state == "DOWN":
+                    row["interpretation"] = "DIVERGENT_PRICE_ACTION"
+                else:
+                    row["interpretation"] = "EARLY_RELATIVE_STRENGTH"
+                shape_label = window.get("shape")
+                if (isinstance(shape_label, str)
+                        and shape_label != _measured_shape(recv_state, donor_state)):
+                    row_reasons.add("SHAPE_SIGN_MISMATCH")
             else:
                 row["interpretation"] = "NO_POSITIVE_RELATIVE_SHIFT"
             for horizon in ("1s", "5s", "20s"):
@@ -1842,6 +1909,12 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
         total = sum(coverage["groups"][g][field] for g in groups)
         coverage["registered_pairs" if field == "registered" else field] = total
     coverage["missing_pair_ids"].sort()
+    # T07: per-leg missingness over the canonical (deduplicated) registered rows —
+    # additive receipt only; no existing coverage key, count, state or reason changes.
+    coverage["missingness"] = {
+        "receiver_unmeasured_pair_ids": sorted(receiver_unmeasured),
+        "donor_unmeasured_pair_ids": sorted(donor_unmeasured),
+    }
     if coverage["missing_pair_ids"]:
         reasons.add("PARTIAL_PAIR_COVERAGE")
     d, b = coverage["groups"]["defensive_sector"], coverage["groups"]["broadening_proxy"]
