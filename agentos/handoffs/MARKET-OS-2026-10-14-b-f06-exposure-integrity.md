@@ -52,10 +52,26 @@ verified:
   command: python3 -m pytest tests/test_research_screener.py -q -k partial_malformed
   result: 'Failed before the parent repair; passes afterward for mixed open/junk and closed/junk books.
     Full current suite: 51 passed.'
+- claim: The original independent review was consumed and accepted once as a diagnostic outcome.
+  command: fabric_task.py result b-f06-exposure-review-01a128b7-v1; fabric_task.py accept
+    b-f06-exposure-review-01a128b7-v1 --by reviewer; fabric_task.py status b-f06-exposure-review-01a128b7-v1
+  result: TERMINAL rc0; ACCEPTED by reviewer with original root and parent. Retained text SHA256
+    817ba095a031955bb950d66af8254ac53f327b329363d234cd03b21b07a9f8f0. Four logic findings
+    were already covered by parent repairs. Repeated EN/ZH Portfolio invitation shortened; current
+    markup already has a whitespace separator, so the missing-space claim is not current.
+- claim: Review correction preserves full-page bake and behavior.
+  command: Write bake_html(REPO, committed_payload) to site/research_screener.html; python3 -m pytest
+    tests/test_research_screener.py -q
+  result: 51 passed. Existing dormant-WatchStore test now also asserts the visible unavailable notice
+    and Portfolio link; static and post-boot signed-out copy agreement is pinned. No CSS changed.
+- claim: Hosted CI passed on the pre-copy-correction head 09e5fb3c581116f698759e2c95725d8a9980dcad.
+  command: gh pr view 9191 --repo mastermindx-market-intelligence/macro --json headRefOid,statusCheckRollup
+  result: All 12 packs, contract-delta, ci-gate, fence-pack, self-mod-fence and ci-authority/main
+    succeeded in CI run 38492155965 and fence run 38492156003. This does not qualify a later head.
 unverified:
-- claim: Independent review and final source acceptance.
-  what_would_verify: Consume retained text from b-f06-exposure-review-01a128b7-v1, reproduce and adjudicate
-    findings, correct and run affected tests. Do not duplicate its run.
+- claim: Final-head CI and implementation-outcome acceptance.
+  what_would_verify: Require concluded applicable checks after the review copy/test correction; then
+    record the original implementation outcome once. Browser and live proof stay separate.
 - claim: EN/ZH dark/light 1440/390 browser evidence and authenticated live repaired page.
   what_would_verify: Chris must first confirm the Chrome extension UI is dismissed/completed. Then
     resume the three saved task tabs, inspect real captures, and after protected merge verify deployed
@@ -66,16 +82,16 @@ unverified:
 unresolved:
 - Chrome refused reload at 2026-10-13T23:46Z because another extension UI is open. Chris was asked
   once; no repeat question or browser control without confirmation.
-- Independent Qwen review is on its original Fabric request; source is being prepared on this single
-  carrier.
+- Independent Qwen review is complete and accepted once as diagnostic work. Original implementation
+  remains unaccepted pending final-head qualification; source stays on this single carrier.
 - Three task tabs retain temporary viewport/preferences and are marked for handoff. Cleanup follows
   browser clearance; do not sign out the existing authenticated session.
-- Initial-head CI-authority/main and self-mod-fence passed. The separate codex/merge-queue-pilot check
-  failed with context_active=false, inactive_base_context and allowed=true. No override or policy
-  change was made; final-head applicable CI remains required.
+- On head 09e5fb3c581116f698759e2c95725d8a9980dcad the separate codex/merge-queue-pilot check
+  failed with context_active=false, inactive_base_context and allowed=true. Applicable main context
+  and aggregate CI gate passed. No override or policy change; later heads require their own CI.
 next_actions:
-- Consume original review b-f06-exposure-review-01a128b7-v1 on installed fabric_task.py normal status/result
-  path; independently adjudicate before final source acceptance.
+- Finish exact final-head CI and original implementation acceptance once. Original independent review
+  is closed; no new review, result read or acceptance replay without a material source regression.
 - Keep the carrier draft and unarmed until browser acceptance is complete. Once the existing browser
   gate is cleared, finish controlled matrix and then normal protected CI/merge/live proof.
 - Restore local original ZH/dark and clear its tab-specific viewport override; verify live authenticated
@@ -104,6 +120,6 @@ prs:
 
 Original root and assigning parent: `01a128b7-bd2b-7a91-891d-39d38f74ad55`.
 
-The canonical local continuation is `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/CONTINUATION_RECEIPT.json`, entry `f06_exposure_integrity`. Its evidence root contains the original packet, retained stdout, export receipt, patch, red/green output and browser baseline. The implementation stdout SHA256 is `af9ac15449db8b97b3d1e7499c83e96406901283db252aeb11dc56c153f0b545`; exported patch SHA256 is `077970f0493852a14d1b8f21dd5fba64be525b964b5c1088244230322e33f1e7`. Export matched the advertised manifest; parent corrections and tests are separate from that original result. No final ledger acceptance is claimed yet.
+The canonical local continuation is `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/CONTINUATION_RECEIPT.json`, entry `f06_exposure_integrity`. Its evidence root contains the original packet, retained stdout, export receipt, patch, red/green output and browser baseline. The implementation stdout SHA256 is `af9ac15449db8b97b3d1e7499c83e96406901283db252aeb11dc56c153f0b545`; exported patch SHA256 is `077970f0493852a14d1b8f21dd5fba64be525b964b5c1088244230322e33f1e7`. Export matched the advertised manifest; parent corrections and tests are separate from that original result. The independent review `b-f06-exposure-review-01a128b7-v1` is accepted once as diagnostic work. The implementation outcome still awaits final-head qualification; no browser, merge or live acceptance is claimed.
 
 This is a partial delivery record. The MarketOntology programme remains incomplete.

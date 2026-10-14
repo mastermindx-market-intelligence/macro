@@ -1612,17 +1612,17 @@ def test_exposure_notice_variants_and_portfolio_destination():
     source = TEMPLATE_PATH.read_text(encoding="utf-8")
     assert '<p class="rs-exposure-null" data-rs-exposure-null' in source
     # Signed-out keeps the canonical engine copy verbatim.
-    assert EXPOSURE_NULL_EN in source
-    assert EXPOSURE_NULL_ZH in source
+    assert source.count(EXPOSURE_NULL_EN) >= 2  # static and post-boot copy agree
+    assert source.count(EXPOSURE_NULL_ZH) >= 2
     for en, zh in (
         ("Loading your holdings…", "正在读取你的持仓…"),
         (
-            "Holdings are unavailable here. Open Portfolio to check your holdings.",
-            "此处暂时无法读取持仓。请打开投资组合查看持仓。",
+            "Holdings are unavailable here.",
+            "此处暂时无法读取持仓。",
         ),
         (
-            "Current holdings could not be verified. Open Portfolio to check.",
-            "暂时无法确认当前持仓。请打开投资组合查看。",
+            "Current holdings could not be verified.",
+            "暂时无法确认当前持仓。",
         ),
     ):
         assert en in source, en
@@ -1660,6 +1660,10 @@ def test_exposure_dormant_watchstore_local_book_is_never_read(tmp_path: Path):
     assert rec["readerCalls"] == 0
     assert _held(rec) == []
     assert _visible(rec) == ["AAPL", "MSFT", "TSLA"]
+    assert rec["notice"]["hidden"] is False
+    assert rec["notice"]["state"] == "unavailable"
+    assert rec["notice"]["linkHidden"] is False
+    assert rec["notice"]["linkHref"] == "watchlist.html"
 
 
 def test_exposure_missing_store_user_or_api_never_claims_zero(tmp_path: Path):
