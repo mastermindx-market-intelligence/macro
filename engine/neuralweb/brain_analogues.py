@@ -555,3 +555,78 @@ ANALOGUES_TOOL_SCHEMA: dict = {
         "required": [],
     },
 }
+
+
+RETAINED_CONTEXT_MAX_BYTES = 64 * 1024
+
+
+def get_retained_market_context(selection, evidence, *, policy) -> dict:
+    """Bounded original-house evidence consumed by the real Brain tool owner.
+
+    This sibling never reads recomputed regime history or forward-price paths.
+    Citation closure states what an original output reported, not entailment.
+    """
+    from collections import Counter
+    from hashlib import sha256
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_operating_cortex_service as service
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+
+    selected = retrieval.disclose_episode_retrieval(selection, policy=policy)
+    original = service.disclose_real_evidence_packet(evidence, policy=policy)
+    if (selected["retrieval_id"] != original["retrieval_id"]
+            or selected["selection_sha256"] != original["selection_sha256"]
+            or selected["query_owner"] != original["owner"]
+            or selected["method_spec"]["method_spec_id"] != original["method_spec_id"]
+            or not 1 <= selected["requested_k"] <= 8):
+        raise service.RealEvidenceError("exact_brain_evidence_selection_required")
+    value = {"schema": "brain.retained_market_context.v1",
+             "method_family": "retained_original_house_output_fixed_l1",
+             "status": original["status"], "available": True,
+             "mode": original["mode"], "owner": original["owner"],
+             "retrieval_id": original["retrieval_id"],
+             "selection_sha256": original["selection_sha256"],
+             "evidence_packet_id": original["packet_id"],
+             "method_spec": selected["method_spec"],
+             "source_use": policy.disclosure(),
+             "denominator": original["denominator"],
+             "exclusion_counts": dict(sorted(Counter(row["reason"] for row in original["accounting"]).items())),
+             "source_cards": original["source_cards"],
+             "neighbors": [{"context_id": row["candidate"]["context_id"],
+                            "distance_q18": row["distance_q18"]}
+                           for row in selected["selected"]],
+             "state_differences": original["state_differences"],
+             "missing_evidence": original["missing_evidence"],
+             "claims": original["claims"], "authority": original["authority"],
+             "interpretation": "Original house outputs and contextual distances; no constituent-vintage, causal, forecast or independent-sample claim."}
+    value["context_id"] = "mmbraincontext_" + sha256(cohort.canonical(value)).hexdigest()
+    if len(cohort.canonical(value)) > RETAINED_CONTEXT_MAX_BYTES:
+        raise service.RealEvidenceError("brain_evidence_byte_bound_exceeded")
+    # Recheck all compared/denominator rows and selected source cards at exit.
+    retrieval.disclose_episode_retrieval(selection, policy=policy)
+    service.disclose_real_evidence_packet(evidence, policy=policy)
+    policy.disclosure()
+    return value
+
+
+RETAINED_CONTEXT_TOOL_SCHEMA: dict = {
+    "name": "get_retained_market_context",
+    "description": (
+        "Read an exact saved Market Memory query and its permitted original house "
+        "macro evidence. Supply the exact query, generation and cutoff from its "
+        "capture reference. Returns five-field cited outputs, deterministic contextual "
+        "neighbors and exclusions. Distinct from recomputed historical analogues; "
+        "never invent identifiers or treat a match as causal or forecast evidence."
+    ),
+    "input_schema": {
+        "type": "object", "additionalProperties": False,
+        "properties": {
+            "query_id": {"type": "string"}, "subject_id": {"type": "string"},
+            "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
+            "query_cutoff": {"type": "string"}, "method_spec_id": {"type": "string"},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 8},
+        },
+        "required": ["query_id", "subject_id", "generation_id", "generation_sha256",
+                     "query_cutoff", "method_spec_id"],
+    },
+}
