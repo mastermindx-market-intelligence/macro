@@ -11089,6 +11089,8 @@ jobs:
           python -m pytest tests/test_agentos_ship_capture.py tests/test_f01_fx_commodity_source_rights.py -q
 
   agentos-knowledge-contracts:
+    # ci.yml executes this manifest through scripts/run_ci_pack.py. The false
+    # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
     # These ten whole-file suites exercise the knowledge compiler and its
@@ -15433,6 +15435,32 @@ jobs:
         run: >
           python -m pytest
           tests/test_deploy_update_self_heal.py -q
+
+  deploy-git-history:
+    if: ${{ false }}
+    gate: code
+    # The suite reads three deploy scripts; static closure also includes the
+    # site/index.html name used by its synthetic repository fixtures. Declare
+    # that conservative dependency while preserving unrelated probe selection.
+    # Private bootstrap coverage remains in unrun-dark-guards.
+    scope: exclusive
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/bootstrap_repo.sh"
+      - "app/deploy/setup.sh"
+      - "tests/test_deploy_git_history.py"
+      - "site/index.html"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git history test dependencies
+        run: pip install pytest
+      - name: Connected deployment Git history contracts
+        run: python -m pytest tests/test_deploy_git_history.py -q
 
   biocatalyst-regulatory:
     if: ${{ false }}

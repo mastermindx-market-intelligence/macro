@@ -4288,6 +4288,9 @@ CURATED_EXCLUSIVE = {
     # share their measured 43-file import/read closure plus the Agent OS corpus.
     # Source/fence execution remains in the existing self-mod job.
     "agentos-knowledge-contracts",
+    # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
+    # preserves the broader self-heal owner without widening unrelated probes.
+    "deploy-git-history",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This

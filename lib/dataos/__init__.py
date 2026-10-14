@@ -54,6 +54,8 @@ from lib.dataos.identity import (
     ReferenceReadReceipt,
     ReferenceSnapshot,
     VendorAliasTable,
+    VENUE_TZ,
+    VENUE_CURRENCY,
     cn_board,
     fx_id,
     future_id,
@@ -72,6 +74,8 @@ from lib.dataos.identity import (
     parse_option_contract_id,
     security_id,
     validate_reference_snapshot,
+    venue_timezone,
+    venue_currency,
 )
 from lib.dataos.nulls import MissingReason, NullPolicy, validate_value
 from lib.dataos.price import (
@@ -108,6 +112,18 @@ from lib.dataos.price_views import (
     TotalReturnPolicy,
     TotalReturnView,
     total_return_view,
+    ViewVintage,
+    RetainedView,
+    ReopenedView,
+    ComposedView,
+    admit_action_input,
+    admit_revision_set,
+    retain_view,
+    reopen_view,
+    reconstruct_price_view,
+    simple_returns,
+    view_label,
+    view_receipt_sha256,
 )
 from lib.dataos.quality import (
     CheckFamily,
@@ -180,6 +196,7 @@ __all__ = [
     "option_contract_id", "parse_option_contract_id",
     "future_id", "parse_future_id", "index_id", "parse_index_id",
     "fx_id", "parse_fx_id",
+    "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "CNBoard", "cn_board", "is_legacy_bse_code",
     "normalize_cn_symbol", "normalize_hk_symbol",
     "AliasRow", "VendorAliasTable",
@@ -227,6 +244,19 @@ __all__ = [
     "TotalReturnPolicy",
     "TotalReturnView",
     "total_return_view",
+    # price_views revision/vintage layer (P05) and venue-bound reconstruction (P06)
+    "ViewVintage",
+    "RetainedView",
+    "ReopenedView",
+    "ComposedView",
+    "admit_action_input",
+    "admit_revision_set",
+    "retain_view",
+    "reopen_view",
+    "reconstruct_price_view",
+    "simple_returns",
+    "view_label",
+    "view_receipt_sha256",
     # nulls (§D6)
     "MissingReason", "NullPolicy", "validate_value",
     # quality (§D8)

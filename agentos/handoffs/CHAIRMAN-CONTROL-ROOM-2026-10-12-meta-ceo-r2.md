@@ -29,7 +29,7 @@ changed:
     exact WS declaration, canonical current record identity, literal sole-parser objective and 48 explicit
     original source obligations; no Runtime admission, grant or acceptance.'
 - path: mastermind:integrations/product_acceptance_request_owner.py
-  what: Draft PR1414 publishes current source f5965eee14031e324f7b887da5cfe6e3bcab036c. The two new source/Runtime
+  what: Ready PR1414 publishes current source f5965eee14031e324f7b887da5cfe6e3bcab036c. The two new source/Runtime
     review owners now reside in control_plane, preserving the core dependency boundary. Installed or product
     acceptance is not claimed.
 verified:
@@ -109,7 +109,7 @@ verified:
     checks and full merge-on-green suite.
   result: 3PASS plus379PASS. Protected manifest includes lib/intl_eod_publication.py in washout closure; protected
     research-screener live.js stamp f8cda39d matches its exact asset. Obsolete unowned-record exemplar moved
-    to notes and a new assertion requires agentos to remain gated. Final contract-delta against398c:
+    to notes and a new assertion requires agentos to remain gated. Final contract-delta against398c returned
     0 introduced0 inherited; all three probes stay within unchanged ceilings. Hosted proof pending.
 unverified:
 - claim: Installed central office, principal admission and complete direction-to-accepted-outcome loop.

@@ -49,13 +49,17 @@ if [ -d "$TARGET/.git" ]; then
 	log "target $TARGET already has a checkout — converging onto the governed remote"
 	git -C "$TARGET" remote set-url origin "$MACRO_REPO_URL"
 	git -C "$TARGET" config core.sshCommand "$MACRO_SSH_COMMAND"
-	log "fetching $MACRO_REPO_BRANCH (depth 1)"
-	git -C "$TARGET" fetch --depth 1 origin "$MACRO_REPO_BRANCH"
+	# Preserve ancestry on subsequent updates. This does not repair any
+	# existing shallow boundary; that remains a separate operation.
+	log "fetching $MACRO_REPO_BRANCH (connected, no depth limit)"
+	git -C "$TARGET" fetch origin "$MACRO_REPO_BRANCH"
 	git -C "$TARGET" reset --hard FETCH_HEAD
 else
-	log "cloning $MACRO_REPO_URL ($MACRO_REPO_BRANCH, depth 1) -> $TARGET"
+	# A fresh checkout needs connected history for native revision checks.
+	# Keep acquisition on the selected branch and the same deploy-key path.
+	log "cloning $MACRO_REPO_URL ($MACRO_REPO_BRANCH, connected single-branch) -> $TARGET"
 	git -c core.sshCommand="$MACRO_SSH_COMMAND" \
-		clone --depth 1 --branch "$MACRO_REPO_BRANCH" "$MACRO_REPO_URL" "$TARGET"
+		clone --single-branch --branch "$MACRO_REPO_BRANCH" "$MACRO_REPO_URL" "$TARGET"
 	# Persist the credential into the new checkout's own config. This matters
 	# because update.sh later runs `git reset --hard`, which .git/config
 	# survives — an ambient env var set only for this process would not.

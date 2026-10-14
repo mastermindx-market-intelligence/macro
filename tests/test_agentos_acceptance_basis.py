@@ -249,6 +249,8 @@ def test_real_r2_data_retains_every_original_obligation_and_exact_candidate_inpu
     assert sum(row['section'] == '15' for row in declaration['proof_obligations']) == 32
     assert sum(row['section'] == '13.1' for row in declaration['proof_obligations']) == 7
     assert sum(row['section'] == '14' for row in declaration['proof_obligations']) == 7
+    assert sum(row['section'] == '13.3' for row in declaration['proof_obligations']) == 1
+    assert sum(row['section'] == '12' for row in declaration['proof_obligations']) == 1
     assert declaration['original_intent_ref']['content_sha256'] == 'a5c534ddabcd1034372354a1ec645dffe1a2520795035a757e4f7def8300c62d'
     assert declaration['commission_ref']['content_sha256'] == 'f5478e366e1f97eafb4bb0b26f6435944d79fd83223b87ab89f83de0e685509a'
     assert declaration.get('execution_commission_refs', []) == []
