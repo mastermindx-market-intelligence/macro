@@ -34,7 +34,7 @@ display-only; compute() is NOT touched by this module).
 from __future__ import annotations
 
 import logging
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Sequence
 
@@ -489,8 +489,38 @@ def _mri_release_forecast_paths() -> list[Path]:
             config.ROOT / "site" / "macrodata" / "release_forecast.json"]
 
 
+def _mri_asof_vintage(asof, now: datetime) -> str | None:
+    """Classify a release_forecast asof stamp against the consumption instant `now`
+    (tz-aware). Returns "instant" or "date" when admissible, None otherwise.
+
+    A tz-aware ISO instant (trailing Z or an explicit offset) is admissible iff it is
+    <= now. A date-only YYYY-MM-DD stamp is admissible iff it is strictly before now's
+    UTC date (a same-day date-only stamp may have been written after the read).
+    Missing, non-string, unparseable or naive stamps are never admissible."""
+    if not isinstance(asof, str) or not asof.strip():
+        return None
+    s = asof.strip()
+    if len(s) == 10:
+        try:
+            d = date.fromisoformat(s)
+        except ValueError:
+            return None
+        return "date" if d < now.astimezone(timezone.utc).date() else None
+    try:
+        ts = datetime.fromisoformat(s[:-1] + "+00:00" if s.endswith("Z") else s)
+    except ValueError:
+        return None
+    if ts.tzinfo is None or ts.utcoffset() is None:
+        return None
+    return "instant" if ts <= now else None
+
+
 def _read_mri_surprise_dispersion(
-    release_type: str, today: date | None = None, *, paths: Sequence[Path] | None = None
+    release_type: str,
+    today: date | None = None,
+    *,
+    paths: Sequence[Path] | None = None,
+    now: datetime | None = None,
 ) -> dict | None:
     """Read the MRI surprise-dispersion context for `release_type` from the committed
     release_forecast.v2 artifact. Returns None on any failure.
@@ -503,6 +533,14 @@ def _read_mri_surprise_dispersion(
     Envelope gate: the payload must be a dict whose "schema" starts with
     "release_forecast.v2" and whose "upcoming" is a list. Legacy uppercase-keyed
     payloads (no schema/upcoming) are rejected outright — never a partial read.
+
+    Vintage gate (C19 WP11 N4): the payload's top-level asof is compared with the
+    consumption instant — the keyword-only `now` if given (it must be tz-aware; a naive
+    `now` returns None), else datetime.now(timezone.utc). A tz-aware asof instant is
+    admitted iff asof <= now; a date-only YYYY-MM-DD asof is admitted iff it is
+    strictly before now's UTC date; a missing, unparseable or naive asof returns None.
+    `today` keeps only its release-date filter role. The admitted precision is
+    returned as `asof_precision` ("instant" | "date").
 
     Selection: the caller's key (e.g. "CPI") is mapped through _MRI_RELEASE_TYPE_MAP
     to the producer's release_type (e.g. "cpi_headline"; unknown keys are lowercased).
@@ -542,6 +580,12 @@ def _read_mri_surprise_dispersion(
             and isinstance(payload.get("upcoming"), list)
         ):
             return None
+        now = now if now is not None else datetime.now(timezone.utc)
+        if now.tzinfo is None or now.utcoffset() is None:
+            return None
+        asof_precision = _mri_asof_vintage(payload.get("asof"), now)
+        if asof_precision is None:
+            return None
         rt = (release_type or "").strip()
         target = _MRI_RELEASE_TYPE_MAP.get(rt.upper(), rt.lower())
         best_rd: date | None = None
@@ -576,6 +620,7 @@ def _read_mri_surprise_dispersion(
             "sigma_scale_pp": float(pp) if pp is not None else None,
             "skew_tag": skew.get("tag"),
             "consumed_asof": payload.get("asof"),
+            "asof_precision": asof_precision,
             "release_date": best_rd.isoformat(),
             "period": best_el.get("period"),
             "forecast_release_type": target,
