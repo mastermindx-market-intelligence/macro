@@ -638,6 +638,20 @@ def _bridge_cpi_month_vs_breakeven(
     return "basis_mismatch:reference_end"
 
 
+def _explicit_effr_gap_bp(context: Optional[Mapping[str, Any]]) -> Optional[float]:
+    """The caller-supplied EFFR-minus-target-midpoint gap in bp, or None when
+    it is absent or unusable (None, bool, non-numeric, NaN, +/-inf). Never raises."""
+    if context is None:
+        return None
+    raw = dict(context).get("effr_minus_midpoint_bp")
+    if raw is None or isinstance(raw, bool) or not isinstance(raw, (int, float)):
+        return None
+    gap = float(raw)
+    if gap != gap or gap in (float("inf"), float("-inf")):
+        return None
+    return gap
+
+
 def _under_zq_vs_midpoint(
     left: QualifiedObservation,
     right: QualifiedObservation,
@@ -646,21 +660,50 @@ def _under_zq_vs_midpoint(
     _mk,
 ) -> ComparisonResult:
     """ZQ monthly-average EFFR vs target midpoint: only with an explicit
-    EFFR-midpoint basis supplied by the canonical owner."""
+    EFFR-midpoint basis supplied by the canonical owner. The returned
+    difference = (ZQ - midpoint) - effr_minus_midpoint_bp, expressed in
+    rule.output_unit."""
     if context is None or "effr_minus_midpoint_bp" not in dict(context):
         return _mk(
             ComparisonStatus.NOT_IDENTIFIED,
             "underidentified:effr_target_basis",
             limitations=("no explicit EFFR-target-midpoint basis supplied",),
         )
-    gap = float(dict(context)["effr_minus_midpoint_bp"])
-    diff = _convert_unit(left.value - right.value, left.unit, rule.output_unit)
+    gap = _explicit_effr_gap_bp(context)
+    if gap is None:
+        return _mk(
+            ComparisonStatus.NOT_IDENTIFIED,
+            "underidentified:effr_target_basis",
+            limitations=("explicit EFFR-target-midpoint basis is not a finite number",),
+        )
+    raw = left.value - right.value
+    if left.unit != right.unit:
+        return _mk(
+            ComparisonStatus.NOT_IDENTIFIED,
+            "underidentified:effr_target_basis",
+            limitations=("operand units differ; EFFR-midpoint gap cannot be applied",),
+        )
+    if rule.output_unit == "bp" and left.unit in PCT_UNITS:
+        diff = raw * 100.0 - gap
+    elif rule.output_unit == "bp" and left.unit == "bp":
+        diff = raw - gap
+    elif rule.output_unit in PCT_UNITS and left.unit == rule.output_unit:
+        diff = raw - gap / 100.0
+    else:
+        return _mk(
+            ComparisonStatus.NOT_IDENTIFIED,
+            "underidentified:effr_target_basis",
+            limitations=("EFFR-midpoint gap cannot be expressed in output unit %s" % rule.output_unit,),
+        )
     return _mk(
         ComparisonStatus.COMPARABLE_AFTER_TRANSFORMATION,
         "transform:monthly_average_vs_level",
         difference=diff,
         transform="monthly_average_vs_level",
-        assumptions=("effr_minus_midpoint_bp=%g" % gap,),
+        assumptions=(
+            "effr_minus_midpoint_bp=%g" % gap,
+            "effr_gap_applied_in=%s" % rule.output_unit,
+        ),
     )
 
 

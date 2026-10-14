@@ -1,6 +1,7 @@
 """Tests for engine/rates_command_basis.py (B0 seat ruling para-8)."""
 
 import ast
+import dataclasses
 import json
 from datetime import date
 from pathlib import Path
@@ -433,8 +434,112 @@ def test_zq_vs_midpoint_underidentified_without_explicit_basis():
     supplied = compare_qualified(zq, midpoint, rule, context={"effr_minus_midpoint_bp": -12.5})
     assert supplied.status == "comparable_after_transformation"
     assert supplied.transform == "monthly_average_vs_level"
-    assert supplied.difference == pytest.approx(-12.5)
+    assert supplied.difference == pytest.approx(0.0)  # B0-FIX6: ZQ 4.25 = 4.375 + (-12.5 bp) is a no-change month
     assert "effr_minus_midpoint_bp=-12.5" in supplied.assumptions
+
+
+def _midpoint_obs(value=4.375, unit="pct_ann_rate"):
+    return _obs(
+        value=value,
+        subject="FED_FUNDS_TARGET",
+        unit=unit,
+        target="fed_funds_target_midpoint",
+        basket_or_index="EFFR",
+        reference_start="2026-09-01",
+        reference_end="2026-09-30",
+        observation_time="2026-09-16",
+        observation_precision="day",
+        seasonal_treatment=NA,
+        averaging_law="point",
+        curve_convention=NA,
+        tenor=NA,
+        model_id=NA,
+        target_epoch=NA,
+        source="fomc:target_range",
+        first_public_evidence="2026-09-16",
+        first_public_precision="day",
+    )
+
+
+def test_zq_vs_midpoint_applies_nonzero_gap_in_bp():
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs()
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": -7}
+    )
+    assert result.status == "comparable_after_transformation"
+    assert result.difference == pytest.approx(-20.5)
+    assert result.unit == "bp"
+    assert "effr_minus_midpoint_bp=-7" in result.assumptions
+    assert "effr_gap_applied_in=bp" in result.assumptions
+    wire = json.loads(json.dumps(result.to_dict()))
+    _record_validator("ComparisonResult").validate(wire)
+
+
+@pytest.mark.parametrize(
+    "gap",
+    [None, "nan", float("nan"), float("inf"), float("-inf"), "abc", True],
+)
+def test_zq_vs_midpoint_unusable_gap_is_not_identified(gap):
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs()
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": gap}
+    )
+    assert result.status == "not_identified"
+    assert result.reason == "underidentified:effr_target_basis"
+    assert result.difference is None
+
+
+@pytest.mark.parametrize("gap", [-12.5, -7.0, 3.25, 10.0])
+def test_zq_vs_midpoint_result_differs_from_raw_spread_when_gap_nonzero(gap):
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs()
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": gap}
+    )
+    raw_bp = (4.10 - 4.375) * 100.0
+    assert result.difference != pytest.approx(raw_bp)
+    assert result.difference == pytest.approx(raw_bp - gap)
+
+
+def test_zq_vs_midpoint_zero_gap_equals_raw_spread():
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs()
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": 0.0}
+    )
+    assert result.difference == pytest.approx(-27.5)
+    assert result.status == "comparable_after_transformation"
+
+
+def test_zq_vs_midpoint_gap_in_pct_output_unit():
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs()
+    rule = dataclasses.replace(
+        RULES["zq_month_vs_policy_midpoint.v1"], output_unit="pct_ann_rate"
+    )
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": -7}
+    )
+    assert result.difference == pytest.approx(-0.205)
+    assert "effr_gap_applied_in=pct_ann_rate" in result.assumptions
+
+
+def test_zq_vs_midpoint_mixed_operand_units_not_identified():
+    zq = _zq_obs(value=4.10)
+    midpoint = _midpoint_obs(value=437.5, unit="bp")
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    result = compare_qualified(
+        zq, midpoint, rule, context={"effr_minus_midpoint_bp": -7}
+    )
+    assert result.status == "not_identified"
+    assert result.reason == "underidentified:effr_target_basis"
+    assert result.difference is None
 
 
 def test_sep_vs_market_needs_year_end_interval_containment():

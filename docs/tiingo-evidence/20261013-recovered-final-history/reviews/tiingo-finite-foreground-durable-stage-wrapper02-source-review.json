@@ -1,0 +1,99 @@
+{
+  "schema": "tiingo.finite_foreground_stage_wrapper_control_source_review/v1",
+  "recorded_at_utc": "2026-10-13T11:10:27.191691+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer": "/root/tiingo_restart_control_adjudication",
+  "source_file": "tiingo-finite-foreground-durable-stage-wrapper02.py",
+  "source_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "verdict": "PASS_EXACT_WRAPPER_CONTROL_SOURCE_CONDITIONAL_ON_REVIEWED_CHILD_AND_LAUNCH_PACKET",
+  "prior_hold_review_sha256": "d4b90f25118950691219194cc9a2777693b570e95e2dbcddac0e14e9935c14b6",
+  "resolved_findings": {
+    "W1": "Observed wait receipt is the next operation after actual child.wait; post-wait validation and its errors recorded separately. Child identity-publication exceptions recorded while wait still proceeds.",
+    "W2": "Same-directory temporary file flushed/fsynced then atomically linked without replacement, parent directory fsynced; successful temp cleanup then directory synced again. Failed publication evidence retained. Control/output paths must be distinct and cannot alias source, packet or frozen inputs lexically.",
+    "W3": "UI notifications catch OSError/ValueError and cannot prevent waiting/receipts. Interpreter shutdown may still produce native120 on closed stdout, which retained test correctly distinguishes from child0."
+  },
+  "source_verification": {
+    "AST_parse_compile_only": true,
+    "one_direct_Popen": true,
+    "one_wait": true,
+    "observed_wait_save_immediately_after_wait": true,
+    "no_retry_daemon_shell_detach_successor": true,
+    "no_wrapper_or_child_execution_by_reviewer": true
+  },
+  "retained_fixture_evidence": {
+    "file": "tiingo-wrapper02-discriminating-control-test-results.json",
+    "sha256": "2a948ea20816b3389b2fca9fa168514fba6afc88ae36783bb6ed98108a99e916",
+    "wrapper_binding_verified": true,
+    "cases": [
+      {
+        "case": "normal",
+        "native_exit_code": 0,
+        "observed_wait_retained": true,
+        "subprocess_wait_exit": 0,
+        "validation_passed": true,
+        "stdout_closed": false,
+        "no_archive_provider_credential_access": true
+      },
+      {
+        "case": "changed-input-after-child",
+        "native_exit_code": 74,
+        "observed_wait_retained": true,
+        "subprocess_wait_exit": 0,
+        "validation_passed": false,
+        "stdout_closed": false,
+        "no_archive_provider_credential_access": true
+      },
+      {
+        "case": "closed-UI-output",
+        "native_exit_code": 120,
+        "observed_wait_retained": true,
+        "subprocess_wait_exit": 0,
+        "validation_passed": true,
+        "stdout_closed": true,
+        "no_archive_provider_credential_access": true
+      },
+      {
+        "case": "duplicate-control-path",
+        "rejected_before_child": true,
+        "native_exit_code": 1
+      },
+      {
+        "case": "atomic-no-replace",
+        "incumbent_hash_unchanged": true,
+        "failed_publication_temp_retained": true
+      }
+    ],
+    "parent_reported_actual_test_tool_session": 99824,
+    "parent_reported_actual_test_tool_exit": 0,
+    "parent_reported_actual_test_chunk": "994f6e",
+    "reviewer_reran_tests": false,
+    "evidence_scope": "Retained parent-supplied fixture results inspected and hashed; source/control review independently performed. No new child execution."
+  },
+  "consumer_contract": [
+    "Admit only an exact reviewed source/mode/prefix/run/root/packet and expected outputs. Wrapper provider0/credentialfalse metadata is not generic source authority or instrumentation.",
+    "Bind intent, direct child identity if successfully recorded, observed-wait receipt, post-wait validation, exact packet/source/wrapper hashes, log and output hashes. Require source semantics and actual root consumption for effect acceptance.",
+    "A successful child requires observed_subprocess_wait_return_code==0 AND post_wait_validation_passed==true AND exact intended outputs/source acceptance. Validation pass alone does not convert nonzero child exit into success.",
+    "Keep direct child wait code distinct from wrapper/native tool exit. A closed-UI native120 may coexist with child0 and validationtrue; preserve all facts, then consume durable receipts explicitly. Never relabel native120 as0.",
+    "If identity/control publication failed, validation_errors remain populated and wrapper returns74 where observable; recorded child exit still survives. Reconcile missing/ambiguous control records instead of retrying.",
+    "Atomic publication/storage failure can still leave no final receipt or retained temp. Treat that as unknown publication state and reconcile on same operation; no automatic relaunch or overwrite.",
+    "Direct Popen handle and monotonic spawn observation prove this wrapper observed that child; they do not prove OS birth time or safe identification by PID after restart. Use original log-FD custody and exact launch evidence for later liveness reconciliation.",
+    "No original91287 or22925 terminal result is fabricated. Their missing return facts remain distinct from any newly wrapped subprocess."
+  ],
+  "not_admitted_by_this_review": [
+    "Any unresolved writer replay",
+    "Any unreviewed qualification source or launch packet",
+    "Unbound selector inventory",
+    "Any provider/credential effect or denied operation",
+    "Final artifact/QA/programme acceptance without actual root consumption"
+  ],
+  "running_operation": "Original reconciliation52142 not polled, stopped, duplicated or otherwise touched.",
+  "effects": {
+    "provider_requests": 0,
+    "credentials_read": false,
+    "archive_reads_or_writes": false,
+    "source_edits": false,
+    "child_execution": false,
+    "dispatch": false,
+    "exclusive_review_metadata_only": true
+  }
+}
