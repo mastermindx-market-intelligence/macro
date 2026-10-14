@@ -18,6 +18,7 @@ The only float literals in this file are inside the float-refusal tests.
 """
 from __future__ import annotations
 
+import ast
 import dataclasses
 import json
 import random
@@ -664,3 +665,565 @@ def test_a27_prior_versions_kept_and_never_overwritten():
     assert [item["effective_date"] for item in versions] == sorted(item["effective_date"] for item in versions)
     applied = apply_outstanding(instruments, ledger)
     IE.check_instrument_set(applied)
+
+
+# ---------------------------------------------------------------------------
+# Refusal builders — one observation built field by field, never by keyword magic
+# ---------------------------------------------------------------------------
+
+
+def raw_observation(**over) -> TransactionObservation:
+    """A fully explicit observation, so a refusal test names the one bad field."""
+    fields: dict = dict(
+        issuer_id=ISSUER,
+        kind="registered_takedown",
+        reporting_basis="individual",
+        event_date="2026-05-01",
+        period_start=None,
+        period_end=None,
+        shares=None,
+        price_per_share=None,
+        gross_proceeds_usd="1000000",
+        net_proceeds_usd=None,
+        principal_usd=None,
+        instruments=None,
+        settlement=None,
+        security_class_id=CLASS,
+        source=filing_source("424B5", "2026-05-02"),
+        evidence=(ev(1),),
+        origin="adjudicated_gold",
+        extraction_method=None,
+        decided_at=ts("2026-05-02"),
+        available_at=ts("2026-05-02"),
+    )
+    fields.update(over)
+    return TransactionObservation.build(**fields)
+
+
+# ---------------------------------------------------------------------------
+# §0 item 6 / A09 — only two origins may state a transaction
+# ---------------------------------------------------------------------------
+
+
+REFUSED_ORIGINS = ("model_prose", "llm", "manual", "heuristic", "extracted", "", "ADJUDICATED_GOLD")
+
+
+def test_origin_refused_for_every_origin_outside_the_two_admitted():
+    """Model prose never mints a transaction, a binding or a coverage record."""
+    assert c.TRANSACTION_ORIGINS == ("canonical_extraction", "adjudicated_gold")
+    for origin in REFUSED_ORIGINS:
+        with pytest.raises(ValueError) as refused:
+            raw_observation(origin=origin)
+        assert "origin" in str(refused.value)
+
+    gold = raw_observation()
+    assert gold.origin == "adjudicated_gold"
+    assert gold.decided_at is not None and gold.extraction_method is None
+    extracted = raw_observation(origin="canonical_extraction", decided_at=None,
+                                extraction_method="capital_structure.transaction_extraction.v1")
+    assert extracted.origin == "canonical_extraction"
+    assert extracted.decided_at is None
+    # Each admitted origin carries its own proof, and never the other's.
+    with pytest.raises(ValueError):
+        raw_observation(origin="canonical_extraction", decided_at=None, extraction_method=None)
+    with pytest.raises(ValueError):
+        raw_observation(origin="adjudicated_gold",
+                        extraction_method="capital_structure.transaction_extraction.v1")
+
+    assert c.BINDING_ORIGINS == ("canonical_join", "adjudicated_gold")
+    row = raw_observation()
+    for origin in ("manual", "model_prose", ""):
+        with pytest.raises(ValueError) as refused:
+            binding(row, "tx:origin", origin=origin)
+        assert "origin" in str(refused.value)
+    joined = binding(row, "tx:origin", origin="canonical_join")
+    assert joined.origin == "canonical_join" and joined.evidence == ()
+    # An adjudicated_gold binding without evidence is not an adjudication.
+    with pytest.raises(ValueError):
+        TransactionBinding.build(observation_id=row.observation_id, target_kind="registration_path",
+                                 target_id=SHELF_PATH, transaction_id="tx:origin",
+                                 usage_class="shelf_takedown", origin="adjudicated_gold",
+                                 decided_at=ts("2026-05-02"), supersedes=None, evidence=())
+
+
+def test_origin_refused_before_a_ledger_can_exist():
+    """A refused origin can never reach a ledger: the record itself does not build."""
+    with pytest.raises(ValueError):
+        observation(event_date="2026-05-01", gross="1000000", accepted="2026-05-02",
+                    origin="model_prose")
+    ledger = reconcile(observations=(), bindings=())
+    assert ledger.support == "unavailable"
+    assert ledger.transactions == () and ledger.usage == () and ledger.records() == ()
+
+
+# ---------------------------------------------------------------------------
+# §0 item 7 / A20 — no float anywhere; unknown is never 0 and never infinity
+# ---------------------------------------------------------------------------
+
+
+def test_float_refusal_in_every_numeric_field():
+    """A float is refused as a float; an int is not an exact decimal string either."""
+    for field, value in (
+        ("shares", 100000.0),
+        ("price_per_share", 1.0),
+        ("gross_proceeds_usd", 3000000.0),
+        ("net_proceeds_usd", 2900000.0),
+        ("principal_usd", 2000000.0),
+        ("instruments", 1000.0),
+    ):
+        with pytest.raises(TypeError) as refused:
+            raw_observation(**{field: value})
+        assert "float is never accepted" in str(refused.value)
+    with pytest.raises(TypeError):
+        raw_observation(shares=100000)
+    with pytest.raises(TypeError):
+        raw_observation(source={**filing_source("424B5", "2026-05-02"), "sec_accepted_at": 20260502.0})
+    with pytest.raises(TypeError):
+        tx.FilingCoverage.build(
+            issuer_id=ISSUER, form_class="424B", covered_from=2025.0, complete_through="2026-09-30",
+            source={"manifest_generation_id": "manifest:e0:2026-10-01", "filing_index_sha256": HASH},
+            extractor_implementation="capital_structure.transaction_extraction.v1",
+            available_at=ts("2026-09-30"),
+        )
+    # A float ledger cursor is refused as a float, never silently stringified.
+    with pytest.raises(TypeError):
+        reconcile_transactions(issuer_id=ISSUER, as_of=2026.5, observations=(), bindings=())
+    # The same magnitude as an exact decimal string is kept byte for byte.
+    assert raw_observation(gross_proceeds_usd="3000000.000").gross_proceeds_usd == "3000000.000"
+
+
+def test_float_refusal_never_leaves_a_float_in_a_built_record():
+    """Every numeric field of every emitted record is an exact decimal string."""
+    ledger, instrument_id, instruments = a27_ledger()
+    SS.assert_no_float(ledger.as_record(), "transaction_ledger")
+    for transaction in ledger.transactions:
+        for field in ("shares", "price_per_share", "gross_proceeds_usd", "net_proceeds_usd",
+                      "principal_usd", "instruments"):
+            value = transaction[field]
+            assert value is None or isinstance(value, str), (field, value)
+            if value is not None:
+                assert Decimal(value).is_finite()
+    for version in versions_of(ledger, instrument_id):
+        for field in ("outstanding", "explained_decrease", "explained_increase", "unexplained_delta"):
+            assert version[field] is None or isinstance(version[field], str)
+    applied = apply_outstanding(instruments, ledger)
+    SS.assert_no_float(applied.as_record(), "applied_instrument_set")
+
+
+def test_unknown_is_never_zero_and_never_infinity():
+    """A20: an unknown usage carries no value at all, and nothing is an infinity."""
+    individual = observation(event_date="2026-05-01", gross="2000000", accepted="2026-05-02")
+    ledger = reconcile(observations=(individual,), bindings=(binding(individual, "tx:only"),),
+                       registration_paths=(shelf_path_record(),))
+    record = usage_of(ledger)
+    assert record["usage"]["status"] == "unknown"
+    assert record["usage"]["value"] is None
+    assert record["usage"]["value"] != "0"
+    assert record["usage_through_complete"] is None
+    assert record["post_window_additions"] is None
+    exact(record, "evidenced_floor", "2000000")
+    for value in (record["usage"]["value"], record["usage_through_complete"],
+                  record["post_window_additions"], record["evidenced_floor"]["value"]):
+        assert value is None or Decimal(value).is_finite()
+    # An unstated instrument balance is unknown, never a zero balance.
+    instrument_id, instruments = warrant_set("series_u_unknown_balance")
+    balance = observation(kind="outstanding_balance", basis="point_in_time", event_date="2026-03-31",
+                          instruments=None, security_class_id=WARRANT_CLASS, form="10-Q",
+                          accepted="2026-03-31")
+    unknown_ledger = reconcile(observations=(balance,),
+                               bindings=(instrument_binding(balance, "tx:balance", instrument_id),),
+                               instruments=instruments)
+    version = versions_of(unknown_ledger, instrument_id)[-1]
+    assert version["status"] == "unknown"
+    assert version["outstanding"] is None
+    applied = apply_outstanding(instruments, unknown_ledger)
+    term = next(item for instrument in applied.instruments if instrument.instrument_id == instrument_id
+                for item in instrument.economic_terms if item.name == "instruments_outstanding")
+    assert term.value.status == "unknown" and term.value.value is None
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.outstanding.status == "unknown" and replaced.outstanding.value is None
+
+
+# ---------------------------------------------------------------------------
+# §0 item 8 — point in time: nothing dated after ``as_of`` is visible
+# ---------------------------------------------------------------------------
+
+
+def assert_invisible(item: TransactionObservation, *, as_of: str = "2026-06-30",
+                     transaction_id: str = "tx:late", instruments=None) -> TransactionLedger:
+    """A record dated after ``as_of`` mints no transaction, no usage and no deferral."""
+    if instruments is None:
+        bind: TransactionBinding = binding(item, transaction_id, target_id=SHELF_PATH)
+        paths: tuple = (shelf_path_record(),)
+    else:
+        bind = instrument_binding(item, transaction_id, instruments.instruments[0].instrument_id)
+        paths = ()
+    ledger = reconcile(as_of=ts(as_of), observations=(item,), bindings=(bind,),
+                       registration_paths=paths, instruments=instruments)
+    assert ledger.support == "unavailable"
+    assert ledger.transactions == ()
+    assert ledger.usage == ()
+    assert ledger.records() == ()
+    assert ledger.deferred == ()
+    assert ledger.unknowns == ()
+    family = ledger.family_state()
+    assert family.records == ()
+    assert family.provenance.support == "unavailable"
+    return ledger
+
+
+def test_point_in_time_available_at_after_as_of_is_invisible():
+    late = raw_observation(available_at=ts("2026-07-15"))
+    assert late.available_at == ts("2026-07-15")
+    assert_invisible(late, as_of="2026-06-30")
+    # The identical record available inside as_of is visible, and does count.
+    control = raw_observation()
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(control,),
+                       bindings=(binding(control, "tx:control"),),
+                       registration_paths=(shelf_path_record(),))
+    assert ledger.support == "supported"
+    exact(usage_of(ledger), "evidenced_floor", "1000000")
+
+
+def test_point_in_time_decided_at_after_as_of_is_invisible():
+    """Only ``decided_at`` moves: ``available_at`` stays inside as_of."""
+    late = raw_observation(decided_at=ts("2026-07-15"))
+    assert late.available_at == ts("2026-05-02")
+    assert_invisible(late, as_of="2026-06-30")
+    # A binding decided after as_of is invisible even when its observation is not.
+    row = raw_observation()
+    late_binding = binding(row, "tx:late-binding", target_id=SHELF_PATH, decided=ts("2026-07-15"))
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(row,), bindings=(late_binding,),
+                       registration_paths=(shelf_path_record(),))
+    assert ledger.support == "partial"
+    assert ledger.transactions == ()
+    assert ledger.deferred == ({"observation_id": row.observation_id, "reason": "binding_not_visible"},)
+
+
+def test_point_in_time_event_date_after_as_of_is_invisible():
+    """An event dated after ``as_of`` never lands, and §2 makes the date non-bypassable."""
+    late = raw_observation(event_date="2026-07-15", source=filing_source("424B5", "2026-07-16"),
+                           available_at=ts("2026-07-16"), decided_at=ts("2026-07-16"))
+    assert_invisible(late, as_of="2026-06-30")
+    # An event may never postdate its own availability, so the event-date gate cannot
+    # be reached with a visible available_at: the two gates coincide by construction.
+    with pytest.raises(ValueError):
+        raw_observation(event_date="2026-07-15", source=filing_source("424B5", "2026-05-02"),
+                        available_at=ts("2026-05-02"))
+    control = raw_observation(event_date="2026-06-15", source=filing_source("424B5", "2026-06-16"),
+                              available_at=ts("2026-06-16"), decided_at=ts("2026-06-16"))
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(control,),
+                       bindings=(binding(control, "tx:control"),),
+                       registration_paths=(shelf_path_record(),))
+    assert ledger.support == "supported"
+    exact(usage_of(ledger), "evidenced_floor", "1000000")
+
+
+def test_point_in_time_period_end_after_as_of_is_invisible():
+    late = observation(basis="cumulative", period_end="2026-07-31", gross="5000000",
+                       accepted="2026-07-31", available=ts("2026-07-31"))
+    assert_invisible(late, as_of="2026-06-30")
+    with pytest.raises(ValueError):
+        observation(basis="cumulative", period_end="2026-07-31", gross="5000000",
+                    accepted="2026-05-02", available=ts("2026-05-02"))
+    control = observation(basis="cumulative", period_end="2026-06-30", gross="5000000",
+                          accepted="2026-06-30")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(control,),
+                       bindings=(binding(control, "tx:control"),),
+                       registration_paths=(shelf_path_record(),))
+    assert ledger.support == "supported"
+    record = usage_of(ledger)
+    assert record["status"] == "known"
+    exact(record, "usage", "5000000")
+    assert record["complete_through"] == "2026-06-30"
+
+
+def test_point_in_time_a_late_record_never_shadows_a_visible_one():
+    """Both at once: only the visible takedown counts, and nothing is zero-filled."""
+    visible = raw_observation(event_date="2026-05-01", gross_proceeds_usd="1000000")
+    late = raw_observation(event_date="2026-08-15", gross_proceeds_usd="4000000",
+                           source=filing_source("424B5", "2026-08-16", accession="0001-26-000030"),
+                           available_at=ts("2026-08-16"), decided_at=ts("2026-08-16"))
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(visible, late),
+                       bindings=(binding(visible, "tx:visible"), binding(late, "tx:late")),
+                       registration_paths=(shelf_path_record(),))
+    assert ledger.support == "supported"
+    assert [item["transaction_id"] for item in ledger.transactions] == ["tx:visible"]
+    record = usage_of(ledger)
+    exact(record, "evidenced_floor", "1000000")
+    assert record["status"] == "unknown"
+    assert f"usage_history_incomplete:{record['usage_key']}" in unknown_ids(ledger)
+
+
+def test_point_in_time_a_late_coverage_record_completes_nothing():
+    """A filing-coverage attestation published after ``as_of`` is invisible too."""
+    individual = observation(event_date="2026-05-01", gross="1000000", accepted="2026-05-02")
+    late_coverage = coverage_record(complete_through="2026-09-30", available="2026-10-15")
+    ledger = reconcile(as_of=ts("2026-09-30"), observations=(individual,),
+                       bindings=(binding(individual, "tx:only"),),
+                       filing_coverage=(late_coverage,),
+                       registration_paths=(shelf_path_record(),))
+    record = usage_of(ledger)
+    assert record["status"] == "unknown"
+    assert record["complete_through"] is None
+    exact(record, "evidenced_floor", "1000000")
+
+
+# ---------------------------------------------------------------------------
+# One ledger carrying every record kind — reused by the contract, order and
+# determinism tests
+# ---------------------------------------------------------------------------
+
+
+def rich_ledger_inputs() -> tuple[dict, str]:
+    """Usage, versions, share reconciliations and realized cash in a single ledger."""
+    instrument_id, instruments = warrant_set("series_u_cash_warrants")
+    window = observation(basis="cumulative", period_end="2026-06-30", gross="5000000",
+                         accepted="2026-06-30")
+    inside = observation(event_date="2026-05-01", gross="1000000", shares="100000",
+                         accepted="2026-05-02")
+    after = observation(event_date="2026-08-15", gross="2000000", shares="80000",
+                        accepted="2026-08-16", accession="0001-26-000020")
+    atm = observation(kind="atm_sales", event_date="2026-07-01", gross="1500000", shares="60000",
+                      form="10-Q", accepted="2026-07-02", accession="0001-26-000021")
+    balance = observation(kind="outstanding_balance", basis="point_in_time", event_date="2026-03-31",
+                          instruments="1000000", security_class_id=WARRANT_CLASS, form="10-Q",
+                          accepted="2026-03-31", accession="0001-26-000022")
+    exercise = observation(kind="warrant_exercise", event_date="2026-05-01", shares="100000",
+                           instruments="100000", settlement="cash", price="1.00",
+                           accepted="2026-05-01", accession="0001-26-000023")
+    resale = observation(kind="resale", event_date="2026-06-01", shares="500000", form="424B4",
+                         accepted="2026-06-02", accession="0001-26-000024")
+    kwargs = {
+        "issuer_id": ISSUER,
+        "as_of": ts(AS_OF),
+        "observations": (window, inside, after, atm, balance, exercise, resale),
+        "bindings": (
+            binding(window, "tx:window"),
+            binding(inside, "tx:inside"),
+            binding(after, "tx:after"),
+            binding(atm, "tx:atm", target_id=SECOND_PATH),
+            instrument_binding(balance, "tx:balance", instrument_id),
+            instrument_binding(exercise, "tx:exercise", instrument_id),
+            binding(resale, "tx:resale", usage_class="resale"),
+        ),
+        "filing_coverage": (coverage_record(),),
+        "registration_paths": (shelf_path_record(), shelf_path_record(SECOND_PATH, "333-000002")),
+        "instruments": instruments,
+        "share_observations": (share_ref("2026-03-31", "10000000"),
+                               share_ref("2026-06-30", "10100000"),
+                               share_ref("2026-09-30", "10240000")),
+    }
+    return kwargs, instrument_id
+
+
+# ---------------------------------------------------------------------------
+# §1 / §0 item 9 — C0 2.2.0 is purely additive over 2.0.0 and 2.1.0
+# ---------------------------------------------------------------------------
+
+
+BASE_COMMIT = "e32d41092080be8adb24bdd10bfeb4115765a0ce"
+BASELINE_FILE = FIXTURES / "c0_2_1_0_contract_baseline.json"
+NEW_FAMILIES = {
+    "transaction_observations": ("capital_structure.transaction_observation.v1",),
+    "transaction_bindings": ("capital_structure.transaction_binding.v1",),
+    "transaction_filing_coverage": ("capital_structure.transaction_filing_coverage.v1",),
+}
+NEW_DEFS = ("transaction_observation", "transaction_binding", "transaction_filing_coverage",
+            "transaction_usage", "instrument_version", "share_reconciliation", "realized_cash")
+DELTA_DEFS = ("compatibility", "input_family", "input_schema")
+DELTA_TABLES = ("COMPATIBLE_INPUT_SCHEMAS", "PROJECTION_COMPATIBILITY")
+
+
+def load_baseline() -> dict:
+    """The frozen C0 2.1.0 surface; its digests are re-derived live, never trusted."""
+    payload = json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
+    assert payload["origin"] == "adjudicated_gold"
+    assert "NOT extracted filing text" in payload["provenance_note"]
+    assert payload["base_commit"] == BASE_COMMIT
+    assert payload["base_state_contract_version"] == "capital-structure-state-contracts/2.1.0"
+    return payload
+
+
+def live_tables() -> dict:
+    """A digest of every digestible table in the live contracts module."""
+    tables = {}
+    for name in sorted(vars(c)):
+        if name.startswith("__"):
+            continue
+        value = getattr(c, name)
+        if not isinstance(value, (tuple, dict, frozenset, list)):
+            continue
+        try:
+            tables[name] = c.sha256_of(sorted(value) if isinstance(value, frozenset) else value)
+        except Exception:  # not a JSON-able vocabulary table
+            continue
+    return tables
+
+
+def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
+    """§0 item 9: every pre-existing schema ``$def`` and vocabulary is untouched."""
+    baseline = load_baseline()
+    defs = c.load_state_schema()["$defs"]
+
+    unchanged = 0
+    for name, digest in baseline["schema_defs"].items():
+        assert name in defs, name
+        if name in DELTA_DEFS:
+            continue
+        assert c.sha256_of(defs[name]) == digest, f"$def {name} changed"
+        unchanged += 1
+    assert unchanged == len(baseline["schema_defs"]) - len(DELTA_DEFS)
+    assert set(defs) == set(baseline["schema_defs"]) | set(baseline["added_schema_defs"])
+    assert sorted(baseline["added_schema_defs"]) == sorted(NEW_DEFS)
+
+    # The three forced deltas: the version const and the two mirrored enums.
+    base_compatibility = baseline["declared_schema_deltas"]["compatibility"]
+    assert defs["compatibility"] == {
+        **base_compatibility,
+        "properties": {
+            **base_compatibility["properties"],
+            "state_contract_version": {"const": c.STATE_CONTRACT_VERSION},
+        },
+    }
+    for name, added in (("input_family", set(NEW_FAMILIES)),
+                        ("input_schema", {schema for schemas in NEW_FAMILIES.values() for schema in schemas})):
+        base_def = baseline["declared_schema_deltas"][name]
+        live_def = defs[name]
+        assert set(live_def) == set(base_def), name
+        assert set(live_def["enum"]) - set(base_def["enum"]) == added, name
+        assert set(base_def["enum"]) <= set(live_def["enum"]), name
+        assert len(live_def["enum"]) == len(set(live_def["enum"])), name
+        assert {key: value for key, value in live_def.items() if key != "enum"} == \
+            {key: value for key, value in base_def.items() if key != "enum"}, name
+    assert set(defs["input_family"]["enum"]) == set(c.COMPATIBLE_INPUT_SCHEMAS)
+    assert set(defs["input_schema"]["enum"]) == {
+        schema for schemas in c.COMPATIBLE_INPUT_SCHEMAS.values() for schema in schemas
+    }
+
+    # The module side: every 2.0.0/2.1.0 vocabulary table is byte-identical.
+    live = live_tables()
+    for name, digest in baseline["module_tables"].items():
+        assert name in live, name
+        if name in DELTA_TABLES:
+            continue
+        assert live[name] == digest, f"vocabulary {name} changed"
+    assert set(live) - set(baseline["module_tables"]) == set(
+        baseline["declared_module_deltas"]["added_module_tables"])
+
+    for family, schemas in baseline["base_compatible_input_schemas"].items():
+        assert list(c.COMPATIBLE_INPUT_SCHEMAS[family]) == schemas, family
+    gained = {family: tuple(schemas) for family, schemas in c.COMPATIBLE_INPUT_SCHEMAS.items()
+              if family not in baseline["base_compatible_input_schemas"]}
+    assert gained == NEW_FAMILIES
+    assert c.PROJECTION_COMPATIBILITY == {
+        **baseline["base_projection_compatibility"],
+        "state_contract_version": c.STATE_CONTRACT_VERSION,
+    }
+    assert set(baseline["base_all"]) <= set(c.__all__)
+    assert set(c.__all__) - set(baseline["base_all"]) == set(
+        baseline["declared_module_deltas"]["added_module_tables"])
+    for name, values in baseline["declared_module_deltas"]["added_module_tables"].items():
+        assert list(getattr(c, name)) == values, name
+
+
+def test_contract_version_2_2_0():
+    assert c.STATE_CONTRACT_VERSION == "capital-structure-state-contracts/2.2.0"
+    schema = c.load_state_schema()
+    assert schema["properties"]["contract_version"]["const"] == c.STATE_CONTRACT_VERSION
+    compatibility = schema["$defs"]["compatibility"]["properties"]["state_contract_version"]
+    assert compatibility["const"] == c.STATE_CONTRACT_VERSION
+    assert c.PROJECTION_COMPATIBILITY["state_contract_version"] == c.STATE_CONTRACT_VERSION
+    ledger = reconcile(observations=(), bindings=())
+    assert ledger.receipt.implementation_digest == c.sha256_of(
+        {"contract": c.STATE_CONTRACT_VERSION, "implementation": IMPLEMENTATION})
+    # 2.1.0's own input families survive the bump untouched.
+    assert c.COMPATIBLE_INPUT_SCHEMAS["instrument_economic_terms"] == (
+        "capital_structure.instrument_economic_term.v1",)
+    assert c.COMPATIBLE_INPUT_SCHEMAS["instrument_term_bindings"] == (
+        "capital_structure.instrument_term_binding.v1",)
+
+
+def test_contract_new_schemas_registered():
+    for family, schemas in NEW_FAMILIES.items():
+        assert c.COMPATIBLE_INPUT_SCHEMAS[family] == schemas
+    assert c.TRANSACTION_KINDS == (
+        "registered_takedown", "atm_sales", "warrant_exercise", "conversion", "redemption",
+        "repurchase", "cancellation", "resale", "outstanding_balance", "instrument_issuance")
+    assert c.REPORTING_BASES == ("individual", "cumulative", "point_in_time")
+    assert c.TRANSACTION_ORIGINS == ("canonical_extraction", "adjudicated_gold")
+    assert c.BINDING_ORIGINS == ("canonical_join", "adjudicated_gold")
+    assert c.BINDING_TARGET_KINDS == ("registration_path", "instrument")
+    assert c.USAGE_CLASSES == ("shelf_takedown", "programme_sale", "resale", "not_applicable")
+    assert c.REALIZED_CASH_KINDS == ("proceeds", "repayment", "no_cash")
+    assert tx.TRANSACTION_KINDS is c.TRANSACTION_KINDS
+    # C0 already admits the family that carries the ledger records.
+    assert "transactions" in c.STATE_FAMILIES
+    defs = c.load_state_schema()["$defs"]
+    for name in NEW_DEFS:
+        assert name in defs, name
+        assert defs[name]["additionalProperties"] is False, name
+        assert defs[name]["properties"]["schema"]["const"].startswith("capital_structure."), name
+
+
+def test_contract_records_validate():
+    """Every record kind this lane emits validates against its ``$def``."""
+    row = raw_observation()
+    c.validate_state_record("transaction_observation", row.as_record())
+    c.validate_state_record("transaction_binding", binding(row, "tx:validate").as_record())
+    c.validate_state_record("transaction_filing_coverage", coverage_record().as_record())
+
+    kwargs, instrument_id = rich_ledger_inputs()
+    ledger = reconcile(**kwargs)
+    for kind, records in (("transaction_usage", ledger.usage),
+                          ("instrument_version", ledger.instrument_versions),
+                          ("share_reconciliation", ledger.share_reconciliations),
+                          ("realized_cash", ledger.realized_cash)):
+        assert records, kind
+        for record in records:
+            c.validate_state_record(kind, record)
+    assert versions_of(ledger, instrument_id)[-1]["outstanding"] == "900000"
+
+    # additionalProperties: false, and the schema literal is a const.
+    with pytest.raises(c.ContractViolation):
+        c.validate_state_record("transaction_observation", {**row.as_record(), "score": "1"})
+    with pytest.raises(c.ContractViolation):
+        c.validate_state_record("transaction_observation",
+                                {**row.as_record(), "schema": "capital_structure.transaction_observation.v2"})
+    with pytest.raises(c.ContractViolation):
+        c.validate_state_record("transaction_usage", {**ledger.usage[0], "rank": "1"})
+    with pytest.raises(c.ContractViolation):
+        c.validate_state_record("instrument_version",
+                                {key: value for key, value in ledger.instrument_versions[0].items()
+                                 if key != "supersedes_version_id"})
+
+
+def test_no_float_call_in_the_engine_source():
+    source = (ROOT / MODULE).read_text(encoding="utf-8")
+    assert "float(" not in source
+    # Not even a float literal survives in the engine: the AST is the proof.
+    tree = ast.parse(source)
+    literals = [node.lineno for node in ast.walk(tree)
+                if isinstance(node, ast.Constant) and isinstance(node.value, float)]
+    assert literals == []
+    calls = [node.lineno for node in ast.walk(tree)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+             and node.func.id == "float"]
+    assert calls == []
+
+
+def test_no_float_literal_in_this_test_file_outside_the_refusal_tests():
+    """The suite states exact values; only the float-refusal tests hold a float."""
+    tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    offenders = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, float):
+            offenders.append(node.lineno)
+    allowed = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name.startswith("test_float_refusal"):
+            for inner in ast.walk(node):
+                if isinstance(inner, ast.Constant) and isinstance(inner.value, float):
+                    allowed.add(inner.lineno)
+    assert allowed, "the float-refusal tests must still hold a float literal"
+    assert sorted(offenders) == sorted(allowed), sorted(set(offenders) - allowed)

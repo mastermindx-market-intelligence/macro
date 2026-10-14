@@ -544,9 +544,6 @@ class TransactionObservation:
         available = _instant(self.available_at, f"{label}.available_at")
         _require(available >= _instant(self.source["mastermind_available_at"], f"{label}.source.mastermind_available_at"),
                  f"{label}.available_at: earlier than source.mastermind_available_at")
-        if self.decided_at is not None:
-            _require(_instant(self.decided_at, f"{label}.decided_at") <= available,
-                     f"{label}.decided_at: later than available_at")
         # An event dated in the future of its own availability is not a fact yet.
         for name in _DATE_FIELDS:
             value = getattr(self, name)
@@ -1695,6 +1692,9 @@ def reconcile_transactions(
     share_observations: Sequence[ShareObservationRef] = (),
 ) -> TransactionLedger:
     """Reconcile what the issuer already did into one point-in-time ledger (§8)."""
+    # A float is refused as a float, never laundered into a contract violation.
+    _refuse_floats(issuer_id, "reconcile_transactions.issuer_id")
+    _refuse_floats(as_of, "reconcile_transactions.as_of")
     _identifier(issuer_id, "reconcile_transactions.issuer_id")
     as_of = _timestamp(as_of, "reconcile_transactions.as_of")
     cutoff = _instant(as_of, "reconcile_transactions.as_of")
