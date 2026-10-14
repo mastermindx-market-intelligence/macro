@@ -107,6 +107,14 @@ verified:
   result: Local62c077fce230, soleparentf573:103existing entries across9lists, all314 definitions/order/path
     multisets retained. Four testsPASS; preview against29e383PASS. Reuse unchanged e2 static and fa9 runtime
     proof explicitly. No hostedCI/release/adoption claim.
+- claim: Final follow-on source anticipates exact incoming A1/main dependencies without changing any incumbent
+    execution definition.
+  command: Canonical manifest loader, full preserved-definition/path-count comparison, strict three-probe
+    declared match-vector equality and exact current-main/composed-A1 merge-tree previews.
+  result: Source566a10d139a0:314jobs load; all existing path memberships/counts retained;13 exact incoming
+    paths added across9exclusive scopes. Both mainc703 and composedA1 7c610b6d previewsPASS. Earlier failed
+    order-only candidates and ancestry diagnosis retained in source-conflict-release-20261014/followon-final.
+    No main/A1 code merge or hosted/release/adoption claim.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
   what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the
@@ -122,8 +130,9 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
   byte-custody witness. All model, historical availability and adoption obligations remain open.
-- A1 newsource1b791 freshCI38568750084 is pending at the initial observation before13:08:15. Incumbent
-  alone may refresh base or merge; old05a proof is insufficient.
+- A1 source1b791 CI38568750084 has binding contract-deltaFAIL/job115868075914 at13:20; three packs passed
+  and nine were running. Exact failure diagnosis pending safe structured check metadata after raw-log
+  terminal-escape refusal. No unsafe-output override, no release bypass.
 next_actions:
 - Reconcile incumbent refresh/merge and fresh checks on publishedA1 source1b791. No manual main merge,
   force push or duplicate controller. Observe CI no more often than300s and only for a real source/dependency
@@ -150,7 +159,11 @@ prs:
 
 The active Chairman assignment is end-to-end programme ownership by Fable with bounded Sol coordination and the existing M2 Fabric. The current original root is `01a1333d-b0c0-7f33-9259-dd718391d9e4`. Historical receiver restrictions describe their retired operations; they do not assign another writer. This record is continuity, not a runtime queue or release grant.
 
-## Latest source correction and release state
+## Latest final source qualification
+
+Follow-on source566a10d139a0 preserves all314 execution definitions and prior path counts, adds13 exact incoming owner dependencies across9exclusive scopes, and passes both current-main and GitHub-composed-A1 merge previews. Canonical loader accepts314jobs. Failed intermediate order-only proposals and the final repair are retained losslessly under `source-conflict-release-20261014/followon-final/`. A1 source1b791 has a real fresh contract-delta failure still under diagnosis. No protected merge or production/adoption claim.
+
+## Earlier source correction and release state
 
 A1 source1b791 was published to its original6651 branch at13:04UTC after current capacity admitted it and exact-main merge preview passed. FreshCI38568750084 is running; incumbent-only base refresh/merge and all production gates remain. Follow-on source-only62c077 repairs nine analogous conflicts, preserves all314 job definitions/path memberships and passes four canonical controls plus a current-main preview. It remains separate and unreleased. Canonical evidence: `research/evidence/eval-os-tier-query-20261014/source-conflict-release-20261014/`. Earlier carrier paragraphs below are retained historical proof and do not override this state.
 
