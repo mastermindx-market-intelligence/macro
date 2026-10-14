@@ -1034,7 +1034,7 @@
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
-      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Sign in to list saved captures', '登录后列出已保存记录')) + '</option>';
+      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Saved captures not loaded', '已保存记录尚未加载')) + '</option>';
       ui.captureSelect.setAttribute('disabled', 'disabled');
       ui.cutoffSelect.innerHTML = '<option value="">' + esc(copy('—', '—')) + '</option>';
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
