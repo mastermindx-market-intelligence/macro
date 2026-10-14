@@ -481,6 +481,23 @@ def _extract_sim_metrics(
                     "A1_detection": _fin((h1.get("A1") or {}).get("detection")),
                     "A2_median_delay": _fin((h1.get("A2") or {}).get("median_delay")),
                 }
+                # prereg V2 §2 / §8 item 11: the Option A null's K, seed, matched
+                # values and (1 − α) quantiles, per (sim, group). Absent (None)
+                # when H1 ran on the superseded V1 bootstrap.
+                nul = h1.get("null")
+                row["h1_null"] = (
+                    {
+                        k2: nul.get(k2)
+                        for k2 in (
+                            "method", "K", "status", "reason", "p_a", "p_b", "p_h1",
+                            "seed", "matched", "quantiles", "n_unreached", "n_nan_a",
+                            "n_nan_b", "n_real_over_N", "bank_key",
+                        )
+                    }
+                    if isinstance(nul, dict)
+                    else None
+                )
+                row["p_bootstrap_superseded"] = h1.get("p_bootstrap_superseded")
             elif h == "H2":
                 h2 = gr.get("H2", {})
                 row["point"] = h2.get("point")
@@ -502,8 +519,19 @@ def _run_one_sim(
     n_target: int,
     cell_id: int,
     k: int,
+    null_k: Optional[int] = None,
 ) -> dict:
+    """One δ-cell path. ``null_k`` (prereg V2 §2) evaluates H1 against the Option A
+    surrogate null with K = ``null_k`` null paths; ``None`` keeps the superseded
+    V1 bootstrap p-values (development only — the §3 size gate refuses those)."""
     seed = np.random.SeedSequence([PATH_SEED_ROOT, cell_id, k])
+    h1_null = None
+    stamp: Dict[str, Any] = {}
+    if null_k is not None:
+        from scripts.leadership_rotation_null import make_h1_null_provider
+
+        h1_null = make_h1_null_provider(int(null_k))
+        stamp = {"h1_null_method": SIZE_GATE_H1_NULL_METHOD, "h1_null_k": int(null_k)}
 
     def groups_fn(nf: int):
         return simulate_family(sigma, delta, rho, nf, seed)
@@ -515,6 +543,7 @@ def _run_one_sim(
             "k": k,
             "status": "UNREACHED",
             "n_formation": None,
+            **stamp,
         }
 
     n_formation, groups, truth, ends_i = picked
@@ -524,7 +553,7 @@ def _run_one_sim(
         e_h = ends_i[h]
         if e_h not in cache:
             cache[e_h] = evaluate_family(
-                groups, start=st.WARMUP, end=e_h, partition="P0"
+                groups, start=st.WARMUP, end=e_h, partition="P0", h1_null=h1_null
             )
         fam = cache[e_h]
         part = _extract_sim_metrics(fam, ends_i)
@@ -539,6 +568,7 @@ def _run_one_sim(
         "truth_n": truth["n"],
         "ends": ends_i,
         "groups": metrics,
+        **stamp,
     }
 
 
@@ -769,6 +799,7 @@ def run_cell(
     workers: int = 1,
     out: Optional[Union[str, Path]] = None,
     k_start: int = 0,
+    null_k: Optional[int] = None,
 ) -> dict:
     """Simulate ``sims`` paths for one cell over the k-range ``[k_start, k_start + sims)``.
 
@@ -801,8 +832,12 @@ def run_cell(
                     records.append(rec)
 
     pending = [k for k in range(k_lo, k_hi) if k not in done]
+    if null_k is not None and (isinstance(null_k, bool) or not isinstance(null_k, int) or null_k < 1):
+        raise ValueError(f"null_k must be a positive int or None, got {null_k!r}")
+    # null_k rides only when set, so the V1-shaped 6-tuple is unchanged.
+    extra: Tuple = (null_k,) if null_k is not None else ()
     task_args = [
-        (sigma, delta, rho, n_target, cell_id, k) for k in pending
+        (sigma, delta, rho, n_target, cell_id, k) + extra for k in pending
     ]
 
     if workers > 1 and task_args:
@@ -904,6 +939,10 @@ def _validate_sim_record(rec: dict, catalog: Dict[int, Tuple[float, float, float
         method = rec["h1_null_method"]
         if not isinstance(method, str) or not method:
             raise ValueError(f"invalid h1_null_method {method!r}")
+    if "h1_null_k" in rec:
+        nk = rec["h1_null_k"]
+        if isinstance(nk, bool) or not isinstance(nk, int) or nk < 1:
+            raise ValueError(f"invalid h1_null_k {nk!r}")
 
 
 def load_sim_records(
@@ -981,6 +1020,7 @@ def grid(
     workers: int = 1,
     out: Optional[Union[str, Path]] = None,
     k_start: int = 0,
+    null_k: Optional[int] = None,
 ) -> List[dict]:
     """Run the selected cells in ascending cell-id order.
 
@@ -1023,6 +1063,7 @@ def grid(
                 workers=workers,
                 out=out,
                 k_start=k_start,
+                null_k=null_k,
             )
         )
     return results
@@ -1269,6 +1310,17 @@ def write_size_gate_artifact(
     }
     if len(methods) != 1:
         raise ValueError(f"MIXED_H1_NULL_METHOD {sorted(methods)}")
+    null_ks = {rec.get("h1_null_k") for _, rec in null_records}
+    h1_null_k: Optional[int] = None
+    if next(iter(methods)) == SIZE_GATE_H1_NULL_METHOD:
+        from scripts.leadership_rotation_null import NULL_K_MIN
+
+        bad_k = sorted(
+            {repr(k) for k in null_ks if isinstance(k, bool) or not isinstance(k, int) or k < NULL_K_MIN}
+        )
+        if bad_k:
+            raise ValueError(f"NULL_K_TOO_SMALL {bad_k} (prereg V2 §2: K >= {NULL_K_MIN})")
+        h1_null_k = min(null_ks)
     null_summaries = sorted(
         (
             c
@@ -1311,6 +1363,7 @@ def write_size_gate_artifact(
         "not_executable": size_result["not_executable"],
         "missing_cells": size_result["missing_cells"],
         "h1_null_method": next(iter(methods)),
+        "h1_null_k": h1_null_k,
         "prereg": {
             "v1_blob": st.PREREG_BLOB_SHA,
             "v2_blob": st.PREREG_V2_BLOB_SHA,
@@ -1519,7 +1572,20 @@ def _cmd_grid(argv: Sequence[str]) -> int:
             "(prereg V2 §3.2: M ≥ 400 per δ = 0 cell, split across processes)"
         ),
     )
+    p.add_argument(
+        "--null-k",
+        dest="null_k",
+        type=int,
+        default=1000,
+        help=(
+            "prereg V2 §2 Option A: K null paths per H1 read (default 1000, the "
+            "minimum the §3 size gate accepts); 0 = the superseded V1 bootstrap "
+            "(development only — the size gate refuses those records)"
+        ),
+    )
     args = p.parse_args(list(argv))
+    if args.null_k < 0:
+        p.error("--null-k must be >= 0")
     if args.cells == "all":
         cell_sel: Union[str, List[int]] = "all"
     elif args.cells == "g2":
@@ -1533,6 +1599,7 @@ def _cmd_grid(argv: Sequence[str]) -> int:
         workers=args.workers,
         out=args.out,
         k_start=args.k_start,
+        null_k=(args.null_k or None),
     )
     return 0
 

@@ -1265,6 +1265,7 @@ _ARTIFACT_KEYS = {
     "not_executable",
     "missing_cells",
     "h1_null_method",
+    "h1_null_k",
     "prereg",
     "harness",
     "inputs",
@@ -1432,6 +1433,9 @@ def test_g2_catalog_ids_params_and_validation():
         },
         catalog,
     )
+    for bad_k in (0, -1, True, 1.5, "1000"):
+        with pytest.raises(ValueError, match="invalid h1_null_k"):
+            _validate_sim_record({"cell_id": 105, "k": 0, "status": "OK", "h1_null_k": bad_k}, catalog)
     with pytest.raises(ValueError, match="unknown cell_id 72"):
         _validate_sim_record({"cell_id": 72, "k": 0, "status": "OK"}, catalog)
     with pytest.raises(ValueError, match="unknown cell_id 112"):
@@ -1624,6 +1628,7 @@ def test_size_out_writes_v1_artifact(tmp_path: Path, capsys):
     # the same population under the repaired §2 null records that method verbatim
     for rec in recs:
         rec["h1_null_method"] = "V2_OPTION_A"
+        rec["h1_null_k"] = 1000
     src_a = tmp_path / "sims_option_a.jsonl"
     _write_jsonl(src_a, recs)
     out_a = tmp_path / "art" / "size_gate_option_a.json"
@@ -1687,6 +1692,18 @@ def test_size_out_refuses_dirty_mismatched_or_mixed(tmp_path: Path, capsys):
     err = capsys.readouterr().err
     assert "MIXED_H1_NULL_METHOD" in err
     assert "V1_BOOTSTRAP_SUPERSEDED" in err and "V2_OPTION_A" in err
+
+    # (d) an Option A population whose null used fewer than K = 1,000 paths
+    repo_d = _tmp_harness_repo(tmp_path / "d")
+    recs_d = _null_recs(harness_identity(repo_d)["id"])
+    for rec in recs_d:
+        rec["h1_null_method"] = "V2_OPTION_A"
+        rec["h1_null_k"] = 1000
+    recs_d[5]["h1_null_k"] = 50
+    rc, out = _run("smallk", recs_d, repo_d)
+    assert rc == 2 and not out.exists()
+    err = capsys.readouterr().err
+    assert "NULL_K_TOO_SMALL" in err and "50" in err
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:_cmd_size return 2 without the artifact when result["sized"] is False (a failing re-size hidden instead of reported)
@@ -1948,6 +1965,8 @@ def test_size_gate_artifact_round_trips_through_the_p1_reader(tmp_path: Path):
         )
         for rec in recs:
             rec["h1_null_method"] = method
+            if method == "V2_OPTION_A":
+                rec["h1_null_k"] = 1000
         return recs
 
     def _write_and_commit(method: str) -> None:
