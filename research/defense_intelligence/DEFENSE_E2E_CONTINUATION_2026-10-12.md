@@ -1184,3 +1184,42 @@ Independent review `defense-capacity-contract-review-01a13300-a` actually launch
 on the existing Fabric as Qwen3.8Max/ubuntu1 at08:27Z; it reviews these new local
 source bytes, with no delegation or canonical write. It remains separate from
 this release and must return before capacity source acceptance.
+
+
+### October14 V12 actual-main integration and sealed reproof
+
+GitHub had retained an old PR base while current main advanced. One same-draft
+close/reopen reconciled the base to46cd92e0; the actual merge had one manifest
+conflict, resolved by preserving both Defense and incomingIND-R206 dependencies.
+No excluded product implementation was authored. Sourcec54b8c132ff00492b7551d15b6a5eabd0e25785c
+also repairs the dossier guard to inspect the actual page/startup controller;17tests pass.
+
+Fresh V12 proof:104passed, one existing skip,105collected,572.05seconds. Original
+receipt SHA256ee5228f81d2a28cc491e42cd54f0ab2885e49aeb536658d56cace2b15e6bd7c0
+binds7587source dependencies,109outputs and the unchanged642-row generation.
+Committed-byte verification accepted it; prior V11 proof remains preserved and
+correctly rejects the changed source. Evidence:combined_generation_v12_proof.
+
+The exact canonical head/base census reports0introduced,2inherited findings.
+Both index136>135 and Prophet-probe130>129 job counts exist on base46cd92e0.
+All closure/unwired/skip-only/trigger classes are empty. No ceiling or required
+gate was weakened. This local classification does not override hosted CI or
+release protection. Newer main8fffd874 was observed; its six proof-dependency
+changes are explicitly recorded, with no output/input overlap. No blind rebase
+or receipt restamping follows that observation.
+
+Separate capacity preparation incorporated this main baseline;222affected tests
+pass with1existing skip.16fixture-only captures cover both themes/languages and
+1440/390layouts, with98API input bindings rechecked; the local server is stopped.
+No factual capacity claim is admitted. Missing CI path declarations for the two
+new tests were repaired, and the full1108-path Defense closure is covered. Its
+full census is still pending. The original capacity CODE review has no delivered
+result; collector refusal remains, including the parent's incorrect bailian mode
+binding (actual mode qwen), retry=false. No retry/replacement or acceptance claim.
+The independent source review defense-capacity-source-review-01a13300-a was
+admitted through existing Fabric onmb at09:29Z; no children/canonical writes.
+
+Next:push this originalPR9066 candidate, consume exact-head hosted gates, then
+protected merge and the existing natural-publisher/financial-CAS order. Original
+7175, P2/Q3 uncertain carriers, Terminal778 custody and independent installed
+acceptance remain preserved. This is a saved phase, not mission completion.
