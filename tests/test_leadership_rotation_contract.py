@@ -1,10 +1,13 @@
-"""Contract tests for engine.leadership_rotation_context (LR-MEAS-SPEC-1, lane B1).
+"""Contract tests for engine.leadership_rotation_context (LR-MEAS-SPEC-1).
 
 Pure-Python fixtures only: no network, no ``data/`` reads, no clock reads.
 Case ids follow the programme acceptance matrix (cf/a cases); lane LR-MEAS-B1
-covers the pure measurement core (spec sections 1, 2, 3, 4, 5-partial, 8).
+covered the pure measurement core (spec sections 1, 2, 3, 4, 8); lane
+LR-MEAS-B2 adds the clock/input contracts (section 5), cohort_at (section 4)
+and the three contract objects (section 6).
 """
 
+import json
 import math
 
 import pytest
@@ -14,20 +17,30 @@ from engine.leadership_rotation_context import (
     US_SECTOR_COHORT_ID,
     Breadth,
     CohortMismatch,
+    GroupMeasurement,
+    ResearchEstimate,
+    TransitionObservation,
     Unmeasured,
+    admissible_as_known,
+    admit_use,
     beta_only_residual,
     breadth,
     breadth_change,
     classify_coordinate,
+    clock_identities,
+    cohort_at,
     cohort_zscores,
     concentration,
+    confirmation_maturity,
     decompose_trailing_change,
     decompose_z_change,
     dedupe_source_roots,
     is_measured,
     normalize_weights,
+    observation_clock,
     overlap,
     pair_interpretation,
+    parse_time,
     rank_measured,
     relative_wealth,
     return_difference,
@@ -423,3 +436,251 @@ def test_extra_dedupe_unrooted_and_transitive():
     assert res["families"] == [["a", "b", "c"], ["solo"]]
     assert res["alias_ids"] == ["a", "b", "c"]
     assert res["unrooted_ids"] == ["solo"]
+
+
+# ---------------------------------------------------------------------------
+# a-cases and cf-cases pinned by the acceptance matrix (B2 slice: clocks,
+# cohort membership, and the three contract objects)
+# ---------------------------------------------------------------------------
+
+def test_a05_unknown_use_withheld():
+    assert admit_use({"display": "permitted"}, "derive") == "withheld"  # absent use
+    assert admit_use(None, "display") == "withheld"  # no rights map at all
+    assert admit_use({"redistribute": "refused"}, "redistribute") == "refused"
+    assert admit_use({"display": "permitted"}, "display") == "permitted"
+    assert admit_use({"display": True}, "display") == "withheld"  # truthy != permission
+
+
+def test_a06_revision_after_decision_not_admissible():
+    assert admissible_as_known(
+        "2026-10-07T13:00:00Z", "2026-10-06T21:00:00Z"
+    ) == "not_admissible"  # the revision arrived after the decision cutoff
+    assert admissible_as_known(None, "2026-10-06T21:00:00Z") == "unknown"
+    assert admissible_as_known("2026-10-06T20:00:00+00:00", "2026-10-06T21:00:00Z") == (
+        "admissible"
+    )
+    assert admissible_as_known("garbage", "2026-10-06T21:00:00Z") == "unknown"
+
+
+def test_a07_evidence_and_live_clocks_distinct():
+    clocks = clock_identities("2026-10-05", "2026-10-06T14:30:00Z")
+    assert clocks["evidence_older_than_live"] is True
+    assert clocks["merged"] is False  # the two clocks are never merged
+    assert clocks["evidence_label"] != clocks["live_label"]
+    assert clocks["evidence_label"] == "group evidence as of 2026-10-05"
+    unknown = clock_identities(None, None)
+    assert unknown["evidence_older_than_live"] is None
+    assert unknown["evidence_label"] == "group evidence date unknown"
+    assert unknown["live_label"] == "live price unavailable"
+    assert unknown["merged"] is False
+    # unparseable evidence must not fake an ordering either
+    garbage = clock_identities("garbage", "2026-10-06T14:30:00Z")
+    assert garbage["evidence_older_than_live"] is None
+
+
+def test_a08_late_joiner_not_in_old_cohort():
+    memberships = [
+        {"member_id": "OLD", "effective_from": "2020-01-01"},
+        {"member_id": "NEW", "effective_from": "2026-09-01", "known_at": "2026-09-01"},
+        {"member_id": "GONE", "effective_from": "2020-01-01", "effective_to": "2026-03-01"},
+    ]
+    cohort = cohort_at(memberships, as_of="2026-06-30")
+    assert cohort["members"] == ["OLD"]  # the late joiner is NOT in the old cohort
+    assert cohort["excluded_future_effective"] == ["NEW"]
+    assert cohort["excluded_expired"] == ["GONE"]
+    assert cohort["population"] == "reconstructed"
+    as_known_rows = [
+        {"member_id": "LATE", "effective_from": "2026-01-01", "known_at": "2026-08-01"},
+        {"member_id": "NOK", "effective_from": "2026-01-01"},
+    ]
+    known = cohort_at(as_known_rows, as_of="2026-06-30", as_known=True)
+    assert known["members"] == []
+    assert known["excluded_not_yet_known"] == ["LATE"]
+    assert known["excluded_knowledge_unknown"] == ["NOK"]
+    assert known["population"] == "as_known"
+    assert cohort_at(as_known_rows, as_of=None) == Unmeasured("missing_input")
+    assert cohort_at(as_known_rows, as_of="not a date") == Unmeasured("unparseable_time")
+
+
+def test_a25_reconstructed_label_kept():
+    gm = GroupMeasurement(
+        group_id="XLK", group_kind="sector", cohort_id=US_SECTOR_COHORT_ID,
+        metric="relative_wealth_pct", units="pct", value=1.5,
+    )
+    payload = gm.to_dict()
+    assert payload["evidence_mode"] == "reconstructed_price_history"
+    assert payload["may_rank"] is False
+    obs = TransitionObservation(
+        definition_id="leadership_rotation_context/1",
+        definition_version="leadership_rotation_context/v1",
+        roles={"receiver": "XLK", "donor": "XLU"},
+        coordinate={"date": "2026-10-01", "vintage": None, "as_of": "2026-10-02"},
+        evidence_mode="reconstructed_price_history", naturally_observed=False,
+    )
+    obs_payload = obs.to_dict()
+    assert obs_payload["evidence_mode"] == "reconstructed_price_history"
+    assert obs_payload["naturally_observed"] is False
+    assert obs.relationship == "context_only"
+    assert obs_payload["relationship"] == "context_only"
+
+
+def test_cf06a_reconstructed_transition_cannot_claim_natural():
+    base = dict(
+        definition_id="leadership_rotation_context/1",
+        definition_version="leadership_rotation_context/v1",
+        roles={"receiver": "XLK", "donor": "XLU"},
+        coordinate={"date": "2026-10-01", "vintage": None, "as_of": "2026-10-02"},
+    )
+    with pytest.raises(ValueError):
+        TransitionObservation(evidence_mode="reconstructed_price_history",
+                              naturally_observed=True, **base)
+    retained = TransitionObservation(evidence_mode="original_retained",
+                                     naturally_observed=True, **base)
+    assert retained.naturally_observed is True  # only original_retained may claim it
+    assert TransitionObservation(evidence_mode="original_retained",
+                                 naturally_observed=False, **base).naturally_observed is False
+    with pytest.raises(ValueError):
+        TransitionObservation(definition_id=base["definition_id"],
+                              definition_version=base["definition_version"],
+                              evidence_mode="original_retained", naturally_observed=True,
+                              roles=base["roles"],
+                              coordinate={"date": "2026-10-01", "as_of": "2026-10-02"})
+    with pytest.raises(ValueError):
+        TransitionObservation(definition_id=base["definition_id"],
+                              definition_version=base["definition_version"],
+                              evidence_mode="original_retained", naturally_observed=False,
+                              roles=base["roles"], coordinate=base["coordinate"],
+                              relationship="attached")
+
+
+def test_a32_maturity_is_t_plus_c_plus_h():
+    assert confirmation_maturity(0, 3, 20) == 23
+    assert confirmation_maturity(5, 3, 20) == 28
+    clock = observation_clock("2026-10-06", confirmation_sessions=3, horizon_sessions=20)
+    assert clock["maturity_offset_sessions"] == 23
+    assert clock["maturity_rule"] == "t+c+H from the original origin"
+    assert clock["session_end"] == "2026-10-06"
+    for bad_origin, bad_c, bad_h in (
+        (-1, 3, 20), (0, -3, 20), (0, 3, -1), (0, True, 20), (0, 3, True),
+        (0, 1.5, 20), (0, 3, None), (0.0, 3, 20),
+    ):
+        with pytest.raises(ValueError):
+            confirmation_maturity(bad_origin, bad_c, bad_h)
+    with pytest.raises(ValueError):
+        observation_clock("2026-10-06", confirmation_sessions=-1)
+    with pytest.raises(ValueError):
+        observation_clock("2026-10-06", horizon_sessions=True)
+    with pytest.raises(ValueError):
+        observation_clock("2026-10-06", confirmation_sessions=2.0)
+
+
+# ---------------------------------------------------------------------------
+# the three contract objects (spec section 6)
+# ---------------------------------------------------------------------------
+
+def test_group_measurement_validation():
+    kw = dict(group_id="XLK", group_kind="sector", cohort_id=US_SECTOR_COHORT_ID,
+              metric="relative_wealth_pct", units="pct")
+    for bad in ({"group_kind": "cluster"}, {"metric": "alpha"}, {"units": "ratio"},
+                {"evidence_mode": "hallucinated"}):
+        with pytest.raises(ValueError):
+            GroupMeasurement(**{**kw, **bad})
+    with pytest.raises(ValueError):
+        GroupMeasurement(**{**kw, "value": True})  # a bool is never a measurement
+    assert isinstance(GroupMeasurement(**kw).value, Unmeasured)  # default is typed unknown
+    assert GroupMeasurement(**{**kw, "value": Unmeasured("thin_history")}).value == (
+        Unmeasured("thin_history")
+    )
+    assert GroupMeasurement(**{**kw, "value": 0.0}).value == 0.0  # a valid zero IS measured
+    coverage = GroupMeasurement(
+        **{**kw, "expected_members": ("a", "b", "c", "d"), "measured_members": ("a", "b")}
+    )
+    assert coverage.coverage == pytest.approx(0.5)
+    counts = GroupMeasurement(**{**kw, "expected_n": 4, "measured_n": 2})
+    assert counts.coverage == pytest.approx(0.5)
+    assert GroupMeasurement(**kw).coverage == Unmeasured("empty_population")
+    assert GroupMeasurement(**{**kw, "expected_n": 0, "measured_n": 0}).coverage == (
+        Unmeasured("empty_population")
+    )
+
+
+def test_research_estimate_unavailable_by_default():
+    est = ResearchEstimate()
+    assert est.status == "unavailable"
+    assert est.probability == Unmeasured("no_admitted_model_support")
+    with pytest.raises(ValueError):
+        ResearchEstimate(probability=0.6)  # identity incomplete -> unavailable, not 0.6
+    full = dict(
+        target="sector leadership flip", horizon_sessions=20, origin="2026-10-01",
+        exit_rule="z < 0 for 5 sessions", model="logistic_beta", protocol="prereg-1",
+        cohort_id=US_SECTOR_COHORT_ID, training_cutoff="2026-09-30",
+        supported_population="us sectors 11", uncertainty_definition="laplace",
+        evidence_tier="synthetic",
+    )
+    with pytest.raises(ValueError):
+        ResearchEstimate(**full, probability=1.5)  # outside [0, 1]
+    with pytest.raises(ValueError):
+        ResearchEstimate(**{**full, "model": None}, probability=0.6)  # identity incomplete
+    assert ResearchEstimate(**full, probability=0.6).status == "estimate"
+    assert ResearchEstimate(**full, probability=0).status == "estimate"  # 0.0 is measured
+    with pytest.raises(ValueError):
+        ResearchEstimate(**full, probability=True)  # a bool is never a probability
+
+
+def test_objects_to_dict_json_safe():
+    gm = GroupMeasurement(
+        group_id="XLK", group_kind="sector", cohort_id=US_SECTOR_COHORT_ID,
+        metric="relative_wealth_pct", units="pct", value=Unmeasured("thin_history"),
+        breadth=breadth(2, 3, 5), concentration=Unmeasured("missing_input"),
+        overlap_with=(("XLK", 0.9),), missing_members=(("XLF", "missing_input"),),
+    )
+    obs = TransitionObservation(
+        definition_id="leadership_rotation_context/1",
+        definition_version="leadership_rotation_context/v1",
+        roles={"receiver": "XLK", "donor": "XLU"},
+        coordinate={"date": "2026-10-01", "vintage": None, "as_of": "2026-10-02"},
+        evidence_mode="synthetic_fixture", naturally_observed=False,
+        interpretation="relative_weakness", source_context={"pair_id": "XLK>XLU"},
+        contrary_evidence=(),
+    )
+    est = ResearchEstimate(
+        target="sector leadership flip", horizon_sessions=20, origin="2026-10-01",
+        exit_rule="z < 0 for 5 sessions", model="logistic_beta", protocol="prereg-1",
+        cohort_id=US_SECTOR_COHORT_ID, training_cutoff="2026-09-30",
+        supported_population="us sectors 11", uncertainty_definition="laplace",
+        evidence_tier="synthetic",
+    )  # probability stays the typed Unmeasured default
+    for obj, schema in (
+        (gm, "leadership_rotation_context.group_measurement/v1"),
+        (obs, "leadership_rotation_context.transition_observation/v1"),
+        (est, "leadership_rotation_context.research_estimate/v1"),
+    ):
+        payload = obj.to_dict()
+        json.dumps(payload, allow_nan=False)  # must serialize, no NaN/Inf
+        assert payload["schema"] == schema
+        assert payload["display_only"] is True
+    assert gm.to_dict()["may_rank"] is False
+    assert gm.to_dict()["coverage"] == {
+        "status": "unmeasured", "reason": "empty_population"
+    }
+    assert est.to_dict()["status"] == "unavailable"
+    assert est.to_dict()["probability"] == {
+        "status": "unmeasured", "reason": "no_admitted_model_support"
+    }
+    assert obs.to_dict()["roles"] == {"receiver": "XLK", "donor": "XLU"}
+
+
+def test_extra_parse_time_and_clocks():
+    assert parse_time(None) == Unmeasured("missing_input")
+    assert parse_time("nonsense") == Unmeasured("unparseable_time")
+    assert parse_time(True) == Unmeasured("unparseable_time")
+    utc = parse_time("2026-10-06T14:30:00Z")
+    assert utc is not None and not isinstance(utc, Unmeasured)
+    assert parse_time("2026-10-06T14:30:00+00:00") == utc  # Z and offset agree
+    assert parse_time("2026-10-06") == parse_time("2026-10-06T00:00:00Z")  # date = 00:00 UTC
+    assert parse_time("2026-10-06T16:30:00+02:00") == utc  # aware offsets normalise to UTC
+    assert parse_time(utc) == utc  # an aware datetime passes through
+    naive = parse_time("2026-10-06T14:30:00")
+    assert naive == utc  # a naive string is read as UTC
+    assert naive.tzinfo is not None
+    assert admissible_as_known("2026-10-06T21:00:00Z", None) == "unknown"
