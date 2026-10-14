@@ -287,6 +287,23 @@ class BEAIndustryContextTests(unittest.TestCase):
                         commodity_code="3344", **forbidden,
                     )
 
+    def test_invalid_history_source_codes_refuse_before_lazy_read(self):
+        class PoisonRows:
+            def __iter__(self):
+                raise AssertionError("unqualified BEA source code reached row iterator")
+
+        for codes in (
+            {"industry_code": "../3341", "commodity_code": "3344"},
+            {"industry_code": "3341", "commodity_code": "3344/../"},
+            {"industry_code": "", "commodity_code": "3344"},
+            {"industry_code": "3341", "commodity_code": ""},
+            {"industry_code": None, "commodity_code": "3344"},
+        ):
+            with self.subTest(codes=codes), self.assertRaises(BEAContextRefused):
+                adapt_eight_year_input_history(
+                    PoisonRows(), **codes, purpose="private_research",
+                )
+
     def test_ninth_row_refused_before_unbounded_generator_continues(self):
         observed = []
 

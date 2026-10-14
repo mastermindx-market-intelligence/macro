@@ -279,6 +279,10 @@ def adapt_eight_year_input_history(
         raise BEAContextRefused(
             "history projection is research-only and not PIT-readable"
         )
+    if (not isinstance(industry_code, str) or not _CODE.fullmatch(industry_code)
+            or not isinstance(commodity_code, str)
+            or not _CODE.fullmatch(commodity_code)):
+        raise BEAContextRefused("exact BEA source codes required before reading rows")
     bounded_rows = []
     for row in rows:
         if len(bounded_rows) == 8:
