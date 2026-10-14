@@ -1237,6 +1237,7 @@ def test_merge3_agreed_three_job_rotation_with_one_sided_body_edit_is_clean() ->
     mirrored = merge3(base, edited_rotation, rotation)
     assert mirrored.conflicts == ()
     assert mirrored.text == edited_rotation
+    _assert_loadable(mirrored)
 
     whole = _swap_fragments(_swap_fragments(base, "alpha", "beta"), "alpha", "gamma")
     mixed = whole.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
