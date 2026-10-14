@@ -82,6 +82,10 @@ GROUP_SIZES = {"defensive_sector": 4, "broadening_proxy": 3}
 DEFAULT_SIMS_NULL = 200
 DEFAULT_SIMS_ALT = 100
 PATH_SEED_ROOT = 20261014
+# Prereg V2 §3.3: a δ = 0 row is SIZED only if BOTH the Wilson 95 % lower
+# bound of its pass rate is ≤ α AND its point pass rate is ≤ α + 2·√(α(1−α)/M).
+# The former advisory label SIZE_EXCEEDS_POINT is retired by the same clause.
+SIZE_RULE = "V2_SEC3_TWO_PART"
 
 # prereg V2 §3 cell 2 (N80) must be reachable: H1 honest-N grows ~1.7/yr per
 # group, so the V1-era 48-year ceiling left N80 mostly UNREACHED.  64/96 are
@@ -842,64 +846,123 @@ def _size_row_entries(summary: dict) -> List[Tuple[str, dict]]:
     return rows
 
 
-def size_check(cell_summaries: Sequence[dict], alpha: float = 0.025) -> dict:
+def size_check(
+    cell_summaries: Sequence[dict],
+    alpha: float = 0.025,
+    min_m: Optional[int] = None,
+    required_cells: Optional[Sequence[int]] = None,
+) -> dict:
+    """Prereg V2 §3.3 two-part size gate over the δ = 0 cells.
+
+    A (hypothesis, group) row — and the ``family_any`` row — is SIZED only if BOTH
+    (i) the Wilson 95 % lower bound of its pass rate is ≤ α AND (ii) its point pass
+    rate is ≤ α + 2·√(α(1−α)/M), where M is the row's OK-simulation count. A row
+    failing either part is ``SIZE_VIOLATION`` (``FAMILY_SIZE_VIOLATION`` for
+    ``family_any``). The former advisory label ``SIZE_EXCEEDS_POINT`` is retired by
+    the same clause: a point exceedance is gated, not merely printed. A row whose M
+    is 0, or below ``min_m``, is ``SIZE_NOT_EXECUTABLE`` — an unmeasurable row is
+    never a sized one.
+    """
+
+    def _finite(value: Any) -> Optional[float]:
+        if value is None:
+            return None
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            return None
+        return v if math.isfinite(v) else None
+
     null_cells = [c for c in cell_summaries if float(c.get("delta", float("nan"))) == 0.0]
     if not null_cells:
         raise ValueError("no delta=0 cells")
+    rows: List[dict] = []
     violations: List[dict] = []
-    exceeds: List[dict] = []
+    not_executable: List[dict] = []
     max_point_rate_ok = 0.0
     max_family_point_rate_ok = 0.0
     n_null_sims = 0
     n_null_ok = 0
     for cell in null_cells:
-        n_null_sims += int(cell.get("n_sims", 0))
+        n_sims = int(cell.get("n_sims", 0))
+        n_null_sims += n_sims
         n_null_ok += int(cell.get("n_ok", 0))
         summ = cell.get("summary", {})
         for row_name, row in _size_row_entries(summ):
-            pr_ok = float(row.get("pass_rate_ok", 0.0) or 0.0)
-            if row_name == "family_any":
-                if pr_ok > max_family_point_rate_ok:
-                    max_family_point_rate_ok = pr_ok
-            elif pr_ok > max_point_rate_ok:
-                max_point_rate_ok = pr_ok
-            wil = row.get("wilson_95_ok", {})
-            lo = float(wil.get("lower", float("nan")))
             passes = int(row.get("passes", 0))
-            n_ok = int(row.get("n_ok", 0))
-            base = {
+            m = int(row.get("n_ok", 0))
+            point = _finite(row.get("pass_rate_ok"))
+            if point is None and m > 0:
+                point = passes / m
+            wil = row.get("wilson_95_ok")
+            wilson_lower = _finite(wil.get("lower")) if isinstance(wil, dict) else None
+            if wilson_lower is None and m > 0:
+                wilson_lower = wilson_interval(passes, m)[0]
+            envelope = (
+                alpha + 2.0 * math.sqrt(alpha * (1.0 - alpha) / m) if m > 0 else None
+            )
+            part_i_ok = None if wilson_lower is None else bool(wilson_lower <= alpha)
+            part_ii_ok = (
+                None
+                if point is None or envelope is None
+                else bool(point <= envelope)
+            )
+            if point is not None:
+                if row_name == "family_any":
+                    if point > max_family_point_rate_ok:
+                        max_family_point_rate_ok = point
+                elif point > max_point_rate_ok:
+                    max_point_rate_ok = point
+            if m == 0 or (min_m is not None and m < min_m):
+                flag = "SIZE_NOT_EXECUTABLE"
+            elif part_i_ok and part_ii_ok:
+                flag = "SIZED"
+            elif row_name == "family_any":
+                flag = "FAMILY_SIZE_VIOLATION"
+            else:
+                flag = "SIZE_VIOLATION"
+            entry = {
                 "cell_id": cell.get("cell_id"),
                 "sigma": cell.get("sigma"),
                 "rho": cell.get("rho"),
                 "n_target": cell.get("n_target"),
+                "n_sims": n_sims,
                 "row": row_name,
                 "passes": passes,
-                "n_ok": n_ok,
-                "pass_rate_ok": pr_ok,
-                "wilson_lower": lo,
+                "m": m,
+                "pass_rate_ok": point,
+                "wilson_lower": wilson_lower,
+                "envelope": envelope,
+                "part_i_ok": part_i_ok,
+                "part_ii_ok": part_ii_ok,
+                "flag": flag,
             }
-            if lo > alpha:
-                flag = (
-                    "FAMILY_SIZE_VIOLATION"
-                    if row_name == "family_any"
-                    else "SIZE_VIOLATION"
-                )
-                violations.append({**base, "flag": flag})
-            elif pr_ok > alpha:
-                flag = (
-                    "FAMILY_SIZE_EXCEEDS_POINT"
-                    if row_name == "family_any"
-                    else "SIZE_EXCEEDS_POINT"
-                )
-                exceeds.append({**base, "flag": flag})
-    sized = not violations
+            rows.append(entry)
+            if flag == "SIZE_NOT_EXECUTABLE":
+                not_executable.append(entry)
+            elif flag != "SIZED":
+                violations.append(entry)
+    present_ids = {c.get("cell_id") for c in null_cells}
+    if required_cells is None:
+        req_sorted: Optional[List[int]] = None
+        missing_cells: List[int] = []
+    else:
+        req_sorted = sorted({int(cid) for cid in required_cells})
+        missing_cells = [cid for cid in req_sorted if cid not in present_ids]
+    sized = (not violations) and (not not_executable) and (not missing_cells)
     return {
         "alpha": alpha,
+        "rule": SIZE_RULE,
         "n_null_cells": len(null_cells),
         "n_null_sims": n_null_sims,
         "n_null_ok": n_null_ok,
+        "rows": rows,
         "violations": violations,
-        "exceeds_point": exceeds,
+        "not_executable": not_executable,
+        "missing_cells": missing_cells,
+        "min_m": min_m,
+        "required_cells": req_sorted,
+        "exceeds_point_retired": True,
         "max_point_rate_ok": max_point_rate_ok,
         "max_family_point_rate_ok": max_family_point_rate_ok,
         "sized": sized,
@@ -965,10 +1028,33 @@ def _cmd_size(argv: Sequence[str]) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--in", dest="in_paths", action="append", required=True)
     p.add_argument("--alpha", type=float, default=0.025)
+    p.add_argument(
+        "--min-m",
+        dest="min_m",
+        type=int,
+        default=None,
+        help="rows with fewer OK sims than this are SIZE_NOT_EXECUTABLE (prereg V2 §3.2)",
+    )
+    p.add_argument(
+        "--require-cells",
+        dest="require_cells",
+        default=None,
+        help="comma-separated δ = 0 cell ids that must be present (prereg V2 §3.1)",
+    )
     args = p.parse_args(list(argv))
+    required_cells = (
+        [int(x) for x in str(args.require_cells).split(",") if x.strip() != ""]
+        if args.require_cells is not None
+        else None
+    )
     try:
         summaries, _stats = _load_summaries_from_inputs(args.in_paths)
-        result = size_check(summaries, alpha=args.alpha)
+        result = size_check(
+            summaries,
+            alpha=args.alpha,
+            min_m=args.min_m,
+            required_cells=required_cells,
+        )
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -1043,68 +1129,88 @@ def _write_summary_md(
         lines.append("_No δ = 0 cells in input._")
     else:
         hdr = (
-            "| cell | σ (pts) | ρ | N | sims ok/unreached | "
-            + " | ".join(row_keys)
-            + " |"
+            "| cell | σ | ρ | N | row | passes / M | point | Wilson lower | "
+            "envelope | (i) lower ≤ α | (ii) point ≤ envelope | flag |"
         )
-        n_cols = 5 + len(row_keys)
+        n_cols = hdr.count("|") - 1
         lines.append(hdr)
         lines.append("|" + "|".join(["---"] * n_cols) + "|")
-        for c in null_cells:
-            summ = c["summary"]
-            cells_cols = []
-            for rk in row_keys:
-                if rk == "family_any":
-                    row = summ.get("family_any", {})
-                else:
-                    row = summ.get("by_group_hypothesis", {}).get(rk, {})
-                p = row.get("passes", 0)
-                n_ok = row.get("n_ok", c["n_ok"])
-                rate = row.get("pass_rate_ok")
-                cells_cols.append(f"{p}/{n_ok} ({_md_rate(rate)})")
+        for entry in size_result.get("rows") or []:
+            part_cols = []
+            for key in ("part_i_ok", "part_ii_ok"):
+                val = entry.get(key)
+                part_cols.append("—" if val is None else ("yes" if val else "no"))
             lines.append(
                 "| "
                 + " | ".join(
                     [
-                        str(c["cell_id"]),
-                        _md_pts(c["sigma"]),
-                        _md_rate(c["rho"]),
-                        str(c["n_target"]),
-                        f"{c['n_ok']}/{c['n_unreached']}",
+                        str(entry.get("cell_id")),
+                        _md_pts(entry.get("sigma")),
+                        _md_rate(entry.get("rho")),
+                        str(entry.get("n_target")),
+                        str(entry.get("row")),
+                        f"{entry.get('passes', 0)}/{entry.get('m', 0)}",
+                        _md_rate(entry.get("pass_rate_ok")),
+                        _md_rate(entry.get("wilson_lower")),
+                        _md_rate(entry.get("envelope")),
+                        part_cols[0],
+                        part_cols[1],
+                        str(entry.get("flag")),
                     ]
-                    + cells_cols
                 )
                 + " |"
             )
+        lines.append(
+            "Size rule: prereg V2 §3 two-part rule (i) Wilson 95 % lower ≤ α AND "
+            "(ii) point ≤ α + 2·√(α(1−α)/M). The former advisory label "
+            "SIZE_EXCEEDS_POINT is retired (V2 §3.3); a point exceedance is now "
+            "gated."
+        )
         if size_result.get("error"):
             lines.append(f"Size verdict: ERROR ({size_result['error']})")
         else:
             alpha = float(size_result.get("alpha", 0.025))
             alpha_s = _md_rate(alpha)
-            violations = size_result.get("violations", [])
-            exceeds = size_result.get("exceeds_point", [])
+            violations = size_result.get("violations") or []
+            not_exec = size_result.get("not_executable") or []
+            missing = size_result.get("missing_cells") or []
+            min_m = size_result.get("min_m")
             if size_result.get("sized"):
-                if exceeds:
-                    lines.append(
-                        "Size verdict: SIZED by the Wilson rule; point rate above α "
-                        "in the cells listed (not distinguishable from simulation "
-                        "noise at this sim count)"
-                    )
-                else:
-                    lines.append("Size verdict: SIZED by the Wilson rule")
+                lines.append(
+                    f"Size verdict: SIZED (prereg V2 §3: every δ = 0 row satisfies "
+                    f"both parts at α = {alpha_s})"
+                )
             else:
                 lines.append(
-                    f"Size verdict: NOT SIZED (prereg §8: false-pass at δ = 0 must be "
-                    f"≤ α = {alpha_s})"
+                    f"Size verdict: NOT SIZED (prereg V2 §3: every δ = 0 row must "
+                    f"satisfy both parts at α = {alpha_s})"
                 )
-            for entry in violations + exceeds:
-                lo = _md_rate(entry.get("wilson_lower"))
+            for entry in violations + not_exec:
+                m = int(entry.get("m", 0) or 0)
+                note = ""
+                if entry.get("flag") == "SIZE_NOT_EXECUTABLE":
+                    note = (
+                        " (no OK simulations)"
+                        if m == 0
+                        else f" (M {m} < min_m {min_m})"
+                    )
                 lines.append(
-                    f"- cell {entry['cell_id']} (σ {_md_pts(entry['sigma'])}, "
-                    f"ρ {_md_rate(entry['rho'])}, N {entry['n_target']}) "
-                    f"{entry['row']}: {entry['passes']}/{entry['n_ok']} "
-                    f"({_md_rate(entry.get('pass_rate_ok'))}), Wilson 95 % lower {lo} "
-                    f"— {entry['flag']}"
+                    f"- cell {entry.get('cell_id')} "
+                    f"(σ {_md_pts(entry.get('sigma'))}, "
+                    f"ρ {_md_rate(entry.get('rho'))}, N {entry.get('n_target')}) "
+                    f"{entry.get('row')}: {entry.get('passes', 0)}/{m}, "
+                    f"point {_md_rate(entry.get('pass_rate_ok'))}, "
+                    f"Wilson 95 % lower {_md_rate(entry.get('wilson_lower'))}, "
+                    f"envelope {_md_rate(entry.get('envelope'))} — "
+                    f"{entry.get('flag')}{note}"
+                )
+            for cell_id in missing:
+                lines.append(
+                    f"- missing cell {cell_id}: required for the §3 re-size but no "
+                    f"δ = 0 record was loaded — row, passes/M, point, Wilson lower "
+                    f"and envelope are all unavailable (NOT_EXECUTABLE; a field "
+                    f"that cannot be truthfully filled is never filled with a "
+                    f"substitute value)"
                 )
     lines.append("")
 
@@ -1217,12 +1323,35 @@ def _cmd_summary(argv: Sequence[str]) -> int:
     p.add_argument("--json", dest="json_out", required=True)
     p.add_argument("--md", dest="md_out", required=True)
     p.add_argument("--alpha", type=float, default=0.025)
+    p.add_argument(
+        "--min-m",
+        dest="min_m",
+        type=int,
+        default=None,
+        help="rows with fewer OK sims than this are SIZE_NOT_EXECUTABLE (prereg V2 §3.2)",
+    )
+    p.add_argument(
+        "--require-cells",
+        dest="require_cells",
+        default=None,
+        help="comma-separated δ = 0 cell ids that must be present (prereg V2 §3.1)",
+    )
     args = p.parse_args(list(argv))
+    required_cells = (
+        [int(x) for x in str(args.require_cells).split(",") if x.strip() != ""]
+        if args.require_cells is not None
+        else None
+    )
     try:
         by_cell, stats = load_sim_records(args.in_paths)
         cells = summarize_records(by_cell)
         try:
-            size_result: dict = size_check(cells, alpha=args.alpha)
+            size_result: dict = size_check(
+                cells,
+                alpha=args.alpha,
+                min_m=args.min_m,
+                required_cells=required_cells,
+            )
         except ValueError as exc:
             size_result = {"error": str(exc)}
     except ValueError as exc:

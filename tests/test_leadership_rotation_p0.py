@@ -243,7 +243,7 @@ def test_wilson_interval_known_values():
     assert hi5 == pytest.approx(0.0572, abs=1e-3)
 
 
-# MUTATION: scripts/leadership_rotation_p0.py:733 use lo < alpha instead of lo > alpha
+# MUTATION: scripts/leadership_rotation_p0.py:787 use wilson_lower >= alpha in part_i_ok
 def test_size_check_flags_high_null_pass_rate():
     passes = 20
     n_ok = 200
@@ -303,6 +303,17 @@ def test_size_check_flags_high_null_pass_rate():
     ok = size_check([cell_ok])
     assert bad["violations"]
     assert not ok["violations"]
+    assert bad["sized"] is False
+    assert ok["sized"] is True
+    bad_row = next(r for r in bad["rows"] if r["row"] == "defensive_sector/H1")
+    assert bad_row["flag"] == "SIZE_VIOLATION"
+    assert bad_row["part_i_ok"] is False
+    assert bad_row["part_ii_ok"] is False
+    assert bad_row["m"] == n_ok
+    ok_row = next(r for r in ok["rows"] if r["row"] == "defensive_sector/H1")
+    assert ok_row["flag"] == "SIZED"
+    assert ok_row["part_i_ok"] is True
+    assert ok_row["part_ii_ok"] is True
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:710 return 0 from _cmd_size when not sized
@@ -415,8 +426,8 @@ def test_family_any_counts_sim_once_with_two_passes():
     assert fam["pass_rate_ok"] == 1.0
 
 
-# MUTATION: scripts/leadership_rotation_p0.py:760 use lo < alpha for SIZE_VIOLATION
-def test_size_boundary_exceeds_point_vs_violation():
+# MUTATION: scripts/leadership_rotation_p0.py:791 test part_ii_ok against alpha, not the envelope
+def test_size_two_part_mild_row_is_sized_and_harsh_row_violates():
     n_ok = 100
 
     def _cell(passes: int) -> dict:
@@ -449,10 +460,24 @@ def test_size_boundary_exceeds_point_vs_violation():
 
     mild = size_check([_cell(3)])
     assert mild["sized"]
-    assert any(x["flag"] == "SIZE_EXCEEDS_POINT" for x in mild["exceeds_point"])
+    assert "exceeds_point" not in mild
+    assert mild["exceeds_point_retired"] is True
+    assert mild["rule"] == "V2_SEC3_TWO_PART"
+    assert mild["violations"] == [] and mild["not_executable"] == []
+    mild_row = next(r for r in mild["rows"] if r["row"] == "defensive_sector/H1")
+    assert mild_row["flag"] == "SIZED"
+    assert mild_row["part_i_ok"] is True
+    assert mild_row["part_ii_ok"] is True
+    # 3/100 is above α but inside the M = 100 noise envelope, so it is sized.
+    assert mild_row["pass_rate_ok"] > mild["alpha"]
+    assert mild_row["pass_rate_ok"] <= mild_row["envelope"]
+
     harsh = size_check([_cell(10)])
     assert not harsh["sized"]
     assert any(x["flag"] == "SIZE_VIOLATION" for x in harsh["violations"])
+    harsh_row = next(r for r in harsh["rows"] if r["row"] == "defensive_sector/H1")
+    assert harsh_row["part_i_ok"] is False
+    assert harsh_row["part_ii_ok"] is False
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:668 read delta from records not catalog
@@ -572,22 +597,72 @@ def test_summary_md_power_table_includes_pass_counts(tmp_path: Path):
     assert re.search(r"1/2\s*\(\s*0\.500\s*\)", power)
 
 
-# MUTATION: scripts/leadership_rotation_p0.py:981 iterate exceeds only (skip violations bullets)
+# MUTATION: scripts/leadership_rotation_p0.py:1070 iterate violations only, skip the rest
 def test_summary_md_size_verdict_locates_violations_and_exceeds(tmp_path: Path):
+    expected_header = [
+        "cell",
+        "σ",
+        "ρ",
+        "N",
+        "row",
+        "passes / M",
+        "point",
+        "Wilson lower",
+        "envelope",
+        "(i) lower ≤ α",
+        "(ii) point ≤ envelope",
+        "flag",
+    ]
+    retirement_line = (
+        "Size rule: prereg V2 §3 two-part rule (i) Wilson 95 % lower ≤ α AND "
+        "(ii) point ≤ α + 2·√(α(1−α)/M). The former advisory label "
+        "SIZE_EXCEEDS_POINT is retired (V2 §3.3); a point exceedance is now gated."
+    )
+
     harsh = _null_cell_records(0, 100, 10)
     _, mout_bad = _run_p0_summary(tmp_path / "harsh", harsh)
     bad = mout_bad.read_text()
+    bad_lines = bad.splitlines()
+    table1 = bad.split("## Table 1 Size (δ = 0)")[1].split("## Table 2 Power")[0]
+    hdr = next(ln for ln in table1.splitlines() if ln.startswith("| cell |"))
+    assert [c.strip() for c in hdr.strip().strip("|").split("|")] == expected_header
+    assert hdr in table1
+    # the retirement line sits directly under the table
+    rule_idx = bad_lines.index(retirement_line)
+    assert bad_lines[rule_idx - 1].startswith("|")
+    assert bad.count("SIZE_EXCEEDS_POINT") == 1
     assert "Size verdict: NOT SIZED" in bad
-    assert "defensive_sector/H1" in bad
-    assert "SIZE_VIOLATION" in bad
-    assert re.search(r"10/100\s*\(", bad)
+    assert re.search(
+        r"\|\s*10/100\s*\|\s*0\.100\s*\|\s*0\.055\s*\|\s*0\.056\s*\|"
+        r"\s*no\s*\|\s*no\s*\|\s*SIZE_VIOLATION\s*\|",
+        bad,
+    )
+    bullet = next(
+        ln
+        for ln in bad_lines
+        if ln.startswith("- cell 0") and "defensive_sector/H1" in ln
+    )
+    for fragment in (
+        "10/100",
+        "point 0.100",
+        "Wilson 95 % lower 0.055",
+        "envelope 0.056",
+        "SIZE_VIOLATION",
+    ):
+        assert fragment in bullet, fragment
 
     mild = _null_cell_records(0, 100, 3)
     _, mout_mild = _run_p0_summary(tmp_path / "mild", mild)
     mild_md = mout_mild.read_text()
-    assert "SIZED by the Wilson rule; point rate above α" in mild_md
-    assert "SIZE_EXCEEDS_POINT" in mild_md
-    assert re.search(r"3/100\s*\(", mild_md)
+    assert retirement_line in mild_md.splitlines()
+    assert mild_md.count("SIZE_EXCEEDS_POINT") == 1
+    assert "Size verdict: SIZED" in mild_md
+    assert "Size verdict: NOT SIZED" not in mild_md
+    assert re.search(
+        r"\|\s*3/100\s*\|\s*0\.030\s*\|\s*0\.010\s*\|\s*0\.056\s*\|"
+        r"\s*yes\s*\|\s*yes\s*\|\s*SIZED\s*\|",
+        mild_md,
+    )
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:911 use f"numpy {np.__version__}" for host line
@@ -658,3 +733,238 @@ def test_formation_years_extension_preserves_v1_prefix():
     assert p0._FORMATION_YEARS[:7] == (4, 8, 12, 16, 24, 32, 48)
     assert max(p0._FORMATION_YEARS) >= 64
     assert list(p0._FORMATION_YEARS) == sorted(set(p0._FORMATION_YEARS))
+
+
+# --- prereg V2 §3.3 two-part size rule: new coverage ------------------------
+
+
+def _size_cell(
+    cell_id: int,
+    m: int,
+    passes: int,
+    *,
+    row: str = "defensive_sector/H1",
+    stored_rate: float | None = None,
+    stored_lower: float | None = None,
+    sigma: float = 0.007,
+    rho: float = 0.5,
+    n_target: int = 20,
+    include_family: bool = False,
+    family: tuple[int, int] = (0, 100),
+) -> dict:
+    """Hand-built δ = 0 cell in the shape `_summarize_cell` emits."""
+    rate = stored_rate if stored_rate is not None else (
+        passes / m if m else float("nan")
+    )
+    lower = stored_lower if stored_lower is not None else (
+        wilson_interval(passes, m)[0] if m else float("nan")
+    )
+    summary: dict = {
+        "by_group_hypothesis": {
+            row: {
+                "passes": passes,
+                "n_ok": m,
+                "pass_rate_ok": rate,
+                "wilson_95_ok": {"lower": lower, "upper": 1.0},
+            }
+        }
+    }
+    if include_family:
+        fam_passes, fam_m = family
+        summary["family_any"] = {
+            "passes": fam_passes,
+            "n_ok": fam_m,
+            "pass_rate_ok": fam_passes / fam_m if fam_m else float("nan"),
+            "wilson_95_ok": {
+                "lower": (
+                    wilson_interval(fam_passes, fam_m)[0] if fam_m else float("nan")
+                ),
+                "upper": 1.0,
+            },
+        }
+    return {
+        "delta": 0.0,
+        "cell_id": cell_id,
+        "sigma": sigma,
+        "rho": rho,
+        "n_target": n_target,
+        "n_sims": m,
+        "n_ok": m,
+        "summary": summary,
+    }
+
+
+def _size_row(result: dict, name: str = "defensive_sector/H1") -> dict:
+    return next(r for r in result["rows"] if r["row"] == name)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:788 drop the part_ii_ok conjunct (T11 gate)
+def test_size_two_part_rejects_constructed_row_the_t11_gate_accepted():
+    # CONSTRUCTED: stored Wilson lower deliberately inconsistent with the counts; a
+    # real count-consistent row cannot separate the gates (see T12R)
+    cells = [_size_cell(0, 400, 17, stored_rate=0.0425, stored_lower=0.024)]
+
+    def _t11_gate_sized(cell_summaries: list[dict], alpha: float = 0.025) -> bool:
+        """The retired T11 rule verbatim: violation iff the STORED lower bound > α."""
+        for cell in cell_summaries:
+            if float(cell.get("delta", float("nan"))) != 0.0:
+                continue
+            summary = cell.get("summary", {})
+            entries = list(summary.get("by_group_hypothesis", {}).items())
+            fam = summary.get("family_any")
+            if isinstance(fam, dict):
+                entries.append(("family_any", fam))
+            for _name, row in entries:
+                stored = row.get("wilson_95_ok", {}).get("lower", float("nan"))
+                if float(stored) > alpha:
+                    return False
+        return True
+
+    assert _t11_gate_sized(cells) is True
+
+    result = size_check(cells)
+    row = _size_row(result)
+    assert row["flag"] == "SIZE_VIOLATION"
+    assert row["part_i_ok"] is True
+    assert row["part_ii_ok"] is False
+    assert result["sized"] is False
+    assert [v["row"] for v in result["violations"]] == ["defensive_sector/H1"]
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:784 envelope as alpha + 1/sqrt(m) (R-H1-3)
+def test_size_envelope_values():
+    at_400 = _size_row(size_check([_size_cell(0, 400, 0)]))["envelope"]
+    at_100 = _size_row(size_check([_size_cell(1, 100, 0)]))["envelope"]
+    assert abs(at_400 - 0.040612) < 5e-5
+    assert abs(at_100 - 0.056225) < 5e-5
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:787 use strict < in part_i_ok
+def test_size_count_consistent_boundaries():
+    cases = [
+        (400, 16, "SIZED", True, True),
+        (400, 17, "SIZE_VIOLATION", False, False),
+        (100, 5, "SIZED", True, True),
+        (100, 6, "SIZE_VIOLATION", False, False),
+    ]
+    for m, passes, flag, part_i, part_ii in cases:
+        result = size_check([_size_cell(0, m, passes)])
+        row = _size_row(result)
+        assert row["flag"] == flag, (m, passes, row)
+        assert row["part_i_ok"] is part_i, (m, passes, row)
+        assert row["part_ii_ok"] is part_ii, (m, passes, row)
+        assert row["wilson_lower"] == pytest.approx(wilson_interval(passes, m)[0])
+        assert row["pass_rate_ok"] == pytest.approx(passes / m)
+        assert result["sized"] is (flag == "SIZED"), (m, passes, result)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:803 drop the family_any flag branch
+def test_size_family_row_flag():
+    result = size_check(
+        [_size_cell(0, 100, 0, include_family=True, family=(10, 100))]
+    )
+    fam = _size_row(result, "family_any")
+    assert fam["flag"] == "FAMILY_SIZE_VIOLATION"
+    assert fam["passes"] == 10 and fam["m"] == 100
+    assert fam["part_i_ok"] is False and fam["part_ii_ok"] is False
+    assert result["sized"] is False
+    assert result["max_family_point_rate_ok"] == pytest.approx(0.10)
+    assert result["max_point_rate_ok"] == pytest.approx(0.0)
+    assert _size_row(result)["flag"] == "SIZED"
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:799 ignore min_m and the m == 0 branch
+def test_size_not_executable_zero_ok_and_min_m():
+    zero = size_check([_size_cell(2, 0, 0)])
+    zero_row = _size_row(zero)
+    assert zero_row["flag"] == "SIZE_NOT_EXECUTABLE"
+    assert zero["sized"] is False
+    assert zero["violations"] == []
+    assert [r["row"] for r in zero["not_executable"]] == ["defensive_sector/H1"]
+    assert zero_row["m"] == 0
+    assert zero_row["pass_rate_ok"] is None
+    assert zero_row["wilson_lower"] is None
+    assert zero_row["envelope"] is None
+    assert zero_row["part_i_ok"] is None
+    assert zero_row["part_ii_ok"] is None
+
+    thin = size_check([_size_cell(0, 100, 2)], min_m=400)
+    thin_row = _size_row(thin)
+    assert thin_row["flag"] == "SIZE_NOT_EXECUTABLE"
+    assert thin["sized"] is False
+    assert thin["violations"] == []
+    assert thin["min_m"] == 400
+    assert [r["row"] for r in thin["not_executable"]] == ["defensive_sector/H1"]
+    # both parts pass on the counts; only the sim budget makes it non-executable
+    assert thin_row["part_i_ok"] is True and thin_row["part_ii_ok"] is True
+    assert size_check([_size_cell(0, 100, 2)])["sized"] is True
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:834 always return missing_cells = []
+def test_size_required_cells_missing():
+    result = size_check([_size_cell(0, 100, 1)], required_cells=[0, 2])
+    assert result["missing_cells"] == [2]
+    assert result["required_cells"] == [0, 2]
+    assert result["sized"] is False
+    assert result["violations"] == []
+    assert result["not_executable"] == []
+
+    complete = size_check(
+        [_size_cell(0, 100, 1), _size_cell(2, 100, 1, n_target=80)],
+        required_cells=[2, 0],
+    )
+    assert complete["missing_cells"] == []
+    assert complete["required_cells"] == [0, 2]
+    assert complete["sized"] is True
+    assert size_check([_size_cell(0, 100, 1)])["required_cells"] is None
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:815 emit the retired n_ok key, drop envelope
+def test_size_rows_carry_both_parts_and_m():
+    cells = [
+        _size_cell(0, 100, 3),
+        _size_cell(1, 400, 17, n_target=40, include_family=True, family=(9, 400)),
+    ]
+    result = size_check(cells, required_cells=[0, 1])
+    expected_keys = {
+        "cell_id",
+        "sigma",
+        "rho",
+        "n_target",
+        "n_sims",
+        "row",
+        "passes",
+        "m",
+        "pass_rate_ok",
+        "wilson_lower",
+        "envelope",
+        "part_i_ok",
+        "part_ii_ok",
+        "flag",
+    }
+    assert len(expected_keys) == 14
+    assert len(result["rows"]) == 3
+    assert result["n_null_cells"] == 2
+    assert result["n_null_sims"] == 500
+    assert result["n_null_ok"] == 500
+    by_id = {c["cell_id"]: c for c in cells}
+
+    def _source_row(cell: dict, name: str) -> dict:
+        if name == "family_any":
+            return cell["summary"]["family_any"]
+        return cell["summary"]["by_group_hypothesis"][name]
+
+    for row in result["rows"]:
+        assert set(row) == expected_keys, sorted(set(row) ^ expected_keys)
+        src_row = _source_row(by_id[row["cell_id"]], row["row"])
+        assert row["m"] == src_row["n_ok"]
+        assert row["passes"] == src_row["passes"]
+        assert row["n_sims"] == by_id[row["cell_id"]]["n_sims"]
+
+    assert _size_row(result)["flag"] == "SIZED"
+    assert _size_row(result, "defensive_sector/H1")["cell_id"] == 0
+    cell1 = [r for r in result["rows"] if r["cell_id"] == 1]
+    assert {r["row"]: r["flag"] for r in cell1} == {
+        "defensive_sector/H1": "SIZE_VIOLATION",
+        "family_any": "SIZED",
+    }
