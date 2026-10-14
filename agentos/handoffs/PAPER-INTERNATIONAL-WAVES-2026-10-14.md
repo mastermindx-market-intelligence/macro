@@ -73,6 +73,9 @@ changed:
 - path: research/paper_international_wave1_wave2/COMPARE_INSPECTOR_JOURNEY_ACCEPTANCE.json
   what: Bind24 distinct Compare/Inspector fixture journeys, inline/modal routes, field clocks, absence, selection/focus
     and actual Auto contract.
+- path: research/paper_international_wave1_wave2/LIBRARY_SERVED_RETURN_BOUNDARY.json
+  what: Record actual served Library search/tool navigation and the new human-only Chrome extension boundary; no
+    return success inferred.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -204,6 +207,10 @@ verified:
     retain server order; no-grant fixture retains two incomparable pins without numbers. Exact source/generation
     and Escape focus survive. Auto uses local time, not OS scheme. Initial failures were harness assumptions/selectors/expectation
     errors; no source repair.
+- claim: Served Library exact-label search reaches the native stock route.
+  command: 'CUA original Chrome tab: search 经济体板块与股票 -> actual link -> original-tab destination inspection; library-served-return-20261014-r1/BOUNDARY.json.'
+  result: Stock route and separate data/generation dates observed. Back REFUSED by Chrome because another extension
+    UI is open. Original tab preserved with markHandoff; no retry, alternate control or confirmed return.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -235,11 +242,14 @@ unresolved:
   parent verification is not independent acceptance.
 - Cold-load language source repair awaits independent review under the existing policy refusal and protected deployment;
   served defect is not yet fixed.
+- New live Library return check requires Chris to complete/dismiss the open Chrome extension UI. Back is unconfirmed;
+  original tab remains handoff. Source/workflow work is independent of this browser refusal.
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- Inspect the Library cross-document search-return boundary against its session-only/no-storage contract, or another
-  incomplete full workflow. Do not invent durable query or Saved storage, or replay accepted checks.
+- After the human dismisses/completes the Chrome extension UI, resume the original Library return tab and verify
+  Back/query behavior against the session-only/no-storage contract. Until then advance a bounded independent gap;
+  do not retry the refused browser effect or invent persistent query/Saved storage.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
@@ -262,6 +272,8 @@ do_not_redo:
   was stopped and is not accepted; causal red is2published Chinese cases, not initial6harness failures.
 - Do not repeat24 Compare/Inspector journeys without relevant change. Compare uses native disclosure by design;
   retain generation/view guards. Auto is clock-based; no native zoom or full live parity inferred.
+- Do not duplicate the live Library stock-link click or retry Back while the Chrome extension refusal persists.
+  Stock destination was confirmed on the original tab after a navigation detachment; Back success is unobserved.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
