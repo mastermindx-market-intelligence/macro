@@ -1790,17 +1790,21 @@
 <!-- ===== FRAGILITY MAP (FULL WIDTH) ===== -->
 <div class="panel">
   <div class="sec-h">
-    <h2 id="intl-structural-fragility">{{ t('Fragility map', '脆弱性地图') }}
-      {{ help('Flags countries where structural vulnerabilities coincide: debt-to-GDP above 70% and rising, fiscal deficit below −5% of GDP, or current account deficit below −3% of GDP. BIS credit gap where available. Source: IMF WEO 2025. Annual data — updates with IMF WEO releases. Berg &amp; Pattillo (1999) criterion adapted. Presence of a flag = vulnerabilities exist, not that a crisis is imminent; most historically flagged countries did not experience a crisis.', '标记存在结构性脆弱因素的国家：债务/GDP超过70%且上升、财政赤字低于GDP的−5%，或经常账户赤字低于GDP的−3%。BIS信用缺口（可用时）。来源：IMF WEO 2025。年度数据——随IMF WEO发布更新。改编自Berg &amp; Pattillo（1999）标准。有标记 = 脆弱性存在，不代表危机即将发生；历史上大多数预警未演变为危机。') }}</h2>
+    <h2 id="intl-structural-fragility" tabindex="-1">{{ t('Fragility map', '脆弱性地图') }}
+      {{ help('Flags countries where structural vulnerabilities coincide: debt-to-GDP above 70% and rising, fiscal deficit below −5% of GDP, or current account deficit below −3% of GDP. BIS credit gap where available. Inputs: IMF WEO and BIS where available; coverage may be partial. Countries with at least three concurrent flags are shown. The source edition and publication date are not supplied here. Berg &amp; Pattillo (1999) criterion adapted. Presence of a flag = vulnerabilities exist, not that a crisis is imminent; most historically flagged countries did not experience a crisis.', '标记存在结构性脆弱因素的国家：债务/GDP超过70%且上升、财政赤字低于GDP的−5%，或经常账户赤字低于GDP的−3%。BIS信用缺口（可用时）。输入：IMF WEO与可用的BIS数据；覆盖可能不完整。展示至少有三项并发预警的国家。此处未提供来源版本或发布日期。改编自Berg &amp; Pattillo（1999）标准。有标记 = 脆弱性存在，不代表危机即将发生；历史上大多数预警未演变为危机。') }}</h2>
     <span class="sub">{{ t('Slow-moving structural vulnerabilities — not a timing signal', '缓慢变化的结构性脆弱因素——非择时信号') }}</span>
   </div>
 
   {%- set VULN = RD.get('vulnerability') %}
   {%- if VULN and VULN.get('countries') %}
     {%- set flagged = VULN.get('countries') | selectattr('fragile', 'equalto', true) | list %}
+    <p class="muted" style="font-size:13px;line-height:1.6;padding:12px 0;">
+      {{ t('Countries with supplied data: ' ~ (VULN.get('countries')|length) ~ ' · flagged: ' ~ (flagged|length) ~ '.', '已提供数据的国家：' ~ (VULN.get('countries')|length) ~ ' · 预警国家：' ~ (flagged|length) ~ '。') }}
+      {{ t('Incomplete inputs do not establish an all-clear.', '缺失输入不代表已全面排除预警。') }}
+    </p>
     {%- if not flagged %}
     <p class="muted" style="font-size:13px;line-height:1.6;padding:12px 0;">
-      {{ t('No economy currently shows three or more concurrent structural warnings — the fragility map is clear.', '目前没有经济体同时亮起三项及以上结构性预警——脆弱性地图暂无标记。') }}
+      {{ t('No supplied country has three or more flags. This describes the available sample only.', '所提供行均未达到三项预警。这仅描述可用样本。') }}
     </p>
     {%- endif %}
     {%- for c in flagged[:3] %}
@@ -1838,14 +1842,20 @@
   {%- else %}
     {# vulnerability is null — honest null with plain-words explanation #}
     <p class="muted" style="font-size:13px;line-height:1.6;padding:12px 0;">
-      {{ t('Fragility data updates with the IMF World Economic Outlook — available here after the next WEO release. This is a slow-moving lens: it changes annually, not daily.', '脆弱性数据随IMF《世界经济展望》更新——下次WEO发布后将在此呈现。这是缓慢变化的视角：按年更新，非按日。') }}
+      {{ t('Fragility readings unavailable in supplied data. No coverage or delivery date is established here.', '所提供数据中的脆弱性读数不可用。此处未确立覆盖范围或交付日期。') }}
     </p>
   {%- endif %}
 
   <p class="caveat ird-asof">
     {{ t('Slow-moving fundamentals — flags fragility, not timing; most historical warnings did not become crises.', '缓慢变化的基本面指标——揭示脆弱性，非择时信号；历史上大多数预警并未演变为危机。') }}
-    {{ help('Berg &amp; Pattillo (1999) criterion adapted: debt &gt;70% GDP and rising, fiscal balance &lt;−5%, current account &lt;−3%. Source: IMF WEO 2025. BIS credit gap where available. Annual data — updates with IMF WEO releases.', 'Berg &amp; Pattillo（1999）改编标准：债务&gt;70% GDP且上升，财政余额&lt;−5%，经常账户&lt;−3%。来源：IMF WEO 2025。BIS信用缺口（可用时）。年度数据——随IMF WEO发布更新。') }}
-    {{ t('Data as of IMF WEO 2025 (where available)', '数据来源：IMF WEO 2025（可用时）') }}
+    {{ help('Berg &amp; Pattillo (1999) criterion adapted: debt &gt;70% GDP and rising, fiscal balance &lt;−5%, current account &lt;−3%. Inputs: IMF WEO and BIS credit gap where available. Partial fields and different field years may occur; this is not a source-release clock.', 'Berg &amp; Pattillo（1999）改编标准：债务&gt;70% GDP且上升，财政余额&lt;−5%，经常账户&lt;−3%。输入：IMF WEO与可用的BIS信用缺口。字段可能缺失且年份不同；这不是来源发布时间。') }}
+    {%- set frag_years = (VULN or {}).get('as_of_years') or {} %}
+    {%- if frag_years.get('min') is integer and frag_years.get('max') is integer %}
+      {{ t('Latest year within each country: ' ~ frag_years.get('min') ~ '–' ~ frag_years.get('max'), '各国所含的最新年份：' ~ frag_years.get('min') ~ '–' ~ frag_years.get('max')) }}
+    {%- else %}
+      {{ t('Latest year within each country: Unavailable', '各国所含的最新年份：不可用') }}
+    {%- endif %}
+    {{ t('Underlying values can have different years and include projections. This is not a publication date.', '底层数据年份可能不同，也可能包含预测值。这不是发布日期期。') }}
   </p>
 </div><!-- /fragility -->
 

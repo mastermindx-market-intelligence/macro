@@ -54,6 +54,37 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const scenario of ['partial','flagged']) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Fragility supplied scope ${scenario} ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',`from tests.test_intl_fragility_scope_render import fragility_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=fragility_fixture('${scenario}')))`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const query=lang==='zh'?'脆弱':'fragility';
+        const input=page.locator('[data-im-library-search]');await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-structural-fragility"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-structural-fragility');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const text=await panel.innerText();assert.ok(text.includes(lang==='zh'?'已提供数据的国家：1':'Countries with supplied data: 1'));
+        assert.ok(text.includes(lang==='zh'?'缺失输入不代表已全面排除预警':'Incomplete inputs do not establish an all-clear'));
+        assert.ok(!/map is clear|next WEO release|IMF WEO 2025|暂无标记/.test(text));
+        assert.ok(text.includes(scenario==='partial'?'2022–2022':'2024–2024'));
+        assert.equal(await panel.locator('.ird-frag-row').count(),scenario==='flagged'?1:0);
+        if(scenario==='flagged') assert.ok(text.includes(lang==='zh'?'美国':'United States'));
+        await page.keyboard.press('Tab');const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});
+        assert.ok(!(await lens.innerText()).includes('2025'));await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
+        assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Contagion keyboard method journey ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_connectedness_scope_render import connectedness_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=connectedness_fixture('matrix')))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});

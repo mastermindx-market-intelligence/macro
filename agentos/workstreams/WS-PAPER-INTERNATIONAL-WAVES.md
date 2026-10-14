@@ -140,8 +140,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Discriminate Fragility absent/partial coverage and date claims against the existing owner; repair only reproduced presentation mismatch without new acquisition, qualification or market assertions.
+next_action: Resume the original live Library-to-Stock return only after Chris completes or dismisses its recorded Chrome extension UI; otherwise assess genuinely new owner qualification, Compare/Saved contract or review input without replaying accepted source cases or polling held surfaces.
 artifacts:
+- research/paper_international_wave1_wave2/FRAGILITY_COVERAGE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CONTAGION_KEYBOARD_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/ECB_BALANCE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json
