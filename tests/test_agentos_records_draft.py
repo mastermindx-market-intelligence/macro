@@ -14,9 +14,11 @@ import ast
 import importlib.util
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 import pytest
@@ -476,6 +478,10 @@ def test_newline_title_head_sha_and_session_stay_one_quoted_line(
         quoted_title = quoted_title.replace(sep, escape)
     quoted_sha = json.dumps(payload["pr"]["head_sha"], ensure_ascii=False)
     quoted_session = json.dumps(session, ensure_ascii=False)
+    # LF and CR are escaped by json.dumps and so are invisible to the mutant;
+    # the parametrized assertion would still be GREEN on the mutant for those,
+    # which is exactly why the test exists: only the three explicit
+    # ``_q`` escapes are load-bearing.
     for label, text in (("handoff body", prose), ("append", append)):
         assert quoted_title in text, label
         assert ("line1" + separator + "ended_because: crashed") not in text, label
@@ -496,12 +502,6 @@ def test_newline_title_head_sha_and_session_stay_one_quoted_line(
     validated = _validate_store(work)
     assert validated.returncode == 0, validated.stdout + validated.stderr
     assert "0 error(s)" in validated.stdout, validated.stdout
-
-
-    # LF and CR are escaped by json.dumps and so are invisible to the mutant;
-    # the parametrized assertion would still be GREEN on the mutant for those,
-    # which is exactly why the test exists: only the three explicit
-    # ``_q`` escapes are load-bearing.
 
 
 def test_supplied_model_and_ending_are_copied(tmp_path: Path) -> None:
@@ -759,3 +759,211 @@ def test_both_kinds_stay_inside_stdout(tmp_path: Path) -> None:
     assert sorted(path.name for path in (STORE / "decisions").glob("*.md")) == decisions
     assert sorted(path.name for path in (STORE / "discoveries").glob("*.md")) == discoveries
     assert list(tmp_path.glob("*.md")) == []
+
+
+_RECORD_GIT_FLAGS = ("-c core.fsmonitor=", "-c core.hooksPath=")
+
+
+def _recorded_git_commands(draft: dict) -> list[str]:
+    """Recorded commands in the output that invoke ``git``.
+
+    ``handoff_verified_commands`` always begins with the drafter itself
+    (``python3 scripts/agentos_records_draft.py --pr-json …``), which is not a
+    git invocation; the hardening law binds the git ones.
+    """
+    commands = [item["command"] for item in draft["handoff_verified_commands"]]
+    commands += [item["command"] for item in draft.get("observations", [])]
+    return [command for command in commands if " git " in command]
+
+
+def _non_merge_observation(tmp_path: Path) -> tuple[Path, str, str]:
+    """Throwaway repo plus its newest non-merge commit and one name it lists."""
+    env = _git_env()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _init_observation_repo(repo, env)
+    sha = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-list", "--no-merges", "--max-count=1", "HEAD"],
+        text=True,
+        env=env,
+    ).strip()
+    assert sha
+    names = subprocess.check_output(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+        text=True,
+        env=env,
+    ).splitlines()
+    assert names, (
+        "non-merge commit has an empty diff-tree; the recorded-command test "
+        "would have no power"
+    )
+    return repo, sha, names[0]
+
+
+def test_recorded_git_commands_carry_the_hardening_flags(tmp_path: Path) -> None:
+    """``verified[].command`` is copy-pasteable; it must harden git as ``_git`` does.
+
+    ``_git`` runs ``git -c core.fsmonitor= -c core.hooksPath= -C <repo>``. The
+    prefix recorded in the draft came from ``_git_tool``, which emitted a plain
+    ``git -C <repo>``. A human pasting the recorded reproduction command into a
+    hostile repository runs that repository's ``core.fsmonitor`` executable with
+    their own credentials, so the two prefixes must be the same argv.
+    """
+    repo, sha, real = _non_merge_observation(tmp_path)
+    fake = "no/such-recorded-command-path.py"
+    draft, _path, _result = _draft(
+        tmp_path,
+        _payload(pr={"head_sha": sha, "files": [real, fake]}),
+        "--repo",
+        str(repo),
+    )
+    commands = _recorded_git_commands(draft)
+    assert len(commands) >= 2, commands
+    expected = "git " + " ".join(_RECORD_GIT_FLAGS) + " -C " + shlex.quote(str(repo)) + " "
+    for command in commands:
+        for flag in _RECORD_GIT_FLAGS:
+            assert flag in command, command
+        assert command.index("core.fsmonitor=") < command.index("core.hooksPath="), command
+        assert expected in command, command
+    # ``changed[].what`` carries the same prefix inside a sentence and is
+    # copy-pasted just as often as the ``verified`` block.
+    prose = [
+        line for line in draft["handoff"]["markdown"].splitlines()
+        if " GIT_NO_LAZY_FETCH=1 " in line
+    ]
+    assert prose, draft["handoff"]["markdown"]
+    for line in prose:
+        assert expected in line, line
+    default, _dp, _dr = _draft(tmp_path)
+    for command in _recorded_git_commands(default):
+        for flag in _RECORD_GIT_FLAGS:
+            assert flag in command, command
+        assert " -C " not in command, command
+
+
+def test_pasting_a_recorded_git_command_does_not_run_repo_fsmonitor(
+    tmp_path: Path,
+) -> None:
+    """The recorded command is run by a human in a shell; it must be hardened.
+
+    ``test_diff_tree_does_not_invoke_repo_fsmonitor`` proves the drafter's own
+    argv never fires a seat-controlled ``core.fsmonitor``. This proves the
+    argv the drafter RECORDS does not either.
+    """
+    env = _git_env()
+    repo, sha, real = _non_merge_observation(tmp_path)
+    marker = tmp_path / "marker"
+    script = tmp_path / "fsmonitor.sh"
+    script.write_text("#!/bin/sh\ntouch " + str(marker) + "\n", encoding="utf-8")
+    os.chmod(script, 0o755)
+    subprocess.run(
+        ["git", "-C", str(repo), "config", "core.fsmonitor", str(script)],
+        check=True,
+        capture_output=True,
+        env=env,
+    )
+
+    # Power check: the UNHARDENED argv touches the marker on this git build.
+    # Without it the assert below could pass because this git never calls
+    # fsmonitor for diff-tree, which is not the thing under test.
+    plain = subprocess.run(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert plain.returncode == 0, plain.stderr
+    assert marker.exists(), (
+        "git diff-tree did not invoke the repo's core.fsmonitor on this git "
+        "build; the recorded-command test has nothing to test against."
+    )
+    marker.unlink()
+
+    draft, _path, _result = _draft(
+        tmp_path,
+        _payload(pr={"head_sha": sha, "files": [real]}),
+        "--repo",
+        str(repo),
+    )
+    recorded = [
+        item["command"]
+        for item in draft["handoff_verified_commands"]
+        if " diff-tree " in item["command"]
+    ]
+    assert len(recorded) == 1, recorded
+    pasted = subprocess.run(
+        ["/bin/sh", "-c", recorded[0]], capture_output=True, text=True, env=env
+    )
+    assert pasted.returncode == 0, pasted.stderr
+    assert not marker.exists(), (
+        "the RECORDED command runs the repository's core.fsmonitor when pasted "
+        f"into a shell: {recorded[0]}"
+    )
+
+
+@pytest.mark.parametrize("separator", ["\u2028", "\u0085", "\u2029", "\x0b", "\x0c"])
+def test_file_path_line_separators_are_refused(tmp_path: Path, separator: str) -> None:
+    """A ``pr.files`` entry is interpolated RAW in the handoff and the append.
+
+    ``changed[].path`` goes through ``_q``, which escapes exactly the characters
+    ``str.splitlines`` breaks on, but the ``- files:`` rows (handoff body and WS
+    append) are plain f-strings, so the ``_pr_fields`` guard is the only place a
+    separator can be refused. It tested only ``\\n`` and ``\\r``, so U+2028,
+    U+0085, U+2029, VT and FF each turned one seat string into two rendered
+    lines.
+    """
+    # Premise: this parameter really is a line break for str.splitlines. If a
+    # future Python stops splitting on it the test must fail, not pass vacuously.
+    assert len(("a" + separator + "b").splitlines()) == 2, repr(separator)
+    clean, _cp, _cr = _draft(tmp_path, _payload(pr={"files": ["lib/x.py"]}))
+    injected = f"lib{separator}ended_because: crashed.py"
+    result, _path = _run(tmp_path, _payload(pr={"files": [injected]}))
+    rendered = ""
+    if result.stdout.strip():
+        rendered = json.loads(result.stdout)["handoff"]["markdown"]
+    assert result.returncode == 2, (
+        f"separator {separator!r} was ACCEPTED: handoff str.splitlines() grew "
+        f"{len(clean['handoff']['markdown'].splitlines())} -> "
+        f"{len(rendered.splitlines())}"
+    )
+    assert "single-line repo-relative paths" in result.stderr
+    assert result.stdout == ""
+
+
+@pytest.mark.parametrize("separator", ["\x1b", "\t", "\x00", "\u200b", "\ufeff"])
+def test_invisible_non_line_breakers_are_refused(tmp_path: Path, separator: str) -> None:
+    """An invisible ``pr.files`` character is refused although it breaks no line.
+
+    The sibling parametrization above pins the characters ``str.splitlines``
+    breaks on. These five break NO line, so the ``splitlines()`` clause alone
+    accepts them and only the ``unicodedata.category`` clause can refuse them:
+    ESC, TAB and NUL are ``Cc``, ZWSP and BOM are ``Cf``. ``_q`` keeps the
+    quoted fields on one physical line, but the ``- files:`` rows in the handoff
+    body and the WS append are plain f-strings, so nothing else keeps an
+    invisible character out of a rendered path that a human copies back into a
+    shell. The clause is load-bearing: deleting it lets all five through (the PR
+    #9310 review's mutation 2c), which is why this test sits beside the
+    separator one instead of inside its parameter list.
+    """
+    # Premise 1: the parameter belongs to the guarded category set, which is the
+    # only thing here that can refuse it.
+    assert unicodedata.category(separator) in {"Cc", "Cf", "Zl", "Zp"}, repr(separator)
+    # Premise 2: it is NOT a line break for str.splitlines, so a splitlines-only
+    # guard could not fail on it. If a future Python starts splitting on it this
+    # test must fail, not pass vacuously.
+    assert len(("a" + separator + "b").splitlines()) == 1, repr(separator)
+    clean, _cp, _cr = _draft(tmp_path, _payload(pr={"files": ["lib/x.py"]}))
+    injected = f"lib{separator}ended_because: crashed.py"
+    result, _path = _run(tmp_path, _payload(pr={"files": [injected]}))
+    rendered = ""
+    if result.stdout.strip():
+        rendered = json.loads(result.stdout)["handoff"]["markdown"]
+    smuggled = [ascii(line) for line in rendered.splitlines() if "ended_because" in line]
+    assert result.returncode == 2, (
+        f"character {separator!r} (category {unicodedata.category(separator)}, "
+        f"not a str.splitlines breaker) was ACCEPTED: clean handoff has "
+        f"{len(clean['handoff']['markdown'].splitlines())} lines and the injected "
+        f"one rendered {smuggled}"
+    )
+    assert "pr.files entries must be single-line repo-relative paths" in result.stderr
+    assert result.stdout == ""

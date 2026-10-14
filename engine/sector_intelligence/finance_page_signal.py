@@ -75,8 +75,9 @@ def apply_page_signal(
     document. Every slice's falsifier list is checked before the first
     slice is written, so a refusal leaves the page as it was. A slice with
     no admitted row is left as it was. All-or-nothing holds against
-    :func:`_attach_falsifiers` refusals: a caller-supplied slice mapping
-    whose own ``__setitem__`` raises is outside that guarantee.
+    :func:`_attach_falsifiers` refusals: a caller-supplied slice mapping, or
+    the ``rerating`` mapping nested inside it, whose own ``__setitem__``
+    raises is outside that guarantee.
     """
     pairs = _admit_pairs(case_document)
     slices = page.get("slices")

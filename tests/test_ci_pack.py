@@ -4806,6 +4806,10 @@ CURATED_EXCLUSIVE = {
     # jobs, check_contract_delta: 1 introduced). scope: exclusive pins it to
     # its declared static import closure; ceilings stay fixed.
     "ric-e0-retrospective-runners",
+    # 2026-10-14 LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the prereg
+    # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
+    # scope: exclusive pins the job to its measured suite_dependency_closure.
+    "leadership-rotation-science",
 }
 
 

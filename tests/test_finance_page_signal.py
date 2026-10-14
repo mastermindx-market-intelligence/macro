@@ -372,11 +372,13 @@ def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
     monkeypatch.setattr(finance_page_signal, "project_falsifier", watching_on_last_row)
     page = _page()
     before = _ids(page)
+    before_full = copy.deepcopy(page)
     with pytest.raises(
         finance_case_signal.FinanceCaseSignalRefusal, match="watching_not_emitted"
     ):
         apply_page_signal(document, page)
     assert _ids(page) == before
+    assert page == before_full
 
 
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:

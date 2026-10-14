@@ -932,7 +932,9 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         # stated definition and the check no-ops; it is kept as a
         # no-op-safe guard for this emit path itself.
         # The USD-thousands family only. The ratio describes itself as a
-        # percentage and says nothing about a currency, so it is unaffected.
+        # percentage and says nothing about a currency, so it is unaffected
+        # -- the ``not key.endswith("_pct")`` guard above exempts it exactly
+        # as ``_screen_stated_definition`` skips it.
         source = filled.get("current_period_fact")
         source_quantum = (
             source.get("display_quantum") if isinstance(source, Mapping) else None
@@ -941,6 +943,16 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
             filled.get("unit") != _STATED_DEFINITION_UNIT
             or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
             or source_quantum != _STATED_DEFINITION_QUANTUM
+            # Row-level mirror of ``_stated_definition_contradicted``'s
+            # defensive clause (#9318 review nit 4, W15-F-FUR item 4): a
+            # row that ARRIVES pre-stamped with a ``display_quantum``
+            # differing from the stated-definition quantum contradicts just
+            # like an envelope. Behaviour-neutral for every reachable input
+            # -- for internal rows the ``setdefault`` in
+            # ``_result_provenance`` has just minted the key's canonical
+            # quantum (``1_thousand`` for this non-``_pct`` family) into
+            # ``filled`` a few lines above, so this comparison no-ops.
+            or filled.get("display_quantum") != _STATED_DEFINITION_QUANTUM
         ):
             filled["value_text"] = None
             filled["withheld_reason"] = _DEFINITION_CONTRADICTED
@@ -963,13 +975,37 @@ def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
     ``unit``, ``scale_power10`` and ``display_quantum``. The trigger that
     lived only in ``_emit_result`` read only the current side, so a
     prior-side contradiction published (independent PR #9285 review,
-    defect D2); the row's own ``display_quantum`` is minted per key by
-    ``_emit_result``, so the quantum claim is checked on the envelopes.
+    defect D2); the row's own ``display_quantum`` is minted per key only
+    at emit time (see ``_screen_stated_definition``), so the quantum
+    claim is checked on the envelopes -- plus one defensive clause: a
+    row that itself carries a ``display_quantum`` differing from the
+    stated-definition quantum contradicts, exactly like an envelope.
+
+    ``_pct`` keys are exempt: the ratio describes itself as a percentage
+    and says nothing about a currency, so a ``_pct`` key returns False
+    unconditionally -- mirroring the ``key.endswith("_pct")`` skip in
+    ``_screen_stated_definition`` (which stays in place) so the predicate
+    is SELF-SUFFICIENT for a direct caller. Before this mirror the
+    exemption lived only in the screen, and a direct call on a ratio row
+    stamped ``"0.01_percent"`` -- the quantum ``_emit_result`` mints for
+    every ``_pct`` key -- contradicted on the defensive row-level clause
+    (#9318 independent review, nit 3; W15-F-FUR item 3).
     """
+    if str(result.get("key") or "").endswith("_pct"):
+        return False
     if (
         result.get("unit") != _STATED_DEFINITION_UNIT
         or result.get("scale_power10") != _STATED_DEFINITION_SCALE
     ):
+        return True
+    if "display_quantum" in result and (
+        result.get("display_quantum") != _STATED_DEFINITION_QUANTUM
+    ):
+        # Defensive: no internal row carries display_quantum when the
+        # screen runs -- it is minted afterwards by the setdefault in
+        # _result_provenance -- so this clause is behaviour-neutral for
+        # every reachable input today. If a pre-stamped row ever reaches
+        # the screen, its own quantum contradicts like an envelope does.
         return True
     for side_key in ("current_period_fact", "prior_period_fact"):
         side = result.get(side_key)
@@ -992,6 +1028,19 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     ``_emit_result`` exempted it (the ratio describes itself as a
     percentage and says nothing about a currency); which ratio cases
     withhold does not change. A row already withheld keeps its own reason.
+
+    The screened rows are INTERNAL envelopes, and the row's own
+    ``display_quantum`` is absent on every internal row when this screen
+    runs: it is filled only afterwards, at emit time, by the
+    ``out.setdefault("display_quantum", display_quantum)`` in
+    ``_result_provenance`` that ``_emit_result`` calls. So the quantum
+    claim of the stated definition is checked on the two envelope sides,
+    ``current_period_fact`` and ``prior_period_fact``, each of which
+    carries ``display_quantum`` from fact ingestion. The predicate keeps
+    one defensive clause -- a row that itself arrives with a
+    ``display_quantum`` differing from the stated-definition quantum is
+    withheld exactly like an envelope contradiction -- but no reachable
+    input triggers it today.
 
     ``advertising_net_change`` is arithmetic on the two advertising change
     ROWS: when one of them is withheld here while the net row's own
