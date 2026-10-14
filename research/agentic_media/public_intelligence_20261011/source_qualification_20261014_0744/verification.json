@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "installed_read_stable": true,
+    "catalog_same_revision": true,
+    "canonical_candidate_filter_used": true,
+    "no_own_event_or_writer_effect": true,
+    "all24_reviewed_source_hashes_unchanged": true
+  },
+  "result": "PASS",
+  "application_tests_rerun": false,
+  "editorial_or_publication_acceptance": false,
+  "d14_credit": "0/10"
+}

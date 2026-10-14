@@ -1,0 +1,57 @@
+{
+  "head": "9dd870a1b424eabb7da9199e9b6e485565a9a4e6",
+  "stable_head": true,
+  "sha256": "ba0256b259ac62bd1f7d8d3b7901d06f33568bbd8c417704b4bf7bf0b3b6fa3c",
+  "inputs_unchanged": true,
+  "recent": [
+    {
+      "id": "marketdesk-k5gzbnlti7v-bb4677",
+      "title": "Market Update US, Europe & Asia",
+      "institution": "Safra",
+      "published_at": "2026-10-14T02:40:43Z",
+      "pages": 12
+    },
+    {
+      "id": "marketdesk-mvobzo6ysbg-8fb904",
+      "title": "FSA FI Daily Commentary 13 October 2026",
+      "institution": "Safra",
+      "published_at": "2026-10-14T02:40:40Z",
+      "pages": 10
+    },
+    {
+      "id": "marketdesk-xeistvhtalj-a6a397",
+      "title": "Bii global outlook in charts",
+      "institution": "BlackRock",
+      "published_at": "2026-10-14T02:32:14Z",
+      "pages": 23
+    },
+    {
+      "id": "marketdesk-60kies6hqgh-b50195",
+      "title": "JPM US Market Intelligence Afternoon Briefing Oct 13",
+      "institution": "J.P. Morgan",
+      "published_at": "2026-10-14T01:34:30Z",
+      "pages": 14
+    },
+    {
+      "id": "marketdesk-kk5budnjn61-1194cc",
+      "title": "Strategy Daily 2026 10 12",
+      "institution": "Mizuho",
+      "published_at": "2026-10-13T22:15:35Z",
+      "pages": 3
+    },
+    {
+      "id": "marketdesk-uejhgzrho58-2d4f8c",
+      "title": "JPM US Market Intelligence | Afternoon Briefing",
+      "institution": "J.P. Morgan",
+      "published_at": "2026-10-13T22:11:54Z",
+      "pages": 19
+    }
+  ],
+  "screen": {
+    "bb4677": "New Safra lead only. Original source and public reuse basis not reviewed; do not feed its stored claims to a writer.",
+    "8fb904": "New Safra fixed-income lead only. Stored comparative sentences split at vs.; comparison scopes and actual observation dates need primary-source review. No rights receipt.",
+    "a6a397": "New BlackRock outlook metadata only. A new catalog id does not supply a public reuse receipt; existing corporate reuse restriction remains unqualified.",
+    "2d4f8c": "Possible overlap with held b50195 from title/topics, but different page count; identity not established. No browser navigation, download, replay or automatic alias finding."
+  },
+  "disposition": "No newly admitted source; no private PDF or summary text retained in this receipt."
+}

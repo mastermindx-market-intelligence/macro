@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-10-14T07:44:53.827794+00:00",
+  "head": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+  "state": "OPEN",
+  "merge_commit": null,
+  "capacity": {
+    "capacity_queued": 0,
+    "capacity_in_progress": 9,
+    "capacity_pending": 0,
+    "capacity_requested": 0,
+    "capacity_waiting": 0
+  },
+  "lease": "m1 p=9266 h=2cdbf5d9497dc3dd65eaf8e5f32de694362c538e t=1791962805 g=53d3516dc5e3",
+  "main_ci": [
+    {
+      "id": 38525525368,
+      "head_sha": "ec6e763d1e24019eae60281d985723c68693d4bb",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 38520655830,
+      "head_sha": "9947bf53c8f818c420bde5a49a927b59c3e0f556",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "binding_failure": "ci-pack-4 in38508325200 remains inherited; existing9227 repair",
+  "controller_trace": [
+    {
+      "run": 38530228415,
+      "kind": "failure-marker only",
+      "target_head": "2779bad8673da8a9efb161456175512d68c0c2b0",
+      "result": "no armed PR at replaced target head; not9209 refresh proof",
+      "log_sha256": "87070592c6fe6c25378a04574e6e9c92a0b890bf2fda6bbcf252053d306ca125"
+    },
+    {
+      "run": 38528034652,
+      "kind": "failure-marker only",
+      "result": "not a release sweep for9209",
+      "log_sha256": "b74ca3af6ad88890e8139ff098337c1a995c6f762edf5ea030088bcc3f4bb9e5"
+    }
+  ],
+  "live_daily_jobs": [
+    115696591645,
+    115696591188
+  ],
+  "no_release_or_producer_mutation": true
+}

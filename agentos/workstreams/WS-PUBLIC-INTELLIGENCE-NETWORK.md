@@ -585,3 +585,16 @@ At the single07:05 read9209 remained8f705cb3/inherited pack4 red,13proofs/cap8,
 No release bypass, new source admission, writer call, follow-on PR or install.
 Publication/cutoverfalse,credit0/10. Full commands/receipts: CHECKPOINT.md and
 research/agentic_media/public_intelligence_20261011/source_qualification_20261014_0704/.
+
+## October14 07:52UTC continuation
+
+Canonical installed candidate filtering at stable9dd870a1 found45 current Research
+events and zero own Brief events; producer remains active. Three new catalog leads
+(Safra bb4677/8fb904,BlackRock a6a397) lack original-source/public-reuse qualification.
+JPM2d4f8c/b50195 overlap is unproved, not an alias permission or retry. Metadata only
+retained; no provider or staging effect. Five source/read-integrity checks pass,
+all24 accepted runtime hashes unchanged. Release read07:44:53:9209 still8f705cb3,
+9proofs/cap8; lease now9266, main38525525368running. Inspected terminal controller
+runs were failure-marker passes, not9209 admission. Preserve original daily writer,
+rights/editorial/held history and every effect boundary. Continue original release
+then same follow-on; full evidence in source_qualification_20261014_0744/.
