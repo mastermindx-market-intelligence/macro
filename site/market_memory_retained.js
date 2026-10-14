@@ -332,7 +332,7 @@
   /* A-PLAYBACK: exact original capture binding. A saved-output read is only
    * committed when the returned IDs (and declared packet digest / ETag when
    * the catalog published them) match the selected catalog entry exactly. */
-  function normalizePlayback(entry, payload, etagHeader, intent) {
+  function normalizePlayback(entry, payload, etagHeader, intent, contentEncoding) {
     var body = requireObject(payload, 'saved_envelope');
     if (body.schema !== 'market_memory.retained_saved_output.v1' || body.mode !== 'retained_actual_output' || body.status !== 'AVAILABLE') throw ContractError('saved_schema');
     var generation = requireObject(body.generation, 'saved_generation'), selected = requireObject(body.selection, 'saved_selection');
@@ -356,7 +356,14 @@
         || refs.source.raw_sha256 !== receipt.source_evidence.raw_source_sha256 || refs.source.raw_bytes !== receipt.source_evidence.raw_source_bytes) throw ContractError('saved_original_refs');
     requireSha(refs.packet.sha256, 'saved_packet_sha'); requireSha(refs.feature.sha256, 'saved_feature_sha'); requireSha(refs.source.raw_sha256, 'saved_source_sha');
     [refs.packet.bytes, refs.feature.bytes, refs.source.raw_bytes].forEach(function (n) { requireCount(n, 'saved_original_bytes'); if (!n) throw ContractError('saved_original_bytes'); });
-    if (etagHeader && etagHeader !== '"' + entry.packetSha256 + '"') throw ContractError('saved_etag');
+    // The edge's gzip/zstd representation suffix is not part of the packet
+    // identity. Accept only the exact digest with its matching wire encoding;
+    // all envelope, source and packet checks above still apply unchanged.
+    var encoding = typeof contentEncoding === 'string' ? contentEncoding.trim().toLowerCase() : '';
+    var packetTag = '"' + entry.packetSha256 + '"';
+    var encodedTag = (encoding === 'gzip' || encoding === 'zstd')
+      ? '"' + entry.packetSha256 + '-' + encoding + '"' : null;
+    if (etagHeader && etagHeader !== packetTag && (!encodedTag || etagHeader !== encodedTag)) throw ContractError('saved_etag');
     var clocks = requireObject(body.clocks, 'saved_clocks'), latest = '';
     ['captured_at','raw_source_built_at','raw_source_observed_at','feature_as_of','event_time','as_known_at','knowledge_cutoff'].forEach(function (key) {
       var clock = exactUtc(clocks[key], 'saved_clock'); if (clock > latest) latest = clock;
@@ -559,6 +566,7 @@
         signal: controller.signal
       }).then(function (response) {
         var etag = response.headers && typeof response.headers.get === 'function' ? response.headers.get('ETag') : null;
+        var contentEncoding = response.headers && typeof response.headers.get === 'function' ? response.headers.get('Content-Encoding') : null;
         var retryAfter = response.headers && typeof response.headers.get === 'function' ? response.headers.get('Retry-After') : null;
         return response.json().catch(function () { return {}; }).then(function (payload) {
           if (!response.ok) {
@@ -571,7 +579,7 @@
             error.etag = etag;
             throw error;
           }
-          return { payload: payload, etag: etag };
+          return { payload: payload, etag: etag, contentEncoding: contentEncoding };
         });
       });
     });
@@ -814,7 +822,7 @@
       if (commitGate(intentSlot, state)) return;
       var playback;
       try {
-        playback = normalizePlayback(entry, result.payload, result.etag, intent);
+        playback = normalizePlayback(entry, result.payload, result.etag, intent, result.contentEncoding);
       } catch (contract) {
         return renderTypedUnavailable('playback_binding', contract.contractCode);
       }

@@ -793,3 +793,14 @@ Terminal778 is unchanged, no new ACK. Cost snapshot preserves partial observed
 usage and expressly disallows native/Fabric double counting or efficiency claims.
 Next: samePR9066 exact-head hosted qualification, protected release chain, then
 remaining real-source, performance, two-subject and independent acceptance.
+
+
+### October14 V15 integration and diagnostic adjudication
+
+V14 head e652575ffd5162c62b4491585ff5ef632a97b064 is saved on original PR9066. The next source integrates protected main a6efa04a48e054d5e261f4a48339792dc982ba24. Six generated/receipt conflicts were recorded and resolved through existing builders and fresh HK/CA browser verifiers:128 cases pass;16 screenshot hashes remain unchanged. All77 bounded canonical input files remain unchanged. The only changed source in the previous browser configuration is shared theme.js, inheriting a seven-line protected-main Market Memory route guard. No excluded-product implementation is authored here.
+
+On unchanged V14 bytes, a diagnostic timing batch passes10/10(max2.860s). Earlier9/10(max3.687s) remains failed evidence. V14 timing-server shutdown journals were absent, contrary to the earlier continuity assumption; browser timing data and server identity remain retained. The diagnostic harness now flushes request/loop journals in its shutdown event and captures protocol priorities. It did not reproduce the miss; one121.9ms loop scheduling gap in this different batch cannot establish the original cause. No speculative product patch or performance closure is claimed.
+
+Separate oversight prep is saved at3348d3593252 after independent Fabric MiniMax review of the chronology delta. Parent corrected the review's invalid -05:00 example by checking all three actual layers: same UTC date accepted, future publication and non-UTC spelling refused. Existing Fabric ledger records reviewer acceptance of that bounded repair. Capacity/source review operations, GAO source quarantine, identity owner, Terminal778 and real-subject acceptance stay on their original gates.
+
+Next: finish affected compatibility checks, commit and push this integration to the same draft PR before running the lengthy full proof, so hosted checks and local proof can overlap. Exact-source witness, independent acceptance and protected publication gates remain required.

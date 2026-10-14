@@ -86,3 +86,42 @@ for(const edge of ['error','timeout'])test('shared lazy signin '+edge+' preserve
 for(const query of ['?ret='+encodeURIComponent('https://other.invalid/'),'?ret=%2Fone&ret=%2Ftwo'])test('shared signin fallback refuses ambiguous or off-origin target: '+query,()=>{
  const x=lazyFallbackHarness(query);x.scripts[0].onerror();assert.equal(x.loc.pathname,'/index.html');assert.equal(x.loc.searchParams.has('ret'),false);
 });
+
+
+// Real 2026-10-14 Google return regression: global Settings bypassed the
+// retained panel's sign-in handler while its catalogue request was pending.
+function settingsEntryHarness(query, ready) {
+ const live=new URL('https://macro.example/market_memory.html'+query),saved={},opens=[],scripts=[],timers=[];
+ const location={get href(){return live.href;},set href(value){live.href=new URL(value,live.href).href;},get origin(){return live.origin;},get pathname(){return live.pathname;},get search(){return live.search;},get searchParams(){return live.searchParams;}};
+ const window={location,history:{state:null,replaceState(_s,_u,target){location.href=new URL(target,location.origin).href;}},
+  sessionStorage:{getItem:k=>saved[k]||null,setItem:(k,v)=>{saved[k]=v;},removeItem:k=>{delete saved[k];}}};
+ const ctx={window,location,URL,URLSearchParams,_mmSharedAssetRoot:'/',setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},
+  document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
+ vm.createContext(ctx);vm.runInContext(script('market_memory_intent.js'),ctx);
+ // Preserve an older ordinary SPY intent, then navigate to the exact source.
+ const incoming=location.href;location.href='https://macro.example/market_memory.html?ticker=SPY';window.MarketMemoryIntent.syncReturn();location.href=incoming;
+ if(ready)window.MMOnboard={open:mode=>opens.push(mode)};
+ const theme=script('theme.js');vm.runInContext(theme.slice(theme.indexOf('  function _mmOpenOnboard('),theme.indexOf('  function _sdWireCta(')),ctx);
+ const expected=window.MarketMemoryIntent.target();ctx._mmOpenOnboard('signin');
+ return {ctx,window,location,saved,opens,scripts,timers,expected};
+}
+const exactSettingsQuery='?ticker=SPY&mm_mode=saved&mm_query=exact-query&mm_subject=exact-subject&mm_gen=exact-generation&mm_gen_sha='+('a'.repeat(64))+'&mm_cutoff=2026-10-13T09%3A17%3A41.967527Z&mm_context=exact-context&mm_source_field=growth_score&mm_source_context=exact-context';
+for(const ready of [false,true])test('global Settings sign-in preserves the current exact source before '+(ready?'opening an existing sheet':'lazy loading the sheet'),()=>{
+ const x=settingsEntryHarness(exactSettingsQuery,ready);assert.equal(x.expected.ok,true);
+ assert.equal(x.location.searchParams.get('ret'),x.expected.target);
+ const capsule=Object.values(x.saved).map(v=>JSON.parse(v)).find(v=>v.schema==='market_memory.intent.oauth.v1');
+ assert.equal(capsule.target,x.expected.target);assert.equal(ready?x.opens.length:x.scripts.length,1);
+ const callback={...x.ctx,window:{...x.window,location:new URL('https://macro.example/market_memory.html?onboard=resume&code=synthetic')}};
+ callback.window.history={state:null,replaceState(_s,_u,target){callback.window.location.href=new URL(target,callback.window.location.origin).href;}};
+ vm.createContext(callback);vm.runInContext(script('market_memory_intent.js'),callback);
+ assert.equal(callback.window.MarketMemoryIntent.resumeStatus().restored,true);
+ for(const [key,value] of new URL(x.expected.target,x.location.origin).searchParams)assert.equal(callback.window.location.searchParams.get(key),value);
+});
+for(const edge of ['error','timeout'])test('Settings lazy '+edge+' fallback retains an exact source even without an incoming ret',()=>{
+ const x=settingsEntryHarness(exactSettingsQuery,false);if(edge==='error')x.scripts[0].onerror();else x.timers[0]();
+ assert.equal(x.location.pathname,'/index.html');assert.equal(x.location.searchParams.get('ret'),x.expected.target);
+});
+test('Settings cannot reuse an older capsule when the current source is ambiguous',()=>{
+ const x=settingsEntryHarness('?mm_query=first&mm_query=second',true);assert.equal(x.expected.ok,false);
+ assert.equal(Object.keys(x.saved).length,0);assert.equal(x.opens.length,0);
+});
