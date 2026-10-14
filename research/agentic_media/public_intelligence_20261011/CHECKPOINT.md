@@ -1,3 +1,57 @@
+Verified 02:25 UTC: PR9209 is ready (not draft), head5d06, label merge-on-green,
+native auto-merge null. Root consumed and accepted the independent review and
+corrected GLM return via their original Fabric IDs; acceptance covers the parent
+repairs and recorded private-release limits, not the original patch unchanged.
+The requested validator follow-on mmx-press-validator-integrity-20261014-001 was
+refused before execution (rc75, host_temperature_at_or_above_limit). Its same-run
+retained receipt is saved; no replacement worker or host retry. Root will perform
+permitted local repairs. Sole writer-contract follow-on remains active. Existing
+GitHub comment6107930181 updated02:24:36Z; heartbeat goal updated1945bytes, ACTIVE.
+
+## Private BAC result and review closure — October 14 02:20 UTC
+
+PR #9209 is pushed at `5d06f81f068aa876743862a1d16b4687adca6422`, with exact-head
+CI `38499512292` still running. Independent Qwen review
+`mmx-press-private-ingress-review-20261014-001` returned NOT PASS on the supplied
+pre-repair text. Its sole blocking metadata-strip/replay finding matches the two
+parent regressions already repaired in 5d06: stable official identity survives
+source/provenance stripping. Red controls and 114 passing affected tests support
+parent acceptance of this private release. The reviewer did not rerun the final
+commit; do not relabel its original verdict PASS. The full return and parent
+adjudication are retained under `official_staging_phase/`.
+
+One actual current BAC attempt completed at 02:10 UTC using Codex/gpt-5.6-luna:
+20,206 input + 1,127 output = 21,333 actual tokens. Stable slot
+`press-official-cd2747adeed2` is quarantined, with its returned draft/report
+preserved, one provider attempt and zero regenerations. Record SHA256
+`444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931`.
+Failures: close paraphrase 0.2778 > 0.18; own-value 0.2074 < 0.40; banned phrase
+"the backdrop". Editorial HOLD also rejects unsupported materiality language and
+broad pre-event scores used in place of issuer analysis. This earns zero W1
+credit. Do not retry, requalify, change GUID or add PDF facts to regenerate it.
+The configured model alias/runner estimate are not the actual billing model or
+token count. No content/site/ledger publication occurred; cutover/publication false.
+
+The existing Research draft is now mechanically quarantined without editing its
+body or original validator report. Its hold and the original Oct11 12:07
+EFFECT_UNKNOWN remain binding. Missing earnings credentials are not a waiting
+condition for other lawful source paths.
+
+Next: move the accepted private implementation into protected release using the
+existing merge-on-green controller; require exact-head CI and actual protected
+merge before installation/24-source/3-page/consumer verification. No manual
+proof-only refresh, duplicate CI or admin merge. The cap of eight is a controller
+refresh limit, not an initial authored-PR ban. In parallel, consume the already
+launched sole writer-contract follow-on `mmx-press-writer-contract-followon-20261014-001`
+for future distinct slots. Address review's bounded nonblocking validator and
+preflight findings in the next release, and qualify genuinely relevant first-party
+inputs; never pad numbers, weaken thresholds or relabel third-party evidence.
+
+verified: `gh pr view 9209 --json headRefOid,isDraft,statusCheckRollup`; exact retained
+review SHA and regression commands are in `independent_review_adjudication.json`;
+actual invocation/result/usage/editorial evidence are `bac_*` files in the same
+phase. Local evidence is not installed source or public capability.
+
 ## Draft release and final identity guard — October 14 02:08 UTC
 
 Draft PR #9209 is created and attached at initial head

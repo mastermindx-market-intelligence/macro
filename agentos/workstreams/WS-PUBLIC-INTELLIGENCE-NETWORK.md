@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume the current independent private-ingress review and finish the running local contract gate; push the integrated authored changes and open one protected PR without mistaking the controller refresh cap for an initial-PR ban. After safety acceptance, requalify current source and stage one bounded private BAC attempt, then adjudicate the unedited result while preserving all publication gates and original EFFECT_UNKNOWN.
+next_action: Complete PR 9209 exact-head CI, protected landing and installed private-consumer proof. Consume the existing writer-contract follow-on and repair the recorded validator/preflight gaps for future distinct slots; qualify relevant first-party inputs without replaying quarantined BAC or Research. Preserve publication, cutover and original EFFECT_UNKNOWN gates.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
