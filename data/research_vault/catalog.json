@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T16:11:00.282261+00:00",
-  "count": 2906,
+  "generated_at": "2026-10-14T16:40:58.792840+00:00",
+  "count": 2907,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -955,6 +955,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbvpc1qbqzo-090bad",
+      "title": "UBS Equity Preference List UK 2026 10 12",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:56:05Z",
+      "summary_points": [
+        "UK Equity Fundamentals: Attractive 12x forward P/E (vs 12.8x median) with robust earnings growth, though lagging global peers; near-term rate risk offset by resilient activity (e.g., energy prices supporting earnings).",
+        "Anglo American Copper Pivot: Strategic shift to copper via asset spin-offs (Valterra, nickel) and Teck merger (62% stake), targeting 30%+ copper volume growth by 2030; key catalysts include $4.5bn dividend and Quellaveco/Woodsmith projects.",
+        "China Demand Risk: Systemic threat across holdings (e.g., 13% revenue exposure for key firms); slower industrial metals demand or Teck merger delays could negatively impact outlook.",
+        "GBP Policy Exposure: All holdings GBP-denominated; critical to monitor UK interest rates, fiscal policies, and Brexit impacts on energy/finance sectors amid currency volatility.",
+        "Sector Growth Catalysts: Favor cyclical/structural areas (Eurozone IT, industrials, banks) via \"European Leaders\" theme; energy transition tailwinds (copper for EVs) and high-margin oncology assets (13% CAGR) drive growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
