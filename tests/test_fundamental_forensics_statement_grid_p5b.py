@@ -344,3 +344,60 @@ def test_r3_fact_bearing_capture_still_ends_at_notes_row() -> None:
         "syn-p5b-r3e-2025",
         "syn-p5b-r3e-2024",
     ]
+
+
+def test_r6_values_beyond_dated_columns_refuse_on_a_rectangular_grid() -> None:
+    # Rectangular grid (no edge pad): the banner prints an undated fourth column, so a
+    # third value has no date to bind to and must refuse rather than be dropped.
+    html = """
+    <html><body>
+    <div>SYNTHETIC STATEMENT OF OPERATIONS</div>
+    <table>
+    <tr>
+      <td>Line</td>
+      <td>March 31, 2025</td>
+      <td>March 31, 2024</td>
+      <td>Change</td>
+    </tr>
+    <tr>
+      <td>Revenue</td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2025" id="syn-p5b-r6-2025" unitRef="usd" decimals="-6" scale="6">10</ix:nonFraction></td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2024" id="syn-p5b-r6-2024" unitRef="usd" decimals="-6" scale="6">9</ix:nonFraction></td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2023" id="syn-p5b-r6-2023" unitRef="usd" decimals="-6" scale="6">1</ix:nonFraction></td>
+    </tr>
+    </table>
+    </body></html>
+    """
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement layout unsupported: row 0 carries 3 values for 2 dated columns$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_r6_row_with_values_equal_to_dated_columns_still_parses() -> None:
+    html = """
+    <html><body>
+    <div>SYNTHETIC STATEMENT OF OPERATIONS</div>
+    <table>
+    <tr>
+      <td>Line</td>
+      <td>March 31, 2025</td>
+      <td>March 31, 2024</td>
+      <td>Change</td>
+    </tr>
+    <tr>
+      <td>Revenue</td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2025" id="syn-p5b-r6e-2025" unitRef="usd" decimals="-6" scale="6">10</ix:nonFraction></td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2024" id="syn-p5b-r6e-2024" unitRef="usd" decimals="-6" scale="6">9</ix:nonFraction></td>
+      <td>11%</td>
+    </tr>
+    </table>
+    </body></html>
+    """
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-03-31", "2024-03-31"]
+    assert [item["fact_id"] for item in parsed["rows"][0]["value_facts"]] == [
+        "syn-p5b-r6e-2025",
+        "syn-p5b-r6e-2024",
+    ]

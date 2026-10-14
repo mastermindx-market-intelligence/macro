@@ -639,9 +639,10 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
 
     Origin slots keep text and facts. Colspan continuations are empty placeholders so
     spacer groups (the AAPL pattern) do not duplicate dates or facts. A label rowspan
-    carries its text down the occupied rows with ``rowspan_carry``. Overlap, a span
-    past the captured table, a span overflow, or a hole after expansion is
-    ``displayed statement layout unsupported``.
+    carries its text down the occupied rows with ``rowspan_carry``. A row narrower
+    than the grid gets fact-free ``edge_pad`` slots on its right edge only. Overlap,
+    a span past the captured table, a span overflow, or an interior hole after
+    expansion is ``displayed statement layout unsupported``.
     """
     if not raw_rows:
         return []
@@ -1015,6 +1016,15 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
         header_dates = composed[0]
     if len(header_dates) < 2:
         raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+    # Values bind to columns by position, so a row carrying more values than the
+    # table prints dated columns would silently lose its trailing values. The
+    # right-edge pad lets a narrow banner row widen onto the body's grid; it must
+    # never let a body value sit beyond the dated columns.
+    for spec in display_rows:
+        if len(spec["value_facts"]) > len(header_dates):
+            raise _layout_unsupported(
+                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns"
+            )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
         output["columns_source"] = "composed_year_row"
