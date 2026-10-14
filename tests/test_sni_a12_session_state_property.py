@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import random
 import sys
-import warnings
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -702,24 +701,16 @@ def test_a12_p2_perturbation_proof_strict_open_fails():
     ssg._state_at = _make_strict_open_state_at(saved)
     try:
         v_at = session_state(cal, at=t_open.isoformat())
-        if v_at.state != "open":
-            warnings.warn(
-                "FAILED LINE: P2 boundary invariant at session_start "
-                f"{cal['sessions'][0][0]} on {cal['trading_date']}: "
-                f"expected 'open', got {v_at.state!r} "
-                "(boundary compare tightened from <= to <)",
-                stacklevel=2,
-            )
-            return
-        # If we got here, the perturbation did not actually move the
-        # boundary state. The proof is inconclusive.
-        warnings.warn(
-            "FAILED LINE: perturbation did not move session_start state "
-            "away from 'open' (proof inconclusive)",
-            stacklevel=2,
-        )
     finally:
         ssg._state_at = saved
+    # The P2 invariant ("open" at the half-open session start) must detect
+    # the perturbation; an unmoved state means the proof is inconclusive.
+    assert v_at.state != "open", (
+        "perturbation did not move session_start state away from 'open' "
+        f"({cal['sessions'][0][0]} on {cal['trading_date']}): proof inconclusive"
+    )
+    # And the unperturbed module still satisfies P2 at the same instant.
+    assert session_state(cal, at=t_open.isoformat()).state == "open"
 
 
 def test_a12_p2_perturbation_proof_inclusive_end_fails():
@@ -760,23 +751,13 @@ def test_a12_p2_perturbation_proof_inclusive_end_fails():
     ssg._state_at = _perturbed
     try:
         v_at = session_state(cal, at=t_close.isoformat())
-        # The unperturbed module returns 'post_close' at the last
-        # session's close (half-open [start, end)). The perturbation
-        # tightens '>=' to '>' so the boundary moment now falls through
-        # to 'break'.
-        if v_at.state != "post_close":
-            warnings.warn(
-                "FAILED LINE: P2 boundary invariant at session_end "
-                f"{cal['sessions'][-1][1]} on {cal['trading_date']}: "
-                f"expected 'post_close', got {v_at.state!r} "
-                "(post-close compare tightened from >= to >)",
-                stacklevel=2,
-            )
-            return
-        warnings.warn(
-            "FAILED LINE: post-close perturbation did not break P2 "
-            "invariant (proof inconclusive)",
-            stacklevel=2,
-        )
     finally:
         ssg._state_at = saved
+    # The unperturbed module returns 'post_close' at the last session's
+    # close (half-open [start, end)). The perturbation tightens '>=' to '>'
+    # so the boundary moment falls through to 'break'; P2 must see it.
+    assert v_at.state != "post_close", (
+        "post-close perturbation did not break the P2 invariant "
+        f"({cal['sessions'][-1][1]} on {cal['trading_date']}): proof inconclusive"
+    )
+    assert session_state(cal, at=t_close.isoformat()).state == "post_close"
