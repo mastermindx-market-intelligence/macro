@@ -187,7 +187,7 @@ def _honest_n_group(
                 if ph.qualifies:
                     onset_items.append((group, ps.pair_id, ph.T))
         return _cluster_n(onset_items)
-    items, _coords = _items_matured_a1(
+    items, _coords, _values = _items_matured_a1(
         group, pairs, cores, residual=(hypothesis == "H3")
     )
     return _cluster_n(items)
