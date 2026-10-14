@@ -548,6 +548,29 @@ def _coalesce_nbbo_microstructure(
 
 # ── DTE / moneyness for a coalesced row ──────────────────────────────────────
 
+def _classify_expiry(exp: Any, session_date: str) -> tuple[int | None, str]:
+    """Return (dte, dte_bucket) for one expiration value.
+
+    Readable means pd.Timestamp(str(exp)) parses to a real timestamp (not NaT)
+    and the whole-day difference to the session date is >= 0. Unreadable or
+    past expiries return (None, "unknown"); they are never 0DTE.
+    """
+    try:
+        exp_ts = pd.Timestamp(str(exp))
+        sess_ts = pd.Timestamp(session_date)
+    except Exception:  # noqa: BLE001
+        return None, "unknown"
+
+    if pd.isna(exp_ts) or pd.isna(sess_ts):
+        return None, "unknown"
+
+    dte_int = int((exp_ts - sess_ts).days)
+    if dte_int < 0:
+        return None, "unknown"
+    bucket = str(_dte_bucket(pd.Series([dte_int])).iloc[0])
+    return dte_int, bucket
+
+
 def _enrich_contract_row(row: pd.Series, session_date: str,
                          oi_prev: pd.DataFrame | None,
                          contract_vol: dict | None = None,
@@ -561,14 +584,7 @@ def _enrich_contract_row(row: pd.Series, session_date: str,
                    bucketing (FIX 3).  None → 'unknown'.
     """
     exp_str = str(row.get("expiration", ""))
-    try:
-        exp_dt = pd.Timestamp(exp_str)
-        sess_dt = pd.Timestamp(session_date)
-        dte_val = max(int((exp_dt - sess_dt).days), 0)
-    except Exception:  # noqa: BLE001
-        dte_val = 0
-
-    dte_bucket_val = str(_dte_bucket(pd.Series([dte_val])).iloc[0])
+    dte_val, dte_bucket_val = _classify_expiry(row.get("expiration", ""), session_date)
     zerodte = dte_bucket_val == "0d"
 
     # FIX 3 — honest moneyness via prior-session close
@@ -1429,22 +1445,15 @@ def _accumulate_tide(
 
         # DTE tide — split by DTE bucket
         if "expiration" in grp.columns:
-            try:
-                sess_dt = pd.Timestamp(session_date)
-                for dte_bkt, bkt_grp in grp.groupby(
-                    grp["expiration"].apply(
-                        lambda e: str(_dte_bucket(
-                            pd.Series([max(int((pd.Timestamp(e) - sess_dt).days), 0)])
-                        ).iloc[0])
-                    )
-                ):
-                    bkt_str = str(dte_bkt)
-                    db = dte_tide.setdefault(bkt_str, {})
-                    dm = db.setdefault(mkey, {"ncp": 0.0, "npp": 0.0})
-                    dm["ncp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "C", "_signed_prem"].sum())
-                    dm["npp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "P", "_signed_prem"].sum())
-            except Exception:  # noqa: BLE001
-                pass
+            buckets = grp["expiration"].map(
+                lambda exp: _classify_expiry(exp, session_date)[1]
+            )
+            for dte_bkt, bkt_grp in grp.groupby(buckets):
+                bkt_str = str(dte_bkt)
+                db = dte_tide.setdefault(bkt_str, {})
+                dm = db.setdefault(mkey, {"ncp": 0.0, "npp": 0.0})
+                dm["ncp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "C", "_signed_prem"].sum())
+                dm["npp"] += float(bkt_grp.loc[bkt_grp["_right_norm"] == "P", "_signed_prem"].sum())
 
     # ── per-root minute series ────────────────────────────────────────────────
     rm = root_minutes.setdefault(root, {})
@@ -1751,8 +1760,14 @@ def build_dte_tide_current(session_date: str, asof: str, day_state: dict) -> dic
         "8_30d": [...],
         "31_90d":[...],
         "90p":   [...],
-      }
+      },
+      "unclassified": {"ncp": <cumulative>, "npp": <cumulative>},
     }
+
+    ``buckets`` stays the five published labels and never includes "unknown".
+    ``unclassified`` sums ``dte_tide.get("unknown", {})`` across minutes and
+    rounds each total with ``round(x, 0)``. It is ``{"ncp": 0.0, "npp": 0.0}``
+    when there is no unknown premium. The schema string is unchanged.
     """
     dte_tide = day_state.get("dte_tide", {})
     buckets_out: dict = {}
@@ -1768,10 +1783,16 @@ def build_dte_tide_current(session_date: str, asof: str, day_state: dict) -> dic
             cum_npp += float(dm.get("npp", 0.0))
             series.append({"t": t, "ncp": round(cum_ncp, 0), "npp": round(cum_npp, 0)})
         buckets_out[bkt] = series
+    unk_ncp = 0.0
+    unk_npp = 0.0
+    for dm in dte_tide.get("unknown", {}).values():
+        unk_ncp += float(dm.get("ncp", 0.0))
+        unk_npp += float(dm.get("npp", 0.0))
     return {
         "schema":  "live_flow.dte_tide/v1",
         "asof":    asof,
         "buckets": buckets_out,
+        "unclassified": {"ncp": round(unk_ncp, 0), "npp": round(unk_npp, 0)},
     }
 
 
