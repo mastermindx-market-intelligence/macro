@@ -62,6 +62,8 @@ __all__ = [
     "grid",
     "size_check",
     "wilson_interval",
+    "load_sim_records",
+    "summarize_records",
 ]
 
 SIGMAS = (0.007, 0.010, 0.014)
@@ -380,11 +382,21 @@ def _load_done_sims(out: Path, cell_id: int) -> set:
     return done
 
 
+def _finite_median(vals: List[float]) -> Optional[float]:
+    finite = [v for v in vals if v is not None and math.isfinite(float(v))]
+    if not finite:
+        return None
+    return float(np.median(finite))
+
+
 def _summarize_cell(sims: List[dict]) -> dict:
     summary: Dict[str, Any] = {
         "n_sims": len(sims),
         "by_group_hypothesis": {},
     }
+    n_ok = sum(1 for s in sims if s.get("status") == "OK")
+    alpha_cal = 0.025
+    family_passes = 0
     for g in _GROUPS:
         for h in _HYPOTHESES:
             key = f"{g}/{h}"
@@ -392,6 +404,13 @@ def _summarize_cell(sims: List[dict]) -> dict:
             passes = 0
             honest_ns: List[float] = []
             years: List[float] = []
+            points: List[float] = []
+            raw_ps: List[float] = []
+            holm_ps: List[float] = []
+            cond_a_true = 0
+            cond_b_true = 0
+            delay_reds: List[float] = []
+            burden_cuts: List[float] = []
             for sim in sims:
                 if sim.get("status") != "OK":
                     v = sim.get("status", "UNREACHED")
@@ -406,15 +425,83 @@ def _summarize_cell(sims: List[dict]) -> dict:
                     honest_ns.append(float(row["honest_n"]))
                 if row.get("window_years") is not None:
                     years.append(float(row["window_years"]))
+                pt = row.get("point")
+                if pt is not None and math.isfinite(float(pt)):
+                    points.append(float(pt))
+                rp = row.get("raw_p")
+                if rp is not None and math.isfinite(float(rp)):
+                    raw_ps.append(float(rp))
+                hp = row.get("holm_p")
+                if hp is not None and math.isfinite(float(hp)):
+                    holm_ps.append(float(hp))
+                if h == "H1":
+                    iut = row.get("iut") or {}
+                    if iut.get("cond_a") is True:
+                        cond_a_true += 1
+                    if iut.get("cond_b") is True:
+                        cond_b_true += 1
+                    dr = iut.get("delay_reduction")
+                    if dr is not None and math.isfinite(float(dr)):
+                        delay_reds.append(float(dr))
+                    bc = iut.get("burden_cut_b")
+                    if bc is not None and math.isfinite(float(bc)):
+                        burden_cuts.append(float(bc))
             n = len(sims)
             lo, hi = wilson_interval(passes, n)
-            summary["by_group_hypothesis"][key] = {
+            # Size check uses pass_rate_ok / wilson_95_ok (OK sims only): UNREACHED
+            # sims cannot pass, so all-sim pass_rate would dilute false-pass rate.
+            lo_ok, hi_ok = wilson_interval(passes, n_ok)
+            row_out: Dict[str, Any] = {
+                "passes": passes,
+                "n_ok": n_ok,
                 "pass_rate": passes / n if n else float("nan"),
+                "pass_rate_ok": passes / n_ok if n_ok else float("nan"),
                 "wilson_95": {"lower": lo, "upper": hi},
+                "wilson_95_ok": {"lower": lo_ok, "upper": hi_ok},
                 "median_honest_n": float(np.median(honest_ns)) if honest_ns else None,
                 "median_window_years": float(np.median(years)) if years else None,
+                "median_point": _finite_median(points),
+                "median_raw_p": _finite_median(raw_ps),
+                "share_raw_p_lt_alpha": (
+                    sum(1 for p in raw_ps if p < alpha_cal) / len(raw_ps) if raw_ps else None
+                ),
+                "share_holm_p_lt_alpha": (
+                    sum(1 for p in holm_ps if p < alpha_cal) / len(holm_ps) if holm_ps else None
+                ),
                 "verdict_counts": verdicts,
             }
+            if h == "H1":
+                row_out["cond_a_true"] = cond_a_true
+                row_out["cond_b_true"] = cond_b_true
+                row_out["median_delay_reduction"] = _finite_median(delay_reds)
+                row_out["median_burden_cut_b"] = _finite_median(burden_cuts)
+            summary["by_group_hypothesis"][key] = row_out
+
+    for sim in sims:
+        if sim.get("status") != "OK":
+            continue
+        any_pass = False
+        for g in _GROUPS:
+            for h in _HYPOTHESES:
+                row = sim.get("groups", {}).get(g, {}).get(h, {})
+                if row.get("verdict") == "DEVELOPMENT_PASS":
+                    any_pass = True
+                    break
+            if any_pass:
+                break
+        if any_pass:
+            family_passes += 1
+    n = len(sims)
+    flo, fhi = wilson_interval(family_passes, n)
+    flo_ok, fhi_ok = wilson_interval(family_passes, n_ok)
+    summary["family_any"] = {
+        "passes": family_passes,
+        "pass_rate": family_passes / n if n else float("nan"),
+        "wilson_95": {"lower": flo, "upper": fhi},
+        "n_ok": n_ok,
+        "pass_rate_ok": family_passes / n_ok if n_ok else float("nan"),
+        "wilson_95_ok": {"lower": flo_ok, "upper": fhi_ok},
+    }
     return summary
 
 
@@ -499,6 +586,93 @@ def _iter_grid_cells() -> List[Tuple[int, float, float, float, int]]:
     return cells
 
 
+def _catalog_map() -> Dict[int, Tuple[float, float, float, int]]:
+    return {
+        cid: (sigma, delta, rho, n_target)
+        for cid, sigma, delta, rho, n_target in _iter_grid_cells()
+    }
+
+
+def _validate_sim_record(rec: dict, catalog: Dict[int, Tuple[float, float, float, int]]) -> None:
+    if "cell_id" not in rec or not isinstance(rec["cell_id"], int):
+        raise ValueError("record missing int cell_id")
+    if rec["cell_id"] not in catalog:
+        raise ValueError(f"unknown cell_id {rec['cell_id']}")
+    if "k" not in rec or not isinstance(rec["k"], int) or rec["k"] < 0:
+        raise ValueError("record missing int k >= 0")
+    status = rec.get("status")
+    if status not in ("OK", "UNREACHED"):
+        raise ValueError(f"invalid status {status!r}")
+
+
+def load_sim_records(
+    paths: Sequence[Union[str, Path]],
+) -> Tuple[Dict[int, List[dict]], dict]:
+    catalog = _catalog_map()
+    by_cell: Dict[int, List[dict]] = {}
+    seen: Dict[Tuple[int, int], str] = {}
+    stats: Dict[str, Any] = {
+        "files": [str(Path(p)) for p in paths],
+        "records": 0,
+        "cells": 0,
+        "duplicates": 0,
+        "skipped_partial": 0,
+    }
+    for path in paths:
+        p = Path(path)
+        lines = p.read_text().splitlines()
+        for lineno, raw in enumerate(lines, start=1):
+            line = raw.strip()
+            if not line:
+                continue
+            is_last = lineno == len(lines)
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                if is_last:
+                    stats["skipped_partial"] += 1
+                    continue
+                raise ValueError(f"{p}:{lineno}") from None
+            _validate_sim_record(rec, catalog)
+            key = (rec["cell_id"], rec["k"])
+            canon = json.dumps(rec, sort_keys=True)
+            if key in seen:
+                if seen[key] != canon:
+                    raise ValueError(f"conflicting duplicate cell_id={key[0]} k={key[1]}")
+                stats["duplicates"] += 1
+                continue
+            seen[key] = canon
+            by_cell.setdefault(rec["cell_id"], []).append(rec)
+    for cid in by_cell:
+        by_cell[cid].sort(key=lambda r: r["k"])
+    stats["records"] = len(seen)
+    stats["cells"] = len(by_cell)
+    return by_cell, stats
+
+
+def summarize_records(by_cell: Dict[int, List[dict]]) -> List[dict]:
+    catalog = _catalog_map()
+    out: List[dict] = []
+    for cell_id in sorted(by_cell):
+        records = by_cell[cell_id]
+        sigma, delta, rho, n_target = catalog[cell_id]
+        n_ok = sum(1 for r in records if r.get("status") == "OK")
+        out.append(
+            {
+                "cell_id": cell_id,
+                "sigma": sigma,
+                "delta": delta,
+                "rho": rho,
+                "n_target": n_target,
+                "n_sims": len(records),
+                "n_ok": n_ok,
+                "n_unreached": len(records) - n_ok,
+                "summary": _summarize_cell(records),
+            }
+        )
+    return out
+
+
 def grid(
     cells: Union[str, Sequence[int]] = "all",
     sims_null: int = DEFAULT_SIMS_NULL,
@@ -534,36 +708,83 @@ def grid(
     return results
 
 
-def size_check(summaries: Sequence[dict], alpha: float = 0.025) -> dict:
+def _size_row_entries(summary: dict) -> List[Tuple[str, dict]]:
+    rows: List[Tuple[str, dict]] = []
+    by_gh = summary.get("by_group_hypothesis", {})
+    for g in _GROUPS:
+        for h in _HYPOTHESES:
+            key = f"{g}/{h}"
+            row = by_gh.get(key)
+            if isinstance(row, dict):
+                rows.append((key, row))
+    fam = summary.get("family_any")
+    if isinstance(fam, dict):
+        rows.append(("family_any", fam))
+    return rows
+
+
+def size_check(cell_summaries: Sequence[dict], alpha: float = 0.025) -> dict:
+    null_cells = [c for c in cell_summaries if float(c.get("delta", float("nan"))) == 0.0]
+    if not null_cells:
+        raise ValueError("no delta=0 cells")
     violations: List[dict] = []
-    max_point = 0.0
-    for cell in summaries:
-        delta = cell.get("delta")
-        if delta is None:
-            continue
-        if float(delta) != 0.0:
-            continue
-        summ = cell.get("summary", cell)
-        by_gh = summ.get("by_group_hypothesis", {})
-        for key, row in by_gh.items():
-            if not isinstance(row, dict):
-                continue
-            pr = row.get("pass_rate", 0.0)
-            if pr > max_point:
-                max_point = pr
-            wil = row.get("wilson_95", {})
-            lo = wil.get("lower", float("nan"))
+    exceeds: List[dict] = []
+    max_point_rate_ok = 0.0
+    max_family_point_rate_ok = 0.0
+    n_null_sims = 0
+    n_null_ok = 0
+    for cell in null_cells:
+        n_null_sims += int(cell.get("n_sims", 0))
+        n_null_ok += int(cell.get("n_ok", 0))
+        summ = cell.get("summary", {})
+        for row_name, row in _size_row_entries(summ):
+            pr_ok = float(row.get("pass_rate_ok", 0.0) or 0.0)
+            if row_name == "family_any":
+                if pr_ok > max_family_point_rate_ok:
+                    max_family_point_rate_ok = pr_ok
+            elif pr_ok > max_point_rate_ok:
+                max_point_rate_ok = pr_ok
+            wil = row.get("wilson_95_ok", {})
+            lo = float(wil.get("lower", float("nan")))
+            passes = int(row.get("passes", 0))
+            n_ok = int(row.get("n_ok", 0))
+            base = {
+                "cell_id": cell.get("cell_id"),
+                "sigma": cell.get("sigma"),
+                "rho": cell.get("rho"),
+                "n_target": cell.get("n_target"),
+                "row": row_name,
+                "passes": passes,
+                "n_ok": n_ok,
+                "pass_rate_ok": pr_ok,
+                "wilson_lower": lo,
+            }
             if lo > alpha:
-                violations.append(
-                    {
-                        "cell_id": cell.get("cell_id"),
-                        "group_hypothesis": key,
-                        "pass_rate": pr,
-                        "wilson_lower": lo,
-                        "flag": "SIZE_VIOLATION",
-                    }
+                flag = (
+                    "FAMILY_SIZE_VIOLATION"
+                    if row_name == "family_any"
+                    else "SIZE_VIOLATION"
                 )
-    return {"violations": violations, "max_point_rate": max_point}
+                violations.append({**base, "flag": flag})
+            elif pr_ok > alpha:
+                flag = (
+                    "FAMILY_SIZE_EXCEEDS_POINT"
+                    if row_name == "family_any"
+                    else "SIZE_EXCEEDS_POINT"
+                )
+                exceeds.append({**base, "flag": flag})
+    sized = not violations
+    return {
+        "alpha": alpha,
+        "n_null_cells": len(null_cells),
+        "n_null_sims": n_null_sims,
+        "n_null_ok": n_null_ok,
+        "violations": violations,
+        "exceeds_point": exceeds,
+        "max_point_rate_ok": max_point_rate_ok,
+        "max_family_point_rate_ok": max_family_point_rate_ok,
+        "sized": sized,
+    }
 
 
 def _cmd_smoke() -> int:
@@ -604,19 +825,250 @@ def _cmd_grid(argv: Sequence[str]) -> int:
     return 0
 
 
+def _parse_in_paths(argv: Sequence[str]) -> Tuple[List[str], argparse.Namespace]:
+    import argparse
+
+    p = argparse.ArgumentParser()
+    p.add_argument("--in", dest="in_paths", action="append", required=True)
+    p.add_argument("--alpha", type=float, default=0.025)
+    args, rest = p.parse_known_args(list(argv))
+    return rest, args
+
+
+def _load_summaries_from_inputs(in_paths: Sequence[str]) -> Tuple[List[dict], dict]:
+    by_cell, stats = load_sim_records(in_paths)
+    return summarize_records(by_cell), stats
+
+
 def _cmd_size(argv: Sequence[str]) -> int:
     import argparse
 
     p = argparse.ArgumentParser()
-    p.add_argument("--in", dest="in_path", required=True)
+    p.add_argument("--in", dest="in_paths", action="append", required=True)
+    p.add_argument("--alpha", type=float, default=0.025)
     args = p.parse_args(list(argv))
-    summaries: List[dict] = []
-    with Path(args.in_path).open() as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                summaries.append(json.loads(line))
-    print(json.dumps(size_check(summaries), indent=2))
+    try:
+        summaries, _stats = _load_summaries_from_inputs(args.in_paths)
+        result = size_check(summaries, alpha=args.alpha)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2))
+    if not result["sized"]:
+        return 1
+    return 0
+
+
+def _md_rate(x: Any) -> str:
+    if x is None:
+        return "—"
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "—"
+    if not math.isfinite(v):
+        return "—"
+    return f"{v:.3f}"
+
+
+def _summary_row_keys() -> List[str]:
+    keys = [f"{g}/{h}" for g in _GROUPS for h in _HYPOTHESES]
+    keys.append("family_any")
+    return keys
+
+
+def _write_summary_md(
+    path: Path,
+    stats: dict,
+    cells: List[dict],
+    size_result: dict,
+    in_paths: Sequence[str],
+) -> None:
+    lines: List[str] = []
+    lines.append("# P0 simulation summary")
+    lines.append("")
+    lines.append(f"Inputs: {', '.join(Path(p).name for p in in_paths)}")
+    lines.append(
+        f"Records kept: {stats.get('records', 0)}; duplicates: {stats.get('duplicates', 0)}; "
+        f"skipped_partial: {stats.get('skipped_partial', 0)}"
+    )
+    lines.append(f"numpy {np.__version__}")
+    lines.append("")
+    lines.append("DEVELOPMENT HARNESS — no verdict authority")
+    lines.append("")
+
+    row_keys = _summary_row_keys()
+    null_cells = [c for c in cells if float(c["delta"]) == 0.0]
+    alt_cells = [c for c in cells if float(c["delta"]) > 0.0]
+
+    lines.append("## Table 1 Size (δ = 0)")
+    if not null_cells:
+        lines.append("_No δ = 0 cells in input._")
+    else:
+        hdr = (
+            "| cell | σ | ρ | N | sims ok/unreached | "
+            + " | ".join(row_keys)
+            + " |"
+        )
+        sep = "|---|" * (5 + len(row_keys))
+        lines.append(hdr)
+        lines.append(sep)
+        for c in null_cells:
+            summ = c["summary"]
+            cells_cols = []
+            for rk in row_keys:
+                if rk == "family_any":
+                    row = summ.get("family_any", {})
+                else:
+                    row = summ.get("by_group_hypothesis", {}).get(rk, {})
+                p = row.get("passes", 0)
+                n_ok = row.get("n_ok", c["n_ok"])
+                rate = row.get("pass_rate_ok")
+                cells_cols.append(f"{p}/{n_ok} ({_md_rate(rate)})")
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        str(c["cell_id"]),
+                        _md_rate(c["sigma"]),
+                        _md_rate(c["rho"]),
+                        str(c["n_target"]),
+                        f"{c['n_ok']}/{c['n_unreached']}",
+                    ]
+                    + cells_cols
+                )
+                + " |"
+            )
+        if size_result.get("error"):
+            lines.append(f"Size verdict: ERROR ({size_result['error']})")
+        elif size_result.get("sized"):
+            lines.append("Size verdict: SIZED")
+        else:
+            flags = [v["flag"] for v in size_result.get("violations", [])]
+            lines.append("Size verdict: " + ", ".join(flags) if flags else "NOT SIZED")
+    lines.append("")
+
+    lines.append("## Table 2 Power (δ > 0)")
+    if not alt_cells:
+        lines.append("_No δ > 0 cells in input._")
+    else:
+        hdr = (
+            "| cell | σ | δ | ρ | N | sims ok/unreached | "
+            + " | ".join(row_keys)
+            + " |"
+        )
+        sep = "|---|" * (6 + len(row_keys))
+        lines.append(hdr)
+        lines.append(sep)
+        for c in alt_cells:
+            summ = c["summary"]
+            cells_cols = []
+            for rk in row_keys:
+                if rk == "family_any":
+                    row = summ.get("family_any", {})
+                else:
+                    row = summ.get("by_group_hypothesis", {}).get(rk, {})
+                cells_cols.append(_md_rate(row.get("pass_rate_ok")))
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        str(c["cell_id"]),
+                        _md_rate(c["sigma"]),
+                        _md_rate(c["delta"]),
+                        _md_rate(c["rho"]),
+                        str(c["n_target"]),
+                        f"{c['n_ok']}/{c['n_unreached']}",
+                    ]
+                    + cells_cols
+                )
+                + " |"
+            )
+    lines.append("")
+
+    lines.append("## Table 3 H1 intersection–union components")
+    if not cells:
+        lines.append("_No cells in input._")
+    else:
+        lines.append(
+            "| cell | group | cond_a_true/n_ok | cond_b_true/n_ok | "
+            "median delay_reduction | median burden_cut_b |"
+        )
+        lines.append("|---|---|---|---|---|---|")
+        for c in cells:
+            summ = c["summary"]["by_group_hypothesis"]
+            for g in _GROUPS:
+                row = summ.get(f"{g}/H1", {})
+                lines.append(
+                    "| "
+                    + " | ".join(
+                        [
+                            str(c["cell_id"]),
+                            g,
+                            f"{row.get('cond_a_true', 0)}/{c['n_ok']}",
+                            f"{row.get('cond_b_true', 0)}/{c['n_ok']}",
+                            _md_rate(row.get("median_delay_reduction")),
+                            _md_rate(row.get("median_burden_cut_b")),
+                        ]
+                    )
+                    + " |"
+                )
+    lines.append("")
+
+    lines.append("## Table 4 Calibration (δ = 0)")
+    if not null_cells:
+        lines.append("_No δ = 0 cells in input._")
+    else:
+        lines.append(
+            "| cell | row | median_raw_p | share_raw_p_lt_alpha | "
+            "share_holm_p_lt_alpha | median_honest_n | median_window_years |"
+        )
+        lines.append("|---|---|---|---|---|---|---|")
+        for c in null_cells:
+            summ = c["summary"]["by_group_hypothesis"]
+            for rk in [f"{g}/{h}" for g in _GROUPS for h in _HYPOTHESES]:
+                row = summ.get(rk, {})
+                lines.append(
+                    "| "
+                    + " | ".join(
+                        [
+                            str(c["cell_id"]),
+                            rk,
+                            _md_rate(row.get("median_raw_p")),
+                            _md_rate(row.get("share_raw_p_lt_alpha")),
+                            _md_rate(row.get("share_holm_p_lt_alpha")),
+                            _md_rate(row.get("median_honest_n")),
+                            _md_rate(row.get("median_window_years")),
+                        ]
+                    )
+                    + " |"
+                )
+    path.write_text("\n".join(lines) + "\n")
+
+
+def _cmd_summary(argv: Sequence[str]) -> int:
+    import argparse
+
+    p = argparse.ArgumentParser()
+    p.add_argument("--in", dest="in_paths", action="append", required=True)
+    p.add_argument("--json", dest="json_out", required=True)
+    p.add_argument("--md", dest="md_out", required=True)
+    p.add_argument("--alpha", type=float, default=0.025)
+    args = p.parse_args(list(argv))
+    try:
+        by_cell, stats = load_sim_records(args.in_paths)
+        cells = summarize_records(by_cell)
+        try:
+            size_result: dict = size_check(cells, alpha=args.alpha)
+        except ValueError as exc:
+            size_result = {"error": str(exc)}
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    payload = {"stats": stats, "cells": cells, "size": size_result}
+    json_path = Path(args.json_out)
+    json_path.write_text(json.dumps(payload, indent=2) + "\n")
+    _write_summary_md(Path(args.md_out), stats, cells, size_result, args.in_paths)
     return 0
 
 
@@ -631,6 +1083,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return _cmd_grid(argv[1:])
     if cmd == "size":
         return _cmd_size(argv[1:])
+    if cmd == "summary":
+        return _cmd_summary(argv[1:])
     return 2
 
 
