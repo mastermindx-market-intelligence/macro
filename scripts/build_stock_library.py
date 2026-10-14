@@ -1671,8 +1671,80 @@ def _verify_native_assessment_pair(assessment, projection, *, candidate, source_
         refuse("native projection does not carry exactly this candidate's episode row")
 
 
+def _verified_native_owner_read(snapshot, *, candidate, source_key, source_receipt):
+    """One singular genuine owner read, verified per binding from this side.
+
+    The original singular consumption: one ``build_native_factual_assessment_result``
+    read for this exact candidate source key/receipt, consumed only through its
+    ``verified_pair()`` and re-checked by ``_verify_native_assessment_pair``.
+    Owner refusal leaves the candidate binding available and the assessment
+    typed unavailable - no receipt is ever fabricated.
+    """
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_result,
+    )
+    try:
+        owner_result = build_native_factual_assessment_result(
+            snapshot, candidate_source_event_id=source_key,
+            candidate_source_receipt=source_receipt)
+        assessment, projection = owner_result.verified_pair()
+        _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                       source_key=source_key, source_receipt=source_receipt)
+        return assessment, ()
+    except _NativeAssessmentBindingRefused:
+        return None, ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
+    except (CandidateStateContractError, OSError, ValueError, TypeError):
+        return None, ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+
+
+def _batch_verified_native_owner_reads(snapshot, deferred):
+    """Resolve every deferred eligible binding through ONE plural native request.
+
+    A single available binding keeps the existing singular owner path. Several
+    bindings invoke ``build_native_factual_assessment_results`` once, in exact
+    row order, and every genuine result is verified per binding from this side.
+    Per-binding refusal maps exactly to ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE
+    and a cross-bound pair to ASSESSMENT_NATIVE_BINDING_UNAVAILABLE; a
+    generation-wide plural refusal exposes no partial batch - every deferred
+    binding stays typed unavailable, and the caller's final raw/UCV/HEAD
+    producer guards still bracket the whole read.
+    """
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_results,
+    )
+    if len(deferred) == 1:
+        _slot, _item, candidate, source_key, source_receipt = deferred[0]
+        return [_verified_native_owner_read(snapshot, candidate=candidate,
+                                            source_key=source_key,
+                                            source_receipt=source_receipt)]
+    bindings = tuple((source_key, source_receipt)
+                     for _slot, _item, _candidate, source_key, source_receipt in deferred)
+    try:
+        results = build_native_factual_assessment_results(snapshot, bindings=bindings)
+    except (CandidateStateContractError, OSError, ValueError, TypeError):
+        return [(None, ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",))
+                for _ in deferred]
+    resolved = []
+    for (_slot, _item, candidate, source_key, source_receipt), result in zip(
+            deferred, results, strict=True):
+        if result is None:
+            resolved.append((None, ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)))
+            continue
+        try:
+            assessment, projection = result.verified_pair()
+            _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                           source_key=source_key, source_receipt=source_receipt)
+            resolved.append((assessment, ()))
+        except _NativeAssessmentBindingRefused:
+            resolved.append((None, ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)))
+        except (CandidateStateContractError, OSError, ValueError, TypeError):
+            resolved.append((None, ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)))
+    return resolved
+
+
 def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
-                                    source_rows, generated_at, relation_details=None):
+                                    source_rows, generated_at, relation_details=None,
+                                    native_batch=False):
     """Private byte-captured original-producer native source resolver.
 
     The one shared resolution core behind the Today projection read and the
@@ -1686,12 +1758,14 @@ def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
     receipt minting, no caller attestation and no new selector ever enter
     here, and ``relation_details`` (used only by callers that need the original
     relation facts beside the Today-shaped result) never alters the returned
-    resolution.
+    resolution. With ``native_batch=True`` (Today only) the per-candidate
+    owner reads are deferred: eligible bindings are collected in exact row
+    order and resolved through one plural native request after the whole
+    captured board is resolved, with every genuine result still verified per
+    binding as before. The fixed Plan shared core keeps the original
+    singular mode by default.
     """
     from hashlib import sha256
-    from engine.prophet_candidate_state import (
-        CandidateStateContractError, build_native_factual_assessment_result,
-    )
     from engine.us_candidate_episode import canonical_json
 
     if "sha256:" + sha256(raw).hexdigest() != binding["source_sha256"]:
@@ -1701,6 +1775,9 @@ def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
     # Aligned with `candidates`: the candidate input plus the assessment of the
     # ONE genuine owner read bound to it, composed only after the final guards.
     native_reads = []
+    # Today batch mode only: eligible bindings deferred out of the resolution
+    # loop as (native_reads slot, item, candidate, source key, source receipt).
+    deferred = []
     for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
         item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
                 "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
@@ -1749,35 +1826,34 @@ def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
                              "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
                              "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
                              "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
-                # One genuine native owner read for this exact binding. The owner
-                # revalidates the snapshot against native disk and derives the
-                # original identity/session itself; the consumer only ever takes
-                # its verified_pair(), never a reprojection or caller-supplied
-                # JSON. Owner refusal leaves the candidate binding available and
-                # the assessment typed unavailable — no receipt is fabricated.
-                assessment = None
-                assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
-                try:
-                    owner_result = build_native_factual_assessment_result(
-                        snapshot, candidate_source_event_id=source_key,
-                        candidate_source_receipt=source_receipt)
-                    assessment, projection = owner_result.verified_pair()
-                    _verify_native_assessment_pair(assessment, projection, candidate=candidate,
-                                                   source_key=source_key, source_receipt=source_receipt)
-                    assessment_codes = ()
-                except _NativeAssessmentBindingRefused:
-                    assessment = None
-                    assessment_codes = ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
-                except (CandidateStateContractError, OSError, ValueError, TypeError):
-                    assessment = None
-                    assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
                 provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
                               "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
                               "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
                                             for event in active_relations]}
-                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
-                            reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
-                native_reads.append((candidate, assessment))
+                if native_batch:
+                    # Today batch mode: defer the owner read. The eligible
+                    # binding is collected in exact row order and resolved
+                    # through one plural native request below; candidate
+                    # availability above never depends on it.
+                    native_reads.append(None)
+                    deferred.append((len(native_reads) - 1, item, candidate,
+                                     source_key, source_receipt))
+                    item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None,
+                                native_provenance=provenance,
+                                reason_codes=[*_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                else:
+                    # One genuine native owner read for this exact binding. The owner
+                    # revalidates the snapshot against native disk and derives the
+                    # original identity/session itself; the consumer only ever takes
+                    # its verified_pair(), never a reprojection or caller-supplied
+                    # JSON. Owner refusal leaves the candidate binding available and
+                    # the assessment typed unavailable — no receipt is fabricated.
+                    assessment, assessment_codes = _verified_native_owner_read(
+                        snapshot, candidate=candidate, source_key=source_key,
+                        source_receipt=source_receipt)
+                    item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
+                                reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                    native_reads.append((candidate, assessment))
             if relation_details is not None:
                 episode_row = episodes[0] if len(episodes) == 1 else None
                 native_facts = {
@@ -1798,6 +1874,16 @@ def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
         candidates.append(item)
         if relation_details is not None:
             relation_details.append(native_facts)
+    if native_batch and deferred:
+        # One plural native request resolves every deferred eligible binding
+        # in exact row order, aligned with the captured rows or refused. With
+        # no eligible binding no native request is made at all, exactly as the
+        # original singular mode never read the owner for an unavailable row.
+        resolved = _batch_verified_native_owner_reads(snapshot, deferred)
+        for (slot, item, candidate, _source_key, _source_receipt), (assessment, codes) in zip(
+                deferred, resolved, strict=True):
+            native_reads[slot] = (candidate, assessment)
+            item["reason_codes"] = [*codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
     return candidates, native_reads
 
 
@@ -1977,7 +2063,7 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
         return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
     candidates, native_reads = _today_native_source_candidates(
         raw, binding=binding, doc=doc, generation=generation, snapshot=snapshot,
-        source_rows=source_rows, generated_at=generated_at)
+        source_rows=source_rows, generated_at=generated_at, native_batch=True)
     try:
         if source_path.read_bytes() != raw:
             return unavailable("SOURCE_SNAPSHOT_CHANGED")
