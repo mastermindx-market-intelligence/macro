@@ -2320,6 +2320,47 @@ def test_emit_result_backstop_withholds_prior_side_contradiction() -> None:
     assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
 
 
+def test_emit_result_backstop_withholds_row_without_current_envelope() -> None:
+    """W15-F-G: the backstop must still withhold a row with NO current envelope.
+
+    On ``main`` (HEAD^ of #9343) the trigger read the CURRENT side's
+    ``display_quantum`` through ``source.get("display_quantum") if
+    isinstance(source, Mapping) else None``, so an absent
+    ``current_period_fact`` compared as ``None`` against
+    ``_STATED_DEFINITION_QUANTUM`` and the row was withheld. #9343 swapped
+    that read for ``_envelope_side_contradicts(...)``, which returns False
+    for a non-Mapping side -- the row then published through
+    ``_emit_result``. That is a loosening: a backstop must never be looser
+    than the one it replaces. This test pins the restored strictness.
+
+    The asymmetry with the predicate is deliberate and pinned here too:
+    ``_stated_definition_contradicted`` treats an absent side as
+    non-contradicting (it never withheld this row), while the ``_emit_result``
+    backstop withholds a row that carries no current envelope at all. An
+    absent PRIOR side stays non-contradicting -- HEAD^ never read the prior
+    side.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "prior_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+    }
+    assert "current_period_fact" not in row
+    assert _stated_definition_contradicted(row) is False, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] is None, emitted
+    assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
+
+
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
     """The golden case, untouched."""
 
