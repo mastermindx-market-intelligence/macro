@@ -111,6 +111,44 @@ def test_research_desk_prompt_forbids_republishing_the_source():
     assert "NEVER REPUBLISH SOURCE DOCUMENTS" in system
 
 
+@pytest.mark.parametrize("desk", ["research_desk", "research_note"])
+def test_research_coverage_does_not_claim_external_estimates_as_our_measurements(desk):
+    """The actual USDA slot labels our annotations first_party, not its forecasts.
+
+    Preserve that receipt contract without telling the writer that USDA's
+    crop forecasts are observations independently produced by Mastermind.
+    """
+    fact = {
+        "id": "vault_point_0", "tier": "first_party", "values": [],
+        "text": "USDA projects wheat ending stocks of 740 million bushels for 2026/27.",
+        "dated": "2026-10-09", "source_name": "Mastermind Research coverage of USDA",
+        "ref": "research_vault:usda-example",
+    }
+    slot = F.slot(desk=desk, as_of="2026-10-14", facts=[fact],
+                  primary_source={"kind": "first_party", "name": "Mastermind Research: USDA"},
+                  min_anchored_receipts=4)
+    system, user = W.build_prompt(slot, F.config())
+    trusted = user.split("[BEGIN UNTRUSTED EVIDENCE DATA")[0]
+    assert "This is our own measurement" not in trusted
+    assert "coverage of an external report" in trusted
+    assert "do not turn the report author's estimates into our own measurements" in trusted
+    assert "Retain the report author's attribution" in system
+    assert "MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]" in user
+    assert fact["text"] in user and "(dated 2026-10-09)" in user
+    assert "[first_party]" in user
+
+
+@pytest.mark.parametrize("desk", ["research_desk", "research_note"])
+def test_research_contract_allows_an_explicit_measurement_gap(desk):
+    """An equity gamma score cannot confirm or refute a crop forecast."""
+    system, user = W.build_prompt(F.slot(desk=desk), F.config())
+    assert "where they agree, where they do not" not in system
+    assert "If our data cannot test the report, say so" in system
+    assert "Do not infer agreement or disagreement from unrelated market context" in system
+    assert "same subject and measurement" in system
+    assert "Do not pad unrelated measurements into a story" in user
+
+
 def test_retry_prompt_names_the_specific_failures():
     _system, user = W.build_prompt(
         F.slot(), F.config(), attempt=1,

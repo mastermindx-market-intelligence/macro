@@ -168,6 +168,24 @@ assert '[BEGIN UNTRUSTED EVIDENCE DATA' in user
 for terms in V._copywriter_lexicons():
     assert all(term in flat for term in terms)
 controls.append('writer-first-party-floor-and-shared-lexicons-with-trusted-boundary')
+for desk in ('research_desk', 'research_note'):
+    fact = {'id': 'vault_point_0', 'ref': 'research_vault:usda-fixture',
+            'tier': 'first_party', 'values': [], 'dated': '2026-10-09',
+            'text': 'USDA projects 740 million bushels for 2026/27.',
+            'source_name': 'Mastermind Research coverage of USDA'}
+    slot = F.slot(desk=desk, facts=[fact], as_of='2026-10-14', min_anchored_receipts=4)
+    original_slot = copy.deepcopy(slot)
+    system, user = W.build_prompt(slot, cfg)
+    trusted = user.split('[BEGIN UNTRUSTED EVIDENCE DATA')[0]
+    assert 'This is our own measurement' not in trusted
+    assert 'coverage of an external report' in trusted
+    assert "do not turn the report author's estimates into our own measurements" in trusted
+    assert 'If our data cannot test the report, say so' in system
+    assert 'Do not infer agreement or disagreement from unrelated market context' in system
+    assert fact['text'] in user and '(dated 2026-10-09)' in user
+    assert 'MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]' in user
+    assert slot == original_slot
+    controls.append(desk + '-external-estimate-attribution-and-measurement-gap')
 assert before == snapshot() and before_head == head()
 print(json.dumps({'accepted':True,'head':before_head,'runtime_root':str(root),
                   'execution_location':'installed_vps' if root == Path('/opt/macro') else 'local_source',

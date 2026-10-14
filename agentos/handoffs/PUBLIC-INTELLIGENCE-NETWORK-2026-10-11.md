@@ -2910,3 +2910,8 @@ remain unqualified. No source upload, generation, staging or publication. Exact
 proof is source_qualification_20261014_1443/. Once-read9209 remainsa18ec982/armed;
 controllers running/pending, existing renderer38558417917 still running. No new
 release/install claim. Application8eb467 and accepted checks unchanged;0/10.
+
+
+## October14 15:07 direct continuation
+
+Installed918fad1e naturally selects USDA slot593acfb87c11, ranked2/firstunheld among200reports.524readfiles/head stable; dedicated report page still absent. Four red prompt regressions exposed misattribution of USDA forecasts and forced cross-market agreement. Root Research-only correction passes432tests/1existing sparse skip; three Brief/earnings prompts byte-identical,12integritygroups pass locally, other21groups reusable. No writer call or staged USDA draft. Active manifest is not yet rebound. Sole Fabric slot-review mmx-press-usda-slot-review-20261014-001 ACTIVE_OR_WAITING; consume exact result, no replay. Original8f705/twohelddrafts/3accounting hashes unchanged. Once-read9209a18ec982 OPEN/armed;controller38586265876 deferred8/cap8;incumbent38558417917renderer active. Next review consumption, correctedsource binding, normalpublicpage acceptance, then original-history singleattemptpreflight. Protected9209install precedes samefollow-onPR/install33groups. Evidence/commands in usda_research_intake_phase/planner_preflight_20261014_1507.

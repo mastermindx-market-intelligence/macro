@@ -1,0 +1,208 @@
+{
+  "observed_at": "2026-10-14T15:13:46.839471+00:00",
+  "installed_head": "918fad1eb52bd62731e9c3aa85734644f739ebf4",
+  "source_id": "usda-2026-10-09-wasde-676",
+  "published_at": "2026-10-09T16:00:00Z",
+  "eligible_count": 200,
+  "ranked_position": 2,
+  "unheld_position": 1,
+  "candidate_pool": 8,
+  "blocked_target": false,
+  "held_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-4sbw9xdvesv-09647d",
+    "research_vault:marketdesk-8inwlunucuj-8950ab",
+    "research_vault:marketdesk-arbvfsvswas-96701d",
+    "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-ioh3cizfpog-b49a47",
+    "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-uc6giunqscq-05fcee",
+    "research_vault:marketdesk-xyyijkslpal-b997fb"
+  ],
+  "triage": {
+    "schema": "press.research_triage.v1",
+    "scoring_version": "w2r.1",
+    "as_of": "2026-10-14",
+    "ts": "2026-10-14T15:13:47Z",
+    "report_id": "usda-2026-10-09-wasde-676",
+    "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+    "institution": "U.S. Department of Agriculture",
+    "published_at": "2026-10-09",
+    "status": "skipped",
+    "drop_reason": null,
+    "drop_detail": null,
+    "tier": "none",
+    "rank": 2,
+    "w_score": 0.573867,
+    "w_score_pre_veto": 0.573867,
+    "components": {
+      "institution_tier": 0.5,
+      "cluster_density": 0.0,
+      "relevance": 0.666667,
+      "extraction_quality": 0.93,
+      "attention_potential": 0.8,
+      "novelty": 0.5
+    },
+    "contributions": {
+      "institution_tier": 0.08,
+      "cluster_density": 0.0,
+      "relevance": 0.146667,
+      "extraction_quality": 0.2232,
+      "attention_potential": 0.064,
+      "novelty": 0.06
+    },
+    "component_detail": {
+      "institution_tier": {
+        "state": "unranked",
+        "institution": "u_s_department_of_agriculture",
+        "note": "institution not in the tier register \u2014 neutral, NOT a measurement"
+      },
+      "cluster_density": {
+        "state": "measured-alone",
+        "institutions": 1,
+        "institutions_full": 4,
+        "story_id": "st-720ee43e90e2f33c",
+        "members": 1,
+        "note": "clustered and genuinely alone on its theme \u2014 this 0 IS a measurement, unlike the absent states"
+      },
+      "relevance": {
+        "state": "no-report-tickers",
+        "note": "this report carries no tickers, so the ticker half is unmeasurable and the topic half is renormalized to carry the component \u2014 NOT a zero ticker score",
+        "renormalized": true,
+        "w_topic_effective": 1.0,
+        "topic_hits": [
+          "demand",
+          "supply"
+        ],
+        "sources": {
+          "movers": {
+            "state": "observed",
+            "tickers": 16
+          },
+          "chronicle": {
+            "state": "observed",
+            "events": 37
+          },
+          "watchlist": {
+            "state": "observed",
+            "assets": 1
+          }
+        }
+      },
+      "extraction_quality": {
+        "state": "observed",
+        "points": 6,
+        "mean_words": 24.0,
+        "numeric_share": 1.0,
+        "pages": 40
+      },
+      "attention_potential": {
+        "state": "observed",
+        "shape": 1.0,
+        "top_pick": false,
+        "numbers": 2,
+        "entities": 6,
+        "length_band": "medium",
+        "contract": "ranking input only \u2014 never a framing instruction to the writer"
+      },
+      "novelty": {
+        "state": "no-peers",
+        "window_days": 30,
+        "note": "no published estate in the window \u2014 neutral value, NOT a measurement of novelty"
+      }
+    },
+    "veto": null,
+    "score_source": "planner-recomputed",
+    "datasketch_present": true
+  },
+  "first_unheld": [
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "published_at": "2026-10-09T16:00:00Z"
+    },
+    {
+      "id": "marketdesk-0ows1rkwgz6-1d9feb",
+      "title": "Shennan Circuits (002916.SZ) mSAP PCB and IC substrate capacity expansion, riding on strong AI demand; TP up to Rmb511; Buy",
+      "published_at": "2026-09-23T14:38:09Z"
+    },
+    {
+      "id": "marketdesk-m04zrgkxyce-22a813",
+      "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+      "published_at": "2026-09-23T18:35:18Z"
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "published_at": "2026-10-10T03:44:06Z"
+    },
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "published_at": "2026-09-23T14:39:45Z"
+    },
+    {
+      "id": "marketdesk-vduxjun5diu-38254c",
+      "title": "Wm weekly market view will earnings resolve the bond equity split 09 october 2026",
+      "published_at": "2026-10-10T03:10:55Z"
+    },
+    {
+      "id": "marketdesk-nkdy4yrxhjc-c2fe94",
+      "title": "Global Weekly Kickstart Earnings Season Arrives with a High Bar",
+      "published_at": "2026-10-12T14:12:24Z"
+    },
+    {
+      "id": "marketdesk-s8rnoottqe9-6727c8",
+      "title": "Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
+      "published_at": "2026-10-12T14:13:19Z"
+    }
+  ],
+  "selected_slots": [
+    {
+      "id": "press-research_desk-2026-10-14-593acfb87c11",
+      "sources": [
+        "research_vault:usda-2026-10-09-wasde-676"
+      ]
+    }
+  ],
+  "cutover": false,
+  "writer_calls": 0,
+  "runtime_writes": 0,
+  "publication_approved": false,
+  "changed_inputs": [],
+  "stable_installed_head": true,
+  "head_after": "918fad1eb52bd62731e9c3aa85734644f739ebf4",
+  "read_file_count": 524,
+  "retained_raw_sha256": "6cbc1bf1d96afda16ccc81341a1eae8379041b8dae0dcaa3ae89c98651247e46",
+  "input_sha256": {
+    "engine/press/__pycache__/__init__.cpython-312.pyc": "86019209270468a1c4aba9e30dbed3eecd95536ab4c83356a988f8fc62d3a66e",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+    "engine/press/__pycache__/validators.cpython-312.pyc": "897cfe9865950362440ff709fbabfd667d6493bc2ffa9e2bd8aa1b224dbb73fe",
+    "engine/press/validators.py": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "data/research_vault/catalog.json": "a984c711fedfe389168bc4828cd38ba2c21098d71fb3b87478a6b7e8a4abb1db",
+    "engine/press/research_triage.py": "18b009e7792a85fc6489da26a87e6deda241e90d19c171b5a5b02d973d651861",
+    "site/marketdata/sp500_heatmap.json": "14c7713b23faf128c08838158a4ba810867cc48d6059539e0c3fb8f63169331b",
+    "site/marketdata/themes_heatmap.json": "1782b2f26e8d087e9ac6c351147dd7a45b768f07a27a906535715afb285c68b5",
+    "data/marketing/hot_tape_pack.json": "75a5e773bcfdd7bf014556ccb2356916ca71bd1b648e62f26e3ef52aaeb269db",
+    "data/chronicle/events.jsonl": "218028927f3bd1607843bf2b170be83b4235a8b1c83ced272da062aee0b7b43b",
+    "data/alerts/watchlist_alerts.jsonl": "43612e8bf84be38038b1e88321579ee2b48758532dca191f1adaceec0ef02df6",
+    "data/press/published.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/market_state/latest.json": "462b7b7cebc50b09f672ea1f130d934494fefb65e740a9ad0076b87e71d40537",
+    "data/gex/latest.json": "37d95d486f459ff9d2719c37b1da6c29480d190a5cad9589b28bafbd4b556c54",
+    "site/basketdata/breadth_split.json": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+    "site/basketdata/fear_greed.json": "5fe89433315763cea04226baf34523ebf627cd3875d88a24a88115afb77acb51",
+    "data/risk_radar/forward_log.jsonl": "240c202431cc160ca8ec53ec65125c2f9d858597bea60e416a91f01dea55017d"
+  }
+}

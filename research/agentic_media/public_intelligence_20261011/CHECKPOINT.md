@@ -1,3 +1,37 @@
+## 2026-10-14 15:07 direct continuation — real USDA selection and attribution repair
+
+The installed planner at stable918fad1eb52bd62731e9c3aa85734644f739ebf4 selects
+press-research_desk-2026-10-14-593acfb87c11 from200eligible reports. USDA ranks2,
+first after the existing held refs; candidate_pool8, scores/cadence/clocks untouched.
+Read-only inspector tracked524files and verified unchanged inputs/HEAD. The source
+remains October9 Research, not Brief or issuer evidence. Same installedHEAD still
+has no dedicated page in site/site.served; PENDING_INCUMBENT_RENDER. Earlier
+browser client refusal remains unretried; inventory finds no retained report tab.
+
+Actual selected context exposed Research prompt misattribution: it called USDA's
+forecasts our own measurement and demanded a comparison with unrelated equity
+indicators. Four regression cases failed. Root implemented Research-only attribution
+and evidence-gap wording without changing receipt tiers, floors, facts, dates or
+source ownership.432affected tests pass/1existing sparse skip. Brief/externalBrief/
+admittedearnings prompts are byte-identical. Expanded integrity probe12groups PASS
+locally, wrong writer hash refuses before fixture execution. Other21accepted portable
+groups unchanged. Sourcewriter c8027347; active bundle not yet rebound pending review.
+
+Fabric mmx-press-usda-slot-review-20261014-001 is the sole selected-slot review,
+controller ACTIVE_OR_WAITING with launch/lease retained. No result or verdict yet;
+consume sameid, no retry/replacement. This distinct context review does not retry
+USDA sidecar refusal or issuer-review refusal. Original runtime8f705/twohelddrafts
+and all3dirty accounting hashes remain exact. No provider/staging/source upload.
+
+Once-read9209 OPEN/armed a18ec982; oldgreen stale. Completedcontroller38586265876
+reports8proofs/cap8,0slots; current38586600906 running. Existingrenderer38558417917
+still in page render,38553964455queued. No newobserver/CI/manualrefresh/dispatch.
+Next consume retained review and bind tested correction, then incumbentpublicpage
+and original-history singleattempt preflight. Consume protected9209landing/install
+using actualmergeSHA/normalupdater, then SAME follow-onPR/install with33groups.
+Publication/cutoverfalse,0/10; all other holds/refusals/unknown effects preserved.
+Evidence: usda_research_intake_phase/planner_preflight_20261014_1507/.
+
 ## 2026-10-14 14:43 wake — new OCC event qualified as a lead, not a writer slot
 
 The supported OCC feed added NR2026-90 at2026-10-14T11:15:00Z: today's debanking

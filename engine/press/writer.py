@@ -406,17 +406,21 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     # the word budget and the model tier come from the slot, not from a second
     # prose contract. Two contracts for one beat is how two voices appear on one
     # masthead.
-    if desk in ("research_desk", "research_note"):
+    research_desk = desk in ("research_desk", "research_note")
+    if research_desk:
         contract = (
             "YOU ARE: the Research Desk of Mastermind Research.\n"
             "THE JOB: single-report commentary. One institutional research note "
-            "is on the table. Restate its substance IN OUR WORDS, then say what "
-            "our own measurements make of it — where they agree, where they do "
-            "not, and what would settle it.\n"
+            "is on the table. Restate its substance IN OUR WORDS. "
+            "Retain the report author's attribution and distinguish its "
+            "estimates from our independent measurements. Compare only where "
+            "SOURCE FACTS support the same subject and measurement. If our "
+            "data cannot test the report, say so. Do not infer agreement or "
+            "disagreement from unrelated market context.\n"
             "WE NEVER REPUBLISH SOURCE DOCUMENTS. The reader gets our reading of "
             "the report and a link to our coverage page, never the report.\n"
-            "SHAPE: what the desk argued / what our data says / what would change "
-            "the picture.\n"
+            "SHAPE: what the report says / what relevant own evidence can and "
+            "cannot test / what evidence would change the assessment.\n"
         )
     else:
         contract = (
@@ -524,6 +528,18 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         parts.append(f"  url:  {primary.get('url')}")
         parts.append("LINKING: the primary source URL above, plus any URL under "
                      "LINKING below.")
+    elif research_desk:
+        parts.append(
+            "PRIMARY SOURCE — FIRST-PARTY COVERAGE. This is our coverage of an "
+            "external report. Attribute its forecasts and findings to the "
+            "report author; do not turn the report author's estimates into our "
+            "own measurements. A [first_party] receipt tag on our coverage "
+            "does not change who produced the underlying measurement. "
+            "Keep independently produced Mastermind measurements distinct, "
+            "with their own subjects and dates. Carry dated receipts inline "
+            "and link only the allowlisted coverage page."
+        )
+        parts.append(f"  desk: {primary.get('name')}")
     else:
         parts.append("PRIMARY SOURCE — FIRST PARTY. This is our own measurement, "
                      "so there is nothing to cite outward. Name the desk in "
