@@ -202,18 +202,12 @@ def test_m6d_seal_full_check__load_s1_build_seal_2(monkeypatch) -> None:
     be ignored and the real S1 builder loaded."""
     fake = types.ModuleType(S1_BUILD_SEAL_MODULE)
     fake.__file__ = "/elsewhere/event_response/build_seal.py"
+    # setitem restores the pre-test entry (or its absence) at teardown, even
+    # after the loader replaces the fake with the real builder.
     monkeypatch.setitem(sys.modules, S1_BUILD_SEAL_MODULE, fake)
-    saved_path = list(sys.path)
-    saved_mod = sys.modules.get(S1_BUILD_SEAL_MODULE)
-    sys.path.insert(0, str(ROOT / "research" / "single_name_intelligence" / "residual"))
-    try:
-        mod = sfc._load_s1_build_seal(ROOT)
-    finally:
-        sys.path[:] = saved_path
-        if saved_mod is None:
-            sys.modules.pop(S1_BUILD_SEAL_MODULE, None)
-        else:
-            sys.modules[S1_BUILD_SEAL_MODULE] = saved_mod
+    monkeypatch.syspath_prepend(
+        str(ROOT / "research" / "single_name_intelligence" / "residual"))
+    mod = sfc._load_s1_build_seal(ROOT)
     assert mod is not fake
     assert mod.__file__ == str(
         (ROOT / "research" / "single_name_intelligence" / "residual"
