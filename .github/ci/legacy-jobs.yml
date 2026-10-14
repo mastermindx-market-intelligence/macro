@@ -29479,6 +29479,11 @@ jobs:
       # segment/denominator pair is one of the two synthetic pairs.
       - "engine/fundamental_forensics/industrials_denominator_guard.py"
       - "tests/test_industrials_denominator_guard.py"
+      # W10-A: certified-comparison enrollment. The stated cell end and the
+      # shared fiscal label reach the certified record beside the QUOTED
+      # derive_result_cash dict; neither owner is edited.
+      - "engine/company_intelligence/industrials_certified_enrollment.py"
+      - "tests/test_industrials_certified_enrollment.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -29496,7 +29501,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py -q
 
   house-law-registry-code:
     if: ${{ false }}
