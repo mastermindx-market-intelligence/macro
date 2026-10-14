@@ -606,6 +606,16 @@ def _bridge_sep_vs_market(
     return "basis_mismatch:reference_end"
 
 
+def _bridge_cpi_month_vs_breakeven(
+    left: QualifiedObservation, right: QualifiedObservation
+) -> Optional[str]:
+    """CPI month print (left) vs 10y inflation compensation (right): a monthly
+    print and a 10-year compensation horizon never share a reference basis, so
+    the refusal is structural (A13) and must not hinge on the data-dependent
+    ``reference_end`` equality a forged operand can satisfy."""
+    return "basis_mismatch:reference_end"
+
+
 def _under_zq_vs_midpoint(
     left: QualifiedObservation,
     right: QualifiedObservation,
@@ -698,6 +708,7 @@ def _compute_term_premium(left, right, rule, context, _mk) -> ComparisonResult:
 
 _BRIDGES = {
     "sep_vs_market_year_end.v1": _bridge_sep_vs_market,
+    "cpi_month_vs_breakeven_10y.v1": _bridge_cpi_month_vs_breakeven,
 }
 _UNDERIDENTIFIED = {
     "zq_month_vs_policy_midpoint.v1": _under_zq_vs_midpoint,
@@ -897,6 +908,15 @@ def _grid_step_pct(assumptions: PathAssumptions) -> float:
     return float(step) / 100.0 / 2.0
 
 
+def _grid_step_tags(assumptions: PathAssumptions) -> Tuple[str, ...]:
+    """Assumption tags naming the grid step actually used (additive F3: no
+    status ever depends on them). Mirrors _grid_step_pct's defaulting."""
+    defaulted = not assumptions.rate_step_bp
+    step_bp = 50.0 if defaulted else float(assumptions.rate_step_bp)
+    tags = ("rate_step_bp=%g" % step_bp,)
+    return tags + (("rate_step_defaulted",) if defaulted else ())
+
+
 def _paths_result(
     paths, best_bp, tol_pct, assumptions_used
 ) -> PathIdentification:
@@ -1059,14 +1079,15 @@ def solve_reference_average(
             PathStatus.MISSING_INPUTS, None, (), None, base_used, ("monthly_average",)
         )
 
-    inside = sorted({d for d in assumptions.effective_dates if start_iso <= d < end_iso})
+    inside = sorted({d for d in assumptions.effective_dates if start_iso <= d <= end_iso})
 
     if not assumptions.effective_dates:
         # nothing supplied: the average alone does not identify a path
         paths, best_bp = _grid_unknown_split(start, end, n_days, avg, assumptions, tol_pct)
         return _paths_result(
             paths, best_bp, tol_pct,
-            base_used + ("no_effective_date_supplied", "grid_enumeration"),
+            base_used + ("no_effective_date_supplied", "grid_enumeration")
+            + _grid_step_tags(assumptions),
         )
 
     if not inside:
@@ -1123,4 +1144,4 @@ def solve_reference_average(
         used = base_used + (
             "effective_dates=%s" % ",".join(inside), "grid_enumeration",
         )
-    return _paths_result(paths, best_bp, tol_pct, used)
+    return _paths_result(paths, best_bp, tol_pct, used + _grid_step_tags(assumptions))
