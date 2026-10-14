@@ -28468,6 +28468,19 @@ jobs:
       - "tests/test_industrials_financial_dossier.py"
       # IND-T05: edition selection and dossier comparison. Same exclusive job.
       - "tests/test_industrials_source_history.py"
+      # W6-A: stated cell end. A matcher tolerance must not rewrite it.
+      - "engine/company_intelligence/industrials_fiscal.py"
+      - "tests/test_industrials_fiscal_period.py"
+      # W6-B: native SourceDocument editions from the synthetic fixtures.
+      - "engine/company_intelligence/industrials_source_facts.py"
+      - "tests/test_industrials_source_facts.py"
+      # W8-A: stated fiscal label on the native document. Tolerance does not
+      # rewrite the cell end.
+      - "engine/company_intelligence/industrials_period_enrollment.py"
+      - "tests/test_industrials_period_enrollment.py"
+      # W8-B: hold the source-edition section until a selector ruling.
+      - "engine/company_intelligence/industrials_edition_record.py"
+      - "tests/test_industrials_edition_record.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -28485,7 +28498,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py -q
 
   house-law-registry-code:
     if: ${{ false }}
