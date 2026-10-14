@@ -26409,6 +26409,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/rate_inflation_transmission.py"
+      - "engine/rates_command_basis.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime.py"
       - "engine/regime_label.py"
