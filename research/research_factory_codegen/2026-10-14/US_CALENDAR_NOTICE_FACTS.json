@@ -46,6 +46,35 @@
       "published_on": "2018-12-01",
       "read_method": "web tool current public primary page",
       "raw_bytes_retained": false
+    },
+    "sandy_sec": {
+      "read_method": "web tool current public primary PDF, before direct capture refusal",
+      "raw_bytes_retained": false,
+      "direct_capture": "HTTP403; not retried",
+      "source_author": "New York Stock Exchange LLC; notice published by SEC",
+      "url": "https://www.sec.gov/rules/sro/nyse/2012/34-68137.pdf",
+      "published_on": "2012-11-01",
+      "release": "34-68137",
+      "file_number": "SR-NYSE-2012-58",
+      "pages_1_based": [
+        2,
+        3
+      ],
+      "source_knowledge_limit": "Post-event confirmation; not advance knowledge of the closure."
+    },
+    "early_2012_2014_sec": {
+      "read_method": "web tool current public primary PDF, before direct capture refusal",
+      "raw_bytes_retained": false,
+      "direct_capture": "HTTP403; not retried",
+      "source_author": "New York Stock Exchange LLC; notice published by SEC",
+      "url": "https://www.sec.gov/rules/sro/nyse/2012/34-68243.pdf",
+      "published_on": "2012-11-15",
+      "release": "34-68243",
+      "file_number": "SR-NYSE-2012-62",
+      "pages_1_based": [
+        2
+      ],
+      "source_knowledge_limit": "Notice confirms an announced schedule; original announcement time is not established. Published after July 3, 2012."
     }
   },
   "years": {
@@ -264,11 +293,46 @@
   ],
   "limits": [
     "Current public notice facts do not authenticate original historical receipt times or prices.",
-    "2012Sandy primary NYSE notice not retrieved in this bounded pass; existing fallback remains unchanged.",
     "2020 release is superseded for2022/2023 by2021release adding Juneteenth.",
     "2018scheduledannualnotice supplemented by2018-12-01 Bush notice.",
     "No holdout labels, prices, collectors, hoststate, sourcecalendar or credentials accessed/mutated.",
     "Shared lib/exchange_holidays.py has incumbent CN extension inPR8721; sourcechanges not made by this evidence package.",
-    "DirectHTTPcapture403 preserved without retry; no sourceHTMLhash asserted."
-  ]
+    "DirectHTTPcapture403 preserved without retry; no sourceHTMLhash asserted.",
+    "NYSE-authored SEC notice34-68137 confirms2012Sandy closures retrospectively; original operational closure announcement not retained.",
+    "SEC notice34-68243 supports six early closes across2012-2013, not full annual calendars. 2010-2013 remain unqualified annual years.",
+    "Direct SEC PDF captures returned403; no retry or alternate downloader. Current web-tool reads predated capture attempts; no raw PDFhash claimed."
+  ],
+  "partial_year_facts": {
+    "2012": {
+      "annual_notice_read_complete": false,
+      "regular_weekday_closures_qualified": false,
+      "early_close_1300_ET": [
+        "2012-07-03",
+        "2012-11-23",
+        "2012-12-24"
+      ],
+      "early_close_source": "early_2012_2014_sec",
+      "date_derivation": "July 3 and December 24 explicit; day after Thanksgiving expanded using fourth Thursday of November.",
+      "extraordinary_closures": [
+        "2012-10-29",
+        "2012-10-30"
+      ],
+      "extraordinary_closures_source": "sandy_sec",
+      "absence_of_other_extraordinary_closures_proven": false
+    },
+    "2013": {
+      "annual_notice_read_complete": false,
+      "regular_weekday_closures_qualified": false,
+      "early_close_1300_ET": [
+        "2013-07-03",
+        "2013-11-29",
+        "2013-12-24"
+      ],
+      "early_close_source": "early_2012_2014_sec",
+      "date_derivation": "July 3 and December 24 explicit; day after Thanksgiving expanded using fourth Thursday of November.",
+      "extraordinary_closures": [],
+      "extraordinary_closures_source": null,
+      "absence_of_other_extraordinary_closures_proven": false
+    }
+  }
 }

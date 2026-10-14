@@ -57,3 +57,12 @@ G00 identifies `chriswong6031-creator` as administrator from Chris's supplied li
 Native Sol coordinators became interrupted/notLoaded and the supported same-child resume path did not recover them. Their completed returns remain preserved. Root uses the admitted M2 Fabric for useful bounded labor, consumes exact retained returns and owns review/integration; no active native hierarchy or idle Wake is claimed.
 
 Exact evidence root: `/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c`. `ROOT_CONTINUATION.json` and `PROGRAMME_EVIDENCE_FRONTIER.json` index original receipts and current obligations. Reuse accepted evidence until a material invalidator appears; do not restamp historical tests to successor source.
+
+
+### Retained review reconciliation and supplementary calendar facts — 2026-10-14 13:08 UTC
+
+The root Stop hook returned the already-consumed `rf-runtime-derived-review-01a1333c-v1` (6776 bytes, SHA256 `4535fbe76e87d6fedb4b0a1591b028ac65a6665246e9bf2fb679a0b4460120f6`). The exact installed-adapter read confirms the same incomplete review; prior rejection remains, with no relaunch or acceptance. The reconciliation receipt is `runtime-release/physical-qualification/ROOT_RUNTIME_DERIVED_REVIEW_HOOK_RECONCILIATION_20261014.json` under programme evidence.
+
+NYSE-authored SEC releases 34-68137 and 34-68243 now support the two 2012 Sandy closures and six early closes across 2012–2013. `US_CALENDAR_NOTICE_FACTS.json` separates these partial facts from the ten complete 2014–2023 annual tables. Complete annual coverage for 2010–2013 remains unqualified, and neither a historical receipt nor advance knowledge is asserted. Runtime calendar hashes and the prepared patch are unchanged. Direct PDF capture returned403 and was not retried; public web-tool reads had already supplied the primary evidence.
+
+The stalled continuity commit completed and was pushed as `233d5b2d88f482fdc4c240c8ccc0a09aa1896e4d`. This settles that save/push only, not host-wide storage health. The corrected-canary v2 recovery message still awaits the existing explicit messaging authorization; no v2 replay, artifact read or capacity message occurred.
