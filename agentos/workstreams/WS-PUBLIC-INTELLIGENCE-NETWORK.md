@@ -722,3 +722,12 @@ merge before that result, and no reviewed source qualifies for generation now.
 verified: source_qualification_20261014_0851/{release_observation.json,
 producer_settlement.json}; existing GitHub comment6107930181 compacted with a
 permanent link to its verbatim63176-character prior body at27244e867c8d.
+
+## October 14 09:15 — existing CVS acquisition route accepted
+
+Actual Chrome CVS dossier -> existing Terminal overlay selected CVS -> return
+to dossier passed. Installed site/site.served/public HTTP bytes match at stable
+40e860a4. Proof: research/agentic_media/public_intelligence_20261011/pathway_qualification_20261014_0912/.
+This is route proof only; no new article, first-party input admission, signup/follow
+write, or9209/follow-on installation.9288 has10passingpacks pluscontract at09:12,
+2packs pending. Existing controller/heartbeat continues; application8eb467 unchanged.

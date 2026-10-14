@@ -2369,3 +2369,34 @@ merge before that result, and no reviewed source qualifies for generation now.
 verified: source_qualification_20261014_0851/{release_observation.json,
 producer_settlement.json}; existing GitHub comment6107930181 compacted with a
 permanent link to its verbatim63176-character prior body at27244e867c8d.
+
+## 2026-10-14 09:15 UTC — candidate stock-to-Terminal path verified while repair CI runs
+
+PR9288 exact head d85258e89e0a remains OPEN. At09:12:29, ten CI packs and
+contract-delta passed; packs0/8 were running.9209 remains OPEN8f705cb3.
+The inactive pilot authority failure is nonbinding; no current exact-head green,
+protected landing or installation is claimed. The existing engine remains live,
+now at OIP PIT accrual. No repeat CI read, refresh or new observer/producer.
+
+Advanced the adjacent acquisition dependency using the actual existing CVS
+canonical dossier in Chrome. The dossier rendered; its Open CVS in Terminal
+link opened the existing dashboard overlay with sym=CVS, the exact dossier
+return URL and visible CVS Health chart. The Back to Macro Dashboard control
+returned to the same dossier and closed the overlay. No signup/follow mutation
+or new account was performed; private watchlist contents were not retained.
+
+Read-only VPS check at09:15:27 bound stable installed40e860a4b3f5531abb18da301cb388ca5761675e.
+CVS page bytes in site,site.served and publicHTTP200 match SHA256
+db8b8d70aa57bb1f161723818be54d062e3afee03bd63a7ed9174b0541907392.
+This accepts only the existing candidate dossier/navigation path. It does not
+admit the CVS event, qualify page measurements as first-party Press receipts,
+clear the deferred issuer review, verify input freshness, or install9209/follow-on.
+Dossier generated/as-of labels are not substituted for underlying event dates.
+
+verified: pathway_qualification_20261014_0912/{cvs_existing_pathway.json,
+release_observation.json}; six route/hash/return assertions pass. Accepted Press
+application8eb467112b83 and prior429tests/31groups remain unchanged. Publication
+and cutover false,credit0/10; all source holds and original uncertain effects
+remain. Next actionable release is existing9288CI/controller return, then
+admitted9209 release/install and the SAME reviewed follow-on. The existing
+heartbeat owns attention, not release authority; no human action is requested.
