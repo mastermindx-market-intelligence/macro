@@ -26120,6 +26120,7 @@ jobs:
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
+          tests/test_market_memory_identity_candidate.py
           tests/test_market_memory_identity_observation.py
           tests/test_market_memory_identity_store.py
           tests/test_market_memory_identity_observation_deploy.py
