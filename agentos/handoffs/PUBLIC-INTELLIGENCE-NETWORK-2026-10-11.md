@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - USDA canonical source and installed fulltext verified by inspect_usda_consumption.py; signed-in40-page browser viewer PASS. Dedicated report page absent. Consume normal render output without redispatch, then guarded Press preflight. Repair9334 is merged17cb5357 with all binding checks green; consume repaired-main controller-admitted9209 exact-head protected delivery, then SAME reviewed follow-on31groups.
+  - Consume admitted9209 refresh/CI/protected install, then SAME reviewed follow-on31groups. The19-control read-only report probe returns PENDING_INCUMBENT_RENDER at stable8a378df8 with12source hashes and USDA summary/excerpt exact. Existing38558417917 renders; no redispatch. Dedicated public page and browser acceptance remain pending; preserve prior client refusal and known-complete intake.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -2885,3 +2885,16 @@ installedHEAD; do not await/retry it. The three canonical git blobs for catalog,
 excerpts andResearch shell match installed SHA256s exactly. #9209 was not reread or
 mutated: its next gate is repaired-main baseline/controller admission and fresh
 exact-head proof, not permission to bypass stale proof.
+
+## Report installation acceptance, 2026-10-14 14:23 wake
+
+Nineteen isolated controls pass for the new portable read-only installed report
+probe. Actual14:34:54Z inspection at stable8a378df8 matches12renderer sources and
+accepted USDA summary/excerpt; both dedicated site/site.served pages remain absent.
+State PENDING_INCUMBENT_RENDER, not acceptance. Actual existing renderer38558417917
+owns job115849744718 and has been in page render since14:09:15; no redispatch.
+Controller38579268760 now defers stale9209 proof for11/cap8 capacity after repaired
+main17cb5357; head remainsa18ec982 OPEN/merge-on-green. No release mutation/extraCI.
+verified: CHECKPOINT.md and usda_research_intake_phase/report_install_20261014_1423/
+verification.json retain exact commands, controls, release/owner snapshots and
+installed proof. Publication/cutoverfalse,0/10; all holds/unknown effects persist.

@@ -1,3 +1,47 @@
+## 2026-10-14 14:23 wake — tested report-install acceptance and actual renderer custody
+
+Added portable stdlib-only inspect_usda_report_install.py plus discriminating
+verify_usda_report_install.py. Nineteen isolated controls PASS: exact accepted page,
+three missing-page pending cases, source/served mismatch, canonical/date/author,
+invented issuer, changed excerpt, wrong gate placement, lost projection qualifier,
+wrong acquisition path/paywall, private PDF link and stored input drift. The test
+harness prohibits network, processes and writes while the probe executes; every
+fixture and original input is unchanged. This extends acceptance tooling only;
+accepted application8eb467 and429tests+1real-data/31groups are unchanged.
+
+Actual installed probe at14:34:54Z returned PENDING_INCUMBENT_RENDER on stable
+8a378df82e56112d4c4ba6968ff0f8585245f758. All12reviewed renderer sources and the
+exact six-point summary/seven-paragraph excerpt match; catalog8e6d3e94 and
+excerpts74e95ace remain stable. Dedicated report HTML is absent in both site and
+site.served. No network/provider/staging/publication writes. This is not report
+installation or browser acceptance. The earlier authenticated40-page viewer proof
+remains scoped and reusable; the dedicated URL client-block is unretried.
+
+Once-read release14:23:25Z: #9209 OPEN/merge-on-green at
+ a18ec9825dd9756fcdc1421c466bb5c769a69883. Controller38579268760 completed14:22:27;
+its14:22:01 verdict is stale proof after17cb5357 check-definition changes, deferred
+at11indexed PR proofs/cap8 with0durable reservations/0slots. Repaired main is now
+accepted by that sweep; do not continue treating9334 as pending or create another
+repair. No manual refresh, release mutation, new CI or observer occurred.
+
+Renderer custody is concrete: engine-render38558417917/job115849744718 is running
+its existing resilient page-render step since14:09:15. render38551481257 completed
+14:06:56 from its earlier snapshot; render38553964455/job115898827884 is queued,
+and engine-render38575454593 remains pending. These normal owners pull current
+main; an old event SHA alone does not justify a duplicate renderer or dispatch.
+Consume their actual committed/installed output at the next fresh observation.
+
+verified: usda_research_intake_phase/report_install_20261014_1423 contains exact
+release/controller excerpt, owner/job snapshots,19controls, installed probe,
+source bindings and commands. Local fixture inputs remain private outside Git.
+Next: run the same read-only installed report probe after incumbent render output
+arrives; require REPORT_FILES_VERIFIED and preserve the browser refusal before
+claiming public acceptance or attempting Press. In parallel consume admitted9209
+refresh/new exact-headCI/protected landing and normal installation using actual
+mergeSHA/24sources/3pages/4probes, then SAME reviewed follow-on PR/install31groups.
+No source reupload/alias, producer replay, held-draft edit or ticker invention.
+Research retains October9/21-day scope; publication/cutoverfalse, D140/10.
+
 ## 2026-10-14 13:52 wake — USDA source consumed and authenticated viewer accepted
 
 The incumbent Research ingest38575926447 completed14:01:52Z. Read-only installed

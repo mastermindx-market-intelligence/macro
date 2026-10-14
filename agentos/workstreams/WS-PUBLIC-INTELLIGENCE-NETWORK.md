@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Repair9334 landed17cb5357; consume repaired-main baseline and controller-admitted9209 refresh/CI/protected install, then SAME follow-on31groups. USDA canonical source/fulltext and signed-in40-page viewer PASS; dedicated public report page absent. Consume normal render installation before Press single-attempt preflight; never reupload known-complete source. Preserve0of10publication gate.
+next_action: Consume controller-admitted9209 refresh after11proofs/cap8, then exact-head protected install and SAME follow-on31groups. Use tested inspect_usda_report_install.py after incumbent38558417917 render; all12sources and USDA inputs match but public report pages remain absent. Preserve browser refusal, known-complete intake and0of10publication gate.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
@@ -1218,3 +1218,16 @@ installedHEAD; do not await/retry it. The three canonical git blobs for catalog,
 excerpts andResearch shell match installed SHA256s exactly. #9209 was not reread or
 mutated: its next gate is repaired-main baseline/controller admission and fresh
 exact-head proof, not permission to bypass stale proof.
+
+## Report installation acceptance, 2026-10-14 14:23 wake
+
+Nineteen isolated controls pass for the new portable read-only installed report
+probe. Actual14:34:54Z inspection at stable8a378df8 matches12renderer sources and
+accepted USDA summary/excerpt; both dedicated site/site.served pages remain absent.
+State PENDING_INCUMBENT_RENDER, not acceptance. Actual existing renderer38558417917
+owns job115849744718 and has been in page render since14:09:15; no redispatch.
+Controller38579268760 now defers stale9209 proof for11/cap8 capacity after repaired
+main17cb5357; head remainsa18ec982 OPEN/merge-on-green. No release mutation/extraCI.
+verified: CHECKPOINT.md and usda_research_intake_phase/report_install_20261014_1423/
+verification.json retain exact commands, controls, release/owner snapshots and
+installed proof. Publication/cutoverfalse,0/10; all holds/unknown effects persist.
