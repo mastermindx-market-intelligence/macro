@@ -132,6 +132,19 @@ def test_semiconductor_names_are_the_shell_objects():
     assert semi.filter_interpretation_blocks is shell.filter_interpretation_blocks
     assert semi.correction_lineage is shell.correction_lineage
     assert semi.collapse_syndicated is shell.collapse_syndicated
+    assert semi.ResearchRefusal is shell.ResearchRefusal
+    assert semi.canonical_text is shell.canonical_text
+    assert semi.generation_fingerprint is shell.generation_fingerprint
+    assert semi.in_anchor_scope is shell.in_anchor_scope
+    assert semi.is_instant is shell.is_instant
+    assert semi.le is shell.le
+    assert semi.parse_clock is shell.parse_clock
+    assert semi.parse_day is shell.parse_day
+    assert semi.readable is shell.readable
+    assert semi.validate_cutoff_format is shell.validate_cutoff_format
+    assert semi.validate_pagination is shell.validate_pagination
+    assert semi.validate_replay_cutoffs is shell.validate_replay_cutoffs
+    assert semi.within is shell.within
 
 
 def test_shared_module_constants():

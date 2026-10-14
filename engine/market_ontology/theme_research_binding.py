@@ -21,7 +21,9 @@ byte. ``filter_interpretation_blocks`` is that composer's replay filter on
 interpretation blocks, same rule. ``review_excluded``,
 ``correction_lineage`` and ``collapse_syndicated`` were never on that
 composer: they are vertical-neutral forms of gates the Robotics and Nuclear
-verticals each carried. They land here unwired: nothing in this tree calls
+verticals carried on their own branches (see
+research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md).
+They land here unwired: nothing in this tree calls
 them except the shared-shell equality suite, which exercises them
 directly. The semiconductor module binds them in its alias block and never
 invokes them, so no semiconductor response byte depends on them.

@@ -51,6 +51,26 @@ SHELL_ALIAS_NAMES = (
     "_in_anchor_scope",
 )
 
+# Public names the semiconductor composer re-exports verbatim from the
+# shell import block (the block minus the MOVED names). A module-level
+# def/class with one of these names shadows the re-export unnoticed
+# unless this tuple pins it.
+SHELL_PUBLIC_REEXPORTS = (
+    "ResearchRefusal",
+    "canonical_text",
+    "generation_fingerprint",
+    "in_anchor_scope",
+    "is_instant",
+    "le",
+    "parse_clock",
+    "parse_day",
+    "readable",
+    "validate_cutoff_format",
+    "validate_pagination",
+    "validate_replay_cutoffs",
+    "within",
+)
+
 
 def _tree(path: Path) -> ast.AST:
     return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -121,7 +141,7 @@ def test_semiconductor_reexports_the_moved_names_from_the_shell():
         if node.module != "engine.market_ontology.theme_research_binding":
             continue
         imported.update(alias.name for alias in node.names)
-    missing = [name for name in MOVED if name not in imported]
+    missing = [name for name in MOVED + SHELL_PUBLIC_REEXPORTS if name not in imported]
     assert missing == []
 
 
@@ -139,4 +159,11 @@ def test_semiconductor_does_not_redefine_a_shell_alias():
         and node.name in SHELL_ALIAS_NAMES
         and node.lineno > aliases[node.name]
     ]
+    assert shadowed == []
+
+
+def test_semiconductor_does_not_define_a_shell_reexport():
+    """A def/class named like a shell re-export shadows the shared object."""
+    defined = _defined_names(_tree(SEMICONDUCTOR))
+    shadowed = sorted(defined & set(MOVED + SHELL_PUBLIC_REEXPORTS))
     assert shadowed == []
