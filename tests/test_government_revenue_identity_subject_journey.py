@@ -98,8 +98,8 @@ def test_chinese_real_page_source_context_has_no_award_metrics(tmp_path):
 
 
 def test_no_fake_latest_companies_or_new_subject_truth_store():
-    source = (ROOT / 'templates/government_revenue.html.j2').read_text()
-    start = source.index('  // Derived atlas subjects')
+    source = (ROOT / 'templates/government-revenue-page.js.j2').read_text()
+    start = source.index('  var identitySubjects=')
     end = source.index('  function buildRows()', start)
     body = source[start:end]
     for banned in ('COMPANIES.push', 'DATA.companies=', 'metrics:', 'BAESY', 'BA.LN', 'localStorage', '<style'):

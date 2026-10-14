@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import copy
 import json
+from pathlib import Path
+import shutil
 
 import pytest
 from fastapi import FastAPI, HTTPException
@@ -38,6 +40,12 @@ def _payload():
 def build_root(tmp_path, monkeypatch):
     templates = tmp_path / "templates"
     templates.mkdir()
+    canonical = Path(__file__).resolve().parents[1] / "templates"
+    for name in ("government-revenue-page.js.j2", "theme.css", "product-nav-icons.css",
+                 "government-revenue-sbir.css", "government-revenue-investor.css",
+                 "government-revenue-theme-context.css", "government-revenue-parity.css"):
+        shutil.copyfile(canonical / name, templates / name)
+    shutil.copytree(canonical / "fonts", templates / "fonts")
     (templates / "government_revenue.html.j2").write_text("<title>Government Revenue</title>")
     monkeypatch.setattr(builder, "build_payload", lambda **_kwargs: _payload())
     return tmp_path

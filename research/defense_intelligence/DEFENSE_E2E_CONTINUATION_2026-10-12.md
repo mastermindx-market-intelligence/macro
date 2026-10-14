@@ -1119,3 +1119,41 @@ Then continue the existing ordered merge/financial-CAS/natural-publication/insta
 chain. Original7175, Terminal778 custody, the second entitled subject and independent
 product acceptance remain open obligations. No production or financial-owner write
 has occurred in this recovery phase; the30-task/45-case mission is not complete.
+
+
+### October 14 downstream CI completion and original FMS delivery
+
+The downstream run after the failed hosted FMS step had stopped without a terminal
+result; it remains explicitly incomplete. A new run of the same57 declared suites
+returned1053 passed, one failed and39 passed subtests. The sole failure was the
+identity-source guard reading the former inline template; moving that guard to
+the actual page controller preserves all prohibited-store and issuer assertions,
+and its full10-test suite passes. The SBIR and asset-publication fixtures now
+supply the canonical required render assets; all25 checks pass without weakening
+the builder's missing-asset refusal. No product/data bytes changed in this slice.
+
+The installed adapter's original-delivery collector recovered the original
+`defense-fms-extracted-shell-tests-01a13300-a` worker's completed result, process
+proof and both hash-bound artifacts using its retained packet/log/support bindings.
+No worker was relaunched and no Fabric implementation or original operation was
+modified. The patch keeps all15 tests and both original byte ceilings. Parent
+review corrected a19-byte unmeasured invalidation call and added a guard against
+remaining unmeasured FMS wiring. All15 full-repository FMS tests and three deliberate
+negative controls pass; combined HTML/controller marginal cost is2791/8192bytes.
+Parent verdict is ACCEPTED_AFTER_PARENT_REPAIR. Fabric ledger acceptance is NOT
+recorded: the existing `accept` command refused the stale controller's nonterminal
+projection even though the independent collection has verified worker-terminal
+proof. Original controller/lease settlement remains unknown; no ledger rewrite.
+
+The same installed original-delivery path observed the original T0 capacity worker
+terminal rc1, but delivery refused `original_delivery_unconfirmed` with retry=false.
+No patch was recovered, no replacement was launched, and the separate committed
+consumer preparation remains unadopted. This is a new terminal-process observation,
+not evidence of lease settlement or a successful capacity implementation.
+
+Exact logs, original FMS return/patch, parent controls and adjudication are preserved
+in `e2e_20261011/v11_ci_completion/` with a byte index. PR9066 remains the same draft
+carrier at2779bad8673da8a9efb161456175512d68c0c2b0 before the next push; no labels or
+auto-merge are active. Next is the complete sealed candidate proof on these final
+repaired bytes, then the original exact-head CI and ordered release chain. The
+30-task/45-case product mission remains open; this checkpoint is not acceptance.
