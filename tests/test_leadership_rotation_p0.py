@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+import re
+import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -89,6 +92,49 @@ def _sim_record(
 
 def _write_jsonl(path: Path, records: list[dict]) -> None:
     path.write_text("\n".join(json.dumps(r) for r in records) + "\n")
+
+
+def _run_p0_summary(tmp_path: Path, records: list[dict]) -> tuple[Path, Path]:
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    p = tmp_path / "in.jsonl"
+    _write_jsonl(p, records)
+    jout = tmp_path / "out.json"
+    mout = tmp_path / "out.md"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.leadership_rotation_p0",
+            "summary",
+            "--in",
+            str(p),
+            "--json",
+            str(jout),
+            "--md",
+            str(mout),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(Path(__file__).resolve().parents[1]),
+    )
+    assert proc.returncode == 0, proc.stderr
+    return jout, mout
+
+
+def _null_cell_records(
+    cell_id: int,
+    n_ok: int,
+    h1_passes: int,
+) -> list[dict]:
+    recs: list[dict] = []
+    for k in range(n_ok):
+        paths = (
+            {("defensive_sector", "H1")}
+            if k < h1_passes
+            else None
+        )
+        recs.append(_sim_record(cell_id, k, pass_paths=paths))
+    return recs
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:118 replace seed_seq with np.random.SeedSequence([0])
@@ -484,6 +530,73 @@ def test_summary_cli_writes_json_and_md(tmp_path: Path):
     assert "Size (δ = 0)" in md
     assert "| 0 |" in md
     assert "| 30 |" in md
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:933 use "|---|" * n_cols for table 1 separator
+def test_summary_md_table_separators_valid(tmp_path: Path):
+    recs = _null_cell_records(0, 4, 0) + [_sim_record(6, 0)]
+    _, mout = _run_p0_summary(tmp_path, recs)
+    md = mout.read_text()
+    sep_re = re.compile(r"^\|(?:---\|)+$")
+    lines = md.splitlines()
+    for i, line in enumerate(lines):
+        if not line or set(line) - set("|- "):
+            continue
+        if "-" not in line:
+            continue
+        assert sep_re.match(line), line
+        if i > 0 and lines[i - 1].startswith("|"):
+            n_cols = lines[i - 1].count("|") - 1
+            assert line.count("---") == n_cols
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:884 return f"{v:.3f}" in _md_pts (log not points)
+def test_summary_md_sigma_delta_in_points(tmp_path: Path):
+    recs = _null_cell_records(0, 2, 0) + [_sim_record(6, 0)]
+    _, mout = _run_p0_summary(tmp_path, recs)
+    md = mout.read_text()
+    assert "σ (pts)" in md and "δ (pts)" in md
+    power = md.split("## Table 2 Power (δ > 0)")[1].split("##")[0]
+    assert re.search(r"\|\s*6\s*\|\s*0\.70\s*\|\s*0\.25\s*\|", power)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:1015 append only _md_rate(rate) in table 2 columns
+def test_summary_md_power_table_includes_pass_counts(tmp_path: Path):
+    recs = _null_cell_records(0, 2, 0) + [
+        _sim_record(6, 0, pass_paths={("defensive_sector", "H1")}),
+        _sim_record(6, 1),
+    ]
+    _, mout = _run_p0_summary(tmp_path, recs)
+    md = mout.read_text()
+    power = md.split("## Table 2 Power (δ > 0)")[1].split("##")[0]
+    assert re.search(r"1/2\s*\(\s*0\.500\s*\)", power)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:981 iterate exceeds only (skip violations bullets)
+def test_summary_md_size_verdict_locates_violations_and_exceeds(tmp_path: Path):
+    harsh = _null_cell_records(0, 100, 10)
+    _, mout_bad = _run_p0_summary(tmp_path / "harsh", harsh)
+    bad = mout_bad.read_text()
+    assert "Size verdict: NOT SIZED" in bad
+    assert "defensive_sector/H1" in bad
+    assert "SIZE_VIOLATION" in bad
+    assert re.search(r"10/100\s*\(", bad)
+
+    mild = _null_cell_records(0, 100, 3)
+    _, mout_mild = _run_p0_summary(tmp_path / "mild", mild)
+    mild_md = mout_mild.read_text()
+    assert "SIZED by the Wilson rule; point rate above α" in mild_md
+    assert "SIZE_EXCEEDS_POINT" in mild_md
+    assert re.search(r"3/100\s*\(", mild_md)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:911 use f"numpy {np.__version__}" for host line
+def test_summary_md_summary_host_line(tmp_path: Path):
+    recs = _null_cell_records(0, 2, 0)
+    _, mout = _run_p0_summary(tmp_path, recs)
+    md = mout.read_text()
+    host_line = next(ln for ln in md.splitlines() if "numpy" in ln and "summary host" in ln)
+    assert host_line.startswith("summary host: numpy ")
 
 
 # MUTATION: scripts/leadership_rotation_p0.py:601 allow unknown cell_id

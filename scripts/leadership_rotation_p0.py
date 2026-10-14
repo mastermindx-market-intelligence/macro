@@ -871,6 +871,19 @@ def _md_rate(x: Any) -> str:
     return f"{v:.3f}"
 
 
+def _md_pts(x: Any) -> str:
+    """Log-ratio value to study points (1 point = 0.01 log)."""
+    if x is None:
+        return "—"
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "—"
+    if not math.isfinite(v):
+        return "—"
+    return f"{v * 100:.2f}"
+
+
 def _summary_row_keys() -> List[str]:
     keys = [f"{g}/{h}" for g in _GROUPS for h in _HYPOTHESES]
     keys.append("family_any")
@@ -892,7 +905,12 @@ def _write_summary_md(
         f"Records kept: {stats.get('records', 0)}; duplicates: {stats.get('duplicates', 0)}; "
         f"skipped_partial: {stats.get('skipped_partial', 0)}"
     )
-    lines.append(f"numpy {np.__version__}")
+    import pandas as pd
+
+    py_ver = ".".join(str(x) for x in sys.version_info[:3])
+    lines.append(
+        f"summary host: numpy {np.__version__}, pandas {pd.__version__}, python {py_ver}"
+    )
     lines.append("")
     lines.append("DEVELOPMENT HARNESS — no verdict authority")
     lines.append("")
@@ -906,13 +924,13 @@ def _write_summary_md(
         lines.append("_No δ = 0 cells in input._")
     else:
         hdr = (
-            "| cell | σ | ρ | N | sims ok/unreached | "
+            "| cell | σ (pts) | ρ | N | sims ok/unreached | "
             + " | ".join(row_keys)
             + " |"
         )
-        sep = "|---|" * (5 + len(row_keys))
+        n_cols = 5 + len(row_keys)
         lines.append(hdr)
-        lines.append(sep)
+        lines.append("|" + "|".join(["---"] * n_cols) + "|")
         for c in null_cells:
             summ = c["summary"]
             cells_cols = []
@@ -930,7 +948,7 @@ def _write_summary_md(
                 + " | ".join(
                     [
                         str(c["cell_id"]),
-                        _md_rate(c["sigma"]),
+                        _md_pts(c["sigma"]),
                         _md_rate(c["rho"]),
                         str(c["n_target"]),
                         f"{c['n_ok']}/{c['n_unreached']}",
@@ -941,11 +959,34 @@ def _write_summary_md(
             )
         if size_result.get("error"):
             lines.append(f"Size verdict: ERROR ({size_result['error']})")
-        elif size_result.get("sized"):
-            lines.append("Size verdict: SIZED")
         else:
-            flags = [v["flag"] for v in size_result.get("violations", [])]
-            lines.append("Size verdict: " + ", ".join(flags) if flags else "NOT SIZED")
+            alpha = float(size_result.get("alpha", 0.025))
+            alpha_s = _md_rate(alpha)
+            violations = size_result.get("violations", [])
+            exceeds = size_result.get("exceeds_point", [])
+            if size_result.get("sized"):
+                if exceeds:
+                    lines.append(
+                        "Size verdict: SIZED by the Wilson rule; point rate above α "
+                        "in the cells listed (not distinguishable from simulation "
+                        "noise at this sim count)"
+                    )
+                else:
+                    lines.append("Size verdict: SIZED by the Wilson rule")
+            else:
+                lines.append(
+                    f"Size verdict: NOT SIZED (prereg §8: false-pass at δ = 0 must be "
+                    f"≤ α = {alpha_s})"
+                )
+            for entry in violations + exceeds:
+                lo = _md_rate(entry.get("wilson_lower"))
+                lines.append(
+                    f"- cell {entry['cell_id']} (σ {_md_pts(entry['sigma'])}, "
+                    f"ρ {_md_rate(entry['rho'])}, N {entry['n_target']}) "
+                    f"{entry['row']}: {entry['passes']}/{entry['n_ok']} "
+                    f"({_md_rate(entry.get('pass_rate_ok'))}), Wilson 95 % lower {lo} "
+                    f"— {entry['flag']}"
+                )
     lines.append("")
 
     lines.append("## Table 2 Power (δ > 0)")
@@ -953,13 +994,13 @@ def _write_summary_md(
         lines.append("_No δ > 0 cells in input._")
     else:
         hdr = (
-            "| cell | σ | δ | ρ | N | sims ok/unreached | "
+            "| cell | σ (pts) | δ (pts) | ρ | N | sims ok/unreached | "
             + " | ".join(row_keys)
             + " |"
         )
-        sep = "|---|" * (6 + len(row_keys))
+        n_cols = 6 + len(row_keys)
         lines.append(hdr)
-        lines.append(sep)
+        lines.append("|" + "|".join(["---"] * n_cols) + "|")
         for c in alt_cells:
             summ = c["summary"]
             cells_cols = []
@@ -968,14 +1009,17 @@ def _write_summary_md(
                     row = summ.get("family_any", {})
                 else:
                     row = summ.get("by_group_hypothesis", {}).get(rk, {})
-                cells_cols.append(_md_rate(row.get("pass_rate_ok")))
+                p = row.get("passes", 0)
+                n_ok = row.get("n_ok", c["n_ok"])
+                rate = row.get("pass_rate_ok")
+                cells_cols.append(f"{p}/{n_ok} ({_md_rate(rate)})")
             lines.append(
                 "| "
                 + " | ".join(
                     [
                         str(c["cell_id"]),
-                        _md_rate(c["sigma"]),
-                        _md_rate(c["delta"]),
+                        _md_pts(c["sigma"]),
+                        _md_pts(c["delta"]),
                         _md_rate(c["rho"]),
                         str(c["n_target"]),
                         f"{c['n_ok']}/{c['n_unreached']}",
