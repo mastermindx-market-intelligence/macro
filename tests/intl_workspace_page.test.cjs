@@ -55,6 +55,29 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Credit standardized change never claims raw direction ${theme} ${lang}`,async()=>{
+    const creditHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_credit_velocity_render import credit_velocity_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=credit_velocity_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const labels=page.locator('.ird-spread-card .sc-vel');
+        const expected=lang==='zh'?['20日变动高于常态','20日变动低于常态','20日变动接近常态','不可用']:['Above usual 20d change','Below usual 20d change','Near usual 20d change','Unavailable'];
+        assert.deepEqual(await labels.allInnerTexts(),expected);
+        for(const el of await labels.all()) {
+          assert.equal(await el.getAttribute('class'),'sc-vel vel-flat');
+          assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'score meaning fits existing card');
+        }
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:creditHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-credit-bonds'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Credit absent observations stay unavailable on Library return ${theme} ${lang}`,async()=>{
     const creditHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_credit_absence_render import credit_absence_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=credit_absence_fixture()))"],
@@ -70,7 +93,7 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         const heading=page.locator('#intl-credit-bonds');const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
         const velocities=panel.locator('.sc-vel');const values=panel.locator('.sc-val');
         for(const index of [0,1,3])assert.equal(await velocities.nth(index).innerText(),lang==='zh'?'不可用':'Unavailable');
-        assert.match(await velocities.nth(2).innerText(),lang==='zh'?/持平/:/Steady/);
+        assert.match(await velocities.nth(2).innerText(),lang==='zh'?/20日变动接近常态/:/Near usual 20d change/);
         assert.deepEqual(await values.allInnerTexts(),['0.00%','—','0.00%','1.25%']);
         const inversion=panel.locator('.ird-inv-row');assert.match(await inversion.innerText(),lang==='zh'?/不可用/:/Unavailable/);
         assert.equal(await inversion.locator('.inv-num').innerText(),'—');

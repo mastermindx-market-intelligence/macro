@@ -140,9 +140,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Repair the retained Credit velocity semantic mismatch using its actual owner grammar.
-  Standardized change deviation is not raw spread direction; preserve owner inputs, ranking and qualification.
-  Reuse accepted absence, clocks and keyboard proof; all release, review, live-browser and IW2 custody holds remain.
+next_action: Investigate distinct or missing Credit regional observation clocks from the existing owner contract.
+  Current footer only displays EM HY date; do not infer shared freshness or fabricate regional stale flags.
+  Reuse accepted semantic, absence, clocks and keyboard proof; all review, release, live-browser and IW2 holds remain.
 artifacts:
 - research/paper_international_wave1_wave2/CENTRAL_BANK_CLOCKS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json
@@ -287,3 +287,5 @@ Browser forced palettes erased the selected History/Scenario border/fill distinc
 Eight source-fixture cases at256px height cover320/820px, Dark/Light andEN/ZH.32modal modes retain keyboard-reachable controls and native Home/End content scrolling, with8origin-focus returns.440control-focus observations and72dialog-focus observations stay visible;48BODY observations have document.hasFocus=false and no background control gains focus. Three categories of rejected harness assumptions are retained separately: unsettled scroll, end-threshold reversal and field-to-deeper without returning to ledger. No Inspector product change, OS keyboard/nativezoom or live acceptance claim.
 
 Credit/bond absence source repair adds ten passing render cases and four bilingual/theme keyboard cases over eight widths, with eight canonical captures and four focused parent views. Six source-render failures plus one browser failure establish causality. No live or complete panel acceptance: separate standardized-velocity direction semantics remain, bound by an actual-helper counterexample. Source not deployed; independent review pending. See CREDIT_BOND_ABSENCE_ACCEPTANCE.json and external credit-bond-absence-20261014-r1 evidence.
+
+Credit velocity meaning source repair supersedes the prior open semantic note: three actual-owner counterexamples now render above/below/near-usual-change with neutral styling, preserving owner data and thresholds. Thirteen affected Python and eight browser cases pass, with overlapping absence coverage explicitly retained; eight canonical captures and four parent views. Independent review and live delivery remain pending. Next trace regional Credit clocks from actual owner fields; no inferred qualification. See CREDIT_VELOCITY_MEANING_ACCEPTANCE.json.

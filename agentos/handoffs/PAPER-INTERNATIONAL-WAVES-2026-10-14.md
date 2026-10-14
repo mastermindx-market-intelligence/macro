@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_credit_velocity_render.py; tests/test_intl_credit_absence_render.py; tests/intl_workspace_page.test.cjs
+  what: Describe standardized credit-change scores relative to their own history, removing false raw-direction wording/arrows/colors while preserving data, band and absence.
+- path: research/paper_international_wave1_wave2/CREDIT_VELOCITY_MEANING_ACCEPTANCE.json; mockups/evidence/paper-international-library/credit-velocity-meaning/
+  what: Bind actual-owner counterexamples, thirteen affected render cases, eight browser cases and eight canonical captures; review and live acceptance remain pending.
 - path: templates/intl.html.j2; tests/test_intl_credit_absence_render.py; tests/intl_workspace_page.test.cjs
   what: Preserve missing credit velocity and inversion coverage as unavailable; retain real zero/counts, include flat curves in no-inversion wording, correct slope basis and native heading focus.
 - path: research/paper_international_wave1_wave2/CREDIT_BOND_ABSENCE_ACCEPTANCE.json; mockups/evidence/paper-international-library/credit-bond-absence/
@@ -155,6 +159,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Standardized credit-change scores no longer imply raw widening, tightening or no movement.
+  command: python3 -m pytest -q tests/test_intl_credit_velocity_render.py tests/test_intl_credit_absence_render.py; node --test --test-name-pattern='Credit (standardized|absent)' tests/intl_workspace_page.test.cjs; credit-velocity-meaning-20261014-r1 capture.py and inspect_cards.py
+  result: 3original renderFAIL and1browserFAIL; final13PythonPASS14inheritedwarnings,8browserPASS16widthstates,8canonicalcaptures4parentviews. Includes affected earlier absence cases, not additive coverage.
 - claim: Credit absence repair distinguishes unknown velocity and empty coverage from real zero and supplied counts, with scoped bilingual keyboard return and dual-theme rendering.
   command: python3 -m pytest -q tests/test_intl_credit_absence_render.py; node --test --test-name-pattern='Credit absent observations' tests/intl_workspace_page.test.cjs; credit-bond-absence-20261014-r1/capture.py and inspect_cards.py
   result: 10PythonPASS14inheritedwarnings;4browserPASS8widthstates;8canonical captures and4parent-viewed focusedimages. No independent review or live acceptance.
@@ -513,3 +520,9 @@ Rates geometry evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1
 The prior four repairs are published through fdbc044f91f03b740aaa58e3023064c20f91ac64 on the existing Macro carrier; its original delayed git add completed without intervention, then normal commit/push succeeded and the checkout was clean. The Credit/bond repair follows on the same carrier. Actual intl_risk/contagion owners distinguish absent velocity; intl_bonds counts only supplied curves and prefers10y-2y then10y-3m. No fabricated0/6 or all-positive/recession reassurance remains for absent/flat data. Parent scoped visual acceptance covers both existing materials. Independent review remains pending; no live/deployment/CI claim.
 
 A distinct actual-helper counterexample remains: synthetic negative raw20day change -0.02 has standardized score+3.901; current present-value label says Widening. The initial probe incorrectly checked rounded raw output(-0.0), then the actual raw delta and helper output were inspected. See credit-bond-absence-20261014-r1/NEXT_VELOCITY_SEMANTICS.json. Next make the standardized-score meaning faithful through existing source contract; no invented raw delta/ranking/qualification. All original holds and IW2 custody remain; no CI/PR poll, worker retry, cross-chat message or original-tab action.
+
+## Credit velocity meaning repair — 2026-10-14
+
+The prior absence repair published at fcd03db5ef12d1b08a573f26566a9bf6d1a5e257 with a clean checkout and normal push. The retained semantic counterexample is now repaired on the same carrier. Actual owner examples: raw20day change-0.02/z+3.901; raw+0.02/z-3.901; raw+2.004/z0. None supports the former widening/tightening/steady wording. Current neutral above/below/near-usual-change text and help describe the existing standardized score; owner math, input values, threshold and ranking are unchanged. This supersedes the prior semantic-defect-open note only within this tested source scope.
+
+Next independent source gap: current Credit footer shows only EM HY date, while the regional owner supplies separate asof values not rendered per card. Investigate distinct/missing clocks before a bounded presentation repair; never infer shared freshness or invent regional stale flags. See credit-velocity-meaning-20261014-r1/NEXT_CREDIT_CLOCKS.json. All release/qualification/review/live/Saved/migration/IW2 holds persist. No new worker, PR/CI observation, original-browser action or cross-chat message.

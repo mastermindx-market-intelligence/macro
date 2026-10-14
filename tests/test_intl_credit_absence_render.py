@@ -40,7 +40,7 @@ def test_credit_missing_velocity_is_not_steady(kind):
     assert len(cards)==4
     for card in cards:
         velocity=card.select_one('.sc-vel').get_text(' ',strip=True)
-        assert ('Steady' if kind=='real_zero' else 'Unavailable') in velocity
+        assert ('Near usual 20d change' if kind=='real_zero' else 'Unavailable') in velocity
         if kind!='real_zero': assert 'Steady' not in velocity and '→' not in velocity
         assert card.select_one('.sc-val').get_text(strip=True)==('0.00%' if kind in ('one_observation','real_zero') else '—')
     assert payload==original
