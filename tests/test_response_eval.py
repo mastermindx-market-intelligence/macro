@@ -1082,3 +1082,108 @@ def test_nothing_in_the_harness_writes_to_site():
         src = (ROOT / rel).read_text(encoding="utf-8")
         assert '"site"' not in src and "'site'" not in src, rel
         assert "site/" not in src.replace("site/ or", "").replace("to site/", ""), rel
+
+
+HISTORICAL_TEXT_CASES = [
+    "benchmark_gold_real_rate_2026-08-09.json",
+    "benchmark_capex_bind_2026-07-22.json",
+]
+
+
+@pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+def test_historical_text_case_uses_bound_source_and_explicit_runners(name):
+    case = ev.load_benchmark(name)
+    seen = []
+    judge = _fake_judge(_judge_reply("max"))
+    def answer(system, user):
+        seen.append((system, user))
+        return case["gold_standard_sentence"]
+    result = ev.run_benchmark(ROOT, judge, answer, name=name)
+    assert result["ok"] is True
+    assert result["replay_scope"] == "supplied_adjudication_text"
+    assert result["historical_source_availability"] == "unverified"
+    assert result["scope_limits"]
+    assert seen[0][1] == case["packet_digest_fixture"] + "\n\n" + case["question_en"]
+    for prop in case["expected_properties"]: assert prop["check"] in judge.calls[0]
+    for failure in case["known_failure_modes"]: assert failure in judge.calls[0]
+    # Injected PASS proves fixture/runner plumbing, not historical model quality.
+
+
+@pytest.mark.parametrize("mutation", ["future", "date", "source_hash", "excerpt", "excerpt_hash", "path", "packet", "cutoff", "availability"])
+def test_historical_text_case_refuses_bad_binding_before_callbacks(monkeypatch, mutation):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(HISTORICAL_TEXT_CASES[0]))
+    meta = case["historical_case"]
+    if mutation == "future": meta["input_facts"][0]["event_date"] = "2026-08-10"
+    elif mutation == "date": meta["input_facts"][0]["event_date"] = "not-a-date"
+    elif mutation == "source_hash": meta["source"]["sha256"] = "0" * 64
+    elif mutation == "excerpt": meta["input_facts"][0]["text"] += " unseen later information"
+    elif mutation == "excerpt_hash": meta["input_facts"][0]["sha256"] = "0" * 64
+    elif mutation == "path": meta["source"]["path"] = "data/qledger/grades.jsonl"
+    elif mutation == "packet": case["packet_digest_fixture"] += " Later price return."
+    elif mutation == "cutoff": meta["cutoff_date"] = "2026-08-09T23:59:00Z"
+    elif mutation == "availability": meta["historical_source_availability"] = "verified"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("invalid historical case reached a callback")
+    result = ev.run_benchmark(ROOT, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert result["ok"] is False and result["error"].startswith("historical_case_")
+    assert result["scope_limits"]
+
+
+@pytest.mark.parametrize("answer,judge", [(None,None),(None,lambda p: None),(lambda s,u: None,None),(False,lambda p: None),(lambda s,u: None,False)])
+def test_historical_text_case_never_uses_default_model_callbacks(monkeypatch, answer, judge):
+    def forbidden(*args): pytest.fail("historical case reached implicit model or doctrine")
+    monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+    result = ev.run_benchmark(ROOT, judge, answer, name=HISTORICAL_TEXT_CASES[0])
+    assert result["ok"] is False
+    assert result["error"] == "historical_case_requires_explicit_runners"
+
+
+def test_historical_text_case_bad_source_file_never_blocks_or_falls_back(tmp_path, monkeypatch):
+    case = ev.load_benchmark(HISTORICAL_TEXT_CASES[0])
+    source = tmp_path / case["historical_case"]["source"]["path"]
+    source.parent.mkdir(parents=True)
+    import os
+    os.mkfifo(source)
+    def forbidden(*args): pytest.fail("unreadable source reached callback")
+    result = ev.run_benchmark(tmp_path, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert not result["ok"] and result["error"] == "historical_case_source_unavailable"
+
+
+@pytest.mark.parametrize("kind", ["oversized", "symlink", "directory"])
+def test_historical_text_case_source_admission_is_bounded(tmp_path, kind):
+    case = ev.load_benchmark(HISTORICAL_TEXT_CASES[0])
+    source = tmp_path / case["historical_case"]["source"]["path"]
+    source.parent.mkdir(parents=True)
+    if kind == "oversized": source.write_bytes(b"x" * 65537)
+    elif kind == "symlink": source.symlink_to(ROOT / case["historical_case"]["source"]["path"])
+    else: source.mkdir()
+    def forbidden(*args): pytest.fail("inadmissible source reached callback")
+    result = ev.run_benchmark(tmp_path, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert result["error"] == "historical_case_source_unavailable"
+
+
+def test_historical_text_case_binds_adjudication_separately_from_inputs(monkeypatch):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(HISTORICAL_TEXT_CASES[0]))
+    case["historical_case"]["adjudication_excerpt"]["text"] += " Wrong oracle"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("unbound adjudication reached callback")
+    assert ev.run_benchmark(ROOT, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])["error"] == "historical_case_excerpt_mismatch"
+
+
+@pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+def test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models(monkeypatch, name):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(name))
+    del case["historical_case"]
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("malformed named historical case fell through to live defaults")
+    monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+    result = ev.run_benchmark(ROOT, name=name)
+    assert result["ok"] is False and result["error"] == "historical_case_metadata_invalid"
+    assert result["scope_limits"]

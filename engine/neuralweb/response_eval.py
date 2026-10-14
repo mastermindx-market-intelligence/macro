@@ -3,8 +3,9 @@
 The scoring half of the W2 evaluation harness (masterplan §3 row 14, rubric §9).
 Reads nothing and writes nothing on its own: the corpus reader/writer lives in
 scripts/run_brain_eval.py and admin/mastermind_logs.py, the LLM judge is INJECTED
-as a callable, and the only file this module opens is its own frozen benchmark
-fixture under engine/neuralweb/eval/.
+as a callable. The module opens its frozen benchmark fixtures under
+engine/neuralweb/eval/; optional historical text cases additionally verify their two
+explicitly admitted, bounded canonical research documents. No outcome store is read.
 
 CONSTRAINT: scores produced here are INTERNAL QA TELEMETRY ONLY. Nothing in this
 module — and nothing downstream of it — may ever write a score, a pass rate, a
@@ -1024,6 +1025,9 @@ def _benchmark_extra_context(case: dict) -> str:
     for prop in case.get("expected_properties") or []:
         if isinstance(prop, dict) and prop.get("check"):
             lines.append(f"- {prop.get('tag') or '?'}: {prop['check']}")
+    for failure in case.get("known_failure_modes") or []:
+        if isinstance(failure, str):
+            lines.append(f"- Known failure to avoid: {failure}")
     gold = str(case.get("gold_standard_sentence") or "").strip()
     if gold:
         lines.append(
@@ -1036,6 +1040,113 @@ def _benchmark_extra_context(case: dict) -> str:
         "and reconciles those specific numbers."
     )
     return "\n".join(lines)
+
+
+_HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_2026-07-22"})
+_HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
+_HISTORICAL_TEXT_SOURCES = frozenset({
+    "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+    "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+})
+_HISTORICAL_SCOPE_LIMITS = [
+    "Supplied adjudication text only; historical source availability is unverified.",
+    "Current doctrine replay, not a reconstruction of the historical model or served product.",
+    "Declared fact dates are checked; source prose chronology remains an adjudicated assumption.",
+    "Internal reasoning QA only; no empirical-study, evaluation-tier or execution claim.",
+]
+
+
+def historical_text_digest(meta: dict) -> str:
+    """The sole assembly of a qualified historical case's answerer inputs."""
+    return (
+        f"FROZEN SUPPLIED HISTORICAL TEXT — cutoff date {meta['cutoff_date']} "
+        f"({meta['session_label']}). Historical source availability is unverified; "
+        "this is not a live dashboard or a proved historically served snapshot.\n"
+        + "\n".join(f"[{fact['event_date']}] {fact['text']}" for fact in meta["input_facts"])
+    )
+
+
+def _historical_text_case_error(case: dict, root: Path) -> str | None:
+    """Validate the optional frozen text contract before any answer/judge call.
+
+    Reads only the two named canonical documents, bounded and regular-file-only. Full
+    bytes and exact excerpts bind input and adjudication separately. No historical
+    stores, model defaults, rights escalation or claim/grade reads are involved.
+    """
+    import hashlib
+    import os
+    import stat
+    from datetime import date
+
+    meta = case.get("historical_case")
+    if (not isinstance(meta, dict) or case.get("frozen") is not True
+            or meta.get("schema") != "response_eval.historical_text_case.v1"
+            or meta.get("replay_scope") != "supplied_adjudication_text"
+            or meta.get("doctrine_scope") != "current_doctrine_replay"
+            or meta.get("historical_source_availability") != "unverified"
+            or meta.get("session_label") not in ("date only", "after hours")):
+        return "historical_case_metadata_invalid"
+
+    def day(value):
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            return None
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+
+    cutoff = day(meta.get("cutoff_date"))
+    adjudication = day(meta.get("adjudication_date"))
+    facts = meta.get("input_facts")
+    if (cutoff is None or adjudication is None or adjudication < cutoff
+            or not isinstance(facts, list) or not 1 <= len(facts) <= 32):
+        return "historical_case_dates_or_facts_invalid"
+    for fact in facts:
+        event = day(fact.get("event_date")) if isinstance(fact, dict) else None
+        if event is None or event > cutoff:
+            return "historical_case_fact_date_invalid"
+    source = meta.get("source")
+    if (not isinstance(source, dict) or not isinstance(source.get("path"), str)
+            or source["path"] not in _HISTORICAL_TEXT_SOURCES):
+        return "historical_case_source_not_admitted"
+    try:
+        path = root / source["path"]
+        if (root / "research").is_symlink():
+            return "historical_case_source_unavailable"
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_size > 65536:
+                return "historical_case_source_unavailable"
+            blob = stream.read(65537)
+            after = os.fstat(stream.fileno())
+        identity = lambda value: (value.st_dev, value.st_ino, value.st_size,
+                                  value.st_mtime_ns, value.st_ctime_ns)
+        if len(blob) > 65536 or identity(before) != identity(after):
+            return "historical_case_source_unavailable"
+        lines = blob.decode("utf-8").splitlines()
+    except (OSError, ValueError, UnicodeError):
+        return "historical_case_source_unavailable"
+    if hashlib.sha256(blob).hexdigest() != source.get("sha256"):
+        return "historical_case_source_hash_mismatch"
+
+    def bound_excerpt(excerpt):
+        if not isinstance(excerpt, dict):
+            return False
+        span = excerpt.get("source_lines")
+        if (not isinstance(span, list) or len(span) != 2
+                or not all(type(n) is int for n in span)
+                or not 1 <= span[0] <= span[1] <= len(lines)):
+            return False
+        text = "\n".join(lines[span[0] - 1:span[1]])
+        return (excerpt.get("text") == text
+                and excerpt.get("sha256") == hashlib.sha256(text.encode()).hexdigest())
+
+    if not all(bound_excerpt(fact) for fact in facts) or not bound_excerpt(meta.get("adjudication_excerpt")):
+        return "historical_case_excerpt_mismatch"
+    if case.get("packet_digest_fixture") != historical_text_digest(meta):
+        return "historical_case_packet_mismatch"
+    return None
 
 
 def run_benchmark(
@@ -1057,11 +1168,28 @@ def run_benchmark(
     fixture, a dead answerer, or a dead judge yields ok=False with the reason,
     never an exception — the weekly lane must still write its summary.
     """
+    named_historical = str(name).split("/")[-1] in _HISTORICAL_TEXT_CASE_NAMES
     case = load_benchmark(name)
     if not case:
         return {"ok": False, "error": "benchmark_absent", "benchmark_id": "",
                 "total": None, "passed": False, "scores": {}, "tags": [],
-                "answer": ""}
+                "answer": "", **({"replay_scope": "supplied_adjudication_text",
+                                  "historical_source_availability": "unverified",
+                                  "scope_limits": list(_HISTORICAL_SCOPE_LIMITS)} if named_historical else {})}
+
+    historical = (named_historical or "historical_case" in case
+                  or (isinstance(case.get("benchmark_id"), str)
+                      and case["benchmark_id"] in _HISTORICAL_TEXT_CASE_IDS))
+    scope = ({"replay_scope": "supplied_adjudication_text",
+              "historical_source_availability": "unverified",
+              "scope_limits": list(_HISTORICAL_SCOPE_LIMITS)} if historical else {})
+    if historical:
+        problem = _historical_text_case_error(case, root or Path(__file__).resolve().parents[2])
+        if problem is None and not (callable(answer_fn) and callable(judge_fn)):
+            problem = "historical_case_requires_explicit_runners"
+        if problem:
+            return {"ok": False, "error": problem, "benchmark_id": case.get("benchmark_id", name),
+                    "total": None, "passed": False, "scores": {}, "tags": [], "answer": "", **scope}
 
     bid = str(case.get("benchmark_id") or name)
     question = str(case.get("question_en") or "")
@@ -1082,7 +1210,7 @@ def run_benchmark(
     if not answer:
         return {"ok": False, "error": "no_answer", "benchmark_id": bid,
                 "total": None, "passed": False, "scores": {}, "tags": [],
-                "answer": "", "system_chars": len(system),
+                "answer": "", "system_chars": len(system), **scope,
                 "doctrine_fingerprint": _doctrine_fingerprint()}
 
     row = {
@@ -1099,6 +1227,7 @@ def run_benchmark(
     )
     return {
         "ok": scored.get("judged", False),
+        **scope,
         "benchmark_id": bid,
         "total": scored.get("total"),
         "passed": scored.get("passed", False),
