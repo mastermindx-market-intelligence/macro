@@ -39,6 +39,7 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     _assert_document_matches_contract_shape,
     _assert_no_forbidden_authority_keys,
     _check_explanation_for_forbidden,
+    _screen_stated_definition,
     project_economic_change,
 )
 
@@ -2146,6 +2147,46 @@ def test_d2_revenue_prior_quantum_contradiction_withholds_change_and_net() -> No
     assert net["withheld_reason"] == "dependency_suppressed", net
 
 
+def test_screen_defensive_own_display_quantum_contradiction_withholds() -> None:
+    """White-box: a row that carries its own contradicting display_quantum.
+
+    No internal row reaches ``_screen_stated_definition`` with a
+    ``display_quantum`` today -- the field is minted later, at emit time,
+    by the ``setdefault`` in ``_result_provenance`` -- a HEAD driver over
+    the full corpus counted 608 rows entering the screen and 0 carrying
+    the key, so the defensive clause is behaviour-neutral for every
+    reachable input. This test feeds the screen the reachable-tomorrow
+    input the clause exists for: BOTH envelopes clean (USD, 10**3,
+    ``1_thousand``) while the row's own ``display_quantum`` states
+    ``5_thousand``. An envelope with that quantum contradicts the stated
+    definition; so must the row itself.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "prior_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "display_quantum": "5_thousand",
+    }
+    _screen_stated_definition([row])
+    assert row["value_text"] is None, row
+    assert row["withheld_reason"] == _WITHHELD_REASON, row
+    assert row["state"] == "WITHHELD", row
+
+
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
     """The golden case, untouched."""
 
@@ -2186,14 +2227,60 @@ def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
         fact["scale_power10"] = 6
 
 
+# Each case pins the EXACT withheld set (result keys whose emitted row
+# carries ``value_text`` None) and the withheld_reason of every withheld
+# row. The sets and reasons were derived by running the code on HEAD
+# (f98fe270) and reading the output, not guessed. They make this test
+# discriminating: the old form only cross-checked availability and the
+# lead against the rows, so a screen that silently stopped withholding a
+# prior-side contradiction (defect D2) still passed -- the verdicts moved
+# with the rows, keeping the agreement intact.
 @pytest.mark.parametrize(
-    "mutate",
+    ("mutate", "expected_withheld", "expected_reasons"),
     [
-        _mutate_clean,
-        _mutate_expense_current_quantum,
-        _mutate_revenue_prior_quantum,
-        _mutate_total_revenue_unit,
-        _mutate_total_revenue_scale,
+        (
+            _mutate_clean,
+            set(),
+            {},
+        ),
+        (
+            _mutate_expense_current_quantum,
+            {
+                RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+                RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+                RESULT_KEY_ADVERTISING_NET_CHANGE,
+            },
+            {
+                RESULT_KEY_ADVERTISING_EXPENSE_CHANGE: _WITHHELD_REASON,
+                RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET: _WITHHELD_REASON,
+                # The expense current envelope IS this row's prior side
+                # (net derivation), so the net row contradicts directly.
+                RESULT_KEY_ADVERTISING_NET_CHANGE: _WITHHELD_REASON,
+            },
+        ),
+        (
+            _mutate_revenue_prior_quantum,
+            {
+                RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_NET_CHANGE,
+            },
+            {
+                RESULT_KEY_ADVERTISING_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The net row's own envelopes stay clean here; it withholds
+                # as a dependent of the withheld revenue-change constituent.
+                RESULT_KEY_ADVERTISING_NET_CHANGE: "dependency_suppressed",
+            },
+        ),
+        (
+            _mutate_total_revenue_unit,
+            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
+            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+        ),
+        (
+            _mutate_total_revenue_scale,
+            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
+            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+        ),
     ],
     ids=[
         "clean_golden",
@@ -2205,6 +2292,8 @@ def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
 )
 def test_availability_lead_and_emitted_rows_agree_under_contradictions(
     mutate,
+    expected_withheld,
+    expected_reasons,
 ) -> None:
     """The verdicts and the emitted rows must read from one truth.
 
@@ -2212,10 +2301,25 @@ def test_availability_lead_and_emitted_rows_agree_under_contradictions(
     actually carries a value; (b) the full economic lead may be claimed only
     when the three change rows it names all publish a value. The lead is
     asserted against the module's own constants, never a hand-copied string.
+    (c) the withheld set is pinned exactly, and every withheld row carries
+    the expected reason, so a screen that stops doing its job fails even
+    when the remaining verdicts stay internally consistent.
     """
     facts = [dict(fact) for fact in _plnt_facts()]
     mutate(facts)
     document = project_economic_change(_plnt_case(facts=facts))
+
+    withheld_keys = {
+        r["key"] for r in document["results"] if r["value_text"] is None
+    }
+    assert withheld_keys == expected_withheld, (
+        f"withheld set {sorted(withheld_keys)} != expected "
+        f"{sorted(expected_withheld)}"
+    )
+    for key, reason in expected_reasons.items():
+        row = _result_by_key(document, key)
+        assert row["value_text"] is None, row
+        assert row["withheld_reason"] == reason, row
 
     any_published = any(
         r["value_text"] is not None for r in document["results"]
