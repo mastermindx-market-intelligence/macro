@@ -881,3 +881,12 @@ extension UI was open. One human dismissal/completion request is pending;
 the sign-in result is not asserted. GAO, SBIR, Terminal778, second-subject and
 research-owner gates remain distinct. Continue the CI repair, full proof,
 same-carrier protected release and installed independent acceptance.
+
+
+### October 14 13:46 UTC — publisher baseline qualification
+
+Protected-main compatibility source is saved at ef699bd38eea3ab818a26ea8d0c9f1d49428eae2. The old-head 9d8 CI38564650554 has now concluded: pack0 alone failed on the demonstrated missing rates basis path; every other test pack passed. Local scope checks remain in progress.
+
+The actual read_baseline refused baseline_source_or_owner_not_qualified because its source closure predated comment-only edits in the live workflow and protected-main capital-structure ledger changes in Daily. The source transition is now explicitly qualified: live executable lines and all other YAML semantics are unchanged; the GovRev Daily caller is byte-identical; only Daily collect/capital_structure jobs changed and each exactly matches protected main29e383bc. FMS and both proof/preflight helpers remain byte-identical. Three semantic negative controls and five actual loader source-drift controls refuse; the qualified staged and actual baseline load successfully. Only the two source hashes change. All33 legacy dispositions, whitelists, evidence and scan dates are preserved. Evidence is in v16_ci_compatibility/baseline_qualification. This does not execute the full current Actions history preflight or authorize duplicate publication.
+
+Because that baseline is itself a sealed proof dependency, the first V16 local proof was deliberately interrupted (exit130; no receipt) before adopting the repair. The verified root-local process group ended; no hosted CI or Fabric worker was cancelled. A fresh complete proof must bind the repaired baseline and unchanged109 outputs before release. No CAS, deployment, protected merge or new published-generation claim follows this checkpoint.
