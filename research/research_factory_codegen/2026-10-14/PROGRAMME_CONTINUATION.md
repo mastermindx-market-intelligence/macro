@@ -2,6 +2,18 @@
 
 The programme remains active under Chairman Chris's end-to-end commission and original root `01a1333c-a475-7052-95a8-72a88eb8c17b`. This checkpoint is continuity, not an execution grant or completion. Root retains Git integration ownership on `claude/ssd-rf-contracts-fresh-01a1333c-164a62968b85f8c2`.
 
+## V3 dispatched and recovery owned — 2026-10-14 16:25 UTC
+
+The original `rf-fixed-smoke-runsc-01a1333c-v3` was admitted through the installed Fabric adapter on Ubuntu1 and executed its one commissioned carrier call. All127 Linux prechecks and2subtests passed with zero skips. The worker sealed a19164-byte carrier return and197-byte test log, but three repeated manifest lines failed the delivery contract; original Fabric rc65 remains unaccepted. Root consumed the28464-byte retained stdout, SHA256 `4630b08a03d2e437a8050b34f8badac2510b7a9856189ff22cc3654a5d575d1d`. Its full physical outcome is UNADJUDICATED. Do not dispatch v3 again, normalize its transcript, clean its scratch or create v4 to work around delivery.
+
+Chris's programme cross-chat permission covers the exact same-operation retrieval request. Fabric Integration received it, ACKed it, prepared the narrow two-file profile and sent it to the existing independent reviewer. The original root will make the supported installed read once after the qualified installation receipt arrives, verify both current-file hashes, and adjudicate the complete carrier. Known expected hashes and the new permitted destination are in `runtime-release/physical-qualification/CORRECTED_CANARY_V3_SAME_RUN_RECOVERY_REQUEST.json`. No ordinary artifact read was attempted on the ineligible run. There is no Chris-only gate.
+
+Root also diagnosed a caller packet defect: asking for only a final manifest conflicts with Qwen's installed STATUS terminal contract, triggering a further response. The existing Fabric owner separately owns the tool-output manifest repair on its existing release carrier. Future newly commissioned packets must honor both contracts; current v3 bytes stay immutable. This is source diagnosis, not installed repair or acceptance.
+
+Host-resource source preparation is committed at `c3b6e1233ef4731744c92a9d9e6f4427d7d8a9e3`. The original census remains unaccepted; root corrected its false prewarmer claim and documented conditional FD-parking placement, ancestor-limit and helper-cleanup observation requirements. No host observation or stress campaign follows from that document. Fence9077 CI at9c9189 remains in progress, with11 of12 test packs green at16:20UTC; normal release controls remain in force.
+
+The next action is recovery and physical adjudication of the exact original v3. Earlier pre-dispatch and pending-v2 statements below are historical and must not be used as current execution instructions.
+
 ## Current adjudicated frontier — 2026-10-14 15:54 UTC
 
 The original projection review has returned and been consumed through the installed Fabric adapter:101123bytes, SHA256 `b6cd1a56d0b9a3ad15516896f4f013def14f613780aecf69262ec5185fe396c6`. Root reproduced its missing-runtime-map finding, added the explicit empty-map refusal, and checked the nil/empty cases through the actual local CLI against an owned fake API. The speculative Path-field concern is disproved by the pinned Docker29.1.3 source (`json:"path,omitempty"`). The bounded review is accepted on its original carrier; it does not cover unrelated installer changes or physical behavior. The systemd parser is separately reviewed and accepted.
