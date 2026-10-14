@@ -54,6 +54,39 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Connectedness read keeps model scope ${theme} ${lang}`,async()=>{
+    const kind=theme==='dark'?'matrix':'absent';
+    const connectedHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      `from tests.test_intl_connectedness_scope_render import connectedness_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=connectedness_fixture('${kind}')))`],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const panel=page.locator('#intl-contagion').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');assert.ok(await panel.isVisible());
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});const text=await panel.innerText();
+        assert.ok(text.includes(lang==='zh'?'模型波动率关联':'Modelled volatility links'),text);
+        const clock=await panel.locator('[data-connectedness-clock]').innerText();
+        assert.ok(clock.includes(lang==='zh'?'模型快照日期':'Model snapshot date'),clock);
+        if(kind==='absent') {
+          assert.equal(await panel.locator('.dc-num,.ur-num').count(),0);
+          assert.ok(clock.includes(lang==='zh'?'不可用':'Unavailable'));
+        } else {
+          assert.equal(await panel.locator('.dc-num').innerText(),'67');assert.equal(await panel.locator('.ur-num').innerText(),'20.0%');
+          assert.ok(text.includes(lang==='zh'?'SPY波动率方差份额':'SPY volatility variance share'));
+          assert.ok(text.includes(lang==='zh'?'模型序列：3':'Model series: 3'));
+          const tip=await panel.locator('.ird-tx-row').first().getAttribute(lang==='zh'?'data-tip-zh':'data-tip-en');
+          assert.ok(tip.includes('160.0')&&tip.includes(lang==='zh'?'可超过100':'may exceed 100'),tip);
+        }
+        assert.ok(!/shocks travel fast|quickly reach|压力可快速蔓延/.test(text));
+        assert.ok(await panel.evaluate(n=>n.scrollWidth<=n.clientWidth+1));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:connectedHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-contagion'});
+  });
+}
+
 for (const [available,hot] of [[0,0],[3,0],[6,3]]) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`EM headline coverage stays scoped ${available} ${theme} ${lang}`,async()=>{
     const emHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',

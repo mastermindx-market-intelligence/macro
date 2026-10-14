@@ -1,0 +1,56 @@
+{
+  "base_head": "a6f94446cfc88eb57acf44c16e2aab01f17a0cec",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Connectedness retains owner outputs while naming volatility-model variance shares, row/column denominators, supplied model parameters/series count and snapshot date; removes speed and causal price claims.",
+  "source_hashes": {
+    "templates/intl.html.j2": "fc3bfb40101ecd2a5097fc231f8f65dc6c8c746df60c93dae49479fb2c64f350",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "tests/test_intl_connectedness_scope_render.py": "cd535b766ea5ad5d2a2ed5e97705767fd7a569ccb4471b6a94632113abe46c2e",
+    "tests/intl_workspace_page.test.cjs": "9c340b6b2bf5c245cbf659e3ce76acfda1ffcf5042941f16a55f79869db67d6d"
+  },
+  "verification": {
+    "red": "8PythonFAIL;1browserFAIL",
+    "green": "8uniquePython:5PASS+3targetedPASS after label-container harness correction,14inheritedwarnings;4browserPASS8widthstates320/1440",
+    "canonical": "8DarkLightENZH1440/390 captures of normalized synthetic matrix with160outboundpoints/20percentSPYshare;27boundassets"
+  },
+  "parent_review": {
+    "files": [
+      "connectedness-1440-dark-en.png",
+      "connectedness-1440-light-en.png",
+      "connectedness-390-dark-zh.png",
+      "connectedness-390-light-zh.png"
+    ],
+    "result": "4actual focused images viewed: numeric/model hierarchy, method/series line, SPY denominator text, scoped date and indicator separation readable in both material directions and narrow Chinese. Not independent approval."
+  },
+  "harness_correction": {
+    "initial_candidate": "5PythonPASS3FAIL",
+    "cause": "BeautifulSoup plain text contains both locale label spans followed by the one shared number; the asserted contiguous English label plus number was not the actual DOM structure.",
+    "repair": "Assert the shared series count in its label container; retain both locale labels. No product/acceptance change; only3failedcases rerun."
+  },
+  "capture_diagnostics": "Inherited static live_config.js404; no document horizontal overflow. Model method tooltip accessibility is separate next inquiry.",
+  "manifest_sha256": "f0694037bd24f77de36991e749b4f3d7bf5d9cff69369d34d6d394003d58f327",
+  "limits": [
+    "Actual spillover over synthetic close series and explicit normalized-matrix aggregation; not acquired or qualified data.",
+    "No model fitting, thresholds, weights, frozen parameters or acquisition changed.",
+    "Not live, speech, nativezoom, physicaltouch or complete accessibility.",
+    "All review, release, rights, Saved, migration, frozen-effect, browser, CI and IW2 holds remain."
+  ],
+  "next": {
+    "state": "SOURCE_INSPECTION_REQUIRES_DISCRIMINATING_BROWSER_PROOF",
+    "source": "Existing Library Contagion link, intl-contagion heading and shared help/tooltip behavior",
+    "finding": "Heading lacks native tabindex unlike repaired Rates/Central bank headings; outbound units/method are in tooltip text. Source path uses ordinary anchors.",
+    "next": "Check native keyboard Library search to Contagion, access model methods, and return with query/context. Repair only reproduced reachability or focus failure; preserve actual shared tooltip component.",
+    "limits": "Isolated source fixture only; original signed-in Chrome tab remains untouched."
+  },
+  "whitespace_correction": {
+    "initial": "DESIGN/VISUAL/AGENTOSpassed;gitdiffcheck rejected trailing whitespace,publicationdidnotrun",
+    "repair": "Removed trailing whitespace only",
+    "optimized_html_unchanged": false,
+    "before_sha256": "00754ff8942ea6480cc27da2508beb3333129ad83b58583b05741835e5fb703b",
+    "after_sha256": "3bea5e95e9b1d3b8b4ce0c116485241cb3baf011f3e5f79c1ee8933889780cb6",
+    "nonwhitespace_tokens_identical": true,
+    "scope": "Only a blank whitespace-only line in normal-flow caveat changed. Original captured bytes retained, no new-byte capture claim; all numeric/text/DOM/assets unchanged."
+  }
+}

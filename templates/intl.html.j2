@@ -1197,29 +1197,16 @@
   {%- set ems_word_zh = '不可用' %}
 {%- endif %}
 
-{# connectedness plain read #}
-{%- if total_conn is not none and total_conn >= 80 %}
-  {%- set conn_read_en = 'Markets tightly linked — shocks travel fast' %}
-  {%- set conn_read_zh = '市场高度关联——冲击快速传播' %}
-{%- elif total_conn is not none and total_conn >= 60 %}
-  {%- set conn_read_en = 'Moderate links between markets' %}
-  {%- set conn_read_zh = '市场间关联程度适中' %}
-{%- else %}
-  {%- set conn_read_en = 'Markets absorbing their own shocks' %}
-  {%- set conn_read_zh = '市场消化自身冲击' %}
-{%- endif %}
-
-{# US receiving share plain read #}
-{%- if us_from is not none and us_from >= 75 %}
-  {%- set us_recv_en = 'US markets are tightly plugged into global moves right now' %}
-  {%- set us_recv_zh = '美国市场目前与全球走势高度联动' %}
-{%- elif us_from is not none and us_from < 55 %}
-  {%- set us_recv_en = 'US markets fairly insulated right now' %}
-  {%- set us_recv_zh = '美国市场目前相对隔离' %}
-{%- else %}
-  {%- set us_recv_en = 'US markets partially exposed to global moves' %}
-  {%- set us_recv_zh = '美国市场对全球走势有一定敞口' %}
-{%- endif %}
+{# Numeric model outputs and supplied parameters, without causal thresholds. #}
+{%- set conn_known = total_conn is number and total_conn is not boolean and total_conn >= 0 and total_conn <= 100 %}
+{%- set us_share_known = us_from is number and us_from is not boolean and us_from >= 0 and us_from <= 100 %}
+{%- set sp_params = SPL.get('params') or {} %}
+{%- set sp_window = sp_params.get('window') %}
+{%- set sp_lag = sp_params.get('var_lag') %}
+{%- set sp_horizon = sp_params.get('horizon') %}
+{%- set sp_params_known = sp_window is integer and sp_window > 0 and sp_lag is integer and sp_lag > 0 and sp_horizon is integer and sp_horizon > 0 %}
+{%- set sp_series = SPL.get('n_series') %}
+{%- set sp_date = SPL.get('as_of') %}
 
 {# top transmitter max value for bar scaling #}
 {%- set tx_max = namespace(v=1.0) %}
@@ -1364,7 +1351,7 @@
 <div class="ird-stage">
   <span class="ird-badge">🌐 {{ t('International Risk Desk', '国际风险台') }}</span>
   <div class="ird-title">{{ t('International Risk Desk', '国际风险台') }}</div>
-  <div class="ird-subtitle">{{ t('Four signals. One read: where risk is building, what crosses to the US, and what to do.', '四个信号，一张快照：风险在哪积聚，什么传导至美国，该怎么做。') }}</div>
+  <div class="ird-subtitle">{{ t('Four descriptive views of supplied risk indicators.', '四个视角，描述所供风险指标。') }}</div>
 
   <div class="ird-hchips">
 
@@ -1458,19 +1445,19 @@
     <!-- CONTAGION BOARD -->
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-contagion">{{ t('Contagion board', '传导看板') }} {{ help('How tightly are global markets linked right now? The score (0–100) measures how far a shock in one market travels to others, using a rolling 150-day window. Higher = shocks spread faster. Top shock senders are markets that export the most stress to peers. US receiving share = how much of international stress eventually reaches the S&P 500 — this is a transmission read, not a causal share. Source: daily ETF returns.', '全球市场目前关联程度如何？得分（0–100）衡量某市场冲击向其他市场的传导程度，使用150日滚动窗口。数值越高，冲击传播越快。前三大冲击输出方是最多向同伴输出压力的市场。美国接收份额 = 国际压力最终传导至标普500的比例——这是传导读数，非因果占比。数据来源：ETF日度收益。') }}</h2>
-        <span class="sub">{{ t('How connected are markets right now?', '市场间关联程度如何？') }}</span>
+        <h2 id="intl-contagion">{{ t('Contagion board', '传导看板') }} {{ help('The model fits rolling ETF volatility, not daily returns: 20-observation Garman-Klass volatility, with a close-return volatility proxy when OHLC is absent. Generalized forecast-error variance shares are row-normalized. The total is the mean share attributed to other tracked series within each series, excluding its own share. These are model variance shares, not transmission speed or causal price-move shares.', '模型拟合滚动ETF波动率，而非日度收益：20期Garman-Klass波动率；缺少OHLC时使用收盘收益波动率代理。广义预测误差方差份额逐行归一化。总指标是各序列中归于其他受监测序列份额的均值，剔除自身份额。这是模型方差份额，非传播速度或价格变动的因果占比。') }}</h2>
+        <span class="sub">{{ t('Modelled volatility links', '模型波动率关联') }}</span>
       </div>
 
-      {%- if total_conn is not none %}
+      {%- if conn_known %}
       <div class="ird-dial-wrap">
         <div class="ird-dial-circle">
           <div class="dc-num">{{ '%.0f' | format(total_conn) }}</div>
           <div class="dc-of">/ 100</div>
         </div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">{{ t(conn_read_en, conn_read_zh) }}</div>
-          <div class="small muted">{{ t('Above 80: stress in any market can quickly reach others. Below 60: markets absorb their own shocks.', '超过80：任意市场的压力可快速蔓延。低于60：市场能消化自身冲击。') }}</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">{{ t('Average cross-series variance share', '跨序列方差份额均值') }}</div>
+          <div class="small muted">{{ t('Share within each tracked volatility series, then averaged; no speed or stress threshold.', '先计算各受监测波动率序列内的份额，再取均值；不代表速度或压力阈值。') }}</div>
           {%- if RD.get('spillover_spark_svg') %}
           <div style="margin-top:8px;opacity:.8;">{{ RD.get('spillover_spark_svg') | safe }}</div>
           {%- endif %}
@@ -1480,20 +1467,22 @@
       <p class="muted small">{{ t('Connectedness data not available', '关联度数据暂不可用') }}</p>
       {%- endif %}
 
+      <div class="small muted" data-connectedness-method>
+        {{ t('Model specification: ', '模型设定：') }}
+        {% if sp_params_known %}{{ t(sp_window|string ~ ' aligned observations · lag ' ~ sp_lag|string ~ ' · horizon ' ~ sp_horizon|string ~ ' steps', sp_window|string ~ '期对齐观测 · 滞后' ~ sp_lag|string ~ '期 · 预测跨度' ~ sp_horizon|string ~ '步') }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %}
+      </div>
+      <div class="small muted">{{ t('Model series: ', '模型序列：') }}{% if sp_series is integer and sp_series >= 0 %}{{ sp_series }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %}</div>
+
       {%- if TXDISP %}
       <div style="margin:10px 0;">
         <div class="small muted" style="margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">
-          {{ t('Top 3 shock senders', '前三大冲击输出方') }}
+          {{ t('Largest outbound model contributions', '较大的模型输出贡献') }}
         </div>
         {%- for tx in TXDISP[:3] %}
         {%- set bar_pct = (tx.to_others_pct / tx_max.v * 100) | round | int if tx_max.v > 0 else 0 %}
-        {# The bar already says "how much more than the others". The raw "134 pts" it used
-           to print beside it is an internal spillover unit — it exceeds 100, has no stated
-           scale, and there is nothing a reader does differently at 134 vs 125. Demoted to
-           the hover; the rank and the bar carry the read. #}
         <div class="ird-tx-row"
-             data-tip-en="{{ tx.ticker }} · sends {{ '%.1f' | format(tx.to_others_pct) }} points of stress to the other tracked markets (150-day rolling window; own-market moves excluded)."
-             data-tip-zh="{{ tx.ticker }} · 向其他受监测市场输出 {{ '%.1f' | format(tx.to_others_pct) }} 点压力（150日滚动窗口，已剔除自身市场波动）。">
+             data-tip-en="{{ tx.ticker }} · {{ '%.1f' | format(tx.to_others_pct) }} summed percentage points across other series' normalized variance rows, excluding its own row; may exceed 100. Not stress units or a causal share."
+             data-tip-zh="{{ tx.ticker }} · 其他序列归一化方差行中的份额合计 {{ '%.1f' | format(tx.to_others_pct) }} 个百分点，剔除自身行；可超过100。非压力单位或因果占比。">
           <span class="ird-tx-rank">#{{ loop.index }}</span>
           <span class="ird-tx-flag">{{ tx.flag }}</span>
           <span class="ird-tx-name">{{ t(tx.name_en, tx.name_zh) }}</span>
@@ -1505,12 +1494,12 @@
       </div>
       {%- endif %}
 
-      {%- if us_from is not none %}
+      {%- if us_share_known %}
       <div class="ird-us-recv">
         <div class="ur-num">{{ '%.1f' | format(us_from) }}%</div>
         <div class="ur-text">
-          <b>{{ t(us_recv_en, us_recv_zh) }}</b>
-          <span class="help">?<span class="tip">{{ t('US receiving share (precise: ' + ('%.1f' | format(us_from)) + '%): what fraction of global shock variance is absorbed by the US index. Source: 150-day rolling VAR, 10-step horizon. This is a transmission read — not a statement that X% of US price moves are caused by overseas markets.', '美国接收份额（精确值：' + ('%.1f' | format(us_from)) + '%）：全球冲击方差中有多大比例被美国指数吸收。数据来源：150日滚动VAR，10步预测。这是传导读数——并非X%的美国价格走势由海外市场引起。') }}</span></span>
+          <b>{{ t('SPY volatility variance share from other tracked series', 'SPY波动率方差份额：来自其他受监测序列') }}</b>
+          <span class="help">?<span class="tip">{{ t('Share of SPY model forecast-error variance attributed to the other tracked volatility series, excluding SPY itself. Denominator: the SPY row-normalized variance decomposition; not the variance of all global markets and not a causal price-return share.', 'SPY模型预测误差方差中归于其他受监测波动率序列的份额，剔除SPY自身。分母为SPY逐行归一化的方差分解，非全球市场方差总量，也非价格收益的因果占比。') }}</span></span>
         </div>
       </div>
       {%- endif %}
@@ -1525,7 +1514,8 @@
         <span class="chip {{ 'caut' if saf_measured and ch_saf.get('safety_bid') else '' }}" data-transmission-safety>{{ t('Dollar five-day flag · Informational', '美元五日标志 · 信息项') }}: {% if not saf_measured %}{{ t('Unavailable', '不可用') }}{% elif ch_saf.get('safety_bid') %}{{ t('Flagged', '已标记') }}{% else %}{{ t('Not flagged', '未标记') }}{% endif %}</span>
       </div>
       <p class="caveat ird-asof">
-        {%- if SPL.get('as_of') %}{{ t('Data as of ' + SPL.get('as_of', ''), '数据截至 ' + SPL.get('as_of', '')) }}.{%- endif %}
+        <span data-connectedness-clock>{{ t('Model snapshot date: ', '模型快照日期：') }}{% if sp_date and sp_date not in ('n/a', 'unknown') %}{{ sp_date|string|e }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %}</span>.
+
         {{ t('The five-day flag is informational and excluded from the four threshold tests.', '五日标志为信息项，不计入四项阈值检查。') }}
       </p>
     </div><!-- /contagion -->
