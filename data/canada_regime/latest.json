@@ -176,7 +176,7 @@
     },
     "copper_gold": {
       "level": 0.0016,
-      "chg_20d_pct": 7.86
+      "chg_20d_pct": 6.87
     }
   },
   "overlay": {
@@ -186,23 +186,23 @@
       {
         "key": "oil",
         "label": "WTI crude oil",
-        "z": -1.46,
+        "z": -1.4,
         "sign": 1.0,
         "risk": "off",
-        "level": 90.91
+        "level": 91.49
       },
       {
         "key": "gold",
         "label": "Gold",
-        "z": -0.59,
+        "z": -0.78,
         "sign": 1.0,
         "risk": "off",
-        "level": 4197.2002
+        "level": 4157.0
       },
       {
         "key": "copper_gold",
         "label": "Copper / Gold",
-        "z": 1.23,
+        "z": 1.07,
         "sign": 1.0,
         "risk": "on",
         "level": 0.0016
@@ -234,10 +234,10 @@
       {
         "key": "dxy",
         "label": "US Dollar (DXY)",
-        "z": 1.93,
+        "z": 2.03,
         "sign": -1,
         "risk": "off",
-        "level": 102.028
+        "level": 102.14
       }
     ],
     "terms_of_trade": "deteriorating",
