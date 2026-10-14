@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T15:55:51.446719+00:00",
-  "count": 2905,
+  "generated_at": "2026-10-14T16:11:00.282261+00:00",
+  "count": 2906,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -913,6 +913,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cucjl2nrsal-fbd798",
+      "title": "Equities Tactical Top Picks",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:58Z",
+      "summary_points": [
+        "Regional Disparity: Asia-Pacific underperformed (-6.2% abs, -4.1% rel) vs.",
+        "Switzerland (5.8% abs) and Europe (0.5% abs), signaling sector-specific risks requiring active rebalancing.",
+        "Nenuvio & FDA Catalyst: $1bn sales target (2026) backed by channel demand; Relifeds FDA refiling timeline (Q3 results) is critical near-term catalyst for aesthetics growth.",
+        "Dental Market Growth: World's largest dental implants company with fastest-growing med tech market (2030); China pricing pressure offset by volume growth, restocking, and share gains.",
+        "Valuation Gap: Relative valuation below historical premiums supports material rating; price target $180 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
