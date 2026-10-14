@@ -2280,13 +2280,13 @@ class _Builder:
         for a route it does not carry.  ``fixed`` is ``quantity is not None``: the
         status of the quantity is not inspected, and its value is never read.
         """
-        owner = NON_CAPACITY_OWNERS.get(action.action)
-        if owner is None:
-            assert action.action in CAPACITY_OWNED_ROUTE_KINDS, action.action
+        if action.action in CAPACITY_OWNED_ROUTE_KINDS:
             raise CapacityInputError(
                 f"scenario action on {action.route_id}: capacity owns {action.action} routes "
                 "and the envelope has no such route"
             )
+        # ``ActionSelection`` admits exactly ROUTE_KINDS, which the two tables tile.
+        owner = NON_CAPACITY_OWNERS[action.action]
         return _NonCapacityAction(
             route_id=action.route_id,
             action=action.action,

@@ -31,6 +31,7 @@ import pytest
 
 import tests.test_capital_structure_capacity as C1
 import tests.test_capital_structure_capacity_c2 as C2
+from engine.capital_structure import capacity as c2b
 from engine.capital_structure.capacity import CapacityInputError
 from engine.capital_structure.issuer_state_contracts import (
     ROUTE_KINDS,
@@ -331,7 +332,11 @@ def test_c2b_debt_draw_and_other_are_funding_only() -> None:
 @pytest.mark.parametrize("kind", ROUTE_KINDS)
 def test_c2b_owner_table(kind: str) -> None:
     """Every ROUTE_KINDS member on a non-envelope id: refused, or owned per §2.2."""
+    # The spec table tiles the contract's twelve kinds, so no kind is unowned.
     assert set(OWNERS) == set(ROUTE_KINDS)
+    assert set(c2b.CAPACITY_OWNED_ROUTE_KINDS) == set(CAPACITY_KINDS)
+    assert set(c2b.NON_CAPACITY_OWNERS) == set(ROUTE_KINDS) - set(CAPACITY_KINDS)
+    assert not set(c2b.CAPACITY_OWNED_ROUTE_KINDS) & set(c2b.NON_CAPACITY_OWNERS)
     route_id = f"{kind}:c2b-not-an-envelope-route"
     kwargs = a21_kwargs(outstanding="30000005")
     if OWNERS[kind] is None:
