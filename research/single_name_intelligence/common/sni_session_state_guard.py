@@ -37,7 +37,8 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from types import MappingProxyType
 from typing import Mapping
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from functools import lru_cache
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
 DAY_KINDS: tuple[str, ...] = ("full", "half", "closed")
 
@@ -207,9 +208,20 @@ def _aware_instant(text: object) -> datetime | None:
     return parsed
 
 
+@lru_cache(maxsize=1)
+def _iana_names() -> frozenset[str]:
+    return frozenset(available_timezones())
+
+
 def _load_zone(name: object) -> ZoneInfo | None:
-    """Load an IANA zone by its exact caller-supplied name; never folded."""
-    if not isinstance(name, str) or name == "":
+    """Load an IANA zone by its exact caller-supplied name; never folded.
+
+    ``ZoneInfo`` resolves names through the filesystem, so on a
+    case-insensitive volume (macOS APFS) ``asia/hong_kong`` would load.
+    Membership in the exact-case IANA name set keeps the refusal
+    platform-independent.
+    """
+    if not isinstance(name, str) or name == "" or name not in _iana_names():
         return None
     try:
         return ZoneInfo(name)
