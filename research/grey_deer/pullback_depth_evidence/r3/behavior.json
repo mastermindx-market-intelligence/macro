@@ -1,0 +1,244 @@
+{
+  "kind": "synthetic_component_behavior_not_production",
+  "cases": [
+    {
+      "market": "cn",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "cn",
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "geometry": {
+        "padding": 24,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    },
+    {
+      "market": "us",
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "geometry": {
+        "padding": 20,
+        "radius": 14,
+        "overflow": 0
+      },
+      "disclosure_keyboard": "pass",
+      "native_expiry": "pass",
+      "input": "synthetic, native observer; not live prices"
+    }
+  ],
+  "passed": 16,
+  "static_chart_cases": [
+    {
+      "market": "cn",
+      "javascript": false,
+      "motion": "normal",
+      "visible_ink": true
+    },
+    {
+      "market": "us",
+      "javascript": false,
+      "motion": "normal",
+      "visible_ink": true
+    }
+  ]
+}

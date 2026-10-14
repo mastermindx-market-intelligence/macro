@@ -8,6 +8,15 @@ from lib import us_cash_calendar as us, tsx_calendar as ca
 
 CALENDARS = {"CN": cn, "HK": hk, "US": us, "CA": ca}
 SLATES = {
+    # Weekday-closure counts beside the notice URLs.
+    # 2023: 18  https://www.sse.com.cn/disclosure/announcement/general/c/c_20221227_5714458.shtml
+    # 2024: 20  https://www.sse.com.cn/disclosure/announcement/general/c/c_20231226_5733939.shtml
+    #           https://www.szse.cn/disclosure/notice/t20231226_605108.html
+    # 2025: 18  https://www.sse.com.cn/disclosure/announcement/general/c/c_20241223_10767108.shtml
+    #           https://www.szse.cn/disclosure/notice/t20241223_611283.html
+    ("CN", 2023): "01-02 01-23 01-24 01-25 01-26 01-27 04-05 05-01 05-02 05-03 06-22 06-23 09-29 10-02 10-03 10-04 10-05 10-06",
+    ("CN", 2024): "01-01 02-09 02-12 02-13 02-14 02-15 02-16 04-04 04-05 05-01 05-02 05-03 06-10 09-16 09-17 10-01 10-02 10-03 10-04 10-07",
+    ("CN", 2025): "01-01 01-28 01-29 01-30 01-31 02-03 02-04 04-04 05-01 05-02 05-05 06-02 10-01 10-02 10-03 10-06 10-07 10-08",
     ("CN", 2026): "01-01 01-02 02-16 02-17 02-18 02-19 02-20 02-23 04-06 05-01 05-04 05-05 06-19 09-25 10-01 10-02 10-05 10-06 10-07",
     ("HK", 2026): "01-01 02-17 02-18 02-19 04-03 04-06 04-07 05-01 05-25 06-19 07-01 10-01 10-19 12-25",
     ("HK", 2027): "01-01 02-08 02-09 03-26 03-29 04-05 05-13 06-09 07-01 09-16 10-01 10-08 12-27",
@@ -52,6 +61,38 @@ def test_real_open_dates_are_not_deleted(market, text):
 @pytest.mark.parametrize("md", ["01-04", "02-14", "02-28", "05-09", "09-20", "10-10"])
 def test_cn_government_makeup_weekends_remain_exchange_closed(md):
     assert not cn.is_session(date.fromisoformat(f"2026-{md}"))
+
+
+# Notice-stated weekend 休市 days (调休). They are not weekday-closure rows.
+CN_WEEKEND_CLOSURES = {
+    2023: "01-28 01-29 04-23 05-06 06-25 10-07 10-08",
+    2024: "02-04 02-18 04-07 04-28 05-11 09-14 09-29 10-12",
+    2025: "01-26 02-08 04-27 09-28 10-11",
+}
+# Ordinary sessions the notice says reopen, one beside each holiday span.
+CN_NEAR_OPEN = {
+    2023: "01-03 01-20 01-30 04-04 04-06 04-28 05-04 06-21 06-26 09-28 10-09",
+    2024: "01-02 02-08 02-19 04-03 04-08 04-30 05-06 06-07 06-11 09-13 09-18 09-30 10-08",
+    2025: "01-02 01-27 02-05 04-03 04-07 04-30 05-06 05-30 06-03 09-30 10-09",
+}
+CN_WEEKDAY_COUNTS = {2023: 18, 2024: 20, 2025: 18}
+
+
+@pytest.mark.parametrize("year", [2023, 2024, 2025])
+def test_cn_historical_notice_weekday_closures_and_nearby_sessions(year):
+    from lib.exchange_holidays import announced_holidays
+
+    holidays = announced_holidays("CN", year)
+    expected = dates(year, SLATES["CN", year])
+    assert set(holidays) == expected
+    assert len(holidays) == CN_WEEKDAY_COUNTS[year]
+    assert all(day.weekday() < 5 and not cn.is_session(day) for day in expected)
+    for day in dates(year, CN_NEAR_OPEN[year]):
+        assert day not in holidays
+        assert cn.is_session(day), day
+    for day in dates(year, CN_WEEKEND_CLOSURES[year]):
+        assert day.weekday() >= 5 and day not in holidays
+        assert not cn.is_session(day), day
 
 
 def test_cn_long_closure_completion_and_spring_festival_tail():
@@ -106,7 +147,7 @@ def test_regular_day_buffers_unchanged_and_local_date_wins(market, zone, d):
 
 
 @pytest.mark.parametrize("market,years", [
-    ("CN", {2026}), ("HK", {2026, 2027}), ("US", {2026, 2027}), ("CA", {2026}),
+    ("CN", {2023, 2024, 2025, 2026}), ("HK", {2026, 2027}), ("US", {2026, 2027}), ("CA", {2026}),
 ])
 def test_coverage_never_claims_unknown_year_verification(market, years):
     from lib.exchange_holidays import announced_holidays, calendar_coverage, early_close
@@ -114,6 +155,9 @@ def test_coverage_never_claims_unknown_year_verification(market, years):
     metadata = calendar_coverage(market)
     assert metadata["verified_years"] == frozenset(years)
     assert metadata["verified_on"] == date(2026, 10, 7)
+    if market == "CN":
+        assert metadata["year_verified_on"][2023] == date(2026, 10, 11)
+        assert metadata["year_verified_on"][2026] == date(2026, 10, 7)
     assert metadata["source_urls"]
     assert set(metadata["year_source_urls"]) == years
     assert announced_holidays(market, 2031) is None
@@ -148,7 +192,8 @@ def test_announcements_and_metadata_are_immutable_and_names_are_bilingual():
 
 def test_historical_fallback_and_legacy_api_semantics():
     assert cn.is_session(date(2019, 2, 11))
-    assert cn.is_session(date(2024, 2, 15))
+    # The 2024 notice closes the Spring Festival tail the approximation left open.
+    assert not cn.is_session(date(2024, 2, 15))
     assert cn.is_session(date(2027, 5, 3))
     assert not hk.is_session(date(2017, 8, 23))
     assert not us.is_session(date(2025, 1, 9))

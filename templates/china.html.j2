@@ -1139,6 +1139,7 @@
   body.page-china .cnx-dlg.open{display:flex}
   body.page-china .cnx-dlg-backdrop{position:fixed;inset:0;background:rgba(5,8,12,.6);backdrop-filter:blur(6px)}
   body.page-china .cnx-dlg-panel{position:relative;width:min(900px,94vw);background:rgba(13,17,24,.94);border:1px solid rgba(255,255,255,.14);border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);backdrop-filter:blur(28px) saturate(1.4);margin-bottom:6vh}
+  @media print{body.page-china{overflow:visible !important}body.page-china .cnx-dlg.open{position:static;inset:auto;overflow:visible}body.page-china .cnx-dlg.open .cnx-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color-scheme:light;background:Canvas;color:CanvasText}body.page-china .cnx-dlg.open .cnx-dlg-close{display:none}body.page-china .cnx-dlg.open .cnx-dlg-backdrop{display:none}}
   body.page-china .cnx-dlg-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.09)}
   body.page-china .cnx-dlg-title{font-size:13px;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
   body.page-china .cnx-dlg-close{background:none;border:1px solid rgba(255,255,255,.16);color:var(--text);width:28px;height:28px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1}
@@ -1167,9 +1168,9 @@
     @keyframes cnxPopIn{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
   }
   @media(prefers-reduced-motion:reduce){
-    body.page-china .cnx-dlg.open .cnx-dlg-backdrop{opacity:1}
-    body.page-china .cnx-dlg.open .cnx-dlg-panel{opacity:1;transform:none}
-    body.page-china .cnx-dlg.open .cnx-dlg-body > *{opacity:1;transform:none}
+    body.page-china .cnx-dlg.open .cnx-dlg-backdrop{opacity:1;transition:none;animation:none}
+    body.page-china .cnx-dlg.open .cnx-dlg-panel{opacity:1;transform:none;transition:none;animation:none}
+    body.page-china .cnx-dlg.open .cnx-dlg-body > *{opacity:1;transform:none;transition:none;animation:none}
   }
   body.page-china .cnx-eyebrow{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
   body.page-china .cnx-eyebrow:first-child{margin-top:0}
@@ -1568,6 +1569,7 @@ html[data-theme="light"] :is(
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-green .cnx-big-score { text-shadow:none; }
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score { text-shadow:none; }
 </style>
+{% if mode != 'stocks' %}<style>{% include "_risk_radar_pullback_depth.css.j2" %}{# Measured-only Risk Radar underway state #}</style>{% endif %}
 </head>
 <body class="{{ 'page-china-stocks' if mode == 'stocks' else 'page-china mx4-grid' }}">
 {{ lens.lens_css() }}
@@ -4635,16 +4637,59 @@ window.__CHART_SWAP__ = {
 /* MX5 dialog / popover / heatmap helpers (macro mode only) */
 (function(){
   var _hmMounted=false;
+  /* Risk Radar dialog keyboard contract (ported from MAS-258 / PR 8188): focus
+     moves into the dialog on open, Tab stays inside it, and closing returns
+     focus to the control that opened it. */
+  var _riskReturnFocus=null;
+  /* A stop the keyboard can reach. A closed <details> keeps its controls in the
+     DOM and Chrome still reports layout boxes for them, so ask the disclosure
+     rather than the box; only its own <summary> stays reachable. */
+  function _riskTabStop(el){
+    if(el.tabIndex<0||el.closest('[inert]')||el.getClientRects().length===0)return false;
+    /* Chrome also paints boxes for content its CSS hides, so defer to checkVisibility too. */
+    if(typeof el.checkVisibility==='function'&&!el.checkVisibility({checkVisibilityCSS:true}))return false;
+    for(var d=el.closest('details:not([open])');d;d=d.parentElement&&d.parentElement.closest('details:not([open])')){
+      var s=d.querySelector(':scope > summary');
+      if(!s||!s.contains(el))return false;
+    }
+    return true;
+  }
+  /* Tab wraps inside the open Risk Radar dialog and pulls stray focus back in.
+     The same stop rule as the Macro page's _trapTab. */
+  var _RISK_STOPS='button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])';
+  function _riskTrapTab(e){
+    var act=document.activeElement;
+    if(document.querySelector('.hm-ov')||(act&&act.closest&&act.closest('.lens-pop.open')))return;
+    var risk=document.querySelector('#cnx-dlg-risk.open:not(.cnx-closing)');
+    if(!risk)return;
+    var focusable=Array.from(risk.querySelectorAll(_RISK_STOPS)).filter(_riskTabStop);
+    if(!focusable.length)return;
+    /* Every Tab steps through these stops: WebKit leaves buttons out of its own
+       Tab order, so Shift+Tab from the stop after the close button walked out. */
+    var i=focusable.indexOf(act),n=focusable.length;
+    e.preventDefault();
+    if(e.shiftKey)focusable[i<=0?n-1:i-1].focus();
+    else focusable[i<0||i===n-1?0:i+1].focus();
+  }
   function cnxOpenDlg(id){
     var el=document.getElementById(id);
     if(!el)return;
+    /* A dialog still closing counts as closed: remember the new opener, and cancel
+       its pending close so it cannot shut this open or move focus away. */
+    if(id==='cnx-dlg-risk'&&(!el.classList.contains('open')||el.classList.contains('cnx-closing'))&&!el.contains(document.activeElement))_riskReturnFocus=document.activeElement;
+    document.querySelectorAll('.cnx-dlg').forEach(function(d){if(d._cnxCancelClose)d._cnxCancelClose();});
     document.querySelectorAll('.cnx-dlg.open').forEach(function(d){d.classList.remove('open','cnx-in','cnx-closing');});
     el.classList.add('open');
+    if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();
     document.body.style.overflow='hidden';
     history.replaceState(null,'',location.pathname+'#'+id);
     /* Add .cnx-in on the next frame (after .open paints the start state) so the
        entrance transition — backdrop fade + panel rise/scale + body stagger — runs. */
-    requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('cnx-in');});});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      if(!el.classList.contains('open')||el.classList.contains('cnx-closing'))return;
+      el.classList.add('cnx-in');
+      if(id==='cnx-dlg-risk'){var first=el.querySelector('.cnx-dlg-close');if(first)first.focus({preventScroll:true});}
+    });});
     /* Lazy-mount the China heatmap the first time the Markets dialog opens — the
        treemap needs a laid-out (visible) container, so we can't render it while hidden. */
     if(id==='cnx-dlg-markets'&&!_hmMounted){
@@ -4666,11 +4711,14 @@ window.__CHART_SWAP__ = {
     document.querySelectorAll('.cnx-dlg.open').forEach(function(el){
       var panel=el.querySelector('.cnx-dlg-panel');
       el.classList.add('cnx-closing');el.classList.remove('cnx-in');
-      var fired=false;
-      var done=function(){if(fired)return;fired=true;if(panel)panel.removeEventListener('transitionend',onEnd);el.classList.remove('open','cnx-closing');};
+      if(el._cnxCancelClose)el._cnxCancelClose();
+      var fired=false,timer;
+      var stop=function(){fired=true;clearTimeout(timer);if(panel)panel.removeEventListener('transitionend',onEnd);if(el._cnxCancelClose===stop)delete el._cnxCancelClose;};
+      var done=function(){if(fired)return;stop();el.classList.remove('open','cnx-closing');if(el.id!=='cnx-dlg-risk')return;var back=_riskReturnFocus;if(back&&back.isConnected&&typeof back.focus==='function'){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;return;}var act=document.activeElement;if((!act||el.contains(act))&&document.body&&typeof document.body.focus==='function')document.body.focus({preventScroll:true});};
       var onEnd=function(e){if(e.target===panel)done();};
       if(panel)panel.addEventListener('transitionend',onEnd);
-      setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
+      timer=setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
+      el._cnxCancelClose=stop;
     });
     document.body.style.overflow='';
     history.replaceState(null,'',location.pathname);
@@ -4711,10 +4759,12 @@ window.__CHART_SWAP__ = {
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
      (don't also close the Markets dialog underneath). */
   document.addEventListener('keydown',function(e){
+    if(e.key==='Tab'){_riskTrapTab(e);return;}
     if(e.key!=='Escape')return;
     if(document.querySelector('.hm-ov'))return;
     if(document.querySelector('.lens-pop.open'))return;
     cnxCloseDlg();
+    cnxClosePops();
   });
   /* close China-local popovers on outside click; the shared Lens owns data-tip receipts. */
   document.addEventListener('click',function(){cnxClosePops();});
