@@ -813,6 +813,15 @@ def path_under_session_root(root: Path) -> bool:
         for index in range(len(parts) - length + 1):
             if parts[index:index + length] == marker:
                 return True
+    # Fabric uses a distinct, host-user-owned checkout root. Keep this opt-in
+    # until the original lane bootstrap can prove a newly minted workspace;
+    # never implicitly re-sparsify a resumed or operator-owned checkout.
+    if os.environ.get("MASTERMIND_FABRIC_SPARSE_NEW") == "1":
+        try:
+            return (Path(root).resolve().parent ==
+                    (Path.home() / "lanes" / "wt").resolve())
+        except OSError:
+            return False
     return False
 
 
