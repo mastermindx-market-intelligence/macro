@@ -605,14 +605,63 @@
     var q = tile && m.quotes[tile.t];
     return q ? q.changePct : null;
   }
+  /* A newer asof/generation is not proof of a measured daily return.
+     The Oct 13 production China JSON had 0/1720 valid 1D observations
+     while the header still read "Daily close". Preserve the real market
+     date, but never label an empty heatmap as settled/current. Shared by
+     compact, full and embedded maps; no new quote/data state owner. */
+  function dailyIntegrityDescriptor(base) {
+    if (!base || (base.market !== 'china' && base.market !== 'hk')
+        || base.map_type !== 'stocks' || !Array.isArray(base.tiles)) return null;
+    var required = base.market === 'china' && base.observation_coverage
+      && Number.isSafeInteger(base.observation_coverage.membership_count)
+      && base.observation_coverage.membership_count > 0
+      ? base.observation_coverage.membership_count : base.tiles.length;
+    if (!required) return {
+      dot: 'degraded',
+      en: 'Daily returns unavailable · no constituent observations',
+      zh: '日线涨跌不可用 · 暂无成分股观测'
+    };
+    var actual = base.tiles.reduce(function (n, tile) {
+      var value = tile && tile.perf && tile.perf['1D'];
+      return n + (typeof value === 'number' && isFinite(value) ? 1 : 0);
+    }, 0);
+    if (base.market === 'china') {
+      var evidence = base.observation_coverage && base.observation_coverage.timeframes
+        && base.observation_coverage.timeframes['1D'];
+      if (!evidence || !Number.isSafeInteger(evidence.valid_count)
+          || !Number.isSafeInteger(evidence.denominator)
+          || evidence.denominator !== required
+          || evidence.valid_count < 0) {
+        actual = 0; // unverified historical metadata never certifies 1D
+      } else {
+        actual = Math.min(actual, evidence.valid_count);
+      }
+    }
+    if (actual / required >= 0.95) return null;
+    return {
+      dot: 'degraded',
+      en: 'Daily returns unavailable · ' + actual + '/' + required
+        + ' observed · ' + (base.asof || '—'),
+      zh: '日线涨跌不可用 · 有效观测 ' + actual + '/' + required
+        + ' · ' + (base.asof || '—')
+    };
+  }
   function hkLiveDescriptor(base) {
     if (!base || base.market !== 'hk' || base.map_type !== 'stocks') return null;
     var m = hkLiveMeta(base);
-    if (!m) return { dot: '', en: 'Daily close · ' + base.asof + ' · ' + base.n_tiles + ' names',
-      zh: '日线收盘 · ' + base.asof + ' · ' + base.n_tiles + ' 只' };
-    if (!m.usable) return { dot: 'degraded',
-      en: 'HK quotes incomplete · ' + m.resolved + '/' + m.requested + ' · Daily fallback ' + base.asof,
-      zh: '港股行情不完整 · ' + m.resolved + '/' + m.requested + ' · 回退日线 ' + base.asof };
+    if (!m) return dailyIntegrityDescriptor(base) || {
+      dot: '', en: 'Daily close · ' + base.asof + ' · ' + base.n_tiles + ' names',
+      zh: '日线收盘 · ' + base.asof + ' · ' + base.n_tiles + ' 只'
+    };
+    if (!m.usable) {
+      var hkDailyOK = !dailyIntegrityDescriptor(base);
+      return { dot: 'degraded',
+        en: 'HK quotes incomplete · ' + m.resolved + '/' + m.requested
+          + (hkDailyOK ? ' · Daily fallback ' : ' · Daily unavailable ') + base.asof,
+        zh: '港股行情不完整 · ' + m.resolved + '/' + m.requested
+          + (hkDailyOK ? ' · 回退日线 ' : ' · 日线不可用 ') + base.asof };
+    }
     var stamp = new Date(m.newestQuoteTs).toLocaleTimeString('en-GB', {
       timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false
     });
@@ -908,7 +957,7 @@
   function chinaLiveDescriptor(data) {
     if (!data || data.market !== 'china') return null;
     var meta = chinaLiveMeta(data);
-    if (!meta) return {
+    if (!meta) return dailyIntegrityDescriptor(data) || {
       state: 'daily', dot: '',
       en: 'Daily close · ' + (data.asof || '—'),
       zh: '日线收盘 · ' + (data.asof || '—'), breadth: null
@@ -920,11 +969,16 @@
     var coverage = meta.resolved + '/' + meta.requested;
     var fallback = meta.fallback ? ' · fallback feed' : '';
     var fallbackZh = meta.fallback ? ' · 备用行情源' : '';
-    if (!meta.usable) return {
-      state: 'degraded', dot: 'degraded',
-      en: 'Live feed degraded · ' + coverage + ' · Daily fallback ' + (data.asof || '—'),
-      zh: '实时行情降级 · ' + coverage + ' · 回退日线 ' + (data.asof || '—'), breadth: null
-    };
+    if (!meta.usable) {
+      var dailyOK = !dailyIntegrityDescriptor(data);
+      return {
+        state: 'degraded', dot: 'degraded',
+        en: 'Live feed degraded · ' + coverage
+          + (dailyOK ? ' · Daily fallback ' : ' · Daily unavailable ') + (data.asof || '—'),
+        zh: '实时行情降级 · ' + coverage
+          + (dailyOK ? ' · 回退日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
+      };
+    }
     var phase = meta.phase, state = 'live', enPhase = 'Live', zhPhase = '实时';
     if (phase === 'session_break') { state = 'break'; enPhase = 'Lunch break'; zhPhase = '午间休市'; }
     else if (phase === 'closing_auction') { state = 'auction'; enPhase = 'Closing auction'; zhPhase = '收盘集合竞价'; }

@@ -90,3 +90,69 @@ test('critical renderer blocks no longer read China 1D directly from tile.perf',
   assert.doesNotMatch(block,/\b(?:t|tile|rec\.t)\.perf\[(?:tf|TF|data\._tf)\]/,`direct 1D-capable perf read remains in ${from}`);
  }
 });
+
+function integrityApi(){
+ const src=source();
+ const a=src.indexOf('  function dailyIntegrityDescriptor(');
+ const b=src.indexOf('  function hkLiveDescriptor(',a);
+ const c=src.indexOf('  function startHKLiveRefresh(',b);
+ const d=src.indexOf('  function chinaLiveDescriptor(');
+ const e=src.indexOf('  function sectorLabels(',d);
+ assert.ok(a>=0&&b>a&&c>b&&d>=0&&e>d,'daily evidence/descriptor boundaries absent');
+ const ctx={Number,Math,Array,Object,isFinite,Date,
+   chinaLiveMeta:()=>null,hkLiveMeta:()=>null};
+ vm.createContext(ctx);
+ vm.runInContext(
+   src.slice(a,c)+'\n'+src.slice(d,e)
+   +'\nglobalThis.integrity={dailyIntegrityDescriptor,chinaLiveDescriptor,hkLiveDescriptor};',
+   ctx
+ );
+ return ctx.integrity;
+}
+
+function dailyFixture(market,values,declared=values.filter(x=>x!==null).length){
+ const d={market,map_type:'stocks',source:'daily-close',asof:'2026-10-13',
+   n_tiles:values.length,
+   tiles:values.map((value,i)=>({t:String(i),perf:{'1D':value}}))};
+ if(market==='china') d.observation_coverage={
+   membership_count:values.length,timeframes:{'1D':{
+     valid_count:declared,denominator:values.length,
+     missing_count:values.length-declared}}};
+ return d;
+}
+
+test('zero-coverage China daily cannot masquerade as a settled heatmap',()=>{
+ const api=integrityApi(),base=dailyFixture('china',Array(100).fill(null),0);
+ const result=api.chinaLiveDescriptor(base);
+ assert.equal(result.dot,'degraded');
+ assert.match(result.en,/Daily returns unavailable.*0\/100.*2026-10-13/);
+ assert.match(result.zh,/日线涨跌不可用.*0\/100/);
+});
+
+test('the daily fallback is truthful even if China tile values contradict declared coverage',()=>{
+ const api=integrityApi(),base=dailyFixture('china',Array(100).fill(1.3),0);
+ const result=api.dailyIntegrityDescriptor(base);
+ assert.equal(result.dot,'degraded');
+ assert.match(result.en,/0\/100/);
+ delete base.observation_coverage;
+ assert.match(api.chinaLiveDescriptor(base).en,/Daily returns unavailable/);
+});
+
+test('95% verified real daily observations remain eligible for China and HK',()=>{
+ const api=integrityApi();
+ const values=[...Array(95).fill(-0.2),...Array(5).fill(null)];
+ const china=dailyFixture('china',values,95);
+ const hk=dailyFixture('hk',values);
+ assert.equal(api.dailyIntegrityDescriptor(china),null);
+ assert.equal(api.dailyIntegrityDescriptor(hk),null);
+ assert.match(api.chinaLiveDescriptor(china).en,/Daily close · 2026-10-13/);
+ assert.match(api.hkLiveDescriptor(hk).en,/Daily close · 2026-10-13/);
+});
+
+test('Hong Kong no-live view discloses insufficient daily return coverage',()=>{
+ const api=integrityApi(),hk=dailyFixture('hk',Array(100).fill(null));
+ const d=api.hkLiveDescriptor(hk);
+ assert.equal(d.dot,'degraded');
+ assert.match(d.en,/Daily returns unavailable.*0\/100.*2026-10-13/);
+ assert.match(d.zh,/日线涨跌不可用/);
+});
