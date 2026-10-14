@@ -704,16 +704,27 @@ def compose_mining_research(
     # Industrial views are pulled from interpretation_blocks verbatim and ordered by
     # stable_subject_id (PLAN:203). Duplicate local asset labels stay visible but are
     # never additional supply (MGD-12).
+    #
+    # W10-1 — the withdrawal that suppresses native_blocks suppresses this channel too.
+    # Every closed T04 limitation mapped from an omission (``changed_source`` included,
+    # see ``_suppress_native_blocks`` above) collapses the reported-economics list to [];
+    # publishing ``interpretation_blocks`` beside that empty panel paired stale causal text
+    # with withdrawn quantities — the exact pairing ``select_mining_evidence`` refuses with
+    # ``generation_changed`` for the evidence drawer, and the reason that refusal is the
+    # review gate for this panel. The contract explanation survives as the limitation; it
+    # never survives as causal text. A non-withdrawn bundle is untouched by this guard, so
+    # a present view still publishes.
     industrial_views: list[dict[str, Any]] = []
-    for view in bundle.interpretation_blocks:
-        industrial_views.append(
-            {
-                "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
-                "view_kind": str(view.get("view_kind", "industrial")),
-                "description": str(view.get("description", "")),
-                "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
-            }
-        )
+    if not _suppress_native_blocks:
+        for view in bundle.interpretation_blocks:
+            industrial_views.append(
+                {
+                    "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
+                    "view_kind": str(view.get("view_kind", "industrial")),
+                    "description": str(view.get("description", "")),
+                    "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
+                }
+            )
     industrial_views = _order_rows_by_stable_source_identity(industrial_views)
 
     # Evidence refs are derived from native_refs; authority is echoed on every object.

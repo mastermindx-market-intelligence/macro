@@ -66,17 +66,21 @@ waves:
     prs: [9345, 9368, 9371, 9372]
     depends_on: [LR-W2, LR-W3]
   - id: LR-W5
-    title: V2 §2–§6 harness repair (F9 size gate, real look_count, prereg V2.1 clause/class table) + T12R/T13R re-size/power + T24 conditional + T25 release readback + T26 four-state closeout
-    status: in_progress
+    title: V2 §2–§6 harness repair (F9 size gate, real look_count, prereg V2.1 clause/class table) + T12R/T13R re-size/power + T26 four-state closeout
+    status: done
+    prs: [9380, 9386]
     depends_on: [LR-W4]
-    next_action: Merge the ORCH-REPAIR DRAFT PR on claude/lr-harness-repair-2026-10-14 (exact-head merge; one main baseline if legacy-jobs.yml paths widen), then re-size under V2.1; only then any P1/P2 read. T25 operator readback is a human gap.
+  - id: LR-W6
+    title: Follow-on (outside the 2026-10-13 masterplan T-graph) — prereg V3 re-registering H1/H2/H3 statistics with fresh size/power before any P1 read; T18 natural-consumption proof from the first nightly; T24 conditional issuance chain; T25 operator readback (human gap)
+    status: todo
+    depends_on: [LR-W5]
+    next_action: Author a dated PREREG V3 (own blob pin; never edit V1/V2/V2.1) re-registering the statistics, re-run T12/T13 size+power under it, and only on SIZED+POWERED issue a P1 read. T25 is a human act.
 next_action: >
-  Wave 5: land the harness repair PR (F9 gate + look_count + PREREG V2.1), re-run T12R/T13R
-  size/power under V2.1, record the result (V3 ruling if re-size fails); nightly publishes
-  measured_read / meta.rs_history for T18 natural-consumption proof; T25 operator readback;
-  T26 four-state report (MEASURED_PRODUCT_COMPLETE supportable on code pending main baseline
-  38627611213; SCIENTIFIC_DISPOSITION recorded; PREDICTIVE_CAPABILITY NOT qualified;
-  ORIGINAL_PROGRAMME NOT complete).
+  Masterplan T-graph closed (T26 recorded: MEASURED_PRODUCT_COMPLETE = COMPLETE on main baseline
+  38627611213; SCIENTIFIC_DISPOSITION_COMPLETE; PREDICTIVE_CAPABILITY_QUALIFIED = NO;
+  ORIGINAL_PROGRAMME_COMPLETE = NOT COMPLETE; repair #9380 → c55b54dab056). Follow-on LR-W6: author
+  PREREG V3 re-registering the statistics before any P1 read; T18 natural proof waits on the first
+  nightly (never dispatch daily.yml); T25 operator readback is a human act.
 ---
 
 # Leadership Migration & Sector/Theme Rotation Intelligence
