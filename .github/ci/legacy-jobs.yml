@@ -30316,17 +30316,24 @@ jobs:
     # rights.load_registry_snapshot) and the modules those imports reach.
     # A dependency edit schedules this job, and contract-delta does not
     # see the suites as unwired.
-    # Measured on this head after dropping config/sparse_worktree.json,
-    # engine/__init__.py and scripts/worktree_sparse.py (declared but in
-    # no suite's closure): suite_dependency_closure over the eight suites
-    # on the run line is 66 files, declared paths: is 68 (the 66 plus
-    # the two tests/fixtures/** patterns), and the shared curation check
-    # curated_exclusive_closure_findings is UNCOVERED 0. run_ci_pack
-    # weight 18 (_job_weight: one command + eight tests/test_ mentions
-    # x2 + len//800), pack 4 of the 12-way partition_jobs static census.
-    # Full tracked inventory on 94b86c4 (git ls-files == git ls-tree -r HEAD,
-    # 120893 paths): suite_dependency_closure of the six suites is 64 files
-    # and curated_exclusive_closure_findings is UNCOVERED 0. The same 64-file
+    # Measured on this head: suite_dependency_closure over the eight
+    # suites on the run line is 66 files, and declared paths: is 69 (the
+    # 66, engine/__init__.py and the two tests/fixtures/** patterns).
+    # curated_exclusive_closure_findings is UNCOVERED 0.
+    # engine/__init__.py is declared although the closure does not list it:
+    # suite_dependency_closure does not emit ancestor package __init__.py
+    # files, yet importing any engine.* module executes it, so an edit to
+    # it must still schedule this job. engine/market_ontology/__init__.py
+    # has the same gap and was undeclared before this re-land; it stays
+    # with the ancestor-init follow-up to ci_scope_dependencies.
+    # config/sparse_worktree.json and scripts/worktree_sparse.py are not
+    # declared (in no suite's closure, and neither is a package __init__).
+    # run_ci_pack weight 18 (_job_weight: two commands, pip install and
+    # pytest, + eight tests/test_ mentions x2 + len//800 = 0). Its pack
+    # slot is not fixed: partition_jobs packs only the jobs a diff selects.
+    # Earlier, on 94b86c4 (120893 tracked paths), the six suites of that
+    # head had a 64-file suite_dependency_closure and
+    # curated_exclusive_closure_findings UNCOVERED 0. The same 64-file
     # union on fe6d00ec still excludes engine/theme_graph/store.py,
     # engine/market_ontology/theme_research_mounts.py and
     # engine/research_priority_ordering.py (curated_exclusive_closure_findings
@@ -30355,6 +30362,7 @@ jobs:
       - "contracts/market_ontology/robotics_theme_research.v1.schema.json"
       - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/__init__.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
       - "engine/company_intelligence/documents.py"

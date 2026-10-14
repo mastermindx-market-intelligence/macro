@@ -4773,7 +4773,7 @@ CURATED_EXCLUSIVE = {
     # onto the packing probes.
     "grey-deer-pullback-stage1",
     # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
-    # One exclusive gate:code job for the six Robotics suites. The declaration
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
     # is their measured import closure (including the #7870 shared shell);
     # exclusivity keeps that closure off the packing probes. The
     # cover-their-own-import-closure test keeps the list honest.
