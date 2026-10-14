@@ -6,9 +6,9 @@
 |---|---|---:|---:|---|
 | standouts (engine buy-board) | 2026-10-08 | 107 | 107 | ⚠️ warn |
 | briefing (Phase-5 priority queue) | 2026-10-14 | 25 | 25 | ok |
-| radar (divergence radar) | 2026-10-14 | 253 | 253 | ok |
+| radar (divergence radar) | 2026-10-14 | 252 | 252 | ok |
 | altdata (alt-data desk) | 2026-10-14 | 30 | 30 | ok |
-| news (news flow) | 2026-10-14 | 1231 | 1154 | ok |
+| news (news flow) | 2026-10-14 | 1197 | 1116 | ok |
 | intel_hub (5-desk command) | 2026-10-14 | 30 | 30 | ok |
 
 ## Warnings

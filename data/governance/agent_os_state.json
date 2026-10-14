@@ -1,14 +1,14 @@
 {
   "schema": "agent_os_state.v1",
   "generator": "scripts/agentos.py status",
-  "source_records_digest": "sha256:e12f3b9cafb2a2f06f6c0484eb723b1b8d7103b4c39a15c0e306064a14701afa",
-  "generated_at": "2026-10-14T08:50:14Z",
+  "source_records_digest": "sha256:330d5b9bab7940d93a9dc4ae2cf1c81b4c99aaae36bd2a24afe5e28d0f4de0c8",
+  "generated_at": "2026-10-14T19:36:17Z",
   "inputs": {
     "workstreams": 96,
-    "decisions": 472,
-    "discoveries": 517,
-    "handoffs": 677,
-    "active_builds": "data/governance/active_builds.json@2026-10-14T08:50:14.615229+00:00",
+    "decisions": 489,
+    "discoveries": 529,
+    "handoffs": 708,
+    "active_builds": "data/governance/active_builds.json@2026-10-14T19:36:17.739932+00:00",
     "active_builds_age_hours": 0.0,
     "worktrees": 1,
     "uncommitted_worktrees": [],
@@ -2225,7 +2225,7 @@
       "repos": [
         "macro"
       ],
-      "next_action": "R2 of the 2026-10-13 masterplan (research/capital_structure/e2e_20261013/ MASTERPLAN.md) is BUILT on claude/cs-v2-r2-ledger-sharding: byte-exact source-ledger sharding (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) repairs the GH001 publication loss that silently dropped every generation since 2026-09-27 (DSC:CS-GENERATION-PUSH-LOST-TO-GH001-WHILE-JOB-SUCCEEDED). Merge it on concluded green, prove main under the changed authority, then observe the first natural scheduled chain for a generation commit carrying source_manifest.part-0002.jsonl; that same chain remains the only closer for the W2C/W2D BUILT_NOT_PROVEN repairs. Do not dispatch daily.yml. The collect job has been cancelled by the runner-listener outage since 2026-10-10 (operator-owned). Next ready tasks after the merge: C0 type freeze, E0 reference docs, then P0 adoption of #8673 only through the held owner path with a hosted gate:data receipt. W3 and W4 remain held.",
+      "next_action": "2026-10-13 masterplan (research/capital_structure/e2e_20261013/MASTERPLAN.md, PR #9115) tasks R2 #9146, C0 #9159, E0 #9244, T0 #9270, I0 #9274, B0 #9264, F0 #9268, B1 #9277, F1 #9283, L0 #9314 and U0 #9355 (journey freeze) are merged and landed; main ci.yml baseline 38587478485 (918fad1e) concluded success and cleared the L0 authority freeze. R1 is closed: the natural chain is still dark (no source_manifest.part-0002.jsonl on main, last generation 24ab0b613f89 on 2026-09-26) because the runner-listener fuse cancels every collect job, a Chairman blocker; never dispatch daily.yml to prove it. C1 is the joint financing-constraint kernel (DEC:CS-V2-JOINT-KERNEL-IN-C1) plus the evidence-qualified capacity adapter, shipped by the PR carrying this record. L1b #9359 (rule pack 1.1.0: Rule 415, Rule 462(e) and Section 10(a)(3) text) is merged and landed (7dd06ff5); L1a #9363 (registration paths) is in CI. I1a (C0 2.1.0 economic terms, instrument_economics.py and supply_scenarios.py, DEC:CS-V2-SUPPLY-ECONOMIC-TERMS-I1) is being built; I1b (deterministic warrant-term extractor) follows it. Then I2, X0, C2, S0, U1, U2, A0, G0, A1, N0, V0 and Z0 per masterplan §13. The UI repair PR #8673 stays held and owns site/capital_structure.js, templates/capital_structure.js and their tests. W3 and W4 remain held. W2C/W2D stay BUILT_NOT_PROVEN until the first natural chain publishes.",
       "created": "2026-10-14",
       "updated": "2026-10-14",
       "stale_days": 0,
@@ -10205,7 +10205,7 @@
             8653,
             8635
           ],
-          "done_at": "2026-10-09T00:21:37Z",
+          "done_at": null,
           "wait": null
         }
       ],
@@ -10302,45 +10302,45 @@
         },
         {
           "number": 8646,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T01:50:01Z"
+          "merged_at": null
         },
         {
           "number": 8650,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T20:55:16Z"
+          "merged_at": null
         },
         {
           "number": 8631,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T21:02:38Z"
+          "merged_at": null
         },
         {
           "number": 8651,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T21:40:18Z"
+          "merged_at": null
         },
         {
           "number": 8629,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T22:17:53Z"
+          "merged_at": null
         },
         {
           "number": 8653,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-08T23:19:34Z"
+          "merged_at": null
         },
         {
           "number": 8635,
-          "state": "merged",
+          "state": "unknown",
           "wave": "TF-CONVERGENCE",
-          "merged_at": "2026-10-09T00:21:37Z"
+          "merged_at": null
         }
       ],
       "claim": null,
@@ -10349,13 +10349,13 @@
       "warnings": [
         "record_disagrees_with_execution: wave D2E cites PR #8540, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
         "record_disagrees_with_execution: wave ENE-1 cites PR #7881, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8646 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8650 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8631 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8651 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8629 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8653 is merged",
-        "record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8635 is merged"
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8646, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8650, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8631, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8651, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8629, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8653, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8635, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)"
       ],
       "source": "agentos/workstreams/WS-GMI-THEME-GRAPH.md"
     },
@@ -11880,7 +11880,7 @@
             8587,
             8588
           ],
-          "done_at": "2026-10-07T07:41:44Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -11899,7 +11899,7 @@
             8614,
             8616
           ],
-          "done_at": "2026-10-07T09:21:08Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -12047,27 +12047,27 @@
         },
         {
           "number": 8583,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W6",
-          "merged_at": "2026-10-07T06:56:16Z"
+          "merged_at": null
         },
         {
           "number": 8587,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W6",
-          "merged_at": "2026-10-07T07:41:40Z"
+          "merged_at": null
         },
         {
           "number": 8588,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W6",
-          "merged_at": "2026-10-07T07:41:44Z"
+          "merged_at": null
         },
         {
           "number": 8596,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W7",
-          "merged_at": "2026-10-07T09:44:35Z"
+          "merged_at": null
         },
         {
           "number": 8454,
@@ -12077,21 +12077,21 @@
         },
         {
           "number": 8613,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W7",
-          "merged_at": "2026-10-07T09:14:24Z"
+          "merged_at": null
         },
         {
           "number": 8614,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W7",
-          "merged_at": "2026-10-07T09:23:10Z"
+          "merged_at": null
         },
         {
           "number": 8616,
-          "state": "merged",
+          "state": "unknown",
           "wave": "W7",
-          "merged_at": "2026-10-07T09:21:08Z"
+          "merged_at": null
         },
         {
           "number": 8809,
@@ -13876,7 +13876,7 @@
       "repos": [
         "macro"
       ],
-      "next_action": "Wave w2 - build the tape-draw adapter and the EDGAR body leaf under DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE, draw the 600-case benchmark, label it with the A6 labeler packet and score it with eval_receipt/eval_grade; keep the v1 contract byte-frozen.",
+      "next_action": "Wave w2 - gated_v3 on or after 2026-10-20 under the frozen fill-only issuer fallback (DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER; one ni-edgar-body-2 fetch that also settles the 113 open windows) and a census verdict on its new cases; a third family after GLM resets (2026-10-19 05:16Z) on the 12 labeled queue cases (T1 executed_amount split) and the disputed slots of gated-in MATCH cases; a second auditor on the gates-2 and census cards; a MiniMax usage capture; a name rung for the 914 no-ticker candidates; 74 MATCH cases score, shortfall 526; shortfalls stay printed, never padded; keep the v1 contract byte-frozen. Wave w3 follows.",
       "created": "2026-10-14",
       "updated": "2026-10-14",
       "stale_days": 0,
@@ -13951,7 +13951,7 @@
             "w1"
           ],
           "deps_satisfied": true,
-          "next_action": "Under DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE, build engine/news_impact/tape_draw.py (tape rows to sampler candidates, with the manifest printing short cells and body_unavailable counts) and engine/news_impact/edgar_body.py (issuer 8-K bodies through the existing SEC owners, spans from documents.text_span); then draw the 600 cases, label them with the A6 labeler packet across two families, and score them with eval_receipt/eval_grade.",
+          "next_action": "The draw (PR",
           "prs": [],
           "done_at": null,
           "wait": null
@@ -14839,7 +14839,7 @@
           "prs": [
             8730
           ],
-          "done_at": "2026-10-10T06:06:31Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14852,7 +14852,7 @@
           "prs": [
             8732
           ],
-          "done_at": "2026-10-10T03:10:02Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14865,7 +14865,7 @@
           "prs": [
             8710
           ],
-          "done_at": "2026-10-10T04:05:22Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14878,7 +14878,7 @@
           "prs": [
             8717
           ],
-          "done_at": "2026-10-10T02:12:13Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14891,7 +14891,7 @@
           "prs": [
             8720
           ],
-          "done_at": "2026-10-09T22:12:15Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14904,7 +14904,7 @@
           "prs": [
             8722
           ],
-          "done_at": "2026-10-10T00:44:38Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14917,7 +14917,7 @@
           "prs": [
             8707
           ],
-          "done_at": "2026-10-09T11:34:41Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -14930,7 +14930,7 @@
           "prs": [
             8733
           ],
-          "done_at": "2026-10-10T05:05:15Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -15104,51 +15104,51 @@
       "prs": [
         {
           "number": 8730,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q01",
-          "merged_at": "2026-10-10T06:06:31Z"
+          "merged_at": null
         },
         {
           "number": 8732,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q02",
-          "merged_at": "2026-10-10T03:10:02Z"
+          "merged_at": null
         },
         {
           "number": 8710,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q03",
-          "merged_at": "2026-10-10T04:05:22Z"
+          "merged_at": null
         },
         {
           "number": 8717,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q04",
-          "merged_at": "2026-10-10T02:12:13Z"
+          "merged_at": null
         },
         {
           "number": 8720,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q05",
-          "merged_at": "2026-10-09T22:12:15Z"
+          "merged_at": null
         },
         {
           "number": 8722,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q06",
-          "merged_at": "2026-10-10T00:44:38Z"
+          "merged_at": null
         },
         {
           "number": 8707,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q07",
-          "merged_at": "2026-10-09T11:34:41Z"
+          "merged_at": null
         },
         {
           "number": 8733,
-          "state": "merged",
+          "state": "unknown",
           "wave": "Q08",
-          "merged_at": "2026-10-10T05:05:15Z"
+          "merged_at": null
         },
         {
           "number": 8736,
@@ -15242,7 +15242,7 @@
       "repos": [
         "macro"
       ],
-      "next_action": "E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b): R0 custody ledger and B0 basis-contract freeze recorded under research/rates_inflation_command/seat_20261014/. B0 (pure engine/rates_command_basis.py + schema) and T0 (A03-A05 board qualification repair) are in flight, then D0/Y0 provenance, then D1/Y1/I0 and C0 composition. F0 merged in #6543 is reused, never redone; held #7909 and the GRI programme (#8317) are preserved.",
+      "next_action": "E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b). Wave 1 is merged: R0/B0 records #9206, E0+P0 #9212, F0 gap #9222, F1 #9232, B0 #9233, D0 #9252, T0 #9253, Y0 #9254. Next: merge M0/X0 #9282 (never re-run M0/X0), one main ci.yml baseline, then ship D1/Y1/I0, then C0 composition, then P1, X1, V0, A0, E1, P2, G0, S0, E2, B1, A1, Z0 per masterplan section 13. Latest handoff: agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-14-e2e-seat-wave1.md. F0 (#6543, #9222) is reused, never redone; held #7909 and the GRI programme (#8317) are preserved.",
       "created": "2026-10-14",
       "updated": "2026-10-14",
       "stale_days": 0,
@@ -15799,7 +15799,7 @@
           "prs": [
             8593
           ],
-          "done_at": "2026-10-07T07:19:47Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -15812,7 +15812,7 @@
           "prs": [
             8579
           ],
-          "done_at": "2026-10-07T05:57:50Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -15825,7 +15825,7 @@
           "prs": [
             8589
           ],
-          "done_at": "2026-10-07T07:01:23Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -15842,7 +15842,7 @@
             8592,
             8610
           ],
-          "done_at": "2026-10-07T09:07:52Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -15969,33 +15969,33 @@
         },
         {
           "number": 8593,
-          "state": "merged",
+          "state": "unknown",
           "wave": "F3-TYPING",
-          "merged_at": "2026-10-07T07:19:47Z"
+          "merged_at": null
         },
         {
           "number": 8579,
-          "state": "merged",
+          "state": "unknown",
           "wave": "F9",
-          "merged_at": "2026-10-07T05:57:50Z"
+          "merged_at": null
         },
         {
           "number": 8589,
-          "state": "merged",
+          "state": "unknown",
           "wave": "F15",
-          "merged_at": "2026-10-07T07:01:23Z"
+          "merged_at": null
         },
         {
           "number": 8592,
-          "state": "merged",
+          "state": "unknown",
           "wave": "F10",
-          "merged_at": "2026-10-07T07:34:17Z"
+          "merged_at": null
         },
         {
           "number": 8610,
-          "state": "merged",
+          "state": "unknown",
           "wave": "F10",
-          "merged_at": "2026-10-07T09:07:52Z"
+          "merged_at": null
         }
       ],
       "claim": null,
@@ -17556,7 +17556,7 @@
           "prs": [
             8698
           ],
-          "done_at": "2026-10-11T23:05:16Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -17571,7 +17571,7 @@
           "prs": [
             8698
           ],
-          "done_at": "2026-10-11T23:05:16Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -17586,7 +17586,7 @@
           "prs": [
             8698
           ],
-          "done_at": "2026-10-11T23:05:16Z",
+          "done_at": null,
           "wait": null
         },
         {
@@ -17614,27 +17614,27 @@
       "prs": [
         {
           "number": 8698,
-          "state": "merged",
+          "state": "unknown",
           "wave": "producer-integrity",
-          "merged_at": "2026-10-11T23:05:16Z"
+          "merged_at": null
         },
         {
           "number": 8698,
-          "state": "merged",
+          "state": "unknown",
           "wave": "historical-qualification",
-          "merged_at": "2026-10-11T23:05:16Z"
+          "merged_at": null
         },
         {
           "number": 8698,
-          "state": "merged",
+          "state": "unknown",
           "wave": "boats-qualification",
-          "merged_at": "2026-10-11T23:05:16Z"
+          "merged_at": null
         },
         {
           "number": 8698,
-          "state": "merged",
+          "state": "unknown",
           "wave": "consumer-delivery",
-          "merged_at": "2026-10-11T23:05:16Z"
+          "merged_at": null
         },
         {
           "number": 945,
@@ -17689,9 +17689,9 @@
       "needs_ceo": null,
       "collisions": [],
       "warnings": [
-        "record_disagrees_with_execution: wave historical-qualification is 'in_progress' but PR #8698 is merged",
-        "record_disagrees_with_execution: wave boats-qualification is 'in_progress' but PR #8698 is merged",
-        "record_disagrees_with_execution: wave consumer-delivery is 'in_progress' but PR #8698 is merged",
+        "record_disagrees_with_execution: wave historical-qualification cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave boats-qualification cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+        "record_disagrees_with_execution: wave consumer-delivery cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
         "record_disagrees_with_execution: wave consumer-delivery cites PR #945, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
         "record_disagrees_with_execution: wave consumer-delivery cites PR #955, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
         "record_disagrees_with_execution: wave consumer-delivery is 'in_progress' but PR #8986 is merged",
@@ -30193,13 +30193,13 @@
     "WS:GMI-TECHNOLOGY-EX-SEMIS — record_disagrees_with_execution: wave TEC-W1 cites PR #7891, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave D2E cites PR #8540, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave ENE-1 cites PR #7881, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8646 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8650 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8631 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8651 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8629 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8653 is merged",
-    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE is 'in_progress' but PR #8635 is merged",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8646, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8650, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8631, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8651, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8629, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8653, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:GMI-THEME-GRAPH — record_disagrees_with_execution: wave TF-CONVERGENCE cites PR #8635, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:INTRADAY-FLOW-P0-RECOVERY — record_disagrees_with_execution: wave PR-4 cites PR #6105, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:LIVE-ENTRY-RADAR — record_disagrees_with_execution: wave W6 cites PR #5834, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:LIVE-ENTRY-RADAR — record_disagrees_with_execution: wave W6 cites PR #5845, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
@@ -30264,9 +30264,9 @@
     "WS:TERMINAL-ENHANCEMENTS20 — record_disagrees_with_execution: wave E19 cites PR #952, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:TERMINAL-ENHANCEMENTS20 — record_disagrees_with_execution: wave E20 cites PR #953, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:TERMINAL-GITHUB-CANONICALIZATION — record_disagrees_with_execution: wave W1 cites PR #484, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
-    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave historical-qualification is 'in_progress' but PR #8698 is merged",
-    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave boats-qualification is 'in_progress' but PR #8698 is merged",
-    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave consumer-delivery is 'in_progress' but PR #8698 is merged",
+    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave historical-qualification cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave boats-qualification cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
+    "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave consumer-delivery cites PR #8698, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave consumer-delivery cites PR #945, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave consumer-delivery cites PR #955, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)",
     "WS:TIINGO-DATA-OS — record_disagrees_with_execution: wave consumer-delivery is 'in_progress' but PR #8986 is merged",

@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T19:02:04.327955+00:00",
-  "count": 2916,
+  "generated_at": "2026-10-14T19:41:24.024321+00:00",
+  "count": 2918,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -113,6 +113,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-uob7dsnax0l-8bd6eb",
+      "title": "GS Hafif GS Flow of Funds Witching Hour 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:05:25Z",
+      "summary_points": [
+        "Corporate Buyback Flow: November ranks 2nd highest for repurchases (48% by month-end), driven by AI trade concentration; full buyback impact expected late month amid structural sector shifts.",
+        "Sector Disparity in Buyback Flows: Financials down 40% YoY vs.",
+        "Energy (+480%), Utilities (+538%), and Consumer Staples (+140%) surging, signaling structural corporate demand realignment.",
+        "Narrow Market Breadth & HF Positioning: Top 10 S&P stocks outperforming (6mo median return +10.1% vs historical median), with hedge funds at 87th percentile in Info Tech exposure, amplifying rotation risk.",
+        "Options Market Conviction: Historically low daily options moves indicate low directional conviction; recommend gamma tenors (e.g., QQ20Nov26 Put Spread) ahead of EPS/fed catalysts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c0hubv6rxqd-061033",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T18:52:00Z",
+      "summary_points": [
+        "CPI & Fed Policy Shift: Headline CPI MoM 0.55% (3.6% YoY) vs Core MoM 0.18% (2.4% YoY) implies skip on Oct Fed hike, December hike likely; bond market avoids repricing, supporting rate-sensitive baskets.",
+        "Geopolitical Oil Volatility: Houthi escalation + Iran tactics drive WTI +0.7% amid oil volatility; US indices mixed (SPX +0.2%, NDX -0.1%) with bond yields lower into CPI.",
+        "Consumer Spending Resilience: Wage growth (4.7-3.7%) supports broad-based spending; card spending +10-13% YoY, delinquencies falling, credit quality at historic lows (WFC/JPM/C).",
+        "ASML 2027 Capacity Risk: Uncertainty on 2027 capacity delivery overshadows fundamental strength (LSD print revisions vs prior -30%), key risk factor for semiconductors.",
+        "Bank Earnings Fundamentals: JPM card growth +10-13% YoY, WFC stable NIM/NII growth; weakness driven by quant/passive flows (not 2s10s curve), signaling market sentiment shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vkqr7ns1tbk-88ffc3",
       "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
