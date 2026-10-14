@@ -152,14 +152,18 @@ def test_us_close_above_high_half_prints_one_tenth():
     """A reclaim closing at 100.05 over the 100.0 high: the raw ratio
     0.04999999999999449 is a hair BELOW the 0.05 half, so formatting it raw -
     or rounded to one place - prints 0.0% with the plus suppressed, while the
-    four-place value 0.05 prints +0.1% on the current metric and the drawn
-    end tag."""
+    four-place value 0.05 prints +0.1% on the current metric, the drawn
+    end tag and the last history row, the one row above the high."""
     rows = _zip(_BASE + [94.0, 89.75, 96.0, 100.05])
-    obs, _window, _view, _qualified, html = _feed(rows)
+    obs, _window, view, _qualified, html = _feed(rows)
     soup = BeautifulSoup(html, "html.parser")
     assert obs.get("phase") == "recovering"
     assert _text(soup, '[data-metric="current"]') == "+0.1%"
     assert _text(soup, ".ilx-tag") == "+0.1%"
+    history = soup.select(".rrp-history tbody tr")
+    last = history[-1].select("td")
+    assert last[0].get_text(strip=True) == view["detail_path"]["dates"][-1]
+    assert last[1].get_text(strip=True) == "+0.1%"
     assert _text(soup, '[data-metric="worst"]') == f"{_MINUS}10.2%"
     assert _text(soup, '[data-metric="rebound"]') == "+11.5%"
 
