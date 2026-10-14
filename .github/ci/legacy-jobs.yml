@@ -2370,6 +2370,7 @@ jobs:
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/identity.py"
@@ -3570,6 +3571,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -6122,6 +6124,7 @@ jobs:
       - "engine/company_intelligence/issuer_disclosure_selection.py"
       - "engine/company_intelligence/issuer_disclosures.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -12538,6 +12541,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_profiles.py
+      - engine/company_intelligence/communications_profiles.py
       - engine/company_intelligence/pg_envelope.py
       - engine/company_intelligence/pg_profile.py
       - engine/company_intelligence/qa_exchange.py
@@ -17210,6 +17214,7 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
       - engine/company_intelligence/issuer_disclosures.py
+      - engine/company_intelligence/communications_profiles.py
       - engine/company_intelligence/issuer_profiles.py
       - engine/company_intelligence/pg_envelope.py
       - engine/company_intelligence/pg_profile.py
@@ -20167,6 +20172,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -21370,6 +21376,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       # 2026-08-26 widening (PR #6454): #6376 (E3-B AAPL canonical
@@ -22459,6 +22466,7 @@ jobs:
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/views.py"
@@ -22523,6 +22531,7 @@ jobs:
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/views.py"
@@ -24648,6 +24657,7 @@ jobs:
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
       - "engine/company_intelligence/issuer_disclosures.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -26710,6 +26720,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -28215,6 +28226,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -28333,6 +28345,7 @@ jobs:
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/issuer_profiles.py"
       - "engine/company_intelligence/mining_issuer_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
@@ -28420,6 +28433,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/communications_profiles.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
@@ -29697,3 +29711,63 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  communications-issuer-enrollment:
+    # Communications Build 1: Alphabet dual-listing enrollment (GOOGL and GOOG,
+    # one CIK). One exclusive gate:code job. Does not extend the fat issuer
+    # profile run and does not extend communications-a1-measures. paths: are the
+    # measured import closure of tests/test_communications_issuer_enrollment.py
+    # (35 concrete files). lib/pages.py and engine/press/earnings_adapter.py are
+    # in that closure; their site/** and templates/** fallback is not declared,
+    # so templates/index.html does not select this job. pyyaml is required
+    # because engine/earnings_narrative/promotion.py and lib/config.py import yaml.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    timeout-minutes: 6
+    paths:
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/communications_profiles.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "tests/test_communications_issuer_enrollment.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Communications issuer enrollment suite
+        run: pip install pytest pyyaml
+      - name: Alphabet dual-listing enrollment
+        run: python -m pytest tests/test_communications_issuer_enrollment.py -q
