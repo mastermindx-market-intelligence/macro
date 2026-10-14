@@ -15,6 +15,13 @@
   "provider_calls": 0,
   "publication": false,
   "cutover": false,
-  "review": "independent review pending; not yet ledger accepted",
-  "artifact_delivery": "Initial local destination was outside approved evidence root and refused before read. Same retained run and digest exported to adapter approved /Volumes/Mastermind/evidence root; no provider replay or policy change."
+  "review": "PASS: independent Terra review of 558ca0a6cded; 64 tests passed in 7.32s",
+  "artifact_delivery": "Initial local destination was outside approved evidence root and refused before read. Same retained run and digest exported to adapter approved /Volumes/Mastermind/evidence root; no provider replay or policy change.",
+  "review_sha256": "07de01203e9f1f718778782f7a117e6fb4eaf87febbc8f35afca7425acc3b5ae",
+  "fabric_acceptance": {
+    "state": "ACCEPTED",
+    "accepted_by": "reviewer",
+    "reason": "VALIDATED_OUTCOME",
+    "run_id": "mmx-press-writer-contract-followon-20261014-001"
+  }
 }

@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Finish PR 9209 protected landing and installed acceptance; recover the same writer-contract Fabric run, integrate its accepted result into the reviewed validator follow-on at 165868, then deliver that bounded separate PR. Continue distinct rights-qualified sources and dated relevant inputs; preserve held drafts and publication gates.
+next_action: Consume the next admitted PR 9209 controller event, complete protected landing and corrected 24-source installed acceptance, then deliver the reviewed validator and writer follow-on from source 558ca through its own PR and installation. Continue current Research source corroboration using actual private-history exclusions; preserve held drafts and all publication gates.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -223,3 +223,57 @@ D14's ten consecutive unedited mixed-desk acceptance and real release gates are
 met. Original October 11 12:07 EFFECT_UNKNOWN remains unreplayed. Earlier
 #8786/#9041 installation and scoped browser acceptance remain historical accepted
 capabilities; this new source is not yet installed or publicly available.
+
+## Writer accepted and complete installation binding — October 14 03:36 UTC
+
+The isolated follow-on application frontier is 558ca0a6cdeddf48fbbedc9f0d7f178882ef68e8.
+The same Fabric writer-contract run mmx-press-writer-contract-followon-20261014-001
+settled and was retained, parent-tested, independently reviewed PASS and accepted
+by reviewer in the incumbent ledger. There is no pending writer or replacement.
+The trusted prompt now states the actual first-party share/receipt rules, configured
+floor, and existing validator-owned banned vocabulary. Provider routing, spend,
+regeneration and public permissions remain unchanged.
+
+Parent proof: six new tests failed on the pristine writer; final combined affected
+suite has 319 passed and one existing sparse-site skip in16.73s. Native independent
+review ran64 writer tests in7.32s. Trigger closure has0 gaps and the CI manifest
+validates305 jobs. Source and review receipts live in writer_contract_phase/.
+
+A separate real acceptance bug was reproduced: the original expected manifest
+contained24 files but its SSH payload checked23, omitting the private staging
+entrypoint. The checker now derives the inventory from the unchanged manifest.
+Positive, missing-entrypoint and changed-entrypoint controls pass locally; no
+production execution is claimed. Both carriers retain this correction. The new
+validator_integrity_phase/postlanding bundle binds all24 follow-on sources and
+three unchanged reviewed pages; its ten-control portable probe passes at source
+558ca with zero real-provider/public/runtime writes. Original9209 expected
+source hashes remain unchanged; the follow-on has its own manifest.
+
+Source discovery progressed through the actual installed Research producer:
+catalog718357ab... was generated02:30UTC and contains2848 reports, with the
+latest datedOctober11. This is fresher than local catalog6dd8f03a.... Read-only
+planning carried the ORIGINAL local held-source refs; the empty production
+staging directory is not a new budget or replay authority. The next public China
+Weekly Kickstart source excerpt states MXCN/CSI300 forward P/E9.8x/12.4x while its
+summary states25.7x/23.1x. This candidate is held before spend. Official MCT
+corroborates its tourism headline only; it does not qualify the contradictory
+valuation facts. See validator_integrity_phase/research_source_qualification/.
+No producer data, extracted report, held draft or attempt record was changed.
+
+PR9209's last lawful observation remains head5d06f81f, CI38499512292 in progress
+with packs0/6 pending and no binding failure at02:39UTC. This is historical,
+not a new CI or landing claim. The incumbent wait guard requires the existing
+heartbeat/controller event; no timed retry, alternate API or new observer was
+used. Keep9209 and this follow-on separate. On the admitted event, consume exact
+protected landing, verify original24-source/3-page installation and consumer
+checks, then merge landed main into this follow-on and deliver its own PR/install.
+
+Publication and cutover remain false; D14 credit remains zero. Preserve the
+original October11 12:07 EFFECT_UNKNOWN and the unchanged BAC/Research drafts.
+Continue current rights-qualified sources and literal source corroboration;
+missing earnings credentials are not the sole waiting condition.
+
+verified: writer_contract_phase/combined_green.txt, independent_review.md and
+validation.json; validator_integrity_phase/local_portable_probe.json,
+install_bundle_coverage_repair.json and research_source_qualification/review.json.
+

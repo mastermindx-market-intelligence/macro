@@ -155,10 +155,23 @@ for cls in ('press-byline','press-footer'):
     assert V.check_advice_lexicon(draft,F.slot(),cfg)['ok'] is False
     assert V.check_banned_lexicon(draft,F.slot(),cfg)['ok'] is False
 controls.append('spoofed-furniture-visible-to-prose-gates')
+# Exercise the installed writer's pure prompt assembly without invoking write.
+prompt_cfg = copy.deepcopy(cfg)
+prompt_cfg['validators']['our_value_min'] = 0.375
+system, user = W.build_prompt(F.slot(min_anchored_receipts=5), prompt_cfg)
+flat = ' '.join(system.split())
+assert 'At least 37.5% of the piece' in flat
+assert 'tagged [first_party]' in flat and 'earns NO share credit' in flat
+assert '5 distinct numbers anchored to [first_party] SOURCE FACTS.' in ' '.join(user.split())
+assert 'BANNED LANGUAGE' in system and 'BANNED LANGUAGE' not in user
+assert '[BEGIN UNTRUSTED EVIDENCE DATA' in user
+for terms in V._copywriter_lexicons():
+    assert all(term in flat for term in terms)
+controls.append('writer-first-party-floor-and-shared-lexicons-with-trusted-boundary')
 assert before == snapshot() and before_head == head()
 print(json.dumps({'accepted':True,'head':before_head,'runtime_root':str(root),
                   'execution_location':'installed_vps' if root == Path('/opt/macro') else 'local_source',
-                  'controls':controls,
+                  'controls':controls,'checked_source_sha256':{rel:hashlib.sha256((root/rel).read_bytes()).hexdigest() for rel in expected},
                   'fixture_writer_calls':len(calls),'real_provider_calls':0,
                   'production_inputs_unchanged':True,'production_staging_writes':0,
                   'public_writes':0,'scope':'Historical isolated fixture proof only'},indent=2))
