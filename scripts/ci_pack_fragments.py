@@ -33,8 +33,11 @@ An order-only permutation on one side together with a text edit on the other
 is also clean when the edit side's job keys stay in base order. Merged jobs
 follow the order-only side's key order. Each job's leading separator moves
 with that permutation; a separator the permutation left on the same job can
-still take the edit side's text. Job bodies, the preamble, and the trailer
-come from the per-key resolve, so the edit's scalar wins.
+still take the edit side's text. A separator the permutation moved must not
+also be edited into a third shape: when the edit side's separator differs
+from both the base and the moved separator, the merge records ``__order__``
+instead of silently dropping that edit. Job bodies, the preamble, and the
+trailer come from the per-key resolve, so the edit's scalar wins.
 
 Order-only means the same job keys, the same preamble and trailer bytes, and
 the same bytes from each job's key line through the end of its fragment. A
@@ -585,7 +588,8 @@ def _apply_order_and_edits(
     """Apply one side's order-only permutation and the other side's text edits.
 
     Job order and a separator the permutation moved come from the order-only
-    side. A separator that side left unchanged can take the edit. Bodies,
+    side, unless the edit side changed that separator to a third shape. A
+    separator that side left unchanged can take the edit. Bodies,
     preamble, and trailer use the per-key resolve, so a one-sided scalar wins.
     ``None`` means this shape is not that case; the caller records ``__order__``.
     """
@@ -629,6 +633,8 @@ def _apply_order_and_edits(
             lead = pick(base_lead, order_lead, edit_lead)
             if lead is None:
                 return None
+        elif edit_lead != base_lead and edit_lead != order_lead:
+            return None
         else:
             lead = order_lead
         pieces.append(lead + body)

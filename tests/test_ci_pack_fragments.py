@@ -238,6 +238,27 @@ def _fragment(text: str, key: str) -> str:
     return next(fragment.text for fragment in split(text) if fragment.key == key)
 
 
+def _single_runs_on_job(text: str) -> tuple[str, str, str]:
+    """First job fragment with exactly one ``    runs-on:`` line.
+
+    Selection by property rather than a live-manifest index: the merged-edit
+    case used to pin ``manifest_keys[2]`` plus a literal
+    ``runs-on: ubuntu-latest`` line, so a reordering or runner migration on
+    main would break it. Returns ``(key, fragment text, the runs-on line)``.
+    """
+    for fragment in split(text):
+        if fragment.kind != "job":
+            continue
+        lines = [
+            line
+            for line in fragment.text.splitlines(keepends=True)
+            if line.startswith("    runs-on:")
+        ]
+        if len(lines) == 1:
+            return fragment.key, fragment.text, lines[0]
+    raise AssertionError("no job fragment has exactly one runs-on line")
+
+
 def _conflict_block(ours_text: str, theirs_text: str) -> str:
     """The marker bytes ``merge3`` must emit around one fragment."""
 
@@ -524,6 +545,29 @@ def test_merge3_cli_writes_ours_and_exits_like_a_merge_driver(tmp_path: Path) ->
     assert join(split(conflicted)) == conflicted
 
 
+def test_merge3_cli_help_escapes_the_percent_placeholders(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """``merge3 --help`` renders the git ``%O %A %B`` placeholders verbatim.
+
+    argparse %-formats positional help strings at display time, so an
+    unescaped ``%O`` raises ``ValueError: unsupported format character 'O'``
+    inside ``--help``. The escape added by acb75c49 had no test. The
+    ``pytest.raises(SystemExit)`` wrapper doubles as the "no ValueError
+    escapes" bar: a ``ValueError`` propagating out of ``main`` fails this
+    test instead of exiting. Pinned RED on the pre-fix blob
+    ``d581f0cc8fe2741b8fec9760a2562ecd0231cacf:scripts/ci_pack_fragments.py``
+    imported from a copy under the lane tmp directory; GREEN at HEAD.
+    """
+    with pytest.raises(SystemExit):
+        main(["merge3", "--help"])
+    captured = capsys.readouterr()
+    assert "ancestor file (%O)" in captured.out
+    assert "current file (%A), overwritten" in captured.out
+    assert "other file (%B)" in captured.out
+    assert "%%" not in captured.out
+
+
 def _commit_resolves(rev: str) -> bool:
     """True when ``git cat-file -e <rev>^{commit}`` exits 0 in this checkout."""
     proc = subprocess.run(
@@ -651,6 +695,96 @@ def test_merge3_mid_file_insert_and_end_appends_where_merge_file_conflicts(
         "recurring-briefs",
     ]
     assert keys.index("beta") + 1 == keys.index("research-vault-source-lineage")
+    assert keys.index("market-ontology-f09-usgs-mcs") + 1 == keys.index(
+        "recurring-briefs"
+    )
+    _assert_loadable(result)
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    base_path.write_text(base, encoding="utf-8")
+    ours_path.write_text(ours, encoding="utf-8")
+    theirs_path.write_text(theirs, encoding="utf-8")
+    proc = subprocess.run(
+        [
+            "git",
+            "merge-file",
+            "-p",
+            "-q",
+            str(ours_path),
+            str(base_path),
+            str(theirs_path),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+    )
+    assert 0 < proc.returncode < 128
+    assert ("<" * 7).encode() in proc.stdout
+    assert ours_path.read_text(encoding="utf-8") == ours
+    assert base_path.read_text(encoding="utf-8") == base
+    assert theirs_path.read_text(encoding="utf-8") == theirs
+
+
+def test_merge3_stock_dashboard_first_frame_mid_file_insert_is_hermetic(
+    tmp_path: Path,
+) -> None:
+    """The d6d1342b53 mid-file job as fixture text, with no repository history.
+
+    ``test_merge3_d6d1342b53_replay_when_commits_resolve`` needs ``git
+    cat-file`` history and skips in a depth-1 clone. This fixture rebuilds
+    that replay's mid-file job shape: theirs inserts
+    ``stock-dashboard-first-frame`` after the middle anchor ``beta`` and
+    appends ``recurring-briefs``, while ours appends
+    ``market-ontology-f09-usgs-mcs``. ``merge3`` keeps the insert after its
+    anchor and orders the two end jobs ours-then-theirs, the same shape the
+    full-history replay pins; the replay's digest
+    ``e9dfd7ca0d26c702ca5daaacb0710b1bf7bae2b8a1e2b8ce0a6b5ebf48f128aa``
+    is untouched. ``git merge-file`` still conflicts. The inputs are
+    fixture text: no commit reads, no merge-base, no ``git cat-file``.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    ours = _append(base, "market-ontology-f09-usgs-mcs", "echo usgs-mcs")
+    theirs = _append(
+        _insert_after(
+            base, "beta", "stock-dashboard-first-frame", "echo first-frame"
+        ),
+        "recurring-briefs",
+        "echo recurring-briefs",
+    )
+    assert _job_keys(ours) == [
+        "alpha",
+        "beta",
+        "gamma",
+        "market-ontology-f09-usgs-mcs",
+    ]
+    assert _job_keys(theirs) == [
+        "alpha",
+        "beta",
+        "stock-dashboard-first-frame",
+        "gamma",
+        "recurring-briefs",
+    ]
+    result = merge3(base, ours, theirs)
+
+    assert result.conflicts == ()
+    assert ("<" * 7) not in result.text
+    keys = _job_keys(result.text)
+    assert keys == [
+        "alpha",
+        "beta",
+        "stock-dashboard-first-frame",
+        "gamma",
+        "market-ontology-f09-usgs-mcs",
+        "recurring-briefs",
+    ]
+    assert keys.index("beta") + 1 == keys.index("stock-dashboard-first-frame")
     assert keys.index("market-ontology-f09-usgs-mcs") + 1 == keys.index(
         "recurring-briefs"
     )
@@ -1002,13 +1136,14 @@ def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
     manifest = _text()
     manifest_keys = _job_keys(manifest)
     manifest_swap = _positional_swap(manifest, manifest_keys[0], manifest_keys[1])
-    target = manifest_keys[2]
-    target_fragment = _fragment(manifest, target)
+    target, target_fragment, old_runs_on = _single_runs_on_job(manifest)
     assert target_fragment in manifest_swap
-    old_runs_on = "    runs-on: ubuntu-latest\n"
     new_runs_on = "    runs-on: ubuntu-22.04\n"
-    assert target_fragment.count(old_runs_on) == 1
+    if old_runs_on == new_runs_on:
+        new_runs_on = "    runs-on: ubuntu-24.04\n"
+    assert old_runs_on != new_runs_on
     edited_fragment = target_fragment.replace(old_runs_on, new_runs_on, 1)
+    assert edited_fragment != target_fragment
     manifest_edit = manifest.replace(target_fragment, edited_fragment, 1)
     manifest_expected = manifest_swap.replace(target_fragment, edited_fragment, 1)
     manifest_result = merge3(manifest, manifest_swap, manifest_edit)
@@ -1030,6 +1165,56 @@ def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
     assert ours_path.read_text(encoding="utf-8") == expected
     assert base_path.read_text(encoding="utf-8") == base
     assert theirs_path.read_text(encoding="utf-8") == edited
+
+
+def test_merge3_positional_swap_beside_a_moved_separator_edit_is_order_conflict() -> None:
+    """A permutation-moved separator must not silently outrank a third-shape edit.
+
+    Ours swaps ``alpha`` and ``beta`` positionally: ``beta`` arrives in
+    ``alpha``'s leading slot, so its leading separator moves (order lead
+    ``""`` against the base lead ``"\n"``). Theirs inserts one
+    ``  # comment between jobs`` line before the ``beta`` key -- a separator
+    that differs from both the base and the moved lead.
+    ``_apply_order_and_edits`` must return ``None`` so ``merge3`` records
+    ``__order__`` with both full texts inside one marker pair, keeping the
+    comment inside the marker instead of dropping it. This is W9-V battery
+    case e1, which produced ``conflicts=()`` with ``comment_kept=False`` at
+    ``03463014``.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    positional = _positional_swap(base, "alpha", "beta")
+    with_comment = base.replace(
+        "\n  beta:", "\n  # comment between jobs\n  beta:", 1
+    )
+    assert with_comment != base
+    assert "  # comment between jobs\n  beta:" in with_comment
+
+    forward = merge3(base, positional, with_comment)
+    assert forward.conflicts == ("__order__",)
+    assert forward.text == _conflict_block(positional, with_comment)
+    middle = "=" * 7
+    closer = ">" * 7
+    at = forward.text.index("  # comment between jobs")
+    assert forward.text.index(middle) < at < forward.text.index(closer)
+
+    reverse = merge3(base, with_comment, positional)
+    assert reverse.conflicts == ("__order__",)
+    assert reverse.text == _conflict_block(with_comment, positional)
+
+    # W9-V battery case e3: a whole-fragment swap keeps each job's own
+    # separator, so order_lead == base_lead and the same comment stays
+    # clean exactly as HEAD behaved before this change.
+    whole = _swap_fragments(base, "alpha", "beta")
+    clean = merge3(base, whole, with_comment)
+    assert clean.conflicts == ()
+    assert "  # comment between jobs\n  beta:" in clean.text
+    _assert_loadable(clean)
 
 
 def test_merge3_positional_swap_of_leading_real_jobs_returns_that_side() -> None:
