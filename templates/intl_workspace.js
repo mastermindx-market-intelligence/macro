@@ -146,7 +146,9 @@
     library.empty.hidden = invalid || !searching || !!matches.length;
     library.back.hidden = !state.library_group;
     library.status.textContent = invalid ? (zh ? '搜索内容无效。请输入不超过256个字符，且不含不支持的控制字符。' : 'Search input is invalid. Use up to 256 characters without unsupported control characters.') :
-      searching && !matches.length ? (zh ? '没有匹配的工具。请尝试其他工具名称或问题。' : 'No tools match this search. Try another tool name or question.') : '';
+      searching && !matches.length ? (zh ? '没有匹配的工具。请尝试其他工具名称或问题。' : 'No tools match this search. Try another tool name or question.') :
+      searching ? (zh ? '“'+library.query+'”的搜索结果：'+matches.length+' 个工具。' :
+        matches.length+(matches.length===1?' tool found for “':' tools found for “')+library.query+'”.') : '';
     var nextResult = null;
     resultRows.slice().reverse().forEach(function (row) {
       if (row.parentNode !== library.results || row.nextSibling !== nextResult) {
