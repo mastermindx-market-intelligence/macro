@@ -985,3 +985,265 @@ def test_a09_fact_fields_frozen_contract():
     ):
         assert code in REASONS
     assert len(REASONS) == len(set(REASONS))
+
+
+# ---------------------------------------------------------------------------
+# X7 red-team repairs 2026-10-13: X7-03 one-sided period_start, X7-04 ratio
+# scheme-only mismatch, X7-08 bool-vs-int scale. cov7_* guard the unchanged
+# positive controls and pre-existing refusals around each hole.
+# ---------------------------------------------------------------------------
+
+
+def _x7_one_sided_period(blank_side: str, blank: object) -> tuple[dict, dict]:
+    """One fact carries period_start; the other side carries `blank`
+    (_OMIT deletes the key; None and "" stay literal blanks)."""
+    if blank_side == "left":
+        return (
+            _base_fact(period_start=blank),
+            _base_fact(source_owner="SYN-OWNER-B"),
+        )
+    return (
+        _base_fact(),
+        _base_fact(period_start=blank, source_owner="SYN-OWNER-B"),
+    )
+
+
+def test_x7_03_same_fact_absent_left():
+    left, right = _x7_one_sided_period("left", _OMIT)
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="same_fact")
+    _assert_refused(swapped, "PERIOD_MISMATCH")
+
+
+def test_x7_03_same_fact_absent_right():
+    left, right = _x7_one_sided_period("right", _OMIT)
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="same_fact")
+    _assert_refused(swapped, "PERIOD_MISMATCH")
+
+
+def test_x7_03_same_fact_none_left():
+    left, right = _x7_one_sided_period("left", None)
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_same_fact_none_right():
+    left, right = _x7_one_sided_period("right", None)
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_same_fact_empty_left():
+    left, right = _x7_one_sided_period("left", "")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_same_fact_empty_right():
+    left, right = _x7_one_sided_period("right", "")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_ratio_absent_left():
+    left, right = _x7_one_sided_period("left", _OMIT)
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="ratio")
+    _assert_refused(swapped, "PERIOD_MISMATCH")
+
+
+def test_x7_03_ratio_absent_right():
+    left, right = _x7_one_sided_period("right", _OMIT)
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="ratio")
+    _assert_refused(swapped, "PERIOD_MISMATCH")
+
+
+def test_x7_03_ratio_none_left():
+    left, right = _x7_one_sided_period("left", None)
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_ratio_none_right():
+    left, right = _x7_one_sided_period("right", None)
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_ratio_empty_left():
+    left, right = _x7_one_sided_period("left", "")
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_03_ratio_empty_right():
+    left, right = _x7_one_sided_period("right", "")
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_04_ratio_scheme_only_mismatch_refused():
+    left = _base_fact(metric="revenue", segment_scheme_version="sch-1")
+    right = _base_fact(
+        metric="net_income",
+        segment_scheme_version="sch-2",
+        source_owner="SYN-OWNER-B",
+    )
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_refused(verdict, "SEGMENT_SCHEME_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="ratio")
+    _assert_refused(swapped, "SEGMENT_SCHEME_MISMATCH")
+
+
+def test_x7_04_ratio_equal_schemes_allowed():
+    left = _base_fact(metric="revenue", segment_scheme_version="sch-1")
+    right = _base_fact(
+        metric="net_income", segment_scheme_version="sch-1", source_owner="SYN-OWNER-B"
+    )
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_allowed(verdict)
+
+
+def test_x7_04_ratio_one_sided_scheme_allowed():
+    left = _base_fact(metric="revenue", segment_scheme_version="sch-1")
+    right = _base_fact(metric="net_income", source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_allowed(verdict)
+
+
+def test_x7_08_true_vs_one_refused():
+    left = _base_fact(scale=True)
+    right = _base_fact(scale=1, source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "SCALE_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+    swapped = check_join(right, left, join_kind="same_fact")
+    _assert_refused(swapped, "SCALE_MISMATCH")
+
+
+def test_x7_08_false_vs_zero_refused():
+    left = _base_fact(scale=False)
+    right = _base_fact(source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "SCALE_MISMATCH")
+    assert validate_fact(left) == ()
+    assert validate_fact(right) == ()
+
+
+def test_x7_08_int_vs_equal_int_allowed():
+    left = _base_fact(scale=1)
+    right = _base_fact(scale=1, source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_allowed(verdict)
+
+
+def test_cov7_two_absent_period_start_same_fact_allowed():
+    left = _base_fact(period_start=_OMIT)
+    right = _base_fact(period_start=_OMIT, source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_allowed(verdict)
+
+
+def test_cov7_period_start_both_dates_mismatch_refused():
+    left = _base_fact(period_start="2024-04-01")
+    right = _base_fact(period_start="2025-04-01", source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "PERIOD_MISMATCH")
+
+
+def test_cov7_time_series_one_sided_period_start_allowed():
+    left, right = _x7_one_sided_period("left", _OMIT)
+    verdict = check_join(left, right, join_kind="time_series")
+    _assert_allowed(verdict)
+
+
+def test_cov7_same_fact_scheme_only_mismatch_refused():
+    left = _base_fact(segment_scheme_version="sch-1")
+    right = _base_fact(segment_scheme_version="sch-2", source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "SEGMENT_SCHEME_MISMATCH")
+
+
+def test_cov7_ratio_one_sided_segment_allowed():
+    left = _base_fact(
+        metric="revenue", segment="cloud", segment_scheme_version="sch-1"
+    )
+    right = _base_fact(metric="net_income", source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_allowed(verdict)
+
+
+def test_cov7_ratio_equal_segments_equal_schemes_allowed():
+    left = _base_fact(
+        metric="revenue", segment="cloud", segment_scheme_version="sch-1"
+    )
+    right = _base_fact(
+        metric="net_income",
+        segment="cloud",
+        segment_scheme_version="sch-1",
+        source_owner="SYN-OWNER-B",
+    )
+    verdict = check_join(left, right, join_kind="ratio")
+    _assert_allowed(verdict)
+
+
+def test_cov7_scale_zero_vs_string_zero_refused():
+    left = _base_fact(scale=0)
+    right = _base_fact(scale="0", source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "SCALE_MISMATCH")
+
+
+def test_cov7_scale_int_mismatch_refused():
+    left = _base_fact(scale=3)
+    right = _base_fact(scale=6, source_owner="SYN-OWNER-B")
+    verdict = check_join(left, right, join_kind="same_fact")
+    _assert_refused(verdict, "SCALE_MISMATCH")
+
+
+def test_cov7_positive_same_fact_and_ratio_allowed():
+    verdict = check_join(
+        _base_fact(source_owner="SYN-OWNER-A"),
+        _base_fact(source_owner="SYN-OWNER-B"),
+        join_kind="same_fact",
+    )
+    _assert_allowed(verdict)
+    ratio = check_join(
+        _base_fact(metric="revenue"),
+        _base_fact(metric="net_income", source_owner="SYN-OWNER-B"),
+        join_kind="ratio",
+    )
+    _assert_allowed(ratio)
