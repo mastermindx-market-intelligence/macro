@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-10-11",
-  "generated_at": "2026-10-11T05:14:56Z",
+  "as_of": "2026-10-13",
+  "generated_at": "2026-10-13T08:39:26Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -21,17 +21,17 @@
     ]
   },
   "n_theses": 18,
-  "n_falsifier_fired": 4,
+  "n_falsifier_fired": 5,
   "n_theses_with_fired": 4,
   "n_ok": 14,
   "stale_legs": [],
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-13",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:ad3dc468911290e89e56a3d33eb08c467704ec451fb45ba1027a6919e417707b",
-      "prev_content_hash": "sha256:20ed62393f61696b3fc490faf8b46fc0ba98eba2c6dc8e581b1180d948ae19fe",
+      "content_hash": "sha256:2173d13daefdbf96cd7ab6cbbfa9b7ec2828c3761b4244dd6f9878a222a018d5",
+      "prev_content_hash": "sha256:ad3dc468911290e89e56a3d33eb08c467704ec451fb45ba1027a6919e417707b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,7 +106,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-10",
+                "as_of": "2026-10-11",
                 "value": 0.59,
                 "condition_met": false
               }
@@ -150,10 +150,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-13",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:d63e37a3cdd8ef650e4025f7ec4efcd1231925727702820a54ad3b0fe0a99eb8",
-      "prev_content_hash": "sha256:a49ee06f40ab5e690f161054abeebcae94e25dd8f5703038ed81b7c550d2056d",
+      "content_hash": "sha256:032aff185bbc100886b0fc99812e385d9decf5926691d79afd57c4c6d4375653",
+      "prev_content_hash": "sha256:d63e37a3cdd8ef650e4025f7ec4efcd1231925727702820a54ad3b0fe0a99eb8",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -219,12 +219,12 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-10",
+                "as_of": "2026-10-11",
                 "value": 0.775,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 0
+            "corrections_superseded": 1
           }
         },
         {
@@ -846,10 +846,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-13",
       "thesis_id": "solar.v1",
-      "content_hash": "sha256:0c7fc0ec928badd8c298cf44181db005c9e0f7419651e3f2479ee128ddc534a0",
-      "prev_content_hash": "sha256:27d0ebd278128c2713bd006b2705c365fdc58a0c837e32c700107042cf47cf8a",
+      "content_hash": "sha256:a20736363e2525a31133699742d7ddda0a755690561f995c5a2549a1a0bee27e",
+      "prev_content_hash": "sha256:0c7fc0ec928badd8c298cf44181db005c9e0f7419651e3f2479ee128ddc534a0",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -901,9 +901,9 @@
         {
           "id": "solar_f1",
           "rule_en": "If revision_breadth for solar is negative (already -0.342 today), earnings cuts are broadening — the IRA subsidy tailwind is not yet offsetting pricing and permitting headwinds.\n",
-          "state": "ARMED",
-          "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.278"
+          "state": "FIRED",
+          "fired": true,
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=-0.042"
         },
         {
           "id": "solar_f2",
@@ -921,8 +921,8 @@
         }
       ],
       "falsifier_summary": {
-        "n_fired": 1,
-        "n_armed": 1,
+        "n_fired": 2,
+        "n_armed": 0,
         "n_data_missing": 0,
         "n_qualitative": 1,
         "any_fired": true
@@ -930,10 +930,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-13",
       "thesis_id": "defense_aerospace.v1",
-      "content_hash": "sha256:546c178334dc056d131b9e290ba7438ad7d3626302595c0ba3f98f29a56e37c1",
-      "prev_content_hash": "sha256:37c9e29604f38c41e5f1088718784dfbb8579bafdfc7b897235cd4d3cb052aa5",
+      "content_hash": "sha256:035e813e3df24d8ef60274c01bccc7c5b47dd0f5bcb47b2bcf53368e80185f05",
+      "prev_content_hash": "sha256:546c178334dc056d131b9e290ba7438ad7d3626302595c0ba3f98f29a56e37c1",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -991,7 +991,7 @@
           "rule_en": "If revision_breadth for defense_aerospace falls below 0.0, budget headwinds or program cancellations are spreading through earnings revisions.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.244"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.164"
         },
         {
           "id": "def_f2",
@@ -1495,10 +1495,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-13",
       "thesis_id": "space_satellite.v1",
-      "content_hash": "sha256:b18c3036898193c1f8c41fd189b47cb69805ee50203d6f3f850ccd42c7d11496",
-      "prev_content_hash": "sha256:36947142906b62f034aa7a3491ef016eb5b0dd47aa2a20a1eba09f8fa10856a3",
+      "content_hash": "sha256:6805104c823d41837fa74bec5de0f040ff90e80ba44cff1cd6648555f2a775d0",
+      "prev_content_hash": "sha256:b18c3036898193c1f8c41fd189b47cb69805ee50203d6f3f850ccd42c7d11496",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1552,7 +1552,7 @@
           "rule_en": "If revision_breadth for space_satellite falls below 0.0, earnings estimates are cutting — commercial ramp is not meeting expectations.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.35"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.083"
         },
         {
           "id": "sat_f2",
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-11T05:14:56Z",
-  "inputs_hash": "sha256:51a23b71772d74a830c5f35ba845eee4c4acf0deb02a075701081ac6187e371a",
+  "produced_at": "2026-10-13T08:39:26Z",
+  "inputs_hash": "sha256:296f12282b3e980bdfc651286381704be2ddb78de417f2f693293a241cf1e705",
   "tier": "display"
 }

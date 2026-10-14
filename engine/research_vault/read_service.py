@@ -45,6 +45,15 @@ def _is_sha256(value: Any) -> bool:
     )
 
 
+def _published_at(item: Mapping[str, Any]) -> str:
+    value = item.get("published_at")
+    try:
+        catalog_mod.parse_generated_at(value)
+    except (catalog_mod.CatalogUnavailable, ValueError, OverflowError):
+        return ""
+    return value
+
+
 def _literal_int(value: Any) -> bool:
     return type(value) is int
 
@@ -440,13 +449,18 @@ class ResearchReadService:
             return "EXTRACTION_UNAVAILABLE", extracted, segments, extra
 
         reader = self._source_digest_reader
-        if reader is not None:
-            try:
-                digest = reader(report_id)
-            except Exception:
-                digest = None
-            if _is_sha256(digest) and digest != extracted.get("source_pdf_sha256"):
-                return "SOURCE_REVISION_CHANGED", extracted, segments, extra
+        if reader is None:
+            return "EXTRACTION_UNAVAILABLE", None, None, extra
+        try:
+            digest = reader(report_id)
+        except Exception:
+            digest = None
+        # The derivative's recorded digest is not an authoritative current
+        # source check. If that check fails, do not return text or certify RIO.
+        if not _is_sha256(digest):
+            return "EXTRACTION_UNAVAILABLE", None, None, extra
+        if digest != extracted.get("source_pdf_sha256"):
+            return "SOURCE_REVISION_CHANGED", extracted, segments, extra
 
         if layer == "thin":
             extra.append("FULL_TEXT_PARTIAL")
@@ -542,7 +556,7 @@ class ResearchReadService:
             "title": item.get("title") or "",
             "institution": item.get("institution") or "",
             "side": item.get("side") or "",
-            "published_at": item.get("published_at") or "",
+            "published_at": _published_at(item),
             "pages": item.get("pages"),
             "language": item.get("language"),
         }
@@ -681,7 +695,7 @@ class ResearchReadService:
                         report_id=report_id,
                         title=str(item.get("title") or "Untitled research"),
                         institution=str(item.get("institution") or "Unknown"),
-                        published_at=str(item.get("published_at") or "1970-01-01T00:00:00+00:00"),
+                        published_at=_published_at(item),
                         source_pdf_sha256=str(extracted["source_pdf_sha256"]),
                         extracted_text_sha256=str(extracted["extracted_text_sha256"]),
                         extractor_name=str(extracted["extractor_name"]),
@@ -815,7 +829,7 @@ class ResearchReadService:
                     "title": item.get("title") or "",
                     "institution": item.get("institution") or "",
                     "side": item.get("side") or "",
-                    "published_at": item.get("published_at") or "",
+                    "published_at": _published_at(item),
                     "rank": index,
                 }
             )
@@ -935,6 +949,18 @@ class ResearchReadService:
         item = items.get(checked)
         if item is None:
             return read_port.failure("REPORT_NOT_FOUND")
+        # The evidence contract requires a known source publication time.
+        # Refuse an undated passage rather than inventing an epoch timestamp
+        # or reporting that a searched, matching passage was not found.
+        if not _published_at(item):
+            return read_port.evidence_result(
+                report_id=checked,
+                evidence_state="UNAVAILABLE",
+                coverage_state="EXTRACTION_UNAVAILABLE",
+                source=self._with_degradation(catalog, now, ["METADATA_PARTIAL"]),
+                passages=(),
+                rio_state="NOT_REQUESTED",
+            )
         coverage, extracted, segments, extra = self._resolve_text(checked, item)
         rio_state, _stored, rio_extra = self._rio_state(checked, extracted)
         extra.extend(rio_extra)

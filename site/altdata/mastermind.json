@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-10-13",
-  "generated_utc": "2026-10-13T05:42:49.508697+00:00",
+  "generated_utc": "2026-10-13T21:03:05.780656+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "Convergence favors AI compute, memory, software, and federal-technology spending, but several signals are sentiment-heavy or politically conflicted. The track record is directionally encouraging but only two calls have been scored, so confidence remains provisional.",
   "brain_present": true,
@@ -387,12 +387,12 @@
         "trump"
       ],
       "trump_linked": true,
-      "rs_vs_spy_60d": 13.6,
+      "rs_vs_spy_60d": 11.7,
       "no_price_data": false,
       "extended": false,
       "rolling_over": false,
-      "off_high_252": -25.8,
-      "ret_20d": 4.7,
+      "off_high_252": -26.8,
+      "ret_20d": 11.1,
       "above_50dma": true,
       "entry_tier": "T2",
       "affiliations": [],
@@ -471,6 +471,53 @@
       "clamped": null
     },
     {
+      "ticker": "TSLA",
+      "signal_score": 46,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.3,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "retail_buzz",
+        "stocktwits_bull",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": -5.7,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -22.8,
+      "ret_20d": 5.3,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Elon Musk",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        },
+        {
+          "actor": "Larry Ellison",
+          "rel": "HOLDS_STAKE",
+          "kind": "exec"
+        },
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 3,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "AMAT",
       "signal_score": 46,
       "conviction": "medium",
@@ -531,53 +578,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "TSLA",
-      "signal_score": 45,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.3,
-      "convergence_score": 4,
-      "channels": [
-        "affiliation",
-        "retail_buzz",
-        "stocktwits_bull",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": -7.1,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -21.9,
-      "ret_20d": 4.7,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Elon Musk",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Larry Ellison",
-          "rel": "HOLDS_STAKE",
-          "kind": "exec"
-        },
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 3,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1393,7 +1393,7 @@
     },
     {
       "ticker": "HBAN",
-      "signal_score": 28,
+      "signal_score": 29,
       "conviction": "medium",
       "action": "WATCH",
       "direction": "neutral",
@@ -1405,12 +1405,12 @@
         "material_8k"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -21.6,
+      "rs_vs_spy_60d": -19.7,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
-      "off_high_252": -18.2,
-      "ret_20d": -8.2,
+      "off_high_252": -17.7,
+      "ret_20d": -7.3,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -1615,12 +1615,12 @@
         "special_situation"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": 27.7,
+      "rs_vs_spy_60d": 26.9,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
-      "off_high_252": -20.1,
-      "ret_20d": -8.9,
+      "off_high_252": -21.2,
+      "ret_20d": -7.5,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -1863,12 +1863,12 @@
         "special_situation"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -21.2,
+      "rs_vs_spy_60d": -20.1,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
-      "off_high_252": -36.6,
-      "ret_20d": -3.5,
+      "off_high_252": -36.3,
+      "ret_20d": -4.3,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -1985,12 +1985,12 @@
         "special_situation"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -21.9,
+      "rs_vs_spy_60d": -20.0,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
-      "off_high_252": -32.2,
-      "ret_20d": -6.2,
+      "off_high_252": -32.3,
+      "ret_20d": -4.7,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],

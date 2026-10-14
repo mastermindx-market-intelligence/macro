@@ -5,6 +5,7 @@ from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
 import builtins
+import json
 import re
 import socket
 
@@ -434,6 +435,35 @@ def test_escaped_nonnumeric_fragment_href_is_admitted_without_a_base_construct()
     parsed = parse_sec_filing_document(content, document_name="fragment-no-base.xhtml")
     assert parsed["facts"][0]["raw_value"] == '<a href="#t1">x</a>'
     validate_sec_filing_parse_result(parsed, source_content=content)
+
+
+@pytest.mark.parametrize(
+    ("case", "head_markup", "body_suffix"),
+    [
+        ("upper_xhtml_head", '<BASE href="https://evil.example/other.htm"/>', ""),
+        ("foreign_namespace_body", "", '<x:base xmlns:x="urn:example:other"/>'),
+        ("mixed_case_head", '<Base href="https://evil.example/other.htm"/>', ""),
+        ("no_namespace_body", "", '<base xmlns=""/>'),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_any_casefold_base_element(
+    case, head_markup, body_suffix
+) -> None:
+    # D1X-5: a same-document fragment resolves against the document base URI,
+    # and HTML base-construct matching is case-insensitive, so ANY element
+    # whose local name casefolds to "base" - uppercase/mixed-case XHTML in the
+    # head, a foreign namespace, or no namespace at all - changes the base and
+    # voids the fragment exception exactly like a lowercase XHTML <base>.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f'<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>{body_suffix}'
+    )
+    content = _inline(body)
+    if head_markup:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(b"<head></head>", f"<head>{head_markup}</head>".encode())
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name=f"fragment-casefold-base-{case}.xhtml")
 
 
 def test_same_document_fragment_predicate_requires_exactly_one_target_and_no_base() -> None:
@@ -1384,17 +1414,109 @@ def test_footnote_continuation_chains_are_excluded_from_fact_continuations():
         parse_sec_filing_document(dangling, document_name="dangling-footnote-chain.xhtml")
 
 
-def test_node_budget_is_raised_to_200k_nodes():
-    # 1 root + 100,049 children = 100,050 nodes: refused at the old 100,000
-    # budget, admitted at 200,000.  No text between tags, so no text events.
-    within = b"<root>" + b"<span/>" * 100_049 + b"</root>"
+def test_node_budget_is_raised_to_300k_nodes():
+    # 1 root + 299,999 children = 300,000 nodes: admitted at the 300,000
+    # budget.  The node check is `len(self.nodes) >= max_nodes` before append,
+    # so N nodes are admitted and N + 1 refused.  No text between tags, so no
+    # text events.
+    within = b"<root>" + b"<span/>" * 299_999 + b"</root>"
     result = parse_sec_filing_document(within, document_name="nodes-within.xml")
     assert result["document"]["kind"] == "other_xml"
     assert len(result["coverage"]) == 17
 
-    beyond = b"<root>" + b"<span/>" * 200_000 + b"</root>"
+    beyond = b"<root>" + b"<span/>" * 300_000 + b"</root>"
     with pytest.raises(SecFilingParseError, match="node limit"):
         parse_sec_filing_document(beyond, document_name="nodes-beyond.xml")
+
+
+def test_b2_cap_literals_are_frozen():
+    # The B'2 seat values; every other _HARD_LIMITS key is unchanged and the
+    # parser identity (version + fingerprint) must not move with caps.
+    assert parser_module._HARD_LIMITS["max_nodes"] == 300_000
+    assert parser_module._HARD_LIMITS["max_fact_text_bytes"] == 2 * 1024 * 1024
+    assert parser_module._HARD_LIMITS["max_facts"] == 12_000
+    assert parser_module._HARD_LIMITS["max_continuation_chain"] == 32
+    assert parser_module._HARD_LIMITS["max_output_bytes"] == 64 * 1024 * 1024
+    assert SEC_FILING_PARSER_VERSION == "1"
+
+
+def test_fact_budget_boundary_is_12000():
+    # The fact check is `len(facts_nodes) > limits["max_facts"]` after
+    # collection, so exactly 12,000 facts are admitted and the 12,001st
+    # refuses.  Repeated identical element names are legal: facts carry no
+    # name-uniqueness rule (only ids are unique, and these have none).
+    within = _instance('<ex:F contextRef="c">x</ex:F>' * 12_000)
+    result = parse_sec_filing_document(within, document_name="facts-within.xml")
+    assert result["coverage"]["fact_count"] == 12_000
+
+    beyond = _instance('<ex:F contextRef="c">x</ex:F>' * 12_001)
+    with pytest.raises(SecFilingParseError, match="fact limit"):
+        parse_sec_filing_document(beyond, document_name="facts-beyond.xml")
+
+
+def test_continuation_chain_boundary_is_32():
+    # A chain is counted as the number of ix:continuation elements reachable
+    # from the owning fact's continuedAt by following continued_at links (the
+    # owning fact itself is not counted).  The root walk checks
+    # `len(chain) >= limits["max_continuation_chain"]` before appending each
+    # member, so exactly 32 linked continuations are admitted and a 33rd
+    # refuses with the chain-limit message.
+    def chain_document(count: int) -> bytes:
+        continuations = "".join(
+            f'<ix:continuation id="c{index}"'
+            + (f' continuedAt="c{index + 1}"' if index < count - 1 else "")
+            + f">t{index}</ix:continuation>"
+            for index in range(count)
+        )
+        return _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" continuedAt="c0">x</ix:nonNumeric>',
+            continuations=continuations,
+        )
+
+    within = parse_sec_filing_document(chain_document(32), document_name="chain-within.xhtml")
+    assert len(within["facts"][0]["continuation_chain"]) == 32
+
+    with pytest.raises(SecFilingParseError, match="chain limit"):
+        parse_sec_filing_document(chain_document(33), document_name="chain-beyond.xhtml")
+
+
+def test_fact_text_boundary_is_2mib():
+    # The fact-text check measures the UTF-8 encoding of the joined lexical
+    # text value (`len(value.encode("utf-8")) > max_fact_text_bytes`), so an
+    # ASCII text of exactly 2 MiB is admitted and one byte more refuses.
+    cap = 2 * 1024 * 1024
+    within = _inline(f'<ix:nonNumeric name="ex:F" contextRef="c">{"a" * cap}</ix:nonNumeric>')
+    result = parse_sec_filing_document(within, document_name="fact-text-within.xhtml")
+    assert len(result["facts"][0]["raw_value"].encode("utf-8")) == cap
+
+    beyond = _inline(f'<ix:nonNumeric name="ex:F" contextRef="c">{"a" * (cap + 1)}</ix:nonNumeric>')
+    with pytest.raises(SecFilingParseError, match="text byte limit"):
+        parse_sec_filing_document(beyond, document_name="fact-text-beyond.xhtml")
+
+
+def test_output_byte_boundary_is_exact(monkeypatch):
+    # The output check measures the canonical JSON encoding of the complete
+    # result (`json.dumps(..., sort_keys=True, separators=(",", ":"))` bytes)
+    # against max_output_bytes on both the parse and validate paths.  The
+    # real-value boundary artifact would be a 64 MiB document, so the boundary
+    # is proven at the exact measured length with the cap lowered to it.
+    assert parser_module._HARD_LIMITS["max_output_bytes"] == 64 * 1024 * 1024
+    content = b"<root/>"
+    result = parse_sec_filing_document(content, document_name="output-exact.xml")
+    measured = len(
+        json.dumps(result, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    )
+
+    at_cap = dict(PARSER_LIMITS)
+    at_cap["max_output_bytes"] = measured
+    monkeypatch.setattr(parser_module, "PARSER_LIMITS", at_cap)
+    parse_sec_filing_document(content, document_name="output-exact.xml")
+
+    below_cap = dict(PARSER_LIMITS)
+    below_cap["max_output_bytes"] = measured - 1
+    monkeypatch.setattr(parser_module, "PARSER_LIMITS", below_cap)
+    with pytest.raises(SecFilingParseError, match="output byte limit"):
+        parse_sec_filing_document(content, document_name="output-beyond.xml")
 
 
 # Semantic byte pins computed by the BASE parser (version 1, fingerprint
