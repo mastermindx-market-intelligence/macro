@@ -172,8 +172,12 @@ def _inner_shadowing_defs(tree: ast.AST) -> set[str]:
     ``semiconductor.<name>`` — but they do shadow the shell object inside
     that scope, which the suite pins separately from the module-namespace
     pin. A def whose immediate parent is a ``ClassDef`` binds a class
-    attribute (a method, even of a class nested in a function) and is
-    excluded here too, exactly as in ``_shadowing_defs``.
+    attribute — a method — and is excluded here. The two pins are not
+    symmetric about that exclusion: ``_shadowing_defs`` drops any def
+    with a ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` ancestor
+    anywhere above it, while this pin drops only defs whose IMMEDIATE
+    parent is a ``ClassDef``, so a def nested in a function body is
+    collected here and can never be collected there.
     """
     parent_of = _parent_map(tree)
     found: set[str] = set()
@@ -211,25 +215,27 @@ _MODULE_COMPOUND_TYPES = (
     ast.ExceptHandler,
     ast.With,
     ast.AsyncWith,
+    ast.TryStar,  # except*; Python 3.11+, CI pins 3.12
 )
 _OTHER_SCOPE_TYPES = (
     ast.FunctionDef,
     ast.AsyncFunctionDef,
     ast.ClassDef,
     ast.Lambda,
-    ast.ListComp,
-    ast.SetComp,
-    ast.DictComp,
-    ast.GeneratorExp,
+    # Comprehensions are deliberately absent: PEP 572 binds a := target
+    # written inside one in the enclosing scope, so the walk descends them.
 )
 
 
 def _walrus_targets(node: ast.AST) -> set[str]:
     """``ast.NamedExpr`` targets that a walked statement binds at module level.
 
-    The walk covers the statement's own expressions and conditions but
-    stops at ``FunctionDef``/``AsyncFunctionDef``/``ClassDef``, lambdas and
-    comprehensions — those open another scope.
+    The walk covers the statement's own expressions and conditions but stops
+    at ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` and ``Lambda``: those
+    open another scope. Comprehensions are descended, not skipped — per
+    PEP 572 a ``:=`` target written inside a comprehension binds in the
+    enclosing scope, while the comprehension's own iteration variable stays
+    local, so ``ast.comprehension.target`` is never collected here.
     """
     found: set[str] = set()
     stack: list[ast.AST] = [node]
@@ -239,6 +245,13 @@ def _walrus_targets(node: ast.AST) -> set[str]:
             continue
         if isinstance(current, ast.NamedExpr) and isinstance(current.target, ast.Name):
             found.add(current.target.id)
+        if isinstance(current, ast.comprehension):
+            # the iteration target belongs to the comprehension's own scope
+            stack.extend(
+                child for child in ast.iter_child_nodes(current)
+                if child is not current.target
+            )
+            continue
         stack.extend(ast.iter_child_nodes(current))
     return found
 
@@ -253,21 +266,28 @@ def _module_level_bound_names(tree: ast.AST) -> set[str]:
 
     Walked: the direct children of ``Module.body`` and, nesting-aware, the
     statements inside module-level compound blocks — ``if`` (its body,
-    ``elif``/``else``), ``try``/``except``/``else``/``finally``,
+    ``elif``/``else``), ``try``/``except``/``except*``/``else``/``finally``,
     ``with``/``async with``, ``for``/``async for`` and ``while`` bodies and
     ``else`` clauses — recursing through compounds nested in compounds.
+    Handlers reach the stack because the extension filter admits
+    ``ast.ExceptHandler``, which is not an ``ast.stmt`` subclass.
     Walrus targets are collected from the expressions and conditions of
-    every walked statement.
+    every walked statement, including one written inside a comprehension:
+    PEP 572 binds it in the enclosing (module) scope.
 
     Not walked: ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` bodies (a
-    function-local or a class attribute never rebinds the module name),
-    lambdas and comprehensions (another scope), and ``except ... as name``
-    handlers, whose binding Python deletes when the handler exits.
+    function-local or a class attribute never rebinds the module name) and
+    lambdas (another scope); a comprehension is descended for ``:=`` targets
+    only. ``except`` and ``except*`` handler BODIES are walked: an import or
+    assignment inside one rebinds the module name whenever the handler runs.
+    The ``except ... as name`` target is not collected — ``handler.name`` is
+    a plain string field, not a binding node, and Python deletes that name
+    when the handler exits.
     """
     if not isinstance(tree, ast.Module):
         return set()
     found: set[str] = set()
-    stack: list[ast.stmt] = list(tree.body)
+    stack: list[ast.AST] = list(tree.body)
     while stack:
         node = stack.pop()
         found.update(_walrus_targets(node))
@@ -290,7 +310,7 @@ def _module_level_bound_names(tree: ast.AST) -> set[str]:
         if isinstance(node, _MODULE_COMPOUND_TYPES):
             stack.extend(
                 child for child in ast.iter_child_nodes(node)
-                if isinstance(child, ast.stmt)
+                if isinstance(child, (ast.stmt, ast.ExceptHandler))
             )
     return found
 
@@ -391,7 +411,9 @@ def test_semiconductor_has_no_inner_shadow_of_a_shell_name():
 
 
 def test_shadowing_defs_scope_table():
-    """The module-namespace pin and the inner-shadow pin are split."""
+    """The module-namespace pin, the inner-shadow pin and the binding
+    collector are pinned from one scope table, on shapes, not on the real
+    module alone."""
     assert _shadowing_defs(ast.parse("x = 1\n")) == set()
     probe = ast.parse("class _Probe:\n    def readable(self):\n        return 1\n")
     assert _shadowing_defs(probe) == {"_Probe"}
@@ -405,6 +427,28 @@ def test_shadowing_defs_scope_table():
     ifnested = ast.parse("if True:\n    def within():\n        pass\n")
     assert "within" in _shadowing_defs(ifnested)
     assert "within" not in _inner_shadowing_defs(ifnested)
+    except_body = ast.parse(
+        "try:\n    from json import loads as _probe_ok\n"
+        "except ImportError:\n    from json import dumps as within\n"
+    )
+    assert "within" in _module_level_bound_names(except_body)
+    except_star = ast.parse(
+        "try:\n    pass\nexcept* ImportError:\n"
+        "    from json import dumps as within\n"
+    )
+    assert "within" in _module_level_bound_names(except_star)
+    except_as = ast.parse(
+        "try:\n    pass\nexcept ImportError as within:\n    pass\n"
+    )
+    assert "within" not in _module_level_bound_names(except_as)
+    comp_walrus = ast.parse("_probe = [(within := i) for i in range(1)]\n")
+    assert "within" in _module_level_bound_names(comp_walrus)
+    assert _module_level_bound_names(ast.parse("[x for x in range(3)]\n")) == set()
+    method_nested = ast.parse(
+        "class C:\n    def m(self):\n        def within():\n            pass\n"
+    )
+    assert "within" not in _shadowing_defs(method_nested)
+    assert "within" in _inner_shadowing_defs(method_nested)
 
 
 def test_semiconductor_does_not_rebind_a_shell_name():
