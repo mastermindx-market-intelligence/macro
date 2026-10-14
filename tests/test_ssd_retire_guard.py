@@ -180,6 +180,37 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(self.remove(w).get("skipped"), "earlier effect unresolved")
         self.assertTrue(self.worktree.exists())
 
+    def test_open_pr_never_removed(self):
+        w = self.candidate()
+        result = self.remove(w, pr_states={w.branch: {"state": "OPEN"}})
+        self.assertEqual(result.get("skipped"), "open PR")
+        self.assertTrue(self.worktree.exists())
+
+    def test_head_moved_after_positive_proof(self):
+        w = self.candidate()
+        (self.worktree / "README.md").write_text("a new committed head\n")
+        git("-C", str(self.worktree), "add", "README.md")
+        git("-C", str(self.worktree), "commit", "-m", "new head not in original proof")
+        result = self.remove(w)
+        self.assertIn("HEAD changed", result.get("skipped", ""))
+        self.assertTrue(self.worktree.exists())
+
+    def test_nonforce_git_refusal_restores_helper_lock(self):
+        w = self.candidate()
+        old = guard._cmd
+        def refuse_remove(*args, **kwargs):
+            if "worktree" in args and "remove" in args:
+                return subprocess.CompletedProcess(args, 1, "", "simulated safe refusal")
+            return old(*args, **kwargs)
+        with patch.object(guard, "_cmd", side_effect=refuse_remove):
+            result = self.remove(w)
+        self.assertIn("non-force removal refused", result.get("skipped", ""))
+        marker = pathlib.Path((self.worktree / ".git").read_text().split(": ",1)[1].strip())
+        self.assertTrue((marker / "locked").exists())
+        self.assertEqual((marker / "locked").read_text().strip(), guard.HELPER_LOCK)
+        self.assertEqual(guard.unresolved_effects(), [])
+        self.assertTrue(self.worktree.exists())
+
     def test_corrupted_pin_fails_closed(self):
         fake = self.root / "release"
         fake.mkdir()
