@@ -19,7 +19,7 @@ verified:
     result: Merge18c4805cea60da91c2ffc5f1fb22c9b34b8be783, all six emitted/runtime files matched installed16:12; public page references retained8638927c. Top-level run conclusion was not separately reread.
   - claim: Legacy notice regression is reproduced and repaired locally.
     command: Actual expanded production browser red plus node tests/js/market_memory_auth_return.test.cjs and python3 -m pytest -q tests/test_build_market_memory_page.py.
-    result: All30 auth-return cases and23 page checks passed after the oversized-input edge repair; U3_LEGACY_LOCALE_FINAL_CHECKS_V2.txt retains the owning page run.
+    result: All31 auth-return cases and23 page checks passed after the independent review identified stale macro retry copy. U3_POST_REVIEW_CHECKS.txt retains the run; typed loading now clears prior notices and context notes.
 unverified:
   - claim: Legacy locale repair is live.
     what_would_verify: Final exact-head CI, normal merge, installed source hashes and actual browser transitions after loading the new version.
@@ -45,3 +45,5 @@ Evidence root: `/Volumes/Mastermind/evidence/market-memory-20261012-01a1333c/int
 Retained live adjudication: `U2_LOCALE_RETAINED_LIVE_ACCEPTANCE.json`.
 New legacy browser red: `U3_LEGACY_LOCALE_BROWSER_OPEN_RED.json`.
 The M2 implementation worker returned a quota refusal without a patch; the original root performed this permitted bounded repair directly. Separate read-only review uses its original Fabric carrier.
+
+Review return: original Qwen result82299bytes SHA256da1c034e2e671618adaf087896d6659ddbec00d345249c1a5d64169663417899 was consumed. Static findings were adjudicated: missing emitted files was a packet omission, latest-issuer link was already fixed, and pending macro copy was repaired with a new red/green case. No independent test execution claimed. The assignment was not accepted wholesale because the worker reported source inspection outside its packet and an auto-gc side effect; no ledger acceptance requested. Prior ca02a035 passed all12CIpacks+gate before this final source change; fresh CI remains required.

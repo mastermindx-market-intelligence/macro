@@ -194,3 +194,26 @@ test('missing OAuth selection keeps its specific notice after locale changes wit
  const x=setup('?onboard=resume');await tick();x.setLang('zh');
  assert.equal(x.pending.length,0);assert.match(x.elements['mm-symbol-summary'].innerHTML,/登录后无法恢复选择/);
 });
+
+
+test('macro sign-in retry renders pending in both languages until the current request settles',async()=>{
+ const x=setup(legacyLocaleQuery);await tick();
+ for(const item of x.pending)replyLegacy(item,401);
+ await tick();x.auth({id:'fixture'});await tick();const count=x.pending.length;
+ for(const language of ['en','zh']) {
+  const writes=x.capsuleWrites;x.setLang(language);await tick();
+  assert.equal(x.pending.length,count);assert.equal(x.capsuleWrites-writes,1);
+  assert.match(x.elements['mm-macro-state'].textContent,language==='zh'?/正在加载宏观记忆/:/Loading macro memory/);
+  assert.doesNotMatch(x.elements['mm-macro-query'].innerHTML,/signin|登录/);
+  assert.equal(x.elements['mm-macro-note'].textContent,'');
+ }
+ const retry=x.pending.filter(p=>p.url.includes('/macro?')).at(-1);
+ replyLegacy(retry,200,{as_of:'2026-10-14',query:{},episodes:[],context_note:'CURRENT_CONTEXT_NOTE'});
+ await tick();assert.match(x.elements['mm-macro-note'].textContent,/CURRENT_CONTEXT_NOTE/);
+ x.setLang('en');assert.match(x.elements['mm-macro-state'].textContent,/State through 2026-10-14/);
+ x.auth(null);x.auth({id:'fixture'});await tick();
+ assert.equal(x.elements['mm-macro-note'].textContent,'','retry cannot retain prior context note');
+ replyLegacy(x.pending.filter(p=>p.url.includes('/macro?')).at(-1),503);await tick();
+ assert.equal(x.elements['mm-macro-note'].textContent,'');
+ assert.match(x.elements['mm-macro-state'].textContent,/Memory unavailable/);
+});

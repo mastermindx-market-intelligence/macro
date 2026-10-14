@@ -196,6 +196,9 @@
 
   function loadMacro() {
     var requestId = ++state.macroRequest;
+    state.macro = null;
+    state.macroNotice = {kind: 'loading'};
+    renderMacroNotice();
     request('/macro?limit=6').then(function (payload) {
       if (requestId !== state.macroRequest) return;
       state.macroAuthBlocked = false;
@@ -227,6 +230,14 @@
   function renderMacroNotice() {
     var notice = state.macroNotice;
     if (!notice) return;
+    if (notice.kind === 'loading') {
+      ui.macroState.className = 'mm-state-pill';
+      ui.macroState.textContent = copy('Loading macro memory…', '正在加载宏观记忆…');
+      ui.macroQuery.innerHTML = '<div class="mm-skeleton mm-skeleton-query"></div>';
+      ui.macroEpisodes.innerHTML = '<div class="mm-skeleton"></div>';
+      ui.macroNote.textContent = '';
+      return;
+    }
     var signedOut = notice.kind === 'signedout';
     ui.macroState.className = 'mm-state-pill is-error';
     ui.macroState.textContent = signedOut ? copy('Sign in required', '需要登录') : copy('Memory unavailable', '记忆暂不可用');
