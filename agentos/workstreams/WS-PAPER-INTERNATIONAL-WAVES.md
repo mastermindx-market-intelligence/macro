@@ -140,10 +140,10 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Continue from cumulative CHECKPOINT on the same Macro PR8754 carrier. Macro/Policy-Risk-History fixture
-  workflow passes; advance served workflow evidence in the authorized Chrome profile or another bounded incomplete
-  journey. Risk absence-copy, compass and table source repairs await independent review. Preserve release, Saved,
-  frozen-effect and IW2 holds.
+next_action: Continue on Macro PR8754 from cumulative CHECKPOINT. Cold locale and Risk have parent/local proof;
+  served Macro-Risk-History and24 Compare/Inspector fixture journeys are recorded. Inspect an unresolved workflow
+  boundary, including Library cross-document return versus its no-storage contract. Independent review, deployment,
+  qualified data/chart, genuine Saved, native zoom and original release/rights/frozen/IW2 holds remain.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -154,6 +154,8 @@ artifacts:
 - research/paper_international_wave1_wave2/J06_HISTORY_JOURNEY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/J06_HISTORY_TABLE_REFLOW_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/MACRO_RISK_HISTORY_JOURNEY_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COLD_LOCALE_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COMPARE_INSPECTOR_JOURNEY_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.

@@ -65,6 +65,14 @@ changed:
 - path: research/paper_international_wave1_wave2/MACRO_RISK_HISTORY_JOURNEY_ACCEPTANCE.json
   what: Bind complete Macro/Policy-Risk-History fixture workflow, four source states, independent clocks and source
     repair evidence.
+- path: templates/intl_workspace_entry.js; site/intl_workspace_entry.js; tests/intl_workspace_page.test.cjs
+  what: Honor bootstrap data-lang during cold published load; six actual-publication ordering and locale regressions.
+    Controller change ruled unnecessary by ablation.
+- path: research/paper_international_wave1_wave2/COLD_LOCALE_ACCEPTANCE.json
+  what: Bind cold-load localization repair and completed served Macro/Policy-Risk-History scope.
+- path: research/paper_international_wave1_wave2/COMPARE_INSPECTOR_JOURNEY_ACCEPTANCE.json
+  what: Bind24 distinct Compare/Inspector fixture journeys, inline/modal routes, field clocks, absence, selection/focus
+    and actual Auto contract.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -175,6 +183,27 @@ verified:
   result: Two empty-disclosure and two duplicate-copy red cases;3 positive controls. Final118PASS with14 inherited
     temp-cleanup warnings.8 final renders pass including320px doubled text; nativezoom not proven. Design/visual
     mechanical guards pass.
+- claim: Cold published Chinese options localize without a language roundtrip.
+  command: NODE_PATH=<installed runtime modules> PLAYWRIGHT_CHROMIUM_CHANNEL=chrome node --test tests/intl_workspace_page.test.cjs
+    tests/intl_workspace_legacy_navigation.test.cjs; cold-locale-20261014-r1/rendered_final.py.
+  result: Final44PASS across2files, including6newcases. Baseline4PASS2FAIL, both published Chinese.8 final Dark/Light
+    EN/ZH1440/320 full pages check256options each and localized Scenario context;26assets bound. Existing controller
+    retained; no deployment.
+- claim: Existing-profile served Macro/Policy-Risk-History workflow is traversable with independent policy date
+    and explicit missing evidence.
+  command: CUA Chrome scoped interactions; macro-risk-history-20261014-r1/SERVED_WORKFLOW.json and original tool
+    transcript.
+  result: ECB2.5percent observation2026-10-09 remained fixed through horizon/basis changes; JP/KR absence and Back/Forward/Overview
+    return/reload preserved context. Served Risk duplicate copy/empty disclosure and initial Chinese option defect
+    retained. One live path only; no live fix or full matrix claim. New owned tab closed; no Saved write or original
+    preference changes.
+- claim: Overview -> Compare -> Inspector/Evidence -> Back preserves context and truthful missing evidence.
+  command: compare-inspector-20261014-r1/journey_actual_routes.py, journey_withheld.py and journey_auto.py; ACCEPTED_JOURNEY.json
+    and ACCEPTED_AUTO.json.
+  result: 16 explicit-theme plus8 Auto cases pass. EN/ZH across1440/820/390/320;26 assets. Four admitted markets
+    retain server order; no-grant fixture retains two incomparable pins without numbers. Exact source/generation
+    and Escape focus survive. Auto uses local time, not OS scheme. Initial failures were harness assumptions/selectors/expectation
+    errors; no source repair.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -204,11 +233,13 @@ unresolved:
   one viewport. Independent visual/accessibility review and nativezoom remain open.
 - New Risk absence-copy repair also awaits independent review under the retained Fabric support-publication refusal;
   parent verification is not independent acceptance.
+- Cold-load language source repair awaits independent review under the existing policy refusal and protected deployment;
+  served defect is not yet fixed.
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- Advance the served Macro/Policy -> Risk -> History path in the existing authorized Chrome profile without claiming
-  fixture/source repairs are deployed; preserve source and release holds.
+- Inspect the Library cross-document search-return boundary against its session-only/no-storage contract, or another
+  incomplete full workflow. Do not invent durable query or Saved storage, or replay accepted checks.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
@@ -227,6 +258,10 @@ do_not_redo:
   requirement; initial unsettled captures are not final evidence.
 - Do not rerun the32 full workflow cases or8 final absence renders without a relevant change. Initial13 harness
   failures are rejected; all synthetic permissions remain test-only.
+- Do not rerun cold-locale44tests or8finalrenders without a relevant input change. The intermediate full closure
+  was stopped and is not accepted; causal red is2published Chinese cases, not initial6harness failures.
+- Do not repeat24 Compare/Inspector journeys without relevant change. Compare uses native disclosure by design;
+  retain generation/view guards. Auto is clock-based; no native zoom or full live parity inferred.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.

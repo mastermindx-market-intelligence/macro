@@ -10,13 +10,17 @@ const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   [path.join(__dirname, 'test_intl_workspace_integration.py')],
   {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
-async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null}={}) {
+async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null, published=false, bootLanguage=null, browserLocale='en-US'}={}) {
   const browser = await chromium.launch({headless:true,
     ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
-  const fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
+  let fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname,'test_intl_workspace_integration.py'),'macro',state],
     {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
-  const context = await browser.newContext({javaScriptEnabled, viewport:{width,height:900}});
+  if (published) fixtureHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
+    'import sys; from pathlib import Path; from scripts.optimize_assets import make_optimizer; p=Path("templates").resolve(); print(make_optimizer(p)(sys.stdin.read(),p))'],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},input:fixtureHtml,encoding:'utf8',maxBuffer:4*1024*1024});
+  const context = await browser.newContext({javaScriptEnabled, locale:browserLocale, viewport:{width,height:900}});
+  if (bootLanguage) await context.addInitScript(lang=>localStorage.setItem('lang',lang),bootLanguage);
   const page = await context.newPage();
   page.setDefaultTimeout(2500);
   // Loading the full multi-context server fixture has its own bounded budget;
@@ -44,6 +48,36 @@ async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440
   });
   try { await page.goto('http://intl.test/intl.html', {waitUntil:'load'}); await fn(page); }
   finally { await browser.close(); }
+}
+
+const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
+  'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
+  {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+for (const published of [false,true]) for (const boot of [
+  {name:'saved English',bootLanguage:'en',browserLocale:'zh-CN',expected:'en'},
+  {name:'saved Chinese',bootLanguage:'zh',browserLocale:'en-US',expected:'zh'},
+  {name:'browser Chinese',bootLanguage:null,browserLocale:'zh-CN',expected:'zh'}
+]) {
+  test(`cold-load locale ${boot.name} with ${published?'published':'raw'} script order`,async()=>{
+    await pageFixture(async page=>{
+      const labels=await page.locator('[data-im-workspace] option[data-im-label-en]').evaluateAll(options=>options.map(option=>({
+        actual:option.textContent,expected:option.getAttribute(document.documentElement.dataset.lang==='zh'?'data-im-label-zh':'data-im-label-en')
+      })));
+      assert.ok(labels.length>10);
+      assert.ok(labels.every(label=>label.actual===label.expected),JSON.stringify(labels.filter(label=>label.actual!==label.expected).slice(0,8)));
+      assert.match(await page.locator('[data-im-scenario-context]').textContent(),boot.expected==='zh'?/研究口径/:/Research basis/);
+      assert.equal(await page.locator('html').getAttribute('lang'),boot.expected==='zh'?'zh-CN':'en');
+      const sourceOrder=await page.locator('script[src]').evaluateAll(nodes=>nodes.map(node=>({src:node.getAttribute('src'),defer:node.defer})));
+      const theme=sourceOrder.findIndex(node=>node.src.startsWith('theme.js'));
+      const entry=sourceOrder.findIndex(node=>node.src.startsWith('intl_workspace_entry.js'));
+      assert.ok(theme>entry);
+      assert.equal(sourceOrder[theme].defer,published);
+      await page.locator('[data-im-controls] button[data-im-view="history"]').click();
+      const context=page.locator('[data-im-panel][data-view="history"]:visible [data-im-scenario-context]');
+      assert.match(await context.innerText(),boot.expected==='zh'?/研究口径/:/Research basis/);
+      assert.equal(new URL(page.url()).searchParams.get('view'),'history');
+    },{published,htmlOverride:coldLocaleHtml,...boot});
+  });
 }
 
 test('real macro entry mounts one panel, changes exact context, returns with browser history and opens legacy', async()=>{
