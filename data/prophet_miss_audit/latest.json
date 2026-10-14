@@ -167,20 +167,22 @@
     "emerging_score": 2.764,
     "n_members": 20,
     "present_counts": {
-     "buy": 1,
-     "ran": 1,
+     "buy": 2,
+     "ran": 2,
      "leaders": 0
     },
     "present": {
      "buy": [
-      "LRN"
+      "LRN",
+      "WLY"
      ],
      "ran": [
-      "MSFT"
+      "MSFT",
+      "TAL"
      ],
      "leaders": []
     },
-    "represented_n": 2,
+    "represented_n": 4,
     "days_since_top5_entry": null
    },
    {
@@ -213,19 +215,18 @@
     "emerging_score": 2.006,
     "n_members": 39,
     "present_counts": {
-     "buy": 2,
+     "buy": 1,
      "ran": 0,
      "leaders": 0
     },
     "present": {
      "buy": [
-      "ADM",
-      "DECK"
+      "ADM"
      ],
      "ran": [],
      "leaders": []
     },
-    "represented_n": 2,
+    "represented_n": 1,
     "days_since_top5_entry": null
    },
    {
@@ -292,7 +293,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 9,
+  "n_unrepresented": 8,
   "misses": [],
   "baskets": [
    {
@@ -334,14 +335,15 @@
     "n_members": 19,
     "n_members_live": 19,
     "n_members_read": 19,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
      "AIG",
-     "CB"
+     "CB",
+     "MET"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -409,9 +411,10 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 5,
+    "n_members_on_board": 6,
     "members_on_board": [
      "ASO",
+     "BBY",
      "BJ",
      "BURL",
      "ROST",
@@ -419,7 +422,7 @@
     ],
     "present_counts": {
      "buy": 1,
-     "watch": 2,
+     "watch": 3,
      "leaders": 0,
      "ran": 2
     },
@@ -513,15 +516,16 @@
     "n_members": 14,
     "n_members_live": 13,
     "n_members_read": 14,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "APH",
      "CSCO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.6766,
     "pctile_n": 252,
@@ -537,17 +541,16 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 6,
+    "n_members_on_board": 5,
     "members_on_board": [
      "DINO",
      "DVN",
      "EQT",
      "MPC",
-     "VLO",
-     "XOM"
+     "VLO"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 2,
      "watch": 0,
      "leaders": 3,
      "ran": 0
@@ -563,13 +566,15 @@
     "name": "Technology (Equal-Weight)",
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
-    "n_members": 74,
+    "n_members": 75,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 11,
+    "n_members_on_board": 13,
     "members_on_board": [
      "ACN",
      "ADSK",
+     "ANET",
+     "APH",
      "AVGO",
      "CSCO",
      "MSFT",
@@ -577,20 +582,20 @@
      "PLTR",
      "PTC",
      "SNDK",
-     "TRMB",
-     "WDC"
+     "SNPS",
+     "TRMB"
     ],
     "present_counts": {
      "buy": 4,
-     "watch": 3,
+     "watch": 2,
      "leaders": 2,
-     "ran": 2
+     "ran": 5
     },
-    "pctile": 0.6567,
+    "pctile": 0.6647,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.007097,
-    "ew_10d": 0.027999
+    "ew_5d": 0.007214,
+    "ew_10d": 0.029845
    },
    {
     "basket_id": "cybersecurity",
@@ -624,17 +629,16 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 6,
+    "n_members_on_board": 5,
     "members_on_board": [
      "APA",
      "DVN",
      "EQT",
      "MPC",
-     "VLO",
-     "XOM"
+     "VLO"
     ],
     "present_counts": {
-     "buy": 4,
+     "buy": 3,
      "watch": 0,
      "leaders": 2,
      "ran": 0
@@ -656,7 +660,7 @@
     "n_members_on_board": 10,
     "members_on_board": [
      "ABNB",
-     "DECK",
+     "BBY",
      "EXPE",
      "GPC",
      "HAS",
@@ -667,8 +671,8 @@
      "YUM"
     ],
     "present_counts": {
-     "buy": 3,
-     "watch": 7,
+     "buy": 2,
+     "watch": 8,
      "leaders": 0,
      "ran": 0
     },
@@ -704,36 +708,12 @@
     "ew_10d": 0.012379
    },
    {
-    "basket_id": "payments_fintech",
-    "name": "Payments & Fintech",
-    "category": "Financials",
-    "as_of": "2026-10-08",
-    "n_members": 22,
-    "n_members_live": 21,
-    "n_members_read": 22,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "AFRM"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.5853,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.032729,
-    "ew_10d": 0.002153
-   },
-   {
     "basket_id": "us_sector_staples",
     "name": "Consumer Staples (Equal-Weight)",
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
     "n_members": 35,
-    "n_members_live": 35,
+    "n_members_live": 33,
     "n_members_read": 35,
     "n_members_on_board": 5,
     "members_on_board": [
@@ -749,11 +729,35 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5813,
+    "pctile": 0.6091,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.033133,
-    "ew_10d": 0.010534
+    "ew_5d": 0.033617,
+    "ew_10d": 0.012197
+   },
+   {
+    "basket_id": "payments_fintech",
+    "name": "Payments & Fintech",
+    "category": "Financials",
+    "as_of": "2026-10-08",
+    "n_members": 22,
+    "n_members_live": 21,
+    "n_members_read": 22,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "SOFI"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.5853,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.032729,
+    "ew_10d": 0.002153
    },
    {
     "basket_id": "defensives",
@@ -852,57 +856,31 @@
     "ew_10d": 0.006656
    },
    {
-    "basket_id": "us_sector_comm",
-    "name": "Communication Services (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-10-08",
-    "n_members": 23,
-    "n_members_live": 23,
-    "n_members_read": 23,
-    "n_members_on_board": 4,
-    "members_on_board": [
-     "CHTR",
-     "FOX",
-     "NWSA",
-     "VZ"
-    ],
-    "present_counts": {
-     "buy": 4,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.502,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.024199,
-    "ew_10d": -0.00542
-   },
-   {
     "basket_id": "us_sector_industrials",
     "name": "Industrials (Equal-Weight)",
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
-    "n_members": 80,
-    "n_members_live": 80,
-    "n_members_read": 80,
-    "n_members_on_board": 3,
+    "n_members": 84,
+    "n_members_live": 83,
+    "n_members_read": 84,
+    "n_members_on_board": 4,
     "members_on_board": [
+     "DD",
      "GD",
      "IR",
      "ODFL"
     ],
     "present_counts": {
-     "buy": 2,
+     "buy": 3,
      "watch": 1,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.4861,
+    "pctile": 0.494,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.003532,
-    "ew_10d": 0.002534
+    "ew_5d": 0.004039,
+    "ew_10d": 0.003568
    },
    {
     "basket_id": "housing",
@@ -934,11 +912,13 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "MSM"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -980,21 +960,23 @@
     "n_members": 76,
     "n_members_live": 76,
     "n_members_read": 76,
-    "n_members_on_board": 9,
+    "n_members_on_board": 11,
     "members_on_board": [
      "AIG",
      "BNY",
      "CB",
      "CBOE",
      "CFG",
+     "CME",
+     "MET",
      "MSCI",
      "NTRS",
      "PNC",
      "STT"
     ],
     "present_counts": {
-     "buy": 4,
-     "watch": 5,
+     "buy": 5,
+     "watch": 6,
      "leaders": 0,
      "ran": 0
     },
@@ -1025,6 +1007,33 @@
     "miss": false,
     "ew_5d": 0.001761,
     "ew_10d": 0.013995
+   },
+   {
+    "basket_id": "us_sector_comm",
+    "name": "Communication Services (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-10-08",
+    "n_members": 25,
+    "n_members_live": 23,
+    "n_members_read": 24,
+    "n_members_on_board": 4,
+    "members_on_board": [
+     "CHTR",
+     "FOX",
+     "NWSA",
+     "VZ"
+    ],
+    "present_counts": {
+     "buy": 4,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.4425,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.023117,
+    "ew_10d": -0.009221
    },
    {
     "basket_id": "ai_agents",
@@ -1058,12 +1067,10 @@
     "n_members": 4,
     "n_members_live": 4,
     "n_members_read": 4,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "PLG"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1082,15 +1089,16 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "ANET",
      "AVGO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.3552,
     "pctile_n": 252,
@@ -1106,15 +1114,17 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 1,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "ANET",
+     "APH",
      "AVGO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 2
     },
     "pctile": 0.3472,
     "pctile_n": 252,
@@ -1149,8 +1159,8 @@
     "name": "Health Care (Equal-Weight)",
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
-    "n_members": 59,
-    "n_members_live": 59,
+    "n_members": 60,
+    "n_members_live": 60,
     "n_members_read": 59,
     "n_members_on_board": 6,
     "members_on_board": [
@@ -1229,7 +1239,7 @@
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
     "n_members": 31,
-    "n_members_live": 31,
+    "n_members_live": 30,
     "n_members_read": 31,
     "n_members_on_board": 3,
     "members_on_board": [
@@ -1255,24 +1265,23 @@
     "category": "US Sectors (EW)",
     "as_of": "2026-10-08",
     "n_members": 26,
-    "n_members_live": 26,
+    "n_members_live": 25,
     "n_members_read": 26,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "DD",
      "DOW"
     ],
     "present_counts": {
-     "buy": 2,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.2798,
+    "pctile": 0.2718,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.010739,
-    "ew_10d": -0.013629
+    "ew_5d": 0.010153,
+    "ew_10d": -0.014858
    },
    {
     "basket_id": "defense",
@@ -1306,10 +1315,12 @@
     "n_members": 7,
     "n_members_live": 7,
     "n_members_read": 7,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CME"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1328,10 +1339,12 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "GFI"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1376,7 +1389,7 @@
     "n_members_read": 11,
     "n_members_on_board": 1,
     "members_on_board": [
-     "SGML"
+     "NB"
     ],
     "present_counts": {
      "buy": 1,
@@ -1446,14 +1459,13 @@
     "n_members": 5,
     "n_members_live": 4,
     "n_members_read": 5,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "SNDK",
-     "WDC"
+     "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 2,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1515,12 +1527,10 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "RHHBY"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -11172,7 +11182,7 @@
   {
    "input": "data/baskets/ohlcv",
    "severity": "structural",
-   "reason": "1 basket(s) missing at least one member close while still reading at or above 60%: silver_miners — EW read over the members present, per-basket counts on each row's n_members_read. Disclosed rather than paged: a single unfetched member is a standing fact, and an annotation that fires every night is noise"
+   "reason": "4 basket(s) missing at least one member close while still reading at or above 60%: silver_miners, us_sector_comm, us_sector_health, us_sector_tech — EW read over the members present, per-basket counts on each row's n_members_read. Disclosed rather than paged: a single unfetched member is a standing fact, and an annotation that fires every night is noise"
   }
  ]
 }

@@ -1,12 +1,12 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-10-09",
+ "as_of": "2026-10-14",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-10-09",
-  "n_new_flags": 148,
-  "n_newly_graded": 56,
+  "as_of": "2026-10-14",
+  "n_new_flags": 0,
+  "n_newly_graded": 14,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
   "n_rows": 3427,
@@ -17,42 +17,42 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "maturing",
- "n_accruing": 3202,
- "n_matured": 225,
+ "n_accruing": 3188,
+ "n_matured": 239,
  "first_maturity_est": null,
  "accrual_by_source": {
   "board_buy": 2922,
   "prophet_plan": 505
  },
  "summary": {
-  "pin5": 0.1244,
-  "held_pct": 0.4667,
+  "pin5": 0.1339,
+  "held_pct": 0.4728,
   "prox_med": 0.1104
  },
  "cohorts": [
   {
    "source": "board_buy",
    "lane": "bottoming",
-   "n": 65,
-   "prox_med": 0.10322738111061347,
-   "pin5": 0.2,
-   "held_pct": 0.4153846153846154,
-   "broke_pct": 0.27692307692307694,
-   "mfe60_med": 0.07302795218655289,
-   "fwd60_med": -0.04444395504378729,
-   "undercut_med": 0.030715391536559666
+   "n": 73,
+   "prox_med": 0.10376567287948912,
+   "pin5": 0.2191780821917808,
+   "held_pct": 0.4246575342465753,
+   "broke_pct": 0.273972602739726,
+   "mfe60_med": 0.07049235888662908,
+   "fwd60_med": -0.04184383669386904,
+   "undercut_med": 0.019278985865703868
   },
   {
    "source": "board_buy",
    "lane": "continuation",
-   "n": 63,
-   "prox_med": 0.13862162311909887,
-   "pin5": 0.015873015873015872,
-   "held_pct": 0.5079365079365079,
-   "broke_pct": 0.3333333333333333,
-   "mfe60_med": 0.10809896185631285,
-   "fwd60_med": -0.05258818938575438,
-   "undercut_med": 0.0037071607044002475
+   "n": 68,
+   "prox_med": 0.1377618883062115,
+   "pin5": 0.029411764705882353,
+   "held_pct": 0.5147058823529411,
+   "broke_pct": 0.3382352941176471,
+   "mfe60_med": 0.11152071895851434,
+   "fwd60_med": -0.05171199236418306,
+   "undercut_med": 0.0032834870669836147
   },
   {
    "source": "board_buy",
@@ -65,6 +65,18 @@
    "mfe60_med": 0.08229951712050343,
    "fwd60_med": -0.0534585763317702,
    "undercut_med": 0.0214224619073341
+  },
+  {
+   "source": "board_buy",
+   "lane": "watch",
+   "n": 1,
+   "prox_med": 0.0678273356630803,
+   "pin5": 0.0,
+   "held_pct": 1.0,
+   "broke_pct": 0.0,
+   "mfe60_med": 0.5046374738502044,
+   "fwd60_med": 0.4614528490752168,
+   "undercut_med": 0.0
   }
  ],
  "baseline_ref": "calibration/bottom_ruler_baseline.json",

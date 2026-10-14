@@ -131,8 +131,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 0.7547507202355774,
-        "delta": -0.1825,
+        "current_value": 0.7630121509372714,
+        "delta": -0.1743,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.9372992907410378
@@ -169,18 +169,18 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
-    "predecessor_generation_id": "business_activity-US-60b2378af9f966e2"
+    "predecessor_generation_id": "business_activity-US-fc225e5d33cf5027"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-12T07:54:54Z",
+    "built_at": "2026-10-14T16:18:54Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "ec95e0f6877b1210e0fda34ff2477854519e8032",
-    "content_sha256": "ca4719831300df8f52df13ec8ab6344310259ef4ec59f621c9827865638d56ca",
-    "generation_id": "business_activity-US-ca4719831300df8f",
+    "code_version": "b355075be34a6f4abe43a0e356e41ed199fc1de2",
+    "content_sha256": "8794e22a07402dff8ead5a6e9206d08e742d9b884444b1982900297d9cf54b42",
+    "generation_id": "business_activity-US-8794e22a07402dff",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -276,8 +276,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.7547507202355774, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.7547507202355774，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.7630121509372714, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.7630121509372714，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -447,7 +447,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.3651934793005,
+        "value": 95.3734549100022,
         "value_type": "index"
       },
       {
@@ -483,7 +483,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.7547507202355774,
+        "value": 0.7630121509372714,
         "value_type": "number"
       },
       {
@@ -519,7 +519,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.8297866340706598,
+        "value": 0.8321470428425723,
         "value_type": "number"
       },
       {

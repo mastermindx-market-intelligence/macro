@@ -103,12 +103,18 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [],
-    "reasons": [],
+    "degraded": [
+      "tga",
+      "net_issuance",
+      "withheld_taxes"
+    ],
+    "reasons": [
+      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE"
+    ],
     "required": [
       {
         "component_id": "tga",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Treasury General Account (TGA) balance",
           "zh": "财政部一般账户（TGA）余额"
@@ -116,11 +122,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "net_issuance",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Net Treasury issuance",
           "zh": "美国国债净发行"
@@ -128,11 +134,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "withheld_taxes",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Withheld income & employment-tax deposits",
           "zh": "预扣所得税与雇佣税存款"
@@ -140,7 +146,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "auction_demand",
@@ -180,19 +186,19 @@
       },
       {
         "component_id": "bond_desk_state",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-10-08",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-13",
+        "status": "PRESENT"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "LATE_WITHIN_TOLERANCE",
+    "worst_freshness": "LATE_WITHIN_TOLERANCE"
   },
   "axes": {
     "items": []
@@ -229,8 +235,8 @@
         "prior_value": 13.8
       },
       {
-        "current_value": 78.0,
-        "delta": 0.0,
+        "current_value": 77.0,
+        "delta": -1.0,
         "metric_id": "bond_desk_health_score_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 78.0
@@ -243,10 +249,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "national_debt_liabilities-US-04dca1823f8b7d11"
+    "changed_fingerprints": [
+      "bond_desk_health_score_level:bond_desk_health_score_level:1ce8cb5a52e03ec4"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "national_debt_liabilities-US-ee961266cde7cb3a"
   },
   "drivers": {
     "balance_sheet": [
@@ -367,11 +375,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-12T07:54:54Z",
+    "built_at": "2026-10-14T16:18:54Z",
     "calculation_as_of": "2026-10-08",
-    "code_version": "ec95e0f6877b1210e0fda34ff2477854519e8032",
-    "content_sha256": "d84f1ea440371c80238fc38205c3db714945eace5cf1ee86c03390366ef825aa",
-    "generation_id": "national_debt_liabilities-US-d84f1ea440371c80",
+    "code_version": "b355075be34a6f4abe43a0e356e41ed199fc1de2",
+    "content_sha256": "e3cf78848f263b9235692f99884e1f622dc3f06f785210114284195ce61da931",
+    "generation_id": "national_debt_liabilities-US-e3cf78848f263b92",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -436,7 +444,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -459,7 +467,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -482,7 +490,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -505,7 +513,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -528,7 +536,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -551,7 +559,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -574,15 +582,15 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "bond_desk_passthrough_read",
         "text": {
-          "en": "Bond-desk coverage state: health healthy (78/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
-          "zh": "债券台面覆盖状态：健康度healthy（78/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
+          "en": "Bond-desk coverage state: health healthy (77/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
+          "zh": "债券台面覆盖状态：健康度healthy（77/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
         },
         "trace_ref": "data/bonds/latest.json"
       },
@@ -596,7 +604,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -618,7 +626,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -640,7 +648,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -663,7 +671,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -685,7 +693,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -723,7 +731,7 @@
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_cash_parked_at_the_fed_mechanically_tighter_bank_reserves",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "tga_level",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -759,7 +767,7 @@
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_tga_building_reserve_draining_negative_is_draining_reserve_injecting",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "tga_impulse_4w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -795,7 +803,7 @@
         "definition_id": "treasury_dts.tga.tga_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_tga_building_reserve_draining_negative_is_draining_reserve_injecting",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "tga_impulse_13w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -831,7 +839,7 @@
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_supply_pressure",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "net_issuance_sum_4w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -867,7 +875,7 @@
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_supply_pressure",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "net_issuance_sum_13w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -903,7 +911,7 @@
         "definition_id": "treasury_dts.net_issuance.net_issuance_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_accelerating_issuance_pace",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "net_issuance_pace_delta_4w_vs_13w_avg_daily",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -939,7 +947,7 @@
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_daily_withheld_receipts",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "withheld_taxes_level",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -975,7 +983,7 @@
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_trailing_revenue",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "withheld_taxes_sum_4w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -1011,7 +1019,7 @@
         "definition_id": "treasury_dts.withheld_taxes.withheld_tax_mn",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger_income_and_employment_growth",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "withheld_taxes_yoy_4w",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -1437,21 +1445,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-08",
+        "calculation_as_of": "2026-10-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_healthy",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_score_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-08",
+        "observed_at": "2026-10-13",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_score_level",
-        "reference_period": "2026-10-08",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1466,28 +1474,28 @@
           "value": null
         },
         "unit": "score_0_100",
-        "value": 78.0,
+        "value": 77.0,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-08",
+        "calculation_as_of": "2026-10-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_label",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_label",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-08",
+        "observed_at": "2026-10-13",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_label",
-        "reference_period": "2026-10-08",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1509,21 +1517,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-08",
+        "calculation_as_of": "2026-10-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.cycle_phase",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_cycle_phase",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-08",
+        "observed_at": "2026-10-13",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_cycle_phase",
-        "reference_period": "2026-10-08",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3310,7 +3318,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Treasury General Account daily balance (Daily Treasury Statement)",
           "zh": "财政部一般账户每日余额（每日财政报表）"
@@ -3331,7 +3339,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Net Treasury issuance (Daily Treasury Statement)",
           "zh": "美国国债净发行（每日财政报表）"
@@ -3352,7 +3360,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Withheld income & employment-tax deposits (Daily Treasury Statement)",
           "zh": "预扣所得税与雇佣税存款（每日财政报表）"
@@ -3436,14 +3444,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "owner_ref": "scripts.build_bonds",
         "provider": "Mastermind Bond Desk",
-        "reference_period": "2026-10-08",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

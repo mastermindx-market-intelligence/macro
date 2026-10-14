@@ -8,7 +8,7 @@
   "scope_en": "Euro area aggregate (current EA21 composition), not the European Union. STOXX Europe 600 is broader market context only.",
   "scope_zh": "欧元区当前21国总量（EA21），并非欧盟整体。STOXX Europe 600仅作更广泛市场背景。",
   "asof": "2026-10-08",
-  "built": "2026-10-09 14:40 UTC",
+  "built": "2026-10-14 19:06 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -207,7 +207,7 @@
     "top_score": 77,
     "dominant_en": "Euro depreciation / outflows",
     "dominant_zh": "欧元贬值／资金外流",
-    "h21": 0.2,
+    "h21": 0.15,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
       "intensity": 77.2,
@@ -218,8 +218,8 @@
       "phase": "flat",
       "reached_risk": true,
       "state_now": "caution",
-      "odds_now": 0.2,
-      "odds_peak": 0.2,
+      "odds_now": 0.15,
+      "odds_peak": 0.15,
       "odds_delta": 0.0,
       "spark": [
         50.6,
@@ -531,7 +531,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2026-08",
-      "age_days": 69,
+      "age_days": 74,
       "state": "fresh",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -539,7 +539,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 191,
+      "age_days": 196,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -547,7 +547,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-08",
-      "age_days": 69,
+      "age_days": 74,
       "state": "fresh",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -555,7 +555,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-01",
-      "age_days": 281,
+      "age_days": 286,
       "state": "stale",
       "label_en": "Rates",
       "label_zh": "利率"
@@ -613,10 +613,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Speech by Commissioner Lahbib at the Irish EU Affairs Committee",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2117",
-        "published": "2026-10-08T12:17:26+00:00",
-        "known_at": "2026-10-08T15:11:21.913400+00:00",
+        "title": "Commissioners Kubilius and Lahbib strengthen global disaster risk management through space technologies",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2164",
+        "published": "2026-10-14T13:14:21+00:00",
+        "known_at": "2026-10-14T15:08:54.328814+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -624,10 +624,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Daily News 08 / 10 / 2026",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/mex_26_2112",
-        "published": "2026-10-08T09:35:35+00:00",
-        "known_at": "2026-10-08T15:11:21.913400+00:00",
+        "title": "Speech by Executive Vice-President Fitto at High Level Session   “A Cohesion Policy for a Competitive Union”",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2163",
+        "published": "2026-10-14T12:19:03+00:00",
+        "known_at": "2026-10-14T15:08:54.328814+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -635,10 +635,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Speech by Commissioner Kos at the International Conference on Corridor VIII in Sofia",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2107",
-        "published": "2026-10-08T08:16:55+00:00",
-        "known_at": "2026-10-08T15:11:21.913400+00:00",
+        "title": "Opening Remarks by Commissioner Hansen at the Farmers' Congress in Sweden",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2162",
+        "published": "2026-10-14T09:37:47+00:00",
+        "known_at": "2026-10-14T15:08:54.328814+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -646,10 +646,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Eurobarometer shows consumers' growing trust in EU Ecolabel",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2091",
-        "published": "2026-10-07T22:00:00+00:00",
-        "known_at": "2026-10-08T15:11:21.913400+00:00",
+        "title": "Opening remarks by Executive Vice-President Teresa Ribera on the Commission decision to accept commitments by Sanofi",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2161",
+        "published": "2026-10-14T09:15:23+00:00",
+        "known_at": "2026-10-14T15:08:54.328814+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       },
@@ -657,10 +657,10 @@
         "publisher": "European Commission",
         "source_key": "ec_presscorner",
         "jurisdiction": "EU",
-        "title": "Keynote remarks by Commissioner Síkela at the Arctic Circle Assembly",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_2104",
-        "published": "2026-10-07T22:00:00+00:00",
-        "known_at": "2026-10-09T04:44:01.177044+00:00",
+        "title": "Eurobarometer survey highlights growing use of AI in European companies",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2160",
+        "published": "2026-10-14T08:42:46+00:00",
+        "known_at": "2026-10-14T15:08:54.328814+00:00",
         "rights_basis": "CC BY 4.0 (Commission Decision 2011/833/EU) — https://commission.europa.eu/legal-notice_en — 'reuse is allowed, provided appropriate credit is given'",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
       }
