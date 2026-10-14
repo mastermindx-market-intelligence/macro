@@ -16,6 +16,17 @@ pessimistic / optimistic / ceiling branch solves (§2.5), asserted actions appli
 as a fixed use that is never a cap (§2.6) and one aggregate with one witness and
 its binding constraints (§2.7).
 
+C2b adds the scenario actions this adapter does not own (SPEC_C2B §2): an action
+on a route the envelope does not carry is partitioned off before any C2a
+validation, recorded in ``inputs["non_capacity_actions"]`` with its canonical
+owner (the supply trace, the funding schedule, or ``capacity_unmodelled``) and
+never read as a number.  Capacity still owns ``shelf_takedown`` and
+``at_the_market`` routes, so an action of either kind on a route the envelope
+does not carry is refused.  A FIXED equity line, registered direct or PIPE draws
+on shared pools this adapter models only for takedowns and ATM programmes, so
+the aggregate becomes a named unknown with no witness and no binding constraint
+rather than a number that silently ignores the consumption.
+
 Nothing here re-implements optimisation, rule text, the public-float test or the
 20% test; those are imported.  Arithmetic is exact (``Decimal``/``Fraction``)
 and floats are refused.  An unknown stays unknown -- never ``0``, never
@@ -49,6 +60,7 @@ from engine.capital_structure.capacity_joint import (
     solve_joint,
 )
 from engine.capital_structure.issuer_state_contracts import (
+    ActionSelection,
     CapacityEnvelope,
     CapitalState,
     CalculationReceipt,
@@ -78,7 +90,7 @@ from engine.capital_structure.rule_applicability import (
 )
 from engine.capital_structure.share_basis import _available_instant
 
-IMPLEMENTATION = "capital_structure.capacity.c2_adapter.v1+" + capacity_joint.IMPLEMENTATION
+IMPLEMENTATION = "capital_structure.capacity.c2_adapter.v2+" + capacity_joint.IMPLEMENTATION
 
 #: Record schemas this adapter reads.  The registration-path producer (L1a) is
 #: not imported: C1 dispatches on the schema string alone.
@@ -120,6 +132,30 @@ BRANCHES = ("pessimistic", "optimistic")
 
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
+
+#: The route kinds this adapter models.  A scenario action of either kind on a
+#: route the envelope does not carry is an input error, not another owner's
+#: business (SPEC_C2B §2.2).
+CAPACITY_OWNED_ROUTE_KINDS = ("shelf_takedown", "at_the_market")
+
+#: SPEC_C2B §2.3: the owner that consumes pools this adapter cannot model.
+CAPACITY_UNMODELLED_OWNER = "capacity_unmodelled"
+
+#: SPEC_C2B §2.2: the canonical owner of a scenario action on a route this
+#: envelope does not carry.  The two capacity-owned kinds are absent by design,
+#: so a lookup miss is the refusal; every other ``ROUTE_KINDS`` member is here.
+NON_CAPACITY_OWNERS: dict[str, str] = {
+    "warrant_exercise": "supply",
+    "conversion": "supply",
+    "exchange": "supply",
+    "redemption": "supply",
+    "repurchase": "supply",
+    "debt_draw": "funding_only",
+    "other": "funding_only",
+    "equity_line": CAPACITY_UNMODELLED_OWNER,
+    "registered_direct": CAPACITY_UNMODELLED_OWNER,
+    "pipe": CAPACITY_UNMODELLED_OWNER,
+}
 
 
 class CapacityInputError(ValueError):
@@ -546,6 +582,34 @@ class _ActionView:
 
 
 @dataclass(frozen=True)
+class _NonCapacityAction:
+    """SPEC_C2B §2.2: one scenario action on a route this envelope does not carry.
+
+    The quantity is never read, converted, priced or recorded: its canonical owner
+    is the supply trace (I1/I2) or the funding schedule (F1), and a second copy
+    here would drift.
+    """
+
+    route_id: str
+    action: str
+    settlement: str
+    owner: str
+    fixed: bool
+    conditions_assumed_met: tuple[str, ...]
+
+    def as_record(self) -> dict[str, Any]:
+        """``inputs["non_capacity_actions"]`` (§2.4): no amount, price or count."""
+        return {
+            "route_id": self.route_id,
+            "action": self.action,
+            "settlement": self.settlement,
+            "owner": self.owner,
+            "fixed": self.fixed,
+            "conditions_assumed_met": list(self.conditions_assumed_met),
+        }
+
+
+@dataclass(frozen=True)
 class _RoutePlan:
     route_id: str
     route_kind: str
@@ -645,6 +709,8 @@ class _Builder:
         self.exclusive_dropped: tuple[str, ...] = ()
         self.exclusive_not_passed: tuple[tuple[str, ...], ...] = ()
         self.action_views: dict[str, _ActionView] = {}
+        self.non_capacity_actions: tuple[_NonCapacityAction, ...] = ()
+        self.unmodelled_consumption: tuple[str, ...] = ()
         self.residual_routes: dict[str, dict[str, Fraction | None]] = {
             branch: {} for branch in BRANCHES
         }
@@ -705,6 +771,14 @@ class _Builder:
         routes = self._routes()
         aggregate = self._aggregate(pessimistic, optimistic, ceiling, active, routes, pools)
         witness = self._witness(pessimistic, active)
+        binding = tuple(sorted(pessimistic.binding)) if pessimistic.determined and active else ()
+        if self.unmodelled_consumption:
+            # SPEC_C2B §2.3: a fixed equity line, registered direct or PIPE may draw
+            # on pools this adapter models only for takedowns and ATM programmes, so
+            # the aggregate is a named unknown and no witness is offered.
+            aggregate = self._unmodelled_bound(aggregate, ceiling, pools)
+            witness = None
+            binding = ()
         unknown_constraints = tuple(sorted(pool.constraint_id for pool in pools if pool.bound.status != "known"))
         inputs = self._inputs(pessimistic, optimistic, ceiling, routes, pools)
         receipt = CalculationReceipt.build(
@@ -722,7 +796,7 @@ class _Builder:
             aggregate_bound=aggregate,
             receipt=receipt,
             shared_pools=pools,
-            binding_constraints=tuple(sorted(pessimistic.binding)) if pessimistic.determined and active else (),
+            binding_constraints=binding,
             unknown_constraints=unknown_constraints,
             mutually_exclusive=self.exclusive_groups,
             feasible_witness=witness,
@@ -2197,16 +2271,55 @@ class _Builder:
             )
         return price
 
+    def _non_capacity_action(self, action: ActionSelection) -> _NonCapacityAction:
+        """SPEC_C2B §2.2: name the owner of an action on a route not of this envelope.
+
+        ``settlement`` is recorded verbatim -- the C2a cash-only rule governs
+        envelope routes alone -- and ``conditions_assumed_met`` is recorded sorted
+        but never checked against a route's conditions, because capacity holds none
+        for a route it does not carry.  ``fixed`` is ``quantity is not None``: the
+        status of the quantity is not inspected, and its value is never read.
+        """
+        owner = NON_CAPACITY_OWNERS.get(action.action)
+        if owner is None:
+            assert action.action in CAPACITY_OWNED_ROUTE_KINDS, action.action
+            raise CapacityInputError(
+                f"scenario action on {action.route_id}: capacity owns {action.action} routes "
+                "and the envelope has no such route"
+            )
+        return _NonCapacityAction(
+            route_id=action.route_id,
+            action=action.action,
+            settlement=action.settlement,
+            owner=owner,
+            fixed=action.quantity is not None,
+            conditions_assumed_met=tuple(sorted(action.conditions_assumed_met)),
+        )
+
     def _apply_actions(self) -> None:
         """Asserted actions become a FIXED use, never a cap on the route."""
         plans = {plan.route_id: plan for plan in self.route_plans}
         views: dict[str, _ActionView] = {}
+        # SPEC_C2B §2.1: partition on the envelope's own route ids BEFORE any C2a
+        # validation.  Envelope-route actions keep the merged C2a path exactly; the
+        # others never reach a route, a pool, a solve, the witness or the aggregate.
+        envelope_actions: list[ActionSelection] = []
+        outside: list[_NonCapacityAction] = []
         for action in sorted(self.scenario.actions, key=lambda item: item.route_id):
-            plan = plans.get(action.route_id)
-            if plan is None:
-                raise CapacityInputError(
-                    f"action names {action.route_id!r}, which is not a route of this envelope"
-                )
+            if action.route_id in plans:
+                envelope_actions.append(action)
+            else:
+                outside.append(self._non_capacity_action(action))
+        self.non_capacity_actions = tuple(outside)
+        self.unmodelled_consumption = tuple(
+            sorted(
+                item.route_id
+                for item in outside
+                if item.fixed and item.owner == CAPACITY_UNMODELLED_OWNER
+            )
+        )
+        for action in envelope_actions:
+            plan = plans[action.route_id]
             if action.action != plan.route_kind:
                 raise CapacityInputError(
                     f"action on {action.route_id!r} declares {action.action!r}, but the route is "
@@ -2525,11 +2638,7 @@ class _Builder:
             return Quantity(unit="usd", status="contradicted", note=self.contradiction)
         fixed_pessimistic = self.fixed_totals["pessimistic"]
         fixed_optimistic = self.fixed_totals["optimistic"]
-        ceiling_raw = (
-            ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
-        )
-        ceiling_value = None if ceiling_raw is None else fixed_optimistic + ceiling_raw
-        ceiling_text = "unbounded" if ceiling_value is None else _floor_text(ceiling_value)
+        ceiling_text = self._ceiling_text(ceiling)
         # §2.6: an asserted action that fails in one branch leaves the answer
         # open, even when the two branch optima happen to coincide.
         agree = not self.branch_infeasible_on_one and (
@@ -2572,6 +2681,50 @@ class _Builder:
             self._note_price_schedule()
         return _unknown_bound(
             "usd", f"floor {floor_text} / ceiling {ceiling_text} under stated unknowns"
+        )
+
+    def _ceiling_text(self, ceiling: JointSolution) -> str:
+        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none)."""
+        ceiling_raw = (
+            ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
+        )
+        ceiling_value = (
+            None if ceiling_raw is None else self.fixed_totals["optimistic"] + ceiling_raw
+        )
+        return "unbounded" if ceiling_value is None else _floor_text(ceiling_value)
+
+    def _unmodelled_bound(
+        self, aggregate: Quantity, ceiling: JointSolution, pools: tuple[Constraint, ...]
+    ) -> Quantity:
+        """SPEC_C2B §2.3: name what a fixed action on an unmodelled route may consume.
+
+        A contradicted C2a aggregate stays contradicted -- the modelled actions
+        already exceed a pool and more consumption cannot cure that -- while the
+        Unknown is still added.  Otherwise the aggregate is unknown, quoting the C2a
+        ceiling: never a number, and never a floor this adapter cannot stand behind.
+        """
+        affects = tuple(sorted(pool.constraint_id for pool in pools))
+        kinds = {item.route_id: item.action for item in self.non_capacity_actions}
+        for route_id in self.unmodelled_consumption:
+            action = kinds[route_id]
+            self.unknowns.append(
+                _unknown(
+                    f"action_route_not_modelled:{route_id}",
+                    f"{action} on {route_id} may draw on shared registration and "
+                    "exchange-approval pools that capacity models only for shelf takedowns "
+                    "and at-the-market programmes",
+                    f"the registration path, pricing date and share or dollar consumption of "
+                    f"{route_id} against each shared pool",
+                    affects,
+                )
+            )
+        if aggregate.status == "contradicted":
+            return aggregate
+        ceiling_text = self._ceiling_text(ceiling)
+        if aggregate.status == "known" and aggregate.value is not None:
+            ceiling_text = aggregate.value
+        return _unknown_bound(
+            "usd", f"floor not evaluated / ceiling {ceiling_text} under stated unknowns"
         )
 
     @staticmethod
@@ -2677,7 +2830,7 @@ class _Builder:
         if optimistic is not None:
             kernel_record["optimistic"] = sha256_of(optimistic.as_record())
         return {
-            "adapter": "capital_structure.capacity.c2_adapter.v1",
+            "adapter": "capital_structure.capacity.c2_adapter.v2",
             "implementation": IMPLEMENTATION,
             "state_id": self.state.state_id,
             "scenario_id": self.scenario.scenario_id,
@@ -2713,6 +2866,12 @@ class _Builder:
                 for path_id in sorted(self.programme_usage_inputs)
             },
             "actions_applied": self._actions_record(),
+            "non_capacity_actions": [item.as_record() for item in self.non_capacity_actions],
+            **(
+                {"unmodelled_consumption": list(self.unmodelled_consumption)}
+                if self.unmodelled_consumption
+                else {}
+            ),
             "remaining_capacity": self._remaining_record(),
             "registration_paths": path_records,
             "baby_shelf": self.baby_shelf_inputs,
@@ -2794,6 +2953,8 @@ __all__ = [
     "AUTOMATIC_SHELF_FORMS",
     "BABY_SHELF_RULES",
     "BRANCHES",
+    "CAPACITY_OWNED_ROUTE_KINDS",
+    "CAPACITY_UNMODELLED_OWNER",
     "CapacityEvaluation",
     "CapacityInputError",
     "CapacityRuleTextUnavailable",
@@ -2802,6 +2963,7 @@ __all__ = [
     "IMPLEMENTATION",
     "NASDAQ_OFFERING_ASSUMPTIONS",
     "NASDAQ_RULE_ID",
+    "NON_CAPACITY_OWNERS",
     "REGISTRATION_PATH_SCHEMA",
     "REFERENCE_PACK_MANIFEST_ID",
     "ROUTE_EXCLUSIVITY_KEY",
