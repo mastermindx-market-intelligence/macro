@@ -28821,7 +28821,9 @@ jobs:
 
   # Guards the news-impact Phase 0 freeze contract (closed templates, evidence
   # binding, F3 basis consts) and its owner-payload conformance (documents.py /
-  # events.py minted spans, absences and fiscal periods).
+  # events.py minted spans, absences and fiscal periods), plus the Phase 1
+  # engine/news_impact leaf: semantic validator + hostile corpus, sampler,
+  # cluster adapter, issuer resolver.
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -28831,17 +28833,31 @@ jobs:
       - "tests/test_news_impact_contracts.py"
       - "engine/company_intelligence/**"
       - "engine/earnings_narrative/contracts.py"
+      - "engine/news_impact/**"
+      - "engine/qbus_news_cluster.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/__init__.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "tests/test_news_impact_*.py"
+      - "tests/fixtures/news_impact/**"
+      - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: install news impact contract test dependencies
-        run: pip install pytest jsonschema pyyaml
+        run: pip install pytest jsonschema pyyaml pandas pyarrow
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
+      - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
+        run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
+      - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement)
+        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
