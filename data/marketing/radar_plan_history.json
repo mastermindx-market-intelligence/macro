@@ -2,6 +2,63 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-13",
+      "tickers": [
+        "ATR",
+        "CCOI",
+        "DEI",
+        "ECG",
+        "GAP",
+        "INGR",
+        "JLL",
+        "KRC",
+        "LLY",
+        "LOPE",
+        "NVDA",
+        "OLN",
+        "PPL",
+        "RYAN",
+        "SBRA",
+        "SFM",
+        "VNO"
+      ]
+    },
+    {
+      "as_of": "2026-10-12",
+      "tickers": [
+        "AMG",
+        "AVGO",
+        "BKH",
+        "CCOI",
+        "CGNX",
+        "CTVA",
+        "ELF",
+        "FLO",
+        "GAP",
+        "JBGS",
+        "PLG",
+        "SEZL",
+        "ST",
+        "SYF",
+        "TBBK",
+        "ULS",
+        "VMI"
+      ]
+    },
+    {
+      "as_of": "2026-10-11",
+      "tickers": [
+        "AIG",
+        "GIS",
+        "IDA",
+        "KRC",
+        "LLY",
+        "OMC",
+        "RYAN",
+        "SPY"
+      ]
+    },
+    {
       "as_of": "2026-10-10",
       "tickers": [
         "AMG",
@@ -137,83 +194,6 @@
         "VMI",
         "WH",
         "WWD"
-      ]
-    },
-    {
-      "as_of": "2026-10-06",
-      "tickers": [
-        "ACCV",
-        "ACMR",
-        "AMG",
-        "ATR",
-        "AZZ",
-        "BKE",
-        "BURL",
-        "CENT",
-        "COHU",
-        "CRI",
-        "CTVA",
-        "ECG",
-        "GAP",
-        "HLNE",
-        "ITW",
-        "JPM",
-        "LFUS",
-        "MD",
-        "MTUS",
-        "N",
-        "PAGS",
-        "PLUS",
-        "SYF",
-        "UTHR",
-        "VCIG",
-        "WING",
-        "WS"
-      ]
-    },
-    {
-      "as_of": "2026-10-05",
-      "tickers": [
-        "DAL",
-        "ELF",
-        "HLNE",
-        "KRC",
-        "PPLI"
-      ]
-    },
-    {
-      "as_of": "2026-10-04",
-      "tickers": [
-        "AIO",
-        "AMKR",
-        "ASTH",
-        "COST",
-        "CR",
-        "CTVA",
-        "DLHC",
-        "ECG",
-        "EGBN",
-        "ESE",
-        "FBK",
-        "FIX",
-        "GAP",
-        "KRC",
-        "MRSH",
-        "MYRG",
-        "N",
-        "NTCT",
-        "NYAX",
-        "PANW",
-        "PL",
-        "PORT.U",
-        "PPLI",
-        "RL",
-        "SQQQ",
-        "SYF",
-        "TBBK",
-        "TNDM",
-        "TRIP",
-        "VOO"
       ]
     }
   ]

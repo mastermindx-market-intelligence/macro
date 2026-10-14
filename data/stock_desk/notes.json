@@ -1,27 +1,26 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-08",
-  "generated_at": "2026-10-10T12:05:13.755815+00:00",
+  "generated_at": "2026-10-13T14:11:47.163937+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-08-MSCI-20261010120513-1",
+      "id": "2026-10-08-MSCI-20261013141147-1",
       "ticker": "MSCI",
       "name": "MSCI",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by the validated selection ordering and an unblocked entry after price reclaimed a rising 10-day average. Conviction stays low because the weekly trend has not turned, macro risk is elevated, and the historical constructive calls have shown weak directional accuracy.",
+      "thesis": "The constructive base-building verdict and unblocked bottoming setup support a tentative relative upside lean. Conviction stays low because the weekly trend is mixed, the Financials basket is deteriorating, and earnings in seven days can override the setup.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis: 55th percentile",
-        "Entry unblocked; swing low and 10-day-average reclaim",
-        "Below 200-day average by 1.6%",
-        "Financials basket deteriorating; macro risk elevated"
+        "Entry axis 60th percentile; cycle not blocked",
+        "Price reclaimed the rising 10-day average after the 535.95 swing low",
+        "Risk controls: earnings in 7 days and deteriorating sector basket"
       ],
-      "dissent": "The apparent daily turn may fail because the bigger picture remains mixed, sector breadth is deteriorating, and quality ranks at only the 14th percentile.",
+      "dissent": "The negative quality axis, contracting liquidity and failure to regain the 200-day average could turn the apparent bottom into another lower high.",
       "falsifier": {
-        "text": "Price loses the October 2 swing low while remaining below the 200-day average.",
+        "text": "A close below the 535.95 swing low or clear relative underperformance after earnings.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MSCI",
@@ -35,23 +34,22 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-ADSK-20261010120513-2",
+      "id": "2026-10-08-ADSK-20261013141147-2",
       "ticker": "ADSK",
       "name": "Autodesk",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The neutral verdict fits conflicting evidence: the entry is unblocked and quality is favorable, but the validated selection ordering is below median and the weekly trend has not turned. The risk controls argue for observation rather than treating the rebound as expected outperformance.",
+      "thesis": "The deterministic verdict finds no clear edge: the daily rebound is unblocked and quality is supportive, but the weekly trend remains mixed and residual selection is below median. That combination supports watching the turn without assuming relative outperformance.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: 44th percentile",
-        "Quality axis: 67th percentile; accounting clean",
-        "Above 50-day but below 200-day average",
-        "Weekly timeframe remains mixed"
+        "Selection axis 44th percentile",
+        "Quality axis 67th percentile with clean accounting flag",
+        "Bottoming daily setup, but still below the 200-day average"
       ],
-      "dissent": "The rejected low, positive MACD, and improving 10-day average could develop into a durable recovery from a level still 25.5% below the 52-week high.",
+      "dissent": "The reclaimed 10-day average, positive MACD and strong cash generation could develop into a durable recovery from a deeply depressed 52-week position.",
       "falsifier": {
-        "text": "The weekly trend turns bullish while price establishes itself above the 200-day average.",
+        "text": "A sustained move above the 200-day average accompanied by rising relative strength versus the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -61,49 +59,22 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-TAL-20261010120513-3",
-      "ticker": "TAL",
-      "name": "TAL Education (ADR)",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The neutral verdict is appropriate because the selection axis is only modestly above median and lacks fundamental or event confirmation. Momentum remains intact, so the extension brake near the 52-week high supports not chasing rather than taking a bearish view.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: 55th percentile, residual momentum only",
-        "Entry axis: 44th percentile with extension flag",
-        "Price 0.4% below 52-week high",
-        "Above both moving averages; MACD positive"
-      ],
-      "dissent": "The intact uptrend and calm risk-on regime could carry the shares higher despite the stretched entry.",
-      "falsifier": {
-        "text": "Price forms a fresh high and then holds above it through a completed pullback.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-29",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-10-08-ABBV-20261010120513-4",
+      "id": "2026-10-08-ABBV-20261013141147-3",
       "ticker": "ABBV",
       "name": "Abbvie Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The neutral verdict takes precedence despite a bullish, with-trend setup: the validated selection ordering is near median and the entry controls flag extension at the 52-week high. Because momentum is intact, that brake supports waiting rather than a directional short.",
+      "thesis": "The profile remains neutral despite a fresh, with-trend buy signal: the stock is at its 52-week high and the selection axis is only near median. Momentum is intact, so extension alone is not a reason to lean bearish.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: 51st percentile",
-        "Entry axis: 50th percentile with extension flag",
-        "Bullish weekly agreement and fresh-buy ladder state",
-        "At 52-week high; RSI 67"
+        "Fresh buy with bullish weekly agreement",
+        "Above both moving averages; MACD positive",
+        "Selection axis 51st percentile; entry axis 57th percentile"
       ],
-      "dissent": "Strong quality, positive MACD, and agreement between daily and weekly trends could sustain relative outperformance without a meaningful pullback.",
+      "dissent": "Bullish multi-timeframe alignment, high factor quality and favorable seasonality could sustain meaningful relative leadership.",
       "falsifier": {
-        "text": "A pullback holds above the 50-day average and is followed by a new high with weekly momentum still bullish.",
+        "text": "Persistent relative-strength expansion versus the S&P 500 while price continues making new highs.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -113,49 +84,79 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-BEKE-20261010120513-5",
+      "id": "2026-10-08-APA-20261013141147-4",
+      "ticker": "APA",
+      "name": "APA Corporation",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The constructive base-building verdict, unblocked turn and above-median residual selection support a modest relative upside lean. The deteriorating Energy basket and stretched daily phase materially limit confidence.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis 60th percentile",
+        "Quality axis 74th percentile with clean accounting flag",
+        "Risk control: deteriorating Energy equal-weight basket",
+        "Daily phase stretched despite positive MACD"
+      ],
+      "dissent": "The late investor phase, sector deterioration and 27.7% extension above the 200-day average raise the risk that this is a tiring move rather than a fresh base.",
+      "falsifier": {
+        "text": "A close below the 41.54 swing low with continued deterioration relative to the S&P 500.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "APA",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-10-08-BEKE-20261013141147-5",
       "ticker": "BEKE",
       "name": "KE Holdings (ADR)",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The neutral verdict reflects a tradable daily turn without a clear relative edge: entry conditions improved, but selection is below median and the weekly trend remains mixed. The prior left-translated cycle is a real bearish warning, though not enough by itself to override the current rebound.",
+      "horizon_d": 20,
+      "thesis": "The neutral verdict is appropriate: the daily bottoming turn is intact, but the weekly picture is mixed and the prior left-translated cycle is a genuine bearish structural warning. Missing quality data and below-median residual selection leave no accountable directional edge.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: 46th percentile",
-        "Entry axis: 62nd percentile and unblocked",
+        "Selection axis 46th percentile",
         "Prior cycle was left-translated",
-        "Above both moving averages; MACD positive"
+        "Weekly timeframe has not turned",
+        "Quality axis unavailable"
       ],
-      "dissent": "The early top in the prior cycle may signal a tiring trend that rolls over before the weekly timeframe confirms the rebound.",
+      "dissent": "Holding above both major moving averages with positive MACD could allow the rejected low to become a durable breakout base.",
       "falsifier": {
-        "text": "Price breaks below the September 16 swing low and the 200-day average.",
+        "text": "A sustained relative-strength breakout versus the S&P 500 with the weekly trend turning bullish.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-29",
+      "check_by": "2026-11-05",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-PG-20261010120513-6",
+      "id": "2026-10-08-PG-20261013141147-6",
       "ticker": "PG",
       "name": "Procter + Gamble Co/The",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The neutral profile is tilted cautiously because the risk controls identify genuine relative weakness in the Defensives basket, while selection is below median and the prior cycle topped early. Conviction remains low because price is still above both moving averages and the daily and weekly trends are bullish.",
+      "thesis": "The fresh with-trend buy signal argues against shorting the name, but the deterministic verdict remains neutral and the risk controls flag a weak defensive basket in a leader-rewarding tape. The prior left-translated cycle further limits confidence in relative upside.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: 43rd percentile",
-        "Defensives basket below its long-term trend",
+        "Fresh buy with bullish weekly agreement",
+        "Risk control: Defensives basket below its long-term trend",
         "Prior cycle was left-translated",
-        "Bullish weekly trend and positive MACD"
+        "Selection axis 43rd percentile"
       ],
-      "dissent": "The fresh-buy setup, defensive low-beta characteristics, positive seasonality, and intact weekly uptrend could allow PG to outperform despite weak basket leadership. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
+      "dissent": "Defensive low-beta characteristics, positive fundamentals and favorable seasonality could support relative resilience if broad-market risk appetite weakens.",
       "falsifier": {
-        "text": "The Defensives basket recovers its long-term trend while PG makes a new cycle high with weekly momentum intact.",
+        "text": "A sustained relative-strength breakout versus the S&P 500 while the Defensives basket regains its long-term trend.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"

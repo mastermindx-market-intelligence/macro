@@ -4284,6 +4284,15 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
+    # preserves the broader self-heal owner without widening unrelated probes.
+    "deploy-git-history",
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
     "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
@@ -4652,6 +4661,104 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
+    # Reviewed template-root curation; preserve other opaque domains and ceilings.
+    "integrated-answer-v0",
+    # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
+    # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
+    "dataos-web-workspace",
+    # 2026-10-12 PR #8873: news-impact Phase 0 contract freeze. Owner closure is
+    # company_intelligence/** plus earnings_narrative/contracts.py; ceilings stay fixed.
+    "news-impact-contracts",
+    # 2026-10-11 #8805: the Information-to-Price receipt suites (SRC-A1, PIT
+    # conformance, R4 V2 admission, EVAL-1 partition clock, EVAL-1 challenger
+    # identity) leave unrun-factor-research, whose opaque engine/** and
+    # collectors/** fallback smeared them onto templates/index.html and pushed
+    # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
+    # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
+    "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
+    # 2026-10-12 Crypto Intelligence R2 (#8901, T23 pre-review BLOCKER B1): the
+    # nine vector/BTC behavior suites leave `unrun-vector-dsr`, whose `gate: data`
+    # made them DARK on every pull request (ci.yml plans `--gate code`;
+    # DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST), and whose inferred
+    # weight 35 -> 54 pushed the packing probes over their ceilings on #8901's
+    # merge ref (index.html 5,801 > 5,800; build_free_content 5,602 > 5,600).
+    # paths: = the measured 360-path import/read closure of the nine suites
+    # (collectors, config, engine incl. btc_*, lib, scripts incl. build_vector /
+    # backfill_crypto / check_crypto_shelves, templates/crypto.html.j2, the three
+    # site/ literals check_contract_delta surfaced). Measured on the merge ref:
+    # probes return to base exactly (index.html 5,782, build_free_content 5,585,
+    # plan_book 5,545); closure findings (); ceilings stay fixed — the #8805 shape.
+    "crypto-vector-r2-organs",
+    # 2026-10-13 cx-int engine: crypto-assistant-context. The crypto
+    # assistant-context contract's import closure is the whole Mastermind
+    # chat stack (context compiler, brain gateway, market packet, native
+    # facts). It runs alone under scope: exclusive with that measured
+    # closure instead of widening crypto-vector-r2-organs onto every
+    # chat-stack change; closure findings stay empty and the probes keep their
+    # base readings.
+    "crypto-assistant-context",
+    # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
+    # reader names scripts/build_security_master.py by path (its subprocess
+    # call and parquet traversal join the closure) and the registry imports
+    # axis modules by computed name. Both smeared the job onto the
+    # build_free_content / plan_book packing probes. scope: exclusive pins it
+    # to its measured closure, so it must be listed here.
+    "gmi-classification-axes",
+    # 2026-10-12 FIF kernel guards (seat ruling, candidate y): the class-A
+    # Financial Intelligence Fabric suites moved off the data-health lanes.
+    # Inference would union ~139 fallback roots (the app/ TestClient suites
+    # import app.main) and breach all three PACKING_PROBES; scope: exclusive
+    # pins the job to the FIF globs plus its measured static/runtime closure.
+    "fif-kernel-guards",
+    # 2026-10-12 SNI S2 event response (#8893): the runner's `git` subprocess
+    # calls and the language test's rglob are opaque, so inference widened
+    # the fallback to engine/** and the plan_book packing probe selected the
+    # job (130 > 129). scope: exclusive pins it to its measured closure.
+    "sni-s2-event-response",
+    # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
+    # its own research tree, lib.nyse_calendar and the trial ledger. scope:
+    # exclusive pins it to that measured closure (57 paths once W4 added the
+    # stage-1b suites), so inference never unions the research/ fallback roots
+    # onto the packing probes.
+    "grey-deer-pullback-stage1",
+    # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
+    # hermetic suites reach engine.fundamental_forensics and the research-vault
+    # store, so inference unioned the whole-tree fallback roots and selected the
+    # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
+    # scope: exclusive pins it to its derived import closure.
+    "fif-saved-research-notifications",
+    # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
+    # subprocess and filesystem traversals rooted at templates/, scripts/,
+    # engine/, data/ and site/ widened inference for these two lanes to those
+    # whole roots, so both selected on all three PACKING_PROBES without
+    # importing or naming a probe file (CI measured
+    # scripts/build_free_content.py at 5604 > 5600 on main). scope: exclusive
+    # pins each to its measured static closure plus its fixture globs.
+    "research-price-panel",
+    "washout-turn-organ",
 }
 
 
@@ -5461,6 +5568,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owner. A M0D-only path list cannot safely replace that whole-job closure.
     The fallback claims remain conservative until that audit; these two
     count changes do not assert direct ownership of the probe modules.
+
+    2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
+    Information-to-Price receipt suite registered in unrun-factor-research
+    took templates/index.html from 5,802 (already over the ceiling; main run
+    38139442230 failed this test) to 5,805. The five ITP steps now live in the
+    exclusive information-to-price-eval-receipts job with their measured
+    closure, so the probe reads 5,793 (head) against 5,805 before
+    the move. No ceiling moves; no suite, registration, assertion or selector
+    is removed or weakened.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
@@ -5741,6 +5857,27 @@ def test_ci_python_is_pinned_to_a_released_parser_runtime() -> None:
 # ---------------------------------------------------------------------------
 
 DATA_HEALTH_WORKFLOW = ROOT / ".github" / "workflows" / "data-health.yml"
+
+
+def test_prophet_chronology_suites_run_in_the_code_gate() -> None:
+    """A green PR must execute the clock/correction suites, not defer them to data-health."""
+    suites = (
+        "tests/test_prophet_plan_chronology_audit.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+        "tests/test_prophet_integrity.py",  # ci-trigger-closure: data — suite name inspected in the manifest
+    )
+    jobs = PACK.load_legacy_jobs(MANIFEST, gate="code")
+    owners = [
+        job for job in jobs
+        if any(
+            all(suite in str(step.get("run", "")).split() for suite in suites)
+            for step in job.definition["steps"]
+        )
+    ]
+    assert len(owners) == 1, "clock/correction suites need one code-gated owner"
+    scopes, _ = PACK.infer_job_scopes(owners)
+    for changed in (*suites, "scripts/audit_prophet_plan_chronology.py"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        selected, reason = PACK.select_jobs(scopes, [changed])
+        assert [job.job_id for job in selected] == [owners[0].job_id], (changed, reason)
 
 
 def test_gate_filter_selects_only_matching_jobs(tmp_path: Path) -> None:

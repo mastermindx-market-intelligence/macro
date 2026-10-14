@@ -132,7 +132,9 @@ def test_mobile_animation_avoids_transformed_or_clipped_iframe_ancestors():
     code = _read("templates/terminal_overlay.js")
     assert "@media(max-width:700px)" in code
     assert "clip-path:none!important;transform:none!important" in code
-    assert ".mmto-frame{transform:none!important;transition:none!important}" in code
+    # Width is clamped on mobile for Safari's iframe content-autosizing bug,
+    # while the original no-transform compositor protection remains intact.
+    assert ".mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}" in code
     # The `!important` opacity is scoped to the OPEN state on purpose: hoisting it
     # into the unconditional rule deletes the closed overlay's non-inheriting hide.
     # tests/test_terminal_overlay_closed_state.py evaluates that cascade for real.

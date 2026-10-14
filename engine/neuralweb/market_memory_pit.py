@@ -30,6 +30,7 @@ query is a hard conflict.
 from __future__ import annotations
 
 import copy
+import errno
 import fcntl
 import json
 import os
@@ -674,6 +675,13 @@ def _directory_fsync(path: Path) -> None:
         os.close(descriptor)
 
 
+def _is_foreign_owned_directory(path: Path) -> bool:
+    """Return whether ``path`` is a real directory owned by another effective uid."""
+
+    metadata = path.lstat()
+    return stat.S_ISDIR(metadata.st_mode) and metadata.st_uid != os.geteuid()
+
+
 def _validate_store_directory(path: Path, *, label: str) -> None:
     try:
         metadata = path.lstat()
@@ -728,9 +736,25 @@ def _ensure_store_directory_chain(root: Path, leaf: Path) -> None:
         raise MarketMemoryStoreError(
             "Market Memory store directory escaped its root"
         ) from exc
+    root_preexisted = os.path.lexists(root)
     _mkdir_durable(root)
     _validate_store_directory(root, label="Market Memory store root")
-    _directory_fsync(root.parent)
+    try:
+        _directory_fsync(root.parent)
+    except PermissionError as exc:
+        # A provisioner-owned parent (app/deploy/README.md: root-owned mode-0710)
+        # grants a non-owner writer search but not read, so the root's own link
+        # cannot be fsynced from here.  Only a root that already existed before
+        # this call qualifies (``_mkdir_durable`` fsyncs the parent of any root
+        # it creates and cannot create one under such a parent), so that link
+        # belongs to the parent's owner.  Every other denial -- an owned parent,
+        # any errno but EACCES -- still fails closed.
+        if (
+            exc.errno != errno.EACCES
+            or not root_preexisted
+            or not _is_foreign_owned_directory(root.parent)
+        ):
+            raise
     cursor = root
     for part in relative.parts:
         cursor = cursor / part
@@ -1394,13 +1418,13 @@ def _validate_capture_receipt(receipt: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _load_stored_from_receipt(
-    root: Path, receipt: Mapping[str, Any], *, store_id: str
+    root: Path, receipt: Mapping[str, Any], *, store_id: str, read_budget: Any = None
 ) -> StoredMarketMemoryContext:
     clean_receipt = _validate_capture_receipt(receipt)
     if clean_receipt["store_id"] != store_id:
         raise MarketMemoryStoreError("capture receipt belongs to another store")
     packet_path = _object_path(root, clean_receipt["packet_sha256"])
-    packet, body = _read_canonical_object(
+    packet, body = (read_budget.read if read_budget is not None else _read_canonical_object)(
         packet_path,
         limit=_MAX_PACKET_BYTES,
         label="Market Memory packet object",
@@ -1469,6 +1493,21 @@ class FileAsKnownAtReader(market_memory.AsKnownAtReader):
         self._head_snapshots: dict[tuple[str, str], PinnedGenerationSnapshot] = {}
         self._active_snapshot_key: tuple[str, str] | None = None
         self._active_snapshot: PinnedGenerationSnapshot | None = None
+
+    def qualify_published_lineage(self, **kwargs):
+        """Distinct bounded OFFLINE qualification; original v1 limits unchanged."""
+        from engine.neuralweb.market_memory_lineage import _qualify_owner
+        return _qualify_owner(self, **kwargs)
+
+    def read_certified_generation(self, membership, *, budget, policy):
+        """Exact original object under an owner-issued certified membership."""
+        from engine.neuralweb.market_memory_lineage import _read_owner_generation
+        return _read_owner_generation(self, membership, budget=budget, policy=policy)
+
+    def read_certified_capture(self, membership, *, query_id, budget, policy):
+        """Validate full W1A receipt/alias/packet from certified membership."""
+        from engine.neuralweb.market_memory_lineage import _read_owner_capture
+        return _read_owner_capture(self, membership, query_id=query_id, budget=budget, policy=policy)
 
     def read_pinned_generation(
         self, *, generation_id: str | None = None

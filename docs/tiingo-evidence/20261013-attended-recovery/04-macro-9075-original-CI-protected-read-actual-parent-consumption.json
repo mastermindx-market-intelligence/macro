@@ -1,0 +1,14 @@
+{
+  "schema": "tiingo.original_protected_source_CI_controller_actual_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:53:37.880957+00:00",
+  "original_tool_session": 27218,
+  "actual_original_terminal_chunk": "3cfa83",
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "accepted_record_sha256": "33f800732873d915ab6ec9652569c52c3b842afff2a5e86fb104a8cccbafb225",
+  "pr_number": 9075,
+  "head": "ca8852fee5089c747fa24c694e1ce50274420546",
+  "all12packs_and_overall_originalCI_success": true,
+  "inactive_codex_pilot_fail_preserved_not_waived": true,
+  "normal_protected_merge_required": true
+}

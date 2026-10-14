@@ -146,3 +146,85 @@ def test_publish_rejects_invalid_source_before_store_creation(tmp_path) -> None:
         raise AssertionError("invalid source must fail before R2")
 
     assert ps.publish_state_blob(source, store_factory=store_must_not_open) is False
+
+
+# ---------------------------------------------------------------------------
+# FIF P1 (F4): A18 write-loss law on publish_state_blob
+# ---------------------------------------------------------------------------
+
+
+class _WriteLossStore:
+    """One put (committing then raising, or returning False), scripted read-back."""
+
+    def __init__(self, *, raise_on_put: bool, commit: bool, read_back):
+        self.raise_on_put = raise_on_put
+        self.commit = commit
+        self.read_back = read_back
+        self.put_calls: list[tuple[str, bytes, str]] = []
+        self.get_calls: list[str] = []
+
+    def put_bytes(self, key: str, body: bytes, content_type: str) -> bool:
+        self.put_calls.append((key, body, content_type))
+        if self.raise_on_put:
+            raise RuntimeError("transport failed after commit")
+        return self.commit
+
+    def get_bytes(self, key: str):
+        self.get_calls.append(key)
+        if isinstance(self.read_back, BaseException):
+            raise self.read_back
+        return self.read_back
+
+
+def _valid_source(tmp_path):
+    blob = _blob()
+    source = tmp_path / "state.json.gz"
+    source.write_bytes(blob)
+    return source, blob
+
+
+@pytest.mark.parametrize(
+    "raise_on_put,commit",
+    [(True, True), (False, False)],
+    ids=["raise-after-commit", "false-ack"],
+)
+def test_lost_put_ack_without_provable_read_back_is_effect_unknown(tmp_path, raise_on_put, commit) -> None:
+    source, blob = _valid_source(tmp_path)
+    for read_back in (None, RuntimeError("object store read failed")):
+        store = _WriteLossStore(raise_on_put=raise_on_put, commit=commit, read_back=read_back)
+        with pytest.raises(ps.PrivateStateEffectUnknownError):
+            ps.publish_state_blob(source, store_factory=lambda: store)
+        # Exactly one put on the ORIGINAL key; never a retry or failover.
+        assert store.put_calls == [(ps.STATE_KEY, blob, "application/gzip")]
+        # The typed refusal carries no storage key and no source path.
+        try:
+            ps.publish_state_blob(source, store_factory=lambda: store)
+        except ps.PrivateStateEffectUnknownError as exc:
+            assert ps.STATE_KEY not in str(exc)
+            assert str(tmp_path) not in str(exc)
+
+
+@pytest.mark.parametrize(
+    "raise_on_put,commit",
+    [(True, True), (False, False)],
+    ids=["raise-after-commit", "false-ack"],
+)
+def test_lost_put_ack_with_exact_read_back_is_idempotent_success(tmp_path, raise_on_put, commit) -> None:
+    source, blob = _valid_source(tmp_path)
+    store = _WriteLossStore(raise_on_put=raise_on_put, commit=commit, read_back=blob)
+    assert ps.publish_state_blob(source, store_factory=lambda: store) is True
+    assert store.put_calls == [(ps.STATE_KEY, blob, "application/gzip")]
+
+
+@pytest.mark.parametrize(
+    "raise_on_put,commit",
+    [(True, True), (False, False)],
+    ids=["raise-after-commit", "false-ack"],
+)
+def test_lost_put_ack_with_different_bytes_is_conflict(tmp_path, raise_on_put, commit) -> None:
+    source, _blob_bytes = _valid_source(tmp_path)
+    conflicting = _blob(_document(generated_at="2026-08-01T12:00:01Z"))
+    store = _WriteLossStore(raise_on_put=raise_on_put, commit=commit, read_back=conflicting)
+    with pytest.raises(ps.PrivateStateConflictError):
+        ps.publish_state_blob(source, store_factory=lambda: store)
+    assert len(store.put_calls) == 1

@@ -1,13 +1,15 @@
 """Build the exact current S&P ticker-news universe from incumbent owner artifacts.
 
 Default mode is CHECK ONLY: owner artifacts are read and cross-checked but no output
-is created. Passing --write atomically publishes one derived JSON snapshot. The
-source parquets are never rewritten, renamed, or repaired here.
+is created. Passing --write atomically publishes one derived JSON snapshot. Passing
+--diagnose prints one per-ticker resolution report and writes nothing. The source
+parquets are never rewritten, renamed, or repaired here.
 """
 from __future__ import annotations
 
 import argparse
 from datetime import datetime, timedelta, timezone
+import inspect
 import json
 import os
 from pathlib import Path
@@ -19,11 +21,13 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
+import pyarrow.fs
 
 from engine.qbus_news_universe import qualify_universe
 from engine.qbus_news_universe_snapshot import (
     NewsUniverseSnapshotError,
     build_news_universe_snapshot,
+    diagnose_news_universe,
 )
 from lib import config
 
@@ -32,6 +36,11 @@ class NewsUniverseBuildError(RuntimeError):
     def __init__(self, code: str) -> None:
         self.code = code
         super().__init__(f"qbus_news_universe_build:{code}")
+
+
+_READ_PARQUET_HAS_TO_PANDAS_KWARGS = (
+    "to_pandas_kwargs" in inspect.signature(pd.read_parquet).parameters
+)
 
 
 def _observed_at(raw: str | None) -> datetime:
@@ -73,7 +82,43 @@ def _records(frame: pd.DataFrame, *, include_index: bool = False) -> list[dict]:
 
 def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
     try:
-        frame = pd.read_parquet(path)
+        # pandas opens plain local paths as Python file objects and hands those to
+        # pyarrow, so buffer reads run as Python-backed arrow::py::PyBuffer objects
+        # on Arrow's process-wide IO pool. When such a completion is delayed past
+        # the start of interpreter finalization, its destructor's PyGILState_Ensure
+        # makes CPython force pthread_exit for the worker, and the forced unwind
+        # ends in std::terminate (SIGABRT, "terminate called without an active
+        # exception") after the receipt is already printed: 63/1002 runs (6.29%)
+        # at OMP_NUM_THREADS=4 on 4 pinned CPUs, and 18/300 on pandas 2.2. Reading
+        # through the native LocalFileSystem keeps the parquet reads' pool tasks
+        # free of Python-backed buffers, so the captured abort precondition cannot
+        # arise (0/1002 and 0/300 after the change). use_threads/pre_buffer False
+        # and the serial to_pandas conversion shrink the pool-thread census rather
+        # than emptying it: 5 -> 6 process threads after the four reads instead of
+        # 5 -> 10, and 5 -> 12 instead of 5 -> 13 on pandas 2.2, where
+        # read_parquet has no to_pandas_kwargs and the to_pandas conversion still
+        # runs on the CPU pool.
+        from urllib.parse import unquote, urlparse
+
+        source: Path | str = path
+        parsed = urlparse(str(path))
+        if parsed.scheme.lower() == "file":
+            # A --current/--pit/... file: URI reaches the read as a URI inside
+            # the Path argparse builds (type=Path keeps the scheme, collapsing
+            # file:///a to file:/a), and base pandas read every such form by
+            # URI parsing (file:/a, file://host/a, file:name, FILE:a), while
+            # LocalFileSystem answers any URI with ArrowInvalid. Normalize to
+            # the decoded URI path so the native read keeps serving them;
+            # non-file schemes and bare colon filenames keep failing as before.
+            source = unquote(parsed.path)
+        kwargs: dict[str, object] = {
+            "filesystem": pyarrow.fs.LocalFileSystem(),
+            "use_threads": False,
+            "pre_buffer": False,
+        }
+        if _READ_PARQUET_HAS_TO_PANDAS_KWARGS:
+            kwargs["to_pandas_kwargs"] = {"use_threads": False}
+        frame = pd.read_parquet(source, **kwargs)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:
@@ -171,6 +216,31 @@ def build_from_files(
     }
 
 
+def diagnose_from_files(
+    *,
+    current: Path | str,
+    pit: Path | str,
+    aliases: Path | str,
+    security: Path | str,
+    observed_at: datetime,
+    min_count: int = 400,
+) -> dict[str, object]:
+    """Read the four owner artifacts and return a per-ticker diagnosis. Writes nothing."""
+
+    current_rows = _read_parquet(Path(current), include_index=True)
+    pit_rows = _read_parquet(Path(pit))
+    alias_rows = _read_parquet(Path(aliases))
+    security_rows = _read_parquet(Path(security))
+    return diagnose_news_universe(
+        current_rows=current_rows,
+        pit_rows=pit_rows,
+        alias_rows=alias_rows,
+        security_rows=security_rows,
+        observed_at=observed_at,
+        min_count=min_count,
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     data = config.data_dir()
     parser = argparse.ArgumentParser(
@@ -210,16 +280,57 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="aware ISO timestamp override for tests/replay; default is current UTC",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--write",
         action="store_true",
         help="atomically publish output; omitted means check-only",
     )
+    mode.add_argument(
+        "--diagnose",
+        action="store_true",
+        help=(
+            "Print a per-ticker resolution diagnosis and write nothing. "
+            "打印逐只成分股的解析诊断，不写入任何文件。"
+        ),
+    )
     return parser
+
+
+def _emit_error(code: object) -> int:
+    print(
+        json.dumps(
+            {
+                "schema": "qbus.news_universe_build.v1",
+                "ok": False,
+                "error": str(code),
+            },
+            sort_keys=True,
+        )
+    )
+    return 2
+
+
+def _main_diagnose(args: argparse.Namespace) -> int:
+    try:
+        report = diagnose_from_files(
+            current=args.current,
+            pit=args.pit,
+            aliases=args.aliases,
+            security=args.security,
+            observed_at=_observed_at(args.observed_at),
+            min_count=int(args.min_count),
+        )
+    except (NewsUniverseBuildError, ValueError, TypeError) as exc:
+        return _emit_error(getattr(exc, "code", "build_failed"))
+    print(json.dumps(report, sort_keys=True))
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.diagnose:
+        return _main_diagnose(args)
     if args.fresh_hours <= 0:
         print(
             json.dumps(
@@ -245,18 +356,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             write=bool(args.write),
         )
     except (NewsUniverseBuildError, ValueError, TypeError) as exc:
-        code = getattr(exc, "code", "build_failed")
-        print(
-            json.dumps(
-                {
-                    "schema": "qbus.news_universe_build.v1",
-                    "ok": False,
-                    "error": str(code),
-                },
-                sort_keys=True,
-            )
-        )
-        return 2
+        return _emit_error(getattr(exc, "code", "build_failed"))
 
     print(json.dumps({**report, "ok": True}, sort_keys=True))
     return 0

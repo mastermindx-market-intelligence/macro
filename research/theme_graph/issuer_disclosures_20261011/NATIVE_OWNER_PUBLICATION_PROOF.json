@@ -1,0 +1,61 @@
+{
+  "schema": "gmi.native_owner_publication_proof/v1",
+  "observed_at": "2026-10-11T17:31:42.811834+00:00",
+  "base_head": "0de7a9ca091dcb16090c9de899bbb3942c80abe6",
+  "red": {
+    "exec": 51000,
+    "rc": 1,
+    "cases": 3,
+    "findings": [
+      "PROPOSED pointer cannot grant serving adoption",
+      "candidate and predecessor must be recorded before effects"
+    ]
+  },
+  "green": {
+    "exec": 70845,
+    "rc": 0,
+    "passed": 233,
+    "seconds": 23.69,
+    "suites": [
+      "test_company_disclosure_owner",
+      "test_company_issuer_disclosures",
+      "test_company_disclosures_api",
+      "test_company_context_runtime",
+      "test_company_intelligence_api"
+    ]
+  },
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "decision": "ACCEPT final staged-adoption and immutable-intent repairs",
+    "scope": "independent source architecture/code review; execution proof parent-owned"
+  },
+  "ci": {
+    "closure_exec": 79885,
+    "rc": 0,
+    "jobs": 278,
+    "uncovered": {},
+    "owner_suite_enrolled_once": true,
+    "existing_job_timeouts_preserved": true
+  },
+  "native_dataset_status": "PROPOSED",
+  "staging_result": "MEMBERS_OBSERVED_NOT_ADOPTED; no serving pointer",
+  "next_adoption": "Actual retained-input staging receipt, protected PRODUCED amendment, fresh adoption-bound manifest/promotion",
+  "real_retained_source_publication_executed": false,
+  "runtime_installed": false,
+  "production_accepted": false,
+  "source_pins": {
+    "engine/company_intelligence/issuer_disclosure_owner.py": "dda234b8bbbba97d5cce637f53bfeb23173c23fe06e0c3e649e30d58046d06e2",
+    "engine/company_intelligence/issuer_disclosure_publication.py": "8ba0f6b3f2dc6ed7161fdce0e409c7f6c307e4ed5187d79ce325907fb867c003",
+    "engine/company_intelligence/issuer_disclosures.py": "5628369c513b041f534a38dcf99d61d1bd40d5fd39414bce90bf9bb75db5dd84",
+    "scripts/publish_company_disclosure.py": "f67a4ed18093c3f90808ddaa60e238c3f6c009a026e9293277b96e614b173e19",
+    "app/main.py": "5c9b04d4cead563ae84c8191002bb5fe4ad0ddec6c570522c48b6dca9f55070c",
+    "config/dataset_registry.yml": "7c2b64d1a51f35e7fd04097b8ee035d607e3b4f1017f3280aca26ff4f2035ea1",
+    ".github/ci/legacy-jobs.yml": "72f7834416e8440d0f507580e8fc408c68d571546f8c8a0c681bbedd15f99f57",
+    "tests/test_company_disclosure_owner.py": "9c9d55ccbbdd82b7652512cb4595987729fcfa73d5c1edc28b582c65f04bf3bf",
+    "tests/test_company_disclosures_api.py": "a5ab5f3adf325ef6bab01f7f907269f48a4f903b733b7aa0fe8d671e01cbfaeb",
+    "tests/test_company_context_runtime.py": "1b766314f459f81a07beb50ff90cd4c378bb38914a48bc277c0442741a639241",
+    "research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json": "c2c5ec3672cd16738ad3bd5d49c091664f0b2fdb47678c9102a76c69c3a9ea53",
+    "research/theme_graph/issuer_disclosures_20261011/PRIVATE_CONSUMER_CONTRACT.md": "0b352e0a1ca4e3d50732ce229ee961139c0ca5b7927d6b065ed805c012e9e1eb",
+    "research/theme_graph/issuer_disclosures_20261011/PRIVATE_RUNTIME_LAYOUT.md": "b3f14a3a8ce1882bdcd3d46f63cf9c9b425c6a319f915496ae1c5753460eab0a"
+  }
+}

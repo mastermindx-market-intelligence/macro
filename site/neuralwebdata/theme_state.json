@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-10-10",
-  "generated_at": "2026-10-10T11:20:27Z",
+  "as_of": "2026-10-13",
+  "generated_at": "2026-10-13T08:39:25Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -39,7 +39,7 @@
           "basket_id": "ai_semiconductors",
           "name_en": "AI Semiconductors",
           "name_zh": "AI半导体",
-          "score": 63,
+          "score": 62,
           "label": "dominant",
           "label_en": "DOMINANT",
           "label_zh": "主导",
@@ -229,7 +229,7 @@
           "basket_id": "semicap_equipment",
           "name_en": "Semiconductor Equipment (WFE)",
           "name_zh": "半导体设备（晶圆厂设备）",
-          "score": 56,
+          "score": 55,
           "label": "neutral",
           "label_en": "NEUTRAL",
           "label_zh": "中性",
@@ -685,7 +685,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 38.8,
+        "score": 38.2,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -940,7 +940,7 @@
       "name_en": "Space & Satellites",
       "name_zh": "太空与卫星",
       "foresight": {
-        "stage": "BROADENING (text)",
+        "stage": "PRECIPICE (text)",
         "tier": "P",
         "score": 50.0,
         "entry_ready": false,
@@ -1324,9 +1324,9 @@
       "name_en": "Solar",
       "name_zh": "太阳能",
       "foresight": {
-        "stage": "GLUT-RISK",
+        "stage": "WATCH",
         "tier": "P",
-        "score": 40.0,
+        "score": 34.7,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1370,12 +1370,17 @@
     }
   ],
   "stale_legs": [
+    "baskets: stale (as_of=2026-10-08)",
+    "radar_enriched: stale (as_of=2026-10-08)",
+    "radar: stale (as_of=2026-10-08)",
+    "narrative_emergence: stale (as_of=2026-10-08)",
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
     "divergence_log[ai_semiconductors]: stale (as_of=2026-09-22)",
     "divergence_log[glp1_obesity]: stale (as_of=2026-10-04)",
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-04)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-06)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[data_center_power]: stale (as_of=2026-09-26)"
   ],
@@ -1391,7 +1396,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-10T11:20:27Z",
-  "inputs_hash": "sha256:913cb1955bb10107beacba7523c5313a63a09d42e52b3196cae3d08cde6dd429",
+  "produced_at": "2026-10-13T08:39:26Z",
+  "inputs_hash": "sha256:54c091fa4c9be4d21f1b3061d40d24f9410441cc81c7333cbce8ed448801a488",
   "tier": "display"
 }

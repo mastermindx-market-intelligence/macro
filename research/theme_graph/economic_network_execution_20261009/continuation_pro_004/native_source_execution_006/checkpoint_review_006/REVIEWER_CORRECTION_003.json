@@ -1,0 +1,10 @@
+{
+  "schema": "economic_network.checkpoint_006_reviewer_correction/v1",
+  "failed_verifier": "check_archive_002.py",
+  "failed_tool_chunk": "b8cc69",
+  "exit_code": 1,
+  "failure": "Reviewer assumed principal adopted the exact suggested phrase; actual equivalent edit used control, including the already-applied. Assertion failed only at the wording-inverse check after archive, originals and all 12 browsable copies passed.",
+  "source_or_delivery_defect": false,
+  "correction": "Use exact observed old/new wording span including control punctuation. Preserve failed verifier; run corrected check_archive_003.py.",
+  "earlier_receipt_written": false
+}

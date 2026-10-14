@@ -1,8 +1,13 @@
 # Grey Deer Risk Intelligence & Capital Protection — canonical index
 
 **Program key:** `WS:GREY-DEER-RISK-INTELLIGENCE` · registry key `grey-deer-risk-intelligence`
-(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; no runtime
-behavior exists yet. This README is an index only — it duplicates no architecture.
+(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; GD-3 production acceptance
+passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
+2026-10-11, continued by the Opus seat on 2026-10-13 (resumption file:
+`GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). Both frozen retrospective pullback runs are
+null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY lane now runs
+prospectively in the nightly at research tier. This README is an index only — it duplicates
+no architecture.
 
 ## Canonical files (this directory)
 
@@ -12,6 +17,16 @@ behavior exists yet. This README is an index only — it duplicates no architect
 | `GREY_DEER_FABLE_EXECUTION_COMMAND_PACKET_2026-08-19.md` | Fable COO execution packet: wave packets GD-0..GD-11, laws, routing, acceptance, stop conditions. |
 | `GREY_DEER_WAVE_GRAPH_AND_PR_ACCEPTANCE_MATRIX_2026-08-19.md` | Mechanical index: wave DAG, PR cards, path fences, collision fences, authority checkpoints. |
 | `GD1_GROK_SCIENTIFIC_REPLAY_HANDOFF_2026-08-19.md` | GD-1A/GD-1B research protocol for the Grok operator (prereg-first PIT replay). Outputs land under `research/grey_deer/gd1/`. |
+| `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` | Fable seat resumption file for the pullback operation: wave plan + exit gates, lane matrix, DECIDED / FACTS / OPEN / NEXT, denial register. Updated at wave boundaries. |
+| `GREY_DEER_FABLE_HANDOFF_2026-10-11.md` | Sol's end-to-end handoff packet — PR #8772 (DRAFT, not on main as of 2026-10-11; the seat consumed the same packet from the Chairman-delivered zip): frontier table, collision pairs, pinned revisions. |
+| `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | O1/T02 versioned eligible-input manifest v1.0.0: per-input producer, rights, vintage, basis and disposition; evidence classes; frozen qualified sample; open determinations G1–G6 routed to owners. An owner projection, not a source store. |
+| `PULLBACK_PREREGISTRATION_2026-10-11.md` | O8/T22 pullback probability-and-depth preregistration v1: frozen Massive SPY sample by content sha256, targets, populations, fixed baselines and simple models, purged expanding folds, paired block bootstrap, Bonferroni-adjusted gates and verdict mapping. Frozen before any outcome on the sample was computed; one execution per revision. |
+| `incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md` | O7/T03 publication-health note: the QLedger GH001 block on the US nightly collection (routed to the QLedger owner), #8042 throughput is not size proof, and the heartbeat stall-marker repair with its production replay. The held 2026-10-08 note lives in PR #8648 and is not written here. |
+| `PULLBACK_STAGE1_RESULTS_2026-10-11.{md,json}` + `PULLBACK_STAGE1_DEVIATION_LOG_2026-10-11.md` | W3 (PR #8938): the one frozen stage-1 execution on SPY — null; the INC deviation is logged, never edited away. `pullback_stage1_r1/` keeps the run payload with `POST_RUN_EDITS.md`, the record of every runner edit after the frozen run (import pin; red-team repairs from PR #9091). |
+| `reviews/PULLBACK_STAGE1_REDTEAM_2026-10-12.md`, `reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md` | W4 (PR #9082): read-only red team of stage-1, and the diagnosis of partial-day Massive bars. |
+| `PULLBACK_PROSPECTIVE_LANE_DESIGN_2026-10-12.md`, `PULLBACK_G3_CN_RIGHTS_EVIDENCE_2026-10-12.md` | W4 (PR #9082): design of the prospective nightly lane (built by W5) and the CN rights evidence for open determination G3. |
+| `PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md`, `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md` | Prereg v1.1 and manifest v1.1.0 for the stage-1b pooled 14-ETF panel (runner PR #9091, frozen with blob pins by PR #9114). One execution per revision. |
+| `pullback_stage1b/PULLBACK_STAGE1B_RESULTS.{md,json}` + `PULLBACK_STAGE1B_RESULTS_ADDENDUM.md` | Stage-1b frozen run (PR #9122): 0 of 12 claims pass. The addendum answers red-team findings F1–F7 from the stored JSON only — the headline `delta_v` row carries V(M3); the true ΔV is printed beside it and no verdict changes. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /
@@ -31,7 +46,22 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-08-27, GD-3 acceptance handoff)
+## Current next action (updated 2026-10-13, Opus seat W5)
+
+- Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
+  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md`. W0–W4 are merged
+  (PRs #8785, #8833, #8835, #8852, #8854, #8938, #9070, #9082, #9091, #9114); stage-1b results
+  (PR #9122) and the nightly forward lane (PR #9128) ship from that handoff.
+- Next: read the first nightly after #9128 merges (`data/grey_deer_pullback/forward_log.jsonl`
+  with SPY rows; no `grey-deer-pullback-*-error` annotation), then close T03 and G-HB from
+  `data/ci/ledger_heartbeat_state.json`. Grading starts only as each horizon elapses;
+  `scripts/research/grey_deer_pullback_readiness.py` reports when the power floor can be met.
+- Neither retrospective run is ever repeated on real data; a new configuration is a new prereg
+  revision with its own trial budget.
+- Incumbents are never written by a new seat: PR #8721 (live writer) and PR #8188 (HOLD-FOR-SOL).
+- Everything in the 2026-08-27 block below is DONE and DO_NOT_REDO.
+
+## Prior next action (2026-08-27, GD-3 acceptance handoff — closed)
 
 - **GD-1 closed:** GD-1A DONE; GD-1B ACCEPTED_NO_PROMOTION — zero GD-5 promotions
   (`DEC:GD1-ACCEPTED-NO-PROMOTION`). Dossier: `gd1/`. **GD-1C closed** DONE /
