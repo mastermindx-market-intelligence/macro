@@ -16,13 +16,20 @@ accompanying tests are synthetic.
 | mutants generated (40 per module, seed=20261016) | 80 |
 | killed by the existing `test_sni_*` suite | 51 |
 | survived the existing suite (raw) | 29 |
-| reclassified as EQUIVALENT (with one-line argument) | 23 |
-| **non-equivalent survivors → killing tests added** | **6** |
+| non-equivalent survivors → killing tests added | 6 |
+| reclassified as EQUIVALENT (29 survived − 6 killed-after) | 23 |
 | killed-after (verified by re-running the mutant) | 6 |
 | new killing tests in `tests/test_sni_mut8_b.py` | 8 (6 killing + 2 control) |
-| score before (raw, no EQUIVALENT reclass) | 23 / 80 = 28.8% |
-| score after (6 added kills) | 29 / 80 = 36.3% |
-| score after (51 KILLED + 6 new kills / 80 - 23 EQUIV = 57 / 57) | 57 / 57 = 100.0% of non-equivalent sites |
+| score before (killed-before / generated) | 51 / 80 = 63.8% |
+| score after ((51 killed-before + 6 killed-after) / generated) | 57 / 80 = 71.3% |
+| score after on non-equivalent mutants ((51 + 6) / (80 − 23 equivalent)) | 57 / 57 = 100.0% |
+
+Seat repair (2026-10-14): the lane's original summary printed
+"score before 23 / 80" and "score after 29 / 80", which counted the
+equivalent and survived buckets as kills; both rows are recomputed above
+from the lane's own killed/survived counts. The per-module tables below
+are likewise corrected: their "EQUIVALENT" rows were RAW survivor
+counts that still included each module's three killed-after mutants.
 
 Mutation score is test strength, not statistical validity. No
 acceptance row moves to DONE on the strength of this sweep alone.
@@ -55,18 +62,22 @@ HEAD `9a2682e4a5f1f9794acf168f512d96d819476b05` baseline.
 
 | outcome | count |
 |---|---|
+| generated | 40 |
 | KILLED (existing suite) | 23 |
-| SURVIVED raw, EQUIVALENT (no-caller `_blank` / `_present`; docstring; error-message suffix where L198 short-circuits the `_field_missing` Or→And change; `return False`→`return None` in a boolean context) | 17 |
-| **non-equivalent survivor → killing test** | **3** |
+| SURVIVED raw | 17 |
+| of which non-equivalent → killing test added (killed-after) | 3 |
+| of which EQUIVALENT (no-caller `_blank` / `_present`; docstring; error-message suffix where L198 short-circuits the `_field_missing` Or→And change; `return False`→`return None` in a boolean context) | 14 |
 | TIMEOUT | 0 |
 
 ### `research/single_name_intelligence/common/sni_correction_lineage_guard.py`
 
 | outcome | count |
 |---|---|
+| generated | 40 |
 | KILLED (existing suite) | 28 |
-| SURVIVED raw, EQUIVALENT (no-caller `_nonblank_str`; docstring; `tuple(tuple)` is a no-op; empty-string check is dead on Python 3.12 because `datetime.fromisoformat("")` already raises; `Z` suffix is native on Python 3.11+) | 12 |
-| **non-equivalent survivor → killing test** | **3** |
+| SURVIVED raw | 12 |
+| of which non-equivalent → killing test added (killed-after) | 3 |
+| of which EQUIVALENT (no-caller `_nonblank_str`; docstring; `tuple(tuple)` is a no-op; empty-string check is dead on Python 3.12 because `datetime.fromisoformat("")` already raises; `Z` suffix is native on Python 3.11+; CI pins Python 3.12.13) | 9 |
 | TIMEOUT | 0 |
 
 ## Surviving-mutant list with killing test name
@@ -101,9 +112,15 @@ mutants killed by their named tests. Two sample re-verifications:
 ## Equivalent arguments
 
 The 23 raw SURVIVED cases that reclassify as EQUIVALENT (no kill test
-spent) break down as follows.
+spent) break down as follows. Rows are per mutation SITE, not per mutant:
+rows marked "killed by test" or "covered by killing test" are listed for
+completeness and are NOT counted among the 23 EQUIVALENT, and one site row
+can stand for several seeded mutants. The per-mutant enumeration came from
+the lane's uncommitted harness (seed 20261016); the seat independently
+re-applied mutants #1 and #5 and confirmed each named test fails on the
+mutant and passes on the original.
 
-### `sni_view_state_guard.py` (17 EQUIV)
+### `sni_view_state_guard.py` (17 raw survivors: 14 EQUIV + 3 killed-after)
 
 | line | op | argument |
 |---|---|---|
@@ -129,7 +146,7 @@ The view_state module defines `_blank` (around line 154) and `_present`
 EQUIVALENT ("no caller"): those mutants are listed above and no kill
 tests are spent on them.
 
-### `sni_correction_lineage_guard.py` (12 EQUIV)
+### `sni_correction_lineage_guard.py` (12 raw survivors: 9 EQUIV + 3 killed-after)
 
 | line | op | argument |
 |---|---|---|

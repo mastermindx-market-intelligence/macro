@@ -20,13 +20,19 @@ Fixtures are synthetic.
 | equivalent survivors (one-line argument below) | 1 |
 | timeout | 0 |
 | score before (killed-before / (killed-before + survived-before)) | 40 / 52 = 0.769 |
-| score after ((killed-before + killed-after) / generated) | 51 / 57 = 0.895 |
+| score after ((killed-before + killed-after) / (killed-before + survived-before)) | 51 / 52 = 0.981 |
+| score after on non-equivalent sites ((killed-before + killed-after) / (52 - 1 equivalent)) | 51 / 51 = 1.000 |
 
 The 5 textually-identical mutants are an artefact of the AST-driven
 harness: `ast.unparse` can produce a string that differs in surface form
 but renders to the same bytes after the slice replacement (e.g., a
 `return None` at a position where the original was already `return
-None`). They are not counted as generated, survived, or equivalent.
+None`). They are counted in the 57 generated but excluded from both score
+denominators, and are not counted as survived or equivalent.
+(Seat repair: the lane's original "score after" row divided by all 57
+generated mutants, mixing a denominator that includes the 5 skipped
+identicals with a numerator that cannot; corrected to the same
+52-mutant denominator as "score before".)
 
 Per-module:
 
@@ -123,6 +129,11 @@ renaming, type widening) would not surface fresh survivors. No
 acceptance row moves to DONE on the strength of this sweep alone.
 
 ## Two sample re-verified survivor kills
+
+Seat re-verification (2026-10-14, independent of the lane harness): the
+`_pair_shape_ok` L155 and `_as_date` L202 `or`→`and` mutants were
+re-applied to the module bytes; each named killing test failed on the
+mutant and passed on the restored original.
 
 1. **M8A three_clock #5** —
    `sni_three_clock_guard.py:242 col 8-26`,
