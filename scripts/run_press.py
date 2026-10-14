@@ -590,6 +590,7 @@ def _stage_preplanned_slots(
             checkpoint.update(draft=draft, slug=draft["slug"],
                               provider=res.get("provider"), model=res.get("model"),
                               retained_draft_attempt=attempt,
+                              validator_report=None,
                               writer_state=res.get("state"),
                               progress={"phase": "validation_pending", "attempt": attempt})
             for key in ("token_cap", "provider_usage"):
@@ -597,6 +598,7 @@ def _stage_preplanned_slots(
                     checkpoint[key] = res[key]
             _write_stage_checkpoint(out, checkpoint)
             report = validators.validate(draft, slot, cfg, root=root)
+            checkpoint["validator_report"] = report
             attempt_row = {"attempt": attempt, "ok": bool(report["ok"]),
                            "failed": report["failed"],
                            "our_value_share": report.get("our_value_share"),
@@ -619,6 +621,18 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
+        if passed_payload is None and checkpoint.get("draft") is not None:
+            # A failed validator verdict is evidence, not permission to erase
+            # the returned prose. Retain its exact last draft/report while
+            # keeping the terminal status and quarantine reason unchanged.
+            # A later provider failure may follow this draft; its own attempt
+            # remains in attempts, and retained_draft_attempt identifies which
+            # response these fields describe.
+            for key in ("draft", "slug", "provider", "model", "writer_state",
+                        "retained_draft_attempt", "validator_report",
+                        "token_cap", "provider_usage"):
+                if key in checkpoint:
+                    item[key] = checkpoint[key]
         _write_stage_checkpoint(out, item)
         summary["items"].append({"id": slot["id"], "desk": slot["desk"],
                                  "status": item["status"],

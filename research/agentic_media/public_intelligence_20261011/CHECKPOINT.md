@@ -3,6 +3,55 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Publication safety gaps repaired locally — October 14 01:18 UTC
+
+The shared proof census is now 14 active runs against cap eight (no refresh lease).
+No release PR was opened. Two independent fixture findings justified adjacent
+repair: full validation accepted a script element; terminal quarantine erased a
+returned draft. The new static markup gate passes 154 validator/earnings tests;
+retained failed-draft evidence passes 116 runner/inspection/admin/markup tests.
+Exact red/green proof, bounded parser review and source rebinding are in
+publication_safety_phase/. No real provider/public effect occurred in these tests.
+The independent repair-worker preflight refused before launch for host admission;
+root repaired directly. The existing official-staging worker remains unchanged.
+
+These in-scope protections join the same unopened source carrier. The prepared
+23-file installed manifest now binds the reviewed validator and runner fixes too.
+Review/qualify the retained official-staging return next; final combined contract
+validation, one capacity-admitted protected PR and installed checks remain open.
+Publication and cutover remain false. Do not count fixtures or the held Research
+draft toward the ten-article mixed-desk acceptance requirement.
+
+## Current-source integration and next ingress — October 14 01:04 UTC
+
+Protected main `a3f3afa1e1268908a54263043f21048c1b5bc1b4` integrated cleanly as
+`30ce8ed68e64cac645ca6249b83e212cd8315dfc`. All 23 accepted source hashes are
+unchanged. Post-integration affected checks: 359 passed in 109.10 seconds. The
+prior combined contract scan passed with zero introduced/inherited violations;
+a new scan is running because protected main changed the CI manifest. No PR has
+been created: current shared capacity is ten active proofs against cap eight.
+The branch is still unmerged; this evidence does not prove installation.
+
+Existing Fabric run `mmx-press-official-staging-20261013-001` is the sole active
+private-ingress worker, routed to GLM on ubuntu2; consume its retained
+`official-staging.patch`, never duplicate the run. It is bounded to explicit
+single-attempt private staging through the existing rail, cumulative cadence /
+duplicate checks, and a fail-closed emit guard. Parent review and tests remain
+required before any real use. The previous writer and consumer returns are
+accepted. No current OCC writer call has occurred.
+
+Treasury's own links supplied the FinCEN consent order and OFAC enforcement
+release. Parent verified the OCC credit, preventing double-counted penalties.
+Exact hashes and constraints are in official_feed_phase/BAC_EDITORIAL_CONSTRAINTS.md
+and bac_penalty_credit_corroboration.json. These additional documents are
+editorial corroboration only, not admitted facts in the RSS consumer.
+
+The same `complete-press-delivery` heartbeat is reactivated for the broader
+publication mission, with a verified 1,978-byte prompt starting with the work-trigger
+rule. It owns attention only. Preserve controller admission and the original
+EFFECT_UNKNOWN. Continue the one protected release and guarded private ingress;
+no public article, publication switch, cutover or new signup/follow is claimed.
+
 ## Current-source and writer repair accepted locally — October 14 00:44 UTC
 
 The non-earnings path now has a real OCC RSS candidate for the October 13 Bank of

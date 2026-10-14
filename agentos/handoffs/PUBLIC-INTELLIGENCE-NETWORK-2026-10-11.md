@@ -1567,3 +1567,8 @@ accounting files and every worktree. The original 12:07 EFFECT_UNKNOWN is unchan
 Next: integrated contract verification, one admitted protected PR, installed source
 and consumer checks; then explicit non-promoting current-source staging through the
 existing rail with duplicate/cadence guards and full mixed-desk editorial review.
+
+
+## October 14 01:04 UTC — integrated source and active private ingress
+
+verified: `python3 -m pytest tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_writer.py tests/test_press_planner.py tests/test_press_validators.py tests/test_press_run.py -q` — 359 passed in 109.10s at integration 30ce8ed68e64cac645ca6249b83e212cd8315dfc. The 23 source hashes match the prepared manifest. `check_contract_delta.py --base f9a5a35...` passed 0/0 before the new main manifest; a new scan against a3f3afa1 is running. Existing run mmx-press-official-staging-20261013-001 remains active and is not accepted. Capacity census at 01:02Z is 10/8; no PR or duplicate CI. Existing heartbeat ACTIVE readback, 1978-byte goal prompt. See checkpoint for exact files and retained source corroboration. Preserve dirty accounting and held Research bytes.

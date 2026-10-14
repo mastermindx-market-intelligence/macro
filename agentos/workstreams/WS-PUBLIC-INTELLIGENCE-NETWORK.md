@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete integrated contract verification and one capacity-admitted protected PR for reviewed context, writer-vintage and offline OCC consumer changes; verify installed bytes, then build explicit non-promoting current-source staging with cumulative duplicate/cadence checks. BAC candidate and existing browser continuation are qualified narrowly; no article or new follow write. Preserve held drafts, accounting and original EFFECT_UNKNOWN.
+next_action: Complete integrated contract verification and one capacity-admitted protected PR for reviewed context, writer-vintage and offline OCC consumer changes; verify installed bytes, then consume and qualify the existing mmx-press-official-staging-20261013-001 private-ingress return with cumulative duplicate/cadence checks. BAC candidate and existing browser continuation are qualified narrowly; no article or new follow write. Preserve held drafts, accounting and original EFFECT_UNKNOWN.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
