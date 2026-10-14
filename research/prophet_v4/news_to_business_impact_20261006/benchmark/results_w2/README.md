@@ -25,10 +25,12 @@ Read these limits before any number below.
 - **The unit is the critical slot.** There are 293 critical numeric slots: three T1 fields,
   one T2 field and one T3 field per case. Slot rates are not case rates.
 - **Two families agreeing is a lower bound, not ground truth.** Where the families
-  disagree, at least one is wrong. Where they agree, both can still be wrong. The audit
-  below is the only third-family check, and it is a 40-slot sample, not the population.
-- **Three classes were not audited.** These are `agree_absent` (129 slots),
-  `absent_reason_differs` (6) and `malformed_value` (11). Their correctness is unmeasured.
+  disagree, at least one is wrong. Where they agree, both can still be wrong. The two
+  audits below are the only third-family checks. They are samples (40 slots, then 26
+  absent slots in the addendum), not the population.
+- **One class was not audited.** `malformed_value` (11 slots) has no audit, so its
+  correctness is unmeasured. The addendum audited 20 of the 129 `agree_absent` slots and
+  all 6 `absent_reason_differs` slots.
 - **The third family is unavailable.** GLM is exhausted until 2026-10-19 05:16Z. The
   registered case gate needs every field to agree, so with two families every case is
   deferred.
@@ -75,12 +77,12 @@ disputed rate is 0.423. The worse family is wrong on at least 0.212 of slots.
 
 | Class | Slots | Meaning |
 |---|---|---|
-| `agree_absent` | 129 | Both families say the value is not stated (unaudited) |
+| `agree_absent` | 129 | Both families say the value is not stated (addendum audit: 20 sampled) |
 | `agree_present` | 40 | Both give the same value |
 | `present_value_differs` | 57 | Both give a value; the values differ |
 | `present_vs_absent` | 50 | One gives a value; the other says not stated |
 | `malformed_value` | 11 | One return breaks the value shape (unaudited) |
-| `absent_reason_differs` | 6 | Both absent, for different reasons (unaudited) |
+| `absent_reason_differs` | 6 | Both absent, for different reasons (addendum audit: all 6) |
 
 The 57 + 50 disputed value slots break down by which part of the value differs. One slot
 can differ in several parts.
@@ -148,7 +150,7 @@ both families and 3 hit the contract gap below.
 
 1. **Two-family agreement on a stated value predicts correctness in this sample.** The
    auditor found no error among the 19 decidable agreed slots. The upper bound of 0.168 is
-   wide, and `agree_absent` was not sampled. See
+   wide. Agreed absences are covered by the addendum below. See
    `DSC:NEWS-IMPACT-TWO-FAMILY-AGREEMENT-PREDICTS-CORRECTNESS`.
 2. **When the families disagree, usually both are wrong in some part.** The commonest
    pattern is periods. fam_a drops a stated period end or invents a period. fam_b invents a
@@ -162,6 +164,39 @@ both families and 3 hit the contract gap below.
    is the increment or the new total. The families agree on the incremental reading, and
    plain English supports a new total. The guide has to rule on this. It is not counted as
    a model error.
+
+### Absent-slot audit addendum
+
+A second audit covered the absent slots the first one left out. It adds strata on top of
+the first audit (seed 20261014) and never redraws it.
+
+- **Draw.** Seed 20261015, rows sorted by (case, field) before sampling: 20 of the 129
+  `agree_absent` slots and all 6 `absent_reason_differs` slots. The sample is
+  `audit/sample_absent.json` (sha256 `819911e4…`). The verdicts are
+  `audit/audit_absent.json` (sha256 `14e63889…`).
+- **Method.** Each card showed both families' absences and every keyword window in the
+  body that holds a number, so a value both families missed would be on the card. As a
+  positive control, the same windows covered the agreed span in 40 of 40 `agree_present`
+  slots.
+- **Agreed absences.** All 20 absences were correct, with 0 shared misses: no body stated
+  a value that both families failed to find. Wilson 95% is 0 to 0.161. The reason was
+  another matter. On cards 8 and 17 both families wrote `not_stated` where the source
+  states a scheduled execution, which guide-v1.1 labels `stated_without_number`. See
+  `DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS`.
+- **Reason splits.** Of the 6 slots where the families gave different reasons, 2 are
+  clear, one won by each family. In both, the losing family cited boilerplate as a claim.
+  The other 4 turned on a gap in guide-v1. Cards 23 to 25 turn on whether a scheduled or
+  planned execution with no amount is a claim without a number. Card 26 turns on whether a
+  qualitative statement of expected effect is a claim about the amount.
+- **Guide ruling.** Annotation guide-v1.1 section 6 rules on all three. Scheduled, planned
+  or pending execution with no amount is `stated_without_number`. A qualitative statement
+  about the slot's own quantity is `stated_without_number`, while a topic mention is
+  `not_stated`. Boilerplate never supports `stated_without_number`. Under these rules the
+  4 ambiguous cards resolve to `stated_without_number`. The v1 labels are not relabeled;
+  the next labeling wave uses guide-v1.1. See
+  `DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION`.
+- **Not re-scored.** `summary.json` is unchanged, because the scorer reproduces it byte
+  for byte from the first audit. The addendum lives in `audit/audit_absent.json` only.
 
 ### Eval receipts
 
@@ -285,12 +320,15 @@ entries and 1 CORRECTION.
 | `eval_receipt_fam_a.json`, `eval_receipt_fam_b.json` | `eval_receipt.v1` per family |
 | `audit/sample.json` | The 40 audit slots (ids and strata only) |
 | `audit/audit.json` | Auditor verdicts per slot, with paraphrased notes |
+| `audit/sample_absent.json` | The 26 addendum slots (ids and strata only) |
+| `audit/audit_absent.json` | Addendum verdicts and summary, with paraphrased notes |
 | `tools/build_label_lanes.py` | Builds the labeling lane trees and packets |
 | `tools/label_batch.template.txt` | Lane packet prompt-v1.0 (64 cases per family) |
 | `tools/label_batch.template.v1.1.txt` | Lane packet prompt-v1.1 (93 cases per family) |
 | `tools/fill_spans.py`, `tools/check_label.py` | In-lane helpers: span hashing and return self-check |
 | `tools/canon_returns.py` | Representation-only canonicalisation (rules C1–C4) before agreement |
 | `tools/build_audit.py` | Draws the audit sample |
+| `tools/build_audit_absent.py` | Draws the addendum sample and runs its positive control |
 | `tools/score_benchmark.py` | Produces `summary.json`, `critical_slots.jsonl` and the receipts |
 
 Registration: sampler `ni-sampler-1`, sampling seed 20261014. Bootstrap 9,999 reps, seed
@@ -313,22 +351,29 @@ PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchm
 PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/score_benchmark.py \
   --w2 SCRATCH_W2 --bench research/prophet_v4/news_to_business_impact_20261006/benchmark \
   --out OUT --audit research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/audit.json
+# addendum: draw the 26 absent slots, then run the window positive control
+PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_audit_absent.py \
+  SCRATCH_W2 AUDIT_OUT
+PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_audit_absent.py \
+  SCRATCH_W2 --control
 ```
 
-`build_audit.py` also writes `batch_*.txt` audit cards. They quote filing text and must
-not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
+`build_audit.py` also writes `batch_*.txt` audit cards, and `build_audit_absent.py`
+writes `batch_absent_*.txt` cards. Both quote filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
 tool's output.
 
 Checked at commit time from the committed tools and the committed `audit/audit.json`:
 `score_benchmark.py` reproduces `summary.json`, `critical_slots.jsonl` and both eval
 receipts byte for byte, and `build_audit.py` reproduces `audit/sample.json` byte for byte.
+`build_audit_absent.py` reproduces `audit/sample_absent.json` byte for byte, and its
+control reports 40 hits and 0 misses.
 
 ## Next
 
-1. Run a third family (GLM after 2026-10-19 05:16Z) on the disputed slots and on an
-   `agree_absent` sample.
-2. Get owner rulings on the two gaps: a per-share dividend home in T1, and the "increase
-   up to $X" reading.
+1. Run a third family (GLM after 2026-10-19 05:16Z) on the disputed slots, under
+   annotation guide-v1.1. The `agree_absent` audit is done (addendum above).
+2. Get owner rulings on the two remaining gaps: a per-share dividend home in T1, and the
+   "increase up to $X" reading. The absence-reason gap is ruled in guide-v1.1.
 3. Decide per-slot against per-case publication.
 4. Add MiniMax cost capture.
 5. Widen the graded frame toward 600 cases where a body source exists.
