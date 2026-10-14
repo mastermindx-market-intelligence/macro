@@ -4,17 +4,21 @@ The two agreed pairs are the synthetic fixture's own
 ``(segment, denominator)`` values under ``business_dimensions``. Any other
 pair, or a missing key, is ``mislabeled_denominator``. The guard does not
 apply to any other metric and does not call ``derive_result_cash``.
+
+requirement_index.md reserves IND-R206's anchor test for T03's
+``tests/test_industrials_source_facts.py``. This suite uses a behaviour
+name and is not that anchor.
 """
 
 from __future__ import annotations
 
 import copy
 
-from engine.company_intelligence.industrials_denominator_guard import denominator_refusal
+from engine.fundamental_forensics.industrials_denominator_guard import denominator_refusal
 from tests.industrials_result_cash_helpers import case
 
 
-def test_ind_r206() -> None:
+def test_denominator_refusal_rejects_a_company_revenue_share_labeled_as_segment_mix() -> None:
     cells = case("same_number_two_headers")["cells"]
     assert {
         (

@@ -28363,7 +28363,7 @@ jobs:
       - "tests/test_industrials_source_history.py"
       # IND-R206: a revenue_share_pct cell is refused unless its
       # segment/denominator pair is one of the two synthetic pairs.
-      - "engine/company_intelligence/industrials_denominator_guard.py"
+      - "engine/fundamental_forensics/industrials_denominator_guard.py"
       - "tests/test_industrials_denominator_guard.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
