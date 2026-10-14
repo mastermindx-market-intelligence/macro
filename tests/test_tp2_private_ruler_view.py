@@ -700,3 +700,107 @@ def test_unknown_daily_rank_state_or_invalid_minute_conditioning_refused():
     with pytest.raises(TP2PrivateViewRefusal, match="minute-matched baseline"):
         build_private_tp2_view(observation=observation, calibration=invalid,
                                view_asof_ns=golden["evaluation_ns"]+1)
+
+
+# Fixed synthetic regressions for builder/private-byte validation parity.
+# These checks authenticate neither source data nor original market capture.
+def _handoff_validation_parity_golden():
+    raw = (Path(__file__).parent / "fixtures/tp2_private_view.synthetic.v0.json").read_bytes()
+    assert len(raw) == 3394
+    assert hashlib.sha256(raw).hexdigest() == (
+        "8c1ee4f865566f013d7a5805fccdd11c031223d39c6d8ec6b66968cbdc35f60b")
+    return json.loads(raw)
+
+
+def _handoff_validation_parity_read(view, reader):
+    from engine.tp2_private_ruler_view import (
+        serialize_private_tp2_view, verify_private_tp2_bytes)
+    if reader == "serialize":
+        return serialize_private_tp2_view(view=view)
+    raw = (json.dumps(view, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=True, allow_nan=False) + "\n").encode("utf-8")
+    return verify_private_tp2_bytes(
+        expected_sha256=hashlib.sha256(raw).hexdigest(),
+        expected_byte_length=len(raw), blob=raw)
+
+
+@pytest.mark.parametrize("reader", ["serialize", "verify"])
+@pytest.mark.parametrize("case", [
+    "decision_before_start", "decision_before_end", "unaligned_minute",
+    "watermark_before_end", "full_day_rank_on_partial_session",
+    "statistics_without_distribution", "zero_prior_complete_distribution",
+    "missing_median", "missing_mad", "missing_percentile", "missing_z",
+    "zero_mad_measured", "no_dispersion_nonzero_mad",
+    "no_dispersion_with_z", "missing_current_share",
+])
+def test_tp2_handoff_validation_parity_rejects_incoherent_state(case, reader):
+    from engine.tp2_private_ruler_view import TP2PrivateViewRefusal
+    view = _handoff_validation_parity_golden()
+    tp1 = view["tp1_provisional_minute"]
+    minute = view["intraday_minute_baseline"]
+    if case in ("decision_before_start", "decision_before_end"):
+        key = ("minute_start_ns_decimal" if case == "decision_before_start"
+               else "minute_end_ns_decimal")
+        tp1["minute_decision_ns_decimal"] = str(int(tp1[key]) - 1)
+        tp1["watermark_available_ns_decimal"] = tp1["minute_decision_ns_decimal"]
+    elif case == "unaligned_minute":
+        for key in ("minute_start_ns_decimal", "minute_end_ns_decimal"):
+            tp1[key] = str(int(tp1[key]) + 1)
+    elif case == "watermark_before_end":
+        tp1["watermark_available_ns_decimal"] = str(int(tp1["minute_end_ns_decimal"]) - 1)
+    elif case == "full_day_rank_on_partial_session":
+        view["observed_source"]["full_rth_covered_claim_unverified"] = False
+    elif case == "statistics_without_distribution":
+        minute.update(n_prior=0, median=None, mad=None,
+                      midrank_percentile=None, robust_z="2")
+    elif case == "zero_prior_complete_distribution":
+        minute["n_prior"] = 0
+    elif case.startswith("missing_"):
+        key = {"missing_median": "median", "missing_mad": "mad",
+               "missing_percentile": "midrank_percentile", "missing_z": "robust_z",
+               "missing_current_share": "cumulative_offexchange_share"}[case]
+        minute[key] = None
+    elif case == "zero_mad_measured":
+        minute["mad"] = "0"
+    elif case == "no_dispersion_nonzero_mad":
+        minute.update(state="NO_ROBUST_DISPERSION", robust_z=None)
+    elif case == "no_dispersion_with_z":
+        minute.update(state="NO_ROBUST_DISPERSION", mad="0")
+    else:
+        raise AssertionError("unrecognized fixed regression")
+    with pytest.raises(TP2PrivateViewRefusal):
+        _handoff_validation_parity_read(view, reader)
+
+
+@pytest.mark.parametrize("reader", ["serialize", "verify"])
+@pytest.mark.parametrize("case", [
+    "closed_minute_equality", "last_rth_minute", "zero_dispersion",
+    "partial_session_without_ranks",
+])
+def test_tp2_handoff_validation_parity_preserves_valid_boundary(case, reader):
+    view = _handoff_validation_parity_golden()
+    tp1 = view["tp1_provisional_minute"]
+    if case == "last_rth_minute":
+        start = int(tp1["minute_start_ns_decimal"]) + 389 * 60_000_000_000
+        tp1["minute_start_ns_decimal"] = str(start)
+        tp1["minute_end_ns_decimal"] = str(start + 60_000_000_000)
+    if case in ("closed_minute_equality", "last_rth_minute"):
+        end = tp1["minute_end_ns_decimal"]
+        tp1["watermark_available_ns_decimal"] = end
+        tp1["minute_decision_ns_decimal"] = end
+        view["view_asof_ns_decimal"] = str(max(int(view["view_asof_ns_decimal"]), int(end)))
+    elif case == "zero_dispersion":
+        view["intraday_minute_baseline"].update(
+            state="NO_ROBUST_DISPERSION", mad="0", robust_z=None)
+    elif case == "partial_session_without_ranks":
+        view["observed_source"]["full_rth_covered_claim_unverified"] = False
+        for rank in view["historical_ruler"].values():
+            rank.update(state="NOT_FULL_RTH", rank_desc_in_observed_sample=None)
+    result = _handoff_validation_parity_read(view, reader)
+    if reader == "serialize":
+        assert result["state"] == "NOT_PUBLISHED"
+        assert result["source_custody_proven"] is False
+    else:
+        assert result == view
+        assert result["public_delivery_allowed"] is False
+        assert result["signal"] is None

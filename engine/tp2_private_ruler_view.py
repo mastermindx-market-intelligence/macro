@@ -701,6 +701,11 @@ def _validate_private_tp2_view(view):
                     _private_view_refuse("historical rank impossible")
             elif rank is not None:
                 _private_view_refuse("historical rank without observed basis")
+        if (observed is None
+                or (observed["full_rth_covered_claim_unverified"] is not True
+                    and any(data["state"] == "OBSERVED_COVERAGE_ONLY"
+                            for data in ranks.values()))):
+            _private_view_refuse("full-session rank without full-session source")
 
     minute = view["intraday_minute_baseline"]
     if minute is not None:
@@ -721,10 +726,21 @@ def _validate_private_tp2_view(view):
                 _private_view_refuse("historical minute fraction invalid")
         if minute["robust_z"] is not None:
             _bounded_signed_decimal(minute["robust_z"], "minute.robust_z")
-        if (minute["state"] not in ("OBSERVED_COVERAGE_ONLY",
-                                   "NO_ROBUST_DISPERSION")
-                and any(minute[k] is not None for k in (
-                    "median", "mad", "robust_z", "midrank_percentile"))):
+        mstate = minute["state"]
+        if mstate in ("OBSERVED_COVERAGE_ONLY", "NO_ROBUST_DISPERSION"):
+            if (minute["n_prior"] < 2
+                    or any(minute[k] is None for k in (
+                        "cumulative_offexchange_share", "median", "mad",
+                        "midrank_percentile"))):
+                _private_view_refuse("historical minute distribution incomplete")
+            mad = Decimal(minute["mad"])
+            if mstate == "NO_ROBUST_DISPERSION":
+                if mad != 0 or minute["robust_z"] is not None:
+                    _private_view_refuse("historical minute dispersion inconsistent")
+            elif mad <= 0 or minute["robust_z"] is None:
+                _private_view_refuse("historical minute robust z incomplete")
+        elif any(minute[k] is not None for k in (
+                "median", "mad", "robust_z", "midrank_percentile")):
             _private_view_refuse("historical statistics without coverage")
 
     tp1_state = view["tp1_minute_state"]
@@ -758,13 +774,16 @@ def _validate_private_tp2_view(view):
         stamps = {k: _private_ns(tp1[k], "TP1."+k) for k in (
             "minute_start_ns_decimal", "minute_end_ns_decimal",
             "minute_decision_ns_decimal", "watermark_available_ns_decimal")}
-        if (not _rth_open_ns(tp1["session"]) <= stamps["minute_start_ns_decimal"]
-                    < _rth_open_ns(tp1["session"])+390*60_000_000_000
+        open_ns = _rth_open_ns(tp1["session"])
+        if (not open_ns <= stamps["minute_start_ns_decimal"]
+                    < open_ns+390*60_000_000_000
+                or stamps["minute_start_ns_decimal"] % 60_000_000_000
                 or stamps["minute_end_ns_decimal"] -
                    stamps["minute_start_ns_decimal"] != 60_000_000_000
-                or stamps["minute_decision_ns_decimal"] > now
-                or stamps["watermark_available_ns_decimal"] >
-                   stamps["minute_decision_ns_decimal"]):
+                or stamps["minute_end_ns_decimal"] > open_ns+390*60_000_000_000
+                or not stamps["minute_end_ns_decimal"]
+                   <= stamps["watermark_available_ns_decimal"]
+                   <= stamps["minute_decision_ns_decimal"] <= now):
             _private_view_refuse("TP1 private original minute clocks invalid")
         _hex(tp1["source_manifest_sha256"], "TP1.manifest")
         _hex(tp1["source_observation_sha256"], "TP1.observation")
