@@ -329,6 +329,29 @@ def test_r1_03_kpi_expected_padded_period_id_yields_period_absent():
     _assert_kpi_refused(verdict, "PERIOD_ABSENT")
 
 
+class _AlwaysEqual:
+    """A non-text expected entry whose ``__eq__`` claims equality with
+    everything. ``str.__eq__`` returns NotImplemented for it, so Python
+    falls back to this reflected ``__eq__`` and an ``==`` scan would call
+    it present."""
+
+    def __eq__(self, other):
+        return True
+
+    __hash__ = None
+
+
+def test_r1_03_kpi_expected_always_equal_object_yields_period_absent():
+    """FAMKT-03 (seat kill): the explicit ``_text_present`` gate on the
+    expected walk is load-bearing, not redundant with ``_contains``. A
+    non-text expected entry that compares equal to every present id
+    must still yield PERIOD_ABSENT and must never be reported."""
+    series = _kpi_positive_series()
+    expected = PERIODS + (_AlwaysEqual(),)
+    verdict = check_kpi_series(series, expected_periods=expected)
+    _assert_kpi_refused(verdict, "PERIOD_ABSENT")
+
+
 def test_r1_03_kpi_expected_unhashable_period_never_raises():
     """FAMKT-03: an unhashable expected entry (e.g. ["SYN-P-5"]) must
     never raise from ``in reported_present``. It yields PERIOD_ABSENT

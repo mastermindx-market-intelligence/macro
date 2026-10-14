@@ -254,22 +254,6 @@ def _fact_id_absent(value: object) -> bool:
     return not _text_present(value)
 
 
-def _supersedes_unknown(value: object) -> bool:
-    """True for a non-None, non-``""`` supersedes that is not a
-    caller-supplied opaque ``str`` (e.g. int, bool, list, dict, set, or
-    any other object). These used to raise ``TypeError`` from the
-    ``supersedes not in known_ids`` membership test; under the X8BREP
-    FAMILY TEXT RULE v2 they are now ABSENT and emit ``SUPERSEDES_UNKNOWN``
-    instead of raising. The empty-string form stays PRESERVED (pinned by
-    ``test_a07g_blank_supersedes_treated_as_absent`` and the mut7_b
-    default fixtures)."""
-    if value is None or value == "":
-        return False
-    if isinstance(value, str):
-        return False
-    return True
-
-
 def then_known_view(
     items: Iterable[Mapping[str, object]],
     *,
