@@ -124,7 +124,98 @@
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "1974e3efbfb9606137ee1d46815736a4a6c6edb2b0d49a93da93d096e05b3547"
+        "source_digest": "1974e3efbfb9606137ee1d46815736a4a6c6edb2b0d49a93da93d096e05b3547",
+        "curve_convention": "par",
+        "level_unit": "pct_ann_rate",
+        "change_unit": "bp",
+        "endpoints": {
+          "5d": {
+            "start": {
+              "date": "2026-09-30",
+              "level": 4.88,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 4.77,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          },
+          "22d": {
+            "start": {
+              "date": "2026-09-07",
+              "level": null,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "expected_absent",
+              "value_state": "stale",
+              "quality": [
+                "carried"
+              ],
+              "limitations": [
+                "expected_absence_holiday_basis"
+              ],
+              "carried_from": "2026-09-04"
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 4.77,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": false,
+            "not_certified_reason": "start_endpoint_expected_absent"
+          },
+          "63d": {
+            "start": {
+              "date": "2026-07-10",
+              "level": 4.21,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 4.77,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          }
+        },
+        "turn_certified": false
       },
       "5y": {
         "source_column": "us5y",
@@ -187,7 +278,98 @@
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "676b3ff58ac87a64ece469cdd5ea9d52e9ae8dc222930ea82b5aaad455f487a9"
+        "source_digest": "676b3ff58ac87a64ece469cdd5ea9d52e9ae8dc222930ea82b5aaad455f487a9",
+        "curve_convention": "par",
+        "level_unit": "pct_ann_rate",
+        "change_unit": "bp",
+        "endpoints": {
+          "5d": {
+            "start": {
+              "date": "2026-09-30",
+              "level": 5.09,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.03,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          },
+          "22d": {
+            "start": {
+              "date": "2026-09-07",
+              "level": null,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "expected_absent",
+              "value_state": "stale",
+              "quality": [
+                "carried"
+              ],
+              "limitations": [
+                "expected_absence_holiday_basis"
+              ],
+              "carried_from": "2026-09-04"
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.03,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": false,
+            "not_certified_reason": "start_endpoint_expected_absent"
+          },
+          "63d": {
+            "start": {
+              "date": "2026-07-10",
+              "level": 4.3,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.03,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          }
+        },
+        "turn_certified": false
       },
       "10y": {
         "source_column": "us10y",
@@ -250,7 +432,98 @@
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "f766c6403c5685c67466456c18bda31ad17c9fd60a495af4f63965edd8fd34af"
+        "source_digest": "f766c6403c5685c67466456c18bda31ad17c9fd60a495af4f63965edd8fd34af",
+        "curve_convention": "par",
+        "level_unit": "pct_ann_rate",
+        "change_unit": "bp",
+        "endpoints": {
+          "5d": {
+            "start": {
+              "date": "2026-09-30",
+              "level": 5.29,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.28,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          },
+          "22d": {
+            "start": {
+              "date": "2026-09-07",
+              "level": null,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "expected_absent",
+              "value_state": "stale",
+              "quality": [
+                "carried"
+              ],
+              "limitations": [
+                "expected_absence_holiday_basis"
+              ],
+              "carried_from": "2026-09-04"
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.28,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": false,
+            "not_certified_reason": "start_endpoint_expected_absent"
+          },
+          "63d": {
+            "start": {
+              "date": "2026-07-10",
+              "level": 4.56,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.28,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          }
+        },
+        "turn_certified": false
       },
       "20y": {
         "source_column": "us20y",
@@ -313,7 +586,98 @@
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "e20545935a163c970fd4e6219aecf2102f58b8a93542a93f02e368c82d6c94ab"
+        "source_digest": "e20545935a163c970fd4e6219aecf2102f58b8a93542a93f02e368c82d6c94ab",
+        "curve_convention": "par",
+        "level_unit": "pct_ann_rate",
+        "change_unit": "bp",
+        "endpoints": {
+          "5d": {
+            "start": {
+              "date": "2026-09-30",
+              "level": 5.68,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.71,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          },
+          "22d": {
+            "start": {
+              "date": "2026-09-07",
+              "level": null,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "expected_absent",
+              "value_state": "stale",
+              "quality": [
+                "carried"
+              ],
+              "limitations": [
+                "expected_absence_holiday_basis"
+              ],
+              "carried_from": "2026-09-04"
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.71,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": false,
+            "not_certified_reason": "start_endpoint_expected_absent"
+          },
+          "63d": {
+            "start": {
+              "date": "2026-07-10",
+              "level": 5.08,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.71,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          }
+        },
+        "turn_certified": false
       },
       "30y": {
         "source_column": "us30y",
@@ -376,9 +740,101 @@
         "turn_watch": null,
         "null_reason": null,
         "source_basis": "captured_source_rows",
-        "source_digest": "e6e2f715300000faa2f3448ff0bf66c45d783d8a3785ebdced5e800a69ced31a"
+        "source_digest": "e6e2f715300000faa2f3448ff0bf66c45d783d8a3785ebdced5e800a69ced31a",
+        "curve_convention": "par",
+        "level_unit": "pct_ann_rate",
+        "change_unit": "bp",
+        "endpoints": {
+          "5d": {
+            "start": {
+              "date": "2026-09-30",
+              "level": 5.64,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.67,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          },
+          "22d": {
+            "start": {
+              "date": "2026-09-07",
+              "level": null,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "expected_absent",
+              "value_state": "stale",
+              "quality": [
+                "carried"
+              ],
+              "limitations": [
+                "expected_absence_holiday_basis"
+              ],
+              "carried_from": "2026-09-04"
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.67,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": false,
+            "not_certified_reason": "start_endpoint_expected_absent"
+          },
+          "63d": {
+            "start": {
+              "date": "2026-07-10",
+              "level": 5.06,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "end": {
+              "date": "2026-10-07",
+              "level": 5.67,
+              "unit": "pct_ann_rate",
+              "curve_convention": "par",
+              "origin": "captured_source_row",
+              "value_state": "present",
+              "quality": [],
+              "limitations": [],
+              "carried_from": null
+            },
+            "change_unit": "bp",
+            "certified": true,
+            "not_certified_reason": null
+          }
+        },
+        "turn_certified": false
       }
-    }
+    },
+    "qualification_version": "curve_endpoint_qualification.v1"
   },
   "breakeven_decomp": {
     "as_of": "2026-10-13",
@@ -1853,6 +2309,339 @@
     }
   ],
   "calibrated": true,
+  "curve_accounting": {
+    "schema": "curve_accounting.v1",
+    "calculation_version": "ric_y1_curve_accounting.v1",
+    "basis_schema": "rates_command_basis.v1",
+    "cutoff": "2026-10-13",
+    "asof": "2026-10-13",
+    "status": "available",
+    "reason": null,
+    "display_only": true,
+    "authority": false,
+    "can_score": false,
+    "can_size": false,
+    "can_trade": false,
+    "law": [
+      "KW and ACM term premia are separate models with separate source, version, fit, vintage and maturity; their disagreement is model disagreement, not a forecast or a signal.",
+      "nominal = expected short rate + term premium and nominal ~= real + inflation compensation are two alternative accounting views of the same yield; they are never added together.",
+      "One nominal yield move cannot identify its own cause; conditional alternatives are shown, never a single attribution."
+    ],
+    "observations": {
+      "nominal_10y": {
+        "subject": "UST_10Y_PAR",
+        "evidence_class": "official_measurement",
+        "value": 5.28,
+        "value_state": "present",
+        "unit": "pct_ann_rate",
+        "target": "ust_par_yield",
+        "basket_or_index": "UST",
+        "reference_start": "2026-10-13",
+        "reference_end": "2036-10-13",
+        "tenor": "10y",
+        "observation_time": "2026-10-13",
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "par",
+        "source": "fred:DGS10",
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": null,
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "public_official",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "observation_origin_unverified",
+          "first_public_evidence_unknown"
+        ],
+        "obs_id": "422d4dec9511772a"
+      },
+      "real_10y": {
+        "subject": "TIPS_10Y_REAL_PAR",
+        "evidence_class": "official_measurement",
+        "value": 2.92,
+        "value_state": "present",
+        "unit": "pct_ann_rate",
+        "target": "ust_real_par_yield",
+        "basket_or_index": "TIPS",
+        "reference_start": "2026-10-13",
+        "reference_end": "2036-10-13",
+        "tenor": "10y",
+        "observation_time": "2026-10-13",
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "real_par",
+        "source": "fred:DFII10",
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": null,
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "public_official",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "observation_origin_unverified",
+          "first_public_evidence_unknown"
+        ],
+        "obs_id": "9a948cfc1e848cc8"
+      },
+      "term_premium_kw_10y": {
+        "subject": "KW_TP_10Y",
+        "evidence_class": "estimated_decomposition",
+        "value": 1.0847,
+        "value_state": "present",
+        "unit": "pct_ann_rate",
+        "target": "term_premium_kw",
+        "basket_or_index": null,
+        "reference_start": "2026-10-09",
+        "reference_end": "2036-10-09",
+        "tenor": "10y",
+        "observation_time": "2026-10-09",
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "zero",
+        "source": "fred:THREEFYTP10",
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": "kw_fred_threefytp10",
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "public_official",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "model_estimate_not_observed",
+          "model_fit_unknown",
+          "model_vintage_unknown",
+          "observation_origin_unverified",
+          "first_public_evidence_unknown"
+        ],
+        "obs_id": "43b299955eba65fd"
+      },
+      "term_premium_acm_10y": {
+        "subject": "ACM_TP_10Y",
+        "evidence_class": "estimated_decomposition",
+        "value": null,
+        "value_state": "missing",
+        "unit": "pct_ann_rate",
+        "target": "term_premium_acm",
+        "basket_or_index": null,
+        "reference_start": null,
+        "reference_end": null,
+        "tenor": "10y",
+        "observation_time": null,
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "zero",
+        "source": null,
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": "acm_not_admitted",
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "unknown",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "acm_input_not_admitted",
+          "evidence_time_unknown"
+        ],
+        "obs_id": "538a22582720684a"
+      },
+      "nominal_10y_move_22d": {
+        "subject": "UST_10Y_PAR_MOVE_22D",
+        "evidence_class": "official_measurement",
+        "value": null,
+        "value_state": "missing",
+        "unit": "bp",
+        "target": "ust_par_yield_move",
+        "basket_or_index": "UST",
+        "reference_start": "2026-09-07",
+        "reference_end": "2026-10-07",
+        "tenor": "10y",
+        "observation_time": "2026-10-07",
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "par",
+        "source": "fred:DGS10",
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": null,
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "public_official",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "observation_origin_unverified",
+          "first_public_evidence_unknown"
+        ],
+        "obs_id": "50cacddf9bc2c923"
+      },
+      "real_10y_move_22d": {
+        "subject": "TIPS_10Y_REAL_PAR_MOVE_22D",
+        "evidence_class": "official_measurement",
+        "value": 49.0,
+        "value_state": "present",
+        "unit": "bp",
+        "target": "ust_real_par_yield_move",
+        "basket_or_index": "TIPS",
+        "reference_start": "2026-09-07",
+        "reference_end": "2026-10-07",
+        "tenor": "10y",
+        "observation_time": "2026-10-07",
+        "observation_precision": "day",
+        "seasonal_treatment": "n/a",
+        "rate_index": "n/a",
+        "averaging_law": "n/a",
+        "curve_convention": "real_par",
+        "source": "fred:DFII10",
+        "source_version": null,
+        "content_ref": null,
+        "first_public_evidence": null,
+        "first_public_precision": "unknown",
+        "admitted_at": null,
+        "cutoff": "2026-10-13",
+        "model_id": null,
+        "target_epoch": null,
+        "vintage": null,
+        "rights": "public_official",
+        "quality": [],
+        "authority": "display_only",
+        "limitations": [
+          "observation_origin_unverified",
+          "first_public_evidence_unknown"
+        ],
+        "obs_id": "84fc2c1532e824a3"
+      }
+    },
+    "comparisons": {
+      "inflation_compensation": {
+        "status": "comparable_after_transformation",
+        "difference": 236.00000000000003,
+        "range": null,
+        "unit": "bp",
+        "rule_id": "inflation_compensation.v1",
+        "rule_version": "1",
+        "transform": "nominal_minus_real",
+        "assumptions": [],
+        "limitations": [
+          "liquidity and on-the-run premium differences",
+          "indexation lag",
+          "instrument basis"
+        ],
+        "reason": "transform:nominal_minus_real",
+        "left_ref": "422d4dec9511772a",
+        "right_ref": "9a948cfc1e848cc8",
+        "left_cutoff": "2026-10-13",
+        "right_cutoff": "2026-10-13"
+      },
+      "term_premium_kw_vs_acm": {
+        "status": "unavailable",
+        "difference": null,
+        "range": null,
+        "unit": "bp",
+        "rule_id": "term_premium_kw_vs_acm.v1",
+        "rule_version": "1",
+        "transform": null,
+        "assumptions": [],
+        "limitations": [],
+        "reason": "operand_missing:right",
+        "left_ref": "43b299955eba65fd",
+        "right_ref": "538a22582720684a",
+        "left_cutoff": "2026-10-13",
+        "right_cutoff": "2026-10-13"
+      },
+      "nominal_par_vs_kw_zero": {
+        "status": "not_comparable",
+        "difference": null,
+        "range": null,
+        "unit": "bp",
+        "rule_id": "par_vs_zero.v1",
+        "rule_version": "1",
+        "transform": null,
+        "assumptions": [],
+        "limitations": [],
+        "reason": "basis_mismatch:curve_convention",
+        "left_ref": "422d4dec9511772a",
+        "right_ref": "43b299955eba65fd",
+        "left_cutoff": "2026-10-13",
+        "right_cutoff": "2026-10-13"
+      },
+      "yield_move_attribution": {
+        "status": "unavailable",
+        "difference": null,
+        "range": null,
+        "unit": "bp",
+        "rule_id": "yield_move_attribution.v1",
+        "rule_version": "1",
+        "transform": null,
+        "assumptions": [],
+        "limitations": [],
+        "reason": "operand_missing:left",
+        "left_ref": "50cacddf9bc2c923",
+        "right_ref": "84fc2c1532e824a3",
+        "left_cutoff": "2026-10-13",
+        "right_cutoff": "2026-10-13"
+      }
+    },
+    "accounting_views": [
+      {
+        "view_id": "expected_short_plus_term_premium",
+        "identity": "nominal = expected_short + term_premium",
+        "present": [
+          "term_premium_kw_10y"
+        ],
+        "not_observed": [
+          "expected_short_10y"
+        ],
+        "note": "The expected short-rate path is not observed here and is never derived by subtracting a zero-coupon model premium from a par yield."
+      },
+      {
+        "view_id": "real_plus_inflation_compensation",
+        "identity": "nominal ~= real + inflation_compensation",
+        "present": [
+          "real_10y"
+        ],
+        "comparison": "inflation_compensation",
+        "note": "This compensation is the same quantity as the published 10y breakeven; it is shown once and never added to it or to the term premium."
+      }
+    ],
+    "views_are_alternatives_never_summed": true
+  },
   "yield_curve": {
     "asof": "2026-10-13",
     "shape": {

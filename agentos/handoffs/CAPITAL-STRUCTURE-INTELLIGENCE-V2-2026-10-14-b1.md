@@ -115,6 +115,7 @@ danger_areas:
   - The split path activates automatically when corporate_actions enters COMPATIBLE_INPUT_SCHEMAS; a producer emitting stage records with a different security_class_id convention will refuse every split.
   - _available_instant falls back to the end of the filed day when available_at, public_available_at and accepted_at are absent; a producer that omits all three shifts point-in-time visibility.
   - MAX_BASIS_AGE_DAYS (150) is part of RULE_DIGEST; changing it changes every receipt.
+prs: [9277]
 ---
 
 # Capital Structure V2 — B1 share basis handoff
