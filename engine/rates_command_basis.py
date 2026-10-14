@@ -657,6 +657,8 @@ def _bridge_h1_target_stem(
         if right.target.endswith("_h1")
         else right.target
     )
+    if not left_stem.strip() or not right_stem.strip():
+        return "basis_mismatch:target_stem"
     if left_stem != right_stem:
         return "basis_mismatch:target_stem"
     return None
@@ -795,6 +797,18 @@ def _compute_term_premium(left, right, rule, context, _mk) -> ComparisonResult:
     )
 
 
+def _epoch_token(value) -> Optional[str]:
+    """Strip whitespace and refuse the blank / NA-sentinel shapes; return the
+    cleaned string or None when the value is absent, whitespace-only, or a
+    ``NA`` / ``na`` / ``n/a`` literal (per the B0H1-R1 ruling)."""
+    if not isinstance(value, str):
+        return None
+    s = value.strip()
+    if s == "" or s.lower() in ("na", NA):
+        return None
+    return s
+
+
 def _compute_h1_target(left, right, rule, context, _mk) -> ComparisonResult:
     """Frozen house projection (left, ``*_first_print``) vs H1 receipt
     (right, ``*_h1``): matched at an explicit evaluation epoch (A29).
@@ -804,20 +818,18 @@ def _compute_h1_target(left, right, rule, context, _mk) -> ComparisonResult:
     ``target_epoch`` is echoed in ``assumptions`` and is never compared.
     """
     ctx = dict(context) if context else {}
-    eval_epoch = ctx.get("eval_target_epoch")
-    if (
-        eval_epoch in (None, "", NA)
-        or right.target_epoch in (None, "", NA)
-    ):
-        return _mk(
-            ComparisonStatus.NOT_COMPARABLE,
-            "unknown_basis:eval_target_epoch",
-        )
-    if eval_epoch != right.target_epoch:
-        return _mk(
-            ComparisonStatus.NOT_COMPARABLE,
-            "basis_mismatch:eval_target_epoch",
-        )
+    ref = right.content_ref
+    if not isinstance(ref, str) or ref[len("same_vintage:"):].strip() == "":
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:content_ref")
+    eval_tok = _epoch_token(ctx.get("eval_target_epoch"))
+    right_tok = _epoch_token(right.target_epoch)
+    if eval_tok is None or right_tok is None:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:eval_target_epoch")
+    left_tok = _epoch_token(left.target_epoch)
+    if left_tok is None:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:model_target_epoch")
+    if eval_tok != right_tok:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "basis_mismatch:eval_target_epoch")
     if left.unit in PCT_UNITS:
         diff = (left.value - right.value) * 100.0
         unit = "bp"
@@ -833,8 +845,8 @@ def _compute_h1_target(left, right, rule, context, _mk) -> ComparisonResult:
         difference=diff,
         unit=unit,
         assumptions=(
-            "eval_target_epoch:%s" % eval_epoch,
-            "model_target_epoch:%s" % left.target_epoch,
+            "eval_target_epoch:%s" % eval_tok,
+            "model_target_epoch:%s" % left_tok,
         ),
         limitations=limitations,
     )
@@ -987,6 +999,7 @@ RULES: Dict[str, ComparisonRule] = {
         (
             "basket_or_index", "reference_start", "reference_end",
             "unit", "seasonal_treatment",
+            "curve_convention", "rate_index", "averaging_law", "tenor",
         ),
         None,
     ),

@@ -1503,6 +1503,216 @@ def test_h1_basket_mismatch_cpi_vs_pce():
     assert "basis_mismatch:basket_or_index" == result.reason
 
 
+@pytest.mark.parametrize(
+    "field,left_value,right_value",
+    [
+        ("unit", "pct_mom", "pct_yoy"),
+        ("seasonal_treatment", "sa", "nsa"),
+        ("reference_start", "2026-09-01", "2026-08-01"),
+        ("reference_end", "2026-09-30", "2026-08-31"),
+    ],
+)
+def test_h1_match_field_mismatch_refused(field, left_value, right_value):
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(**{field: left_value})
+    right = _h1_right(**{field: right_value})
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:%s" % field
+    assert result.difference is None
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "basket_or_index",
+        "reference_start",
+        "reference_end",
+        "unit",
+        "seasonal_treatment",
+        "curve_convention",
+        "rate_index",
+        "averaging_law",
+        "tenor",
+    ],
+)
+def test_h1_none_match_field_unknown_basis(field):
+    rule = RULES[H1_RULE_ID]
+    base = _h1_right()
+    try:
+        right = dataclasses.replace(base, **{field: None})
+    except (ValueError, TypeError) as exc:
+        pytest.skip("none_unreachable_at_construction:%s:%s" % (field, type(exc).__name__))
+    result = compare_qualified(
+        _h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:%s" % field
+    assert result.difference is None
+
+
+@pytest.mark.parametrize(
+    "over,expected",
+    [
+        ({"evidence_class": "official_measurement"}, "constraint:evidence_class:left"),
+        ({"evidence_class": "house_estimate"}, "constraint:evidence_class:right"),
+        ({"target": "cpi_u_all_items_mom_sa_h1"}, "constraint:target:left"),
+    ],
+)
+def test_h1_constraint_refusals(over, expected):
+    rule = RULES[H1_RULE_ID]
+    side = "left" if expected.endswith(":left") else "right"
+    if side == "left":
+        left = _h1_left(**over)
+        right = _h1_right()
+    else:
+        left = _h1_left()
+        right = _h1_right(**over)
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == expected
+    assert result.difference is None
+
+
+@pytest.mark.parametrize("bad_epoch", [None, "", " ", "NA", "na", NA])
+def test_h1_left_epoch_absent_unknown_basis(bad_epoch):
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(target_epoch=bad_epoch)
+    result = compare_qualified(
+        left, _h1_right(), rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:model_target_epoch"
+    assert result.difference is None
+
+
+def test_h1_assumptions_never_contain_none():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(), _h1_right(), rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "directly_comparable"
+    for assumption in result.assumptions:
+        assert "None" not in assumption, "assumption leaked the repr None: %r" % assumption
+
+
+def test_h1_curve_convention_par_vs_zero_refused():
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(curve_convention="par")
+    right = _h1_right(curve_convention="zero")
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:curve_convention"
+    assert result.difference is None
+
+
+def test_h1_effr_arithmetic_vs_sofr_compounded_refused():
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(rate_index="EFFR", averaging_law="arithmetic_calendar_day")
+    right = _h1_right(rate_index="SOFR", averaging_law="compounded_business_day")
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:rate_index"
+    assert result.difference is None
+
+
+def test_h1_na_on_both_sides_matches():
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(
+        curve_convention=NA,
+        rate_index=NA,
+        averaging_law=NA,
+        tenor=NA,
+    )
+    right = _h1_right(
+        curve_convention=NA,
+        rate_index=NA,
+        averaging_law=NA,
+        tenor=NA,
+    )
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "directly_comparable"
+    assert result.difference == pytest.approx(-10.0)
+
+
+def test_h1_empty_stem_refused():
+    rule = RULES[H1_RULE_ID]
+    left = _h1_left(target="_first_print")
+    right = _h1_right(target="_h1")
+    result = compare_qualified(
+        left, right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:target_stem"
+    assert result.difference is None
+
+
+@pytest.mark.parametrize(
+    "blank_ref", ["same_vintage:", "same_vintage:   ", "same_vintage:\t\n "]
+)
+def test_h1_same_vintage_empty_suffix_refused(blank_ref):
+    rule = RULES[H1_RULE_ID]
+    right = _h1_right(content_ref=blank_ref)
+    result = compare_qualified(
+        _h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:content_ref"
+    assert result.difference is None
+
+
+@pytest.mark.parametrize(
+    "eval_epoch,expected_status,expected_reason",
+    [
+        (" 2026-09-30 ", "directly_comparable", None),
+        ("2026-09-30\t", "directly_comparable", None),
+        ("   ", "not_comparable", "unknown_basis:eval_target_epoch"),
+    ],
+)
+def test_h1_epochs_whitespace_stripped(eval_epoch, expected_status, expected_reason):
+    rule = RULES[H1_RULE_ID]
+    right = _h1_right(target_epoch="2026-09-30\t")
+    result = compare_qualified(
+        _h1_left(), right, rule, context={"eval_target_epoch": eval_epoch}
+    )
+    assert result.status.value == expected_status
+    if expected_reason is not None:
+        assert result.reason == expected_reason
+    else:
+        assert "eval_target_epoch:2026-09-30" in result.assumptions
+
+
+def test_h1_eval_epoch_empty_string_unknown_basis():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(), _h1_right(), rule, context={"eval_target_epoch": ""}
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:eval_target_epoch"
+    assert result.difference is None
+
+
+def test_h1_no_proxy_limitation_when_right_not_proxy():
+    rule = RULES[H1_RULE_ID]
+    right = _h1_right()
+    assert "proxy_vintage" not in right.quality
+    result = compare_qualified(
+        _h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"}
+    )
+    assert result.status.value == "directly_comparable"
+    assert "proxy_vintage:right" not in result.limitations
+
+
 def test_eval_target_epoch_confined_to_h1_hook_ast():
     """Every literal string ``eval_target_epoch`` in the module AST must lie
     inside ``_compute_h1_target``; the lane forbids the keyword leaking into
@@ -1527,7 +1737,11 @@ def test_eval_target_epoch_confined_to_h1_hook_ast():
         return False
 
     for node in _ast.walk(tree):
-        if isinstance(node, _ast.Constant) and node.value == needle:
+        if (
+            isinstance(node, _ast.Constant)
+            and isinstance(node.value, str)
+            and needle in node.value
+        ):
             assert _in_h1(node.lineno), (
                 "literal %r appears outside _compute_h1_target at line %d"
                 % (needle, node.lineno)
