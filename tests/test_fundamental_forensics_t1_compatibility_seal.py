@@ -1,9 +1,11 @@
 """FIF T2: pre-T1 compatibility hash seal — pinning tests (MASTERPLAN §4.3 / A02).
 
 The committed manifest ``tests/fixtures/fundamental_forensics/
-t1_compatibility_seal_manifest_v1.json`` was EXECUTED at pre-T1 base commit
-``5267c66846e7733bc1eb30edc1524daff51598ca`` by
-``scripts/fif_compatibility_seal.py``.  Every test here recomputes one sealed
+t1_compatibility_seal_manifest_v1.json`` was re-executed at FIF G0 commit
+``a6bed4b64ff999077545bca3ee4157e02387a47a`` by
+``scripts/fif_compatibility_seal.py`` (seat ruling G0-R2; the pre-T1 seal at
+``5267c66846e7733bc1eb30edc1524daff51598ca`` is preserved in #8936 history).
+Every test here recomputes one sealed
 family through the REAL services/kernel and asserts
 
     recomputed value == manifest value == existing test-pinned literal
@@ -58,7 +60,7 @@ MANIFEST = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
 
 # The pre-T1 seal at 5267c66846e7733bc1eb30edc1524daff51598ca is preserved in
 # #8936 history; this constant re-targets the G0 re-seal (seat ruling G0-R2).
-SEALED_BASE_COMMIT = "5267c66846e7733bc1eb30edc1524daff51598ca"
+SEALED_BASE_COMMIT = "a6bed4b64ff999077545bca3ee4157e02387a47a"
 
 EXPECTED_CASES = {
     "no_lineage_a3_golden",

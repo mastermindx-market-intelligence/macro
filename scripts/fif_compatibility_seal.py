@@ -62,7 +62,7 @@ from engine.fundamental_forensics.statement_graph import (  # noqa: E402
     load_golden_aapl_package,
 )
 
-EXPECTED_BASE_COMMIT = "5267c66846e7733bc1eb30edc1524daff51598ca"
+EXPECTED_BASE_COMMIT = "a6bed4b64ff999077545bca3ee4157e02387a47a"
 MANIFEST_SCHEMA = "fundamental_forensics.t1_compatibility_seal_manifest/v1"
 DEFAULT_OUT = (
     ROOT / "tests" / "fixtures" / "fundamental_forensics"
