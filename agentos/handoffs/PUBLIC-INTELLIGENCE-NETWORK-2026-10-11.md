@@ -1679,3 +1679,46 @@ review SHA and regression commands are in `independent_review_adjudication.json`
 actual invocation/result/usage/editorial evidence are `bac_*` files in the same
 phase. Local evidence is not installed source or public capability.
 
+
+## Reviewed validator follow-on — October 14 03:10 UTC
+
+The follow-on source is 16586816a63a47bbe47841d80c976ee096b93e63 on
+claude/ssd-mmx-press-validator-followon-20261014-c1dc27962b7d07c4 in
+/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4.
+It is separate from PR9209's unchanged remote head5d06 and has no PR yet.
+Native independent review rejected317ce for dropping scale when "expressed in"
+has no comma. Parent reproduced2failures/1pass, repaired the phrase and passed
+167 affected tests in7.62s. Same reviewer independently returned PASS at165868,
+19focusedtests in2.94s. Retained turn_context confirms gpt-5.6-terra/medium;
+original NOT PASS and rereview both remain under validator_integrity_phase/.
+Local portable probe now passes nine controls with zero real provider/public
+writes. It has not run on production. Accepted scope is explicit magnitude,
+genuine boilerplate scoring, context floor, attempt clocks and private provenance
+guards; no general currency/semantic equivalence or publication approval.
+
+The sole writer-contract Fabric run mmx-press-writer-contract-followon-20261014-001
+remains ACTIVE_OR_WAITING on its original carrier. Current-output inspection
+refused original_current_output_unconfirmed at03:04; no alternate read, kill,
+replacement or retry was attempted. Continue same-run terminal result recovery.
+The separate Fabric review request had no eligible host; native bounded review
+was used after that admission failure, not as a parallel duplicate.
+
+Read-only source investigation is saved in additional_source_discovery.json.
+NVIDIA October13 announcement is future launch/readiness, not revenue or stock
+reaction; its commercial Press rights are unqualified. SEC latest listedOctober9
+is outside Brief freshness. Current FTC items lack a qualified public-stock
+association. KBH remains refused for source contradiction/truncation. No source
+was injected into a writer and no held event was replayed.
+
+PR9209 last lawful CI observation:38499512292 in progress, ci-pack-0/6 pending,
+no binding failures. That is historical observation, not current completion.
+Incumbent CI wait guard requires the existing heartbeat/controller event; no
+timed or alternate-carrier poll. On actual protected landing execute original
+24-source/3-page acceptance using actual merge SHA and normal updater, then
+integrate landed main into this follow-on and ship its bounded remaining diff.
+Preserve actual runtime attempts in the original current-event workspace, shared
+dirty accounting, BAC/Research holds, original12:07 EFFECT_UNKNOWN, publication/
+cutover false, and ten consecutive unedited mixed-desk acceptance.
+
+Verified: affected pytest167pass; reviewer19pass; local standalone installed
+probe9controls; git diff --check. Installed and live claims remain unchanged.

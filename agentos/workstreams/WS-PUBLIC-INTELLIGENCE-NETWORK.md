@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete PR 9209 exact-head CI, protected landing and installed private-consumer proof. Consume the existing writer-contract follow-on and repair the recorded validator/preflight gaps for future distinct slots; qualify relevant first-party inputs without replaying quarantined BAC or Research. Preserve publication, cutover and original EFFECT_UNKNOWN gates.
+next_action: Finish PR 9209 protected landing and installed acceptance; recover the same writer-contract Fabric run, integrate its accepted result into the reviewed validator follow-on at 165868, then deliver that bounded separate PR. Continue distinct rights-qualified sources and dated relevant inputs; preserve held drafts and publication gates.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
