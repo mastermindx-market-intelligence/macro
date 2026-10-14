@@ -1232,8 +1232,8 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
     scripts/build_earnings_public_wire.py:1850. The probe now appends an
     ``except OSError`` mapped to ``unreadable_stage_file`` (FileNotFoundError
     still matches first), the same code the source-body probe already uses
-    (private_economic_stage.py:535-536), and the ``os.open``/``os.fdopen``/
-    ``os.replace`` write block maps its ``OSError`` to the same code.
+    (private_economic_stage.py:535-536). The ``OSError`` arm over the swap is
+    pinned by ``test_stage_maps_write_block_oserrors_to_a_typed_refusal``.
     """
     import os as os_module
 
@@ -1258,6 +1258,7 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
             return self._real.lstat(path, *args, **kwargs)
 
     _permit(monkeypatch, tmp_path)
+    permitted_registry = private_publication.NATIVE_RIGHTS_REGISTRY_PATH
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
     closure = receipt.closure
     assert closure is not None
@@ -1265,25 +1266,140 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
     baseline = tmp_path / "stage-path-lstat-baseline"
     shutil.copytree(receipt.private_dir, baseline)
 
-    for needle, expected_tail in (
-        ("native/workspaces", f"{generation_id}.json"),
-        ("native/latest.json", "latest.json"),
+    def _file_names(root: Path, pattern: str) -> list[str]:
+        return sorted(str(path) for path in root.rglob(pattern) if path.is_file())
+
+    for needle, expected_tail, refuses_first_write in (
+        ("native/workspaces", f"{generation_id}.json", True),
+        # latest.json is written last, so earlier chain files legitimately land.
+        ("native/latest.json", "latest.json", False),
     ):
         stage = tmp_path / f"stage-path-lstat-{needle.rsplit('/', 1)[-1]}"
         shutil.copytree(baseline, stage)
         gate = _LstatGate(os_module, needle)
-        monkeypatch.setattr(stage_module, "os", gate)
-        with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
+        with monkeypatch.context() as patch:
+            patch.setattr(stage_module, "os", gate)
+            with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
+                augment_private_stage(
+                    stage, acquisition=None, prior_closure=closure,
+                    observed_at=LATER_OBSERVED_AT,
+                )
+        # The os gate is scoped by its own context, so this test's permit
+        # precondition is still installed after the gate is released.
+        assert private_publication.NATIVE_RIGHTS_REGISTRY_PATH is permitted_registry, (
+            "releasing the os gate also reverted this test's own permit"
+        )
+        assert gate.denied, f"the write probe never reached {needle}"
+        assert gate.denied[0].endswith(expected_tail)
+        if refuses_first_write:
+            # ``_reset_native`` wiped native/ before the denial, so a real no-write
+            # proof is an empty tree, not byte-identity with a destroyed baseline.
+            laid = _file_names(stage / "native", "*")
+            assert laid == [], f"the denied first write still laid bytes: {laid}"
+        else:
+            assert not (stage / "native" / "latest.json").exists()
+        residue = _file_names(stage, ".*")
+        assert residue == [], f"the denied write left temp residue: {residue}"
+
+    assert private_publication.NATIVE_RIGHTS_REGISTRY_PATH is permitted_registry
+    # CONTROL: with the real ``os`` (and this test's own permit) the replay writes.
+    control = tmp_path / "stage-path-lstat-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+
+@pytest.mark.parametrize("fail_on", ("open", "fdopen", "replace"))
+def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fail_on: str,
+) -> None:
+    """The ``os.open``/``os.fdopen``/``os.replace`` write block maps its ``OSError``
+    to the same code.
+
+    Independent review W15-V-9105f on 2a311019: reverting only the write block's
+    ``except OSError`` arm (private_economic_stage.py:428-440) left the whole
+    owning job green, because every existing arm denies ``os.lstat`` inside
+    ``_write_stage_file`` and never reaches the write itself. A full device is an
+    ``OSError`` that is not a ``FileNotFoundError``, so ENOSPC on each of
+    ``os.open``, ``os.fdopen`` and ``os.replace`` must refuse with
+    ``unreadable_stage_file`` — the code this module already uses — instead of
+    leaking raw past the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850, and the refusal must still unlink
+    its private temp so no ``.``-prefixed residue survives in the stage.
+    """
+    import errno as errno_module
+    import os as os_module
+
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    class _WriteGate:
+        """Every ``os`` attribute delegates; only ``fail_on`` denies a stage write."""
+
+        def __init__(self, real: object, fail_on: str, stage: Path) -> None:
+            self._real = real
+            self._fail_on = fail_on
+            self._prefix = str(stage)
+            self.denied: list[str] = []
+            self._stage_fds: set[int] = set()
+
+        def __getattr__(self, name: str):
+            return getattr(self._real, name)
+
+        def _in_stage(self, path: object) -> bool:
+            return str(path).startswith(self._prefix)
+
+        def _deny(self, target: str) -> None:
+            self.denied.append(target)
+            raise OSError(errno_module.ENOSPC, "No space left on device", target)
+
+        def open(self, path, *args, **kwargs):
+            if self._fail_on == "open" and self._in_stage(path):
+                self._deny(str(path))
+            fd = self._real.open(path, *args, **kwargs)
+            if self._in_stage(path):
+                self._stage_fds.add(fd)
+            return fd
+
+        def fdopen(self, fd, *args, **kwargs):
+            if self._fail_on == "fdopen" and fd in self._stage_fds:
+                self._deny(f"fd={fd}")
+            return self._real.fdopen(fd, *args, **kwargs)
+
+        def replace(self, src, dst, *args, **kwargs):
+            if self._fail_on == "replace" and self._in_stage(dst):
+                self._deny(str(dst))
+            return self._real.replace(src, dst, *args, **kwargs)
+
+    def _file_names(root: Path, pattern: str) -> list[str]:
+        return sorted(str(path) for path in root.rglob(pattern) if path.is_file())
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    baseline = tmp_path / f"stage-write-{fail_on}-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+    stage = tmp_path / f"stage-write-{fail_on}"
+    shutil.copytree(baseline, stage)
+
+    gate = _WriteGate(os_module, fail_on, stage)
+    with monkeypatch.context() as patch:
+        patch.setattr(stage_module, "os", gate)
+        with pytest.raises(PrivateEconomicStageError) as raised:
             augment_private_stage(
                 stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
             )
-        monkeypatch.undo()
-        assert gate.denied, f"the write probe never reached {needle}"
-        assert gate.denied[0].endswith(expected_tail)
-        assert not (stage / "native" / "latest.json").exists()
+    assert raised.value.reason == "unreadable_stage_file"
+    assert gate.denied, f"the write block never called os.{fail_on}"
+    laid = _file_names(stage / "native", "*")
+    assert laid == [], f"the denied write still laid bytes: {laid}"
+    residue = _file_names(stage, ".*")
+    assert residue == [], f"the refusal left temp residue in the stage: {residue}"
 
-    # CONTROL: with the real ``os`` the same replay still writes.
-    control = tmp_path / "stage-path-lstat-control"
+    # CONTROL: with the real ``os`` and no gate the same replay still writes.
+    control = tmp_path / f"stage-write-{fail_on}-control"
     shutil.copytree(baseline, control)
     written = augment_private_stage(
         control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
