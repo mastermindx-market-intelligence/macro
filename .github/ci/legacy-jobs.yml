@@ -28759,6 +28759,7 @@ jobs:
     # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
     # determinism checks, the panel split/calendar adjustment and the stage-1b
     # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
+    # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
@@ -28770,6 +28771,8 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1_determinism.py"
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
+      - "scripts/research/grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_episode_samples.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -28834,6 +28837,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
           tests/test_grey_deer_pullback_stage1b.py
+          tests/test_grey_deer_episode_samples.py
 
   sni-s1-residual:
     if: ${{ false }}
