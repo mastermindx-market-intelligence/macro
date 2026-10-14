@@ -42,14 +42,18 @@ Lane O2-P02, programme DATA-OS-COMPLETION, base D00 (2026-10-13).
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
-from dataclasses import dataclass
+from collections.abc import Iterable
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import StrEnum
 from fractions import Fraction
 from typing import Mapping
 
+from lib.dataos import read_contract
 from lib.dataos.price import (
     AdjustmentBasis,
     PriceError,
@@ -57,6 +61,16 @@ from lib.dataos.price import (
     is_ambiguous,
     parse_column,
 )
+from lib.dataos.read_contract import (
+    Dependency,
+    ReadMode,
+    ReadRequest,
+    ReadResult,
+    RetainedOutput,
+)
+from lib.dataos.registry import ActionInputStatus, Registry, qualify_action_input
+from lib.dataos.temporal import utc
+from lib.dataos.identity import IdentityError, parse_listing_key, venue_currency, venue_timezone
 
 __all__ = [
     "ActionFamily",
@@ -81,6 +95,19 @@ __all__ = [
     "TotalReturnPolicy",
     "TotalReturnView",
     "total_return_view",
+    # ── correction-aware retained views + the qualify-first gate (O3-P05) ──
+    "ViewVintage",
+    "RetainedView",
+    "ReopenedView",
+    "ComposedView",
+    "admit_action_input",
+    "admit_revision_set",
+    "retain_view",
+    "reopen_view",
+    "reconstruct_price_view",
+    "simple_returns",
+    "view_label",
+    "view_receipt_sha256",
 ]
 
 #: The only P01 qualification string that may enter a split factor (D00.D3).
@@ -148,6 +175,12 @@ class RefusalReason(StrEnum):
     ``DUPLICATE_EVENT_ID`` / ``ROW_AFTER_AS_AT`` / ``NON_POSITIVE_VALUE`` were
     added by the R02 heal.
     ``DUPLICATE_ROW_DATE`` was added by the R02 heal of the total-return view.
+    ``VENUE_CLOCK_UNKNOWN`` (D00.A1.1: the as_at day is the listing venue's
+    calendar day, so an unmapped or contradictory MIC is never fallen back to
+    UTC), ``CURRENCY_MISMATCH`` (D00.A1.2: a known-and-different currency
+    refuses rather than assuming FX) and ``SCHEMA_MISMATCH`` (a retained
+    payload that does not declare the current retained-view schema) were added
+    by lane P06.
     """
 
     UNSUPPORTED_ACTION = "unsupported_action"
@@ -177,6 +210,14 @@ class RefusalReason(StrEnum):
     MISSING_PRICE = "missing_price"
     # ── added by the R02 heal of the total-return view (m5) ──
     DUPLICATE_ROW_DATE = "duplicate_row_date"
+    # ── added by lane O3-P05's retained views (D00.D5: one generation, one receipt) ──
+    MIXED_GENERATION = "mixed_generation"
+    RECEIPT_MISMATCH = "receipt_mismatch"
+    UNBOUND_GENERATION = "unbound_generation"
+    # ── added by lane P06: venue-local as_at day + declared listing currency (D00.A1) ──
+    VENUE_CLOCK_UNKNOWN = "venue_clock_unknown"
+    CURRENCY_MISMATCH = "currency_mismatch"
+    SCHEMA_MISMATCH = "schema_mismatch"
 
 
 class ViewRefusal(PriceError):
@@ -518,19 +559,57 @@ def _check_window_event(event: ActionEvent) -> Fraction | None:
     return event.ratio
 
 
-def split_factor(t: date, revisions: ActionRevisionSet, as_at: datetime) -> Fraction:
+# ── the venue clock and the declared currency (D00.A1.1 / D00.A1.2, P06) ──────
+
+def _venue_zone(mic):
+    try:
+        return venue_timezone(mic)
+    except IdentityError as exc:
+        raise ViewRefusal(f"no venue clock for MIC {mic!r} — the as_at day is never taken from UTC (D00.A1.1)",
+                          reason=RefusalReason.VENUE_CLOCK_UNKNOWN) from exc
+
+def _venue_day(as_at: datetime, mic) -> date:
+    return as_at.astimezone(_venue_zone(mic)).date()
+
+def _venue_currency(mic) -> str:
+    try:
+        return venue_currency(mic)
+    except IdentityError as exc:
+        raise ViewRefusal(f"no declared currency for MIC {mic!r} (D00.A1.2)",
+                          reason=RefusalReason.VENUE_CLOCK_UNKNOWN) from exc
+
+def _check_row_currency(rows, expected: str) -> None:
+    # A1.2: an optional `currency` column, when present, must equal the declared currency row by row.
+    for row in rows:
+        if "currency" not in row:
+            continue
+        value = row["currency"]
+        if value is None or (isinstance(value, str) and not value.strip()):
+            raise ViewRefusal("row currency is empty — the view never assumes a currency",
+                              reason=RefusalReason.UNKNOWN_FX, column="currency")
+        if not isinstance(value, str):
+            raise TypeError(f"row currency must be a str, got {type(value).__name__}")
+        if _norm_currency(value) != expected:
+            raise ViewRefusal(f"row currency {value!r} is not the listing's {expected!r} — no FX is applied",
+                              reason=RefusalReason.CURRENCY_MISMATCH, column="currency")
+
+
+def split_factor(t: date, revisions: ActionRevisionSet, as_at: datetime, *, mic: str) -> Fraction:
     """``S(t)`` — the exact cumulative split divisor at row date ``t`` (D00.D3).
 
     Product of ``r_e`` over CONFIRMED split events active at ``as_at`` with
-    ``t < ex_date <= as_at`` (UTC date).  The boundary is half-open on the left:
+    ``t < ex_date <= as_at_day`` (the listing venue's calendar day of ``as_at``,
+    D00.A1.1 — never the UTC date).  The boundary is half-open on the left:
     a row dated ``ex_date - 1 day`` is divided by ``r``; a row dated ``ex_date``
     is not (the exchange already printed the new unit that session).  Events
-    with ``ex_date > as_at`` are not yet effective — the view's share basis is
+    with ``ex_date > as_at_day`` are not yet effective — the view's share basis is
     the one at ``as_at``, so a future split never rescales the past.
 
     Cash dividends contribute nothing.  Any eligible in-window event that is
     unsupported, unconfirmed, or carries an invalid/unknown/mismatched value
-    raises :class:`ViewRefusal` — never a silent skip.
+    raises :class:`ViewRefusal` — never a silent skip.  ``mic`` (keyword-only,
+    required) names the listing venue: a MIC with no venue clock refuses
+    ``VENUE_CLOCK_UNKNOWN`` rather than falling back to UTC.
     """
     _require_date(t, what="t")
     _require_aware(as_at, what="as_at")
@@ -538,7 +617,7 @@ def split_factor(t: date, revisions: ActionRevisionSet, as_at: datetime) -> Frac
         raise TypeError(
             f"revisions must be an ActionRevisionSet, got {type(revisions).__name__}"
         )
-    as_at_day = as_at.astimezone(timezone.utc).date()
+    as_at_day = _venue_day(as_at, mic)
     factor = Fraction(1)
     for event in revisions.resolve(as_at):
         if not (t < event.ex_date <= as_at_day):
@@ -655,13 +734,17 @@ class PriceView:
     """A labelled, source-linked price view (D00.D1/D00.01).
 
     ``executable`` is True only for RAW (D00.D3: only a printed price may be
-    executed; an adjusted level is a level nobody ever traded at).
+    executed; an adjusted level is a level nobody ever traded at).  ``currency``
+    (P06, D00.A1.2) is the listing's declared currency when the view resolved
+    it from the venue, and ``None`` when no venue was consulted (a mic-less
+    RAW view) — never a guessed or FX-converted code.
     """
 
     basis: str
     rows: tuple[Mapping, ...]
     reference: AdjustmentReference
     executable: bool
+    currency: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "basis", _normalize_basis(self.basis))
@@ -677,6 +760,12 @@ class PriceView:
                 f"price; an adjusted level is a level nobody traded",
                 reason=RefusalReason.NOT_EXECUTABLE_BASIS,
             )
+        if self.currency is not None and not isinstance(self.currency, str):
+            raise TypeError(
+                f"currency must be a str or None, got {type(self.currency).__name__}"
+            )
+        if isinstance(self.currency, str):
+            object.__setattr__(self, "currency", _norm_currency(self.currency))
 
 
 def _price_columns(row: Mapping) -> list[tuple[str, PriceField, AdjustmentBasis]]:
@@ -782,7 +871,7 @@ def _validate_price_columns(rows: tuple[Mapping, ...]) -> list[list[tuple[str, P
     return per_row
 
 
-def raw_view(rows) -> PriceView:
+def raw_view(rows, *, mic: str | None = None) -> PriceView:
     """The printed tape, validated as all-``<field>_raw`` and executable (D00.D3).
 
     RAW is never adjusted, but it is EXACT: every price column and
@@ -791,12 +880,20 @@ def raw_view(rows) -> PriceView:
     key passes through unchanged and input rows are never mutated.  The column
     law above still applies, so a vendor-adjusted series can never be labelled
     RAW — the exact DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT failure mode.
+
+    ``mic`` is OPTIONAL here: without it the view is identical to a mic-less
+    past (``currency`` is ``None`` and no row-currency check runs); with it the
+    listing's declared currency (D00.A1.2) is carried on the view and an
+    optional ``currency`` column on the rows must equal it row by row.
     """
     materialized = tuple(rows)
     for row in materialized:
         if not isinstance(row, Mapping):
             raise TypeError(f"rows must be mappings, got {type(row).__name__}")
+    expected = _venue_currency(mic) if mic is not None else None
     per_row = _validate_price_columns(materialized)
+    if expected is not None:
+        _check_row_currency(materialized, expected)
     out_rows: list[dict] = []
     for row, columns in zip(materialized, per_row):
         out = dict(row)
@@ -812,10 +909,11 @@ def raw_view(rows) -> PriceView:
         rows=tuple(out_rows),
         reference=AdjustmentReference("RAW", None, None),
         executable=True,
+        currency=expected,
     )
 
 
-def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_convention: str = "shares") -> PriceView:
+def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, mic: str, quantity_convention: str = "shares") -> PriceView:
     """The split-adjusted view: ``P_raw(t) / S(t)`` per row, never twice (D00.D3).
 
     Every input price column must be ``<field>_raw`` (see the column law above);
@@ -824,7 +922,10 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
     input rows are never mutated.  The view is never executable and its
     reference names the action revision set and the ``as_at`` instant, so the
     number is reproducible against the recorded revisions.  A row dated after
-    the UTC date of ``as_at`` refuses ROW_AFTER_AS_AT.
+    the listing venue's calendar day of ``as_at`` (D00.A1.1) refuses
+    ROW_AFTER_AS_AT.  ``mic`` (keyword-only, required) resolves both the venue
+    clock and the declared currency (D00.A1.2): the view carries the listing's
+    currency and an optional ``currency`` column on the rows must equal it.
     """
     if quantity_convention != "shares":
         raise ViewRefusal(
@@ -832,7 +933,7 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
             reason=RefusalReason.UNSUPPORTED_QUANTITY_CONVENTION,
         )
     _require_aware(as_at, what="as_at")
-    as_at_day = as_at.astimezone(timezone.utc).date()
+    as_at_day = _venue_day(as_at, mic)
     if not isinstance(revisions, ActionRevisionSet):
         raise TypeError(
             f"revisions must be an ActionRevisionSet, got {type(revisions).__name__}"
@@ -842,6 +943,7 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
         if not isinstance(row, Mapping):
             raise TypeError(f"rows must be mappings, got {type(row).__name__}")
     per_row = _validate_price_columns(materialized)
+    _check_row_currency(materialized, _venue_currency(mic))
     out_rows: list[dict] = []
     for row, columns in zip(materialized, per_row):
         if "date" not in row:
@@ -855,7 +957,7 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
                 reason=RefusalReason.ROW_AFTER_AS_AT,
                 column="date",
             )
-        factor = split_factor(day, revisions, as_at)
+        factor = split_factor(day, revisions, as_at, mic=mic)
         out: dict = {"date": day}
         for key, field, _ in columns:
             raw = _exact_fraction(row[key], what=f"price column {key!r}", column=key)
@@ -869,6 +971,7 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
         rows=tuple(out_rows),
         reference=AdjustmentReference("SADJ", revisions.revision_set_id, as_at),
         executable=False,
+        currency=_venue_currency(mic),
     )
 
 
@@ -1043,6 +1146,7 @@ def total_return_view(
     as_at: datetime,
     policy: TotalReturnPolicy,
     *,
+    mic: str,
     q0=1,
 ) -> TotalReturnView:
     """The house TOTAL_RETURN oracle over a raw close series (D00.D3, O2-P04).
@@ -1052,6 +1156,11 @@ def total_return_view(
     their closes.  The column law above applies verbatim: any non-raw price
     column refuses (``*_tradj`` -> NON_RAW_INPUT, ``*_sadj`` ->
     DOUBLE_ADJUST_RISK) — a vendor TRADJ series is never an input to this view.
+
+    ``mic`` (keyword-only, required) resolves the listing venue's clock
+    (D00.A1.1) and its declared currency (D00.A1.2): the policy's currency must
+    equal the declared one (else CURRENCY_MISMATCH) and an optional
+    ``currency`` column on the rows must equal it row by row.
 
     Events are ``revisions.resolve(as_at)`` (P02) kept while ``t0 < ex_date <=
     t1`` and applied in ``(ex_date, sequence)`` order; two same-ex-date events
@@ -1079,8 +1188,9 @@ def total_return_view(
     ``q0`` (default 1) is the starting share count and must be exact and
     positive.  Every output is an exact ``Fraction``.
     A non-positive ``q0`` or ``close_raw(t0)`` refuses NON_POSITIVE_VALUE; two
-    rows on one date refuse DUPLICATE_ROW_DATE and a row dated after the UTC
-    date of ``as_at`` refuses ROW_AFTER_AS_AT (column ``date`` for both).
+    rows on one date refuse DUPLICATE_ROW_DATE and a row dated after the
+    listing venue's calendar day of ``as_at`` (D00.A1.1) refuses
+    ROW_AFTER_AS_AT (column ``date`` for both).
     """
     if not isinstance(policy, TotalReturnPolicy):
         raise TypeError(
@@ -1107,7 +1217,15 @@ def total_return_view(
             "total_return_view needs at least one row (t0/t1 are the first "
             "and last row dates)"
         )
-    as_at_day = as_at.astimezone(timezone.utc).date()
+    as_at_day = _venue_day(as_at, mic)
+    expected = _venue_currency(mic)
+    if policy.currency != expected:
+        raise ViewRefusal(
+            f"the policy's currency {policy.currency!r} is not the listing's "
+            f"declared {expected!r} — no FX is applied in any view (D00.A1.2)",
+            reason=RefusalReason.CURRENCY_MISMATCH,
+        )
+    _check_row_currency(materialized, expected)
     close_by_day: dict[date, Fraction] = {}
     previous_day: date | None = None
     for row in materialized:
@@ -1207,12 +1325,20 @@ def total_return_view(
                 reason=RefusalReason.CASH_BASIS_MISMATCH,
                 event_id=event.event_id,
             )
-        if event.currency is None or _norm_currency(event.currency) != policy.currency:
+        if event.currency is None or not event.currency.strip():
+            raise ViewRefusal(
+                f"cash dividend {event.event_id!r} declares no currency — the "
+                f"view never assumes one and no FX is applied in any view "
+                f"(D00.D3)",
+                reason=RefusalReason.UNKNOWN_FX,
+                event_id=event.event_id,
+            )
+        if _norm_currency(event.currency) != policy.currency:
             raise ViewRefusal(
                 f"cash dividend {event.event_id!r} is in "
                 f"{event.currency!r}, not the policy's {policy.currency!r} — no "
                 f"FX is applied in any view (D00.D3)",
-                reason=RefusalReason.UNKNOWN_FX,
+                reason=RefusalReason.CURRENCY_MISMATCH,
                 event_id=event.event_id,
             )
         if event.cash_per_share is None:
@@ -1271,3 +1397,682 @@ def total_return_view(
         events_applied=tuple(applied),
         executable=False,
     )
+
+
+# ── correction-aware retained views + the qualify-first gate (O3-P05) ─────────
+#
+# D00.D5 closes the loop this section implements: a view is a point-in-time
+# quantity over (rows, action revision set, identity generation, code), and a
+# CORRECTION is a new generation — never a rewrite of the old one.  So a view
+# that answered a question must be RETAINABLE exactly as it answered it, and
+# reopenable byte-exactly later, while a recomputation over a corrected source
+# is a different vintage that can never wear the old one's receipt.
+#
+# Three pieces, each a composition of accepted modules (never a re-implementation):
+#
+# * the QUALIFY-FIRST gate — :func:`admit_action_input` runs P01's
+#   ``registry.qualify_action_input`` BEFORE any event enters a composed view;
+#   the caller's qualification string is always discarded and replaced by the
+#   verdict, so a SUSPECTED inference can never arrive pre-labelled CONFIRMED;
+# * the VINTAGE — :class:`ViewVintage` + :func:`retain_view`/:func:`reopen_view`
+#   bind a view to its source generation, revision set, identity generation and
+#   code version through one canonical payload, one digest and one receipt
+#   (T01's ``read_contract.replay`` does the byte-exactness);
+# * the COMPOSITION — :func:`reconstruct_price_view` builds a view from a
+#   read_contract RECONSTRUCT result, so mode/cutoff/clock/generation refusals
+#   stay read_contract's own and are never re-implemented here.
+
+#: Schema tags written into every canonical payload / receipt, so a retained
+#: artifact declares what it is instead of relying on its file name.  The view
+#: payload moved to v2 in P06 (it gained the declared ``currency`` member);
+#: the receipt schema is unchanged (it never carried view fields).
+_RETAINED_VIEW_SCHEMA = "dataos.retained_price_view.v2"
+_RETAINED_RECEIPT_SCHEMA = "dataos.retained_price_view_receipt.v1"
+
+_HEX40 = re.compile(r"\A[0-9a-f]{40}\Z")
+_HEX64 = re.compile(r"\A[0-9a-f]{64}\Z")
+
+
+def _dumps_canonical(doc: Mapping) -> bytes:
+    """The one canonical JSON encoding: sorted keys, tight separators, no NaN."""
+    return json.dumps(
+        doc, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")
+
+
+# ── P05.05 — the qualify-first action-input gate ─────────────────────────────
+
+def admit_action_input(
+    event: ActionEvent, observation: Mapping, *, registry: Registry
+) -> ActionEvent:
+    """Stamp one action event with P01's verdict BEFORE it may enter a view.
+
+    The FIRST statement qualifies the observation (P01's
+    ``lib.dataos.registry.qualify_action_input``, imported — never copied); a
+    structurally impossible observation raises that function's ``ValueError``
+    unchanged, because a malformed input has no honest status to stamp.
+
+    The gate then refuses, typed, exactly the two shapes that cannot become an
+    event at all:
+
+    * a QUALIFIED EMPTY response — authoritative absence is not an event, so
+      there is nothing to stamp (NOT_CONFIRMED; P01.03);
+    * a receipt naming a DIFFERENT observation than the one the event claims
+      (RECEIPT_MISMATCH) — a verdict may not authenticate a substituted event.
+
+    Every other verdict is STAMPED onto the event as its qualification string:
+    the caller's own qualification is always discarded (``replace``), so a
+    SUSPECTED / UNQUALIFIED / UNCAPTURED event is recorded — never dropped —
+    and ``_check_window_event`` refuses it NOT_CONFIRMED in every view whose
+    window it enters, while outside any window it stays inert.
+    """
+    verdict = qualify_action_input(observation, registry=registry)
+    if verdict.status is ActionInputStatus.NO_ACTION_IN_QUALIFIED_RESPONSE:
+        raise ViewRefusal(
+            f"event {event.event_id!r} was offered against a qualified response "
+            f"that authoritatively held no action — absence is not an event "
+            f"(P01.03)",
+            reason=RefusalReason.NOT_CONFIRMED,
+            event_id=event.event_id,
+        )
+    if verdict.receipt is not None and verdict.receipt != event.source_receipt:
+        raise ViewRefusal(
+            f"event {event.event_id!r} carries source_receipt "
+            f"{event.source_receipt!r} but its observation was qualified under "
+            f"receipt {verdict.receipt!r} — a verdict may not authenticate a "
+            f"substituted event (D00.D5)",
+            reason=RefusalReason.RECEIPT_MISMATCH,
+            event_id=event.event_id,
+        )
+    return replace(event, qualification=verdict.status.value)
+
+
+def admit_revision_set(
+    revision_set_id: str,
+    inputs: Iterable[tuple[ActionEvent, Mapping]],
+    *,
+    registry: Registry,
+) -> ActionRevisionSet:
+    """An :class:`ActionRevisionSet` every event of which passed the gate.
+
+    Composes :func:`admit_action_input` over ``(event, observation)`` pairs;
+    the set itself is P02's, unchanged.  Direct ``ActionRevisionSet(...)``
+    construction stays legal for legacy callers and tests (see GAPS).
+    """
+    return ActionRevisionSet(
+        revision_set_id,
+        tuple(admit_action_input(event, obs, registry=registry) for event, obs in inputs),
+    )
+
+
+# ── P05.03 — the vintage, the canonical payload, the receipt, the label ───────
+
+@dataclass(frozen=True)
+class ViewVintage:
+    """What a view's numbers were computed FROM (D00.D1/D00.D5).
+
+    Four names, one vintage: the source generation of the rows, the action
+    revision set the factors resolved against, the identity generation the
+    request bound, and the code version that produced the view.  Two views with
+    equal vintages and equal digests are the same answer; anything else is a
+    different answer even when the rows happen to coincide.  ``revision_set_id``
+    is ``None`` ONLY for a RAW view (no action revisions were consulted).
+    """
+
+    source_generation_id: str
+    revision_set_id: str | None
+    identity_generation_id: str
+    code_version: str
+
+    def __post_init__(self) -> None:
+        for name in ("source_generation_id", "identity_generation_id"):
+            value = getattr(self, name)
+            if not isinstance(value, str):
+                raise TypeError(f"{name} must be a str, got {type(value).__name__}")
+            if not value:
+                raise ValueError(f"{name} must be a non-empty str, got {value!r}")
+        if self.revision_set_id is not None:
+            if not isinstance(self.revision_set_id, str):
+                raise TypeError(
+                    f"revision_set_id must be a str or None, "
+                    f"got {type(self.revision_set_id).__name__}"
+                )
+            if not self.revision_set_id:
+                raise ValueError(
+                    f"revision_set_id must be a non-empty str or None, "
+                    f"got {self.revision_set_id!r}"
+                )
+        if not isinstance(self.code_version, str):
+            raise TypeError(
+                f"code_version must be a str, got {type(self.code_version).__name__}"
+            )
+        if not _HEX40.match(self.code_version):
+            raise ValueError(
+                f"code_version must be a 40-char lowercase-hex code version "
+                f"(the read_contract rule), got {self.code_version!r}"
+            )
+
+
+def _encode_view_value(value, *, key: str):
+    """One row value -> its exact, reversible canonical form.
+
+    ``bool`` is checked before ``int`` (bool subclasses int) and ``datetime``
+    before ``date`` (likewise), exactly as the frozen table orders them.
+    Anything else — a float, a Decimal, a naive datetime, a nested container —
+    refuses NON_EXACT_INPUT: a value that cannot round-trip byte-exactly
+    cannot be retained, and converting it would silently restate history.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, Fraction):
+        return {"q": f"{value.numerator}/{value.denominator}"}
+    if isinstance(value, int):
+        return value
+    if isinstance(value, datetime):
+        return {"t": utc(value).isoformat()}
+    if isinstance(value, date):
+        return {"d": value.isoformat()}
+    if value is None or isinstance(value, str):
+        return value
+    raise ViewRefusal(
+        f"retained row column {key!r} carries {type(value).__name__} {value!r} — "
+        f"only exact reversible values (Fraction, date, aware datetime, str, "
+        f"int, bool, None) may be retained byte-exactly",
+        reason=RefusalReason.NON_EXACT_INPUT,
+        column=key,
+    )
+
+
+def _decode_view_value(value):
+    """Invert :func:`_encode_view_value` exactly (single-key ``q``/``d``/``t``)."""
+    if isinstance(value, dict) and len(value) == 1:
+        if "q" in value:
+            return Fraction(value["q"])
+        if "d" in value:
+            return date.fromisoformat(value["d"])
+        if "t" in value:
+            return datetime.fromisoformat(value["t"])
+    return value
+
+
+def _encode_view_row(row: Mapping) -> dict:
+    if not isinstance(row, Mapping):
+        raise TypeError(f"a view row must be a Mapping, got {type(row).__name__}")
+    encoded: dict = {}
+    for key, value in row.items():
+        if not isinstance(key, str):
+            raise ViewRefusal(
+                f"a retained row carries the non-string column {key!r} — a "
+                f"column that cannot be named cannot be retained",
+                reason=RefusalReason.NON_EXACT_INPUT,
+            )
+        encoded[key] = _encode_view_value(value, key=key)
+    return encoded
+
+
+def _decode_view_row(row: Mapping) -> dict:
+    return {key: _decode_view_value(value) for key, value in row.items()}
+
+
+def _vintage_doc(vintage: ViewVintage) -> dict:
+    return {
+        "source_generation_id": vintage.source_generation_id,
+        "revision_set_id": vintage.revision_set_id,
+        "identity_generation_id": vintage.identity_generation_id,
+        "code_version": vintage.code_version,
+    }
+
+
+def _canonical_view_payload(view: PriceView, vintage: ViewVintage) -> bytes:
+    """The canonical payload of (view, vintage) — the bytes a replay must serve.
+
+    One JSON document under the frozen dumps settings; every row value passes
+    through the exact/reversible encoder first, so the payload carries no float
+    anywhere and decodes back to the very objects it was built from.
+    """
+    reference = view.reference
+    return _dumps_canonical(
+        {
+            "schema": _RETAINED_VIEW_SCHEMA,
+            "basis": view.basis,
+            "executable": view.executable,
+            "currency": view.currency,
+            "reference": {
+                "basis": reference.basis,
+                "action_revision_set_id": reference.action_revision_set_id,
+                "as_at": (
+                    None if reference.as_at is None else utc(reference.as_at).isoformat()
+                ),
+            },
+            "vintage": _vintage_doc(vintage),
+            "rows": [_encode_view_row(row) for row in view.rows],
+        }
+    )
+
+
+def view_receipt_sha256(output_id: str, vintage: ViewVintage, view_digest: str) -> str:
+    """The receipt that PUBLISHED one retained view under ``output_id``.
+
+    Hashes the canonical JSON of the receipt schema — output id, the four
+    vintage names, the view digest — so an old receipt can never cover a new
+    source generation, factor set, identity generation or view: any one of them
+    moves the digest (D00.D5.3).
+    """
+    return hashlib.sha256(
+        _dumps_canonical(
+            {
+                "schema": _RETAINED_RECEIPT_SCHEMA,
+                "output_id": output_id,
+                "vintage": _vintage_doc(vintage),
+                "view_digest": view_digest,
+            }
+        )
+    ).hexdigest()
+
+
+def view_label(view: PriceView, vintage: ViewVintage) -> str:
+    """The one-line human label of (view, vintage): basis, currency, as_at, ids, code."""
+    reference = view.reference
+    as_at = "-" if reference.as_at is None else utc(reference.as_at).isoformat()
+    revision_set = reference.action_revision_set_id or "-"
+    return (
+        f"{view.basis}|currency={view.currency or '-'}|as_at={as_at}"
+        f"|revision_set={revision_set}"
+        f"|source_generation={vintage.source_generation_id}"
+        f"|identity_generation={vintage.identity_generation_id}"
+        f"|code_version={vintage.code_version}"
+    )
+
+
+# ── P05.01/P05.03 — retain and reopen ────────────────────────────────────────
+
+@dataclass(frozen=True)
+class RetainedView:
+    """A view frozen as it answered: vintage, payload, digest, receipt.
+
+    ``key`` is the vintage triple plus the digest — the identity two retained
+    views must share to be the same answer.  ``payload`` is the canonical bytes
+    (``None`` only on a destructured/tampered holder, which ``reopen_view``
+    routes to read_contract's NO_RETAINED_OUTPUT).
+    """
+
+    vintage: ViewVintage
+    view_digest: str
+    label: str
+    payload: bytes | None
+    output_id: str
+    publishing_receipt_sha256: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.vintage, ViewVintage):
+            raise TypeError(
+                f"vintage must be a ViewVintage, got {type(self.vintage).__name__}"
+            )
+        for name in ("view_digest", "publishing_receipt_sha256"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not _HEX64.match(value):
+                raise ValueError(
+                    f"{name} must be a 64-char lowercase-hex sha256, got {value!r}"
+                )
+
+    @property
+    def key(self) -> tuple:
+        return (
+            self.vintage.source_generation_id,
+            self.vintage.revision_set_id,
+            self.vintage.code_version,
+            self.view_digest,
+        )
+
+
+def retain_view(
+    view: PriceView,
+    vintage: ViewVintage,
+    *,
+    output_id: str,
+    publishing_receipt_sha256: str | None = None,
+) -> RetainedView:
+    """Freeze one view as it answered, under one output id and one receipt.
+
+    Refuses MIXED_GENERATION — a vintage that does not belong to this view —
+    before anything is serialised, in each of its three shapes: a revision set
+    the view's own reference does not name; a RAW view (which consulted no
+    action revisions) carrying a revision set id; an adjusted view carrying
+    none.  After the digest is computed, a SUPPLIED receipt that does not equal
+    the receipt this (output_id, vintage, view) actually hashes to refuses the
+    same way: an old receipt can never cover a new generation, factor set,
+    identity generation or view.  With no receipt supplied, the computed one is
+    used.  A row value that cannot round-trip refuses NON_EXACT_INPUT.
+    """
+    if not isinstance(view, PriceView):
+        raise TypeError(f"view must be a PriceView, got {type(view).__name__}")
+    if not isinstance(vintage, ViewVintage):
+        raise TypeError(f"vintage must be a ViewVintage, got {type(vintage).__name__}")
+    if not isinstance(output_id, str) or not output_id:
+        raise TypeError(f"output_id must be a non-empty string, got {output_id!r}")
+    reference = view.reference
+    if vintage.revision_set_id != reference.action_revision_set_id:
+        raise ViewRefusal(
+            f"vintage names revision set {vintage.revision_set_id!r} but the view "
+            f"was computed against {reference.action_revision_set_id!r} — one "
+            f"vintage, one revision set (D00.D5.1)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if view.basis == "RAW" and vintage.revision_set_id is not None:
+        raise ViewRefusal(
+            "a RAW view consulted no action revisions, so its vintage carries "
+            f"no revision set id (got {vintage.revision_set_id!r})",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if view.basis != "RAW" and vintage.revision_set_id is None:
+        raise ViewRefusal(
+            f"a {view.basis!r} view resolves factors against an action revision "
+            f"set, so its vintage must name it (got None)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    payload = _canonical_view_payload(view, vintage)
+    view_digest = hashlib.sha256(payload).hexdigest()
+    receipt = view_receipt_sha256(output_id, vintage, view_digest)
+    if publishing_receipt_sha256 is not None and publishing_receipt_sha256 != receipt:
+        raise ViewRefusal(
+            f"the supplied publishing receipt does not cover output "
+            f"{output_id!r} at this vintage and view digest — an old receipt "
+            f"can never publish a new generation, factor set, identity "
+            f"generation or view (D00.D5.3)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    return RetainedView(
+        vintage=vintage,
+        view_digest=view_digest,
+        label=view_label(view, vintage),
+        payload=payload,
+        output_id=output_id,
+        publishing_receipt_sha256=(
+            receipt if publishing_receipt_sha256 is None else publishing_receipt_sha256
+        ),
+    )
+
+
+@dataclass(frozen=True)
+class ReopenedView:
+    """A retained view reopened byte-exactly: the view, its label, its vintage
+    and the read_contract REPLAY result that served the bytes."""
+
+    view: PriceView
+    label: str
+    vintage: ViewVintage
+    result: ReadResult
+
+
+def reopen_view(retained: RetainedView, request: ReadRequest) -> ReopenedView:
+    """Reopen a retained view through ``read_contract.replay`` — byte-exactly.
+
+    The retained material (payload, digest, receipt) goes to T01's ``replay``
+    untouched: tampered bytes surface as read_contract's ``ReadRefusal`` with
+    ``RETAINED_DIGEST_MISMATCH``, and missing material (a ``None`` payload, a
+    wrong ``output_id``) as ``NO_RETAINED_OUTPUT`` — both propagate unchanged.
+    The decoded document must declare the current ``_RETAINED_VIEW_SCHEMA`` or
+    refuse ``SCHEMA_MISMATCH`` (P06): a payload of another schema is never
+    reopened as this view shape.  Only then is the payload decoded back into a
+    :class:`PriceView` and its
+    :class:`ViewVintage`, and the decoded vintage must equal the retained one
+    and re-hash to the retained receipt, else MIXED_GENERATION: bytes that
+    decode to a different vintage than the one they were retained under are a
+    mixed generation no matter what their digest says.
+    """
+    if not isinstance(retained, RetainedView):
+        raise TypeError(
+            f"retained must be a RetainedView, got {type(retained).__name__}"
+        )
+    if not isinstance(request, ReadRequest):
+        raise TypeError(f"request must be a ReadRequest, got {type(request).__name__}")
+    result = read_contract.replay(
+        request,
+        RetainedOutput(
+            retained.output_id,
+            retained.payload,
+            retained.view_digest,
+            retained.publishing_receipt_sha256,
+        ),
+    )
+    doc = json.loads(result.payload.decode("utf-8"))
+    if doc.get("schema") != _RETAINED_VIEW_SCHEMA:
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} declare schema "
+            f"{doc.get('schema')!r}, not {_RETAINED_VIEW_SCHEMA!r} — an artifact "
+            f"of another schema is never reopened as this one (D00.D5)",
+            reason=RefusalReason.SCHEMA_MISMATCH,
+        )
+    reference_doc = doc["reference"]
+    as_at = (
+        None
+        if reference_doc["as_at"] is None
+        else datetime.fromisoformat(reference_doc["as_at"])
+    )
+    view = PriceView(
+        doc["basis"],
+        tuple(_decode_view_row(row) for row in doc["rows"]),
+        AdjustmentReference(
+            reference_doc["basis"], reference_doc["action_revision_set_id"], as_at
+        ),
+        doc["executable"],
+        currency=doc["currency"],
+    )
+    vintage = ViewVintage(**doc["vintage"])
+    if vintage != retained.vintage:
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} decode to "
+            f"vintage {_vintage_doc(vintage)} but were retained under "
+            f"{_vintage_doc(retained.vintage)} — one artifact, one generation "
+            f"(D00.D5.1)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if (
+        view_receipt_sha256(retained.output_id, vintage, retained.view_digest)
+        != retained.publishing_receipt_sha256
+    ):
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} do not "
+            f"re-hash to the receipt that published them — the receipt and the "
+            f"artifact belong to different generations (D00.D5.3)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    label = view_label(view, vintage)
+    if label != retained.label:
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} decode to "
+            f"label {label!r}, not the retained {retained.label!r}",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    return ReopenedView(view, label, vintage, result)
+
+
+# ── P05.02 — the composition over read_contract.reconstruct ──────────────────
+
+@dataclass(frozen=True)
+class ComposedView:
+    """A view composed from a read_contract reconstruction: the view, its
+    vintage, the underlying ``ReadResult`` (evidence intact) and the label."""
+
+    view: PriceView
+    vintage: ViewVintage
+    result: ReadResult
+    label: str
+
+
+def _action_event_from_row(row: Mapping, *, clock_column: str) -> ActionEvent:
+    """One selected action row -> an ActionEvent stamped ``UNQUALIFIED``.
+
+    The placeholder qualification is exactly that: the qualify-first gate
+    overwrites it with the verdict before any view sees the event.
+    """
+    return ActionEvent(
+        event_id=row["event_id"],
+        family=ActionFamily(row["family"]),
+        ex_date=date.fromisoformat(row["ex_date"]),
+        known_at=utc(row[clock_column]),
+        source_receipt=row["source_receipt"],
+        qualification="UNQUALIFIED",
+        ratio=Fraction(row["ratio"]) if row.get("ratio") is not None else None,
+        cash_per_share=(
+            Fraction(row["cash_per_share"])
+            if row.get("cash_per_share") is not None
+            else None
+        ),
+        cash_basis=row.get("cash_basis"),
+        currency=row.get("currency"),
+        supersedes=row.get("supersedes"),
+        cancelled=bool(row.get("cancelled", False)),
+        sequence=row.get("sequence"),
+    )
+
+
+def reconstruct_price_view(
+    request: ReadRequest,
+    *,
+    bars: Dependency,
+    actions: Dependency,
+    observations: Mapping[str, Mapping],
+    registry: Registry,
+    code_version: str,
+    identity_generation_id: str,
+    basis: str = "SADJ",
+) -> ComposedView:
+    """Compose a correction-aware view over ``read_contract.reconstruct``.
+
+    Step 1 is the reconstruction itself, so every mode/cutoff/clock/generation
+    refusal is read_contract's own and is never re-implemented here.  Step 2
+    (P06, D00.A1) resolves the listing's MIC from the contract identity: the
+    listing key's MIC and an explicit ``identity["mic"]`` must agree, either
+    alone binds the venue, and neither refuses ``VENUE_CLOCK_UNKNOWN`` —
+    an ``IdentityError`` never escapes the view layer.  A
+    ``field_units["currency"]`` that differs from the venue's declared currency
+    refuses ``CURRENCY_MISMATCH`` (D00.A1.2: it IS the listing currency).
+    Each
+    selected action row becomes an ``ActionEvent`` whose ``known_at`` is the
+    REQUESTED clock's value on that row; every event must carry an observation,
+    which the qualify-first gate stamps (or refuses on).  The revision set id is
+    ``"actions:" + <read_contract's digest of exactly the selected action
+    rows>``, so a correction that changes what was selected changes the vintage
+    even when the rows happen to compose the same view.  Bars rows are
+    projected to ``date`` plus their ``*_raw`` columns only — generation and
+    clock columns never enter a view.  The source generation is the bars
+    dependency's bound generation: a bars dependency that declared no
+    generations refuses UNBOUND_GENERATION, because a view with no source
+    generation can never be retained or superseded (D00.D5).
+    """
+    result = read_contract.reconstruct(
+        request,
+        {"bars": bars, "actions": actions},
+        required=("bars", "actions"),
+        code_version=code_version,
+    )
+    identity = request.contract.identity
+    key_mic: str | None = None
+    try:
+        key_mic = parse_listing_key(identity["listing_id"]).mic
+    except IdentityError:
+        key_mic = None
+    id_value = identity.get("mic")
+    if id_value is not None and not isinstance(id_value, str):
+        raise ViewRefusal(
+            f"identity['mic'] must be a str or absent, got "
+            f"{type(id_value).__name__} {id_value!r} — the listing's venue is "
+            f"never guessed (D00.A1.1)",
+            reason=RefusalReason.VENUE_CLOCK_UNKNOWN,
+        )
+    id_mic: str | None = (
+        id_value.strip().upper()
+        if isinstance(id_value, str) and id_value.strip()
+        else None
+    )
+    if key_mic is not None and id_mic is not None and key_mic != id_mic:
+        raise ViewRefusal(
+            f"the listing key names venue {key_mic!r} but identity['mic'] names "
+            f"{id_mic!r} — one listing, one venue (D00.A1.1)",
+            reason=RefusalReason.VENUE_CLOCK_UNKNOWN,
+        )
+    mic = key_mic if key_mic is not None else id_mic
+    if mic is None:
+        raise ViewRefusal(
+            "the contract identity names no listing venue (neither a parseable "
+            "listing key MIC nor identity['mic']) — the as_at day is never taken "
+            "from UTC (D00.A1.1)",
+            reason=RefusalReason.VENUE_CLOCK_UNKNOWN,
+        )
+    expected_currency = _venue_currency(mic)
+    declared_unit = request.contract.field_units.get("currency")
+    if declared_unit is not None and (
+        not isinstance(declared_unit, str) or _norm_currency(declared_unit) != expected_currency
+    ):
+        raise ViewRefusal(
+            f"field_units['currency'] is {declared_unit!r}, not the listing's "
+            f"declared {expected_currency!r} — field_units.currency IS the "
+            f"listing currency and no FX is applied (D00.A1.2)",
+            reason=RefusalReason.CURRENCY_MISMATCH,
+        )
+    clock_column = result.evidence["clock"]
+    events = [
+        _action_event_from_row(row, clock_column=clock_column)
+        for row in result.values["actions"]
+    ]
+    for event in events:
+        if event.event_id not in observations:
+            raise ViewRefusal(
+                f"action event {event.event_id!r} has no observation — an event "
+                f"may enter a composed view only through P01's qualify-first "
+                f"gate (D00.D3)",
+                reason=RefusalReason.NOT_CONFIRMED,
+                event_id=event.event_id,
+            )
+    revisions = admit_revision_set(
+        "actions:" + read_contract.selected_input_sha256s(result)["actions"],
+        ((event, observations[event.event_id]) for event in events),
+        registry=registry,
+    )
+    projected = [
+        {
+            "date": date.fromisoformat(row["date"]),
+            **{k: v for k, v in row.items() if k.endswith("_raw")},
+        }
+        for row in result.values["bars"]
+    ]
+    normalized_basis = _normalize_basis(basis)
+    if normalized_basis == "SADJ":
+        view = sadj_view(projected, revisions, request.cutoff, mic=mic)
+    elif normalized_basis == "RAW":
+        view = raw_view(projected, mic=mic)
+    else:
+        raise ViewRefusal(
+            f"basis {basis!r} names no composable view (only SADJ and RAW)",
+            reason=RefusalReason.AMBIGUOUS_BASIS,
+        )
+    source_generation_id = result.evidence["dependency_generation_ids"]["bars"]
+    if source_generation_id is None:
+        raise ViewRefusal(
+            "the bars dependency declared no generations, so the view has no "
+            "source generation to be retained or superseded under (D00.D5)",
+            reason=RefusalReason.UNBOUND_GENERATION,
+        )
+    vintage = ViewVintage(
+        source_generation_id,
+        view.reference.action_revision_set_id,
+        identity_generation_id,
+        code_version,
+    )
+    return ComposedView(view, vintage, result, view_label(view, vintage))
+
+
+def simple_returns(view: PriceView, field: str = "close") -> tuple[Fraction, ...]:
+    """``p1 / p0 - 1`` over consecutive rows of ``<field>_<basis>`` — exact.
+
+    A common split factor on every endpoint cancels in these returns (V04) and
+    a single-bar correction does not (V05) — which is exactly why the retained
+    view, not the recomputation, is the artifact a return claim must cite.
+    """
+    column = f"{field}_{view.basis.lower()}"
+    prices = [
+        _exact_fraction(row[column], what=f"return column {column!r}", column=column)
+        for row in view.rows
+    ]
+    return tuple(prices[i + 1] / prices[i] - 1 for i in range(len(prices) - 1))

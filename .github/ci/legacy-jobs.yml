@@ -84,6 +84,9 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_trusted.py
       - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
       - "collectors/edgar.py"
@@ -2946,6 +2949,7 @@ jobs:
       - "lib/dataos/__init__.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -5455,6 +5459,7 @@ jobs:
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
+      - "tests/test_us_candidate_episode_identity_retry.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -5499,7 +5504,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
@@ -5858,6 +5863,7 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -6509,6 +6515,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -7378,20 +7385,16 @@ jobs:
         run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
-      # Share one pytest session across the three existing offline EDGAR suites.
+      # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
-      - name: edgar 8-K item-code expansion unit tests (LHB-R7) and all existing owning contracts in one pytest session
-        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py -q
+      - name: EDGAR item, counterparty, quarterly, universe and first-request guards in one pytest session
+        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py -q
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
       # dollar leg, the "primary document" selector was reading the EDGAR submission
       # HEADER page (index.json's `type` field is the listing ICON name, never a form
       # type), and the fetched HTML was never stripped to prose. All three, plus the
       # bounded exhibit reads and the enrich_rev backfill bookkeeping, are pinned here.
-      - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
-        run: python -m pytest tests/test_edgar_universe_widening.py -q
-      - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
-        run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
       # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
       # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
       # because its subject is this job's subject one layer down: a collectors/ module
@@ -8566,14 +8569,12 @@ jobs:
         run: pip install pytest pyyaml
       - name: DAG conformance check (hard — exits 1 on undeclared lane drift)
         run: python scripts/check_dag_conformance.py --verbose
-      - name: DAG conformance selftest + live conformance tests
-        run: python -m pytest tests/test_dag_conformance.py -q
+      - name: complete existing dag-conformance contracts
+        run: python -m pytest tests/test_dag_conformance.py tests/test_tech_lab_offrender_budget.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py tests/test_daily_graph_shadow_state_step.py tests/test_nightly_liveness.py tests/test_runner_queue_hostage.py -q
       # Same family, one layer down: dag.yml pins WHAT the nightly lane runs,
       # this pins that the lane's timeout still lets it finish. tech_lab_offrender
       # was cancelled at its 40m cap every night 2026-07-19→07-26 — the declared
       # step sequence was perfectly conformant, and the publish tail never ran.
-      - name: nightly lane budgets (tech_lab_offrender publish tail)
-        run: python -m pytest tests/test_tech_lab_offrender_budget.py -q
       # Third layer of the same family: W2 runtime telemetry (masterplan
       # 2026-08-06). Every self-hosted daily.yml job must carry the job-start
       # mark as its FIRST step and the always() timings/85%-tripwire finish as
@@ -8581,26 +8582,18 @@ jobs:
       # (a cap raise that skips the arg silently rescales the tripwire — the
       # tech_lab stale-label class), and a synthetic 86% run must trip the
       # line-start ::warning (masterplan §0.2 acceptance gate).
-      - name: nightly runtime telemetry (W2 wiring + 85% tripwire behavior)
-        run: python -m pytest tests/test_nightly_timings.py -q
       # Fourth layer, same family: daily.yml's schedule is a DST cron PAIR and the
       # root et_gate job keeps exactly one firing. The suite EXTRACTS the inline gate
       # script out of the live workflow and executes it against instants either side
       # of both DST flips, then pins the cron pair to the script's constants and that
       # every job still reaches the gate. A drifted gate skips the sole authoritative
       # nightly with nothing going red — the same silent class as the two above.
-      - name: daily ET regime gate (DST pair disambiguator + wiring pins)
-        run: python -m pytest tests/test_daily_et_gate.py -q
       # 2026-08-12 (#5416): a workflow FILE over ~512,000 bytes stops being
       # processed SILENTLY — cron stops firing and dispatched runs queue with
       # zero jobs, uncancellable. The budget test reds growth before the cap.
-      - name: workflow file size stays under GitHub's silent processing cap
-        run: python -m pytest tests/test_workflow_file_size.py -q
       # Gate #8 (seat ruling G1-RC1, 2026-10-06): the GMI graph shadow theme_state
       # step stays in oracle_offrender (off-render, bounded, continue-on-error) and
       # never moves into the engine job's render budget.
-      - name: GMI graph shadow-state step pin (oracle_offrender)
-        run: python -m pytest tests/test_daily_graph_shadow_state_step.py -q
       # Same incident, other half. The size guard stops daily.yml being stranded
       # AGAIN; this one notices when the nightly stops producing runs for ANY
       # reason — strand, cancellation, or a green run that never advances the
@@ -8608,8 +8601,6 @@ jobs:
       # every instrument we had measured DATA staleness on weekend-safe budgets.
       - name: nightly liveness guard selftest (scripts/check_nightly_liveness.py)
         run: python3 scripts/check_nightly_liveness.py --selftest
-      - name: nightly liveness dead-man switch (checks + wiring pins)
-        run: python -m pytest tests/test_nightly_liveness.py -q
       # Third instrument in the same lane, added 2026-09-25. The two above watch
       # daily.yml; this one watches the QUEUE, which is what neither of them can
       # see. daily.yml routes `macstudio` — a live label — so it ran green through
@@ -8620,8 +8611,6 @@ jobs:
       # test is a watchdog that silently stops being true.
       - name: runner queue hostage guard selftest (scripts/check_runner_queue_hostage.py)
         run: python3 scripts/check_runner_queue_hostage.py --selftest
-      - name: runner queue hostage dead-man switch (checks + wiring pins)
-        run: python -m pytest tests/test_runner_queue_hostage.py -q
 
   push-retry-policy:
     if: ${{ false }}
@@ -8852,6 +8841,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -8983,7 +8973,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -8994,6 +8984,9 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_evaluation.py
+          tests/test_research_codegen_transport.py
           -q
 
   cycle-pattern-authority:
@@ -9796,10 +9789,8 @@ jobs:
         # renders the ONE shipped template line that publishes window.WL_SECTOR_ZH, to
         # prove an undefined context still emits `{}` rather than a bare `=`.
         run: pip install pytest pandas numpy pyarrow pyyaml markupsafe jinja2
-      - name: risk_core.js math — §7 sanity anchors + structural invariants
-        run: python -m pytest tests/test_risk_core_js.py -q
-      - name: watchlist_risk.js chain lane — node-shelled helper tests (TXI W4)
-        run: python -m pytest tests/test_watchlist_chains_js.py -q
+      - name: complete existing wri-risk-core contracts
+        run: python -m pytest tests/test_risk_core_js.py tests/test_watchlist_chains_js.py tests/test_watchlist_books_js.py tests/test_watchstore_multilist_js.py tests/test_watchlist_workspace_js.py tests/test_stockdata_consumer_recovery_js.py tests/test_watchlist_sector_i18n.py tests/test_watchlist_drawer_js.py tests/test_portfolio_state_js.py tests/test_portfolio_truth_a1a_js.py tests/test_portfolio_auth_transition_js.py tests/test_portfolio_import_a1b_js.py tests/test_no_absolute_path_symlinks.py tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
       # UWP/W1a: the watchlist+portfolio STORE (templates/watchstore.js), same
       # node-shelling idiom as the two steps above. test_watchlist_books_js.py was
       # named by no run: step in any workflow since it landed (P5 in
@@ -9807,16 +9798,10 @@ jobs:
       # "never on an empty book") on the file W1a rewrites, so it is wired here
       # rather than left dark. The multilist suite pins the list-scoped push diff:
       # a full-membership delete that escapes its list wipes a sibling watchlist.
-      - name: watchstore.js store — local books + one-shot folds
-        run: python -m pytest tests/test_watchlist_books_js.py -q
-      - name: watchstore.js store — registered multi-list seam (W1a)
-        run: python -m pytest tests/test_watchstore_multilist_js.py -q
       # W2 workspace layer over that store: the bulk-entry parser (the anonymous
       # funnel's front door), the weighting model, the engine-state -> plain-word
       # stage map (which may only ever DE-ESCALATE), delta-since-visit, and the
       # read-side guard that stops a focus refetch from reverting a just-made edit.
-      - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
-        run: python -m pytest tests/test_watchlist_workspace_js.py -q
       # site20 S3: templates/stockdata.js — index validated before it is cached,
       # one in-flight US index read, regional/ticker transient failures retried on a
       # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
@@ -9829,8 +9814,6 @@ jobs:
       # portfolio.js under fake timers (503 once -> names fill after the window).
       - name: stockdata.js consumer recovery — one re-ask after the failure window (S3-01)
         run: node --test tests/js/stockdata_consumer_recovery.test.mjs
-      - name: portfolio consumer recovery — names fill after a transient index failure (S3-01)
-        run: python -m pytest tests/test_stockdata_consumer_recovery_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -9838,8 +9821,6 @@ jobs:
       # untranslated name renders perfectly — so the guard covers all four ways it
       # goes quiet: a taxonomy the glossary has gone blind to, the build not
       # handing the map over, the lookup itself, and a print site that bypasses it.
-      - name: watchlist sector names — glossary, build wiring, print sites (zh)
-        run: python -m pytest tests/test_watchlist_sector_i18n.py -q
       # W4 per-ticker Intelligence Drawer over that workspace. The load-bearing gate is
       # honest absence: every section builder is run over an EMPTY payload and must
       # return a row that NAMES what is missing, because a section that renders nothing
@@ -9847,32 +9828,18 @@ jobs:
       # attribute-escaping slot in the shared row painter (a silent breakout), the
       # dossier route (`stock.html` reads location.hash only — `?t=` is a 200 that opens
       # empty), and the anonymous lock shell.
-      - name: watchlist drawer — honest absence, glance vocabulary, canonical routes (W4)
-        run: python -m pytest tests/test_watchlist_drawer_js.py -q
-      - name: portfolio_state.js — snapshot authority + weighting law (A1A)
-        run: python -m pytest tests/test_portfolio_state_js.py -q
-      - name: portfolio truth — A1A mutation battery + page wiring (A1A)
-        run: python -m pytest tests/test_portfolio_truth_a1a_js.py -q
       # Consumer-level auth-transition proof (Sol blocker 2, A1A closure): drives the
       # REAL watchstore.js + portfolio.js + portfolio_state.js together over a genuine
       # event bus — the delayed-cloud window, a permanently-failed Supabase client
       # init, and write-failure honesty (blocker 3) end to end.
-      - name: portfolio auth-transition — consumer-level proof (A1A closure)
-        run: python -m pytest tests/test_portfolio_auth_transition_js.py -q
       # A1B fast start: the frozen paste grammar plus the REAL Portfolio store's
       # atomic local save, N-row cloud receipt, lost-response reconciliation,
       # auth-generation fence, and UUID-preserving local-to-cloud fold.
-      - name: portfolio import — exact draft + failure-safe batch persistence (A1B)
-        run: python -m pytest tests/test_portfolio_import_a1b_js.py -q
       # Repo hygiene, wired here because this wave introduced the class it closes: a crop
       # harness borrows site/stockdata/ from the main checkout for the duration of a
       # shoot, and an aborted run once left the symlink behind long enough for a broad
       # `git add` to commit a machine-local ABSOLUTE path into the shipping tree. It
       # needs no node and no artifacts, so it is cheap wherever it runs.
-      - name: repo hygiene — no tracked absolute-path symlinks
-        run: python -m pytest tests/test_no_absolute_path_symlinks.py -q
-      - name: factor-exposure engine — orthogonalization, betas, crypto universe (W6.1)
-        run: python -m pytest tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
 
   house-law-registry:
     if: ${{ false }}
@@ -10973,6 +10940,7 @@ jobs:
       - scripts/worktree_gc_liveness.py
       - tests/test_agent_worktree_roots.py
       - tests/test_agentos_compile.py
+      - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
@@ -11149,27 +11117,85 @@ jobs:
             --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
-      - name: agent-os record contract (schema fail-closed, join fail-open)
-        # ORDERED LAST IN THIS JOB, deliberately. `run_ci_pack.py:_run_job` returns on
-        # the FIRST nonzero step, so any step placed before `self-mod-fence live check`
-        # can make that fence never run — the F2 fence would go dark for the PR while
-        # the job reports a failure that has nothing to do with self-modification.
-        # A knowledge-plane record check must never be able to blind a security fence,
-        # so it sits behind every fence step in this job.
-        #
-        # Folded in as a STEP, not a new job, also deliberately: the manifest sits at
-        # the narrow-diff ceiling (test_representative_narrow_diffs_skip_at_least_one
-        # _quarter_of_jobs asserts selected <= len(jobs)*4//5), so adding a job can red
-        # an unrelated pack, and a `paths:` scope cannot fix it — infer_job_scopes()
-        # UNIONS declared paths with inferred ones, so a declaration only ever WIDENS.
-        # Keeping the job COUNT fixed keeps that arithmetic still.
+      - name: agent-os record and broad integration checks
+        # Remains after every security-fence step. The scoped knowledge suites
+        # below cannot prevent the live self-modification check from running.
         run: |
-          # Direct invocation FIRST and deliberately: the pytest suite skips itself
-          # when agentos/ is outside a sparse cone, so a store that failed to check
-          # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
-          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py tests/test_agentos_ship_capture.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
+          python -m pytest tests/test_agentos_ship_capture.py tests/test_f01_fx_commodity_source_rights.py -q
+
+  agentos-knowledge-contracts:
+    # ci.yml executes this manifest through scripts/run_ci_pack.py. The false
+    # sentinel is required by that runner; it prevents duplicate GitHub jobs.
+    if: ${{ false }}
+    gate: code
+    # These ten whole-file suites exercise the knowledge compiler and its
+    # committed records. Audit: 43 concrete transitive files plus the complete
+    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # glob edges use temporary fixture repositories or those same declared
+    # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
+    # No suite or security step is removed; no packing ceiling is raised.
+    scope: exclusive
+    paths:
+      - agentos/**
+      - research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md
+      - config/compiled_kill_registry.yml
+      - config/context_index.yml
+      - config/mastermind_programs.yml
+      - config/pr_linkage_rules.v1.json
+      - config/ruling_graph.yml
+      - config/synapse.yml
+      - engine/context_index/fusion.py
+      - engine/context_index/gitinfo.py
+      - engine/context_index/lexical.py
+      - engine/context_index/packet.py
+      - engine/context_index/structured.py
+      - lib/__init__.py
+      - lib/pr_linkage_validator.py
+      - research/DO_NOT_REBUILD.md
+      - research/linear_portfolio_p0/linear_snapshot_2026-08-25.json
+      - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F02_OWNER_SOURCE_RIGHTS_MAP_2026-09-05.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
+      - research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md
+      - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
+      - scripts/__init__.py
+      - scripts/agentos.py
+      - scripts/agentos_ship_capture.py
+      - scripts/audit_stranded_work.py
+      - scripts/linear_portfolio_plan.py
+      - templates/_navlinks.html.j2
+      - templates/intelligence_hub.html.j2
+      - tests/__init__.py
+      - tests/agent_eval_continuity_cases.py
+      - tests/linear_portfolio_plan_cases.py
+      - tests/linear_portfolio_plan_live_cases.py
+      - tests/test_agentos_acceptance_basis.py
+      - tests/test_agentos_compile.py
+      - tests/test_agentos_schema.py
+      - tests/test_agentos_status.py
+      - tests/test_b_rec2_wave_boundary_records.py
+      - tests/test_b_rec3_wave_boundary_records.py
+      - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_f02_owner_map_receipts.py
+      - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
+      - tests/test_w9b_rec_ns.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: validate actual store and run complete knowledge suites
+        run: |
+          # This direct invocation fails when a sparse store would skip pytest.
+          python3 scripts/agentos.py validate
+          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
+            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
@@ -13126,6 +13152,7 @@ jobs:
       - lib/dataos/__init__.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -13857,6 +13884,11 @@ jobs:
       - "tests/fixtures/global_liquidity_transmission_wliq1_window.json"
       - "tests/test_global_liquidity.py"
       - "tests/test_global_liquidity_transmission.py"
+      - "tests/test_global_liquidity_transmission_liveness_v2.py"
+      - ".github/workflows/daily.yml"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
+      - "site/liquiditydata/global_liquidity_transmission.json"
+      - "engine/market_os/macro_workspaces/liquidity_central_banks.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13865,9 +13897,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install state-producer test dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
-        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
+        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
 
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -14135,13 +14167,11 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
-      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
-      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
-      # below stays a single-writer edit point for concurrent research-vault PRs.
-      - name: research vault blank-text typing (F3)
-        run: python -m pytest tests/test_research_vault_blank_text.py -q
-      - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+      # F3/F5-M share LocalStore and seeded-PDF fixtures. One invocation runs both
+      # suites with the ingestion/page tests while preserving their full inferred
+      # dependency ownership. No extra interpreter is needed.
+      - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -15465,6 +15495,32 @@ jobs:
           python -m pytest
           tests/test_deploy_update_self_heal.py -q
 
+  deploy-git-history:
+    if: ${{ false }}
+    gate: code
+    # The suite reads three deploy scripts; static closure also includes the
+    # site/index.html name used by its synthetic repository fixtures. Declare
+    # that conservative dependency while preserving unrelated probe selection.
+    # Private bootstrap coverage remains in unrun-dark-guards.
+    scope: exclusive
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/bootstrap_repo.sh"
+      - "app/deploy/setup.sh"
+      - "tests/test_deploy_git_history.py"
+      - "site/index.html"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git history test dependencies
+        run: pip install pytest
+      - name: Connected deployment Git history contracts
+        run: python -m pytest tests/test_deploy_git_history.py -q
+
   biocatalyst-regulatory:
     if: ${{ false }}
     gate: code
@@ -16446,6 +16502,14 @@ jobs:
       - "lib/*"
       # Data OS selected-price evidence is imported through engine.price_ladder.
       - "lib/dataos/price.py"
+      # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price_views.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "scripts/__init__.py"
       - "scripts/build_flow_leaders.py"
       - "scripts/build_market_structure.py"
@@ -16784,12 +16848,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests
-      - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
-        run: python -m pytest tests/test_press_validators.py -q
-      - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
-      - name: press admin panel + workflow shape
-        run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
+      - name: press validator, planner, writer, orchestrator, admin and property suites
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -16806,8 +16866,6 @@ jobs:
       # This job does NOT run `--check`: the trees do not exist yet, so the check
       # would be red on arrival. Wiring it is a follow-up for the session that
       # generates and commits them.
-      - name: press properties + cutover pairing guard
-        run: python -m pytest tests/test_press_properties.py -q
       # Derived-tree drift guard: the committed properties/ trees must byte-match
       # a fresh rebuild from templates + config + ledger. A template or config
       # edit that forgets `python -m scripts.build_press_properties` goes red
@@ -16915,6 +16973,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
       - app/account_actions.py
       - app/account_prefs.py
@@ -17539,6 +17598,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -20229,6 +20289,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
       - "config/fundamental_forensics/coverage/**"
@@ -20858,6 +20919,15 @@ jobs:
       - "lib/config.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/price.py"
+      # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price_views.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "config/dataset_registry.yml"
       - "lib/delisted_symbols.py"
       - "lib/evidence_foundation.py"
       - "lib/exchange_holidays.py"
@@ -20869,6 +20939,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_inspector_view.py"
@@ -21616,6 +21687,14 @@ jobs:
       - "lib/dataos/identity.py"
       # Price-ladder consumers now import the Data OS price vocabulary directly.
       - "lib/dataos/price.py"
+      # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price_views.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "app/__init__.py"
       - "app/mailer.py"
       - "collectors/*"
@@ -24591,6 +24670,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - tests/test_market_memory_lineage.py
       - "config/intelligence_workspace/**"
       - "engine/prophet_lab/**"
       - "research/research_panels/**"
@@ -25279,6 +25360,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -25484,7 +25566,8 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py -q
+          tests/test_market_memory_episode_retrieval.py
+          tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -26420,6 +26503,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -26685,6 +26769,7 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -27333,6 +27418,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -28916,6 +29002,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -29071,6 +29158,8 @@ jobs:
     paths:
       - research/single_name_intelligence/event_response/**
       - research/single_name_intelligence/runs/s2_event_response/**
+      - research/single_name_intelligence/runs/s2_event_response_v1_1/**
+      - research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md
       - engine/qledger.py
       - engine/grading_stats.py
       - engine/trial_ledger.py
@@ -29091,6 +29180,8 @@ jobs:
       - tests/test_sni_s2_cli.py
       - tests/test_sni_s2_seal_integrity.py
       - tests/test_sni_s2_language.py
+      - tests/test_sni_s2_property.py
+      - tests/test_sni_s2_v1_1_hardening.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29100,7 +29191,7 @@ jobs:
       - name: install minimal S2 dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: S2 event response contracts (P04-P06, historical-descriptive)
-        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py -q -p no:cacheprovider
 
   single-name-coverage-profiles:
     if: ${{ false }}
@@ -29150,6 +29241,90 @@ jobs:
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
 
+  grey-deer-pullback-forward:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Grey Deer W5 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback forward lane - the
+    # prospective prereg writer, its grader, the nightly entry point and the
+    # readiness reporter. Hermetic: synthetic series and tmp_path logs only; the
+    # writer/grader identity env is monkeypatched by the tests, never set here.
+    # Curated exclusive (like grey-deer-pullback-stage1): the lane imports the
+    # frozen stage-1 runner, whose lazy risk_radar closure would otherwise pull
+    # this job into ordinary code PRs past the packing-probe ceilings. paths:
+    # below therefore replace inference and list the whole import closure.
+    timeout-minutes: 10
+    paths:
+      - "engine/grey_deer_pullback_forward.py"
+      - "engine/grey_deer_pullback_forward_grade.py"
+      - "scripts/__init__.py"
+      - "scripts/grey_deer_pullback_nightly.py"
+      - "scripts/research/grey_deer_pullback_readiness.py"
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_pullback_forward.py"
+      - "tests/test_grey_deer_pullback_forward_grade.py"
+      - "tests/test_grey_deer_pullback_nightly.py"
+      - "tests/test_grey_deer_pullback_readiness.py"
+      - "lib/observed_moves.py"
+      - "engine/vol_forecast.py"
+      - "lib/nyse_calendar.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "engine/__init__.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/election_cycle.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/validate_regime_fwd.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml requests
+      - name: pullback forward writer, grader, nightly and readiness tests
+        run: >-
+          python -m pytest -q
+          tests/test_grey_deer_pullback_forward.py
+          tests/test_grey_deer_pullback_forward_grade.py
+          tests/test_grey_deer_pullback_nightly.py
+          tests/test_grey_deer_pullback_readiness.py
+
   grey-deer-pullback-stage1:
     if: ${{ false }}
     gate: code
@@ -29166,11 +29341,14 @@ jobs:
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
       - "scripts/research/grey_deer_pullback_stage1b.py"
+      - "scripts/research/grey_deer_pullback_stage1b_addendum.py"
+      - "research/grey_deer/pullback_stage1b/**"
       - "tests/test_grey_deer_pullback_stage1.py"
       - "tests/test_grey_deer_panel_adjust.py"
       - "tests/test_grey_deer_pullback_stage1_determinism.py"
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
+      - "tests/test_grey_deer_pullback_stage1b_addendum.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -29235,6 +29413,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
           tests/test_grey_deer_pullback_stage1b.py
+          tests/test_grey_deer_pullback_stage1b_addendum.py
 
   sni-s1-residual:
     if: ${{ false }}
@@ -29246,6 +29425,7 @@ jobs:
     paths:
       - "research/single_name_intelligence/residual/**"
       - "research/single_name_intelligence/runs/s1_residual/**"
+      - "research/single_name_intelligence/runs/s1_residual_v1_1/**"
       - "engine/qledger.py"
       - "engine/grading_stats.py"
       - "engine/trial_ledger.py"
@@ -29260,6 +29440,9 @@ jobs:
       - "tests/test_sni_s1_report_order.py"
       - "tests/test_sni_s1_seal_integrity.py"
       - "tests/test_sni_s1_stats.py"
+      - "tests/test_sni_s1_property.py"
+      - "tests/test_sni_s1_v1_1_hardening.py"
+      - "tests/test_sni_s1_v1_2_hash_invariant.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29269,7 +29452,246 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
-        run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py tests/test_sni_s1_property.py tests/test_sni_s1_v1_1_hardening.py tests/test_sni_s1_v1_2_hash_invariant.py -q -p no:cacheprovider
+
+  sni-shared-and-drafts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): shared exact-inference + seal library (common/),
+    # the immutable evaluation ledger (evaluation/), the US/Mag-7 descriptive
+    # stress set (us_stress/), and the DRAFT pre-registrations (P04 v2, A8 US
+    # transfer, S0 amendment A01). Hermetic: synthetic inputs and committed
+    # draft JSON only, tmp_path-scoped, never data/. Every authority flag false.
+    # Curated exclusive so the loaders' sys.path imports cannot widen inference
+    # to engine/**; the paths are the whole import closure, checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
+    timeout-minutes: 10
+    paths:
+      - research/single_name_intelligence/common/**
+      - research/single_name_intelligence/evaluation/**
+      - research/single_name_intelligence/us_stress/**
+      - research/single_name_intelligence/us_transfer/**
+      - research/single_name_intelligence/protocols/**
+      - research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.json
+      - research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md
+      - research/single_name_intelligence/event_response/p04_v2_draft_loader.py
+      - contracts/single_name_intelligence/**
+      - tests/test_sni_common_inference.py
+      - tests/test_sni_common_seal.py
+      - tests/test_sni_eval_ledger.py
+      - tests/test_sni_p04_v2_draft.py
+      - tests/test_sni_a8_us_transfer_draft.py
+      - tests/test_sni_s0_amendment_a01_draft.py
+      - tests/test_sni_us_stress.py
+      # Measured closure of tests/test_sni_a8_us_transfer_draft.py, which reads
+      # engine/qledger.py as text to pin GRADE_HORIZONS against the owner; the
+      # inferer conservatively owns that file's import closure. Listed, not hidden.
+      - collectors/__init__.py
+      - collectors/_drip.py
+      - collectors/base.py
+      - collectors/china_analyst.py
+      - collectors/china_filings.py
+      - collectors/china_news.py
+      - collectors/china_visits.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/metabolism_budget.yml
+      - engine/__init__.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_validation.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/entity_resolver.py
+      - engine/event_calendar.py
+      - engine/forward_calendar_context.py
+      - engine/gdelt_client.py
+      - engine/grading_stats.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/master_brain.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/name_resolver.py
+      - engine/narrative_crossmarket.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/passport.py
+      - engine/pooling.py
+      - engine/provider_health.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
+      - engine/qledger_validity.py
+      - engine/rebalance_calendar.py
+      - engine/regime_label.py
+      - engine/regime_vector.py
+      - engine/session_anchor.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/ticker_shape.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/filing_value_units.py
+      - lib/hk_calendar.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/nyse_calendar.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: sni shared library, evaluation ledger, US stress set and draft preregs
+        run: python -m pytest tests/test_sni_common_inference.py tests/test_sni_common_seal.py tests/test_sni_eval_ledger.py tests/test_sni_p04_v2_draft.py tests/test_sni_a8_us_transfer_draft.py tests/test_sni_s0_amendment_a01_draft.py tests/test_sni_us_stress.py -q -p no:cacheprovider
+
+  sni-program-guards:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): cross-cutting program guards that span more than one
+    # study — the acceptance evidence matrix, S1/S2 equivalence against common/,
+    # program invariants, the quarantine fence mutation tests, the sealed-run
+    # digest repro, the SCHK full-coverage seal verifier, the A20 injection-
+    # safety scan, and the US stress onboarding/then-known checks. Hermetic:
+    # committed bytes and tmp_path only; a depth-1 checkout skips (never
+    # errors, never fetches). Every authority flag false. Curated exclusive so
+    # the run-seal loaders' sys.path imports cannot widen inference; the paths
+    # are the whole import closure, checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
+    timeout-minutes: 15
+    paths:
+      - "research/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "config/single_name_intelligence/**"
+      - "data/reference/security_master.parquet"
+      - "engine/__init__.py"
+      - "engine/qledger.py"
+      - "engine/grading_stats.py"
+      - "engine/trial_ledger.py"
+      - "tests/test_sni_acceptance_matrix.py"
+      - "tests/test_sni_common_equivalence.py"
+      - "tests/test_sni_program_invariants.py"
+      - "tests/test_sni_quarantine_fence.py"
+      - "tests/test_sni_run_seal_repro.py"
+      - "tests/test_sni_seal_full_check.py"
+      - "tests/test_sni_injection_safety.py"
+      - "tests/test_sni_us_stress_onboarding.py"
+      - "tests/test_sni_us_stress_then_known.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: sni cross-cutting program guards
+        run: python -m pytest tests/test_sni_acceptance_matrix.py tests/test_sni_common_equivalence.py tests/test_sni_program_invariants.py tests/test_sni_quarantine_fence.py tests/test_sni_run_seal_repro.py tests/test_sni_seal_full_check.py tests/test_sni_injection_safety.py tests/test_sni_us_stress_onboarding.py tests/test_sni_us_stress_then_known.py -q -p no:cacheprovider
+
+  sni-public-exposure-scan:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): no public surface may serve, render, upload or link
+    # SNI material. Reads templates/, app/ (minus tests), the named publish/
+    # render/mirror scripts and the render/deploy workflows as TEXT — it never
+    # imports them, so the scanned names carry a `ci-trigger-closure: data`
+    # marker and are declared here instead of inferred. Its own
+    # test_ci_job_declares_every_scanned_surface fails if a scanned surface is
+    # missing below. Split from sni-program-guards so a template edit pays this
+    # one small file, not the whole guard suite.
+    timeout-minutes: 10
+    paths:
+      - "templates/**"
+      - "app/**"
+      - "scripts/publish_*.py"
+      - "scripts/build_site.py"
+      - "scripts/ci/public_render.sh"
+      - "scripts/render_*_fast.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/close_pass_publish.py"
+      - "scripts/mirror_gex_state_r2.py"
+      - "scripts/mirror_terminal_context_r2.py"
+      - ".github/workflows/render.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/daily.yml"
+      - ".github/ci/legacy-jobs.yml"
+      - "research/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "tests/test_sni_public_exposure.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: sni public-exposure scan
+        run: python -m pytest tests/test_sni_public_exposure.py -q -p no:cacheprovider
+
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
