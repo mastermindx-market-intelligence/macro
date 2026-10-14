@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T06:54:28.021325+00:00",
-  "count": 2878,
+  "generated_at": "2026-10-14T07:24:31.936154+00:00",
+  "count": 2879,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -226,6 +226,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-l0fedbsnrqv-a1e3b8",
+      "title": "Investor Positioning and Flows Oct 13",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:05:41Z",
+      "summary_points": [
+        "Tech Rotation Overextended: MCG & Tech ratio breached 14.2% annual growth trend (since 2016) and 10% volatility band, signaling inverted risk-reward (4pp upside vs 16pp downside) with 5th top of long-run trend channel.",
+        "Asymmetric Sector Positioning: Tech remains overweight (positive positioning score) while Financials/Industrials/Materials are underweight (Financials at 17% percentile), driven by negative catalysts and rotation dynamics.",
+        "Regional Tech Exposure Impact: Rotation away from Tech favors Europe (9% exposure) over US (40%) and Asia (30%), with Tech exposure as key return determinant across regions.",
+        "Earnings Rotation Mechanics: MCG & Tech outperforms S&P 500 Ex-MCG & Tech by 38.1% during rotations into Tech vs 32.9%, but underperforms by 16.6% during rotations away (vs -17.9% for rest).",
+        "Consumer Cyclicals Overallocation: Current 80% percentile (Figure 19) signals significant overbought conditions and near-term correction risk for large-cap cyclicals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 54,
       "language": "en",
       "needs_metadata": false
     },
