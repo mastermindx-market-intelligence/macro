@@ -1002,7 +1002,22 @@ def test_c10_10_sale_on_2026_10_14_is_verified_with_beyond_window_nasdaq_text() 
     plain, _, _ = evaluate(registration=reg, share_basis=shares, resolutions=resolutions)
     conditions = routes_by_id(plain)[f"shelf_takedown:{PATH_A}"].conditions
     assert not any("bracketed" in condition for condition in conditions)
-    assert not any("requalify" in condition for condition in conditions)
+    # The Form S-3 eligibility text is verified on the sale date, so it adds no
+    # condition. Rule 415(a)(5) (rule pack 1.1.0, L1b) was last verified on
+    # 2026-10-09 and therefore carries its own requalify condition; every
+    # requalify condition must come from a rule that is actually beyond its window.
+    for rule_id in ("form_s3.I.B.6", "form_s3.I.B.1"):
+        status = ra.rule_status_as_of(PACK, rule_id, SALE)
+        assert status.condition is None or status.condition not in conditions
+    assert rule_condition("cfr.17.230.415.a.5", SALE) in conditions
+    beyond_window = {
+        ra.rule_status_as_of(PACK, rule_id, SALE).condition
+        for rule_id in PACK.rules
+        if ra.rule_status_as_of(PACK, rule_id, SALE).state == "beyond_window"
+    }
+    assert all(
+        condition in beyond_window for condition in conditions if "requalify" in condition
+    )
     assert not any(item.startswith("rule_text:") for item in unknown_ids(plain))
     nasdaq, _, _ = evaluate(
         registration=reg, share_basis=shares, resolutions=resolutions, other=NASDAQ_ASSUMPTIONS
@@ -1046,8 +1061,10 @@ def test_c10_10_sale_on_2015_06_01_brackets_ib6_and_withholds_ib1_and_nasdaq() -
     assert evaluation.inputs["baby_shelf"]["reason"] == "eligibility_withheld"
 
 
-def test_c10_10_sale_on_2007_06_01_has_no_rule_text_at_all() -> None:
-    sale = "2007-06-01"
+def test_c10_10_sale_on_2004_06_01_has_no_rule_text_at_all() -> None:
+    # Rule pack 1.1.0 (L1b) holds Rule 415 text in force from 2005-12-01, so the
+    # first date with no qualified text at all moved from 2007 to before that.
+    sale = "2004-06-01"
     assert ra.build_rule_pack(PACK, sale)[0] is None
     reg, shares = standard_registration(sale, registered="20000000")
     state, scenario, _ = build(sale=sale, registration=reg, share_basis=shares, rules=rules_for(SALE))
@@ -1059,6 +1076,18 @@ def test_c10_10_sale_on_2007_06_01_has_no_rule_text_at_all() -> None:
     with pytest.raises(CapacityInputError):
         # CapacityRuleTextUnavailable IS a CapacityInputError, so the public surface stays closed.
         evaluate_capacity(state, scenario, rules_for(SALE))
+
+
+def test_c10_10_sale_on_2007_06_01_refuses_rules_from_another_date() -> None:
+    # On 2007-06-01 only the Rule 415 text is in force; rules compiled for the
+    # 2026 sale do not match that pack, so the evaluation refuses instead of
+    # silently using text that was not in force.
+    sale = "2007-06-01"
+    assert ra.build_rule_pack(PACK, sale)[0] is not None
+    reg, shares = standard_registration(sale, registered="20000000")
+    state, scenario, _ = build(sale=sale, registration=reg, share_basis=shares, rules=rules_for(SALE))
+    with pytest.raises(CapacityInputError, match="does not match the rule text in force on 2007-06-01"):
+        explain_capacity(state, scenario, rules_for(SALE), pack=PACK)
 
 
 def test_c10_10_sale_on_2027_03_01_is_beyond_every_qualified_window() -> None:
