@@ -157,6 +157,12 @@ def test_actual_ingest_retains_receipt_plan_before_checkpoint_visibility(seeded,
                      and event["payload"]["key"] == contract.CORPUS_KEY]
     assert len(plans) == len(corpus_writes) == 2
     assert all(plan < write for plan, write in zip(plans, corpus_writes))
+    for plan, corpus_write in zip(plans, corpus_writes):
+        intended = base64.b64decode(events[plan]["payload"]["catalog_base64"])
+        following = next(event["payload"] for event in events[corpus_write + 1:]
+                         if event["kind"] == "write_intent"
+                         and event["payload"]["key"] == catalog.CATALOG_KEY)
+        assert base64.b64decode(following["catalog_base64"]) == intended
     pending = events[plans[0]]["payload"]["pending_receipts"]
     assert len(pending) == 1
     assert base64.b64decode(pending[0]["body_base64"]) == store.get_bytes(pending[0]["key"])
@@ -198,6 +204,79 @@ def test_unpersisted_publication_plan_blocks_the_entire_batch(seeded, tmp_path, 
                        generation_identity=IDENTITY, generation_evidence=evidence)
     assert store.events == [("cas", catalog.CATALOG_KEY)]
     assert json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]["state"] == "BUILDING"
+
+
+def test_original_catalog_survives_loss_after_acknowledged_corpus(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    intended = {**doc["items"][0], "title": "Captured before corpus visibility"}
+    monkeypatch.setattr(ingest, "_list_inbox_pdfs", lambda _: ["research_inbox/synthetic.pdf"])
+    monkeypatch.setattr(ingest, "_ingest_one", lambda *a, **k: {
+        "status": "ingested", "item": intended, "title_source": "sidecar",
+        "facts": {"content_sha256": "b" * 64, "text_layer": "full"}})
+    def process_lost(*a, **k):
+        raise SystemExit("synthetic process loss before catalog call")
+    monkeypatch.setattr(catalog, "publish", process_lost)
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        with pytest.raises(SystemExit, match="process loss"):
+            ingest.run(store, tmp_path / "working.sqlite", now=NOW, checkpoint_every=1,
+                       generation_identity=IDENTITY, generation_evidence=evidence)
+    events = read_evidence(path, expected_identity=IDENTITY)
+    plan = next(event["payload"] for event in events if event["kind"] == "publication_plan")
+    original = base64.b64decode(plan["catalog_base64"])
+    assert json.loads(original)["items"][0]["title"] == intended["title"]
+    assert hashlib.sha256(original).hexdigest() == plan["catalog_sha256"]
+    assert len(original) == plan["catalog_bytes"]
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))["items"][0]["title"] != intended["title"]
+    assert events[-1]["kind"] == "write_result"
+    assert events[-1]["payload"]["outcome"] == "returned_true"
+
+
+def test_changed_catalog_after_freeze_refuses_before_visibility(seeded):
+    store, doc, session, wrapped = begin(seeded)
+    catalog.prepare_publication(doc, now=NOW)
+    frozen = session.prepare_catalog(doc)
+    doc["items"][0]["title"] = "changed after capture"
+    prior = list(store.events)
+    result = catalog.publish(wrapped, doc, now=NOW, prepared_bytes=frozen)
+    assert result.published is False
+    assert "prepared catalog changed" in result.error
+    assert store.events == prior
+
+
+def test_prepared_catalog_keeps_original_stamp_when_publication_is_later(seeded):
+    from datetime import timedelta
+    store, doc, session, wrapped = begin(seeded)
+    catalog.prepare_publication(doc, now=NOW)
+    frozen = session.prepare_catalog(doc)
+    result = catalog.publish(wrapped, doc, now=NOW + timedelta(seconds=9), prepared_bytes=frozen)
+    assert result.published
+    assert result.data == store.get_bytes(catalog.CATALOG_KEY) == frozen
+
+
+def test_planned_catalog_conflict_never_releases_pending_receipts(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    monkeypatch.setattr(ingest, "_list_inbox_pdfs", lambda _: ["research_inbox/synthetic.pdf"])
+    monkeypatch.setattr(ingest, "_ingest_one", lambda *a, **k: {
+        "status": "ingested", "item": doc["items"][0], "title_source": "sidecar",
+        "facts": {"content_sha256": "b" * 64, "text_layer": "full"}})
+    original = store.put_bytes_strict_conditional
+    def conflict_after_begin(*a, **k):
+        result = original(*a, **k)
+        store.conflict = True
+        return result
+    monkeypatch.setattr(store, "put_bytes_strict_conditional", conflict_after_begin)
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        with pytest.raises(writer.GenerationWriteUnavailable, match="conditional conflict"):
+            ingest.run(store, tmp_path / "working.sqlite", now=NOW, checkpoint_every=1,
+                       generation_identity=IDENTITY, generation_evidence=evidence)
+    assert not any(key.startswith(fulltext_store.RECEIPT_PREFIX) for _, key in store.events)
+    events = read_evidence(path, expected_identity=IDENTITY)
+    assert any(e["kind"] == "publication_plan" and e["payload"]["pending_receipts"] for e in events)
+    assert events[-1]["payload"]["outcome"] == "conditional_conflict"
 
 
 def test_legacy_false_put_remains_unknown_in_original_evidence(seeded, tmp_path):

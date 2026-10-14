@@ -1470,10 +1470,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             if (not dry_run and checkpoint_every > 0
                     and summary["ingested"] % checkpoint_every == 0):
                 conn.commit()
+                publication_kwargs = {}
                 if generation_session is not None:
-                    generation_session.record_publication(corpus_path, pending_receipts)
+                    catalog_mod.prepare_publication(cat, now=now)
+                    prepared = generation_session.prepare_catalog(cat)
+                    generation_session.record_publication(
+                        corpus_path, pending_receipts, catalog_bytes=prepared)
+                    publication_kwargs["prepared_bytes"] = prepared
                 if publish_corpus(store, corpus_path):
-                    if catalog_mod.publish(store, cat, now=now).published:
+                    if catalog_mod.publish(store, cat, now=now, **publication_kwargs).published:
                         _flush_receipts(store, pending_receipts)
                 log.info("research_vault: checkpoint at %d ingested",
                          summary["ingested"])
@@ -1573,14 +1578,19 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # would permanently strand documents that never became visible (Defect 4).
     if not dry_run:
         _t = time.monotonic()
+        publication_kwargs = {}
         if generation_session is not None:
-            generation_session.record_publication(corpus_path, pending_receipts)
+            catalog_mod.prepare_publication(cat, now=now)
+            prepared = generation_session.prepare_catalog(cat)
+            generation_session.record_publication(
+                corpus_path, pending_receipts, catalog_bytes=prepared)
+            publication_kwargs["prepared_bytes"] = prepared
         summary["corpus_published"] = publish_corpus(store, corpus_path)
         timing_s["corpus_publish_s"] = time.monotonic() - _t
         summary["catalog_published"] = False
         if summary["corpus_published"]:
             _catalog_t = time.monotonic()
-            published = catalog_mod.publish(store, cat, now=now)
+            published = catalog_mod.publish(store, cat, now=now, **publication_kwargs)
             timing_s["catalog_publish_s"] = time.monotonic() - _catalog_t
             summary["catalog_bytes"] = published.data
             summary["catalog_published"] = published.published

@@ -224,8 +224,8 @@ class ProducerGenerationSession:
         if self.evidence is not None:
             self._evidence("write_result", {"operation": operation, "outcome": outcome})
 
-    def record_publication(self, corpus_path, pending_receipts):
-        """Retain pending receipt bytes before the corpus/catalog visibility cut.
+    def record_publication(self, corpus_path, pending_receipts, *, catalog_bytes: bytes):
+        """Retain the exact batch before the corpus/catalog visibility cut.
 
         This is evidence for the original owner, not a replay or completion API.
         An unavailable sink refuses before this publication batch begins.
@@ -236,6 +236,11 @@ class ProducerGenerationSession:
         self.assert_current()
         path = Path(corpus_path)
         try:
+            if type(catalog_bytes) is not bytes or len(catalog_bytes) > contract.CATALOG_MAX_BYTES:
+                self._fail("publication catalog outside evidence bound")
+            planned = catalog_mod.parse_strict(catalog_bytes, check_future_clock=False)
+            if planned.get(contract.GENERATION_FIELD) != self.record:
+                self._fail("publication catalog must preserve current BUILDING")
             before = path.stat()
             if before.st_size > contract.CORPUS_MAX_BYTES:
                 self._fail("publication corpus outside evidence bound")
@@ -258,6 +263,8 @@ class ProducerGenerationSession:
                 "epoch": self.record["epoch"],
                 "catalog_predecessor_sha256": _sha(self.catalog_bytes),
                 "catalog_predecessor_version": self.catalog_version,
+                "catalog_sha256": _sha(catalog_bytes), "catalog_bytes": len(catalog_bytes),
+                "catalog_base64": base64.b64encode(catalog_bytes).decode("ascii"),
                 "corpus_sha256": digest.hexdigest(), "corpus_bytes": before.st_size,
                 "pending_receipts": pending})
         except GenerationWriteUnavailable:

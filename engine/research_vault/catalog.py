@@ -631,7 +631,15 @@ def ensure_generation_write_allowed(store) -> None:
         raise RuntimeError("generation-bearing catalog requires adopted writer session")
 
 
-def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublishResult:
+def prepare_publication(catalog: dict, now: datetime | None = None) -> bytes:
+    """Freeze the ordinary publication fields before a generation's batch starts."""
+    _reindex(catalog)
+    catalog["generated_at"] = _now_iso(now)
+    return (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def publish(store, catalog: dict, now: datetime | None = None, *,
+            prepared_bytes: bytes | None = None) -> CatalogPublishResult:
     """Stamp ``generated_at``, serialize, and atomically put to the store.
 
     Serialization mirrors the atomic-JSON idiom (indent=2, ensure_ascii=False,
@@ -644,16 +652,21 @@ def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublish
     Never raises: a store that throws is reported as a failed publish, because the
     caller's correct response is identical either way (do not advance anything).
     """
-    _reindex(catalog)
-    catalog["generated_at"] = _now_iso(now)
     session = getattr(store, "generation_session", None)
-    data = (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    # A captured generation batch already froze its stamp and normalized body.
+    # Preserve it across corpus publication; never invent a later visibility cut.
+    data = (prepare_publication(catalog, now) if prepared_bytes is None else
+            (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
     try:
         ensure_generation_write_allowed(store)
         if session is not None:
             data = session.prepare_catalog(catalog)
         elif "producer_generation" in catalog:
             raise RuntimeError("generation-bearing catalog requires adopted writer session")
+        if prepared_bytes is not None:
+            if session is None or type(prepared_bytes) is not bytes or data != prepared_bytes:
+                raise RuntimeError("prepared catalog changed before publication")
+            data = prepared_bytes
         ok = bool(store.put_bytes(CATALOG_KEY, data, "application/json"))
         detail = getattr(store, "last_put_error", None)
         error = "" if ok else f"store rejected the catalog put ({detail or 'no detail'})"

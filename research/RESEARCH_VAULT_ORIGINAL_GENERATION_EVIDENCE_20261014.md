@@ -17,7 +17,7 @@ the BUILDING/COMPLETE contract. All-writer qualification remains a separate gate
 | Before each covered PUT | Key, exact byte digest and length, content type, epoch | An intent does not show that the request was sent |
 | After synchronous return | True, conditional conflict, or explicitly uncertain result | Legacy unconditional false may hide a transport error |
 | After catalog readback | Actual observed version and exact byte digest | A version is not an anti-ABA history |
-| Before checkpoint/final corpus publication | Corpus digest/length and the original pending receipt bodies | A plan does not prove publication |
+| Before checkpoint/final corpus publication | Exact intended catalog bytes, corpus digest/length and original pending receipt bodies | A plan does not prove publication |
 | After successful COMPLETE readback | Exact catalog digest/version and original epoch | Source admission, all writers and consumer acceptance remain separate |
 
 Every append is fsynced before returning. Creation uses exclusive, no-follow file
@@ -63,6 +63,14 @@ intent, lost artifact, unknown delayed request, moved predecessor, or missing
 capture anchor remains unavailable. A current matching object is an observation,
 not permission to retry an uncertain write.
 
+The batch freezes its normalized catalog and original publication timestamp
+before the corpus write. The same exact bytes are retained in publication_plan
+and supplied to catalog.publish; that call refuses a changed body and does not
+restamp it. This closes a measured gap in the earlier journal: a process lost
+after an acknowledged corpus PUT but before catalog.publish previously lost the
+intended catalog that existed only in memory. Corpus, catalog and receipts still
+publish in that order. A catalog conflict does not release pending receipts.
+
 This increment deliberately contains no recovery executor. Before production
 adoption the owner still owes that supported continuation path, actual executed
 source/run binding for every recurring invocation, all-writer settlement,
@@ -104,9 +112,19 @@ test. The separate Fabric-authored journal tests are reviewed against actual fil
 bytes, permissions, locks and injected I/O failures. These are source proofs;
 they do not qualify any live writer or installed runtime.
 
+The publication-gap failure injection uses actual ingestion control flow with a
+synthetic parser and store. The intended new catalog is absent from the earlier
+journal despite a confirmed corpus write. Three discriminators fail on that
+source and pass with the frozen batch: original catalog retention, exact later
+publication bytes, and refusal of a body changed after capture. Additional tests
+cover later publication clocks and conflict-withheld receipts. The final affected
+suite contains670passing tests with no skips.
+
 A separate local sizing probe retained three4,623,772-byte synthetic catalog
 intents plus thirty2KiB receipt plans. It used the current2889-item public
 fixture and the earlier2888-member observation only as sizing inputs, not as a
 coherent live generation. The resulting journal was18,579,918bytes, append plus
 inspection took0.563seconds, and process peak RSS was88,883,200bytes on macOS.
 These figures neither qualify the production runner nor establish source custody.
+They describe the earlier capture layout, before exact intended catalog bytes
+were also included in each publication plan, and are not the new run budget.
