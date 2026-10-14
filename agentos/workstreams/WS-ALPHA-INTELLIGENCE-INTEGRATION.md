@@ -224,8 +224,12 @@ waves:
       for the same main SHA entered the workflow concurrency group; no baseline
       job failed. This is a contract-only on-main capability, not a producer,
       consumer, store, product surface, deployment or PROVEN_LIVE claim. K3
-      remains IN_PROGRESS because K3-D Economic Propagation is still NOT_BUILT
-      and requires its own commission. This canonical K3-E remains distinct from
+      remains IN_PROGRESS because the existing K3-D Economic Propagation candidate
+      is BUILT_NOT_PROVEN on PR #6514 under operation
+      alpha-k3d-economic-propagation-20260826-sol-001. Continue that same carrier
+      through exact-head CI, review and Sol release; do not commission duplicate
+      work. Its runtime remains display/research-only and production-unproven.
+      This canonical K3-E remains distinct from
       the K3E Expectation-Market-Dynamics child program
       (DEC:K3E-EXPECTATION-MARKET-DYNAMICS-FREEZE); neither replaces the other.
   - id: k4
