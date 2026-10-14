@@ -442,3 +442,39 @@ ARTIFACT_DELIVERY_CONTRACT_FAILED. Its retained stdout was consumed, but the rep
 artifact was not received or accepted; same-run capsule diagnosis was refused.
 Summary findings are hypotheses to validate against actual source, not accepted
 review evidence. Original frozen operations and runtime/auth/transport gates remain.
+
+## 2026-10-14 selected launcher and producer/reader integration
+
+Mastermind1458 publishes explicit selected-factory composition at
+82bd474581f410f3b9b212afaf75beaf0f807ba1. One prepared Macro provider now feeds
+the actual launcher's existing MCP/citation service and adapter, with private
+guard conversion by field name and no request/health resweep. CLI/config defaults
+remain unenabled.554 distinct MCP tests pass, zero skipped; four actual Macro
+source/synthetic SQLite/importer/launcher cases pass. Two preimage cases fail.
+New independent code-review operationrv-selected-factory-review-01a13301-r1 is
+on its original Qwen3.8Max/Ubuntu3 carrier with retained-result review pending;
+it does not retry the earlier failed architecture-review artifact delivery.
+
+This F11 branch integrates the accepted producer merge
+901ac4fb45c0f8e0295ff34777791e2ea8941f2d because its canonical catalog, ingestion
+and R2 constructor overlap the selected reader. Two conflicted files were
+resolved: additive CI scopes/test suites were preserved from both parents, and
+producer_generation keeps only the already-reviewed four-window delta over the
+merged producer module. Catalog retains both public preview and writer guards.
+Writer, materialize-only and R2 modules match the accepted producer bytes exactly.
+The stronger overlap test now uses the actual R2 constructor with a synthetic SDK
+transport; both cases fail with the previous constructor and pass with the union.
+
+The union covers1642 affected cases:1641 distinct passes and one pre-existing
+snapshot-moved retrieval-fixture skip. Initial16 missing-page failures and8
+sparse-data skips were resolved by materializing five exact committed fixtures,
+then rerunning only those24 cases plus the7 strengthened window cases;31passed.
+All2708 CI trigger closures are reachable and both CI curation checks pass.
+This remains Draft/HOLD95, with no installed release or writer adoption. Evidence
+is in runtime-composition/producer-reader-union under the original completion root.
+
+The Fabric recovery owner is active again, repairing1391CI and then its separate
+controller-recovery patch; no original Research return is inferred. Auth0 sign-in
+using the existing MastermindX Google account reached a Chrome extension-popup
+automation block. Root asked Chris once to complete/dismiss that popup and kept
+the tab. No provider API/grant modification occurred. Source integration continued.

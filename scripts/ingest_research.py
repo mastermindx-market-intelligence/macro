@@ -206,6 +206,8 @@ def main() -> int:
                     help="use a local filesystem store rooted at DIR (no R2)")
     ap.add_argument("--dry-run", action="store_true",
                     help="run ingest but do NOT publish corpus/catalog back to R2")
+    ap.add_argument("--materialize-only", action="store_true",
+                    help="bounded immutable derivatives only; no mutable publication or repo snapshot")
     ap.add_argument("--corpus", metavar="PATH",
                     help="corpus.sqlite path (default: a temp file)")
     ap.add_argument("--repo-dir", metavar="DIR",
@@ -217,6 +219,8 @@ def main() -> int:
                          "on the scheduled production run, where 'no store' means "
                          "the secrets did not reach the runner — not 'nothing to do'")
     a = ap.parse_args()
+    if a.materialize_only and (a.dry_run or a.corpus or a.repo_dir):
+        ap.error("--materialize-only owns private scratch and forbids dry-run/corpus/repo-dir overrides")
 
     repo_dir = _repo_snapshot_dir(a.repo_dir)
     repo_catalog = repo_dir / "catalog.json"
@@ -231,7 +235,7 @@ def main() -> int:
             # On a developer box this is genuinely nothing to do. On the hourly
             # production run it means the R2 secrets did not reach the runner, and
             # a green lane would report "ingested nothing" as success forever.
-            if a.require_store:
+            if a.require_store or a.materialize_only:
                 print("::error title=research-ingest::no research store configured "
                       "(RESEARCH_LOCAL_STORE / --local / R2_RESEARCH_BUCKET + creds) "
                       "— the hourly ingest could not run at all", flush=True)
@@ -239,6 +243,12 @@ def main() -> int:
             print("ingest_research: no store (set RESEARCH_LOCAL_STORE, --local, "
                   "or R2_RESEARCH_BUCKET + R2 creds) — nothing to do", file=sys.stderr)
             return 0
+
+        if a.materialize_only:
+            from engine.research_vault import materialize_published
+            result = materialize_published.run(store)
+            print("ingest_research: materialize-only " + json.dumps(result, sort_keys=True))
+            return 1 if result.get("error") else 0
 
         corpus_path = Path(a.corpus) if a.corpus else \
             Path(tempfile.gettempdir()) / "research_vault_corpus.sqlite"

@@ -49,7 +49,8 @@ from engine.fundamental_forensics.production_lineage import (
     mint_production_lineage_evidence,
 )
 from engine.fundamental_forensics.sec_document_spine import build_filing_manifests
-from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
+from engine.fundamental_forensics import statement_graph
+from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES, StatementGraphError
 from engine.fundamental_forensics.query_service import CanonicalEntityBinding
 import scripts.publish_fif_production_datasets as producer
 
@@ -4243,3 +4244,300 @@ def test_c0c_m4_partial_report_coverage_reflects_commit_outcome(
         item["served"] is False and item["served_withheld"] == "commit_not_attempted"
         for item in skipped_row["accessions"]
     )
+
+
+# ---------------------------------------------------------------------------
+# A0 repair: a statement-reconstruction refusal excludes ONE issuer, typed,
+# instead of aborting the whole publication (2026-10-13 schedule run: one
+# SNOW 10-Q ragged grid killed AAPL's publish).
+
+_REFUSED_LAYOUT = "displayed statement layout unsupported: ragged grid at row 1 column 18"
+
+
+def _three_issuer_contract(tmp_path: Path, identity: dict) -> tuple[Path, list[str]]:
+    """The m4 shape: one coverage row per issuer _stage_three_issuers makes."""
+    base_cik = identity["cik"]
+    ciks = [base_cik] + [
+        base_cik[:-1] + str((int(base_cik[-1]) + step) % 10) for step in (2, 3)
+    ]
+    accessions = [
+        {
+            "accession": a,
+            "form": str(identity["manifests"][a]["form"]),
+            "filing_date": _row_value(identity, a, "filing_date"),
+        }
+        for a in identity["accessions"]
+    ]
+    issuers = []
+    for cik, suffix in zip(ciks, ("", "2", "3")):
+        entity_id = identity["entity_id"] + suffix
+        issuers.append(
+            {
+                "cik": cik,
+                "ticker": identity["ticker"] + suffix,
+                "legal_name": "Synthetic Lane Issuer",
+                "security_master_binding": {
+                    "issuer_id": entity_id,
+                    "issuer_cik": cik,
+                    "security_id": identity["security_id"],
+                    "listing_key": identity["listing_key"],
+                    "mic": "XNAS",
+                    "effective_at": "2023-05-09T00:00:00",
+                },
+                "accessions": accessions,
+            }
+        )
+    document = {
+        "schema": "fundamental_forensics.coverage_contract/v1",
+        "contract_id": "synthetic-a0-statement-refusal-test",
+        "issuers": issuers,
+    }
+    contract = tmp_path / "contract-three.json"
+    contract.write_text(json.dumps(document, indent=1), encoding="utf-8")
+    return contract, ciks
+
+
+def _stage_three_issuers_coherently(monkeypatch) -> None:
+    """_stage_three_issuers minus the real stage's ``no_retained_package`` rows
+    for the CIKs it fabricates. Those issuers ARE staged here, so a coherent
+    report must not also list them excluded (verify_report refuses an issuer
+    that appears twice)."""
+    _stage_three_issuers(monkeypatch)
+    fabricated_stage = producer._stage_contract_issuers
+
+    def _staged(issuers, *, archive_root, capture_failures=None):
+        staged, excluded = fabricated_stage(
+            issuers, archive_root=archive_root, capture_failures=capture_failures
+        )
+        staged_ciks = {row.binding.cik for row in staged}
+        return staged, [row for row in excluded if row["cik"] not in staged_ciks]
+
+    monkeypatch.setattr(producer, "_stage_contract_issuers", _staged)
+
+
+def _refuse_statements_for(monkeypatch, refused_suffixes: tuple[str, ...], message: str) -> None:
+    """Make the REAL plan raise the reconstruction refusal for chosen issuers."""
+    real_plan = producer._plan_issuer
+
+    def _planned(staged_row, **kwargs):
+        entity_id = staged_row.binding.entity_id
+        if any(entity_id.endswith(suffix) for suffix in refused_suffixes):
+            raise StatementGraphError(message)
+        return real_plan(staged_row, **kwargs)
+
+    monkeypatch.setattr(producer, "_plan_issuer", _planned)
+
+
+def test_a0_statement_refusal_slug_vocabulary_tracks_the_kernel() -> None:
+    assert producer._STATEMENT_REFUSAL_SLUGS[0][0] == statement_graph._DISPLAYED_LAYOUT_UNSUPPORTED
+    layout = statement_graph._layout_unsupported("ragged grid at row 1 column 18")
+    assert producer.statement_refusal_slug(layout) == "displayed_layout_unsupported"
+    assert (
+        producer.statement_refusal_slug(
+            StatementGraphError("displayed statement table is absent: CONSOLIDATED BALANCE SHEET")
+        )
+        == "displayed_table_absent"
+    )
+    assert (
+        producer.statement_refusal_slug(
+            StatementGraphError("displayed statement columns are absent: BALANCE SHEETS")
+        )
+        == "displayed_columns_absent"
+    )
+    for other in (
+        "displayed statement has no numeric rows: X",
+        "fact is missing from the iXBRL parse: us-gaap:Revenues",
+        "columns collapse distinct filing periods",
+    ):
+        assert producer.statement_refusal_slug(StatementGraphError(other)) is None
+    assert set(producer.STATEMENT_REFUSAL_SLUGS) == {
+        "displayed_layout_unsupported",
+        "displayed_table_absent",
+        "displayed_columns_absent",
+    }
+    assert "statement_reconstruction_refused" in producer.PUBLISHER_ERROR_CODES
+
+
+def test_a0_one_refused_issuer_is_excluded_and_the_rest_publish(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    _refuse_statements_for(monkeypatch, ("2",), _REFUSED_LAYOUT)
+    rc = _publish_cli(lane, contract, store, report_path)
+    out = capsys.readouterr().out
+    assert rc == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    reason = "statement_reconstruction_refused:displayed_layout_unsupported"
+    refused_rows = [row for row in report["excluded"] if row["cik"] == ciks[1]]
+    assert refused_rows == [
+        {
+            "ticker": identity["ticker"] + "2",
+            "cik": ciks[1],
+            "reason": reason,
+            "detail": _REFUSED_LAYOUT,
+        }
+    ]
+    assert sorted(row["entity_id"] for row in report["published"]) == [
+        identity["entity_id"],
+        identity["entity_id"] + "3",
+    ]
+    assert not _latest_json_path(store, identity["entity_id"] + "2").exists()
+    assert _latest_json_path(store, identity["entity_id"]).exists()
+    assert _latest_json_path(store, identity["entity_id"] + "3").exists()
+    coverage = {row["cik"]: row for row in report["coverage"]}
+    assert coverage[ciks[1]]["served"] == 0
+    assert all(
+        item["served"] is False and item["served_withheld"] == reason
+        for item in coverage[ciks[1]]["accessions"]
+    )
+    assert coverage[ciks[0]]["served"] == len(identity["accessions"])
+    assert any(
+        line.startswith(
+            "::warning title=fif_production_datasets-statement_reconstruction_refused::"
+        )
+        for line in out.splitlines()
+    )
+    producer.verify_report(report, producer.build_production_dataset_store(local_dir=store))
+
+
+def test_a0_unclassified_statement_error_still_aborts_the_run(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, _ = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    _refuse_statements_for(monkeypatch, ("2",), "displayed statement has no numeric rows: X")
+    rc = _publish_cli(lane, contract, store, report_path)
+    errors = _stderr_error_lines(capsys)
+    assert rc == 1
+    assert any("fif_production_datasets-publish_failed" in line for line in errors)
+    assert not report_path.exists()
+    assert _store_files(store) == []
+
+
+def test_a0_every_issuer_refused_writes_the_report_then_fails_typed(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    _refuse_statements_for(
+        monkeypatch, ("",), "displayed statement columns are absent: BALANCE SHEETS"
+    )
+    rc = _publish_cli(lane, contract, store, report_path)
+    errors = _stderr_error_lines(capsys)
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_reconstruction_refused::")
+        for line in errors
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert sorted(row["cik"] for row in report["excluded"]) == sorted(ciks)
+    assert {row["reason"] for row in report["excluded"]} == {
+        "statement_reconstruction_refused:displayed_columns_absent"
+    }
+    for suffix in ("", "2", "3"):
+        assert not _latest_json_path(store, identity["entity_id"] + suffix).exists()
+    assert all(row["served"] == 0 for row in report["coverage"])
+
+
+def test_a0_kernel_refusal_reaches_the_publisher_through_the_real_plan(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """The refusal raised by the KERNEL reconstructor (not a stubbed plan)
+    travels the real _plan_issuer -> publish_production_dataset ->
+    _statement_trees_role_payload path into a typed exclusion; the report row
+    carries the kernel's own message, and the annotation stays one line."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    message = "displayed statement table is absent: 50% OWNED\nSUBSIDIARIES"
+
+    def _refuse(*, package, registry):
+        raise StatementGraphError(message)
+
+    monkeypatch.setattr(statement_graph, "reconstruct_primary_statements", _refuse)
+    rc = _publish_cli(lane, contract, store, report_path)
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_reconstruction_refused::")
+        for line in captured.err.splitlines()
+    )
+    warnings = [
+        line
+        for line in captured.out.splitlines()
+        if line.startswith("::warning title=fif_production_datasets-statement_reconstruction_refused::")
+    ]
+    assert len(warnings) == 3
+    assert all("50%25 OWNED%0ASUBSIDIARIES" in line for line in warnings)
+    assert not any(line.startswith("SUBSIDIARIES") for line in captured.out.splitlines())
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert sorted(row["cik"] for row in report["excluded"]) == sorted(ciks)
+    assert all(
+        row["reason"] == "statement_reconstruction_refused:displayed_table_absent"
+        and row["detail"] == message
+        for row in report["excluded"]
+    )
+    for suffix in ("", "2", "3"):
+        assert not _latest_json_path(store, identity["entity_id"] + suffix).exists()
+
+
+def _minimal_refusal_report(reason: str, served: bool = False) -> dict:
+    return {
+        "published": [],
+        "excluded": [{"ticker": "SNOW", "cik": "0001640147", "reason": reason}],
+        "coverage": [
+            {
+                "cik": "0001640147",
+                "served": int(served),
+                "accessions": [
+                    {
+                        "accession": "0001640147-26-000001",
+                        "admitted": True,
+                        "served": served,
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_a0_verify_admits_only_the_closed_refusal_vocabulary(tmp_path) -> None:
+    store = producer.build_production_dataset_store(local_dir=tmp_path / "store")
+    for slug in sorted(producer.STATEMENT_REFUSAL_SLUGS):
+        producer.verify_report(
+            _minimal_refusal_report(f"statement_reconstruction_refused:{slug}"), store
+        )
+    for bad in ("statement_reconstruction_refused:bogus", "statement_reconstruction_refused"):
+        with pytest.raises(producer.PublisherError) as caught:
+            producer.verify_report(_minimal_refusal_report(bad), store)
+        assert caught.value.code == "verify_failed"
+    with pytest.raises(producer.PublisherError, match="excluded issuer") as caught:
+        producer.verify_report(
+            _minimal_refusal_report(
+                "statement_reconstruction_refused:displayed_table_absent", served=True
+            ),
+            store,
+        )
+    assert caught.value.code == "verify_failed"

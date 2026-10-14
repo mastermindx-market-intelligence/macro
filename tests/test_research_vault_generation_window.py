@@ -4,7 +4,7 @@ import threading
 
 import pytest
 
-from engine.research_vault import catalog, producer_generation as generation
+from engine.research_vault import catalog, producer_generation as generation, r2_store
 from engine.research_vault.qualified_reader import _LimitedStore
 from engine.research_vault.r2_store import R2Store
 from tests import test_research_vault_producer_generation as fixture
@@ -25,7 +25,12 @@ def test_four_member_overlap_has_bounded_admission(monkeypatch, wrapped):
     memory = fixture.MemoryStore()
     spec = fixture.spec_with(12, {"full": 12})
     fixture.build_generation(memory, spec)
-    store = exact_transport(memory)
+    # Exercise the merged ordinary-client constructor admission, not a manually
+    # asserted safety flag. Only the SDK transport and bytes are synthetic.
+    monkeypatch.setattr(r2_store, "_r2_client", lambda: object())
+    store = R2Store("synthetic-bucket")
+    store.get_bytes_strict_bounded = memory.get_bytes_strict_bounded
+    store.get_bytes_strict_bounded_versioned = memory.get_bytes_strict_bounded_versioned
     if wrapped:
         store = _LimitedStore(store, 1024)
     barrier, lock = threading.Barrier(4), threading.Lock()
