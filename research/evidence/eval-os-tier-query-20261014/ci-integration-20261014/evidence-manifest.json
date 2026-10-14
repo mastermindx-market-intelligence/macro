@@ -7,7 +7,14 @@
     },
     "followon-faed-integration-tests.xml": {
       "sha256": "053cf5dc6b12c44fe899b256d27193ba3fe074b5c8e1f80bfb39ea43fc3a3816",
-      "bytes": 102961
+      "bytes": 102961,
+      "storage": {
+        "path": "followon-faed-integration-tests.xml.gz",
+        "format": "gzip",
+        "sha256": "5ca63ecfdb08f5fe77b912077be61e7df89af3ec0b383a915a3d8097b73662da",
+        "bytes": 20465,
+        "decoded_bytes_preserved": true
+      }
     },
     "followon-f095-integration-validation.json": {
       "sha256": "32ede07a32147e015d6be7621abb6dbe116237ca3e3224c79ea26635acb70956",
@@ -106,5 +113,6 @@
       "bytes": 16894
     }
   },
-  "scope": "Retained local RED/repaired proofs and review adjudication; no production acceptance."
+  "scope": "Retained local RED/repaired proofs and review adjudication; no production acceptance.",
+  "storage_note": "Failed-test traces retain their original whitespace and bytes in lossless gzip archives. Logical filenames and SHA256 values identify decoded original evidence; storage fields identify the committed archive. Raw originals also remain in the programme evidence directory and prior source commit."
 }
