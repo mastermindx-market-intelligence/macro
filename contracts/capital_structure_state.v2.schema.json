@@ -132,6 +132,7 @@
         "instrument_candidate_terms",
         "share_count_observations",
         "financials",
+        "corporate_actions",
         "corrections"
       ]
     },
@@ -146,7 +147,8 @@
         "capital_structure.instrument_candidate_term.v1",
         "capital_structure.share_count_observation.v1",
         "capital_structure.share_count_observation.v2",
-        "capital_structure.financial_item_observation.v1"
+        "capital_structure.financial_item_observation.v1",
+        "capital_structure.corporate_action_observation.v1"
       ]
     },
     "nullable_input_schema": {"anyOf": [{"$ref": "#/$defs/input_schema"}, {"type": "null"}]},
@@ -325,7 +327,7 @@
           }
         },
         {
-          "if": {"properties": {"input_family": {"enum": ["financials", "corrections"]}}, "required": ["input_family"]},
+          "if": {"properties": {"input_family": {"enum": ["corrections"]}}, "required": ["input_family"]},
           "then": {"properties": {"support": {"const": "not_built"}, "schema": {"type": "null"}}}
         }
       ]
@@ -440,7 +442,7 @@
         "covenant_terms": {"$ref": "#/$defs/safe_record_array"},
         "candidate_terms": {"$ref": "#/$defs/safe_record_array"},
         "share_observations": {"$ref": "#/$defs/safe_record_array"},
-        "financials": {"type": "array", "maxItems": 0},
+        "financials": {"$ref": "#/$defs/safe_record_array"},
         "corrections": {"type": "array", "maxItems": 0}
       }
     },

@@ -1967,3 +1967,72 @@ def test_a_degraded_entry_only_ever_reports_the_unavailable_state() -> None:
         f"{sorted(reasons)!r}; only 'unavailable' is produced today, so a new "
         "state is a contract-visible change that needs a consumer decision"
     )
+
+
+# ---------------------------------------------------------------------------
+# Result-envelope contradiction vs the stated definition
+# ---------------------------------------------------------------------------
+#
+# ``_emit_result`` withholds the USD-thousands family when the result's own
+# envelope contradicts the definition the module states for it: unit is not
+# "USD", scale_power10 is not 3, or the current-period source quantum is not
+# "1_thousand". These cases drive that trigger through the real projection
+# and pin the real withheld_reason code; the display suite used to stand in
+# for it with a hand-set literal the projection never emits.
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "expect_withheld"),
+    [
+        ("unit", "EUR", True),
+        ("scale_power10", 6, True),
+        ("display_quantum", "10_thousand", True),
+        # Control: the envelope matches the stated definition (the synthetic
+        # factory's own defaults -- USD, scale 3, 1_thousand), so nothing is
+        # withheld for this reason.
+        ("unit", "USD", False),
+    ],
+    ids=[
+        "unit_not_USD",
+        "scale_not_3",
+        "source_quantum_not_1_thousand",
+        "control_envelope_matches",
+    ],
+)
+def test_result_envelope_contradiction_withholds_advertising_net_change(
+    field: str, value: Any, expect_withheld: bool
+) -> None:
+    """Each contradiction trigger withholds the advertising net change.
+
+    Built from the file's existing helpers: ``_plnt_facts`` supplies the
+    six-fact synthetic case, ``_plnt_case`` wraps it with subject and source
+    records, and ``_result_by_key`` reads the emitted row. The mutation lands
+    on BOTH advertising_revenue facts so the pair rule (the two facts must
+    share unit, scale_power10 and sign_convention) still forms the pair: the
+    contradiction is a claim conflict with the stated definition, not a
+    pairing failure.
+    """
+    facts = [dict(fact) for fact in _plnt_facts()]
+    mutated = 0
+    for fact in facts:
+        if fact["metric"] == "advertising_revenue":
+            fact[field] = value
+            mutated += 1
+    assert mutated == 2, (
+        "the synthetic factory no longer carries an advertising_revenue "
+        f"pair -- mutated {mutated} facts, this case proves nothing"
+    )
+
+    document = project_economic_change(_plnt_case(facts=facts))
+    row = _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)
+
+    if expect_withheld:
+        assert row["value_text"] is None, row
+        assert (
+            row["withheld_reason"] == "result_envelope_contradicts_stated_definition"
+        ), row
+    else:
+        assert (
+            row["withheld_reason"] != "result_envelope_contradicts_stated_definition"
+        ), row
+        assert row["value_text"] == "-4", row
