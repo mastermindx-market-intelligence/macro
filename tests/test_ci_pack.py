@@ -4810,6 +4810,10 @@ CURATED_EXCLUSIVE = {
     # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
     # scope: exclusive pins the job to its measured suite_dependency_closure.
     "leadership-rotation-science",
+    # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
+    #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
+    #  scripts/build_free_content.py (135 > 134). Register the reviewed 198-path owner; closure audits and ceilings stay fixed.
+    "leadership-rotation-countercases",
 }
 
 
