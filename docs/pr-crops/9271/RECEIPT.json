@@ -1,0 +1,192 @@
+{
+ "lane": "LR-T18-EV1R",
+ "parent": "ORCH-PROD",
+ "seat": "135304d0",
+ "date_utc": "2026-10-14",
+ "head_under_test": "8558d17ea7cf468c1a7dc568949fed56dda67f83",
+ "head_ref": "origin/claude/lr-t18-sector-central-journey-2026-10-14",
+ "evidence_class": "synthetic (LOCAL render + LOCAL injected data)",
+ "label": "LOCAL",
+ "VERDICT": "FAILED",
+ "FINDING": {
+  "summary": "The #si-measured measured-read panel NEVER RENDERS at the pinned head: its inline script dies at parse time, so no state (ok/partial, full, stale, absent, outage, invalid, nodata, history loading/failed, generation mismatch, obs none/event/incompatible, unmeasured), no art-direction pair, no keyboard/deep-link behavior can exist on this page.",
+  "root_cause": "templates/sector_central.html.j2 opens <script> at line 3610 for the mr-panel block but never closes it: after '/* mr-panel:end */' (line 4118) the next markup is <script src=\"si_workspace.js\"></script> (line 4124) with no </script> in between. The HTML parser therefore ends the mr-panel script at the </script> ON line 4124, swallowing '<script src=\"si_workspace.js\">' as JavaScript text. The block's first tokens after the comment are '<script ...' -> SyntaxError: Unexpected token '<' -> the ENTIRE mr-panel script (render(), states, deep link, keyboard, history) never executes, and si_workspace.js is never even requested (it exists only as text inside the dead script). With no workspace router, .si-view[data-view=map] stays display:none, so #si-measured (inside it) is never visible.",
+  "in_browser_proof": {
+   "console": "pageerror: Unexpected token '<'",
+   "siWorkspaceFetched": false,
+   "window.__siRoute": "undefined",
+   ".si-view[data-view=map] computed display": "none",
+   "#mr-row count": 0,
+   "#mr-status text": "(empty - no partial chip, render() never ran)",
+   "data_independent": "identical failure on all 12 data variants (ok, full, stale, absent, outage, invalid, nodata, hloading, hfailed, genmis, hrecon, obsincompat)"
+  },
+  "builder_checks": {
+   "render_env": "matches build_sector_central.py line 453 exactly (FileSystemLoader + autoescape=True + engine.i18n td/tr/t); render succeeds and emits the defective markup",
+   "write_page": "lib/pages.py:740 writes verbatim (+ data-base shim) - no repair of script tags",
+   "committed site page": "site/sector_central.html at 8558d17e contains no mr-panel at all (stale build predating the template change), so CI never exercised this code path"
+  },
+  "recommended_fix": "close the mr-panel script block: add </script> after '/* mr-panel:end */' in templates/sector_central.html.j2 (between template lines 4118 and 4124). Then re-run this lane against the fixed head.",
+  "min_repro": "render the template per build_sector_central.py, serve, open ?g=XLE#map -> console shows 'Unexpected token <'; #si-measured stays display:none"
+ },
+ "render": {
+  "template": "sector_central.html.j2",
+  "kwargs": {
+   "basket_member_syms": [
+    "SPY"
+   ]
+  },
+  "html_bytes": 327879,
+  "si_measured_occurrences": 1
+ },
+ "assets": {
+  "materialized": 37,
+  "missing_from_git": 0,
+  "note": "29 same-origin src/href assets + 8 discovered at runtime (account.js, nav_market.js sibling set, fonts/Inter-*.woff2, product-nav-icons.css); all present in git at the pinned head"
+ },
+ "variants": {
+  "H": "2026-10-12",
+  "H_source": "SC0.as_of (CY0.meta.rs_history absent as expected)",
+  "CYR_note": "CYR is SYNTHETIC LOCAL - layout evidence only; every crop using it carries -synth",
+  "variants": {
+   "ok": {
+    "sha256_sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "SECTOR_CENTRAL.measured_read = fixture measured_read_v1 with all generation/confirmed_events/early_context/rows dates set to H=2026-10-12 (fixture status partial -> partial chip expected)"
+    ],
+    "label": "LOCAL"
+   },
+   "full": {
+    "sha256_sector_central_data.js": "1194a2a0372f9aaaea2b3d243dbe95986f5c3067d9881f4a4652674ac0e6495a",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "as ok but measured_read.status='available'"
+    ],
+    "label": "LOCAL"
+   },
+   "stale": {
+    "sha256_sector_central_data.js": "aecdc670b5be667bb9bd89919c777f93b2b3c340290a397d756a491f6ca57742",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "SC.as_of=H+1d=2026-10-13 (must be > H); measured_read=MR_OK -> stale chip expected"
+    ],
+    "label": "LOCAL"
+   },
+   "absent": {
+    "sha256_sector_central_data.js": "c6fe071312e590666742a6901d9a86b401d28e003a18de57150b2f02b21bd080",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "committed SC0 unchanged: no measured_read key"
+    ],
+    "label": "LOCAL"
+   },
+   "outage": {
+    "sha256_sector_central_data.js": "316666384f3121e07dbdbeff8bcfeca706248ee98136bad50d0527f32f395aef",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "measured_read={status:unavailable,reason:source_missing}"
+    ],
+    "label": "LOCAL"
+   },
+   "invalid": {
+    "sha256_sector_central_data.js": "0b2a5db418a4a57b6ee723a8eabdc79b642599e16a8a4cf07fd1e767984d01ca",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "measured_read.schema demoted to /v0"
+    ],
+    "label": "LOCAL"
+   },
+   "nodata": {
+    "sha256_sector_central_data.js": "c6fe071312e590666742a6901d9a86b401d28e003a18de57150b2f02b21bd080",
+    "sha256_sector_cycles_data.js": "87b883ceb7d8908e6b11cfd4b4795ec477f07b3d0c8d1fbeab1f383aef833e7e",
+    "mutations": [
+     "sector_central_data.js replaced by comment: window.SECTOR_CENTRAL never assigned"
+    ],
+    "label": "LOCAL"
+   },
+   "hloading": {
+    "sha256_sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+    "sha256_sector_cycles_data.js": "8f4bbc0099e55b34846bb94c4e938a3ed50d02f76992b2f2027643744e9a2430",
+    "mutations": [
+     "sector_cycles_data.js replaced by comment: window.SECTOR_CYCLES never assigns"
+    ],
+    "label": "LOCAL"
+   },
+   "hfailed": {
+    "sha256_sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+    "sha256_sector_cycles_data.js": null,
+    "mutations": [
+     "sector_cycles_data.js ABSENT -> HTTP 404 (A42)"
+    ],
+    "label": "LOCAL"
+   },
+   "genmis": {
+    "sha256_sector_central_data.js": "93beb8e03e0ae6b20110afdd8cb45e86f5af272f23702984fe10ab211c96705b",
+    "sha256_sector_cycles_data.js": "c73aa89c827b9b2fcc96dcd303281fe4166e691428ec66570b98f489f92972bf",
+    "mutations": [
+     "measured_read.generation.history_as_of=session_end=H-3d=2026-10-09; cycles=CYR(synth)"
+    ],
+    "label": "LOCAL"
+   },
+   "hrecon": {
+    "sha256_sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+    "sha256_sector_cycles_data.js": "c73aa89c827b9b2fcc96dcd303281fe4166e691428ec66570b98f489f92972bf",
+    "mutations": [
+     "cycles=CYR (SYNTHETIC reconstructed rs_history, 120 points/sector ending H)"
+    ],
+    "label": "LOCAL"
+   },
+   "obsincompat": {
+    "sha256_sector_central_data.js": "dc6d043d688296494bcab634d05b661451180a76554b5f18d72b5071f99cdb31",
+    "sha256_sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e",
+    "mutations": [
+     "confirmed_events.status=incompatible_generation, confirmed_events.as_of=H-3d=2026-10-09"
+    ],
+    "label": "LOCAL"
+   }
+  }
+ },
+ "variants_dir_sha256_note": "sha256 values cover sector_central_data.js and sector_cycles_data.js per variant; sector_central.html is identical in all variants",
+ "pngs": [
+  {
+   "file": "DIAGNOSTIC-forced-mapview-skeleton-1440-dark.png",
+   "variant": "ok (+ all 12 \u2014 failure is data-independent)",
+   "viewport": "1440x900",
+   "locale": "en",
+   "theme": "dark",
+   "bytes": 119778,
+   "sha256": "9b1fafef72b74c313b8bf542e522c155be618f0180bf73df37a81aa77d399f84",
+   "note": "DIAGNOSTIC forced-visibility shell, not a panel render"
+  },
+  {
+   "file": "broken-overview-1440-dark.png",
+   "variant": "ok (+ all 12 \u2014 failure is data-independent)",
+   "viewport": "1440x900",
+   "locale": "en",
+   "theme": "dark",
+   "bytes": 309181,
+   "sha256": "ef0712a982d472ab74fe907ea75212effaf4ce8375e69b06754d6409369c3046",
+   "note": "full-viewport overview: the visible page at the pinned head (panel section never becomes visible)"
+  },
+  {
+   "file": "broken-overview-1440-light.png",
+   "variant": "ok (+ all 12 \u2014 failure is data-independent)",
+   "viewport": "1440x900",
+   "locale": "en",
+   "theme": "light",
+   "bytes": 312189,
+   "sha256": "de462ab10f08c7b75f61ae9cee1d629c3a548186e3bb12b74e83951db75c7145",
+   "note": "full-viewport overview: the visible page at the pinned head (panel section never becomes visible)"
+  }
+ ],
+ "png_total_bytes": 741148,
+ "A44_distinctness_table": "NOT ASSESSABLE - the panel script never runs, so no state container (mx-empty / mx-error / mr-invalid / mr-gen / loading skeleton) is ever created. No state pairs can be compared. The task's A44 question is moot on this head.",
+ "s4_interaction_assertions": "NOT RUN - panel script dead at parse: no rows to select, no segbtn, no deep-link handler, no history, no keyboard handlers registered (root listeners are attached inside the script that never executes).",
+ "matrix_art_direction": "NOT ASSESSABLE - .mr-detail is never populated and the map view never displays; the two-art-direction evidence cannot be produced from this head.",
+ "aborted_non_local_urls": [],
+ "notes": [
+  "All artifacts synthetic LOCAL: template rendered locally, fixture tests/fixtures/leadership_rotation/measured_read_v1.json injected locally, served from 127.0.0.1 only; browser context aborted every non-127.0.0.1 request (none occurred).",
+  "The DIAGNOSTIC png forcibly sets .si-view[data-view=map] display:block to show the server-rendered shell (skeleton #mr-cov, empty #mr-list, empty #mr-status). It is NOT a panel render and must not be read as one.",
+  "MR_OK fixture dates set to H=2026-10-12 (= SC0.as_of; CY0.meta.rs_history absent as expected, so H came from SC0.as_of). CYR synthetic cycles data (11 sectors x 120 weekday points) is layout-only; every crop that would have used it carries -synth."
+ ]
+}
