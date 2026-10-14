@@ -1,0 +1,198 @@
+{
+  "operation": "gmi-theme-research-food-agriculture-environment-20260924-001",
+  "scope": "Hand-transcribed research arithmetic and local semantic counterexamples only",
+  "source_locators": {
+    "N26": "https://www.nutrien.com/news/press-releases/nutrien-reports-second-quarter-2026-results-1753",
+    "N25": "https://www.sec.gov/Archives/edgar/data/1725964/000119312525174610/d86630dex992.htm"
+  },
+  "source_rows": [
+    {
+      "source": "N25",
+      "period": "2025-06-30",
+      "region": "North America",
+      "current": 3384,
+      "lt31": 192,
+      "d31_90": 62,
+      "gt90": 257,
+      "gross": 3895,
+      "allowance": 76,
+      "net": 3819,
+      "unit": "USD_millions"
+    },
+    {
+      "source": "N25",
+      "period": "2025-06-30",
+      "region": "International",
+      "current": 724,
+      "lt31": 55,
+      "d31_90": 17,
+      "gt90": 43,
+      "gross": 839,
+      "allowance": 13,
+      "net": 826,
+      "unit": "USD_millions"
+    },
+    {
+      "source": "N25",
+      "period": "2025-06-30",
+      "region": "Total",
+      "current": 4108,
+      "lt31": 247,
+      "d31_90": 79,
+      "gt90": 300,
+      "gross": 4734,
+      "allowance": 89,
+      "net": 4645,
+      "unit": "USD_millions"
+    },
+    {
+      "source": "N26",
+      "period": "2026-06-30",
+      "region": "North America",
+      "current": 3686,
+      "lt31": 157,
+      "d31_90": 60,
+      "gt90": 226,
+      "gross": 4129,
+      "allowance": 66,
+      "net": 4063,
+      "unit": "USD_millions"
+    },
+    {
+      "source": "N26",
+      "period": "2026-06-30",
+      "region": "International",
+      "current": 916,
+      "lt31": 70,
+      "d31_90": 23,
+      "gt90": 36,
+      "gross": 1045,
+      "allowance": 7,
+      "net": 1038,
+      "unit": "USD_millions"
+    },
+    {
+      "source": "N26",
+      "period": "2026-06-30",
+      "region": "Total",
+      "current": 4602,
+      "lt31": 227,
+      "d31_90": 83,
+      "gt90": 262,
+      "gross": 5174,
+      "allowance": 73,
+      "net": 5101,
+      "unit": "USD_millions"
+    }
+  ],
+  "north_america": {
+    "periods": [
+      "2025-06-30",
+      "2026-06-30"
+    ],
+    "gross_receivables_USD_millions": [
+      3895,
+      4129
+    ],
+    "past_due_USD_millions": [
+      511,
+      443
+    ],
+    "past_due_percent_of_gross": [
+      "13.12",
+      "10.73"
+    ],
+    "over90_USD_millions": [
+      257,
+      226
+    ],
+    "over90_percent_of_gross": [
+      "6.60",
+      "5.47"
+    ],
+    "gross_growth_percent": "6.01",
+    "verdict": "Lower reported aging ratios; actual repayment improvement is not identified from snapshots alone",
+    "not_a_fixed_cohort": true,
+    "terms_currency_mix_and_writeoff_adjustment": "not established"
+  },
+  "synthetic_counterexample": {
+    "begin_overdue": 100,
+    "end_overdue": [
+      80,
+      80,
+      80
+    ],
+    "actual_cash": [
+      20,
+      0,
+      0
+    ]
+  },
+  "positive_checks_passed": 42,
+  "corrupted_variants_rejected": 8,
+  "failures": 0,
+  "positive_checks": [
+    "N25/North America: aging sums to gross",
+    "N25/North America: allowance bridge",
+    "N25/International: aging sums to gross",
+    "N25/International: allowance bridge",
+    "N25/Total: aging sums to gross",
+    "N25/Total: allowance bridge",
+    "N26/North America: aging sums to gross",
+    "N26/North America: allowance bridge",
+    "N26/International: aging sums to gross",
+    "N26/International: allowance bridge",
+    "N26/Total: aging sums to gross",
+    "N26/Total: allowance bridge",
+    "N25: regional sum current",
+    "N25: regional sum lt31",
+    "N25: regional sum d31_90",
+    "N25: regional sum gt90",
+    "N25: regional sum gross",
+    "N25: regional sum allowance",
+    "N25: regional sum net",
+    "N26: regional sum current",
+    "N26: regional sum lt31",
+    "N26: regional sum d31_90",
+    "N26: regional sum gt90",
+    "N26: regional sum gross",
+    "N26: regional sum allowance",
+    "N26: regional sum net",
+    "North America seasonal pair accepted",
+    "2025 NA past-due dollars",
+    "2026 NA past-due dollars",
+    "2025 NA past-due ratio rounds correctly",
+    "2026 NA past-due ratio rounds correctly",
+    "2025 NA over90 ratio rounds correctly",
+    "2026 NA over90 ratio rounds correctly",
+    "Equal ending stocks under three different cash outcomes",
+    "Absent due-cohort cash is not identified",
+    "Unknown dispositions do not identify collection quality",
+    "Known cohort cash remains a cohort-only observation",
+    "New current balances can lower delinquency ratio with unchanged overdue dollars",
+    "Synthetic cash advance before delivery earns no revenue",
+    "Synthetic later full delivery releases prepaid revenue",
+    "Synthetic receipt and later advance application are one cash inflow",
+    "Joint announcement and filing are one economic event"
+  ],
+  "rejected_variants": [
+    "net denominator substituted for gross",
+    "December substituted for June seasonal comparison",
+    "International substituted for North America",
+    "CAD substituted for USD",
+    "non-adjacent year accepted without redefinition",
+    "forecast promoted to observed actual",
+    "negative synthetic disposition",
+    "prepaid revenue exceeds the synthetic prepaid amount"
+  ],
+  "implementation_tests_executed": 0,
+  "forecast_backtests_executed": 0,
+  "independent_review": false,
+  "authority": {
+    "source_admission": false,
+    "product_write": false,
+    "ranking": false,
+    "trade": false
+  },
+  "script_sha256": "61a0ea7f0f37f209f5397a193f684f2f92df126dfb5372dbf7b8d5c35ab2e489"
+}
