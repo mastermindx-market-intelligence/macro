@@ -17,13 +17,19 @@
 
    The builder passes shell_statement_zh and shell_window_zh into the
    render context (dicts keyed by the synthetic case_id). Both default
-   to empty dicts so a render without the bridge context stays empty.   #}
+   to empty dicts so a render without the bridge context stays empty.
+
+   The chip's visible text is the governed EN/ZH pair of the D.18
+   falsifier_state map in finance_intelligence.js — NOT the raw enum.
+   The machine token stays in data-state-falsifier for the render
+   tests; the pin test parses the pair from the JS so they cannot
+   drift.   #}
 {% for item in watching_items | default([]) %}
 <li class="fi-falsifier fi-panel2"
     data-state-falsifier="{{ item.state }}"
     data-falsifier-id="{{ item.falsifier_id }}">
   <span class="fi-falsifier-chip"
-        data-state-falsifier="{{ item.state }}"><span class="l-en">{{ item.state }}</span><span class="l-zh">{{ item.state }}</span></span>
+        data-state-falsifier="{{ item.state }}"><span class="l-en">Not yet evaluable</span><span class="l-zh">暂无法评估</span></span>
   <span class="fi-falsifier-statement">
     <span class="l-en">{{ item.statement }}</span>
     <span class="l-zh">{{ (shell_statement_zh | default({})).get(item.falsifier_id, '') }}</span>

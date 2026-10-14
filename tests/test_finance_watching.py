@@ -16,6 +16,7 @@ import ast
 import copy
 import json
 import re
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -88,6 +89,52 @@ def _ids(page: Mapping[str, Any]) -> dict[str, list[str]]:
         sl["slice_id"]: [item["falsifier_id"] for item in sl["falsifiers"]]
         for sl in page["slices"]
     }
+
+
+_JS_CHIP_PAIR_RE = re.compile(
+    r"NOT_YET_EVALUABLE:\s*\['([^']*)',\s*'([^']*)'\]"
+)
+
+
+def _js_chip_pair() -> tuple[str, str]:
+    """Parse the governed EN/ZH chip label pair out of the page JS.
+
+    ``templates/finance_intelligence.js`` D.18 ``falsifier_state`` is the
+    canonical bilingual chip copy; the include must match it exactly, so
+    the label test reads the pair back out of that file instead of
+    hardcoding a second copy that could drift.
+    """
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    match = _JS_CHIP_PAIR_RE.search(js)
+    assert match, "NOT_YET_EVALUABLE chip pair not found in the page JS"
+    return match.group(1), match.group(2)
+
+
+class _VisibleTextCollector(HTMLParser):
+    """Collect visible text nodes; <script>/<style> bodies are not visible."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.texts: list[str] = []
+        self._skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self._skip += 1
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style") and self._skip:
+            self._skip -= 1
+
+    def handle_data(self, data):
+        if not self._skip:
+            self.texts.append(data)
+
+
+def _visible_texts(html: str) -> list[str]:
+    collector = _VisibleTextCollector()
+    collector.feed(html)
+    return collector.texts
 
 
 def test_shell_watching_items_are_not_yet_evaluable() -> None:
@@ -180,6 +227,72 @@ def test_measured_document_is_refused_and_writes_nothing() -> None:
     assert "syn-fin-case-beta" not in flat
 
 
+def test_shell_watching_items_raises_on_refused_document(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Production fail-closed: the shell path lets the refusal propagate.
+
+    Reviewer mutant mC2 wrapped ``apply_page_signal`` inside
+    ``shell_watching_items`` in ``try/except Exception: return []``.
+    This test pins the shipped behaviour: sabotage the module's shell
+    document exactly the way the review gate refuses (formal count 1),
+    reset the memo, and require ``SynthesisAdmissionRefusal`` to surface
+    while the memo stays unset (nothing partially memoized, page intact).
+    """
+    sabotaged = copy.deepcopy(finance_watching._SHELL_DOCUMENT)
+    sabotaged["formal_causal_outcomes_measured"] = 1
+    monkeypatch.setattr(finance_watching, "_SHELL_DOCUMENT", sabotaged)
+    monkeypatch.setattr(finance_watching, "_WATCHING_ITEMS", None)
+    with pytest.raises(SynthesisAdmissionRefusal) as caught:
+        finance_watching.shell_watching_items()
+    assert str(caught.value) == "formal_causal_outcomes_measured"
+    assert finance_watching._WATCHING_ITEMS is None
+
+
+def test_finance_watching_module_has_no_try() -> None:
+    """AST pin: no ``try`` block anywhere in finance_watching.py.
+
+    The module's contract is propagation: an admission refusal reaches
+    the caller and the page stays as it was. Any ``try/except`` is a
+    fail-open hole that turns a refusal into a silent empty watching
+    list (mC2). Version-robust: ``ast.TryStar`` is checked when present.
+    """
+    tree = ast.parse(Path(finance_watching.__file__).read_text(encoding="utf-8"))
+    node_types: tuple[type, ...] = (ast.Try,)
+    if hasattr(ast, "TryStar"):
+        node_types += (ast.TryStar,)
+    found = [node for node in ast.walk(tree) if isinstance(node, node_types)]
+    assert not found, f"{len(found)} try block(s) in finance_watching.py"
+
+
+def test_shell_watching_items_raises_on_unexpected_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """P3 pin: a placed falsifier in a foreign state raises, never vanishes.
+
+    The state filter used to ``continue`` silently; a placement that is
+    not NOT_YET_EVALUABLE breaks the review-gate contract, so the bridge
+    raises ``ValueError`` naming the state and leaves the memo unset.
+    """
+
+    def _fake_apply(document, page):
+        page["slices"][0]["falsifiers"].append(
+            {
+                "falsifier_id": "syn-fake-watcher",
+                "statement": "Synthetic foreign placement.",
+                "window": "2024-01-01",
+                "state": "WATCHING",
+            }
+        )
+
+    monkeypatch.setattr(finance_watching, "apply_page_signal", _fake_apply)
+    monkeypatch.setattr(finance_watching, "_WATCHING_ITEMS", None)
+    with pytest.raises(ValueError) as caught:
+        finance_watching.shell_watching_items()
+    assert "WATCHING" in str(caught.value)
+    assert finance_watching._WATCHING_ITEMS is None
+
+
 def test_watching_items_matches_apply_page_signal_on_the_fixture() -> None:
     """The public helper returns exactly what ``apply_page_signal`` places.
 
@@ -196,6 +309,23 @@ def test_watching_items_matches_apply_page_signal_on_the_fixture() -> None:
     assert finance_watching.shell_watching_items() == placed
 
 
+def test_shell_watching_items_returns_independent_copies() -> None:
+    """P3 pin: callers get copies of the memo's dicts, not the dicts.
+
+    ``list(memo)`` shared every dict object, so a caller mutation leaked
+    into the memo and every later call. Mutate the returned items; a
+    fresh call must still return the pristine frozen projections.
+    """
+    first = finance_watching.shell_watching_items()
+    snapshot = copy.deepcopy(first)
+    first[0]["statement"] = "MUTATED-BY-CALLER"
+    first[0]["state"] = "WATCHING"
+    first[1]["injected_key"] = "leak"
+    second = finance_watching.shell_watching_items()
+    assert second == snapshot
+    assert "injected_key" not in second[1]
+
+
 def test_builder_render_includes_watching_list_without_a_read_url(tmp_path: Path) -> None:
     """``render_shell`` writes the watching list into a temp site root.
 
@@ -207,49 +337,70 @@ def test_builder_render_includes_watching_list_without_a_read_url(tmp_path: Path
     """
     worktree_site = ROOT / "site" / "finance_intelligence.html"
     backup = worktree_site.read_bytes() if worktree_site.exists() else None
-    try:
-        # Mirror the existing renderer test: symlink the templates dir so
-        # the builder sees the same templates as the worktree.
-        (tmp_path / "templates").symlink_to(TEMPLATES, target_is_directory=True)
-        page = render_shell(tmp_path)
-        html = page.read_text(encoding="utf-8")
+    # Mirror the existing renderer test: symlink the templates dir so
+    # the builder sees the same templates as the worktree.
+    (tmp_path / "templates").symlink_to(TEMPLATES, target_is_directory=True)
+    page = render_shell(tmp_path)
+    html = page.read_text(encoding="utf-8")
 
-        # The worktree site/ is untouched.
-        if backup is not None:
-            assert worktree_site.read_bytes() == backup
-        else:
-            assert not worktree_site.exists()
+    # The worktree site/ is untouched — render_shell wrote only tmp_path.
+    if backup is not None:
+        assert worktree_site.read_bytes() == backup
+    else:
+        assert not worktree_site.exists()
 
-        # FI_READ_URL stays empty: no fetch on the live page.
-        assert 'data-fi-read-url=""' in html
-        assert FI_READ_URL == ""
+    # FI_READ_URL stays empty: no fetch on the live page.
+    assert 'data-fi-read-url=""' in html
+    assert FI_READ_URL == ""
 
-        # Two falsifier <li> rows, with the spec'd CSS hook.
-        rows = re.findall(
-            r'<li class="fi-falsifier fi-panel2"[^>]*>(.*?)</li>', html, re.S
-        )
-        assert len(rows) == 2, f"expected 2 falsifier rows, got {len(rows)}"
+    # Two falsifier <li> rows, with the spec'd CSS hook.
+    rows = re.findall(
+        r'<li class="fi-falsifier fi-panel2"[^>]*>(.*?)</li>', html, re.S
+    )
+    assert len(rows) == 2, f"expected 2 falsifier rows, got {len(rows)}"
 
-        # Each row carries a NOT_YET_EVALUABLE state marker.
-        states = re.findall(
-            r'data-state-falsifier="([^"]+)"', html
-        )
-        assert states, "no data-state-falsifier marker found"
-        assert all(state == "NOT_YET_EVALUABLE" for state in states)
-        assert len(states) >= 2
+    # Each row carries a NOT_YET_EVALUABLE state marker.
+    states = re.findall(
+        r'data-state-falsifier="([^"]+)"', html
+    )
+    assert states, "no data-state-falsifier marker found"
+    assert all(state == "NOT_YET_EVALUABLE" for state in states)
+    assert len(states) >= 2
 
-        # Alpha primary_limit is on the page; beta too. No WATCHING anywhere.
-        alpha = _row("syn-fin-case-alpha")
-        beta = _row("syn-fin-case-beta")
-        assert alpha["primary_limit"] in html
-        assert beta["primary_limit"] in html
-        assert "WATCHING" not in html
-        # The ZH strings (synthetic) are on the page too.
-        assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-alpha"] in html
-        assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-beta"] in html
-    finally:
-        # Defensive: never leave anything written to the worktree site/.
-        pass
+    # Alpha primary_limit is on the page; beta too. No WATCHING anywhere.
+    alpha = _row("syn-fin-case-alpha")
+    beta = _row("syn-fin-case-beta")
+    assert alpha["primary_limit"] in html
+    assert beta["primary_limit"] in html
+    assert "WATCHING" not in html
+    # The ZH strings (synthetic) are on the page too.
+    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-alpha"] in html
+    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-beta"] in html
+
+
+def test_watching_chip_label_is_localized(tmp_path: Path) -> None:
+    """P2: the visible chip text is the governed pair, not the raw enum.
+
+    The chip keeps the machine token in ``data-state-falsifier`` (the
+    render test above reads it) while the visible text becomes the D.18
+    ``falsifier_state`` pair from ``templates/finance_intelligence.js``.
+    The pair is parsed back out of that file, so template and JS can
+    never drift silently.
+    """
+    en, zh = _js_chip_pair()
+    (tmp_path / "templates").symlink_to(TEMPLATES, target_is_directory=True)
+    html = render_shell(tmp_path).read_text(encoding="utf-8")
+    # Literal visible pair, as commissioned ...
+    assert ">Not yet evaluable<" in html
+    assert ">暂无法评估<" in html
+    # ... and the same pair parsed from the governed JS map (drift guard).
+    assert f">{en}<" in html
+    assert f">{zh}<" in html
+    # No element's visible text equals the machine token (attributes ok).
+    hits = [t for t in _visible_texts(html) if t.strip() == "NOT_YET_EVALUABLE"]
+    assert not hits, "raw enum leaking as visible chip text"
+    # The machine token stays in the data attribute the render test reads.
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in html
 
 
 def test_no_io_in_finance_watching_module() -> None:

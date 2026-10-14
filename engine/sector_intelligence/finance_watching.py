@@ -137,23 +137,30 @@ def shell_watching_items() -> list[dict[str, str]]:
 
     Each call runs :func:`apply_page_signal` against the frozen
     synthetic document and a fresh shell page. The result is memoized
-    only inside this module: callers may mutate the returned list, but
-    the falsifier dicts themselves are the page-gate's own projections
-    (four keys, ``NOT_YET_EVALUABLE``). Admission refusal propagates —
-    the caller sees :class:`SynthesisAdmissionRefusal` and the page is
-    left as it was.
+    only inside this module; every caller receives defensive copies
+    (the list and each item dict), so mutating a returned item cannot
+    leak into the memo or a later call. The falsifier shape is the
+    page-gate's own projection (four keys, ``NOT_YET_EVALUABLE``).
+    Admission refusal propagates — the caller sees
+    :class:`SynthesisAdmissionRefusal` and the page is left as it was;
+    a placed falsifier in any other state raises ``ValueError`` naming
+    that state instead of vanishing from the page.
     """
     global _WATCHING_ITEMS
     if _WATCHING_ITEMS is not None:
-        return list(_WATCHING_ITEMS)
+        return [dict(item) for item in _WATCHING_ITEMS]
     page = _build_shell_page()
     apply_page_signal(_SHELL_DOCUMENT, page)
     placed: list[dict[str, str]] = []
     for sl in page["slices"]:
         for item in sl["falsifiers"]:
             if item["state"] != _FALSIFIER_STATE:
-                # Review gate contract: never WRITE not-emitted.
-                continue
+                # Review gate contract: never WRITE not-emitted — and
+                # never silently DROP a placement in a foreign state
+                # either. Fail loudly, naming the state.
+                raise ValueError(
+                    f"unexpected watching falsifier state: {item['state']}"
+                )
             placed.append(dict(item))
     _WATCHING_ITEMS = placed
-    return list(_WATCHING_ITEMS)
+    return [dict(item) for item in _WATCHING_ITEMS]

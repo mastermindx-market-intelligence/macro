@@ -13326,6 +13326,7 @@ jobs:
       - engine/sector_intelligence/finance_page_signal.py
       - engine/sector_intelligence/finance_case_signal.py
       - engine/sector_intelligence/finance_projection.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_fundamental_forensics.py
       - scripts/build_index_leadership.py
       - scripts/build_ipo.py
@@ -21372,6 +21373,7 @@ jobs:
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_international_macro.py"
@@ -22626,6 +22628,7 @@ jobs:
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_index_leadership.py"
@@ -28920,6 +28923,7 @@ jobs:
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
