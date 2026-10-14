@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T19:26:21.003157+00:00",
-  "count": 2917,
+  "generated_at": "2026-10-14T19:41:24.024321+00:00",
+  "count": 2918,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -113,6 +113,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-uob7dsnax0l-8bd6eb",
+      "title": "GS Hafif GS Flow of Funds Witching Hour 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:05:25Z",
+      "summary_points": [
+        "Corporate Buyback Flow: November ranks 2nd highest for repurchases (48% by month-end), driven by AI trade concentration; full buyback impact expected late month amid structural sector shifts.",
+        "Sector Disparity in Buyback Flows: Financials down 40% YoY vs.",
+        "Energy (+480%), Utilities (+538%), and Consumer Staples (+140%) surging, signaling structural corporate demand realignment.",
+        "Narrow Market Breadth & HF Positioning: Top 10 S&P stocks outperforming (6mo median return +10.1% vs historical median), with hedge funds at 87th percentile in Info Tech exposure, amplifying rotation risk.",
+        "Options Market Conviction: Historically low daily options moves indicate low directional conviction; recommend gamma tenors (e.g., QQ20Nov26 Put Spread) ahead of EPS/fed catalysts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-c0hubv6rxqd-061033",
       "title": "JPM US Market Intelligence | Morning Briefing",
