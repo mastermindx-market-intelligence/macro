@@ -43,3 +43,8 @@ prs: [6528, 9300, 9298, 9312, 9313]
 
 Original root01a1333c-a475-7052-95a8-72c623fb12e1 remains the assigning parent.
 The complete evidence and remaining gates are in the linked research record.
+
+
+Continuation: PR9328 now includes the locale-state repair and its generated paired asset. Four new state regression groups reproduced the mixed-language defect;17state cases,32owner-wire cases and the exact template/site parity test pass. The old c07b9bcb CI failed that parity test and remains superseded red evidence, not a green release. Current source still needs fresh CI, normal merge and actual installed/browser proof.
+
+Shared-API diagnosis: two nonblocking Python stack samples place both hot threads in the incumbent Prophet Daily Brief history-normalization path. The original Prophet owner is active. A code-path/timing-only packet is prepared and cross-chat send permission is pending. No ownership transfer, runtime restart or caching/concurrency change occurred. The independent locale Fabric operation `mm-u2-degraded-locale-20261014-01a1333c-v1` ended with verified pre-execution capacity refusal; no worker started or quality verdict was recorded. Parent executed the bounded repair directly.

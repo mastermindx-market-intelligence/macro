@@ -90,3 +90,11 @@ Retained files are under
 See also `G1_CANDIDATE_INSTALLED_PROOF.json`, the original 49-case frontier and
 `U1_CATALOG_RUNTIME_DIAGNOSIS.json`. Local receipts do not substitute for later
 production acceptance or canonical owner admission.
+
+## Locale and paired-asset repair
+
+The real Chinese unavailable screen retained English failure copy and its mode explanation. The locale callback now renders a closed presentation state, including pending, catalog prompt, request failure, exact-reference denial and signed-out notices. Translation does not replay a request, increment its epoch, change pins or restore redacted evidence. Sign-out also clears the original-clock markup. Four new regression groups failed before the repair; all17 state cases and32 owner-wire tests pass afterward. A separately reproduced stale pending-status label now becomes the existing bilingual loading copy.
+
+PR9328's initial head c07b9bcb failed `public-render-fastlane` because the paired site asset had not been regenerated. The repaired source uses `lib.site_assets.copy_asset`; all five Market Memory asset pairs compare byte-identically, and the exact failing parity test passes. The initial CI failure remains evidence; a new exact-head CI result and production verification are still required.
+
+Two nonblocking production stack samples found threads1928106 and1928139 in `daily_brief_v1 -> read_today_candidate_projection -> read_today_candidate_source_rows -> _records_snapshot -> _json_safe`, one holding the GIL. Loopback and public unauthenticated catalog reads had timed out, while a later health read recovered. These point samples identify an executing shared dependency; they do not prove exclusive causality. The four candidate Parquet parts total20,749,208 compressed bytes by stat only; no records or labels were opened. The prepared dependency packet is awaiting explicit permission to message the existing Prophet V4 chat. No Prophet source or runtime settings were changed.
