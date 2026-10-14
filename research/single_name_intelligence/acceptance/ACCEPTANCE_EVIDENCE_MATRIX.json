@@ -1,0 +1,1091 @@
+{
+  "schema_version": "sni_acceptance_matrix.v2",
+  "as_of_utc": "2026-10-13T06:25:37Z",
+  "sources": {
+    "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
+    "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+    "supersedes": "92eab08a156c405ea76efdeefa98416ccfae4af6",
+    "base_ref": "040b61c32fc7d1be1f9b0f22d03f6a43540a4fe5"
+  },
+  "authority_flags": {
+    "rank_authority": false,
+    "gate_authority": false,
+    "size_authority": false,
+    "signal_authority": false,
+    "escalation_authority": false,
+    "trade_authority": false
+  },
+  "counts": {
+    "DONE": 4,
+    "PARTIAL": 26,
+    "GATED": 10,
+    "NOT_STARTED": 0
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "title": "BABA ADS distinct from ordinary-share counters",
+      "status": "PARTIAL",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A01 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "BABA resolved; 9988 NO_ISSUER_EVIDENCE."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md",
+          "note": "ADS-to-share ratio owner absent."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s1_residual_v1_1/VERSION_RECORD.json",
+          "note": "X1-02 exemplar table separates BABA ADS / 9988.HK / 0700.HK / TCEHY UNRESOLVED."
+        }
+      ],
+      "gap": "C1/C4 ratio contract untested; no source-proven ADS interval test; August behavioral pilot is not current data."
+    },
+    {
+      "id": "A02",
+      "title": "Dual counters keep relations without minted IDs",
+      "status": "PARTIAL",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A02 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "89988 and 80700 have no security_id."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_single_name_coverage_profiles.py",
+          "note": "Profiles pin no minted ticker or CIK ids."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_selection.py",
+          "note": "test_exact_token_selection keeps 09988/89988 and 00700/80700 as exact tokens."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md",
+          "note": "80700 absence via substring scan, no minted id."
+        }
+      ],
+      "gap": "C1 relationship contract not on main; no permutation-safe dual-counter identity test."
+    },
+    {
+      "id": "A03",
+      "title": "Null HK issuer stays null; ID operations refuse",
+      "status": "PARTIAL",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A03 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md",
+          "note": "issuer_of_security returns None; NO_ISSUER_EVIDENCE."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "HK issuer links stay UNRESOLVED."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s0_amendment_a01_draft.py",
+          "note": "test_tcehy_ids_null_unresolved_not_admitted pins TCEHY ids null."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress.py",
+          "note": "test_r1_05_identity_ids_at_any_depth refuses non-null identity ids."
+        }
+      ],
+      "gap": "Missing test that ID-dependent SNI operations refuse on null issuer."
+    },
+    {
+      "id": "A04",
+      "title": "Ticker aliases and venue mismatches cannot cross-bind",
+      "status": "PARTIAL",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A04 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md",
+          "note": "TME is not Tencent; TCEHY unresolved."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "Theme-graph vs Data OS identity split."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_selection.py",
+          "note": "test_40700_never_matches_00700_even_as_substring_class."
+        }
+      ],
+      "gap": "No C1/C4 test that padding, alias, or currency mismatch cannot bind."
+    },
+    {
+      "id": "A05",
+      "title": "Conflicting identity receipts fail or supersede visibly",
+      "status": "GATED",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A05 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release #6613 issuer/registration identity-receipt versioning before C1/C2 can start."
+    },
+    {
+      "id": "A06",
+      "title": "Permuted relationship inputs yield identical record IDs",
+      "status": "GATED",
+      "owner_task": "C1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A06 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release #6613 relationship-record ID stability before C1 can start."
+    },
+    {
+      "id": "A07",
+      "title": "Post-cutoff facts cannot enter a then-known view",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A07 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "P4 late filing: announced_at preserved, no backdating."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s1_residual_v1_1/REPORT.md",
+          "note": "identity = RETROSPECTIVE JOIN (A07); identity_resolved_as_of = ingested_at."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md",
+          "note": "Vintage rule pins per-episode as_of; facts after as_of_utc are never then-known."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress.py",
+          "note": "test_no_look_ahead refuses residual windows that include t."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p04_v2_draft.py",
+          "note": "test_r1_01_vintage_pin_fields_required and test_r1_02_as_of_utc_machine_checkable."
+        }
+      ],
+      "gap": "No then-known compiler test excluding post-cutoff filings or retrieval."
+    },
+    {
+      "id": "A08",
+      "title": "Economic, owner-known, and publication times stay distinct",
+      "status": "PARTIAL",
+      "owner_task": "V1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A08 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Row 15: backfill never counts as prospective."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_clock.py",
+          "note": "test_hkt_to_utc_conversion and test_disclosure_date_maps_strictly_after_on_both_clocks."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/event_response/s2_clocklaw.py",
+          "note": "S2 session placement on HK and US clocks; not the SNI three-clock product view."
+        }
+      ],
+      "gap": "SNI three-clock view (economic / owner-known / publication) unbuilt; V1/C2 wait on R1."
+    },
+    {
+      "id": "A09",
+      "title": "Segment, GAAP, scale, and period mismatches cannot join",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A09 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "P3 segment recast is owner SILENT_JOIN."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "Probe 3 segment recast SILENT_JOIN."
+        }
+      ],
+      "gap": "No automated refusal of mismatched joins."
+    },
+    {
+      "id": "A10",
+      "title": "Missing KPI is not zero or silently carried forward",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A10 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "Financials partial/stale; BABA metrics UNRESOLVED."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
+          "note": "Nine-descriptor standard; inferred values stay PARTIAL."
+        }
+      ],
+      "gap": "C3 compiler not on main; no test that missing KPI stays non-zero."
+    },
+    {
+      "id": "A11",
+      "title": "Valuation denominators bind canonical capital versions",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A11 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "P1 pack REFUSED uncarried share denominators."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "Probe 1 pack REFUSED per A11."
+        }
+      ],
+      "gap": "No C4 test binding share count to a canonical capital version."
+    },
+    {
+      "id": "A12",
+      "title": "HK lunch, holidays, halts, and US DST produce session state",
+      "status": "PARTIAL",
+      "owner_task": "M0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A12 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md",
+          "note": "sessions_calendar ready; lunch/halts not carried."
+        },
+        {
+          "ref": "main",
+          "path": "config/single_name_intelligence/coverage_profiles/alibaba.yml",
+          "note": "M0 sessions_calendar family in the profile."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_clock.py",
+          "note": "test_hk_midday_break_maps_to_next_session maps lunch for S2 events, not M0 session state."
+        }
+      ],
+      "gap": "No SNI M0 test of lunch, holiday, halt, or DST declared session state."
+    },
+    {
+      "id": "A13",
+      "title": "Stale FX and closed-market prices refuse contemporaneous compare",
+      "status": "PARTIAL",
+      "owner_task": "C4",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A13 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md",
+          "note": "FX partial; RMB prices UNRESOLVED."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Row 19: KWEB is never a Tencent quote."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md",
+          "note": "hk_adr_bridge marks 0700-KWEB proxy."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s0_amendment_a01_draft.py",
+          "note": "test_tcehy_ids_null_unresolved_not_admitted; TCEHY is not admitted."
+        }
+      ],
+      "gap": "C4 comparison guard unbuilt; no stale-FX or proxy-stays-proxy test; TCEHY is not admitted (KWEB proxy)."
+    },
+    {
+      "id": "A14",
+      "title": "Holdings and options OI are not live flow or intent",
+      "status": "PARTIAL",
+      "owner_task": "C3",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A14 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md",
+          "note": "Southbound holdings and SFC shorts qualified."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
+          "note": "Holdings and shorts read as owner facts."
+        }
+      ],
+      "gap": "No product-copy test forbidding live-flow or intent labels."
+    },
+    {
+      "id": "A15",
+      "title": "Unknown owner key or digest cannot enter the twin",
+      "status": "GATED",
+      "owner_task": "C2",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A15 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release the C2 reference twin; unknown-key digest admission is not started."
+    },
+    {
+      "id": "A16",
+      "title": "Source correction changes lineage without rewriting history",
+      "status": "PARTIAL",
+      "owner_task": "V1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A16 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Rows 8 and 20: declared correction and manifest extension."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "P7 source correction flagged as era/receipt rows."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/protocols/S0_AMENDMENT_A01_DRAFT.md",
+          "note": "Successor table points at P04 v2 DRAFT; nothing is refilled."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md",
+          "note": "P04 v2 is an unregistered successor after information_leak; registered false."
+        }
+      ],
+      "gap": "SNI generation/manifest not implemented; P04 v2 is an unregistered draft; V1 waits on R1."
+    },
+    {
+      "id": "A17",
+      "title": "Lost write ack stays EFFECT_UNKNOWN until reconciliation",
+      "status": "GATED",
+      "owner_task": "P0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A17 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release the P0 write path; EFFECT_UNKNOWN reconciliation is not started."
+    },
+    {
+      "id": "A18",
+      "title": "Entitlement denial precedes private access; public has no full text",
+      "status": "PARTIAL",
+      "owner_task": "P0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A18 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md",
+          "note": "Rights classes include BLOCKED-licence and UNVERIFIED."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
+          "note": "Pack carries no private full text."
+        }
+      ],
+      "gap": "P0 entitlement gate unbuilt; no pre-access denial test."
+    },
+    {
+      "id": "A19",
+      "title": "Account, language, counter, and as-of cannot leak",
+      "status": "GATED",
+      "owner_task": "P0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A19 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release P0/P1 cache, URL, and log isolation; no isolation test exists."
+    },
+    {
+      "id": "A20",
+      "title": "Injected source instructions cannot change tools or authority",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A20 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "A20 note: retrieved text treated as data."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
+          "note": "A20: no instruction span acted on."
+        }
+      ],
+      "gap": "No automated test that injected instructions cannot change tool use."
+    },
+    {
+      "id": "A21",
+      "title": "Optional source failure shows partial without blocking core",
+      "status": "GATED",
+      "owner_task": "C3",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A21 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release the C3/P0 stale-last-good compiler path; it is not started."
+    },
+    {
+      "id": "A22",
+      "title": "Linked counters and overlapping outcomes do not inflate N",
+      "status": "DONE",
+      "owner_task": "S2",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_collapse.py",
+          "note": "test_cross_counter_occurrence_is_one_episode_with_two_counter_members."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_v1_1_hardening.py",
+          "note": "test_h1_x2_08_honest_n_lead_table pins the 27-row honest-N table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
+          "note": "v1.1 honest-N lead table; overlapping windows do not inflate N."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/protocols/S0_INDEPENDENCE_LAW.md",
+          "note": "Frozen A22 collapse order and honest-N."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+          "note": "Register binds A22 to IL collapse before counting."
+        }
+      ],
+      "gap": ""
+    },
+    {
+      "id": "A23",
+      "title": "Split membership is immutable; contaminated holdout retires visibly",
+      "status": "DONE",
+      "owner_task": "S1",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s1_info_leak.py",
+          "note": "test_step_in_tune_window_produces_retirement_end_to_end."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s1_seal_integrity.py",
+          "note": "test_tampered_membership_count_exits_nonzero."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_info_leak.py",
+          "note": "test_train_is_never_retired; TUNE leak retires visibly."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_seal_integrity.py",
+          "note": "test_tampered_membership_table_is_refused."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s1_residual_v1_1/SEAL_AND_BUDGET.json",
+          "note": "v1.1 sealed split membership before outcomes."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
+          "note": "INFO-LEAK (A23): P04 TUNE RETIRED-CONTAMINATED; TRAIN never retired."
+        }
+      ],
+      "gap": ""
+    },
+    {
+      "id": "A24",
+      "title": "Residual description is never causal news impact",
+      "status": "DONE",
+      "owner_task": "S1",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s1_language.py",
+          "note": "test_lane_modules_are_clean scans S1 modules for A24 tokens."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_language.py",
+          "note": "test_no_a24_tokens_and_no_validated_anywhere."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_v1_1_hardening.py",
+          "note": "test_h1_v1_1_report_banned_tokens_regression."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s1_residual_v1_1/REPORT.md",
+          "note": "Sealed residual report is HISTORICAL-DESCRIPTIVE, non-causal."
+        }
+      ],
+      "gap": ""
+    },
+    {
+      "id": "A25",
+      "title": "Unestimable family abstains with N; never default 50/50",
+      "status": "DONE",
+      "owner_task": "S2",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_abstain.py",
+          "note": "test_direction_zero_abstains_never_fills; test_no_05_fill_tokens_in_pooling_or_direction."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a25_p_half_without_declared_reason_refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_common_inference.py",
+          "note": "test_plain_word_null_forbidden_phrases_and_unknown."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
+          "note": "ABSTAIN_NO_EPISODES / ABSTAIN_INSUFFICIENT_CLUSTERS with honest-N; never 0.5 fill."
+        }
+      ],
+      "gap": ""
+    },
+    {
+      "id": "A26",
+      "title": "Forecast registration is count-once; spec change is new belief",
+      "status": "PARTIAL",
+      "owner_task": "V1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A26 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Rows 16-17: count-once; computed salt is an extension."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evaluation/sni_eval_ledger.py",
+          "note": "REGISTERED = False draft; duplicate REGISTER refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a26_duplicate_register_refused_count_stays_1; test_a26_two_different_keys_count_2."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evaluation/REGISTRATION_LEDGER_DRAFT.md",
+          "note": "R1-gated draft; registered false; not Evaluation OS."
+        }
+      ],
+      "gap": "sni_belief.v1 salt and family gate not landed; ledger is an unregistered R1-gated draft; V1 waits on R1."
+    },
+    {
+      "id": "A27",
+      "title": "Published probabilities never change after outcomes",
+      "status": "PARTIAL",
+      "owner_task": "V1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A27 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Rows 18 and 20: belief immutability is a declared extension."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a27_second_publish_same_id_different_p_refused; test_a27_chain_verifies; test_a27_replay_from_file_equals_incremental_state."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evaluation/sni_eval_ledger.py",
+          "note": "Append-only hash chain; REGISTERED = False."
+        }
+      ],
+      "gap": "No live SNI belief publication hash-chain; ledger is an unregistered R1-gated draft; V1/P2 wait on R1."
+    },
+    {
+      "id": "A28",
+      "title": "Pending, unpriceable, censored, and matured targets stay distinct",
+      "status": "PARTIAL",
+      "owner_task": "V1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A28 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_V0_EVALUATION_SUPPORT_MATRIX.md",
+          "note": "Rows 9-13: maturity, censoring, HK clocks as owner facts."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a28_four_states_distinct_pending_unresolved; test_a28_censored_forbids_outcome; test_a28_matured_needs_outcome."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evaluation/sni_eval_ledger.py",
+          "note": "PENDING / UNPRICEABLE / CENSORED / MATURED states; REGISTERED = False."
+        }
+      ],
+      "gap": "SNI censoring_state extension unlanded; ledger is an unregistered R1-gated draft; V1/V2 wait on R1."
+    },
+    {
+      "id": "A29",
+      "title": "Proper scores and coverage reproduce against frozen baselines",
+      "status": "PARTIAL",
+      "owner_task": "A1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A29 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s1_stats.py",
+          "note": "test_binomial_hand_values; test_wilson_known_values."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_common_inference.py",
+          "note": "test_wilson_known_values; test_binomial_exactness."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a29_brier_recompute_exact_three_matured against a caller baseline."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
+          "note": "Proper score NOT SUPPORTED; hit/excess are not a proper score. P07 NOT SUPPORTED."
+        }
+      ],
+      "gap": "A1 independent proper-score reproduction against frozen SNI forecast baselines is unstarted; return/hit grading is not probabilistic forecast support; ledger is an R1-gated draft."
+    },
+    {
+      "id": "A30",
+      "title": "Failed model stays NO-GO; UI does not imply forecast success",
+      "status": "PARTIAL",
+      "owner_task": "A1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A30 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+          "note": "Failed models killed or held as research."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/runs/s1_residual_v1_1/REPORT.md",
+          "note": "TUNE labelled NON-CONFIRMATORY / BLOCKED-AS-EVIDENCE, not a forecast win."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a30_nogo_then_publish_refused."
+        }
+      ],
+      "gap": "No UI/authority copy test; ledger NO-GO is an R1-gated draft; A1/P2 wait on R1."
+    },
+    {
+      "id": "A31",
+      "title": "EN/ZH and viewports preserve issuer, counter, lens, and as-of",
+      "status": "PARTIAL",
+      "owner_task": "P1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A31 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_REFERENCE_JOURNEY_AND_WIRE_CONTRACT_DRAFT.md",
+          "note": "Journey draft names issuer, counter, lens, as-of."
+        }
+      ],
+      "gap": "No EN/ZH or viewport persistence test; live single-name surfaces wait on R1; P1/A0 wait on R1."
+    },
+    {
+      "id": "A32",
+      "title": "Source clicks resolve to permitted evidence; unavailable copy works",
+      "status": "PARTIAL",
+      "owner_task": "P1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A32 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_REFERENCE_JOURNEY_AND_WIRE_CONTRACT_DRAFT.md",
+          "note": "Wire-contract draft for sources and unavailable states."
+        }
+      ],
+      "gap": "No keyboard, focus, or source-click test; live single-name surfaces wait on R1; P1/A0 wait on R1."
+    },
+    {
+      "id": "A33",
+      "title": "Real reference evidence exists for both companies",
+      "status": "PARTIAL",
+      "owner_task": "E1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A33 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
+          "note": "Owner-native Alibaba pack on real owner reads."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md",
+          "note": "Owner-native Tencent pack; A33 named in header."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Alibaba/E1_COVERAGE_REPORT_2026-10-11.json",
+          "note": "Machine-readable Alibaba coverage twin."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/evidence/Tencent/E2_COVERAGE_REPORT_2026-10-11.json",
+          "note": "Machine-readable Tencent coverage twin."
+        }
+      ],
+      "gap": "No A0 test that an all-absence or synthetic-fixture page fails release."
+    },
+    {
+      "id": "A34",
+      "title": "Cache, network, and load meet the pre-ratified SLO",
+      "status": "GATED",
+      "owner_task": "P0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A34 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release P0/A0 live-surface SLO work; no SLO, isolation, or fan-out test exists."
+    },
+    {
+      "id": "A35",
+      "title": "Source-to-browser correction path is witnessed on release",
+      "status": "GATED",
+      "owner_task": "L0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A35 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release L0 installed real-path; source-to-browser correction is not started."
+    },
+    {
+      "id": "A36",
+      "title": "US and Mag-7 packs need no ticker-specific strategy branches",
+      "status": "PARTIAL",
+      "owner_task": "U1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A36 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md",
+          "note": "Reuse map for existing company-intelligence surfaces."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/SNI_U0_COMPOSITION_SEAM_DECISION.md",
+          "note": "Composition seam decision; no US product pack yet."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress.py",
+          "note": "test_no_ticker_branch_law; science harness has no Mag-7 ticker strings."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/us_stress/profiles/GOOGL.yml",
+          "note": "Alphabet Class A (GOOGL) only; GOOG Class C is not a separate profile."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/us_transfer/A8_US_RESIDUAL_TRANSFER_PREREG_DRAFT.md",
+          "note": "Mag-7 residual-transfer DRAFT copies P01 structure; P07 NOT SUPPORTED; registered false."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a8_us_transfer_draft.py",
+          "note": "test_r1_03_cohort_hindsight_survivorship_not_transfer_evidence."
+        }
+      ],
+      "gap": "U1-U4 US/Mag-7 product packs unbuilt; Alphabet class-duplicate evidence untested on a product pack; TCEHY is not admitted (KWEB proxy); they wait on L0/R1."
+    },
+    {
+      "id": "A37",
+      "title": "Held-out company onboards through configuration and contract tests",
+      "status": "PARTIAL",
+      "owner_task": "X0",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A37 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress.py",
+          "note": "test_held_out_onboarding drops a synthetic eighth profile with no module change."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/us_stress/README.md",
+          "note": "Harness for A37: adding a company is adding a YAML profile."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/us_stress/stress_set.py",
+          "note": "Ticker universe is only profiles/; the module does not name the seven US tickers."
+        }
+      ],
+      "gap": "Science-harness onboarding is synthetic only; live held-out company onboarding waits on R1."
+    },
+    {
+      "id": "A38",
+      "title": "Scale economics include rights, capture, parse, cache, and review",
+      "status": "GATED",
+      "owner_task": "X1",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A38 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release X0/A1 before X1 coverage-tier economics; the work is not started."
+    },
+    {
+      "id": "A39",
+      "title": "Native Opus coordinates; Fabric labor has admission receipts",
+      "status": "PARTIAL",
+      "owner_task": "R0",
+      "gated_on": null,
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A39 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/e2e_20261011/SNI_PROGRAM_CONTINUATION_2026-10-11.md",
+          "note": "R0 custody recovery; O-9 fabric receipts incomplete."
+        }
+      ],
+      "gap": "Admission, start, and result receipts are incomplete across delegated tasks."
+    },
+    {
+      "id": "A40",
+      "title": "Closeout does not abandon reserved gates or natural outcomes",
+      "status": "GATED",
+      "owner_task": "X2",
+      "gated_on": "R1",
+      "evidence": [
+        {
+          "ref": "census",
+          "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
+          "note": "Case A40 in the acceptance table."
+        }
+      ],
+      "gap": "R1 must release reserved closeout gates; SNI-8 closeout is not started; X2 waits on R1."
+    }
+  ]
+}
