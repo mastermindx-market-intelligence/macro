@@ -480,10 +480,6 @@ _JUNK_FIELDS = (
 )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="JGP-01 open: validate_fact raises TypeError on unhashable level value",
-)
 def test_p6_no_raise_on_junk():
     total = 0
     for case in range(N_CASES):
@@ -493,9 +489,8 @@ def test_p6_no_raise_on_junk():
             if rng.random() < 0.25:
                 fact[k] = rng.choice(_JUNK_VALUES)
         msg = _msg(BASE_SEED + 6, case)
-        # DESIRED: no exception. CURRENT BUG: validate_fact raises
-        # TypeError("unhashable type") when `level` is a list/dict/set,
-        # because `level not in _LEVELS` (a frozenset) does a hash.
+        # No exception on any junk value. JGP-01 (fixed): an unhashable
+        # `level` used to raise TypeError from the frozenset lookup.
         v1 = validate_fact(fact)
         v2 = validate_fact(fact, as_of="2026-12-31")
         other = _gen_valid_fact(rng)
@@ -504,6 +499,22 @@ def test_p6_no_raise_on_junk():
             _ = _stripped(verdict.reasons)
         total += 1
     assert total >= N_CASES, "p6 ran fewer than N_CASES generated cases"
+
+
+def test_jgp01_unhashable_level_refuses_level_unknown():
+    for junk in ([1, 2, 3], {"issuer": 1}, {"security"}):
+        fact = _gen_valid_fact(random.Random(BASE_SEED + 601))
+        fact["level"] = junk
+        assert "LEVEL_UNKNOWN" in validate_fact(fact)
+
+
+def test_jgp01_unhashable_join_kind_refuses_join_kind_unknown():
+    rng = random.Random(BASE_SEED + 602)
+    left, right = _gen_valid_fact(rng), _gen_valid_fact(rng)
+    for junk in (["same_fact"], {"ratio": 1}, {"time_series"}):
+        verdict = check_join(left, right, join_kind=junk)
+        assert verdict.status == "REFUSED"
+        assert "JOIN_KIND_UNKNOWN" in verdict.reasons
 
 
 # ---------------------------------------------------------------------------
