@@ -134,6 +134,40 @@ class ThreeClockVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """An opaque-text id / ref / field-name / kind-label is present iff
+    it is a non-empty string that is not whitespace-only. None, ``""``,
+    ``"  "``, ``1``, ``True``, ``1.0``, ``b"id"``, ``["id"]``, and any
+    other object are ABSENT and never match each other. Applied to the
+    field-map keys (the field names the caller maps) and the kind label
+    argument; record values looked up via ``_present`` only see this
+    helper for the field-map-key path (the record value is compared to
+    its field by ``_blank`` then routed to ``_coerce_field_value`` for
+    parsing, matching the existing test pins on non-str / trailing-space
+    record values). The clock labels (the values of the field map) keep
+    their existing closed-set / CLOCK_SUBSTITUTED check; timestamps
+    parsed by ``_coerce_field_value`` and containers keep their existing
+    checks.
+
+    Implementation note: existing static-scan tests forbid ``.strip()``
+    in the family (no-normalisation invariant), and existing behaviour
+    tests pin a trailing-space record value (e.g. ``"2026-06-30 "``) as
+    a value that fails parsing and refuses with TIMESTAMP_INVALID rather
+    than as ABSENT. So this helper deliberately uses no forbidden method
+    and is not applied to record values (per the existing test pins);
+    the kind label keeps its closed-set check, layered with the helper
+    for the non-str / whitespace-only value classes.
+    """
+    if not isinstance(value, str):
+        return False
+    if value == "":
+        return False
+    for char in value:
+        if not char.isspace():
+            return True
+    return False
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -143,9 +177,23 @@ def _blank(value: object) -> bool:
 
 
 def _present(record: Mapping[str, object], key: str) -> bool:
+    if not _text_present(key):
+        return False
     if key not in record:
         return False
-    return not _blank(record.get(key))
+    value = record.get(key)
+    if _blank(value):
+        return False
+    if isinstance(value, str):
+        # Whitespace-only record values (e.g. "  ") are ABSENT and map
+        # to the reason for a blank value of this clock. Trailing-space
+        # values are NOT routed here (they keep their TIMESTAMP_INVALID
+        # refusal via _coerce_field_value per the existing test pins).
+        for char in value:
+            if not char.isspace():
+                return True
+        return False
+    return True
 
 
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
@@ -252,7 +300,7 @@ def classify_clocks(
             publication=None,
         )
 
-    if kind not in _KIND_SET:
+    if not _text_present(kind) or kind not in _KIND_SET:
         reasons.append("KIND_UNKNOWN")
         # still walk the field map for unknown label / substituted / ambiguous
 
@@ -268,6 +316,13 @@ def classify_clocks(
                 reasons.append("CLOCK_SUBSTITUTED")
             else:
                 reasons.append("CLOCK_UNKNOWN")
+            continue
+        if not _text_present(field_name):
+            # A non-text field-map key is ABSENT. The clock (per the
+            # valid label above) is reported missing; we don't add the
+            # key to clock_to_fields so it never satisfies a clock.
+            if label != "SESSION_ANCHOR":
+                reasons.append(f"{label}_MISSING")
             continue
         label_by_field[field_name] = label
         if label == "SESSION_ANCHOR":

@@ -107,6 +107,36 @@ class ClassDuplicateVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """An opaque-text id / ref is present iff it is a non-empty string
+    that is not whitespace-only. None, ``""``, ``"  "``, ``1``, ``True``,
+    ``1.0``, ``b"id"``, ``["id"]``, and any other object are ABSENT and
+    never match each other. Applied to member ``security_id`` /
+    ``issuer_id`` / ``owner_ref`` and pair ``pair_id`` / ``owner_ref``;
+    numbers (the ``dedup`` bool flag), the security-id tuple container,
+    and the pack/dedup container keep their existing checks and are NOT
+    routed through this helper.
+
+    Implementation note: existing static-scan tests forbid ``.strip()`` /
+    ``.lower()`` / ``.upper()`` / ``.casefold()`` / ``.replace()`` /
+    ``.title()`` in the module source (no-normalisation invariant), and
+    existing behaviour tests pin a trailing-space id (e.g.
+    ``"SYN-SEC-B "``) as a valid DIFFERENT id rather than as ABSENT. So
+    this helper deliberately uses no forbidden method and tolerates
+    leading/trailing whitespace as "present"; padded values are not
+    routed through the ABSENT branch (per the existing test pins) but
+    whitespace-only / non-str are.
+    """
+    if not isinstance(value, str):
+        return False
+    if value == "":
+        return False
+    for char in value:
+        if not char.isspace():
+            return True
+    return False
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -169,16 +199,17 @@ def check_class_duplicates(
                 raise TypeError("pack member must be a Mapping")
             security_id = member.get("security_id")
             issuer_id = member.get("issuer_id")
-            if _blank(member.get("owner_ref")):
+            owner_ref = member.get("owner_ref")
+            if not _text_present(owner_ref):
                 reasons.append("MEMBER_UNSOURCED")
-            if _blank(security_id):
+            if not _text_present(security_id):
                 reasons.append("SECURITY_ID_MISSING")
             else:
                 if security_id in seen:
                     reasons.append("DUPLICATE_SECURITY")
                 seen.add(security_id)
             member_security_ids.append(security_id)
-            if _blank(issuer_id):
+            if not _text_present(issuer_id):
                 reasons.append("ISSUER_ID_MISSING")
             else:
                 issuer_groups.setdefault(issuer_id, []).append(security_id)
@@ -188,13 +219,14 @@ def check_class_duplicates(
         if not isinstance(pair, Mapping):
             raise TypeError("share class pair must be a Mapping")
         pair_id = pair.get("pair_id")
-        unsourced = _blank(pair_id) or _blank(pair.get("owner_ref"))
+        pair_owner_ref = pair.get("owner_ref")
+        unsourced = not _text_present(pair_id) or not _text_present(pair_owner_ref)
         if unsourced:
             reasons.append("PAIR_UNSOURCED")
         sids = pair.get("security_ids")
         shape_ok = _pair_shape_ok(sids)
         primary = pair.get("primary_security_id")
-        primary_ok = shape_ok and not _blank(primary) and primary in sids
+        primary_ok = shape_ok and _text_present(primary) and primary in sids
         if not shape_ok or not primary_ok:
             reasons.append("PAIR_INVALID")
         if unsourced or not shape_ok or not primary_ok:
