@@ -1,7 +1,7 @@
 {
   "schema": "research_codegen.fixed_canary_source.v1",
   "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
-  "state": "CORRECTED_SOURCE_QUALIFIED_COMMISSION_V2_SUBMITTED_RESULT_PENDING",
+  "state": "CORRECTED_SOURCE_QUALIFIED_V2_TERMINAL_DELIVERY_FAILURE_INNER_RECEIPT_PENDING",
   "source_sha256": {
     "cli29_anonymous_config.py": "727f76b5c5a50bcaadc09a7358f6be270981c38321ec0e1029e7a8634600a0d8",
     "fixed_canary.py": "4095b9c42358c05ed057b0d8cef4106b47dbf0a33a5d13226dd62cfdbe7e02db",
