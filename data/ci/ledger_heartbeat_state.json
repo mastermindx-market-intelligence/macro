@@ -1,6 +1,6 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-10-13T00:48:28Z",
+  "updated_utc": "2026-10-13T13:25:48Z",
   "last_check_date": "2026-10-13",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
@@ -9,12 +9,15 @@
       "stalled_since": "2026-10-09"
     },
     "data/risk_radar/forward_log.jsonl": {
-      "asof": "2026-10-09",
+      "asof": "2026-10-12",
       "last_check_date": "2026-10-13",
-      "stalled_since": null
+      "stalled_since": null,
+      "lag_stalled_since": null,
+      "sessions_behind": 0,
+      "expected_session": "2026-10-12"
     },
     "data/market_state/forward_log.jsonl": {
-      "asof": "2026-10-09",
+      "asof": "2026-10-12",
       "last_check_date": "2026-10-13",
       "stalled_since": null
     },
@@ -26,7 +29,10 @@
     "data/leadership_crack/forward_log.jsonl": {
       "asof": "2026-10-08",
       "last_check_date": "2026-10-13",
-      "stalled_since": "2026-10-09"
+      "stalled_since": "2026-10-09",
+      "lag_stalled_since": null,
+      "sessions_behind": 2,
+      "expected_session": "2026-10-12"
     },
     "data/deterioration_cascade/forward_log.jsonl": {
       "asof": "2026-10-09",

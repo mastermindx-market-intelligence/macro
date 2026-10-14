@@ -4284,6 +4284,13 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # R2 original-intent context producer: the ten Agent OS knowledge suites
+    # share their measured 43-file import/read closure plus the Agent OS corpus.
+    # Source/fence execution remains in the existing self-mod job.
+    "agentos-knowledge-contracts",
+    # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
+    # preserves the broader self-heal owner without widening unrelated probes.
+    "deploy-git-history",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4709,6 +4716,14 @@ CURATED_EXCLUSIVE = {
     # probes return to base exactly (index.html 5,782, build_free_content 5,585,
     # plan_book 5,545); closure findings (); ceilings stay fixed — the #8805 shape.
     "crypto-vector-r2-organs",
+    # 2026-10-13 cx-int engine: crypto-assistant-context. The crypto
+    # assistant-context contract's import closure is the whole Mastermind
+    # chat stack (context compiler, brain gateway, market packet, native
+    # facts). It runs alone under scope: exclusive with that measured
+    # closure instead of widening crypto-vector-r2-organs onto every
+    # chat-stack change; closure findings stay empty and the probes keep their
+    # base readings.
+    "crypto-assistant-context",
     # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
     # reader names scripts/build_security_master.py by path (its subprocess
     # call and parquet traversal join the closure) and the registry imports
@@ -4727,18 +4742,48 @@ CURATED_EXCLUSIVE = {
     # the fallback to engine/** and the plan_book packing probe selected the
     # job (130 > 129). scope: exclusive pins it to its measured closure.
     "sni-s2-event-response",
+    # 2026-10-13 SNI INT1: the shared inference/seal library, evaluation
+    # ledger, US stress set and draft-prereg loaders import through sys.path
+    # inserts. scope: exclusive pins the job to their measured closure so the
+    # research/ fallback roots never reach the packing probes.
+    "sni-shared-and-drafts",
+    # 2026-10-13 SNI INT1: the cross-cutting guard suite (matrix, equivalence,
+    # invariants, quarantine fence, run-seal repro, SCHK, A20, US stress) loads
+    # through the same sys.path inserts; pinned to its measured closure.
+    "sni-program-guards",
+    # 2026-10-13 SNI INT1: the public-exposure scan reads publish surfaces as
+    # TEXT (closure-marked data). Unpinned, those literal script names pulled
+    # build_site.py's 757-file import closure into the job and every packing
+    # probe selected it (templates/index.html 5815 > 5800). It declares its
+    # scanned surfaces instead and pins them in its own test.
+    "sni-public-exposure-scan",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
     # exclusive pins it to that measured closure (57 paths once W4 added the
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
+    # the frozen stage-1 runner, whose lazy risk_radar closure made inference
+    # select the job on the plan_book (130 > 129) and build_free_content
+    # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
+    # measured 63-path closure; closure findings (); ceilings stay fixed.
+    "grey-deer-pullback-forward",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
+    # subprocess and filesystem traversals rooted at templates/, scripts/,
+    # engine/, data/ and site/ widened inference for these two lanes to those
+    # whole roots, so both selected on all three PACKING_PROBES without
+    # importing or naming a probe file (CI measured
+    # scripts/build_free_content.py at 5604 > 5600 on main). scope: exclusive
+    # pins each to its measured static closure plus its fixture globs.
+    "research-price-panel",
+    "washout-turn-organ",
 }
 
 
@@ -4906,7 +4951,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
@@ -5557,6 +5602,37 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure, so the probe reads 5,793 (head) against 5,805 before
     the move. No ceiling moves; no suite, registration, assertion or selector
     is removed or weakened.
+
+    2026-10-13 (SNI INT1, ``sni-public-exposure-scan``): the WEIGHT ceiling
+    on templates/index.html is RATCHETED 5,800 -> 5,803. This is the
+    decision the 2026-09-24 entry said the next entrant would need. The
+    job is already ``scope: exclusive`` with no fallback tier. It enters
+    this probe on its OWN declared subject: it reads templates/** as text
+    to prove that no public template serves, renders or links SNI
+    material, and its test_ci_job_declares_every_scanned_surface reds if
+    that path is dropped. That is the wave-7 ratchet case, not a smear to
+    curate. Its weight is the estimator floor for a one-suite job (two
+    run steps + one tests/ path = 4). Hosted contract-delta run
+    38379913058 / job 115237474626, base 70de9c667b80:
+
+        templates/index.html          134 -> 135 jobs, 5,799 -> 5,803 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,602 -> 5,602 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,562 -> 5,562 weight
+
+    sni-public-exposure-scan is the only newly selected job, and only on
+    the template probe. The ceiling moves to the exact measurement, with
+    no padding. Job ceilings (135 / 134 / 129), the other two weight
+    ceilings (5,600 / 5,600) and the 10-pack ceiling are unchanged.
+    Alternatives rejected:
+    - dropping templates/** from the job would leave template edits
+      unguarded;
+    - folding the suite into an existing template-riding job still adds
+      +2 (5,801);
+    - an OBSERVED_COMMAND_SECONDS entry below the estimator would
+      understate a job that installs packages.
+    In the same run, build_free_content was already at 5,602 against its
+    5,600 ceiling on the base. That was reported as inherited, not
+    introduced, and is left for a separate heal.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

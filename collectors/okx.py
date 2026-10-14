@@ -57,11 +57,18 @@ class OkxAdapter(Adapter):
         tk = self._taker_volume()
         if tk is not None:
             out["taker_volume"] = tk
-        try:                                  # rubik hourly outage must degrade ONLY this
-            tkh = self._taker_volume_hourly()  # series, never fail the whole okx adapter
-            if tkh is not None:                # (which would freeze the daily series + trip
-                out["taker_volume_hourly"] = tkh  # the circuit breaker)
+        # rubik hourly outage must degrade ONLY this series, never fail the
+        # whole okx adapter (which would freeze the daily series + trip the
+        # circuit breaker). record_response appends exactly one entry, so an
+        # unchanged length in the except means no response receipt was reached.
+        mark = len(getattr(self, "source_capture_status", ()))
+        try:
+            tkh = self._taker_volume_hourly()
+            if tkh is not None:
+                out["taker_volume_hourly"] = tkh
         except Exception as e:  # noqa: BLE001
+            if len(getattr(self, "source_capture_status", ())) == mark:
+                observations.record_unavailable(self, "okx_taker", type(e).__name__)
             log.warning("okx taker_volume_hourly fetch failed (non-fatal): %s", e)
         sp = self._spot_candles(full_history)
         if sp is not None:
