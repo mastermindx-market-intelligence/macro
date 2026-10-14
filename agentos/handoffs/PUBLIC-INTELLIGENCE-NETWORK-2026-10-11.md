@@ -1538,3 +1538,32 @@ review mmx-press-context-review-20261013-001 and separate repair mmx-press-write
 consume their retained same-run returns. Continue the publication mission without replaying
 any completed or EFFECT_UNKNOWN provider attempt. Three local accounting files are dirty from
 the new completed staging and stay outside the source commit. See cumulative CHECKPOINT.md.
+
+## Current-source and writer repair accepted locally — October 14 00:44 UTC
+
+The non-earnings path now has a real OCC RSS candidate for the October 13 Bank of
+America assessment. `official_feed_phase/` retains exact source bytes, corporate
+mapping, bounded factual-reporting qualification, read-only plan and independent
+review. A parent UTF-16/DOCTYPE counterexample failed the initially reviewed code;
+the decoded XML parser now closes that gap. No writer/provider/publication effect
+occurred for this candidate. Its five dated first-party context facts are only a
+pre-event broad baseline; numerical sufficiency does not prove editorial relevance.
+Chrome verified the existing BAC dossier selects BAC in its live Terminal overlay,
+with no new signup or follow write.
+
+The Fabric writer-vintage patch is retrieved, applied and accepted after parent
+red/green verification: 14 failed/40 passed before repair; six integrated suites
+then passed 358 tests. It carries each fact's date into the prompt, sanitizes source
+labels, and requests story-specific headings. Rebuilding the real held Research
+prompt now shows the September 23 PCE date. The held draft remains byte-identical
+and earns no W1 credit. See `writer_vintage_phase/`. No regeneration of that slot.
+
+There is still no PR or binding CI for this phase. At 00:34 UTC, nine active PR
+proofs exceeded cap eight; the existing controller continues to own admission.
+To avoid three overlapping CI carriers, combine the reviewed context consumer,
+writer repair and offline OCC consumer in the existing unmerged branch before its
+first PR. All application changes remain non-promoting. Preserve three dirty local
+accounting files and every worktree. The original 12:07 EFFECT_UNKNOWN is unchanged.
+Next: integrated contract verification, one admitted protected PR, installed source
+and consumer checks; then explicit non-promoting current-source staging through the
+existing rail with duplicate/cadence guards and full mixed-desk editorial review.

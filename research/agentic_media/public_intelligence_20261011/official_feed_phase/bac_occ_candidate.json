@@ -1,0 +1,72 @@
+{
+  "schema": "press.source_qualification_research.v1",
+  "observed_at": "2026-10-14T00:22:39.741361+00:00",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "intake": "Existing breaking_feed.parse_feed applied read-only to publisher-documented RSS bytes; no configured live source added",
+  "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "source_config_proposal": {
+    "key": "occ_news",
+    "kind": "rss",
+    "url": "https://www.occ.treas.gov/rss/occ_news.xml",
+    "source_name": "Office of the Comptroller of the Currency",
+    "tier": "official"
+  },
+  "feed_documentation_url": "https://www.occ.treas.gov/rss/index-rss.html",
+  "item": {
+    "id": "99354c7bd7561bf9356a1193875243a72ff1d000",
+    "source": "occ_news",
+    "source_name": "Office of the Comptroller of the Currency",
+    "source_tier": "official",
+    "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+    "published_at": "2026-10-13T20:15:00+00:00",
+    "headline": "OCC Imposes $750 Million Assessment Against Bank of America for Deficient BSA/AML Compliance",
+    "body_snippet": "The Office of the Comptroller of the Currency (OCC) today announced a $750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations, including 12 CFR 21.21 and 12 CFR 21.11. This amount is the largest in OCC history."
+  },
+  "event_date": "2026-10-13",
+  "publication_clock": "2026-10-13T20:15:00+00:00",
+  "body_scope": "Complete publisher RSS summary only, not the full release; no clipping by the existing 600-character parser",
+  "primary_url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+  "rights_assessment": {
+    "status": "bounded factual reporting candidate",
+    "basis": "Official agency-authored statement of its enforcement action; report facts in original words with named source and direct link. No seals, images, third-party expression, or blanket license to other materials.",
+    "references": [
+      "https://uscode.house.gov/view.xhtml?req=%28title%3A17+section%3A105+edition%3Aprelim%29",
+      "https://www.fincen.gov/site-policies-and-notices"
+    ],
+    "limits": "FinCEN policy supports only its own separate release, not the OCC policy. US government-work treatment is not a worldwide blanket grant. Original factual reporting is the proposed scope."
+  },
+  "reviewed_claims": [
+    {
+      "literal": "$750 million civil money penalty",
+      "meaning": "OCC assessment, not total across agencies",
+      "tier": "third_party"
+    },
+    {
+      "literal": "Bank of America, N.A.",
+      "meaning": "Regulated bank subsidiary; public issuer association BAC requires explicit corporate mapping",
+      "tier": "third_party"
+    }
+  ],
+  "ticker_candidate": "BAC",
+  "dossier_url": "https://www.mastermind-x.com/stocks/BAC.html",
+  "prohibited_inferences": [
+    "No sum of OCC and FinCEN penalties until credit mechanics are source-verified.",
+    "No claim that today marks new misconduct rather than an enforcement action.",
+    "No causal stock-price claim, forward trade instruction, or earnings surprise inference.",
+    "No use of ingestion/poll time as event date."
+  ],
+  "supplemental_primary_research": [
+    "https://home.treasury.gov/news/press-releases/sb0657",
+    "https://www.fincen.gov/news/news-releases/fincen-assesses-12-billion-penalty-against-bank-america",
+    "https://ofac.treasury.gov/recent-actions/20261013_33"
+  ],
+  "remaining": [
+    "Supported source-specific consumer contract; current external consumer is White House-only.",
+    "Exact source/policy binding and independent source/editorial acceptance.",
+    "Current relevant first-party measurements and corporate mapping.",
+    "Real mixed-desk W1 acceptance and protected publication release."
+  ],
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false
+}

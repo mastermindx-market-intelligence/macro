@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume exact context review and admitted writer-vintage patch; honor shared CI capacity before creating the protected context PR, then verify installed consumer. One real Research draft is retained but held for stale narration and mixed-cohort overlap; do not replay it or claim publication. Continue permitted non-earnings source qualification.
+next_action: Complete integrated contract verification and one capacity-admitted protected PR for reviewed context, writer-vintage and offline OCC consumer changes; verify installed bytes, then build explicit non-promoting current-source staging with cumulative duplicate/cadence checks. BAC candidate and existing browser continuation are qualified narrowly; no article or new follow write. Preserve held drafts, accounting and original EFFECT_UNKNOWN.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
@@ -131,3 +131,32 @@ the app result and installed automation readback after GitHub evidence persisten
 The parent workstream remains active.
 
 October 13 current-source continuation: two-file external consumer repair adds explicit no-share review and hash-bound selected engine context while retaining planning-only authority. `current_event_phase/READINESS.md` records source census, no ready Brief slot, exact validation and next executable release work. The original unknown provider effect remains unreplayed.
+
+## Current-source and writer repair accepted locally — October 14 00:44 UTC
+
+The non-earnings path now has a real OCC RSS candidate for the October 13 Bank of
+America assessment. `official_feed_phase/` retains exact source bytes, corporate
+mapping, bounded factual-reporting qualification, read-only plan and independent
+review. A parent UTF-16/DOCTYPE counterexample failed the initially reviewed code;
+the decoded XML parser now closes that gap. No writer/provider/publication effect
+occurred for this candidate. Its five dated first-party context facts are only a
+pre-event broad baseline; numerical sufficiency does not prove editorial relevance.
+Chrome verified the existing BAC dossier selects BAC in its live Terminal overlay,
+with no new signup or follow write.
+
+The Fabric writer-vintage patch is retrieved, applied and accepted after parent
+red/green verification: 14 failed/40 passed before repair; six integrated suites
+then passed 358 tests. It carries each fact's date into the prompt, sanitizes source
+labels, and requests story-specific headings. Rebuilding the real held Research
+prompt now shows the September 23 PCE date. The held draft remains byte-identical
+and earns no W1 credit. See `writer_vintage_phase/`. No regeneration of that slot.
+
+There is still no PR or binding CI for this phase. At 00:34 UTC, nine active PR
+proofs exceeded cap eight; the existing controller continues to own admission.
+To avoid three overlapping CI carriers, combine the reviewed context consumer,
+writer repair and offline OCC consumer in the existing unmerged branch before its
+first PR. All application changes remain non-promoting. Preserve three dirty local
+accounting files and every worktree. The original 12:07 EFFECT_UNKNOWN is unchanged.
+Next: integrated contract verification, one admitted protected PR, installed source
+and consumer checks; then explicit non-promoting current-source staging through the
+existing rail with duplicate/cadence guards and full mixed-desk editorial review.
