@@ -28987,7 +28987,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install news impact contract test dependencies
-        run: pip install pytest jsonschema pyyaml pandas pyarrow
+        run: pip install pytest jsonschema pyyaml pandas pyarrow requests
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
