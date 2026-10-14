@@ -730,7 +730,8 @@ def test_every_comparison_status_reachable():
 
 
 def test_all_registry_rules_present_and_exercised():
-    assert len(RULES) == 11
+    assert len(RULES) == 12
+    assert "forecast_vs_h1_target.v1" in RULES
     probes = {
         "forecast_vs_first_print.v1": lambda: compare_qualified(
             _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2"),
@@ -762,6 +763,24 @@ def test_all_registry_rules_present_and_exercised():
             _obs(value=30.0, unit="bp", target="ust_par_yield_move"),
             _obs(value=20.0, unit="bp", target="term_premium_move_kw"),
             RULES["yield_move_attribution.v1"],
+        ),
+        "forecast_vs_h1_target.v1": lambda: compare_qualified(
+            _obs(
+                value=0.2,
+                evidence_class="house_estimate",
+                target="cpi_u_all_items_mom_sa_first_print",
+                model_id="release_forecast:v2",
+                target_epoch="2026-09-30",
+            ),
+            _obs(
+                value=0.3,
+                target="cpi_u_all_items_mom_sa_h1",
+                content_ref="same_vintage:abcdef0123456789abcdef01",
+                quality=("proxy_vintage",),
+                target_epoch="2026-09-30",
+            ),
+            RULES["forecast_vs_h1_target.v1"],
+            context={"eval_target_epoch": "2026-09-30"},
         ),
     }
     for rule_id, probe in probes.items():
@@ -1072,6 +1091,447 @@ def test_module_is_pure_ast():
                 assert node.func.id not in ("open", "eval", "exec", "__import__"), node.func.id
         elif isinstance(node, ast.Attribute):
             assert node.attr not in ("now", "utcnow", "today", "system", "popen"), node.attr
+
+
+# ---------------------------------------------------------------------------
+# B0-H1 forecast_vs_h1_target.v1 (R2-E1-S13)
+# ---------------------------------------------------------------------------
+
+GOLDEN_RESULTS_DIGEST = (
+    "2aa5b7397307539821d95144d88812a8d740b37a98e9bb429b15bbf05a77e51d"
+)
+GOLDEN_RULES_DIGEST = (
+    "79256fa9cbd66d7a267cd0b8141e9fcb241950b1a3c705958f2372f083a3f104"
+)
+GOLDEN_EXISTING_RULE_IDS = (
+    "cpi_month_vs_breakeven_10y.v1",
+    "cpi_vs_pce.v1",
+    "forecast_vs_first_print.v1",
+    "inflation_compensation.v1",
+    "par_vs_zero.v1",
+    "same_basis_level_change.v1",
+    "sep_vs_market_year_end.v1",
+    "sr3_vs_zq.v1",
+    "term_premium_kw_vs_acm.v1",
+    "yield_move_attribution.v1",
+    "zq_month_vs_policy_midpoint.v1",
+)
+
+
+def _golden_existing_matrix():
+    """Fixed matrix: every existing rule id x the operand pairs the registry
+    probes exercise; ``forecast_vs_first_print.v1`` is run twice (no context
+    and a synthetic eval_target_epoch context) so a future regression that
+    silently reads context shows as a digest drift."""
+    probes = {
+        "forecast_vs_first_print.v1": (
+            _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2"),
+            _obs(value=0.3),
+        ),
+        "same_basis_level_change.v1": (
+            _obs(),
+            _obs(value=0.3, reference_start="2026-08-01", reference_end="2026-08-31"),
+        ),
+        "zq_month_vs_policy_midpoint.v1": (_zq_obs(), _zq_obs()),
+        "sr3_vs_zq.v1": (_zq_obs(), _zq_obs()),
+        "par_vs_zero.v1": (
+            _obs(),
+            _obs(value=0.3, curve_convention="zero"),
+        ),
+        "cpi_vs_pce.v1": (
+            _obs(),
+            _obs(
+                value=0.3,
+                basket_or_index="PCE",
+                subject="PCEPI",
+                target="pce_headline_mom_sa",
+            ),
+        ),
+        "cpi_month_vs_breakeven_10y.v1": (
+            _obs(),
+            _obs(
+                value=2.25,
+                subject="T10YIE",
+                unit="pct_yoy",
+                target="inflation_compensation",
+                basket_or_index=NA,
+                tenor="10y",
+                reference_start="2026-10-13",
+                reference_end="2036-10-15",
+                source="fred:T10YIE",
+            ),
+        ),
+        "yield_move_attribution.v1": (
+            _obs(value=30.0, unit="bp", target="ust_par_yield_move"),
+            _obs(value=20.0, unit="bp", target="term_premium_move_kw"),
+        ),
+        "sep_vs_market_year_end.v1": (
+            _obs(
+                evidence_class="survey_participant_projection",
+                target="sep_year_end_median",
+                value=4.5,
+                unit="pct_ann_rate",
+                reference_start="2026-01-01",
+                reference_end="2026-12-31",
+            ),
+            _obs(
+                evidence_class="market_implied_expectation",
+                target="fed_funds_futures_year_end",
+                value=4.6,
+                unit="pct_ann_rate",
+                reference_start="2026-12-01",
+                reference_end="2026-12-31",
+            ),
+        ),
+        "inflation_compensation.v1": (
+            _obs(
+                curve_convention="par",
+                value=4.5,
+                unit="pct_ann_rate",
+                target="par_nominal",
+                tenor="10y",
+                reference_start="2026-10-13",
+                reference_end="2036-10-15",
+            ),
+            _obs(
+                curve_convention="real_par",
+                value=2.0,
+                unit="pct_ann_rate",
+                target="real_nominal",
+                tenor="10y",
+                reference_start="2026-10-13",
+                reference_end="2036-10-15",
+            ),
+        ),
+        "term_premium_kw_vs_acm.v1": (
+            _obs(
+                model_id="kw_main_v3",
+                target="term_premium_kw",
+                value=0.5,
+                unit="pct_ann_rate",
+                tenor="10y",
+                reference_start="2026-10-13",
+                reference_end="2036-10-15",
+            ),
+            _obs(
+                model_id="acm_main_v2",
+                target="term_premium_acm",
+                value=0.6,
+                unit="pct_ann_rate",
+                tenor="10y",
+                reference_start="2026-10-13",
+                reference_end="2036-10-15",
+            ),
+        ),
+    }
+    results = []
+    for rule_id in sorted(probes):
+        rule = RULES[rule_id]
+        left, right = probes[rule_id]
+        results.append(compare_qualified(left, right, rule, context=None))
+    fpv = compare_qualified(
+        probes["forecast_vs_first_print.v1"][0],
+        probes["forecast_vs_first_print.v1"][1],
+        RULES["forecast_vs_first_print.v1"],
+        context={"eval_target_epoch": "h1_2026_10"},
+    )
+    return results, fpv
+
+
+def _golden_results_digest():
+    import hashlib
+    results, fpv = _golden_existing_matrix()
+    payload = [r.to_dict() for r in results] + [fpv.to_dict()]
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
+def _golden_rules_digest():
+    import hashlib
+    payload = [dataclasses.asdict(RULES[k]) for k in GOLDEN_EXISTING_RULE_IDS]
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
+def test_existing_kinds_byte_identical_golden():
+    assert _golden_results_digest() == GOLDEN_RESULTS_DIGEST, (
+        "existing-kinds results digest drifted; the H1 lane must not change "
+        "any existing rule's output by a single byte"
+    )
+    assert _golden_rules_digest() == GOLDEN_RULES_DIGEST, (
+        "existing 11 RULES registrations drifted; the H1 lane must not "
+        "rewrite any existing rule's fields or order"
+    )
+
+
+H1_RULE_ID = "forecast_vs_h1_target.v1"
+
+
+def _h1_left(value=0.2, **over):
+    over.setdefault("evidence_class", "house_estimate")
+    over.setdefault("target", "cpi_u_all_items_mom_sa_first_print")
+    over.setdefault("model_id", "release_forecast:v2")
+    over.setdefault("target_epoch", "2026-09-30")
+    return _obs(value=value, **over)
+
+
+def _h1_right(value=0.3, **over):
+    over.setdefault("evidence_class", "official_measurement")
+    over.setdefault("target", "cpi_u_all_items_mom_sa_h1")
+    over.setdefault("content_ref", "same_vintage:abcdef0123456789abcdef01")
+    over.setdefault("target_epoch", "2026-09-30")
+    return _obs(value=value, **over)
+
+
+def test_h1_direct_difference_pct_to_bp():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(value=0.20),
+        _h1_right(value=0.30),
+        rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result.status.value == "directly_comparable"
+    assert result.difference == pytest.approx(-10.0)
+    assert result.unit == "bp"
+    assert "eval_target_epoch:2026-09-30" in result.assumptions
+    assert "model_target_epoch:2026-09-30" in result.assumptions
+    assert "h1_target_not_official_first_print" in result.limitations
+
+
+def test_h1_direct_difference_native_unit_not_bp_labelled():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _obs(
+            value=130.0,
+            evidence_class="house_estimate",
+            target="nfp_total_nonfarm_first_print",
+            unit="thousands_persons",
+            basket_or_index="NFP",
+            target_epoch="2026-09-30",
+            model_id="release_forecast:nfp:v3",
+            seasonal_treatment="sa",
+        ),
+        _obs(
+            value=180.0,
+            evidence_class="official_measurement",
+            target="nfp_total_nonfarm_h1",
+            unit="thousands_persons",
+            basket_or_index="NFP",
+            target_epoch="2026-09-30",
+            content_ref="same_vintage:bcdef0123456789abcdef012",
+            seasonal_treatment="sa",
+        ),
+        rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result.status.value == "directly_comparable"
+    assert result.difference == pytest.approx(-50.0)
+    assert result.unit == "thousands_persons"
+
+
+def test_h1_missing_context_unknown_basis():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(_h1_left(), _h1_right(), rule, context=None)
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:eval_target_epoch"
+
+
+def test_h1_mismatched_eval_epoch_basis_mismatch():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(),
+        _h1_right(),
+        rule,
+        context={"eval_target_epoch": "2026-08-31"},
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:eval_target_epoch"
+
+
+def test_h1_right_target_epoch_na_unknown_basis():
+    rule = RULES[H1_RULE_ID]
+    right = _h1_right()
+    right = dataclasses.replace(right, target_epoch=NA)
+    result = compare_qualified(_h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"})
+    assert result.status.value == "not_comparable"
+    assert result.reason == "unknown_basis:eval_target_epoch"
+
+
+def test_h1_stem_bridge_refuses_cpi_forecast_vs_nfp_receipt():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(value=0.2),
+        _obs(
+            value=130.0,
+            evidence_class="official_measurement",
+            target="nfp_total_nonfarm_h1",
+            unit="thousands_persons",
+            basket_or_index="NFP",
+            target_epoch="2026-09-30",
+            content_ref="same_vintage:bcdef0123456789abcdef012",
+            seasonal_treatment="sa",
+        ),
+        rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "basis_mismatch:target_stem"
+
+
+def test_h1_right_without_same_vintage_receipt_refused():
+    rule = RULES[H1_RULE_ID]
+    right = _obs(
+        value=0.30,
+        evidence_class="official_measurement",
+        target="cpi_u_all_items_mom_sa_h1",
+        content_ref="some_other_receipt:abc",
+        target_epoch="2026-09-30",
+    )
+    result = compare_qualified(_h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"})
+    assert result.status.value == "not_comparable"
+    assert "constraint:content_ref:right" == result.reason
+
+
+def test_h1_rule_refuses_first_print_right_side():
+    rule = RULES[H1_RULE_ID]
+    right = _obs(
+        value=0.30,
+        evidence_class="official_measurement",
+        target="cpi_u_all_items_mom_sa_first_print",
+        content_ref="same_vintage:abcdef0123456789abcdef01",
+        target_epoch="2026-09-30",
+    )
+    result = compare_qualified(_h1_left(), right, rule, context={"eval_target_epoch": "2026-09-30"})
+    assert result.status.value == "not_comparable"
+    assert "constraint:target:right" == result.reason
+
+
+def test_first_print_refuses_h1_right_side():
+    fp_rule = RULES["forecast_vs_first_print.v1"]
+    result = compare_qualified(
+        _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2"),
+        _h1_right(),
+        fp_rule,
+    )
+    assert result.status.value == "not_comparable"
+    assert "constraint:target:right" == result.reason
+
+
+def test_first_print_ignores_eval_target_epoch_context():
+    fp_rule = RULES["forecast_vs_first_print.v1"]
+    left = _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2")
+    right = _obs(value=0.3)
+    without = compare_qualified(left, right, fp_rule, context=None)
+    with_ctx = compare_qualified(
+        left, right, fp_rule, context={"eval_target_epoch": "h1_2026_10"},
+    )
+    assert without.to_dict() == with_ctx.to_dict()
+
+
+def test_h1_export_with_unknown_rights_blocked():
+    rule = dataclasses.replace(RULES[H1_RULE_ID], purpose="export")
+    left = _h1_left(rights="unknown")
+    right = _h1_right(rights="unknown")
+    result = compare_qualified(
+        left, right, rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result.status.value == "not_comparable"
+    assert result.reason == "rights_unknown"
+
+
+def test_h1_proxy_vintage_limitation_present():
+    rule = RULES[H1_RULE_ID]
+    right_with_proxy = _obs(
+        value=0.30,
+        evidence_class="official_measurement",
+        target="cpi_u_all_items_mom_sa_h1",
+        content_ref="same_vintage:abcdef0123456789abcdef01",
+        target_epoch="2026-09-30",
+        quality=("proxy_vintage",),
+    )
+    result = compare_qualified(
+        _h1_left(),
+        right_with_proxy,
+        rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert "proxy_vintage:right" in result.limitations
+    assert "h1_target_not_official_first_print" in result.limitations
+
+
+def test_h1_left_target_epoch_never_compared():
+    rule = RULES[H1_RULE_ID]
+    left_a = dataclasses.replace(_h1_left(), target_epoch="2026-09-30")
+    left_b = dataclasses.replace(_h1_left(), target_epoch="2099-12-31")
+    right = _h1_right()
+    result_a = compare_qualified(
+        left_a, right, rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    result_b = compare_qualified(
+        left_b, right, rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result_a.status.value == "directly_comparable"
+    assert result_b.status.value == "directly_comparable"
+    assert result_a.difference == pytest.approx(result_b.difference)
+    assert result_a.reason == result_b.reason
+
+
+def test_h1_basket_mismatch_cpi_vs_pce():
+    rule = RULES[H1_RULE_ID]
+    result = compare_qualified(
+        _h1_left(value=0.20),
+        _obs(
+            value=0.15,
+            evidence_class="official_measurement",
+            target="cpi_u_all_items_mom_sa_h1",
+            basket_or_index="PCE",
+            unit="pct_mom",
+            seasonal_treatment="sa",
+            content_ref="same_vintage:pce01234567890123456789",
+            target_epoch="2026-09-30",
+        ),
+        rule,
+        context={"eval_target_epoch": "2026-09-30"},
+    )
+    assert result.status.value == "not_comparable"
+    assert "basis_mismatch:basket_or_index" == result.reason
+
+
+def test_eval_target_epoch_confined_to_h1_hook_ast():
+    """Every literal string ``eval_target_epoch`` in the module AST must lie
+    inside ``_compute_h1_target``; the lane forbids the keyword leaking into
+    other rules or hooks."""
+    import ast as _ast
+    tree = _ast.parse(MODULE_PATH.read_text(), filename=str(MODULE_PATH))
+    h1_func_nodes = []
+    needle = "eval_target_epoch"
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.FunctionDef) and node.name == "_compute_h1_target":
+            h1_func_nodes.append(node)
+    assert h1_func_nodes, "_compute_h1_target function is missing from module"
+    allowed_lineno_ranges = [
+        (n.lineno, n.end_lineno if hasattr(n, "end_lineno") and n.end_lineno else n.lineno)
+        for n in h1_func_nodes
+    ]
+
+    def _in_h1(lineno):
+        for start, end in allowed_lineno_ranges:
+            if start <= lineno <= end:
+                return True
+        return False
+
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.Constant) and node.value == needle:
+            assert _in_h1(node.lineno), (
+                "literal %r appears outside _compute_h1_target at line %d"
+                % (needle, node.lineno)
+            )
 
 
 def _realised_assumptions(**over):
