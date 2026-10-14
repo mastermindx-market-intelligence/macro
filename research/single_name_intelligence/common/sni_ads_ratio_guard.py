@@ -389,7 +389,10 @@ def check_ads_ratio(
             date_invalid = True
         elif end is not None and start is not None and end <= start:
             interval_invalid = True
-        if rec.get("issuer_id") != request_issuer:
+        # FAMILY TEXT RULE v2: equality only between two present values (X9-03).
+        rec_issuer = rec.get("issuer_id")
+        if not (_text_present(rec_issuer) and _text_present(request_issuer)
+                and rec_issuer == request_issuer):
             issuer_mismatch = True
 
     if unsourced:

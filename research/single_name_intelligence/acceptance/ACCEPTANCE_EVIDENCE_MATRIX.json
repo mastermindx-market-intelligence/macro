@@ -850,7 +850,7 @@
           "note": "INT7 red-team repair CGLREP: copy-guard literal scanner skips symlinks, survives cycles and non-str keys (synthetic; row stays PARTIAL)"
         }
       ],
-      "gap": "Product UI and rendered site remain unguarded; JSON and Python string literals remain unguarded."
+      "gap": "Product UI and rendered site remain unguarded (gated on R1)."
     },
     {
       "id": "A15",
@@ -1092,7 +1092,7 @@
         {
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/A20B_INJECTION_EXTENSION_2026-10-13.md",
-          "note": "Findings A20B-F1: p04_v2_draft_loader accepts a smuggled authority value outside its two official blocks."
+          "note": "Finding A20B-F1 (p04_v2_draft_loader accepted a smuggled authority value outside its two official blocks) is recorded FIXED by lane A20F."
         },
         {
           "ref": "main",
@@ -1102,7 +1102,7 @@
         {
           "ref": "main",
           "path": "tests/test_sni_injection_safety_ext.py",
-          "note": "test_a20b_08_loader_authority_smuggle_refused_or_not_true records A20B-F1 as a strict xfail on the P04 v2 draft loader."
+          "note": "test_a20b_08_loader_authority_smuggle_refused_or_not_true passes with no xfail; test_a20f_01..05 pin the A20F refusal of top-level, nested, falsy-non-False and list-embedded authority smuggles and that the committed P04 draft still loads."
         },
         {
           "ref": "main",
@@ -1130,7 +1130,7 @@
           "note": "INT7 structural authority scan: parses every SNI JSON/JSONL/YAML file and flags any non-False authority value however it is spelled (row stays PARTIAL)"
         }
       ],
-      "gap": "Finding A20B-F1 (the P04 v2 draft loader accepts a smuggled authority value outside its two official blocks) is open on BASE."
+      "gap": "A20B-F1 is fixed on BASE by lane A20F; injection safety is pinned on synthetic fixtures and committed SNI artifacts only, with no live retrieval or product surface exercised."
     },
     {
       "id": "A21",

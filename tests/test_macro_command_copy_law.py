@@ -1966,6 +1966,10 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
     )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
     for other, fact in LINEAGE_NOTE_KIND_FACTS.items():
         zh = LINEAGE_NOTE_KIND_SENTENCES[other]["zh"]
         if other == kind:
@@ -1988,6 +1992,10 @@ def _assert_page_states_one_lineage_kind(html: str) -> str:
     """
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
+    )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
     )
     stated = [kind for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()
               if kind in LINEAGE_NOTE_KIND_SENTENCES and fact in html]

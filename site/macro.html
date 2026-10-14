@@ -121,7 +121,7 @@
 <link rel="preload" as="style" href="assets/css/ac31abdd.css?v=ac31abdd">
 <link rel="preload" as="style" href="assets/css/8d75ce3f.css?v=8d75ce3f">
 <link rel="preload" as="style" href="assets/css/abe9c747.css?v=abe9c747">
-<link rel="preload" as="style" href="assets/css/ad29aa1a.css?v=ad29aa1a">
+<link rel="preload" as="style" href="assets/css/ddaf9092.css?v=ddaf9092">
 <link rel="preload" as="style" href="assets/css/b2bc0843.css?v=b2bc0843">
 
 </head>
@@ -2537,7 +2537,7 @@
     </div>
     
   
-  <link rel="stylesheet" href="assets/css/ad29aa1a.css?v=ad29aa1a">
+  <link rel="stylesheet" href="assets/css/ddaf9092.css?v=ddaf9092">
   <div class="panel span12" id="release-radar">
     <h2><span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span>
       <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Pre-print model projections for upcoming US macro releases (CPI, NFP, PCE, PPI). Comparison set is our own benchmark set (naive prior, trailing trend, Cleveland nowcast) — not street estimates. Display-only context; not investment advice; scored forward in public.</span><span class="l-zh">即将公布美国宏观数据（CPI、NFP、PCE、PPI）的预测模型。对比基准为我方自有基准集（朴素先验、趋势追踪、克利夫兰预报），非街道估算。仅展示，非投资建议，正向评分公开记录。</span></span></span>
@@ -3206,6 +3206,19 @@
     /* MRI-R24: v3_factor challenger shadow row */
     function v3FactorRow(v3, isClaims, isNfp){
       if (!v3) return '';
+      /* RIC-M0: a withdrawn claim shows no number, only a plain note */
+      if (v3.claim_withdrawn){
+        return '<div class="rr-shadow-row">'
+          +'<div class="rr-shadow-label">'
+          +'<span class="l-en">V3 Factor · comparison model</span>'
+          +'<span class="l-zh">V3 因子 · 对比模型</span>'
+          +'</div>'
+          +'<div class="rr-shadow-retired">'
+          +'<span class="l-en">Withdrawn: on the first-print retest it did worse than its simple baseline, so no number is shown.</span>'
+          +'<span class="l-zh">已撤下：首发值复测中不及简单基准，故不显示数值。</span>'
+          +'</div>'
+          +'</div>';
+      }
       var useK = isClaims || isNfp;
       var ptStr = v3.point != null ? (useK ? fmtK(v3.point) : fmtNum(v3.point,2)) : '—';
       var warning = v3.warning || '';
@@ -4788,8 +4801,8 @@
         </span>
         
         <span class="mx5-sector-chip hot">
-          <span class="l-en">AI Software &amp; Platforms</span>
-          <span class="l-zh">AI 软件与平台</span>
+          <span class="l-en">Retail</span>
+          <span class="l-zh">零售</span>
         </span>
         
       </div>
@@ -4801,13 +4814,13 @@
       <div class="mx5-sector-chips">
         
         <span class="mx5-sector-chip cold">
-          <span class="l-en">Technology (Equal-Weight)</span>
-          <span class="l-zh">信息技术（等权）</span>
+          <span class="l-en">Energy (Equal-Weight)</span>
+          <span class="l-zh">能源（等权）</span>
         </span>
         
         <span class="mx5-sector-chip cold">
-          <span class="l-en">Energy (Equal-Weight)</span>
-          <span class="l-zh">能源（等权）</span>
+          <span class="l-en">Technology (Equal-Weight)</span>
+          <span class="l-zh">信息技术（等权）</span>
         </span>
         
         <span class="mx5-sector-chip cold">
@@ -4857,18 +4870,6 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="AI Software &amp; Platforms — heating" data-tip-zh="AI 软件与平台 — 升温">
-          <div class="mx5-sector-heat-bar mx5-shb-hot" style="height:37px;opacity:0.5700000000000001;"></div>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
         <div class="mx5-sector-heat-col" data-tip-en="Retail — heating" data-tip-zh="零售 — 升温">
           <div class="mx5-sector-heat-bar mx5-shb-hot" style="height:16px;opacity:0.28;"></div>
         </div>
@@ -4881,8 +4882,8 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="Technology (Equal-Weight) — cooling" data-tip-zh="信息技术（等权） — 退潮">
-          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:32px;opacity:0.41999999999999993;"></div>
+        <div class="mx5-sector-heat-col" data-tip-en="Energy (Equal-Weight) — cooling" data-tip-zh="能源（等权） — 退潮">
+          <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:37px;opacity:0.48999999999999994;"></div>
         </div>
         
         
@@ -4893,7 +4894,7 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="Energy (Equal-Weight) — cooling" data-tip-zh="能源（等权） — 退潮">
+        <div class="mx5-sector-heat-col" data-tip-en="Technology (Equal-Weight) — cooling" data-tip-zh="信息技术（等权） — 退潮">
           <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:27px;opacity:0.3499999999999999;"></div>
         </div>
         
@@ -5129,13 +5130,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
-        
-        <span class="mx5-ai-ticker-pill">UNH</span>
-        
         <span class="mx5-ai-ticker-pill">XLF</span>
         
-        <span class="mx5-ai-ticker-pill">SPY</span>
+        <span class="mx5-ai-ticker-pill">MSTR</span>
+        
+        <span class="mx5-ai-ticker-pill">QQQ</span>
+        
+        <span class="mx5-ai-ticker-pill">BAC</span>
         
       </div>
       
@@ -5143,14 +5144,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 High-Impact Items</span><br>
-          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">growth</span><br>
-          4 high-impact signals across channels
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">3 High-Impact Items</span><br>
+          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">earnings</span><br>
+          3 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">4 条高影响信息</span><br>
-          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">增长</span><br>
-          4 条高影响信号
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">3 条高影响信息</span><br>
+          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">业绩</span><br>
+          3 条高影响信号
         </span>
         
       </div>
@@ -5233,11 +5234,11 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Earnings Snapshot: ASML Q3 GAAP EPS beats at €12.93; raises Q4 guidance above es…</span>
-              <span class="l-zh">财报速览：ASML第三季度GAAP每股收益达12.93欧元，超预期；上调第四季度指引至高于预期，并更新2026财年销售展…</span>
+              <span class="l-en">Bank of America shares drop 8% after third-quarter revenue miss and regulatory p…</span>
+              <span class="l-zh">美国银行股价下跌8%，因第三季度营收未达预期及监管罚款</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>Seeking Alpha - Market Currents</span> · 
+              <span>CNBC - Stock Blog</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -6101,14 +6102,8 @@
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr heat">&#9650;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></span>
-              <span class="mx5-dlg-sector-rk">#4</span>
-            </div>
-            
-            <div class="mx5-dlg-sector-row">
-              <span class="mx5-dlg-sector-arr heat">&#9650;</span>
               <span class="mx5-dlg-sector-name"><span class="l-en">Retail</span><span class="l-zh">零售</span></span>
-              <span class="mx5-dlg-sector-rk">#20</span>
+              <span class="mx5-dlg-sector-rk">#19</span>
             </div>
             
           </div>
@@ -6117,13 +6112,13 @@
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr cool">&#9661;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></span>
-              <span class="mx5-dlg-sector-rk">#5</span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">Energy (Equal-Weight)</span><span class="l-zh">能源（等权）</span></span>
+              <span class="mx5-dlg-sector-rk">#4</span>
             </div>
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr cool">&#9661;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">Energy (Equal-Weight)</span><span class="l-zh">能源（等权）</span></span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></span>
               <span class="mx5-dlg-sector-rk">#6</span>
             </div>
             
@@ -6343,7 +6338,7 @@
 
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="26c50cc78d41747f" data-settled-session="2026-10-13" data-coherence="MIXED">
+         data-bundle-id="96164a9794bec56f" data-settled-session="2026-10-13" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
@@ -6401,11 +6396,11 @@
     <summary><span class="l-en">Settled evidence · 4 sources</span><span class="l-zh">收盘依据 · 4 个来源</span></summary>
     <div class="gde-disc-body">
           
-          <div id="gde-rotation-context" data-context-session="2026-10-08">
+          <div id="gde-rotation-context" data-context-session="2026-10-13">
             <p class="gde-disc-h"><span class="l-en">Leadership and risk · settled evidence</span><span class="l-zh">领涨变化与风险 · 收盘依据</span></p>
             
             
-            <p class="gde-input-caveat"><span class="l-en">Rotation evidence is unavailable for this session. This does not establish a stable market.</span><span class="l-zh">本交易日的轮动依据不全，不能据此认定市场稳定。</span></p>
+            <p class="gde-context-line"><span class="l-en">Defensive groups and broader-market proxies gaining relative strength · 2026-10-13.</span><span class="l-zh">防御板块与更广市场代理相对转强 · 2026-10-13。</span></p>
             
             <p class="gde-context-line"><span class="l-en">The macro backdrop and relative leadership describe different aspects of the market. Shared price or breadth inputs do not count as independent confirmation.</span><span class="l-zh">宏观背景与相对领涨结构描述市场的不同方面。共用的价格或广度数据不能重复计为独立确认。</span></p>
             
@@ -6463,9 +6458,9 @@
                 <tr>
                   <td class="l"><span class="l-en">Relative leadership</span><span class="l-zh">相对领导变化</span></td>
                   <td class="tnum"><span class="l-en">Defensive groups and broader-market proxies gaining relative strength</span><span class="l-zh">防御板块与更广市场代理相对转强</span></td>
-                  <td class="tnum">2026-10-08</td>
+                  <td class="tnum">2026-10-13</td>
                   <td>
-                    <span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
+                    <span class="l-en">This session</span><span class="l-zh">本交易日</span>
                     
                   </td>
                 </tr>
@@ -6477,7 +6472,7 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 26c50cc78d41747f ·
+            grey-deer-v1-2026-08-19 · bundle 96164a9794bec56f ·
             coverage DEGRADED ·
             coherence MIXED (scope market_reads) ·
             stage null (required_coverage_unavailable) ·
@@ -7922,7 +7917,7 @@
         <section class="riskdlg-vw" data-sx-vw-host="risk-detail">
           <div class="riskdlg-sec-h">
             <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
-            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-12</small>
+            <small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-13</small>
           </div>
           <div class="riskdlg-vw-note">
             <span class="l-en">Detailed volatility, curve, correlation and dispersion context. Display-only — the regime read above remains primary.</span>
@@ -8294,7 +8289,7 @@
             
             <a class="riskdlg-theme" href="basket/ai_software.html">
               <span class="riskdlg-tn"><span class="l-en">AI Software</span><span class="l-zh">AI 软件</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#4</span><span class="riskdlg-rank-delta up"> · ▲3 5d</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#5</span><span class="riskdlg-rank-delta up"> · ▲2 5d</span></span>
             </a>
             
             
@@ -8332,14 +8327,14 @@
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/semicap_equipment.html">
               <span class="riskdlg-tn"><span class="l-en">Semicap Equipment</span><span class="l-zh">半导体设备</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#15</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#13</span></span>
             </a>
             
             
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/memory_storage.html">
               <span class="riskdlg-tn"><span class="l-en">Memory &amp; Storage</span><span class="l-zh">存储与内存</span></span>
-              <span class="riskdlg-tm"><span class="riskdlg-rank">#26</span><span class="riskdlg-rank-delta down"> · ▼20 5d</span></span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#27</span><span class="riskdlg-rank-delta down"> · ▼21 5d</span></span>
             </a>
             
             </details>
@@ -9231,10 +9226,46 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4652736-earnings-snapshot-asml-q3-gaap-eps-beats-at-1293-raises-q4-guidance-above-estimates-and-updates-fy26-sales-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/10/14/bank-of-america-bac-q3-2026-earnings.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Earnings Snapshot: ASML Q3 GAAP EPS beats at €12.93; raises Q4 guidance above estimates and updates FY26 sales outlook</span><span class="l-zh">财报速览：ASML第三季度GAAP每股收益达12.93欧元，超预期；上调第四季度指引至高于预期，并更新2026财年销售展望</span></span>
+              <span class="nbx-title"><span class="l-en">Bank of America shares drop 8% after third-quarter revenue miss and regulatory penalty</span><span class="l-zh">美国银行股价下跌8%，因第三季度营收未达预期及监管罚款</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 14</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.cnbc.com/investingclub/2026/10/14/were-exiting-our-remaining-stake-in-an-industrial-stock-spin-off-gone-wrong.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">We&#39;re exiting our remaining stake in an industrial stock spin-off gone wrong</span><span class="l-zh">我们正在退出对一家工业股分拆失误的剩余持股</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 14</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4653026-yieldmax-intc-option-income-strategy-etf-announces-weekly-distribution-of-04070?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">YieldMax INTC Option Income Strategy ETF announces weekly distribution of $0.4070</span><span class="l-zh">YieldMax INTC Option Income Strategy ETF宣布每周派息0.4070美元</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9267,15 +9298,51 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/unitedhealth-keeps-medical-costs-under-control-and-raises-its-outlook-again-71abc99c?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4653017-nvidia-chipagents-launch-benchmark-to-test-ai-models-on-chip-design-report?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
-              <span class="nbx-title"><span class="l-en">UnitedHealth keeps medical costs under control — and raises its outlook again</span><span class="l-zh">联合健康将医疗成本控制得当——并再次上调其展望</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Nvidia, ChipAgents launch benchmark to test AI models on chip design: report</span><span class="l-zh">英伟达与ChipAgents推出基准测试，评估AI模型在芯片设计上的表现：报道</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 13</span>
+              <span class="nbx-date">Oct 14</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4653027-yieldmax-jp-option-income-strategy-etf-announces-weekly-distribution-of-00478?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">YieldMax JP Option Income Strategy ETF announces weekly distribution of $0.0478</span><span class="l-zh">YieldMax JP Option Income Strategy ETF宣布每周派息0.0478美元</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 14</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4653023-yieldmax-hood-option-income-strategy-etf-announces-weekly-distribution-of-03012?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">YieldMax HOOD Option Income Strategy ETF announces weekly distribution of $0.3012</span><span class="l-zh">YieldMax HOOD Option Income Strategy ETF宣布每周派息0.3012美元</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Oct 14</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -9303,10 +9370,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4652734-asian-equities-stabilize-following-wall-street-tech-selloff-oil-nears-95-china-trade-data-beats?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.npr.org/2026/10/14/nx-s1-5550974/skincare-scheme-mazal-group-investigation" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Asian equities stabilize following Wall Street tech selloff; oil nears $95, China trade data beats</span><span class="l-zh">华尔街科技股抛售后亚洲股市企稳；油价逼近95美元，中国贸易数据超预期</span></span>
+              <span class="nbx-title"><span class="l-en">The skincare scheme that led to consumer complaints, lawsuits and a federal investigation</span><span class="l-zh">导致消费者投诉、诉讼和联邦调查的护肤方案</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -9321,87 +9388,15 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4652750-nvidia-commits-250m-over-5-years-to-advance-uk-agentic-safety-research?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Nvidia commits $250M over 5 years to advance UK agentic safety research</span><span class="l-zh">英伟达承诺5年内投入2.5亿美元推进英国代理式安全研究</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 14</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/14/goldman-says-investors-seek-profitable-chinese-business-growth-abroad.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.marketwatch.com/story/bank-of-america-adds-a-profit-miss-to-the-misery-of-a-1-2-billion-government-fine-d4420bfa?mod=mw_rss_topstories" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Goldman says investors are looking for &#39;profitable&#39; Chinese business growth overseas</span><span class="l-zh">高盛称投资者正寻找中国企业在海外实现“盈利性”增长的机会</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 13</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4652744-coreweave-seeks-insurers-capital-to-finance-ai-infrastructure-build-out---report?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">CoreWeave seeks insurers’ capital to finance AI infrastructure build-out - report</span><span class="l-zh">CoreWeave寻求保险公司资金为AI基础设施扩建融资——报道</span></span>
+              <span class="nbx-title"><span class="l-en">Bank of America adds a profit miss to the misery of a $1.2 billion government fine</span><span class="l-zh">美国银行利润未达预期，再添12亿美元政府罚款的困境</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Oct 14</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/the-spacex-threat-could-loom-over-at-ts-stock-for-a-prolonged-stretch-analyst-cautions-71436853?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
-              <span class="nbx-title"><span class="l-en">The SpaceX threat could loom over AT&amp;T’s stock for a prolonged stretch, analyst cautions</span><span class="l-zh">分析师警告：SpaceX的威胁可能长期笼罩AT&amp;T股价</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 13</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/10/12/a-massive-trade-just-happens-in-surging-shares-of-snap.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">A massive trade just happened in surging shares of Snap</span><span class="l-zh">Snap股价飙升之际出现一笔巨额交易</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 12</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -9467,7 +9462,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
             <span class="l-en">Easing pressure building</span>
             <span class="l-zh">宽松压力积聚</span>
           </span>
-          <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">2026-10-08</span>
+          <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">2026-10-13</span>
         </div>
         <div style="font-size:13px;color:var(--ink-2,rgba(255,255,255,.7));line-height:1.6">
           <span class="l-en">Easing pressure is building — futures still price about three hikes. A deeper equity pullback is the main offset.</span>
@@ -9510,8 +9505,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
                 
                 
                 <span class="fbm-leg hawk "
-                      data-tip-en="10y breakeven moved -5.0bp over 20 days (threshold: +8bp)."
-                      data-tip-zh="10年期盈亏平衡点20天变动-5.0个基点（阈值：+8bp）。">
+                      data-tip-en="10y breakeven moved -3.0bp over 20 days (threshold: +8bp)."
+                      data-tip-zh="10年期盈亏平衡点20天变动-3.0个基点（阈值：+8bp）。">
                   <span class="fbm-dot"></span><span class="l-en">Breakevens</span><span class="l-zh">盈亏平衡</span>
                 </span>
                 
@@ -9571,8 +9566,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
                 
                 
                 <span class="fbm-leg ease "
-                      data-tip-en="HY OAS z-score: 0.48 (threshold: +1.0)."
-                      data-tip-zh="高收益利差z分数：0.48（阈值：+1.0）。">
+                      data-tip-en="HY OAS z-score: 0.47 (threshold: +1.0)."
+                      data-tip-zh="高收益利差z分数：0.47（阈值：+1.0）。">
                   <span class="fbm-dot"></span><span class="l-en">Credit stress</span><span class="l-zh">信用压力</span>
                 </span>
                 
@@ -9710,6 +9705,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         <div class="fbm-chart-take">
           <span class="l-en">At end-2026 the market implies 4.00% vs the Fed&#39;s 4.10% median dot (-10bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.99pp).</span>
           <span class="l-zh">在end-2026，市场隐含 4.00% 对比美联储 4.10% 的中位点（-10基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.99个百分点）。</span>
+          <span class="fbm-tip" data-tip-en="Path source: ZQ fed-funds futures. Futures prices carry a risk premium — a market read, not a forecast." data-tip-zh="路径来源：ZQ 联邦基金期货。期货价格含风险溢价——是市场定价，不是预测。">?</span>
         </div>
         
         
@@ -9760,12 +9756,21 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
       
       
+      
+      
+      
+      
+      
+      
+      
+      
+      
       <div class="fbm-row">
-        <span class="fbm-row-state" style="color:var(--warn,#f59e0b)"><span class="fbm-row-dot" style="background:var(--warn,#f59e0b)"></span><span class="l-en">Next CPI · 5d</span><span class="l-zh">下次CPI · 5天</span></span>
+        <span class="fbm-row-state" style="color:var(--warn,#f59e0b)"><span class="fbm-row-dot" style="background:var(--warn,#f59e0b)"></span><span class="l-en">Next CPI · 2026-10-14</span><span class="l-zh">下次CPI · 2026-10-14</span></span>
         <span class="fbm-row-line"><span class="l-en">Recent data leans in line — a print either way can reset the read.</span><span class="l-zh">近期数据大致符合 — 任一方向的数据都可能重置解读。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Release 2026-10-14 (5 days out). Surprise skew: inline, -0.14σ."
-          data-tip-zh="发布 2026-10-14（5 天后）。惊喜偏向：inline，-0.14σ。">?</span>
+          data-tip-en="Release 2026-10-14. Day count not shown: it was computed when the data was built, not today. Recent-data lean: in line, -0.14σ."
+          data-tip-zh="发布 2026-10-14。未显示天数：天数在数据生成时计算，并非今天。近期数据倾向：大致符合，-0.14σ。">?</span>
       </div>
       
       <div class="mx5-dlg-sep"></div>
@@ -9796,8 +9801,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         <span class="fbm-row-state" style="color:var(--down,#ef4444)"><span class="fbm-row-dot" style="background:var(--down,#ef4444)"></span><span class="l-en">Bear steepener</span><span class="l-zh">熊市变陡</span></span>
         <span class="fbm-row-line"><span class="l-en">Long-end yields are rising faster than the front — driven by fiscal and risk-premium, not a growth call.</span><span class="l-zh">长端收益率上升快于短端 — 由财政与风险溢价驱动，非增长判断。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Curve shape: Bear steepener. Term premium rising (+28bp). Kim-Wright model (FRED THREEFYTP10); ACM pending."
-          data-tip-zh="曲线形态：熊市变陡。期限溢价上升（+28bp）。Kim-Wright模型（FRED THREEFYTP10）；ACM待接入。">?</span>
+          data-tip-en="Curve shape: Bear steepener. Term premium rising (+30bp). Kim-Wright model (FRED THREEFYTP10); ACM pending."
+          data-tip-zh="曲线形态：熊市变陡。期限溢价上升（+30bp）。Kim-Wright模型（FRED THREEFYTP10）；ACM待接入。">?</span>
       </div>
       
       <div class="mx5-dlg-sep"></div>
@@ -9825,18 +9830,18 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <span class="fbm-chip"
-          data-tip-en="Fed officials made 6 public comments in the last 7 days, 20 in the last 30 — more talk often precedes a shift in guidance."
-          data-tip-zh="美联储官员近7天公开发言 6 次，近30天 20 次 — 发声增多往往先于指引调整。">
+          data-tip-en="Fed officials made 6 public comments in the last 7 days, 21 in the last 30 — more talk often precedes a shift in guidance."
+          data-tip-zh="美联储官员近7天公开发言 6 次，近30天 21 次 — 发声增多往往先于指引调整。">
           <span class="fbm-chip-k"><span class="l-en">Comments</span><span class="l-zh">发声</span></span>
           <span><span class="l-en">6 this week</span><span class="l-zh">本周 6 次</span></span>
         </span>
         
         
         <span class="fbm-chip"
-          data-tip-en="Policy intel is 92 days old (as of 2026-07-13)."
-          data-tip-zh="政策情报为 92 天前（截至 2026-07-13）。">
+          data-tip-en="Policy intel is 93 days old (as of 2026-07-13)."
+          data-tip-zh="政策情报为 93 天前（截至 2026-07-13）。">
           <span class="fbm-chip-k"><span class="l-en">Intel</span><span class="l-zh">情报</span></span>
-          <span><span class="l-en">92d old</span><span class="l-zh">92天前</span></span>
+          <span><span class="l-en">93d old</span><span class="l-zh">93天前</span></span>
         </span>
         
       </div>
@@ -9845,8 +9850,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
       <div class="fbm-chips">
         <span class="fbm-chip warn"
-          data-tip-en="Intel as of 2026-07-13 (92d old) — Conditions only, no direction or probability assigned."
-          data-tip-zh="情报截至2026-07-13（92天前） — 条件性观察，不赋予方向或概率。">
+          data-tip-en="Intel as of 2026-07-13 (93d old) — Conditions only, no direction or probability assigned."
+          data-tip-zh="情报截至2026-07-13（93天前） — 条件性观察，不赋予方向或概率。">
           <span class="fbm-chip-k"><span class="l-en">Geopolitics</span><span class="l-zh">地缘</span></span>
           <span><span class="l-en">Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)</span><span class="l-zh">伊朗/中东 —— 停火已崩溃（截至7/8）</span></span>
         </span>
@@ -9990,9 +9995,9 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
       <div class="mx5-dlg-sep"></div>
       <div style="font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.4));line-height:1.6;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span class="l-en">As of 2026-10-08 — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
-        <span class="l-zh">截至 2026-10-08 — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
-        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 24d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 92d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 24d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 92d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
+        <span class="l-en">As of 2026-10-13 — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
+        <span class="l-zh">截至 2026-10-13 — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
+        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 25d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 93d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 25d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 93d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
       </div>
       
 
@@ -10053,8 +10058,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:55.0%;background:var(--fg-col, #f59e0b)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #f59e0b)">55</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:54.0%;background:var(--fg-col, #f59e0b)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #f59e0b)">54</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10068,10 +10073,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(9.0 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(7.2 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">55</div>
+<div class="sg-dial-val">54</div>
 <div class="sg-dial-cap">Neutral</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10090,14 +10095,14 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" points="0.0,13.92 5.42,12.06 10.85,12.54 16.27,16.11 21.69,16.02 27.12,16.11 32.54,15.6 37.97,19.83 43.39,15.57 48.81,13.65 54.24,10.35 59.66,6.84 65.08,7.32 70.51,7.74 75.93,6.93 81.36,7.14 86.78,7.8 92.2,7.53 97.63,6.57 103.05,7.11 108.47,8.1 113.9,9.87 119.32,9.66 124.75,11.94 130.17,11.16 135.59,12.09 141.02,11.55 146.44,11.73 151.86,10.32 157.29,11.13 162.71,12.12 168.14,14.07 173.56,13.14 178.98,10.86 184.41,12.09 189.83,13.74 195.25,15.39 200.68,17.31 206.1,15.3 211.53,16.83 216.95,18.3 222.37,19.74 227.8,17.04 233.22,17.04 238.64,13.11 244.07,13.47 249.49,15.99 254.92,16.53 260.34,15.48 265.76,17.94 271.19,18.75 276.61,19.62 282.03,19.5 287.46,17.82 292.88,16.35 298.31,15.12 303.73,16.14 309.15,17.58 314.58,16.26 320.0,16.62 "/>
+<polyline fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" points="0.0,12.06 5.42,12.54 10.85,16.11 16.27,16.02 21.69,16.11 27.12,15.6 32.54,19.83 37.97,15.57 43.39,13.65 48.81,10.35 54.24,6.84 59.66,7.32 65.08,7.74 70.51,6.93 75.93,7.14 81.36,7.8 86.78,7.53 92.2,6.57 97.63,7.11 103.05,8.1 108.47,9.87 113.9,9.66 119.32,11.94 124.75,11.16 130.17,12.09 135.59,11.55 141.02,11.73 146.44,10.32 151.86,11.13 157.29,12.12 162.71,14.07 168.14,13.14 173.56,10.86 178.98,12.09 184.41,13.74 189.83,15.39 195.25,17.31 200.68,15.3 206.1,16.83 211.53,18.3 216.95,19.74 222.37,17.04 227.8,17.04 233.22,13.11 238.64,13.47 244.07,15.99 249.49,16.53 254.92,15.48 260.34,17.94 265.76,18.75 271.19,19.62 276.61,19.5 282.03,17.82 287.46,16.35 292.88,15.12 298.31,16.14 303.73,17.58 309.15,16.26 314.58,16.62 320.0,16.89 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 4.1 · 55/100 in its own history</span>
-              <span class="l-zh">读数：4.1 · 历史百分位 55/100</span>
+              <span class="l-en">Reading: 3.99 · 54/100 in its own history</span>
+              <span class="l-zh">读数：3.99 · 历史百分位 54/100</span>
             </div>
           </span>
         </div>
@@ -10301,8 +10306,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:83.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">83</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:82.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">82</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10316,10 +10321,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(59.4 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(57.6 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">83</div>
+<div class="sg-dial-val">82</div>
 <div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10338,14 +10343,14 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,15.15 5.42,13.47 10.85,9.69 16.27,9.03 21.69,9.3 27.12,8.94 32.54,12.9 37.97,17.31 43.39,14.37 48.81,11.04 54.24,10.65 59.66,9.6 65.08,10.23 70.51,10.89 75.93,11.16 81.36,9.12 86.78,10.56 92.2,10.23 97.63,9.0 103.05,6.39 108.47,6.6 113.9,10.11 119.32,13.5 124.75,11.49 130.17,9.81 135.59,10.59 141.02,11.49 146.44,11.16 151.86,13.2 157.29,16.47 162.71,18.99 168.14,21.99 173.56,20.22 178.98,19.08 184.41,21.15 189.83,24.03 195.25,22.89 200.68,22.44 206.1,20.97 211.53,23.16 216.95,24.3 222.37,23.49 227.8,20.22 233.22,18.36 238.64,18.06 244.07,15.54 249.49,11.91 254.92,9.75 260.34,10.2 265.76,10.11 271.19,9.69 276.61,8.58 282.03,9.42 287.46,9.21 292.88,6.69 298.31,5.79 303.73,5.94 309.15,8.28 314.58,8.67 320.0,8.13 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,13.47 5.42,9.69 10.85,9.03 16.27,9.3 21.69,8.94 27.12,12.9 32.54,17.31 37.97,14.37 43.39,11.04 48.81,10.65 54.24,9.6 59.66,10.23 65.08,10.89 70.51,11.16 75.93,9.12 81.36,10.56 86.78,10.23 92.2,9.0 97.63,6.39 103.05,6.6 108.47,10.11 113.9,13.5 119.32,11.49 124.75,9.81 130.17,10.59 135.59,11.49 141.02,11.16 146.44,13.2 151.86,16.47 157.29,18.99 162.71,21.99 168.14,20.22 173.56,19.08 178.98,21.15 184.41,24.03 189.83,22.89 195.25,22.44 200.68,20.97 206.1,23.16 211.53,24.3 216.95,23.49 222.37,20.22 227.8,18.36 233.22,18.06 238.64,15.54 244.07,11.91 249.49,9.75 254.92,10.2 260.34,10.11 265.76,9.69 271.19,8.58 276.61,9.42 282.03,9.21 287.46,6.69 292.88,5.79 298.31,5.94 303.73,8.28 309.15,8.67 314.58,8.13 320.0,8.43 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 5.69 · 83/100 in its own history</span>
-              <span class="l-zh">读数：5.69 · 历史百分位 83/100</span>
+              <span class="l-en">Reading: 5.49 · 82/100 in its own history</span>
+              <span class="l-zh">读数：5.49 · 历史百分位 82/100</span>
             </div>
           </span>
         </div>
@@ -10363,8 +10368,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:67.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">67</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:66.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">66</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10378,10 +10383,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(30.6 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(28.8 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">67</div>
+<div class="sg-dial-val">66</div>
 <div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10400,14 +10405,14 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,17.01 5.42,16.14 10.85,19.86 16.27,19.62 21.69,19.8 27.12,19.02 32.54,22.8 37.97,17.1 43.39,14.61 48.81,14.28 54.24,15.84 59.66,14.22 65.08,12.9 70.51,12.39 75.93,13.5 81.36,13.11 86.78,11.67 92.2,11.82 97.63,11.04 103.05,12.96 108.47,14.28 113.9,12.39 119.32,14.67 124.75,12.87 130.17,14.31 135.59,13.47 141.02,12.99 146.44,11.55 151.86,11.37 157.29,12.45 162.71,15.48 168.14,12.99 173.56,11.16 178.98,11.61 184.41,13.17 189.83,14.04 195.25,15.78 200.68,18.48 206.1,14.31 211.53,17.16 216.95,17.34 222.37,18.24 227.8,13.44 233.22,12.21 238.64,12.36 244.07,10.95 249.49,12.96 254.92,13.98 260.34,12.36 265.76,14.85 271.19,14.79 276.61,15.51 282.03,15.63 287.46,13.2 292.88,13.65 298.31,12.63 303.73,12.78 309.15,13.38 314.58,12.27 320.0,13.02 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,16.14 5.42,19.86 10.85,19.62 16.27,19.8 21.69,19.02 27.12,22.8 32.54,17.1 37.97,14.61 43.39,14.28 48.81,15.84 54.24,14.22 59.66,12.9 65.08,12.39 70.51,13.5 75.93,13.11 81.36,11.67 86.78,11.82 92.2,11.04 97.63,12.96 103.05,14.28 108.47,12.39 113.9,14.67 119.32,12.87 124.75,14.31 130.17,13.47 135.59,12.99 141.02,11.55 146.44,11.37 151.86,12.45 157.29,15.48 162.71,12.99 168.14,11.16 173.56,11.61 178.98,13.17 184.41,14.04 189.83,15.78 195.25,18.48 200.68,14.31 206.1,17.16 211.53,17.34 216.95,18.24 222.37,13.44 227.8,12.21 233.22,12.36 238.64,10.95 244.07,12.96 249.49,13.98 254.92,12.36 260.34,14.85 265.76,14.79 271.19,15.51 276.61,15.63 282.03,13.2 287.46,13.65 292.88,12.63 298.31,12.78 303.73,13.38 309.15,12.27 314.58,13.02 320.0,13.11 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 15.2 · 67/100 in its own history</span>
-              <span class="l-zh">读数：15.2 · 历史百分位 67/100</span>
+              <span class="l-en">Reading: 15.3 · 66/100 in its own history</span>
+              <span class="l-zh">读数：15.3 · 历史百分位 66/100</span>
             </div>
           </span>
         </div>
@@ -10425,8 +10430,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:71.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">71</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:72.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">72</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10440,10 +10445,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(37.8 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(39.6 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">71</div>
+<div class="sg-dial-val">72</div>
 <div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10462,14 +10467,14 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,18.3 5.42,9.0 10.85,19.56 16.27,17.97 21.69,20.28 27.12,21.51 32.54,29.49 37.97,21.3 43.39,18.6 48.81,20.43 54.24,20.76 59.66,14.55 65.08,16.23 70.51,18.75 75.93,12.27 81.36,14.04 86.78,14.43 92.2,11.04 97.63,6.51 103.05,7.89 108.47,14.1 113.9,12.09 119.32,9.36 124.75,7.92 130.17,9.06 135.59,9.21 141.02,5.52 146.44,9.69 151.86,12.84 157.29,15.18 162.71,18.63 168.14,16.62 173.56,15.66 178.98,17.67 184.41,18.63 189.83,21.09 195.25,25.65 200.68,28.26 206.1,24.87 211.53,25.68 216.95,24.15 222.37,27.57 227.8,16.83 233.22,17.94 238.64,15.0 244.07,13.95 249.49,19.2 254.92,23.52 260.34,21.09 265.76,23.49 271.19,18.0 276.61,23.43 282.03,26.07 287.46,22.23 292.88,20.13 298.31,16.14 303.73,13.41 309.15,10.08 314.58,14.94 320.0,11.61 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,9.0 5.42,19.56 10.85,17.97 16.27,20.28 21.69,21.51 27.12,29.49 32.54,21.3 37.97,18.6 43.39,20.43 48.81,20.76 54.24,14.55 59.66,16.23 65.08,18.75 70.51,12.27 75.93,14.04 81.36,14.43 86.78,11.04 92.2,6.51 97.63,7.89 103.05,14.1 108.47,12.09 113.9,9.36 119.32,7.92 124.75,9.06 130.17,9.21 135.59,5.52 141.02,9.69 146.44,12.84 151.86,15.18 157.29,18.63 162.71,16.62 168.14,15.66 173.56,17.67 178.98,18.63 184.41,21.09 189.83,25.65 195.25,28.26 200.68,24.87 206.1,25.68 211.53,24.15 216.95,27.57 222.37,16.83 227.8,17.94 233.22,15.0 238.64,13.95 244.07,19.2 249.49,23.52 254.92,21.09 260.34,23.49 265.76,18.0 271.19,23.43 276.61,26.07 282.03,22.23 287.46,20.13 292.88,16.14 298.31,13.41 303.73,10.08 309.15,14.94 314.58,11.61 320.0,11.49 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: -1.89 · 71/100 in its own history</span>
-              <span class="l-zh">读数：-1.89 · 历史百分位 71/100</span>
+              <span class="l-en">Reading: -1.93 · 72/100 in its own history</span>
+              <span class="l-zh">读数：-1.93 · 历史百分位 72/100</span>
             </div>
           </span>
         </div>
@@ -10487,8 +10492,8 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:76.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">76</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:75.0%;background:var(--fg-col, #22d97a)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">75</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -10502,10 +10507,10 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(46.8 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(45.0 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">76</div>
+<div class="sg-dial-val">75</div>
 <div class="sg-dial-cap">Greed</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -10524,14 +10529,14 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,20.64 5.42,13.62 10.85,10.59 16.27,19.71 21.69,19.38 27.12,21.99 32.54,21.03 37.97,26.31 43.39,14.58 48.81,8.88 54.24,8.43 59.66,10.89 65.08,8.01 70.51,5.4 75.93,4.41 81.36,5.82 86.78,5.19 92.2,3.84 97.63,3.9 103.05,3.36 108.47,4.53 113.9,6.6 119.32,4.8 124.75,8.79 130.17,6.21 135.59,11.1 141.02,10.14 146.44,9.75 151.86,7.05 157.29,6.96 162.71,10.56 168.14,17.25 173.56,11.58 178.98,6.6 184.41,6.93 189.83,11.22 195.25,14.04 200.68,19.2 206.1,10.68 211.53,16.56 216.95,16.8 222.37,18.15 227.8,7.83 233.22,5.58 238.64,6.66 244.07,5.16 249.49,8.58 254.92,10.44 260.34,7.47 265.76,15.6 271.19,16.5 276.61,17.04 282.03,15.72 287.46,10.41 292.88,12.39 298.31,10.56 303.73,10.59 309.15,10.83 314.58,8.13 320.0,10.14 "/>
+<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,13.62 5.42,10.59 10.85,19.71 16.27,19.38 21.69,21.99 27.12,21.03 32.54,26.31 37.97,14.58 43.39,8.88 48.81,8.43 54.24,10.89 59.66,8.01 65.08,5.4 70.51,4.41 75.93,5.82 81.36,5.19 86.78,3.84 92.2,3.9 97.63,3.36 103.05,4.53 108.47,6.6 113.9,4.8 119.32,8.79 124.75,6.21 130.17,11.1 135.59,10.14 141.02,9.75 146.44,7.05 151.86,6.96 157.29,10.56 162.71,17.25 168.14,11.58 173.56,6.6 178.98,6.93 184.41,11.22 189.83,14.04 195.25,19.2 200.68,10.68 206.1,16.56 211.53,16.8 216.95,18.15 222.37,7.83 227.8,5.58 233.22,6.66 238.64,5.16 244.07,8.58 249.49,10.44 254.92,7.47 260.34,15.6 265.76,16.5 271.19,17.04 276.61,15.72 282.03,10.41 287.46,12.39 292.88,10.56 298.31,10.59 303.73,10.83 309.15,8.13 314.58,10.14 320.0,10.44 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 0.848 · 76/100 in its own history</span>
-              <span class="l-zh">读数：0.848 · 历史百分位 76/100</span>
+              <span class="l-en">Reading: 0.85 · 75/100 in its own history</span>
+              <span class="l-zh">读数：0.85 · 历史百分位 75/100</span>
             </div>
           </span>
         </div>
@@ -10740,7 +10745,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           <span><span class="l-en">Sentiment context only — display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.</span><span class="l-zh">仅为情绪参考 — 公开市场指标的仅展示合成。不计分，不进入周期引擎，无前瞻性判断。贪婪/恐惧读数若无周期背景，不构成反向信号。</span></span>
           
           
-          <span class="sg-foot-asof" style="margin-left:auto"><span class="l-en">As of 2026-10-12</span><span class="l-zh">数据日期 2026-10-12</span></span>
+          <span class="sg-foot-asof" style="margin-left:auto"><span class="l-en">As of 2026-10-13</span><span class="l-zh">数据日期 2026-10-13</span></span>
           
         </div>
         
@@ -10773,7 +10778,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           <div class="sct-lane-head">
             <span class="sct-lane-dot"></span>
             <span class="l-en">Rotating in &mdash; leading</span><span class="l-zh">资金流入 — 领跑</span>
-            <span class="sct-lane-n">4<span class="l-en"> sectors</span><span class="l-zh"> 个板块</span></span>
+            <span class="sct-lane-n">3<span class="l-en"> sectors</span><span class="l-zh"> 个板块</span></span>
           </div>
           <div class="sct-rung" style="--sct-c:var(--up,#22d97a)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg></span>
@@ -10818,40 +10823,20 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
   <div class="sct-rung" style="--sct-c:var(--up,#22d97a)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg></span>
     <div class="sct-body">
-      <div class="sct-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></div>
-      <div class="sct-sub">
-        <span class="sct-rk">#4</span>
-        <span class="sct-stance"><span class="l-en">dominant</span><span class="l-zh">dominant</span></span>
-      </div>
-    </div>
-    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
-      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 16.0 L124 14.0"/>
-      <circle class="sct-dot-old" cx="8" cy="16.0" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="14.0" r="3.4"/>
-    </svg>
-    <div class="sct-delta">
-      <span class="sct-delta-v">+3</span>
-      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
-    </div>
-  </div>
-  <div class="sct-rung" style="--sct-c:var(--ink-3,rgba(255,255,255,.42))">
-    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span>
-    <div class="sct-body">
       <div class="sct-name"><span class="l-en">Retail</span><span class="l-zh">零售</span></div>
       <div class="sct-sub">
-        <span class="sct-rk">#20</span>
+        <span class="sct-rk">#19</span>
         <span class="sct-stance"><span class="l-en">emerging</span><span class="l-zh">emerging</span></span>
       </div>
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 15.0 L124 15.0"/>
-      <circle class="sct-dot-old" cx="8" cy="15.0" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="15.0" r="3.4"/>
+      <path class="sct-ln" d="M8 15.3 L124 14.7"/>
+      <circle class="sct-dot-old" cx="8" cy="15.3" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="14.7" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">0</span>
+      <span class="sct-delta-v">+1</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10866,43 +10851,43 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
             <span class="l-en">Losing momentum &mdash; lagging</span><span class="l-zh">动能减弱 — 落后</span>
             <span class="sct-lane-n">4<span class="l-en"> sectors</span><span class="l-zh"> 个板块</span></span>
           </div>
-          <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
-    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
-    <div class="sct-body">
-      <div class="sct-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></div>
-      <div class="sct-sub">
-        <span class="sct-rk">#5</span>
-        <span class="sct-stance"><span class="l-en">dominant</span><span class="l-zh">dominant</span></span>
-      </div>
-    </div>
-    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
-      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 13.7 L124 16.3"/>
-      <circle class="sct-dot-old" cx="8" cy="13.7" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="16.3" r="3.4"/>
-    </svg>
-    <div class="sct-delta">
-      <span class="sct-delta-v">-4</span>
-      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
-    </div>
-  </div>
-  <div class="sct-rung" style="--sct-c:var(--up,#22d97a)">
+          <div class="sct-rung" style="--sct-c:var(--up,#22d97a)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg></span>
     <div class="sct-body">
       <div class="sct-name"><span class="l-en">Energy (Equal-Weight)</span><span class="l-zh">能源（等权）</span></div>
       <div class="sct-sub">
-        <span class="sct-rk">#6</span>
+        <span class="sct-rk">#4</span>
         <span class="sct-stance"><span class="l-en">deteriorating</span><span class="l-zh">deteriorating</span></span>
       </div>
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 17.9 L124 12.1"/>
-      <circle class="sct-dot-old" cx="8" cy="17.9" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="12.1" r="3.4"/>
+      <path class="sct-ln" d="M8 18.5 L124 11.5"/>
+      <circle class="sct-dot-old" cx="8" cy="18.5" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="11.5" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">+9</span>
+      <span class="sct-delta-v">+11</span>
+      <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
+    </div>
+  </div>
+  <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
+    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
+    <div class="sct-body">
+      <div class="sct-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></div>
+      <div class="sct-sub">
+        <span class="sct-rk">#6</span>
+        <span class="sct-stance"><span class="l-en">dominant</span><span class="l-zh">dominant</span></span>
+      </div>
+    </div>
+    <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
+      <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
+      <path class="sct-ln" d="M8 13.4 L124 16.6"/>
+      <circle class="sct-dot-old" cx="8" cy="13.4" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="16.6" r="3.4"/>
+    </svg>
+    <div class="sct-delta">
+      <span class="sct-delta-v">-5</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -11428,7 +11413,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>511</td><td>2026-10-13</td>
+        <td>511</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11437,7 +11422,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11446,7 +11431,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>694</td><td>2026-10-13</td>
+        <td>696</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11455,7 +11440,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>251</td><td>2026-10-13</td>
+        <td>251</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11464,7 +11449,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>25</td><td>2026-10-13</td>
+        <td>25</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11473,7 +11458,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-10-13</td>
+        <td>180</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11482,7 +11467,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>8</td><td>2026-08-01</td>
+        <td>9</td><td>2026-09-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11491,7 +11476,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11500,7 +11485,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11509,7 +11494,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4</td><td>2026-10-13</td>
+        <td>4</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11527,7 +11512,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2390</td><td>2026-10-13</td>
+        <td>2391</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11536,7 +11521,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11545,7 +11530,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11554,7 +11539,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11563,7 +11548,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2547</td><td>2026-10-13</td>
+        <td>2552</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11572,7 +11557,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-10-12</td>
+        <td>180</td><td>2026-10-13</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11581,7 +11566,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11590,7 +11575,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-10-13</td>
+        <td>6</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11599,7 +11584,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11608,7 +11593,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11617,7 +11602,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11626,7 +11611,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>9034</td><td>2026-10-13</td>
+        <td>9035</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11635,7 +11620,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>3747</td><td>2026-10-13</td>
+        <td>10090</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11644,7 +11629,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>8151</td><td>2026-10-13</td>
+        <td>8153</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11653,7 +11638,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4466</td><td>2026-10-13</td>
+        <td>4468</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11662,7 +11647,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11671,7 +11656,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>143686</td><td>2026-10-13</td>
+        <td>143717</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11680,7 +11665,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
-        <td>40773</td><td>2026-10-13</td>
+        <td>138488</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11689,7 +11674,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
-        <td>41006</td><td>2026-10-13</td>
+        <td>48216</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11698,7 +11683,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11707,7 +11692,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11716,7 +11701,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11725,7 +11710,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11734,7 +11719,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1008</td><td>2026-10-13</td>
+        <td>1009</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12103,7 +12088,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>651</td><td>2026-10-13</td>
+        <td>652</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12112,7 +12097,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5777</td><td>2026-10-13</td>
+        <td>5779</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12121,7 +12106,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>710</td><td>2026-10-13</td>
+        <td>712</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12130,7 +12115,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12139,7 +12124,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12148,7 +12133,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>42</td><td>2026-10-13</td>
+        <td>43</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12157,7 +12142,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4991</td><td>2026-10-13</td>
+        <td>4993</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12165,9 +12150,9 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         <td class="l">hk_full_breadth</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">HK full main-board spot snapshot unavailable (Eastmoney flaky)</td>
       </tr>
       
       <tr>
@@ -12175,7 +12160,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12184,7 +12169,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12193,7 +12178,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1513</td><td>2026-10-13</td>
+        <td>1514</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12202,7 +12187,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12211,7 +12196,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>167</td><td>2026-10-13</td>
+        <td>6067</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12220,7 +12205,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2363</td><td>2026-10-05</td>
+        <td>2364</td><td>2026-10-12</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12238,7 +12223,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12247,7 +12232,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-12</td>
+        <td>1</td><td>2026-10-13</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12256,7 +12241,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>3298</td><td>2026-10-13</td>
+        <td>3612</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12265,7 +12250,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-10-13</td>
+        <td>1</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12274,7 +12259,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>251</td><td>2026-10-13</td>
+        <td>251</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12283,7 +12268,7 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>100</td><td>2026-10-13</td>
+        <td>100</td><td>2026-10-14</td>
         <td class="l muted"></td>
       </tr>
       
@@ -13000,9 +12985,9 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-14 06:20 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-14 15:38 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-14 06:20 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-14 15:38 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
@@ -13093,8 +13078,8 @@ window.__CHART_SWAP__ = {
            "HY OAS %":"高收益债利差 %","% S&P500 > 50DMA":"标普500 高于50日均线 %"}
 };
 </script>
-<script src="theme.js?v=f283b778" defer></script>
-<script src="tier_preview.js?v=d80100db" defer></script>
+<script src="theme.js?v=bd0a93b3" defer></script>
+<script src="tier_preview.js?v=5c2f37a6" defer></script>
 
 
 <script src="tablesort.js?v=dc424cb1" defer></script>

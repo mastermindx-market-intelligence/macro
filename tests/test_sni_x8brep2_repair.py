@@ -189,10 +189,14 @@ def test_r2_01_fact_id_leading_ascii_space_padded_still_present():
     this. PIN behaviour: this test is expected to PASS on base."""
     items = [_fact(fact_id=" F1"), _fact(fact_id="F1")]
     view = then_known_view(items, cutoff=CUTOFF)
-    assert view.allowed is True, view
-    assert " F1" in view.included, view.included
-    assert "F1" in view.included, view.included
-    assert "DUPLICATE_FACT_ID" not in view.reasons, view.reasons
+    # FAMKT pin-move (c): FAMILY TEXT RULE v2 (seat ruling) closes the
+    # padded half of X8B-02; a padded fact_id is ABSENT, never a
+    # different valid id. The pin was downgraded to the ABSENT-class
+    # reason per the SEAT-GRANTED pin-move rule.
+    assert view.allowed is False, view
+    assert "FACT_ID_MISSING" in view.reasons, view.reasons
+    assert " F1" not in view.included, view.included
+    assert "F1" not in view.included, view.included
 
 
 # ---------------------------------------------------------------------------

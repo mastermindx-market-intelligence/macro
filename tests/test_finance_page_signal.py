@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 import copy
 import json
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, MutableMapping
 from pathlib import Path
 from typing import Any
 
@@ -345,31 +345,111 @@ def test_routing_reads_only_the_admitted_rows() -> None:
 
 
 def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
-    """A placement that raises on the second slice leaves the first untouched.
+    """A WATCHING refusal on the LAST grouped slice leaves every slice untouched.
 
-    apply_page_signal pre-validates every slice's falsifier list through a
-    throwaway slice before writing any real slice, so a
-    :func:`_attach_falsifiers` that fails part-way through the slice loop
-    cannot leave an earlier slice rewritten. The monkeypatched helper fails
-    on its second call; both grouped slices come from the ordinary two-row
-    fixture (card_networks, exchanges_trading_venues).
+    The refusal comes from the real path, not a patched-out helper: the row
+    routed to the last slice in grouping order projects a falsifier whose
+    state is not ``NOT_YET_EVALUABLE``, so the real :func:`_attach_falsifiers`
+    refuses it with ``watching_not_emitted``. The dry pass must cover every
+    grouped slice, not only the first, or an earlier slice is rewritten
+    before the refusal lands. ``project_falsifier`` is patched on
+    ``finance_page_signal``, the name the module calls from ``_admit_pairs``.
     """
+    document = _document()
+    order: list[str] = []
+    for row in document["cases"]:
+        if row["slice_id"] not in order:
+            order.append(row["slice_id"])
+    last_slice = order[-1]
+    real_project = finance_case_signal.project_falsifier
+
+    def watching_on_last_row(row):
+        falsifier = real_project(row)
+        if row.get("slice_id") == last_slice:
+            falsifier = {**falsifier, "state": "WATCHING"}
+        return falsifier
+
+    monkeypatch.setattr(finance_page_signal, "project_falsifier", watching_on_last_row)
     page = _page()
     before = _ids(page)
-    real = finance_page_signal._attach_falsifiers
-    calls: list[object] = []
-
-    def flaky(slice_doc, falsifiers):
-        calls.append(slice_doc.get("slice_id"))
-        if len(calls) == 2:
-            raise finance_case_signal.FinanceCaseSignalRefusal("boom")
-        return real(slice_doc, falsifiers)
-
-    monkeypatch.setattr(finance_page_signal, "_attach_falsifiers", flaky)
-    with pytest.raises(finance_case_signal.FinanceCaseSignalRefusal) as caught:
-        apply_page_signal(_document(), page)
-    assert str(caught.value) == "boom"
+    before_full = copy.deepcopy(page)
+    with pytest.raises(
+        finance_case_signal.FinanceCaseSignalRefusal, match="watching_not_emitted"
+    ):
+        apply_page_signal(document, page)
     assert _ids(page) == before
+    assert page == before_full
+
+
+class _RaisingReratingLookup(MutableMapping[str, Any]):
+    """Slice mapping whose ``get("rerating")`` raises ``exc``.
+
+    Every other key behaves like the underlying plain dict, so building
+    the id-to-slice index succeeds; only the ``rerating`` lookup raises.
+    The override is required for the KeyError param: an inherited
+    ``Mapping.get`` would swallow a KeyError from ``__getitem__`` and
+    return its default instead of letting it propagate.
+    """
+
+    def __init__(self, store: dict[str, Any], exc: BaseException) -> None:
+        self._store = store
+        self._exc = exc
+
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "rerating":
+            raise self._exc
+        return self._store.get(key, default)
+
+    def __getitem__(self, key: str) -> Any:
+        return self._store[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._store[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self._store[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._store)
+
+    def __len__(self) -> int:
+        return len(self._store)
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        pytest.param(
+            RuntimeError("rerating lookup exploded"), id="runtime_error"
+        ),
+        pytest.param(
+            KeyError("rerating"), id="key_error_from_overridden_get"
+        ),
+    ],
+)
+def test_raising_rerating_lookup_leaves_both_slices_untouched(exc) -> None:
+    """A caller-supplied lookup that raises leaves the page as it was.
+
+    The document routes one falsifier to each of the two slices. The
+    second slice's ``get("rerating")`` raises, so the first slice's
+    falsifiers and the second slice's own placement must both stay
+    unwritten: every lookup on a caller-supplied slice happens before
+    the first caller-visible write. The raised exception propagates.
+    """
+    first = _slice("card_networks", "sentinel-card")
+    second: dict[str, Any] = {
+        "slice_id": "exchanges_trading_venues",
+        "falsifiers": [],
+        "rerating": {"falsifier_ids": []},
+    }
+    page = {"slices": [first, _RaisingReratingLookup(second, exc)]}
+    before_first = copy.deepcopy(first)
+    before_second = copy.deepcopy(second)
+    with pytest.raises(type(exc)) as caught:
+        apply_page_signal(_document(), page)
+    assert caught.value is exc
+    assert first == before_first
+    assert second == before_second
 
 
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:

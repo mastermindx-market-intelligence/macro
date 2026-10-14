@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-13",
-  "generated_at": "2026-10-14T08:23:42+00:00",
+  "as_of": "2026-10-14",
+  "generated_at": "2026-10-14T16:28:05+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 83492.65,
-    "change_24h_pct": -0.22,
+    "price": 83489.65,
+    "change_24h_pct": -0.0,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 21,
-    "exposure_pct": 44,
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and the pace of the move. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与涨跌节奏。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 12,
+    "exposure_pct": 41,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "integrity_ok": true,
-    "final_exposure_pct": 44,
+    "final_exposure_pct": 41,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -47,9 +47,9 @@
           "label_en": "Structure",
           "label_zh": "结构",
           "source": "master.board.structure",
-          "state_en": "Constructive",
-          "state_zh": "偏多",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "DIRECTIONAL"
         },
         {
@@ -57,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-13"
+        "as_of": "2026-10-14"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -209,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Capitulation (bottoming)",
-          "state_zh": "投降（筑底）",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "NEW"
         },
         {

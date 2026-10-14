@@ -3591,6 +3591,13 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
@@ -5217,7 +5224,7 @@
      <script> tags, so this dynamic request and a page-authored one share ONE
      cache key. An unbaked build (local/custom, serving templates/ raw) leaves
      it '' and simply requests the unversioned URL. */
-  var MM_BRAIN_VER = "e3bc0580";
+  var MM_BRAIN_VER = "3c737978";
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;

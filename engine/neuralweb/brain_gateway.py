@@ -6411,10 +6411,13 @@ def _earnings_call_citations(value: Any) -> list[str]:
 def _extract_citations_brain(
     messages: list[dict], *, extra: Iterable[str] = (),
 ) -> list[str]:
-    """Pull signal refs plus earnings URL/hash citations from the conversation."""
+    """Pull signal refs, retained source locators and earnings citations."""
     from engine.neuralweb.ask_brain import _extract_citations  # noqa: PLC0415
 
+    from engine.neuralweb.market_memory_brain_citations import retained_source_citations
+
     found = list(_extract_citations(messages))
+    found.extend(retained_source_citations(messages))
     for message in messages:
         content = message.get("content") if isinstance(message, dict) else None
         if not isinstance(content, list):

@@ -1,80 +1,44 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-10-13T16:28:13Z",
-  "as_of": "2026-10-13",
+  "generated_utc": "2026-10-14T15:55:33Z",
+  "as_of": "2026-10-14",
   "coverage": {
     "start": "2006-03-30",
-    "end": "2026-10-13",
-    "n_candidate_days": 5359
+    "end": "2026-10-14",
+    "n_candidate_days": 5360
   },
   "query": {
-    "date": "2026-10-13",
+    "date": "2026-10-14",
     "quad": "Q3",
     "quad_name": "Stagflation",
     "liquidity": "contracting",
     "cycle": "mid",
-    "growth_z": -0.1422,
-    "inflation_z": 1.1231
+    "growth_z": -0.4315,
+    "inflation_z": 1.1204
   },
   "analogs": [
     {
-      "date": "2017-01-11",
-      "distance": 0.1149,
+      "date": "2017-01-06",
+      "distance": 0.1152,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.034759,
-        "h60": 0.032449,
-        "h120": 0.031206
+        "h20": 0.014278,
+        "h60": 0.031839,
+        "h120": 0.012969
       },
       "fwd_csi300": {
-        "h20": 0.03651,
-        "h60": 0.046639,
-        "h120": 0.118029
-      }
-    },
-    {
-      "date": "2026-04-17",
-      "distance": 0.1149,
-      "quad": "Q3",
-      "quad_name": "Stagflation",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": -0.001189,
-        "h60": -0.081095,
-        "h120": null
-      },
-      "fwd_csi300": {
-        "h20": 0.008984,
-        "h60": -0.037635,
-        "h120": null
-      }
-    },
-    {
-      "date": "2024-06-21",
-      "distance": 0.1447,
-      "quad": "Q3",
-      "quad_name": "Stagflation",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.000377,
-        "h60": -0.086604,
-        "h120": 0.132293
-      },
-      "fwd_csi300": {
-        "h20": 0.020368,
-        "h60": -0.077521,
-        "h120": 0.139799
+        "h20": 0.019448,
+        "h60": 0.039645,
+        "h120": 0.090595
       }
     },
     {
       "date": "2025-01-22",
-      "distance": 0.4341,
+      "distance": 0.1447,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -91,44 +55,80 @@
       }
     },
     {
-      "date": "2023-09-22",
-      "distance": 0.4501,
+      "date": "2024-06-18",
+      "distance": 0.1447,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.031574,
-        "h60": -0.0721,
-        "h120": -0.034263
+        "h20": -0.018457,
+        "h60": -0.103319,
+        "h120": 0.116773
       },
       "fwd_csi300": {
-        "h20": -0.03902,
-        "h60": -0.109798,
-        "h120": -0.055303
+        "h20": 0.003098,
+        "h60": -0.085653,
+        "h120": 0.125744
       }
     },
     {
-      "date": "2024-02-26",
-      "distance": 0.5901,
+      "date": "2023-10-11",
+      "distance": 0.3115,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.005292,
-        "h60": 0.030726,
-        "h120": -0.054133
+        "h20": -0.017731,
+        "h60": -0.059225,
+        "h120": -0.026265
       },
       "fwd_csi300": {
-        "h20": 0.0134,
-        "h60": 0.03525,
-        "h120": -0.027941
+        "h20": -0.023884,
+        "h60": -0.104742,
+        "h120": -0.054252
+      }
+    },
+    {
+      "date": "2024-02-21",
+      "distance": 0.3115,
+      "quad": "Q3",
+      "quad_name": "Stagflation",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.029268,
+        "h60": 0.04195,
+        "h120": -0.037132
+      },
+      "fwd_csi300": {
+        "h20": 0.026971,
+        "h60": 0.047213,
+        "h120": -0.018882
+      }
+    },
+    {
+      "date": "2026-04-17",
+      "distance": 0.3115,
+      "quad": "Q3",
+      "quad_name": "Stagflation",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.001189,
+        "h60": -0.081095,
+        "h120": null
+      },
+      "fwd_csi300": {
+        "h20": 0.008984,
+        "h60": -0.037635,
+        "h120": null
       }
     },
     {
       "date": "2016-02-25",
-      "distance": 0.704,
+      "distance": 0.4212,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -145,110 +145,106 @@
       }
     },
     {
-      "date": "2008-09-01",
-      "distance": 0.9758,
+      "date": "2026-06-16",
+      "distance": 0.544,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.096806,
-        "h60": -0.159331,
-        "h120": -0.04976
+        "h20": -0.056498,
+        "h60": -0.043195,
+        "h120": null
+      },
+      "fwd_csi300": {
+        "h20": -0.042227,
+        "h60": -0.071257,
+        "h120": null
+      }
+    },
+    {
+      "date": "2008-07-28",
+      "distance": 0.926,
+      "quad": "Q3",
+      "quad_name": "Stagflation",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.192977,
+        "h60": -0.505213,
+        "h120": -0.358963
       },
       "fwd_csi300": null
     },
     {
-      "date": "2023-01-30",
-      "distance": 1.0,
-      "quad": "Q3",
-      "quad_name": "Stagflation",
-      "liquidity": "neutral",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.007326,
-        "h60": 0.002586,
-        "h120": -0.010076
-      },
-      "fwd_csi300": {
-        "h20": -0.021386,
-        "h60": -0.051306,
-        "h120": -0.044998
-      }
-    },
-    {
-      "date": "2021-04-01",
+      "date": "2021-02-04",
       "distance": 1.0,
       "quad": "Q2",
       "quad_name": "Reflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.01245,
-        "h60": 0.009815,
-        "h120": 0.033257
+        "h20": -0.012447,
+        "h60": -0.019288,
+        "h120": -0.010957
       },
       "fwd_csi300": {
-        "h20": -0.019566,
-        "h60": -0.009344,
-        "h120": -0.040935
+        "h20": -0.064028,
+        "h60": -0.091832,
+        "h120": -0.093433
       }
     },
     {
-      "date": "2021-10-25",
-      "distance": 1.0,
+      "date": "2021-11-19",
+      "distance": 1.0066,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "expanding",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.00238,
-        "h60": -0.011029,
-        "h120": -0.153104
+        "h20": 0.003211,
+        "h60": -0.035499,
+        "h120": -0.153963
       },
       "fwd_csi300": {
-        "h20": -0.009978,
-        "h60": -0.036686,
-        "h120": -0.213334
+        "h20": -0.00503,
+        "h60": -0.071691,
+        "h120": -0.213041
       }
     },
     {
-      "date": "2021-01-28",
+      "date": "2006-06-08",
       "distance": 1.0066,
-      "quad": "Q2",
-      "quad_name": "Reflation",
-      "liquidity": "contracting",
+      "quad": "Q3",
+      "quad_name": "Stagflation",
+      "liquidity": "unknown",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.005417,
-        "h60": -0.01207,
-        "h120": -0.024915
+        "h20": 0.109084,
+        "h60": 0.053529,
+        "h120": 0.303765
       },
-      "fwd_csi300": {
-        "h20": -0.015452,
-        "h60": -0.055159,
-        "h120": -0.093218
-      }
+      "fwd_csi300": null
     }
   ],
   "fan": {
     "h20": {
-      "p25": -0.004897,
-      "median": 0.002834,
-      "p75": 0.01242,
+      "p25": -0.017913,
+      "median": 0.001011,
+      "p75": 0.028094,
       "n": 12
     },
     "h60": {
-      "p25": -0.074349,
-      "median": -0.004221,
-      "p75": 0.018277,
+      "p25": -0.064693,
+      "median": -0.027394,
+      "p75": 0.022576,
       "n": 12
     },
     "h120": {
-      "p25": -0.042012,
-      "median": -0.010076,
-      "p75": 0.069947,
-      "n": 11
+      "p25": -0.034415,
+      "median": 0.001006,
+      "p75": 0.112826,
+      "n": 10
     }
   },
   "method_note": "Feature vector: z-scored growth_score and inflation_score (population z over all valid candidate rows) plus one-hot categorical distance for quad, liquidity, and cycle (each mismatched category contributes 1.0 to the Euclidean distance). Weighting is fixed and undifferentiated across the five dimensions. Neighbors selected by greedy Euclidean nearest-neighbor with time-exclusion >=120 calendar days and intra-result diversity >=60 calendar days. Forward paths use PIT-anchored first close strictly after the analog date; off-history windows return null.",

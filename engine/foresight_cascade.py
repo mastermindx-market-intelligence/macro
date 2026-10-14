@@ -290,11 +290,11 @@ def _entry(stage: str, disloc: dict | None) -> tuple[bool, str]:
 def _fda_molecule_lists(scarcity_row):
     """(molecules_checked, molecules_with_rows) when both were measured, else None.
 
-    Coverage is measured only under summary.coverage: engine.fda_scarcity is
-    the only producer and it writes both lists there, never at the row top
-    level. A row that names molecules at the top level without coverage has not
-    measured the gap — naming every checked molecule would invent one — so
-    there is no row-level fallback.
+    The only producer, engine.fda_scarcity.compute_fda_scarcity, writes both
+    lists under summary.coverage; it also mirrors molecules_checked at the row
+    top level, but never molecules_with_rows. A row that names molecules only
+    at the top level has not measured the gap — naming every checked molecule
+    would invent one — so there is no row-level fallback.
     """
     if not isinstance(scarcity_row, dict):
         return None
@@ -466,8 +466,11 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                 # does not attach this helper to every exclusive job that
                 # already imports the cascade. healthcare-fda-supply owns the
                 # file because its suite imports it. The clause is optional
-                # decoration, so it is guarded exactly like the chip guard
-                # above: a failure logs at debug and leaves molecule_gap None.
+                # decoration, so it degrades in control flow like the chip
+                # guard above, but the failure logs at WARNING, not debug:
+                # production builds run at INFO (scripts/build_foresight.py
+                # basicConfig), where a debug line would hide a clause that
+                # silently stopped rendering. molecule_gap stays None.
                 try:
                     names = _fda_molecule_lists(scarcity_row)
                     if names is not None:
@@ -476,7 +479,7 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                         )
                         molecule_gap = gap_module.molecule_gap_clause(*names)
                 except Exception as _e:  # noqa: BLE001
-                    log.debug("fda_scarcity molecule_gap clause failed for %s: %s", k, _e)
+                    log.warning("fda_scarcity molecule_gap clause failed for %s: %s", k, _e)
 
         # W1b: Federal Register policy catalyst chip — fold into rationale only.
         # NEVER changes stage. policy_reg_chip is a display dict; summary folds into rationale.
