@@ -15,10 +15,14 @@ cache. The headline dump (`candidates_meta.jsonl`) is not committed either.
 | `routing/` | Full-pool draw. Population for material-event routing recall (headline only). | `94e80a344c7056a6…` | 484 |
 | `graded/` | Same seed and sampler, drawn only over the body-available frame. Population for critical-numeric and unsupported-transfer grading. | `bd2f1b0b06c1334d…` | 157 |
 | `body_frame/` | The edgar_body status map for all 2,837 candidates, plus the fetch report. | status map `66ce529d9aaaed94…` | 2,837 |
+| `body_frame_v2/` | The `ni-edgar-body-2` status map and fetch report for the same 2,837 candidates, plus the `ni-routing-gates-2` gate map and gate report on those bodies. | status map `1234ebb16c402cfa…`, gate map `83af8bf109215005…` | 2,837 |
+| `gated_v2/` | Continuation draw: same seed and sampler, drawn only over the v2 body-available cases that gates-2 lets in. | `8b6b429cfa7f02fc…` | 99 |
 
 Each draw directory holds `manifest.json` (`ni-sampler-1`), `cases.jsonl` and
 `draw_report_body.json`. The draw report records the funnel, pool and drawn cells,
-per-cell shortfalls, holdout groups and per-cell body accounting.
+per-cell shortfalls, holdout groups and per-cell body accounting. `gated_v2/` holds
+`draw_report.json` as written by `tape_draw`, with the body frame and gate frame it was
+drawn over recorded in its `frame` and `gate_frame` fields.
 
 ## Inputs
 
@@ -79,3 +83,63 @@ byte. Given the same status map, the third reproduces `graded/manifest.json` and
 `graded/cases.jsonl` byte for byte. Both were checked at commit time. `draw_report_body.json`
 is the draw report with per-cell body accounting added by
 `engine.news_impact.tape_draw.attach_body_accounting`, using the same status map.
+
+## Filing-first widening (`ni-edgar-body-2`)
+
+The v1 band attaches an 8-K filed one session either side of the seen session. Form 8-K is
+due within four business days of the event, so a headline that previews or announces an
+event often comes before the report. `ni-edgar-body-2` keeps the pre-side at one session
+and extends the post-side to four (`DEC:NEWS-IMPACT-EDGAR-BODY-2-BAND`). Submissions are read
+live on the run date, so a case whose window has not closed by `--as-of` is reported as
+`window_open` rather than as having no filing. Each attached filing carries its session
+offset and whether it was filed before, in, or after the seen session. v1 output is
+unchanged and was checked byte for byte against the base module on recorded responses.
+
+The v2 fetch (`--as-of 2026-10-14`: 440 submissions, 411 indexes, 802 documents, 131.3 MB)
+found a qualifying 8-K for 364 candidates, against 235 under v1. The other 2,473 have no
+body: 1,271 issuers have no CIK, 1,089 filed no qualifying 8-K in the band, and 113 windows
+were still open. Nothing failed to fetch.
+
+| Template | v1 body-available | v2 body-available | gates-2 in (pos, neg, amb, nc = total) | drawn (pos, neg, amb, nc = total) | drawn shortfall |
+|---|---|---|---|---|---|
+| T1 | 77 | 121 | 42, 5, 4, 3 = 54 | 38, 5, 3, 3 = 49 | 151 |
+| T2 | 115 | 169 | 56, 10, 6, 2 = 74 | 33, 5, 6, 2 = 46 | 154 |
+| T3 | 43 | 74 | 5, 1, 1, 0 = 7 | 4, 0, 0, 0 = 4 | 196 |
+| Total | 235 | 364 | 135 | 99 | 501 |
+
+The sampler draws one case per holdout group, so 135 gated-in cases give 99 drawn cases.
+Gates-2 drops 229 of the 364 v2 bodies (by code: 67 issuer absent, 36 issuer not the
+subject, 30 ambiguous ticker, 25 no family language, 21 commentary, 19 market report, 17
+event mismatch, and 14 across the remaining four codes). The drawn shortfall is printed
+and never padded. T3 has 4 of 200.
+
+The 99 drawn cases are a continuation population, not a regrade. 73 already carry a
+two-family grade from the 157-case graded draw. For 15 of those, v2 attaches filings
+beyond the body that was graded, so the grade stands on the v1 body. 26 have never been
+graded, and v1 found no body for 21 of them. Every scored case keeps its own routing
+verdict and only MATCH counts (`DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH`).
+
+The two remaining levers sit outside this band. 1,271 candidates name no ticker the
+ledger resolves to a CIK, which is the event-ledger owner's problem rather than the body
+fetch's. The 113 open windows close by 2026-10-19, so a v2 re-run with `--as-of` on or
+after 2026-10-20 settles them.
+
+### Reproduce (v2)
+
+```
+python -m engine.news_impact.edgar_body --cases candidates_all.jsonl --sessions sessions.json \
+  --cache edgar_cache --out bodies_v2 --version ni-edgar-body-2 --as-of 2026-10-14 \
+  --user-agent "MastermindX Prophet News Impact data@mastermind-x.com"
+python -m engine.news_impact.routing_gates_2 --candidates candidates_all.jsonl \
+  --bodies bodies_v2/bodies.jsonl --texts bodies_v2/texts --out gates2_map.json \
+  --report gates2_report.json
+python -m engine.news_impact.tape_draw --tape items.parquet --event-log event_log.parquet \
+  --reject-sample reject_sample.parquet --ledger ticker_cik_ledger.json --seed 20261014 \
+  --out gated_v2_out --body-frame bodies_v2/status_map.json --gate-frame gates2_map.json
+```
+
+The fetch reads live submissions, so a later run can differ where the SEC record changed.
+Given the committed status map, the second and third commands reproduce `gates2_map.json`,
+`gates2_report.json` and every file in `gated_v2/` byte for byte. This was checked at
+commit time with Python 3.12 (`edgar_body.py` does not parse on 3.11). `bodies.jsonl` and
+`texts/` hold filing text and stay in scratch.

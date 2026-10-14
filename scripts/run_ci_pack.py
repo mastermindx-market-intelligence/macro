@@ -4792,9 +4792,12 @@ def _run_ancestor_init_census(args: argparse.Namespace) -> int:
     fixture) — and the curator already owns closure failure in
     ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
     is the published baseline; per-init rows follow sorted by cross-job
-    count descending then path.
+    count descending then path. ``--gate`` is honoured the way every other
+    mode honours it — forwarded to ``load_legacy_jobs``, the single gate
+    filter choke point — and its argparse default is ``None``, so the
+    default census stays whole-manifest and byte-identical.
     """
-    jobs = load_legacy_jobs(args.workflow)
+    jobs = load_legacy_jobs(args.workflow, gate=args.gate)
     repo_root = _find_repo_root(Path(args.workflow))
     findings = ancestor_init_census(jobs, repo_root=repo_root)
     per_init_count: dict[str, int] = {}
@@ -5350,6 +5353,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         (args.execute, "--execute"),
         (args.validate_only, "--validate-only"),
         (args.plan_only, "--plan-only"),
+        # ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+        # (``default=None``) are not ``store_true``: the census dispatched
+        # first in ``main`` silently WON over both (observed rc=0, the plan
+        # never read/never emitted), so presence — ``is not None``, not
+        # truthiness — is the conflict test.
+        (args.plan_json is not None, "--plan-json"),
+        (args.emit_plan_json is not None, "--emit-plan-json"),
     ):
         if args.ancestor_init_census and _census_conflict:
             parser.error(

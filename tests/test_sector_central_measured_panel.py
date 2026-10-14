@@ -582,8 +582,10 @@ def test_12_early_box_watch_muted_broadening_clause_no_forecast():
     assert "More sectors are starting to keep up" in broad["early"], broad["early"]
     assert "Based on 4 of 5 checks" in broad["early"]
     assert "partial coverage" not in broad["early"]
-    admitted = _run(cfg={"mr": {"research_estimate": {"status": "available"}}})
+    admitted = _run(cfg={"mr": {"research_estimate": {
+        "status": "estimate", "probability": 0.5, "horizon_sessions": 21}}})
     assert "Forecast: none" not in admitted["early"], admitted["early"]
+    assert "Research estimate" in admitted["early"], admitted["early"]
 
 
 # ══════════════════════════════════════════════════════════════════════════════════
@@ -740,3 +742,315 @@ def test_18_mobile_touch_targets_and_unmeasured_rows_stack():
     assert {".mr-row", ".mr-segbtn", ".mr-link"} <= targets, targets
     assert ".mr-row-na{grid-template-columns:minmax(0,1fr);" in block, block
     assert ".mr-name{white-space:normal}" in block, block
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# LR-FIX-B1 — R1 ZH failure copy
+# ══════════════════════════════════════════════════════════════════════════════════
+
+#: 12 named failure/unknown states and their (en, zh) copy. Each must render
+#: Chinese in ZH and never carry an ASCII word of 4+ letters from its EN twin.
+ZH_FAILURE_STATES = [
+    ("no_data", {"central": "none"}, "show();",
+     "Data for this page did not load.", "页面数据未能加载"),
+    ("absent", {"central": "absent"}, "show();",
+     "not in today", "今日数据尚未包含"),
+    ("unavailable", {"mr": {"status": "unavailable"}}, "show();",
+     "could not be produced today", "今日无法生成此项读数"),
+    ("cycles_failed", {"search": "?g=XLE", "cycles": CYC}, """
+        __window.SECTOR_CYCLES = CYC;
+        dispatchDoc('sc:cycles-data');
+        dispatchWin('error', {target: {tagName: 'SCRIPT',
+                                       src: 'sector_cycles_data.js?v=x'}});
+        show();
+    """,
+     "History unavailable right now", "历史暂不可用"),
+    ("history_unpublished", {"search": "?g=XLE",
+                             "cycles": {"meta": {}, "sectors": []}}, "show();",
+     "not published yet", "尚未发布"),
+    ("too_few_points", {"search": "?g=XLE",
+                        "cycles": {"meta": {"rs_history": {"as_of": "2026-10-09"}},
+                                   "sectors": [{"ticker": "XLE",
+                                                "rs_history": [{"date": "2026-10-09",
+                                                                 "rs_21d": 2.4,
+                                                                 "rs_63d": 4.1}]}]}}, "show();",
+     "Not enough history points", "历史数据点不足"),
+    ("obs_unavailable", {"search": "?g=XLK", "mr": {"confirmed_events": {"status": "unavailable"}}}, """
+        obsClick();
+        show();
+    """,
+     "Recorded events are unavailable right now", "已记录事件暂不可用"),
+    ("obs_none", {"search": "?g=XLK", "mr": {"confirmed_events": {"status": "none"}}}, """
+        obsClick();
+        show();
+    """,
+     "No recorded events are open", "目前没有已记录事件"),
+    ("obs_not_in_12", {"search": "?g=XLK",
+                       "mr": {"confirmed_events": {"status": "available", "as_of": "2026-10-09",
+                                                   "truncated": True,
+                                                   "rows": [{"sector": "Utilities", "started": "2026-10-01",
+                                                             "day_n": 2}]}}}, """
+        obsClick();
+        show();
+    """,
+     "Not among the 12 most recent", "最近 12 个"),
+    ("obs_none_for_sector", {"search": "?g=XLK",
+                             "mr": {"confirmed_events": {"status": "available", "as_of": "2026-10-09",
+                                                         "truncated": False, "rows": []}}}, """
+        obsClick();
+        show();
+    """,
+     "No recorded events for this sector", "该板块暂无已记录事件"),
+    ("early_unavailable", {"mr": {"early_context": {"status": "unavailable"}}}, "show();",
+     "Early observation unavailable today", "早期观察暂不可用"),
+]
+
+
+@needs_node
+@pytest.mark.parametrize("name,cfg,body,en_twin,zh_twin", ZH_FAILURE_STATES,
+                         ids=[s[0] for s in ZH_FAILURE_STATES])
+def test_18_zh_failure_states_render_chinese(name, cfg, body, en_twin, zh_twin):
+    """R1: every bare-English string passed to mxError/mxEmpty in the panel IIFE
+    must render Chinese in ZH and contain no ASCII word of 4+ letters from its
+    EN twin. # MUTATION: panel still emits English mxError/mxEmpty on every
+    failure state -> ZH fixture shows ASCII strings -> assertion fails."""
+    out = _run(body=body, cfg=dict(cfg, lang="zh"))
+    # Only check rendered text fields (not URL/histCalls logs)
+    blob = " ".join(str(out.get(k, "")) for k in
+                    ("body", "sub", "status", "cov", "list", "un",
+                     "detail", "hist", "early"))
+    assert zh_twin in blob, f"{name}: expected Chinese copy {zh_twin!r} in {blob!r}"
+    for en in re.findall(r"[A-Za-z]{4,}", en_twin):
+        assert en not in blob, \
+            f"{name}: ASCII word {en!r} from EN twin leaked into ZH render: {blob!r}"
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# LR-FIX-B1 — R2 null/hostile group guard
+# ══════════════════════════════════════════════════════════════════════════════════
+
+HOSTILE_GROUPS = [
+    ("null_item", [None]),
+    ("number_item", [42]),
+    ("numeric_id", [{"group_id": 7}]),
+    ("empty_object", [{}]),
+]
+
+HOSTILE_PARAMS = [
+    pytest.param(groups, search, lang, id=f"{name}-{lang}{'-link' if search else ''}")
+    for name, groups in HOSTILE_GROUPS
+    for search in ("", "?g=XLK")
+    for lang in ("en", "zh")
+]
+
+
+@needs_node
+@pytest.mark.parametrize("groups,search,lang", HOSTILE_PARAMS)
+def test_19_null_and_hostile_groups_fail_to_named_invalid_state(groups, search, lang):
+    """R2: render()'s validation gate requires every element of M2.groups to
+    satisfy g && typeof g === 'object' && typeof g.group_id === 'string';
+    otherwise the existing mr-invalid state. The init deep-link loop dereferences
+    groups[gi].group_id only after a guard, so groups=[null] never throws at
+    IIFE init. # MUTATION: validation gate dereferences g.group_id unguarded ->
+    node throws "Cannot read property 'group_id' of null" before render()."""
+    out = _run(cfg={"mr": {"groups": groups}, "lang": lang, "search": search})
+    assert "mr-invalid" in out["body"], \
+        f"groups={groups} search={search!r} lang={lang} expected mr-invalid, got {out['body']!r}"
+    if lang == "zh":
+        assert "无法校验" in out["body"] or "不显示" in out["body"], out["body"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# LR-FIX-B1 — N-RE1 admitted estimate branch
+# ══════════════════════════════════════════════════════════════════════════════════
+
+@needs_node
+def test_20_admitted_estimate_renders_display_only_line():
+    """N-RE1: re_ with status='estimate' + valid probability/horizon renders the
+    'Research estimate — display only' line; every other shape falls through to
+    the unchanged 'Forecast: none — …' line. The measured read (list, cov,
+    status, sub, rows, un, detail) is byte-identical to the no-estimate render.
+    # MUTATION: panel gates on status==='available' (a word the producer never
+    emits) -> admitted estimate falls through to 'Forecast: none' -> assertion
+    fails on 'Research estimate' substring."""
+    no_est = _run()
+    en_est = _run(cfg={"mr": {"research_estimate": {
+        "status": "estimate", "probability": 0.62, "horizon_sessions": 21}}})
+    assert "Research estimate — display only: 62% over the next 21 sessions" in en_est["early"], \
+        en_est["early"]
+    assert "Forecast: none" not in en_est["early"], en_est["early"]
+    zh_est = _run(cfg={"mr": {"research_estimate": {
+        "status": "estimate", "probability": 0.62, "horizon_sessions": 21}},
+                       "lang": "zh"})
+    assert "62%" in zh_est["early"], zh_est["early"]
+    assert "21 个交易日" in zh_est["early"], zh_est["early"]
+    assert "Forecast: none" not in zh_est["early"], zh_est["early"]
+    # The measured read is byte-identical: the estimate touches early only.
+    for key in ("list", "cov", "status", "sub", "rows", "un", "detail"):
+        assert no_est[key] == en_est[key], (key, no_est[key], en_est[key])
+    # Negative cases fall through to the unchanged "Forecast: none" line.
+    bad_cases = [
+        {"status": "available"},
+        {"status": "estimate", "probability": 1.5, "horizon_sessions": 21},
+        {"status": "estimate", "probability": "0.6", "horizon_sessions": 21},
+        {"status": "estimate", "probability": 0.5, "horizon_sessions": 0},
+        {"status": "estimate", "probability": 0.5, "horizon_sessions": 2.5},
+        {},
+    ]
+    for bad in bad_cases:
+        out = _run(cfg={"mr": {"research_estimate": bad}})
+        assert "Forecast: none" in out["early"], (bad, out["early"])
+        assert "Research estimate" not in out["early"], (bad, out["early"])
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# LR-FIX-B1 — basis "unknown" is not called "price only"
+# ══════════════════════════════════════════════════════════════════════════════════
+
+@needs_node
+def test_21_basis_unknown_is_not_called_price_only():
+    """basis(b) must distinguish price_only from any other shape (e.g. 'unknown'):
+    price_only → 'price only' / '仅价格'; anything else → 'basis not stated' /
+    '未注明价格口径'. # MUTATION: basis(b) returns 'price only' for any non-
+    total_return value -> 'unknown' is mislabelled as 'price only' -> assertion
+    on 'basis not stated' fails."""
+    out = _run(cfg={"mr": {"generation": {"price_basis": "unknown"}}})
+    assert "basis not stated" in out["sub"], out["sub"]
+    zh = _run(cfg={"mr": {"generation": {"price_basis": "unknown"}}, "lang": "zh"})
+    assert "未注明价格口径" in zh["sub"], zh["sub"]
+    po = _run(cfg={"mr": {"generation": {"price_basis": "price_only"}}})
+    assert "price only" in po["sub"], po["sub"]
+    assert "basis not stated" not in po["sub"], po["sub"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# LR-FIX-B1 — series hydration guard
+# ══════════════════════════════════════════════════════════════════════════════════
+
+@needs_node
+def test_22_series_hydration_wait_then_ready_and_failed():
+    """B4: a cycles core whose XLK record lacks rs_history, with
+    window.SC_SERIES_DATA set, must show a loading skeleton (not 'Not enough
+    history points') until either (a) the series lands via SECTOR_CYCLES_SERIES
+    merged in + sc:cycles-data, (b) a script error fires for the series URL, or
+    (c) the 20 s backstop expires. The existing CYCLES_STATE failed/ready path
+    stays unchanged when rs_history is present on the record.
+    # MUTATION: reconHtml hits the 'Not enough history points' path the moment
+    rec.rs_history is missing (no series hydration guard) -> loading skeleton
+    assertion fails; second mutation: no capture-phase listener matches
+    sector_cycles_series_data.js -> 'History unavailable right now' assertion
+    fails after a script error for that URL."""
+    # (a) wait state: the cycles core carries no rs_history, SC_SERIES_DATA is
+    # a string, and SECTOR_CYCLES_SERIES is undefined. renderHist should show
+    # the loading skeleton, NOT the "Not enough history points" message.
+    out = _run(body="""
+        var core = {meta: {rs_history: {as_of: '2026-10-09'}},
+                    sectors: [{ticker: 'XLE', rs_history: [
+                      {date: '2026-10-07', rs_21d: 2.0, rs_63d: 3.9},
+                      {date: '2026-10-08', rs_21d: 2.2, rs_63d: 4.0},
+                      {date: '2026-10-09', rs_21d: 2.4, rs_63d: 4.1}]}]};
+        __window.SC_SERIES_DATA = 'sector_cycles_series_data.js';
+        // the split core carries an XLK record WITHOUT rs_history (the heavy
+        // arrays live in the series file), and the core has landed: the wait
+        // must come from the series guard, not from the CYCLES_STATE wait.
+        core.sectors.push({ticker: 'XLK'});
+        __window.SECTOR_CYCLES = core;
+        dispatchDoc('sc:cycles-data');
+        show();
+    """, cfg={"search": "?g=XLK", "mr": {"groups": [
+        g for g in _fixture()["groups"] if g["group_id"] != "XLK"
+    ] + [{"group_id": "XLK", "name_en": "Technology", "name_zh": "科技",
+          "current": {"status": "measured", "rs_21d": 3.5, "rs_63d": 5.0, "rank": 1,
+                      "reason": None, "metric": "relative_wealth_pct", "units": "pct",
+                      "z": 0.0}}]}})
+    assert "mr-skel-spark" in out["hist"], out["hist"]
+    assert "Not enough history points" not in out["hist"], out["hist"]
+    # (b) ready: after the series lands and sc:cycles-data dispatches, the
+    # trail draws. (rs_history appears on the XLK record after the merge.)
+    ready = _run(body="""
+        var core = {meta: {rs_history: {as_of: '2026-10-09'}},
+                    sectors: [{ticker: 'XLE', rs_history: [
+                      {date: '2026-10-07', rs_21d: 2.0, rs_63d: 3.9},
+                      {date: '2026-10-08', rs_21d: 2.2, rs_63d: 4.0},
+                      {date: '2026-10-09', rs_21d: 2.4, rs_63d: 4.1}]}]};
+        __window.SC_SERIES_DATA = 'sector_cycles_series_data.js';
+        __window.SECTOR_CYCLES = core;
+        __window.SECTOR_CYCLES_SERIES = {
+          sectors: [{ticker: 'XLK', rs_history: [
+            {date: '2026-10-07', rs_21d: 1.0, rs_63d: 2.0},
+            {date: '2026-10-08', rs_21d: 1.2, rs_63d: 2.2},
+            {date: '2026-10-09', rs_21d: 1.4, rs_63d: 2.4}]}]};
+        core.sectors.push({ticker: 'XLK', rs_history:
+          __window.SECTOR_CYCLES_SERIES.sectors[0].rs_history});
+        dispatchDoc('sc:cycles-data');
+        show();
+    """, cfg={"search": "?g=XLK", "mr": {"groups": [
+        g for g in _fixture()["groups"] if g["group_id"] != "XLK"
+    ] + [{"group_id": "XLK", "name_en": "Technology", "name_zh": "科技",
+          "current": {"status": "measured", "rs_21d": 3.5, "rs_63d": 5.0, "rank": 1,
+                      "reason": None, "metric": "relative_wealth_pct", "units": "pct",
+                      "z": 0.0}}]}})
+    assert "polyline" in ready["hist"], ready["hist"]
+    # (c) failed: a script error for sector_cycles_series_data.js sets the
+    # SERIES_STATE to 'failed' and the next renderHist shows the named failure
+    # state.
+    failed = _run(body="""
+        var core = {meta: {rs_history: {as_of: '2026-10-09'}},
+                    sectors: [{ticker: 'XLK'}]};
+        __window.SC_SERIES_DATA = 'sector_cycles_series_data.js';
+        __window.SECTOR_CYCLES = core;
+        dispatchDoc('sc:cycles-data');
+        dispatchWin('error', {target: {tagName: 'SCRIPT',
+                                       src: 'sector_cycles_series_data.js?v=x'}});
+        show();
+    """, cfg={"search": "?g=XLK", "mr": {"groups": [
+        g for g in _fixture()["groups"] if g["group_id"] != "XLK"
+    ] + [{"group_id": "XLK", "name_en": "Technology", "name_zh": "科技",
+          "current": {"status": "measured", "rs_21d": 3.5, "rs_63d": 5.0, "rank": 1,
+                      "reason": None, "metric": "relative_wealth_pct", "units": "pct",
+                      "z": 0.0}}]}})
+    assert "History unavailable right now" in failed["hist"], failed["hist"]
+    # (d) 20s backstop: when the series URL is set but never lands, the backstop
+    # fires the failure state.
+    backstop = _run(body="""
+        var core = {meta: {rs_history: {as_of: '2026-10-09'}},
+                    sectors: [{ticker: 'XLK'}]};
+        __window.SC_SERIES_DATA = 'sector_cycles_series_data.js';
+        __window.SECTOR_CYCLES = core;
+        dispatchDoc('sc:cycles-data');
+        fireTimers();
+        show();
+    """, cfg={"search": "?g=XLK", "mr": {"groups": [
+        g for g in _fixture()["groups"] if g["group_id"] != "XLK"
+    ] + [{"group_id": "XLK", "name_en": "Technology", "name_zh": "科技",
+          "current": {"status": "measured", "rs_21d": 3.5, "rs_63d": 5.0, "rank": 1,
+                      "reason": None, "metric": "relative_wealth_pct", "units": "pct",
+                      "z": 0.0}}]}})
+    assert "History unavailable right now" in backstop["hist"], backstop["hist"]
+    # (e) the series LANDED but carries no history for this sector: the 20 s
+    # backstop must not relabel that as a load failure — the honest state is
+    # "Not enough history points" (ORCH-FIX amendment: the backstop latches
+    # 'failed' only while SECTOR_CYCLES_SERIES is still undefined).
+    landed_empty = _run(body="""
+        var core = {meta: {rs_history: {as_of: '2026-10-09'}},
+                    sectors: [{ticker: 'XLK'}]};
+        __window.SC_SERIES_DATA = 'sector_cycles_series_data.js';
+        __window.SECTOR_CYCLES = core;
+        dispatchDoc('sc:cycles-data');
+        __window.SECTOR_CYCLES_SERIES = {};
+        dispatchDoc('sc:cycles-data');
+        fireTimers();
+        show();
+    """, cfg={"search": "?g=XLK", "mr": {"groups": [
+        g for g in _fixture()["groups"] if g["group_id"] != "XLK"
+    ] + [{"group_id": "XLK", "name_en": "Technology", "name_zh": "科技",
+          "current": {"status": "measured", "rs_21d": 3.5, "rs_63d": 5.0, "rank": 1,
+                      "reason": None, "metric": "relative_wealth_pct", "units": "pct",
+                      "z": 0.0}}]}})
+    assert "Not enough history points" in landed_empty["hist"], landed_empty["hist"]
+    assert "History unavailable right now" not in landed_empty["hist"], landed_empty["hist"]
+    # When rec.rs_history is present (today's monolith), behaviour is byte-
+    # identical to base: the loading skeleton never appears for the data path.
+    monolith = _run(cfg={"search": "?g=XLE", "cycles": CYC})
+    assert "polyline" in monolith["hist"], monolith["hist"]
+    assert "mr-skel-spark" not in monolith["hist"], monolith["hist"]

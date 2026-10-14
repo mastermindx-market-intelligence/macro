@@ -24,6 +24,12 @@ from engine.pit import DEFAULT_RELEASE_LAGS
 
 
 # --- base board key order (captured STEP 0; engine UNEDITED) --------------------
+# C0 lane addition (2026-10-14): `board_generation` (generation integrity
+# stamp) and `inflation_lenses` (verbatim I0 carry) were appended beside
+# curve_accounting by RIC-W7 §2.11e. The base order was preserved up to
+# `qualified_comparisons`; the two new keys land AFTER `curve_accounting`
+# and `curve_accounting_export` so the suffix carries them in the order
+# pinned by C0 (board_generation before inflation_lenses).
 _BASE_BOARD_KEYS = [
     'schema', 'asof', 'built', 'display_only', 'authority', 'board',
     'expectations_pressure', 'divergence', 'conditions', 'market_check',
@@ -262,7 +268,13 @@ def test_y1b_board_passes_curve_accounting_through_verbatim(tmp_path):
 
 def test_y1b_board_key_order_and_stance_input_unchanged(tmp_path):
     result = ric.build_board(root=tmp_path)
-    assert list(result) == _BASE_BOARD_KEYS + ["curve_accounting", "curve_accounting_export"]
+    # C0 lane addition (2026-10-14): `board_generation` + `inflation_lenses`
+    # land beside curve_accounting per RIC-W7 §2.11e — see DEVIATIONS entry
+    # in /tmp/ric-c0/RETURN.md for the FROZEN-key-order update rationale.
+    assert list(result) == _BASE_BOARD_KEYS + [
+        "curve_accounting", "curve_accounting_export",
+        "board_generation", "inflation_lenses",
+    ]
 
     # Wrap compose_stance so we can read what compose_stance actually saw.
     original = ric.compose_stance

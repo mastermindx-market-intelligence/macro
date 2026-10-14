@@ -55,7 +55,7 @@ from engine.capital_structure.issuer_state_contracts import (
 )
 
 RULE_APPLICABILITY_PACK_SCHEMA = "capital_structure.rule_applicability_pack.v1"
-RULE_APPLICABILITY_PACK_VERSION = "capital-structure-rule-applicability/1.0.0"
+RULE_APPLICABILITY_PACK_VERSION = "capital-structure-rule-applicability/1.1.0"
 RULE_APPLICABILITY_PACK_RELPATH = Path("config") / "capital_structure_rule_applicability_pack.v1.json"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 

@@ -332,6 +332,36 @@ def test_s7_invalid_payloads_degrade_never_raise():
         assert len(out["groups"]) == 11
         assert all(g["current"]["status"] == "unmeasured" for g in out["groups"])
         assert out["generation"]["session_end"] is None
+    # one hostile event leg never collapses the whole read to a projection error:
+    # the bad row projects null legs and the valid row next to it still projects.
+    # MUTATION: unguarded leg `.get` (a truthy non-mapping leg raises AttributeError)
+    rot = _build_rotation_payload()
+    hostile = dict(rot, active=[
+        dict(rot["active"][0], id="hostile-legs", from_leg="x", to_leg=1,
+             donor=["a"], receiver="r"),
+        rot["active"][1],
+    ])
+    out = lrc.measured_group_read(cyc, rotation_payload=hostile)
+    assert out["schema"] == MEASURED_READ_SCHEMA
+    assert out.get("reason") != "projection_error"
+    hostile_ce = out["confirmed_events"]
+    assert hostile_ce["status"] == "available" and hostile_ce["n_active"] == 2
+    rows = {row["id"]: row for row in hostile_ce["rows"]}
+    assert rows["hostile-legs"]["from_key"] is None
+    assert rows["hostile-legs"]["to_key"] is None
+    assert rows["hostile-legs"]["sector"] == "Technology"   # the row still projects
+    assert rows["xly-xlp:cross"]["from_key"] == "disc"
+    assert rows["xly-xlp:cross"]["to_key"] == "staples"
+    # a dict `sectors` container reads as empty and is never iterated by key
+    dict_cyc = {"meta": {"asOf": AS_OF, "benchmark": "SPY",
+                         "rs_history": {"schema": "sector_cycles.rs_history.v1",
+                                        "as_of": AS_OF}},
+                "sectors": {"XLK": {}}}
+    out = lrc.measured_group_read(dict_cyc)
+    assert out["schema"] == MEASURED_READ_SCHEMA
+    assert out["status"] == "unavailable"
+    assert out["cohort"]["measured_n"] == 0 and out["cohort"]["outside_cohort"] == []
+    assert all(g["current"]["status"] == "unmeasured" for g in out["groups"])
     # horizon outside {rs_21d, rs_63d} is a programmer error
     with pytest.raises(ValueError):
         lrc.measured_group_read(cyc, horizon="rs_126d")
@@ -430,3 +460,68 @@ def test_s11_scratch_only_no_owner_bytes_touched():
 def test_cohort_is_the_frozen_owner_cohort():
     assert us_sector_cohort() == tuple(sorted(us_sector_cohort()))
     assert len(us_sector_cohort()) == 11
+
+
+# -------------------------------------- LR-FIX-A repairs (#9257 R1/R2, N-PB1) ----
+
+def test_fix_a4_non_list_active_is_invalid_payload_not_zero():
+    # MUTATION: `or []` coercion (a truthy non-list `active` reads as zero events)
+    cyc, rot = _build_fixture_payload()
+    for bad_active in ({}, "x", 7, True):
+        ce = lrc.measured_group_read(cyc, rotation_payload=dict(
+            rot, active=bad_active))["confirmed_events"]
+        assert ce["status"] == "unavailable", bad_active
+        assert ce["reason"] == "invalid_payload", bad_active
+        assert ce["n_active"] is None, bad_active      # unknown, never a measured 0
+        assert ce["rows"] == [] and ce["truncated"] is False
+    # unmeasured is not zero: an absent or explicitly None `active` is MISSING input
+    absent = {key: value for key, value in rot.items() if key != "active"}
+    for no_active in (absent, dict(rot, active=None)):
+        ce = lrc.measured_group_read(cyc, rotation_payload=no_active)["confirmed_events"]
+        assert ce["status"] == "unavailable"
+        assert ce["reason"] == "missing_input"
+        assert ce["n_active"] is None and ce["rows"] == []
+    # an empty list IS a measured zero and stays exactly as before
+    ce = lrc.measured_group_read(cyc, rotation_payload=dict(rot, active=[]))["confirmed_events"]
+    assert ce["status"] == "none" and ce["n_active"] == 0 and ce["rows"] == []
+    # the as-of mismatch branch still takes precedence over both
+    off = lrc.measured_group_read(cyc, rotation_payload=dict(
+        rot, as_of="2026-10-08", active="x"))["confirmed_events"]
+    assert off["status"] == "incompatible_generation"
+    assert off["reason"] == "as_of_mismatch" and off["n_active"] is None
+
+
+def test_fix_npb1_price_basis_reads_declared_basis():
+    # MUTATION: hard-coded literal (`price_basis` never reads meta.rs_history.basis)
+    rot = _build_rotation_payload()
+    declared = (("tr", "total_return"), ("price", "price_only"),
+                (None, "total_return"), ("px", "unknown"))
+    projections = []
+    for basis, expected in declared:
+        cyc = _build_cyc_payload()
+        if basis is None:
+            assert "basis" not in cyc["meta"]["rs_history"]     # the absent case
+        else:
+            cyc["meta"]["rs_history"]["basis"] = basis
+        out = lrc.measured_group_read(cyc, rotation_payload=rot)
+        assert out["generation"]["price_basis"] == expected, basis
+        projections.append(out)
+    # the declared basis is a LABEL axis only: every measured value is identical
+    blobs = {json.dumps([{"current": [g["current"] for g in proj["groups"]],
+                          "cohort": proj["cohort"]}], sort_keys=True, allow_nan=False)
+             for proj in projections}
+    assert len(blobs) == 1
+    assert projections[-1]["generation"]["price_basis"] == "unknown"
+    assert projections[-1]["cohort"]["measured_n"] == projections[0]["cohort"]["measured_n"] == 9
+    # a non-str basis is unknown too, and the reconstruction label stays hard-coded:
+    # a source that LIES about its mode is still labelled reconstructed
+    for lying in ({"basis": 7}, {"basis": ["tr"]},
+                  {"basis": "tr", "mode": "original_retained", "naturally_observed": True}):
+        cyc = _build_cyc_payload()
+        cyc["meta"]["rs_history"].update(lying)
+        out = lrc.measured_group_read(cyc, rotation_payload=rot)
+        expected_basis = "total_return" if isinstance(lying["basis"], str) else "unknown"
+        assert out["generation"]["price_basis"] == expected_basis, lying
+        assert all(g["reconstruction"]["mode"] == "reconstructed_price_history"
+                   and g["reconstruction"]["naturally_observed"] is False
+                   for g in out["groups"])
