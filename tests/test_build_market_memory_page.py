@@ -50,7 +50,7 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
     assert "request('/symbol/'" in source
     assert "basisPoints(query.spread_2s10s)" in source
     assert "data.historical_basis" in source
-    assert "error.status === 403" in source
+    assert "notice.status === 403" in source
     assert "macroRequest: 0" in source
     assert "requestId !== state.macroRequest" in source
     assert "requestId !== state.symbolRequest" in source
@@ -195,10 +195,10 @@ const noEvidence = () => {assert.ok(!summary().includes('mm-symbol-ticker'),summ
  reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>')); assert.ok(grids().includes('mm-grid-card'));
  submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker')); assert.equal(location.search,'?ticker=NVDA');
  submit('MSFT'); await tick(); submit('AAPL'); await tick(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>'));
- submit('NVDA'); await tick(); reply('NVDA',503); await tick(); const failure=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),failure);
+ submit('NVDA'); await tick(); reply('NVDA',503); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'个股记忆暂不可用':'Symbol memory unavailable'));
  submit('NVDA'); await tick(); reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>'));
  submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
- submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); const signedOut=summary(); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),signedOut);
+ submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'登录以打开个股记忆':'Sign in to open symbol memory'));
  console.log('pending, invalid, latest-intent, late completion, failure, recovery, sign-out and language assertions passed');
 })().catch(error => {console.error(error);process.exitCode=1;});
 '''
