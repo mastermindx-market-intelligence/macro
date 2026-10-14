@@ -305,6 +305,26 @@ _SAVED_SELECTED_LABEL_SCRIPT = (
 
 # X2-s r1 (H1): the device-local briefcase key the seed init script plants.
 BRIEFCASE_STORAGE_KEY = "mastermind.filing_forensics.saved_research.v1"
+
+# A0-SE additive hook (SAFE-ENV), opened only by --dataset-store/--state-store;
+# existing modes are unchanged without them.
+PRODUCTION_CAPTURE_ENV_NAMES = (
+    "FIF_FINANCIAL_DATASET_MODE",
+    "FIF_PRODUCTION_DATASET_LOCAL_STORE",
+    "RESEARCH_LOCAL_STORE",
+)
+
+
+def install_state_into_local_store(store_dir: str | Path, blob: bytes) -> Path:
+    """Write the built state object into a LOCAL store at the loader's key."""
+    from engine.fundamental_forensics import private_state  # noqa: PLC0415
+
+    target = Path(store_dir) / private_state.STATE_KEY
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(blob)
+    return target
+
+
 PRIMARY_FINDING_SELECTOR = "[data-open-primary-finding]"
 SELECTED_TAB_SELECTOR = '.ff-tab[aria-selected="true"]'
 EVIDENCE_SELECTOR = "#ff-evidence"
@@ -1919,6 +1939,14 @@ def build_parser() -> argparse.ArgumentParser:
         "the device-local saved-views briefcase (one localStorage key) before any "
         "page script; a briefcase_seed.json sidecar records path/sha256/storage_key",
     )
+    parser.add_argument(
+        "--dataset-store", default=None, metavar="DIR", dest="dataset_store",
+        help="A0-SE SAFE-ENV hook: production mode over this LOCAL fixture store",
+    )
+    parser.add_argument(
+        "--state-store", default=None, metavar="DIR", dest="state_store",
+        help="A0-SE SAFE-ENV hook: keep the built private state in this LOCAL store",
+    )
     return parser
 
 
@@ -2026,6 +2054,15 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     scrub = scrub_process_env()
     prior_macro_repo = os.environ.get("MACRO_REPO")
+    # A0-SE SAFE-ENV hook: opened only by the explicit flags below.
+    prior_production_capture_env = {
+        name: os.environ.get(name) for name in PRODUCTION_CAPTURE_ENV_NAMES
+    }
+    if args.dataset_store is not None:
+        os.environ["FIF_FINANCIAL_DATASET_MODE"] = "production"
+        os.environ["FIF_PRODUCTION_DATASET_LOCAL_STORE"] = str(Path(args.dataset_store).expanduser().resolve())
+    if args.state_store is not None:
+        os.environ["RESEARCH_LOCAL_STORE"] = str(Path(args.state_store).expanduser().resolve())
     try:
         os.environ["MACRO_REPO"] = str(tree_root)
         forensics_api = load_forensics_module()
@@ -2042,10 +2079,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 stack.callback(clear_private_state_cache)
                 mode_verification = {"local_state_set_aside": set_aside}
             if mode == MODE_POPULATED:
-                state_receipt = build_kernel_state(tree_root, generated_at=args.generated_at)
+                into_local_store = args.state_store is not None
+                state_receipt = build_kernel_state(
+                    tree_root,
+                    generated_at=args.generated_at,
+                    install=not into_local_store,
+                )
+                if into_local_store:
+                    destination = install_state_into_local_store(
+                        args.state_store, state_receipt.blob
+                    )
+                else:
+                    destination = tree_root / LOCAL_STATE_RELATIVE
                 print(
-                    f"kernel state: {state_receipt.bytes} bytes sha256={state_receipt.sha256[:16]} "
-                    f"-> {LOCAL_STATE_RELATIVE}"
+                    f"kernel state: {state_receipt.bytes} bytes "
+                    f"sha256={state_receipt.sha256[:16]} -> {destination}"
                 )
             elif mode == MODE_DEGRADED:
                 state_receipt = build_kernel_state(
@@ -2108,6 +2156,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             os.environ["MACRO_REPO"] = prior_macro_repo
         restore_process_env(scrub)
+        for name, old in prior_production_capture_env.items():
+            if old is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = old
 
     if capture_rc != 0 and not (out_dir / "manifest.json").is_file():
         print(f"error: wrapped capture failed with exit {capture_rc}; no manifest written")
