@@ -1,0 +1,53 @@
+{
+  "canonical_main_snapshot": "23c6a32f37231c3e1b45c2695181566256ef91b3",
+  "observed_at": "2026-10-14T08:38:40.855778+00:00",
+  "rows": [
+    {
+      "path": "data/market_state/latest.json",
+      "sha256": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "bytes": 40025,
+      "date_fields": {
+        "asof": "2026-10-12"
+      },
+      "meta_date_fields": {}
+    },
+    {
+      "path": "data/gex/latest.json",
+      "sha256": "4b8fbd2592f981ec77d2d33ea4cb8504ebff237d4f448969f3f4a0d40939dec2",
+      "bytes": 2293,
+      "date_fields": {
+        "asof": "2026-10-08"
+      },
+      "meta_date_fields": {}
+    },
+    {
+      "path": "site/basketdata/breadth_split.json",
+      "sha256": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+      "bytes": 1840,
+      "date_fields": {
+        "as_of": "2026-10-08"
+      },
+      "meta_date_fields": {}
+    },
+    {
+      "path": "site/basketdata/fear_greed.json",
+      "sha256": "70cd2712f4a98936819a3fc99ecdac5bb866adc6fca9b78b131358ecf766a571",
+      "bytes": 7979,
+      "date_fields": {
+        "as_of": "2026-10-12"
+      },
+      "meta_date_fields": {}
+    },
+    {
+      "path": "data/risk_radar/forward_log.jsonl",
+      "sha256": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+      "bytes": 157376,
+      "last_record_date_fields": {
+        "asof": "2026-10-12"
+      },
+      "rows": 65
+    }
+  ],
+  "admission": false,
+  "limitation": "Newest commit time is not event time; no slot planned or provider called."
+}

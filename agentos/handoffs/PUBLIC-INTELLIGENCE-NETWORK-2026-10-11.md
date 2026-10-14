@@ -2245,3 +2245,87 @@ all24 accepted runtime hashes unchanged. Release read07:44:53:9209 still8f705cb3
 runs were failure-marker passes, not9209 admission. Preserve original daily writer,
 rights/editorial/held history and every effect boundary. Continue original release
 then same follow-on; full evidence in source_qualification_20261014_0744/.
+
+
+## 2026-10-14 08:05 wake — active repair of the newly red integration baseline
+
+The single08:06 release observation found9209 OPEN8f705cb3,12activeproofs/cap8,
+lease9266/2cdbf5d9497d. Full controller38532540975 now holds it behind actual
+integration-baseline38530059577 red at703477f0a822, despite earlier mainCI green.
+The baseline failed only the packing-count regression (1failed/825passed), distinct
+from landed9227's older path-prune repair. Closed9207 is a historical weight issue.
+No9209 refresh, duplicate producer/observer/CI or release waiver was attempted.
+
+The root isolated and implemented a two-job scope repair on the approvedSSD tree
+mmx-press-ci-scope-repair-20261014-230a5ee08076d732, base73669c7df214. Existing full
+static closures and runtime reads now replace false-positive AST/render fallback
+selection for leadership-rotation-contract and lr-rotation-evidence-modes. All313
+jobs, commands, dependencies and original paths remain; the exact curated registry
+adds only those two names. No packing ceiling or assertion was weakened.
+
+The initial proposal passed70focused checks and contract-delta0/0; the full job
+then correctly failed the omitted registry enrollment (1failed/823passed/2existing
+sparse skips). That is repaired and the registry check passes. Independent Fabric
+mmx-press-ci-scope-review-20261014-001 completed once; useful findings were consumed
+and accepted, not labelled a final-code workerPASS. Per-suite63+5pass read audits
+confirmed config.yml/support reads; final67/93path declarations preserve these
+and package initializers. All160positive paths and6negative probes pass. The final
+complete-job and differential rechecks are running; source is not yet aPR/install.
+
+Adjacent source qualification froze main23c6a32f37231c3e1b45c2695181566256ef91b3.
+The newest fear/greed render commit isOct14 but its eventdate is stillOct12.
+Market-state/radar areOct12 and gamma/breadthOct8. Commit-time freshness supplies
+no new admitted event. Existing daily38495183073 remains the original carrier;
+its initial live engine/tail and unknown collector push are not replayed.
+
+Press application8eb467112b83 remains unchanged. Reuse429tests/1sparse skip plus
+1real-data check,31portable groups and24-source/3-page acceptance bundle. No
+follow-onPR/install, D14credit or new public capability; publication/cutoverfalse.
+Finish the existing bounded CI repair, then admitted9209 release/install and the
+SAME reviewed Press follow-on. Preserve all held drafts, source exclusions, source
+rights/editorial gates,10uneditedpasses,Commission19,Catalyst8678,refused issuer
+review andOct11 12:07EFFECT_UNKNOWN.
+
+verified: source_qualification_20261014_0805/{release_dependency.json,
+own_artifact_commits.json,own_artifact_dates.json}; companion CI tree retains
+research/agentic_media/public_intelligence_20261011/ci_scope_phase/ with exact
+source, logs, closure/read audits and original review. No production/source data
+writes or provider story generation.
+
+
+
+## 2026-10-14 08:50 UTC — baseline repair PR9288 submitted with full local proof
+
+New bounded main-red repair https://github.com/mastermindx-market-intelligence/macro/pull/9288
+is OPEN and attached at d85258e89e0a2cd6ef53b31df55a8011549b4479. Exact PR readback
+confirmed main-red-repair and merge-on-green; native autoMergeRequest is null.
+Fresh CI38537927444 started08:50:01Z. It must pass normally; no admin merge,
+manual refresh, duplicateCI or controller bypass. Before push, both target jobs
+were unchanged on fresh main e95584df7273acafce150bba3225e0915868a9a9.
+
+The final full formerly failing integration-baseline job passes824tests with2
+existing sparse-checkout skips in634.42s. Per-suite runtime audits pass63+5tests;
+160dependency inclusion/sixunrelated refusal controls pass. Final contract-delta
+0introduced/0inherited in489.4s. Probes135/134/129jobs,5674/5475/5437weight,10packs
+each, all unchanged ceilings. AST/manifest semantic checks preserve313jobs,
+everycommand/dependency/timeout/oldpath/assertion; onlytwo scopes andtworegistry
+members change. The review's valid findings were repaired; no workerPASS onfinal
+bytes is claimed. Its retained original operation is accepted and not retried.
+
+This repairs a newly discovered dependency ofPress9209; it is not the Press
+follow-on or publication. Original9209 was last read08:06OPEN8f705cb3 behind the
+new main-red gate; main-red/capacity controller remains authoritative. Original
+Press application8eb467112b83 and429tests/31portablegroups/24sources/3pages remain
+unchanged. No follow-onPR/install or D14credit. Existing dailyproducer and held
+source history remain unreplayed. The latest committed source date audit confirms
+Oct12market/radar/sentiment andOct8gamma/breadth, not fresh own-event support.
+
+Next: consume9288 exact-headCI/protectedcontroller result, then admitted9209
+refresh/release/install, then the SAME reviewed follow-on. Continue permitted
+source qualification from actual event dates and meaningful own receipts.
+
+verified: source_qualification_20261014_0805/pr9288_created.json; immutable
+repair commit d85258e89e0a at research/agentic_media/public_intelligence_20261011/ci_scope_phase/.
+AgentOS1734records/0errors/164advisorywarnings. The previous63,176-character
+GitHub evidence comment is preserved verbatim in github_evidence_history_before_20261014_0805.md
+before its current frontier is compacted with a permanent commit link.

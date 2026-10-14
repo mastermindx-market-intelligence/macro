@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-10-14T08:38:14.451189+00:00",
+  "canonical_main_snapshot": "23c6a32f37231c3e1b45c2695181566256ef91b3",
+  "artifact_commit_heads": [
+    {
+      "path": "data/market_state/latest.json",
+      "last_commit": "21c22e1707e51aacb37901e3b6756ad8a9321512",
+      "commit_time": "2026-10-13T01:51:27-07:00",
+      "subject": "chronicle: nightly event spine + state_log + rollups 2026-10-13"
+    },
+    {
+      "path": "data/gex/latest.json",
+      "last_commit": "48cf3140e2ff153769044fe0b621f4719d3bace8",
+      "commit_time": "2026-10-09T07:20:55-07:00",
+      "subject": "engine: regime update 2026-10-09"
+    },
+    {
+      "path": "site/basketdata/breadth_split.json",
+      "last_commit": "33199bf79bc1abcb8591d51e4b33ec34a0847d07",
+      "commit_time": "2026-10-09T00:51:52-07:00",
+      "subject": "render: site re-render 2026-10-09 (scope=all, from=cdab62686e79)"
+    },
+    {
+      "path": "site/basketdata/fear_greed.json",
+      "last_commit": "e7d5b13d60e2dd048b501bafa5a58a630c138407",
+      "commit_time": "2026-10-14T00:34:21-07:00",
+      "subject": "render: site re-render 2026-10-14 (scope=all, from=3bf4b196eb0e)"
+    },
+    {
+      "path": "data/risk_radar/forward_log.jsonl",
+      "last_commit": "21c22e1707e51aacb37901e3b6756ad8a9321512",
+      "commit_time": "2026-10-13T01:51:27-07:00",
+      "subject": "chronicle: nightly event spine + state_log + rollups 2026-10-13"
+    }
+  ],
+  "limit": "Commit freshness only, not event-date/factual/rights admission. No producer or source replay."
+}
