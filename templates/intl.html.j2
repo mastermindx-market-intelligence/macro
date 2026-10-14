@@ -1243,8 +1243,9 @@
 {%- set CC_FLAG = {'US':'🇺🇸','XM':'🇪🇺','JP':'🇯🇵','GB':'🇬🇧','CH':'🇨🇭','CA':'🇨🇦','AU':'🇦🇺'} %}
 
 {# inversion board #}
-{%- set n_inv = INV.get('n_inverted', 0) %}
-{%- set n_total_inv = INV.get('n_total', 6) %}
+{%- set n_inv = INV.get('n_inverted') %}
+{%- set n_total_inv = INV.get('n_total') %}
+{%- set inv_available = n_inv is number and n_total_inv is number and n_total_inv > 0 and n_inv >= 0 and n_inv <= n_total_inv %}
 {%- set inv_countries = INV.get('countries') or [] %}
 {%- set inv_sync = INV.get('synchronized', false) %}
 
@@ -1624,7 +1625,7 @@
     <!-- CREDIT & BOND STRESS -->
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-credit-bonds">{{ t('Credit & bond stress', '信用与债券压力') }} {{ help('Credit spreads = the extra yield emerging-market bonds pay above comparable Treasuries, in percentage points. Velocity arrow = direction of 20-day move (↑ widening = more stress, ↓ tightening = easing). EM high-yield source: BAML EM High Yield index. Regional spreads: BAML regional subindices. Inversion board: 10yr minus 3-month yield for 6 major curves. EM spread history collected since Jul 2023 (data-vendor cap) — long-run comparisons build up over time.', '信用利差 = 新兴市场债券相对同期美债的超额收益率（百分点）。速度箭头 = 20日走势方向（↑走阔 = 压力上升，↓收窄 = 压力减轻）。新兴市场高收益来源：美银美林新兴市场高收益指数。地区利差：美银美林地区子指数。倒挂看板：6个主要收益率曲线的10年减3月期利差。新兴市场利差数据自2023年7月起收集（数据供应商限制）——长期比较随时间积累。') }}</h2>
+        <h2 id="intl-credit-bonds" tabindex="-1">{{ t('Credit & bond stress', '信用与债券压力') }} {{ help('Credit spreads = the extra yield emerging-market bonds pay above comparable Treasuries, in percentage points. Velocity arrow = direction of 20-day move (↑ widening = more stress, ↓ tightening = easing). EM high-yield source: BAML EM High Yield index. Regional spreads: BAML regional subindices. Inversion board: 10-year minus 2-year yield, falling back to 3-month where 2-year is absent. Counts include only sovereign curves with supplied data; coverage can be partial. EM spread history collected since Jul 2023 (data-vendor cap) — long-run comparisons build up over time.', '信用利差 = 新兴市场债券相对同期美债的超额收益率（百分点）。速度箭头 = 20日走势方向（↑走阔 = 压力上升，↓收窄 = 压力减轻）。新兴市场高收益来源：美银美林新兴市场高收益指数。地区利差：美银美林地区子指数。倒挂看板：10年减2年期收益率；缺少2年期时采用3月期。计数仅涵盖有数据的主权曲线，覆盖可能不完整。新兴市场利差数据自2023年7月起收集（数据供应商限制）——长期比较随时间积累。') }}</h2>
         <span class="sub">{{ t('Are lenders charging more for risk?', '贷款方是否在为风险索取更高溢价？') }}</span>
       </div>
 
@@ -1636,8 +1637,12 @@
           <div class="sc-label">{{ t('EM high-yield spreads', '新兴市场高收益利差') }}</div>
           <div class="sc-val">{{ ('%.2f' | format(em_hy_v) + '%') if em_hy_v is not none else '—' }}</div>
           <div class="sc-vel {{ 'vel-up' if em_hy_vel is not none and em_hy_vel > 0.1 else 'vel-dn' if em_hy_vel is not none and em_hy_vel < -0.1 else 'vel-flat' }}">
+            {%- if em_hy_vel is none %}
+            {{ t('Unavailable', '不可用') }}
+            {%- else %}
             {{ '↑' if em_hy_vel is not none and em_hy_vel > 0.1 else '↓' if em_hy_vel is not none and em_hy_vel < -0.1 else '→' }}
             {{ t('Widening (20d)', '走阔（20日）') if em_hy_vel is not none and em_hy_vel > 0.1 else t('Tightening (20d)', '收窄（20日）') if em_hy_vel is not none and em_hy_vel < -0.1 else t('Steady (20d)', '持平（20日）') }}
+            {%- endif %}
           </div>
         </div>
         <!-- Asia -->
@@ -1647,8 +1652,12 @@
           <div class="sc-label">{{ t('Asia credit spreads', '亚洲信用利差') }}</div>
           <div class="sc-val">{{ ('%.2f' | format(asia_v) + '%') if asia_v is not none else '—' }}</div>
           <div class="sc-vel {{ 'vel-up' if asia_vel is not none and asia_vel > 0.1 else 'vel-dn' if asia_vel is not none and asia_vel < -0.1 else 'vel-flat' }}">
+            {%- if asia_vel is none %}
+            {{ t('Unavailable', '不可用') }}
+            {%- else %}
             {{ '↑' if asia_vel is not none and asia_vel > 0.1 else '↓' if asia_vel is not none and asia_vel < -0.1 else '→' }}
             {{ t('Widening (20d)', '走阔（20日）') if asia_vel is not none and asia_vel > 0.1 else t('Tightening (20d)', '收窄（20日）') if asia_vel is not none and asia_vel < -0.1 else t('Steady', '持平') }}
+            {%- endif %}
           </div>
         </div>
         <!-- LatAm -->
@@ -1664,8 +1673,12 @@
           </div>
           <div class="sc-val">{{ ('%.2f' | format(latam_v) + '%') if latam_v is not none else '—' }}</div>
           <div class="sc-vel {{ 'vel-up' if latam_vel is not none and latam_vel > 0.1 else 'vel-dn' if latam_vel is not none and latam_vel < -0.1 else 'vel-flat' }}">
+            {%- if latam_vel is none %}
+            {{ t('Unavailable', '不可用') }}
+            {%- else %}
             {{ '↑' if latam_vel is not none and latam_vel > 0.1 else '↓' if latam_vel is not none and latam_vel < -0.1 else '→' }}
             {{ t('Widening slowly (20d)', '缓慢走阔（20日）') if latam_vel is not none and latam_vel > 0.1 else t('Tightening (20d)', '收窄（20日）') if latam_vel is not none and latam_vel < -0.1 else t('Steady', '持平') }}
+            {%- endif %}
           </div>
         </div>
         <!-- EMEA -->
@@ -1675,22 +1688,28 @@
           <div class="sc-label">{{ t('EMEA credit spreads', '欧非中东信用利差') }}</div>
           <div class="sc-val">{{ ('%.2f' | format(emea_v) + '%') if emea_v is not none else '—' }}</div>
           <div class="sc-vel {{ 'vel-up' if emea_vel is not none and emea_vel > 0.1 else 'vel-dn' if emea_vel is not none and emea_vel < -0.1 else 'vel-flat' }}">
+            {%- if emea_vel is none %}
+            {{ t('Unavailable', '不可用') }}
+            {%- else %}
             {{ '↑' if emea_vel is not none and emea_vel > 0.1 else '↓' if emea_vel is not none and emea_vel < -0.1 else '→' }}
             {{ t('Widening (20d)', '走阔（20日）') if emea_vel is not none and emea_vel > 0.1 else t('Tightening (20d)', '收窄（20日）') if emea_vel is not none and emea_vel < -0.1 else t('Steady', '持平') }}
+            {%- endif %}
           </div>
         </div>
       </div>
 
-      <!-- Curve Inversion Board -->
-      {%- set inv_color_cls = 'warn' if n_inv > 0 and n_inv < n_total_inv else 'red' if n_inv == n_total_inv else '' %}
-      <div class="ird-inv-row" style="{{ 'background:color-mix(in srgb,var(--up) 6%,var(--panel2));border-color:color-mix(in srgb,var(--up) 25%,var(--line))' if n_inv == 0 else 'background:color-mix(in srgb,var(--warn) 6%,var(--panel2));border-color:color-mix(in srgb,var(--warn) 25%,var(--line))' if n_inv < n_total_inv else 'background:color-mix(in srgb,var(--down) 6%,var(--panel2));border-color:color-mix(in srgb,var(--down) 25%,var(--line))' }}">
-        <div class="inv-num {{ 'warn' if n_inv > 0 and n_inv < n_total_inv else 'red' if n_inv == n_total_inv else '' }}" style="{{ 'color:var(--ink-up, var(--up))' if n_inv == 0 else 'color:var(--ink-warn, var(--warn))' if n_inv < n_total_inv else 'color:var(--ink-down, var(--down))' }}">{{ n_inv }} / {{ n_total_inv }}</div>
+      <!-- Curve Inversion Board: counts describe supplied coverage, never absent markets. -->
+      {%- set inv_color_cls = ('warn' if n_inv > 0 and n_inv < n_total_inv else 'red' if n_inv == n_total_inv else '') if inv_available else '' %}
+      <div class="ird-inv-row" style="{{ 'background:var(--panel2);border-color:var(--line)' if not inv_available else 'background:color-mix(in srgb,var(--up) 6%,var(--panel2));border-color:color-mix(in srgb,var(--up) 25%,var(--line))' if n_inv == 0 else 'background:color-mix(in srgb,var(--warn) 6%,var(--panel2));border-color:color-mix(in srgb,var(--warn) 25%,var(--line))' if n_inv < n_total_inv else 'background:color-mix(in srgb,var(--down) 6%,var(--panel2));border-color:color-mix(in srgb,var(--down) 25%,var(--line))' }}">
+        <div class="inv-num {{ inv_color_cls }}" style="{{ 'color:var(--muted)' if not inv_available else 'color:var(--ink-up, var(--up))' if n_inv == 0 else 'color:var(--ink-warn, var(--warn))' if n_inv < n_total_inv else 'color:var(--ink-down, var(--down))' }}">{{ (n_inv|string + ' / ' + n_total_inv|string) if inv_available else '—' }}</div>
         <div class="inv-text">
           <b>{{ t('Yield curves inverted', '收益率曲线倒挂') }}</b><br>
-          {%- if n_inv == 0 %}
-            {{ t('All ' + n_total_inv|string + ' tracked curves positively sloped — no recession signal from bond markets', '所有' + n_total_inv|string + '条跟踪曲线均正斜率——债市无衰退信号') }}
+          {%- if not inv_available %}
+            {{ t('Unavailable — curve coverage is missing.', '不可用——缺少曲线覆盖数据。') }}
+          {%- elif n_inv == 0 %}
+            {{ t('No inversions among ' + n_total_inv|string + ' curves with data; flat curves are included.', '有数据的' + n_total_inv|string + '条曲线均未倒挂；其中可包括平坦曲线。') }}
           {%- else %}
-            {{ t(n_inv|string + ' of ' + n_total_inv|string + ' curves inverted — watch for further spread', n_inv|string + '/' + n_total_inv|string + '条曲线倒挂——关注是否进一步蔓延') }}
+            {{ t(n_inv|string + ' of ' + n_total_inv|string + ' curves with data inverted.', '有数据的' + n_total_inv|string + '条曲线中有' + n_inv|string + '条倒挂。') }}
           {%- endif %}
         </div>
       </div>

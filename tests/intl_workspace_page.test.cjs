@@ -55,6 +55,36 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Credit absent observations stay unavailable on Library return ${theme} ${lang}`,async()=>{
+    const creditHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_credit_absence_render import credit_absence_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=credit_absence_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const input=page.locator('[data-im-library-search]:visible');const query=lang==='zh'?'信用':'Credit';
+      await input.fill(query);
+      const link=page.locator('[data-im-library-tool="credit_bonds"] a[href="#intl-credit-bonds"]');
+      assert.equal(await link.count(),1);const origin=page.url();
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-credit-bonds');const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const velocities=panel.locator('.sc-vel');const values=panel.locator('.sc-val');
+        for(const index of [0,1,3])assert.equal(await velocities.nth(index).innerText(),lang==='zh'?'不可用':'Unavailable');
+        assert.match(await velocities.nth(2).innerText(),lang==='zh'?/持平/:/Steady/);
+        assert.deepEqual(await values.allInnerTexts(),['0.00%','—','0.00%','1.25%']);
+        const inversion=panel.locator('.ird-inv-row');assert.match(await inversion.innerText(),lang==='zh'?/不可用/:/Unavailable/);
+        assert.equal(await inversion.locator('.inv-num').innerText(),'—');
+        assert.equal(await heading.evaluate(n=>document.activeElement===n),true);
+        for(const el of [...await velocities.all(),inversion])assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'absence copy fits its container');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.goBack();assert.equal(page.url(),origin);assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:creditHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Central bank clocks keep independent owner dates ${theme} ${lang}`,async()=>{
     const cbHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_central_bank_clocks_render import central_bank_clocks_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk={'cb_desk':central_bank_clocks_fixture()}))"],

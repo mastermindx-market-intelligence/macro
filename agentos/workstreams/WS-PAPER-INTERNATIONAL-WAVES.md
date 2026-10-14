@@ -140,11 +140,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Trace Credit and bond stress owner absence before repairing newly observed missing-input presentation.
-  With only a Central bank payload the existing Credit cards print Steady and inversion0of6 without supplied readings.
-  Discriminate genuine zero/steady/counts from missing values; do not invent market coverage or qualification.
-  Original live Library Stock Back awaits Chris completing/dismissing Chrome extension UI; preserve its tab.
-  Independent review, source qualification, Saved and release holds persist; IW2 owns all TerminalPR804 surfaces.
+next_action: Repair the retained Credit velocity semantic mismatch using its actual owner grammar.
+  Standardized change deviation is not raw spread direction; preserve owner inputs, ranking and qualification.
+  Reuse accepted absence, clocks and keyboard proof; all release, review, live-browser and IW2 custody holds remain.
 artifacts:
 - research/paper_international_wave1_wave2/CENTRAL_BANK_CLOCKS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json
@@ -287,3 +285,5 @@ Browser forced palettes erased the selected History/Scenario border/fill distinc
 ### Short-height Inspector, 2026-10-14
 
 Eight source-fixture cases at256px height cover320/820px, Dark/Light andEN/ZH.32modal modes retain keyboard-reachable controls and native Home/End content scrolling, with8origin-focus returns.440control-focus observations and72dialog-focus observations stay visible;48BODY observations have document.hasFocus=false and no background control gains focus. Three categories of rejected harness assumptions are retained separately: unsettled scroll, end-threshold reversal and field-to-deeper without returning to ledger. No Inspector product change, OS keyboard/nativezoom or live acceptance claim.
+
+Credit/bond absence source repair adds ten passing render cases and four bilingual/theme keyboard cases over eight widths, with eight canonical captures and four focused parent views. Six source-render failures plus one browser failure establish causality. No live or complete panel acceptance: separate standardized-velocity direction semantics remain, bound by an actual-helper counterexample. Source not deployed; independent review pending. See CREDIT_BOND_ABSENCE_ACCEPTANCE.json and external credit-bond-absence-20261014-r1 evidence.
