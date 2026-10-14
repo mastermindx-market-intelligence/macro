@@ -166,6 +166,8 @@ def main() -> int:
         cfg['min_age_days'] = args.min_age_days
     # The host-local reaper is an adapter, not an alternate policy authority.
     protected = gc.human_driven_protection([primary], cfg)
+    # Manual checkouts may be resumable by a human despite having no process.
+    protected.extend(r / "manual" for r in managed_roots)
     if not guard.REQUIRED_HUMAN_ROOTS.issubset(set(map(str, protected))):
         print(json.dumps({'fatal': 'human-driven protection missing'}))
         return 2
