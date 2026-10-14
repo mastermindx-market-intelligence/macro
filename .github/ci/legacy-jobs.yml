@@ -3022,6 +3022,7 @@ jobs:
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -3602,6 +3603,7 @@ jobs:
       - "lib/pages.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -6644,6 +6646,7 @@ jobs:
       - "site/vol/regime.json"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "site/government-revenue-data/research-state.json"
       - "collectors/dod_budget_live.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
@@ -13531,6 +13534,7 @@ jobs:
       - "lib/live_flow_event_stage.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -18402,6 +18406,7 @@ jobs:
       - "collectors/sbir_awards.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -19491,7 +19496,9 @@ jobs:
       - "tests/test_government_revenue_defense_owner_adapter.py"
       - "tests/test_defense_refresh_cohort.py"
       - "tests/test_defense_reported_financial_profiles.py"
+      - "tests/test_defense_space_profiles.py"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "tests/fixtures/company_intelligence/defense/**"
       - "tests/test_government_revenue_publisher_consumers.py"
       - "tests/test_defense_recognition_market_clocks.py"
@@ -19607,7 +19614,7 @@ jobs:
       - name: Tenant isolation and immutable reader selection
         run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py -q
       - name: Qualified issuer segment facts and owner refresh
-        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py -q
+        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py tests/test_defense_space_profiles.py -q
       - name: Adverse evidence, ownership terms and complete source retention
         run: python -m pytest tests/test_noc_adverse.py tests/test_gd_profile.py tests/test_issuer_supplements.py tests/test_industrial_refresh.py tests/test_complete_owner_refresh.py tests/test_f2_composition.py tests/test_lhx_reported_income.py -q
       - name: Defense economics source binding and entitled read boundary
@@ -19852,6 +19859,7 @@ jobs:
     paths:
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/dod_budget.py"
@@ -21921,6 +21929,7 @@ jobs:
       - "tests/test_washout_turn.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -23283,6 +23292,7 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -23584,6 +23594,7 @@ jobs:
       - "tests/earnings_economic_fixtures.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/industrial_sources.py"
@@ -23684,6 +23695,7 @@ jobs:
       - "tests/test_earnings_economic_interpretation.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -26429,6 +26441,7 @@ jobs:
       - "collectors/sbir_awards.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -28778,6 +28791,7 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_preflight.py
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "site/government-revenue-data/research-state.json"
       - "collectors/dod_budget_live.py"
       - "config/government_revenue/program_theme_assignments.v1.json"
@@ -29816,6 +29830,7 @@ jobs:
       - "tests/test_options_skew_backfill.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -29935,6 +29950,7 @@ jobs:
       - "tests/test_mining_updates.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
@@ -30046,6 +30062,7 @@ jobs:
       - "tests/test_industrials_edition_record.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/industrial_sources.py"

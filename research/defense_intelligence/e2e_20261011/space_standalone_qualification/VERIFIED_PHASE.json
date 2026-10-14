@@ -1,0 +1,35 @@
+{
+  "state": "STANDALONE_SPACE_SOURCE_AND_CONSUMER_VERIFIED_REVIEW_PENDING",
+  "verified_at": "2026-10-14T17:43:52.300006+00:00",
+  "base": "5bbaaa712145fd147bb86ff7559f7c41071e37de",
+  "source_tree": "d3367c541a410409adba7d279df99dda2259c3ca",
+  "source_files": {
+    ".github/ci/legacy-jobs.yml": "5914726e9f69eee450546976b86c0d727bc4d1cb4cf0324db5ccf6c0290441d8",
+    "engine/company_intelligence/defense_cash_profiles.py": "59621e511c3f0db6ab3cae907c757c60159ca7df8ed45ed26c38c09f6bba6b6f",
+    "engine/company_intelligence/defense_space_profiles.py": "8da13b55ff4c09eb7026b041c9487980ebce0aeea43b424e09ce34ebe54a9f0f",
+    "engine/government_revenue/program_theme_disclosure.py": "7e28025ab627a24362eea51cd8d2252c242b6070faeb4b0f392cd1592b32d7f7",
+    "tests/defense_o2_source_contracts/test_program_theme_disclosure.py": "61369bcc8b150c9e4ebbdb10be15e5e271b6f9dd9e33419fc4cf0363251f1336",
+    "tests/fixtures/company_intelligence/defense/NOC.GEM63XL.real_fragment.html": "2f5fb3e28c98166b5835db69c29b235d11958d8e814914ea64c364c444aeedb2",
+    "tests/fixtures/company_intelligence/defense/NOC.GEM63XL.real_fragment.provenance.json": "724f07210d30307a2d1e08bbc56f1218d5525246bcfc6a1f75ebab4acc74cb6b",
+    "tests/fixtures/company_intelligence/defense/NOC.space_systems.real_fragment.html": "8e3ac2e410d40f41eacbc1d3b623756e5a43e08c294e98d67581078422eabab8",
+    "tests/fixtures/company_intelligence/defense/NOC.space_systems.real_fragment.provenance.json": "87a12c21661abf5a233b65e2b60e7e22b22b7b5a0b45fc4b9e386b11518ff7b8",
+    "tests/test_defense_space_profiles.py": "b2f7e6f8ca9dd3114d162eade79ce2561eb444b920f0e88ebd25d5a950bdc503"
+  },
+  "tests_passed": 166,
+  "ci_import_scopes_closed": 16,
+  "actual_full_source_replay": true,
+  "existing_quartet_financial_facts_preserved": true,
+  "source_to_theme": "Seven exact NOC Space references only; other theme references retained, six market leaves remain stale",
+  "bounded_visual_reuse": {
+    "source_evidence_commit": "c682d5295db250e8419e4589a00c3f4ef801c313",
+    "component_cells": 8,
+    "basis": "All public disclosure bytes are semantically identical except three top-level current projection identity/time fields. UI source is untouched by the ten-path delta.",
+    "limit": "Explicit component fixture, parent visual inspection; not full-page or installed/authenticated acceptance."
+  },
+  "capacity_changes_in_delta": false,
+  "canonical_financial_or_theme_owner_written": false,
+  "release_branch_modified": false,
+  "publication": false,
+  "independent_review": "defense-space-standalone-review-01a13300-a pending retained result; no acceptance yet",
+  "next": "Consume and adjudicate the exact retained independent integration review. This contribution remains outside PR9066 until its existing release settles; preserve all source/effect/release gates."
+}

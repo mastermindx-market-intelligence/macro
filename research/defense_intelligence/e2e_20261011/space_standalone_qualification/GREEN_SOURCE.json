@@ -1,0 +1,73 @@
+{
+  "state": "ONE_REAL_SOURCE_ADVERSE_FACT_AND_PROJECTION_VERIFIED",
+  "source_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+  "incumbent_noc_facts": 20,
+  "incumbent_noc_facts_sha256": "7716617a8c56d6479a2e0d80132d12a76e13182213199c67b9bc570d1a1ac1ac",
+  "existing_space_figures_unchanged": 6,
+  "total_source_facts": 27,
+  "negative_projection_controls": [
+    "value",
+    "unit",
+    "period",
+    "basis",
+    "company_id",
+    "year",
+    "quarter"
+  ],
+  "new_fact": {
+    "schema": "event_fact.v1",
+    "fact_id": "evt_cik0001133421_2026Q2_source_validation:issuer_space_gem63xl_unfavorable_eac",
+    "event_id": "evt_cik0001133421_2026Q2_source_validation",
+    "metric": "issuer_space_gem63xl_unfavorable_eac",
+    "value": 91.0,
+    "unit": "USD_million",
+    "period": "2026Q2",
+    "basis": "issuer_reported_program_cost_estimate:GEM63XL:unfavorable_EAC",
+    "source_span": {
+      "schema": "source_span.v1",
+      "authority": "context_only",
+      "span_id": "span_b0c7781e3a632803e207",
+      "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "sub_kind": "transcript_segment",
+        "segment_index": 0,
+        "span_start_byte": 222484,
+        "span_end_byte": 222486
+      },
+      "text_sha256": "1da51b8d8ff98f6a48f80ae79fe3ca6c26e1abb7b7d125259255d6d2b875ea08",
+      "display_excerpt": "91",
+      "rights_profile": "rp_public_primary_v1",
+      "receipt_state": "byte_replayed",
+      "receipt": {
+        "source_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+        "segment_index": 0,
+        "segment_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+        "segment_bytes": 519778,
+        "span_start_byte": 222484,
+        "span_end_byte": 222486,
+        "text_sha256": "1da51b8d8ff98f6a48f80ae79fe3ca6c26e1abb7b7d125259255d6d2b875ea08"
+      },
+      "unreplayable_reason": null
+    }
+  },
+  "projected_fact": {
+    "fact_id": "evt_cik0001133421_2026Q2_source_validation:issuer_space_gem63xl_unfavorable_eac",
+    "value": 91.0,
+    "unit": "USD_million",
+    "period": "2026Q2",
+    "accounting_basis": "issuer_reported_program_cost_estimate:GEM63XL:unfavorable_EAC",
+    "fact_class": "reported_eac",
+    "owner_ref": "isolated-source-validation-only",
+    "source_span": {
+      "receipt_state": "byte_replayed",
+      "text_sha256": "1da51b8d8ff98f6a48f80ae79fe3ca6c26e1abb7b7d125259255d6d2b875ea08",
+      "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+      "span_id": "span_b0c7781e3a632803e207",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm"
+    }
+  },
+  "canonical_writes": 0,
+  "publication": false
+}

@@ -1,0 +1,20 @@
+{
+  "differences": [
+    [
+      "/theme_content_id",
+      "gptc1-2171edc4dea8a22d771f18fd",
+      "gptc1-d2ef08e510fda8e9d38614b5"
+    ],
+    [
+      "/as_of",
+      "2026-10-14T17:14:42.343807+00:00",
+      "2026-10-14T17:40:05.159440+00:00"
+    ],
+    [
+      "/content_id",
+      "gptd1-5856baf08ce9a034f5407846",
+      "gptd1-f23e73028e0bcc146c915d60"
+    ]
+  ],
+  "count": 3
+}

@@ -1,0 +1,73 @@
+{
+  "base": "5bbaaa712145fd147bb86ff7559f7c41071e37de",
+  "scope": "Space financial source and interpretation only; no capacity source or contract admission",
+  "source_commits": [
+    {
+      "commit": "ad493ca32b387493f9bc3c74aa548f2d3cb6f18a",
+      "patch": "ad493ca32b38.patch",
+      "sha256": "9fe5d18005905f7a0de0d1d20de55e48a6f490dc7a356c2270643de28ab12838",
+      "apply_check_rc": 0,
+      "diagnostic": ""
+    },
+    {
+      "commit": "a8e32783aaa6e7b4dd0b5f01c41c070246fdf1ad",
+      "patch": "a8e32783aaa6.patch",
+      "sha256": "c0fe6572a1d011caac46d667479f8f9c33530300c2c61b16447afff6c2539151",
+      "apply_check_rc": 0,
+      "diagnostic": ""
+    },
+    {
+      "commit": "7563178ae601a8ab5faac53bb4c4219d2d90fc6c",
+      "patch": "7563178ae601.patch",
+      "sha256": "e7c118021570fbbc3d066308f82a182da84e9d847c236758f5e57597dd1d2a15",
+      "apply_check_rc": 0,
+      "diagnostic": ""
+    },
+    {
+      "commit": "c682d5295db250e8419e4589a00c3f4ef801c313",
+      "patch": "c682d5295db2.patch",
+      "sha256": "8387aaf65ddb32a369014769651b4342f3f2b686080ef559707205a58355b624",
+      "apply_check_rc": 0,
+      "diagnostic": ""
+    }
+  ],
+  "all_apply": true,
+  "workspace_or_refs_modified": false,
+  "production_effect": false,
+  "ci_reconciliation": {
+    "changed_jobs": [
+      "conviction-profile",
+      "options-matrix-code",
+      "fif-kernel-guards",
+      "nw-lobe-unfreeze",
+      "crypto-assistant-context",
+      "defense-rail-laws",
+      "govrev-program-ontology",
+      "washout-turn-organ",
+      "unrun-picks-boards",
+      "earnings-economic-source-selection",
+      "earnings-economic-dossier",
+      "research-price-panel",
+      "ticker-news-qbus",
+      "skew-accrual-lane",
+      "mining-economic-dossier",
+      "industrials-result-cash"
+    ],
+    "unrelated_semantics_preserved": true,
+    "source_manifest_sha256": "5914726e9f69eee450546976b86c0d727bc4d1cb4cf0324db5ccf6c0290441d8"
+  },
+  "changed_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "engine/company_intelligence/defense_cash_profiles.py",
+    "engine/company_intelligence/defense_space_profiles.py",
+    "engine/government_revenue/program_theme_disclosure.py",
+    "tests/defense_o2_source_contracts/test_program_theme_disclosure.py",
+    "tests/fixtures/company_intelligence/defense/NOC.GEM63XL.real_fragment.html",
+    "tests/fixtures/company_intelligence/defense/NOC.GEM63XL.real_fragment.provenance.json",
+    "tests/fixtures/company_intelligence/defense/NOC.space_systems.real_fragment.html",
+    "tests/fixtures/company_intelligence/defense/NOC.space_systems.real_fragment.provenance.json",
+    "tests/test_defense_space_profiles.py"
+  ],
+  "patch_sha256": "50c16f2cea2871a225b80d067977bda443ec9395a6b814322de2f910935e7c6e",
+  "result_tree": "d3367c541a410409adba7d279df99dda2259c3ca"
+}

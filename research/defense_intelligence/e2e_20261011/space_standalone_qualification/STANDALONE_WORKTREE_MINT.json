@@ -1,0 +1,10 @@
+{
+  "request": {
+    "cwd": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main",
+    "name": "pr-9066",
+    "session_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7"
+  },
+  "rc": 0,
+  "stdout": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/pr-9066-e4ea65fadb39fb56\n",
+  "stderr": ""
+}

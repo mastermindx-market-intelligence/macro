@@ -1,0 +1,48 @@
+{
+  "source_financial_generation": "655092e33004e2cff2344b0e",
+  "canonical_old_sha256": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f",
+  "staged_sha256": "9558eee0bdd40ce3a3c4be03f3e1362a6ce6caca1fbf866de6c5b35a1e56d586",
+  "profiles": 4,
+  "profile_changes": {
+    "LMT": {
+      "existing_facts_semantically_identical": 21,
+      "new_facts": [],
+      "changed_top_fields": [
+        "axes"
+      ]
+    },
+    "RTX": {
+      "existing_facts_semantically_identical": 16,
+      "new_facts": [],
+      "changed_top_fields": [
+        "axes"
+      ]
+    },
+    "NOC": {
+      "existing_facts_semantically_identical": 20,
+      "new_facts": [
+        "evt_cik0001133421_2026q2_results:issuer_space_gem63xl_unfavorable_eac",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_margin",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_margin_prior",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_operating_profit",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_operating_profit_prior",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_sales",
+        "evt_cik0001133421_2026q2_results:issuer_space_segment_sales_prior"
+      ],
+      "changed_top_fields": [
+        "axes"
+      ]
+    },
+    "LHX": {
+      "existing_facts_semantically_identical": 31,
+      "new_facts": [],
+      "changed_top_fields": [
+        "axes"
+      ]
+    }
+  },
+  "canonical_unchanged": true,
+  "stage_only": true,
+  "publication": false,
+  "clock": "2026-10-14T17:39:04.497284+00:00"
+}

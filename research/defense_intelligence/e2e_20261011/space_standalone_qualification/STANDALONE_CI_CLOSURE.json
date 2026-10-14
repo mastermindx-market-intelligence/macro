@@ -1,0 +1,105 @@
+{
+  "scope": "All16 existing explicit cash-profile import scopes; unchanged other jobs and ceilings",
+  "manifest_sha256": "5914726e9f69eee450546976b86c0d727bc4d1cb4cf0324db5ccf6c0290441d8",
+  "new_module_sha256": "8da13b55ff4c09eb7026b041c9487980ebce0aeea43b424e09ce34ebe54a9f0f",
+  "jobs": [
+    {
+      "job": "conviction-profile",
+      "exclusive": true,
+      "derived_paths": 636,
+      "missing": []
+    },
+    {
+      "job": "options-matrix-code",
+      "exclusive": true,
+      "derived_paths": 89,
+      "missing": []
+    },
+    {
+      "job": "fif-kernel-guards",
+      "exclusive": true,
+      "derived_paths": 921,
+      "missing": []
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "exclusive": true,
+      "derived_paths": 989,
+      "missing": []
+    },
+    {
+      "job": "crypto-assistant-context",
+      "exclusive": true,
+      "derived_paths": 754,
+      "missing": []
+    },
+    {
+      "job": "defense-rail-laws",
+      "exclusive": true,
+      "derived_paths": 1064,
+      "missing": []
+    },
+    {
+      "job": "govrev-program-ontology",
+      "exclusive": true,
+      "derived_paths": 87,
+      "missing": []
+    },
+    {
+      "job": "washout-turn-organ",
+      "exclusive": true,
+      "derived_paths": 871,
+      "missing": []
+    },
+    {
+      "job": "unrun-picks-boards",
+      "exclusive": true,
+      "derived_paths": 1079,
+      "missing": []
+    },
+    {
+      "job": "earnings-economic-source-selection",
+      "exclusive": true,
+      "derived_paths": 48,
+      "missing": []
+    },
+    {
+      "job": "earnings-economic-dossier",
+      "exclusive": true,
+      "derived_paths": 72,
+      "missing": []
+    },
+    {
+      "job": "research-price-panel",
+      "exclusive": true,
+      "derived_paths": 909,
+      "missing": []
+    },
+    {
+      "job": "ticker-news-qbus",
+      "exclusive": true,
+      "derived_paths": 817,
+      "missing": []
+    },
+    {
+      "job": "skew-accrual-lane",
+      "exclusive": true,
+      "derived_paths": 79,
+      "missing": []
+    },
+    {
+      "job": "mining-economic-dossier",
+      "exclusive": true,
+      "derived_paths": 65,
+      "missing": []
+    },
+    {
+      "job": "industrials-result-cash",
+      "exclusive": true,
+      "derived_paths": 67,
+      "missing": []
+    }
+  ],
+  "no_uncovered_paths": true,
+  "unintended_job_or_ceiling_changes": false
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "defense-space-standalone-review-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "subject_pool": "codex",
+  "packet_sha256": "631edc6025c89070e834ec7a1a0002a9b0bbae99546901ca31a6fb575be763ac",
+  "packet_bytes": 78146,
+  "source_files": {
+    "engine/company_intelligence/defense_space_profiles.py": "8da13b55ff4c09eb7026b041c9487980ebce0aeea43b424e09ce34ebe54a9f0f",
+    "engine/government_revenue/program_theme_disclosure.py": "7e28025ab627a24362eea51cd8d2252c242b6070faeb4b0f392cd1592b32d7f7",
+    "tests/test_defense_space_profiles.py": "b2f7e6f8ca9dd3114d162eade79ce2561eb444b920f0e88ebd25d5a950bdc503",
+    "tests/defense_o2_source_contracts/test_program_theme_disclosure.py": "61369bcc8b150c9e4ebbdb10be15e5e271b6f9dd9e33419fc4cf0363251f1336"
+  },
+  "scope": "Independent static review of isolated source integration and boundaries; no production acceptance"
+}
