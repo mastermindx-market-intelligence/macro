@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Finish the reviewed-context external Press repair through its protected PR and installed consumer proof; current-source census and 258 local tests are saved in current_event_phase. Continue non-earnings source qualification. Both prior releases are accepted; no current article is admitted, and publication/cutover remain false.
+next_action: Consume exact context review and admitted writer-vintage patch; honor shared CI capacity before creating the protected context PR, then verify installed consumer. One real Research draft is retained but held for stale narration and mixed-cohort overlap; do not replay it or claim publication. Continue permitted non-earnings source qualification.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786

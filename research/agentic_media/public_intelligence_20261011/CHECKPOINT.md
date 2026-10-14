@@ -3,26 +3,40 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Active current-source phase — October 13 23:53 UTC
+## Active current-source and real staging phase — October 14 00:11 UTC
 
-The Chairman resumed the parent publication goal and directed non-earnings paths.
-New external-SSD carrier starts at `2df04150e5302d4e9fd595315b5b953345c798aa`:
-`/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f`.
-Its two application changes allow an explicit reviewed no-share choice and selected,
-hash-bound first-party engine context in the existing planning-only external consumer.
-Four affected suites pass 258 tests; historical standalone probe passes four positive
-and nine negative controls, with no Press provider or staging writes. Exact independent
-review is running as `mmx-press-context-review-20261013-001`; no PR exists at this save.
-See `current_event_phase/READINESS.md` and its source readbacks/validation receipts.
+Current carrier remains `claude/ssd-mmx-press-current-event-20261013-3acef99375769a7f`
+on `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f`.
+Implementation `2ff3246dae7508d76359bb1d50dda6b29447f1a7`, documentation `cb25ec738138`,
+and protected-main integration `e1c44106d8df8448976f4313e309af1709e4e738` preserve the
+reviewed external consumer/test hashes. Four affected suites: 258 passed; standalone
+consumer: four historical positives, nine refusals; contract-delta: zero introduced,
+zero inherited, unchanged packing ceilings. Review `mmx-press-context-review-20261013-001`
+remains active at the last adapter observation. No PR exists. The 00:11 capacity read
+found ten active PR CI runs against cap eight and one refresh lease; do not bypass it.
 
-Fresh White House/Fed/BEA inspections and the normal Brief planner produced no ready
-current issuer story; BLS's 403 was preserved without retry. Research's selected old
-GS summary was not sent for generation without current rights/freshness qualification.
-No article is admitted or published. Earnings is only one unavailable source route.
-The prior four owned completion records and #9041 live proof were reconciled only
-after confirming protected-main bytes matched their prior source base. The completed
-release heartbeat remains paused; this is foreground continuation of the wider mission.
+One distinct existing Research Desk slot was actually generated with a retained
+provider_started checkpoint and completed response: `press-research_desk-2026-10-13-6baf3247f154`,
+source `research_vault:marketdesk-ergkmhwhsow-e05c9a`. Command and receipts are in
+`current_event_phase/RESEARCH_STAGING_REVIEW.md`. One attempt, zero regeneration,
+564 words, all 17 isolated checks passed. Actual Codex/gpt-5.6-terra usage: 19,942 input
+plus 1,134 output tokens. The configured model alias and runner estimate are not billing
+proof. Preserve the three local appended accounting files; do not commit replacements.
 
+Publication/editorial outcome remains HOLD. The untouched draft incorrectly calls an
+older PCE observation current. A copied mixed cohort of this draft plus the two prior
+stages fails unchanged self-similarity: a repeated research heading scores 1.000, and
+the earlier Brief has substantive overlap 0.381. This is not ten consecutive accepted
+drafts. No article emitted, publication/cutover false; no provider replay/backdating.
+The independent next writer repair is `mmx-press-writer-vintage-20261013-001`, limited to
+fact vintage and story-specific heading guidance, with a retained patch return.
+
+White House/Fed/BEA census supplies no ready current issuer story; BLS 403 is preserved.
+The NVIDIA October 13 software-update lead is saved without republication; its official
+RSS terms restrict noncommercial use, so no commercial-feed ingestion was added.
+Earnings credentials are only one route-specific constraint. Continue permitted source
+qualification, protected source-context delivery and the separate writer repair.
+The prior releases #8786/#9041 remain accepted; their bounded heartbeat remains paused.
 
 ## Both requested releases accepted — October 13 00:46 UTC
 

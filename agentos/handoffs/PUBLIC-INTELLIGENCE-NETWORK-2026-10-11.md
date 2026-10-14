@@ -1523,3 +1523,18 @@ The parent workstream remains active.
 Verified commands for #9041: `gh run view 38325360762 --repo mastermindx-market-intelligence/macro --json headSha,status,conclusion,updatedAt` (exact 85625, completed success); controller 38327651605 log (#9041 protected squash); `prepare-ancestry.py 242ac8d2ca62dbc4440278f35c50c95ee99638af 604d4ec4a5608dafa0442edbb237d188d1a7d5eb <local-repo>` (seven objects); `mmx-9041-install-check.py 242ac8d2ca62dbc4440278f35c50c95ee99638af` (accepted); existing SSH stdin of `installed-consumer.py` into `/opt/macro/.venv/bin/python -B - /opt/macro` (two positive/five refusal controls accepted); `mmx-9041-runtime-inspect.py 242ac8d2ca62dbc4440278f35c50c95ee99638af` (zero items, stable inputs); `mmx-9041-http-check.py` (three exact-page matches). Finalization is PROVEN_OUTCOME for this bounded two-release request; the larger publication mission remains incomplete.
 
 October 13 foreground continuation (supersedes earlier next-action snapshots): current carrier is `claude/ssd-mmx-press-current-event-20261013-3acef99375769a7f` on the policy-selected `/Volumes/Mastermind 2` SSD. Run `python3 -m pytest -q tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py tests/test_press_run.py`: 258 passed in 10.43s. Source census, exact app hashes and local consumer proof are in `current_event_phase/`. Consume review `mmx-press-context-review-20261013-001`, finish protected delivery, and continue qualified source intake. No new Press generation or publication has occurred.
+
+
+October 14 00:11 UTC continuation supersedes the preceding no-generation snapshot.
+The real distinct Research Desk staging command in current_event_phase/RESEARCH_STAGING_REVIEW.md
+returned one unedited draft, one attempt, 17 isolated checks green; actual provider usage
+is 21,076 tokens. Source-stage hash and terminal receipt are retained. Editorial stale-vintage
+wording and mixed-cohort similarity keep it HOLD, with no W1 credit. `mixed_cohort_inspection.json`
+records all three copied stages failing unchanged similarity. No canonical draft was edited.
+Current integrated source is e1c44106d8df8448976f4313e309af1709e4e738; `check_contract_delta.py
+--base f9a5a35cd66bd840ad37e7976cb42034359c22fa` returned zero introduced/zero inherited failures.
+Capacity read found ten active PR CI runs against cap eight. No PR/CI was created. Preserve
+review mmx-press-context-review-20261013-001 and separate repair mmx-press-writer-vintage-20261013-001;
+consume their retained same-run returns. Continue the publication mission without replaying
+any completed or EFFECT_UNKNOWN provider attempt. Three local accounting files are dirty from
+the new completed staging and stay outside the source commit. See cumulative CHECKPOINT.md.
