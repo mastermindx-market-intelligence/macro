@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T11:10:59.841833+00:00",
-  "count": 2890,
+  "generated_at": "2026-10-14T11:25:22.665160+00:00",
+  "count": 2891,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -815,6 +815,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9f7b08hhppb-f1ab7a",
+      "title": "Americas Business & Information Services 3Q debt issuance moderates, but key growth drivers remain intact",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:13:09Z",
+      "summary_points": [
+        "Global Debt Issuance Moderation: Q3 global debt issuance fell 8% y/y, driven by 54% y/y decline in leveraged loans and 37% in high yield, offset only by investment grade (25% y/y) and AI data center growth.",
+        "EMEA Outperformance: EMEA was sole region with Q3 debt growth (+3% y/y), led by corporate investment grade (+29%) and structured finance (+13%), contrasting NA (-13%) and APAC (-3%) declines.",
+        "SPGI/MCO Revenue Correlation: Ratings revenue growth for SPGI (3.3% y/y) and MCO (3.6% y/y) shows 86-89% correlation with global debt issuance volume, making debt market activity a core revenue driver.",
+        "US Yield Curve Tightening: 30-year US Treasury yield at 5.62% and rising 10-year yields signal tightening financial conditions, increasing borrowing costs and impacting debt valuations.",
+        "Credit Spread Divergence: Investment-grade spreads narrowed while high-yield spreads widened, coinciding with 37% y/y surge in M&A activity, reflecting shifting risk perceptions and liquidity shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
