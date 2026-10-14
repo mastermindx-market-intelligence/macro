@@ -29486,6 +29486,14 @@ jobs:
       # derive_result_cash dict; neither owner is edited.
       - "engine/company_intelligence/industrials_certified_enrollment.py"
       - "tests/test_industrials_certified_enrollment.py"
+      # W10-B: the first consumer-visible Industrials signal. One certified
+      # comparison payload — the QUOTED derivation dict plus the enrolled label
+      # and stated end — is placed all-or-nothing on a caller page dict under
+      # ``industrials_certified_comparison``; a data refusal publishes value None
+      # on the same key. Neither owner (W10-A enrollment, derive_result_cash) is
+      # edited or vendored here.
+      - "engine/company_intelligence/industrials_certified_signal.py"
+      - "tests/test_industrials_certified_signal.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -29503,7 +29511,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py tests/test_industrials_certified_signal.py -q
 
   house-law-registry-code:
     if: ${{ false }}
