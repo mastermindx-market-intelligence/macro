@@ -95,8 +95,12 @@
     "run_id": 38544633791,
     "head": "fc04588278e12b5e693cbea72fea3193986f78d1",
     "last_observed": "in_progress",
-    "required_failures_observed": [],
-    "watcher_started": false
+    "required_failures_observed": [
+      "ci-pack-3:stock-dashboard-first-frame receipt binding",
+      "ci-pack-10:p0b-receipt-closure same-diff receipt binding"
+    ],
+    "watcher_started": false,
+    "local_repair": "v13_main_integration/p0b_receipt_repair/ADJUDICATION.json"
   },
   "original_carrier": 7175,
   "delivery_carrier": 9066,

@@ -710,3 +710,32 @@ The extraction ledger verdict proves only bounded repaired-byte consistency.
 Source/access, exact program-link curation and final acceptance are separate.
 The original SBIR403 is likewise preserved; current official documentation still
 states maintenance, and no new API request or alternate corpus ingestion occurred.
+
+
+### October 14 receipt closure repair and oversight contract return
+
+The V13 hosted run38544633791 demonstrated two related failures: first-frame
+receipt hashes and same-diff receipt closure. Integration had adopted incoming
+main browser receipts while retaining Defense shared-nav fixture hashes. Both
+existing HK/CA browser verifiers were rerun;128 cases pass,16 screenshot hashes
+remain unchanged, all construction/loaded-asset hashes verify. Only three proof
+JSON files changed. All136 affected tests and the exact-base receipt closure
+pass; the original V13 Government Revenue seal still verifies committed bytes
+under its original proof runtime. The wrong-interpreter refusal and invocation
+errors remain retained. See v13_main_integration/p0b_receipt_repair.
+
+Oversight core Fabric result defense-oversight-core-01a13300-a is accepted after
+parent repair: ontology1.3/dossier1.2 contracts preserve capacity, and the parent
+fixed/tested the curator rejecting capacity admission after1.3 migration.212
+real-repository checks pass with one skip; saved prep commit b19f0eeb4972 on the
+capacity consumer SSD carrier. No canonical facts admitted. A distinct bounded
+fixture-only oversight UI leaf defense-oversight-ui-01a13300-a is running on
+ubuntu3/GLM Flash; consume its retained result and verify the actual factory.
+GAO access quarantine, original unresolved reviews/P2/Q3,Terminal778 and second
+entitled-subject acceptance remain unchanged. Current GitHub main identity
+receipt is still Oct11 legacy without publication/identity_observations seals;
+merged9150/9152 do not substitute for the real installed owner generation.
+
+Next: push saved proof/repair to originalPR9066, conclude exact-head gates and
+carry protected release through natural publisher observation and fresh CAS.
+Continue fixture UI/independent acceptance preparation while hosted CI runs.
