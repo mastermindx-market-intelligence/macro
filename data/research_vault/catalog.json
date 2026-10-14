@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T18:26:12.743296+00:00",
-  "count": 2914,
+  "generated_at": "2026-10-14T19:02:04.327955+00:00",
+  "count": 2916,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -554,6 +554,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-na3aw28nwyx-8f1249",
+      "title": "GCC Energy Mapping export strength into year end earnings delivery",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:19Z",
+      "summary_points": [
+        "ADNOC Gas EBITDA Recovery: 85% Habshan gas supply restored by June 2026, domestic volumes shielded from Hormuz risks (70% sales), driving sequential earnings improvement; full restoration on track for 2027.",
+        "Market Shift to Earnings Leverage: Focus moves from disruption absorption to near-term earnings upside (e.g., ADNOC L&S/ADG defensive exposure), supported by GCC export normalization and tight freight markets.",
+        "ADNOC L&S Valuation Gap: Buy-rated with 12m price target AED8.80 (up from AED7.70), trading below 3Y average EV/EBITDA (8.8x vs. 4x), despite strong 3Q26 shipping/ILSP recovery and FY26 guidance upgrade.",
+        "LNG Flow Normalization Delay: Hormuz LNG exports to normalize only to 83% of pre-war levels by Feb 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-yzhyfari9wt-013b93",
       "title": "Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
       "institution": "Goldman Sachs",
@@ -995,6 +1015,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yfmzhgjtnxe-d89894",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:17:54Z",
+      "summary_points": [
+        "AI Stock Concentration: Top 10 S&P 500 (AI-heavy) firms now constitute ~40% of index cap, with passive investors holding >50% exposure to AI stocks, severely undermining diversification.",
+        "Key Macro Data: China CPI (Sep), US Core CPI (Sep), UK GDP (Aug), Eurozone industrial production (Aug), US retail sales (Sep), and US PPI (Sep) drive near-term volatility.",
+        "Flow Divergence: S&P 500’s 2.4% YTD gain vs.",
+        "DAX’s 2.4% YTD reflects divergent capital flows amid concentrated AI exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
