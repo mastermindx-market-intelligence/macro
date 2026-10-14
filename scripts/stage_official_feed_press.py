@@ -1,5 +1,5 @@
 """scripts/stage_official_feed_press.py — private staging for ONE qualified
-official-feed (OCC) Press candidate.
+official-feed (OCC or DOJ) Press candidate.
 
 One explicit invocation stages exactly one already-qualified official candidate
 through the incumbent Press runner.  This is a thin caller, not a second
@@ -62,8 +62,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parent.parent
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
+# An existing later entry does not protect against an earlier foreign package.
+sys.path.insert(0, str(_REPO))
 
 from engine.press import desk_planner, validators, writer  # noqa: E402
 from engine.press.official_feed_candidate import plan_official_feed_candidate  # noqa: E402
@@ -213,6 +213,7 @@ def _same_source(row: dict, plan: dict) -> bool:
 
 def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
                                   qualification_path, qualification_sha256,
+                                  release_path=None, policy_path=None,
                                   now: datetime | None = None) -> dict:
     """Stage one qualified official-feed candidate as an ordinary Brief slot.
 
@@ -240,6 +241,7 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
         qualification_path=Path(qualification_path),
         qualification_sha256=str(qualification_sha256).lower(),
         root=root, as_of=moment.isoformat(), cfg=cfg,
+        release_path=release_path, policy_path=policy_path,
     )
     run_date = str(plan["validation_context"]["as_of"])
     identity = {
@@ -357,13 +359,15 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
-        description="Privately stage ONE qualified official-feed (OCC) Press "
+        description="Privately stage ONE qualified official-feed (OCC or DOJ) Press "
                     "candidate through the incumbent runner. Never emits.")
     ap.add_argument("--feed", required=True, help="retained feed evidence file")
     ap.add_argument("--feed-sha256", required=True, help="SHA256 of the feed evidence")
     ap.add_argument("--qualification", required=True, help="retained qualification file")
     ap.add_argument("--qualification-sha256", required=True,
                     help="SHA256 of the qualification file")
+    ap.add_argument("--release", help="DOJ only: retained full release bound by qualification")
+    ap.add_argument("--policy", help="DOJ only: retained reuse policy bound by qualification")
     ap.add_argument("--root", default="", help="repo root override (tests)")
     ap.add_argument("--confirm-private-staging", action="store_true",
                     help="required acknowledgement: the calling principal authorizes "
@@ -400,6 +404,8 @@ def main(argv=None) -> int:
             feed_path=Path(args.feed), feed_sha256=args.feed_sha256,
             qualification_path=Path(args.qualification),
             qualification_sha256=args.qualification_sha256,
+            release_path=Path(args.release) if args.release else None,
+            policy_path=Path(args.policy) if args.policy else None,
         )
     except ValueError as exc:
         # Every planning refusal is a ValueError carrying its own reason.  The
