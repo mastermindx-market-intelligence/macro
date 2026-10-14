@@ -65,7 +65,7 @@ import yaml
 
 log = logging.getLogger(__name__)
 
-_REGISTRY_CACHE: dict | None = None
+_REGISTRY_CACHE: tuple[Path, dict] | None = None
 _CLAIM_FAMILY_PREFIX = "reflex."
 _FIRINGS_PATH_PATTERN = re.compile(r"^data/reflexes/([^/]+)/firings\.jsonl$")
 
@@ -82,7 +82,10 @@ def _registry_path(root: Path | str | None = None) -> Path:
 
 
 def load_registry(root: Path | str | None = None, *, force: bool = False) -> dict:
-    """Load and validate config/reflexes.yml.  Cached after first load.
+    """Load and validate config/reflexes.yml. Cached by resolved registry path.
+
+    Same-path content changes retain the existing explicit force/invalidate
+    contract. Selecting another root always qualifies that root independently.
 
     Validation checks:
       - reflex names are unique;
@@ -94,10 +97,15 @@ def load_registry(root: Path | str | None = None, *, force: bool = False) -> dic
     dict (mapping name → entry).
     """
     global _REGISTRY_CACHE  # noqa: PLW0603
-    if _REGISTRY_CACHE is not None and not force:
-        return _REGISTRY_CACHE
+    # The caller-selected source is part of cache identity. A previous root's
+    # rules must never mask a different root, missing file, or malformed registry.
+    # Keep the existing single-entry/explicit-force-refresh contract; this is
+    # not a new reload service, registry, or policy-authority decision.
+    p = _registry_path(root).resolve()
+    cached = _REGISTRY_CACHE
+    if cached is not None and cached[0] == p and not force:
+        return cached[1]
 
-    p = _registry_path(root)
     if not p.exists():
         raise FileNotFoundError(f"reflexes.yml not found at {p}")
 
@@ -139,7 +147,9 @@ def load_registry(root: Path | str | None = None, *, force: bool = False) -> dic
         )
         raise ValueError(msg)
 
-    _REGISTRY_CACHE = reflexes
+    # One assignment keeps the source identity and its value associated even
+    # when calls for different roots overlap. Read-side uses one local snapshot.
+    _REGISTRY_CACHE = (p, reflexes)
     log.info("reflexes: loaded %d entries (%d mirroring)",
              len(reflexes),
              sum(1 for e in reflexes.values()
@@ -209,14 +219,19 @@ def record_firing(
         f"{name}:{ts}:{trigger_key}".encode()
     ).hexdigest()[:16]
 
-    record: dict[str, Any] = {
+    # These five fields belong to this writer, never the calling observation.
+    # Preserve the historical key order and ordinary serialized bytes while
+    # preventing payload metadata from changing identity or context-only status.
+    owned_fields: dict[str, Any] = {
         "claim_id": claim_id,
         "reflex": name,
         "claim_family": f"{_CLAIM_FAMILY_PREFIX}{name}",
         "desk": "reflex",
         "is_context_only": True,
-        **payload,
     }
+    record: dict[str, Any] = dict(owned_fields)
+    record.update(payload)
+    record.update(owned_fields)
     # Ensure mandatory keys are present (fill defaults)
     record.setdefault("scope_type", "macro")
     record.setdefault("scope_key", "macro")
