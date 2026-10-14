@@ -160,6 +160,12 @@ def test_a09_partial_weights_not_renormalised():
     assert normalize_weights({"a": None}) == Unmeasured("missing_input")
     assert normalize_weights({"a": -0.5, "b": 1.5}) == Unmeasured("invalid_weights")
     assert normalize_weights({"a": 0.0}) == Unmeasured("invalid_weights")
+    # coverage of a partial map is measured against the EXPECTED map: the
+    # measured weight share is 0.6 (no renormalisation), never 1.0
+    wc = weight_coverage({"a": 0.6, "b": 0.4}, ["a"])
+    assert wc["measured_weight_share"] == pytest.approx(0.6)
+    assert wc["count_coverage"] == pytest.approx(0.5)
+    assert wc["missing_ids"] == ["b"]
 
 
 def test_a10_breadth_one_of_one_measured_of_two():
@@ -368,6 +374,38 @@ def test_functions_total_over_none():
     assert dd["family_count"] == 0
     assert dd["item_count"] == 0
     assert dd["families"] == []
+    # clocks / cohort / admission: unknown stays a string state, None or []
+    assert parse_time(None) == Unmeasured("missing_input")
+    assert admissible_as_known(None, None) == "unknown"
+    assert admit_use(None, "display") == "withheld"
+    clocks = clock_identities(None, None)
+    assert clocks["evidence_older_than_live"] is None
+    assert clocks["merged"] is False  # a real constant, not an unknown stand-in
+    cohort = cohort_at(None, as_of="2026-10-06")
+    assert cohort["members"] == [] and cohort["excluded_unparseable"] == []
+    # adapters (LR-MEAS-B3): every owner adapter is total over None
+    sep = separate_from_legacy(None, None)
+    assert sep["legacy_status"] is None
+    assert sep["legacy_events"] == [] and sep["transition_observations"] == []
+    assert sep["attached_to_legacy"] == 0
+    assert earliest_observable_coordinate(None, before="2026-10-05") == (
+        Unmeasured("missing_input")
+    )
+    assert from_sector_record(None) == Unmeasured("missing_input")
+    snap = sector_cohort_snapshot(None)
+    assert snap["measured"] == []
+    assert len(snap["missing"]) == 11
+    assert all(reason == "missing_input" for _, reason in snap["missing"])
+    assert snap["positive_breadth"]["k_over_n"] == {
+        "status": "unmeasured", "reason": "no_measured_members"
+    }
+    gm_none = from_leadership_receipt(None, group_id="g", cohort_id="c")
+    assert gm_none.value == Unmeasured("missing_input")
+    assert gm_none.session_end is None and gm_none.benchmark is None
+    diag = diagnose_rotation_payload(None, cohort_id="c")
+    assert diag["rows"] == [] and diag["flag_counts"] == {}
+    attrib = attribute_coordinate(None, as_of="2026-10-06")
+    assert attrib["observations"] == [] and attrib["unavailable_pair_ids"] == []
 
 
 # ---------------------------------------------------------------------------
@@ -1112,6 +1150,22 @@ def test_module_imports_stdlib_only():
     for owner in ("engine", "sector_cycles", "rotation_events", "leadership_receipt",
                   "subsector_rotation", "numpy", "pandas"):
         assert owner not in imported
+    # no I/O, no clock reads, no randomness, no subprocess anywhere in code:
+    # scan the module source with DOCSTRINGS STRIPPED via ast (the module
+    # docstring legitimately mentions datetime.now as a prohibition)
+    stripped = ast.parse(source)
+    for node in ast.walk(stripped):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef,
+                             ast.ClassDef)):
+            body = node.body
+            if (body and isinstance(body[0], ast.Expr)
+                    and isinstance(body[0].value, ast.Constant)
+                    and isinstance(body[0].value.value, str)):
+                node.body = body[1:] or [ast.Pass()]
+    code_only = ast.unparse(stripped)
+    for token in ("open(", "requests", "urlopen", "datetime.now(", "random",
+                  "subprocess"):
+        assert token not in code_only, f"forbidden token in module code: {token!r}"
 
 
 def test_inputs_not_mutated():
@@ -1151,3 +1205,247 @@ def test_inputs_not_mutated():
     assert rotation_payload == frozen["rotation"]
     assert ledger == frozen["ledger"]
     assert ratio_batch == frozen["ratio"]
+    # the pure projection functions read their mapping inputs too, never mutate
+    pure = {
+        "breadth_change": ({"a": True, "b": False, "c": None}, {"a": False, "b": True}),
+        "cohort_zscores": ({"a": 1.0, "b": 2.0, "c": None},),
+        "overlap": ({"a": 0.6, "b": 0.4}, {"a": 0.5, "c": 0.5}),
+        "concentration": ({"a": 0.5, "b": 0.5},),
+        "weight_coverage": ({"a": 0.6, "b": 0.4}, ["a"]),
+        "dedupe_source_roots": ([{"id": "g", "source_roots": ["r"]},
+                                 {"id": "h", "source_roots": ["r"]}],),
+        "rank_measured": ({"a": 1.0, "b": None, "c": 0.0},),
+    }
+    pure_frozen = {name: copy.deepcopy(args) for name, args in pure.items()}
+    breadth_change(*pure["breadth_change"])
+    cohort_zscores(*pure["cohort_zscores"], cohort_id="c")
+    overlap(*pure["overlap"])
+    concentration(*pure["concentration"])
+    weight_coverage(*pure["weight_coverage"])
+    dedupe_source_roots(*pure["dedupe_source_roots"])
+    rank_measured(*pure["rank_measured"])
+    zc_before = {"a": 1.0, "b": 2.0}
+    zc_after = {"a": 1.0, "b": 2.0, "d": -6.0}
+    zc_before_frozen = copy.deepcopy(zc_before)
+    zc_after_frozen = copy.deepcopy(zc_after)
+    decompose_z_change("b", zc_before, zc_after,
+                       cohort_id_before="c", cohort_id_after="c")
+    assert zc_before == zc_before_frozen and zc_after == zc_after_frozen
+    for name, args in pure.items():
+        assert args == pure_frozen[name], f"{name} mutated its input"
+
+
+# ---------------------------------------------------------------------------
+# SYNTHETIC_FALSIFIERS -- the ten programme controls, each run THROUGH this
+# module's functions (a failure names its control via the parametrize id)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("control", [
+    "both_down", "breadth_missingness", "empty_is_unknown", "composition_only",
+    "shared_holdings", "rolling_carry", "beta_only", "relative_units",
+    "confirmation_maturity", "zero_vs_missing",
+])
+def test_sf_synthetic_falsifiers_ten_controls(control):
+    if control == "both_down":
+        # both legs down does NOT mean the receiver recovered: wealth ratio up
+        res = pair_interpretation(-0.02, -0.08)
+        assert res["relative_wealth"] > 0
+        assert res["interpretation"] == "relative_resilience"
+        assert "absolute_recovery" in res["not_claimed"]
+        assert "measured_inflow" in res["not_claimed"]
+    elif control == "breadth_missingness":
+        # half-measured breadth carries identification bounds, never a CI
+        b = breadth(1, 1, 2)
+        assert b.k_over_n == pytest.approx(1.0)
+        assert b.coverage == pytest.approx(0.5)
+        assert b.bounds == pytest.approx((0.5, 1.0))
+        assert b.to_dict()["bounds_kind"] == (
+            "identification_bounds_not_confidence_interval"
+        )
+    elif control == "empty_is_unknown":
+        empty = breadth(0, 0, 0)
+        assert empty.k_over_n == Unmeasured("empty_population")
+        assert empty.coverage == Unmeasured("empty_population")
+        assert empty.bounds == Unmeasured("empty_population")
+        assert cohort_zscores({}, cohort_id="t")["state"] == "insufficient_reference"
+        assert isinstance(normalize_weights({}), Unmeasured)
+    elif control == "composition_only":
+        # the A12 fixture: list shrinkage that lifts k/n is composition, not breadth
+        before = {f"m{i}": i < 2 for i in range(10)}
+        after = {"m0": True, "m1": True}
+        res = breadth_change(before, after)
+        assert res["whole_list_before"].k_over_n == pytest.approx(0.2)
+        assert res["whole_list_after"].k_over_n == pytest.approx(1.0)
+        assert res["newly_positive_common"] == []
+        assert res["composition_only"] is True
+    elif control == "shared_holdings":
+        # 90% shared weight is 0.9 overlap; shared source roots are ONE vote
+        g = {"S": 0.9, "x": 0.1}
+        h = {"S": 0.9, "y": 0.1}
+        assert overlap(g, h) == pytest.approx(0.9)
+        res = dedupe_source_roots([
+            {"id": "g", "source_roots": ["root:shared"]},
+            {"id": "h", "source_roots": ["root:shared"]},
+        ])
+        assert res["family_count"] == 1
+    elif control == "rolling_carry":
+        # a trailing window stepped inside its own length carries old terms
+        res = decompose_trailing_change([-0.1, 0.0, 0.0], [0.0])
+        assert res["carry_only"] is True
+        assert rolling_carry(3, 1)["shared_terms"] == 2
+    elif control == "beta_only":
+        # a stated beta can absorb the whole move; the excess is arithmetic only
+        res = beta_only_residual(-0.02, -0.10, 0.2)
+        assert res["beta_residual"] == pytest.approx(0.0, abs=EPS)
+        assert res["arithmetic_excess"] == pytest.approx(0.08)
+    elif control == "relative_units":
+        # a difference is NOT a wealth relative: the two quantities differ
+        rd = return_difference(0.10, 0.05)
+        rw = relative_wealth(0.10, 0.05)
+        assert rd == pytest.approx(0.05)
+        assert rw == pytest.approx(1.0 / 21.0)
+        assert rd != rw
+    elif control == "confirmation_maturity":
+        # maturity counts from the origin: t + c + H, not t + max(c, H)
+        assert confirmation_maturity(0, 3, 20) == 23
+    elif control == "zero_vs_missing":
+        res = rank_measured({"z": 0.0, "n1": -1.0, "n2": -2.0, "m": None})
+        assert res["ranked"] == ["z", "n1", "n2"]  # a valid 0.0 ranks above negatives
+        assert res["unranked"] == ["m"]  # a missing value never ranks
+    else:  # pragma: no cover - the parametrize list is closed
+        raise AssertionError(f"unknown SYNTHETIC_FALSIFIERS control: {control}")
+
+
+# ---------------------------------------------------------------------------
+# public API and acceptance-matrix closure
+# ---------------------------------------------------------------------------
+
+PUBLIC_API = (  # the 51 exported names at the judged LR-MEAS-B2 head
+    "SCHEMA",
+    "DEFINITION_ID",
+    "UNMEASURED",
+    "EPS",
+    "EVIDENCE_MODES",
+    "GROUP_KINDS",
+    "METRICS",
+    "UNITS",
+    "REASONS",
+    "US_SECTOR_COHORT_ID",
+    "Unmeasured",
+    "is_measured",
+    "Breadth",
+    "CohortMismatch",
+    "relative_wealth",
+    "return_difference",
+    "breadth",
+    "breadth_change",
+    "cohort_zscores",
+    "z_for",
+    "classify_coordinate",
+    "rank_measured",
+    "normalize_weights",
+    "overlap",
+    "concentration",
+    "shared_members",
+    "weight_coverage",
+    "cohort_at",
+    "parse_time",
+    "admissible_as_known",
+    "admit_use",
+    "observation_clock",
+    "confirmation_maturity",
+    "clock_identities",
+    "GroupMeasurement",
+    "TransitionObservation",
+    "ResearchEstimate",
+    "us_sector_cohort",
+    "from_sector_record",
+    "sector_cohort_snapshot",
+    "from_leadership_receipt",
+    "diagnose_rotation_payload",
+    "attribute_coordinate",
+    "earliest_observable_coordinate",
+    "separate_from_legacy",
+    "rolling_carry",
+    "decompose_trailing_change",
+    "beta_only_residual",
+    "pair_interpretation",
+    "decompose_z_change",
+    "dedupe_source_roots",
+)
+
+MATRIX_CASES = {
+    # acceptance-matrix case id -> the test function that pins it
+    "A05": "test_a05_unknown_use_withheld",
+    "A06": "test_a06_revision_after_decision_not_admissible",
+    "A07": "test_a07_evidence_and_live_clocks_distinct",
+    "A08": "test_a08_late_joiner_not_in_old_cohort",
+    "A09": "test_a09_partial_weights_not_renormalised",
+    "A10": "test_a10_breadth_one_of_one_measured_of_two",
+    "A11": "test_a11_all_unavailable_typed_and_zero_coverage",
+    "A12": "test_a12_composition_only_breadth",
+    "A13": "test_a13_unknown_to_positive_is_new_coverage",
+    "A14": "test_a14_aliases_one_family",
+    "A15": "test_a15_peer_change_names_reference_change",
+    "A16": "test_a16_zero_vs_missing",
+    "A17": "test_a17_all_at_origin_is_neutral_not_leading",
+    "A18": "test_a18_both_down_is_relative_resilience",
+    "A19": "test_a19_beta_only_residual_zero",
+    "A20-aux": "test_a20_aux_aliases_do_not_add_observations",
+    "A25-aux": "test_a25_reconstructed_label_kept",
+    "A31": "test_a31_old_negative_expiry_is_carry_only",
+    "A32": "test_a32_maturity_is_t_plus_c_plus_h",
+    "SF-1": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-2": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-3": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-4": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-5": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-6": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-7": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-8": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-9": "test_sf_synthetic_falsifiers_ten_controls",
+    "SF-10": "test_sf_synthetic_falsifiers_ten_controls",
+    "CF-01": "test_cf01_return_difference_is_not_relative_wealth",
+    "CF-02": "test_cf02_breadth_bounds_collapse_when_fully_covered",
+    "CF-03": "test_cf03_overlap_self_is_one",
+    "CF-04": "test_cf04_concentration_equal_weights_is_n",
+    "CF-05": "test_cf05_zscore_refuses_mismatched_cohort",
+    "CF-06": "test_cf06_reconstructed_coordinate_never_naturally_observed",
+    "CF-07": "test_cf07_rolling_carry_flag_when_terms_shared",
+    "CF-08": "test_cf08_unmeasured_never_ranks",
+}
+
+
+def test_public_api_is_exported():
+    from engine import leadership_rotation_context as lrc
+
+    constants = {"SCHEMA", "DEFINITION_ID", "UNMEASURED", "EPS", "EVIDENCE_MODES",
+                 "GROUP_KINDS", "METRICS", "UNITS", "REASONS", "US_SECTOR_COHORT_ID"}
+    assert len(PUBLIC_API) == 51
+    for name in PUBLIC_API:
+        assert name in lrc.__all__, f"{name} missing from __all__"
+        value = getattr(lrc, name)
+        if name in constants:
+            continue  # a module constant, present and exported
+        assert isinstance(value, type) or callable(value), name
+    assert not any(name.startswith("_") for name in lrc.__all__)
+    assert len(set(lrc.__all__)) == len(lrc.__all__)  # no duplicate exports
+
+
+def test_matrix_cases_each_have_a_test():
+    expected_keys = (
+        [f"A{n:02d}" for n in range(5, 20)]          # A05..A19
+        + ["A20-aux", "A25-aux", "A31", "A32"]
+        + [f"SF-{n}" for n in range(1, 11)]           # SF-1..SF-10
+        + [f"CF-{n:02d}" for n in range(1, 9)]        # CF-01..CF-08
+    )
+    assert len(expected_keys) == 37
+    assert set(MATRIX_CASES) == set(expected_keys), (
+        "MATRIX_CASES keys must equal the acceptance-matrix case set exactly"
+    )
+    for key in expected_keys:
+        test_name = MATRIX_CASES[key]
+        fn = globals().get(test_name)
+        # a case with no pinning test is a FAIL, not a skip
+        assert callable(fn), f"matrix case {key} has no pinning test {test_name}"
+        assert fn.__name__.startswith("test_")
