@@ -4757,18 +4757,33 @@ CURATED_EXCLUSIVE = {
     # probe selected it (templates/index.html 5815 > 5800). It declares its
     # scanned surfaces instead and pins them in its own test.
     "sni-public-exposure-scan",
+    # 2026-10-13 SNI INT2: the acceptance-evidence suite (A03/A04/A07/A10/A12,
+    # copy guard, A33, A36, A39, P03 ULP, register consistency) imports the
+    # acceptance/, residual/, event_response/ and us_stress/ modules through
+    # sys.path inserts; pinned to its measured closure like sni-program-guards.
+    "sni-acceptance-evidence",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
     # exclusive pins it to that measured closure (57 paths once W4 added the
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
+    # the frozen stage-1 runner, whose lazy risk_radar closure made inference
+    # select the job on the plan_book (130 > 129) and build_free_content
+    # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
+    # measured 63-path closure; closure findings (); ceilings stay fixed.
+    "grey-deer-pullback-forward",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 Grey Deer GD-4C: the stdlib-only PBOC liquidity classifier.
+    # As a step in china-native-collectors it moved templates/index.html to
+    # 5,816 > 5,800; its own exclusive job keeps the import closure only.
+    "grey-deer-pboc-liquidity",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -4778,6 +4793,10 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-14: rotation AST/render fallback curation; retain full static
+    # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
 }
 
 
@@ -4945,9 +4964,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 129, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5627,6 +5646,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     In the same run, build_free_content was already at 5,602 against its
     5,600 ceiling on the base. That was reported as inherited, not
     introduced, and is left for a separate heal.
+
+    2026-10-14 (Market Memory UI integration with Leadership Rotation):
+    hosted run 38530236436 on merge 2d524d3e1 of b3f9739 into
+    703477f0 reproduced two JOB-only breaches. Full inference on current
+    main union 44cc567d1edf (base 05bcc762fb16; all 313 jobs retained)
+    measures 136 / 134 / 130 jobs and 5,678 / 5,475 / 5,441 weight,
+    with ten packs for every probe. The two genuine main entrants are
+    lr-rotation-evidence-modes on templates/index.html (its imported
+    sector-cycle suites conservatively own templates/**), and
+    leadership-rotation-contract on plan_book.py (engine/** fallback).
+    Each weighs four; neither selects build_free_content.py.
+
+    Fund only those measured counts: 135 -> 136 and 129 -> 130.
+    Keep every suite and conservative dependency claim, the build-script
+    count ceiling 134, all weight ceilings, and the ten-pack limit.
+    Narrowing either job without a complete closure audit would discard
+    coverage, while padding counts beyond the exact measured entrants
+    would hide the next change. No selector or runtime source is edited.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

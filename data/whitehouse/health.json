@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-14T01:13:59.828825+00:00",
-  "posts_seen": 6,
-  "seen_total": 286,
-  "evaluated": 0,
+  "as_of": "2026-10-14T07:37:48.755273+00:00",
+  "posts_seen": 7,
+  "seen_total": 287,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-14-presidential-message-on-the-birthday-of-the-united-states-navy",
+      "importance": 8,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
