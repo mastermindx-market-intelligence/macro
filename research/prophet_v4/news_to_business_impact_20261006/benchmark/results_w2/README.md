@@ -36,6 +36,12 @@ Read these limits before any number below.
 - **The third family is unavailable.** GLM is exhausted until 2026-10-19 05:16Z. The
   registered case gate needs every field to agree, so with two families every case is
   deferred.
+- **The labels measure extraction from the attached filing, not the headline's event.**
+  The routing check addendum found that 25 of 40 sampled cases (0.625, Wilson 95%
+  [0.470, 0.758]) do not pair a material event with a filing that reports it. Every
+  agreement, audit and eval-receipt figure here says how faithfully the families read the
+  attached 8-K. None says whether that 8-K is the event the headline reported. About 59 of
+  the 157 cases (from 38 to 83 at the interval ends) are on-event.
 
 ## Families and what ran
 
@@ -228,15 +234,15 @@ has no seed.
 - **Verdicts.** The verdicts are `audit/audit_malformed.json` (sha256 `82819ab2…`). All 6
   counterfactual agreements were correct. Of the 5 disputes, fam_b was right in 3 and
   fam_a in 0. The other 2 are a guide gap (M1, a centre plus or minus a tolerance) and a
-  routing mismatch (M9, an earnings release under the strategic/product template). All 3
+  routing mismatch (M9; the routing check addendum traces it to issuer resolution). All 3
   fam_a errors are non-standard T1 actions: an amendment of existing loans with no new
   money (M4), borrowing capacity written as an authorization remainder (M5), and a share
   count written where a preferred offering's liquidation amount belongs (M6).
-- **Routing.** Cards M3, M7 and M9 sit under a template that does not fit the event: a
+- **Routing.** Cards M3, M7 and M9 carry a filing that does not fit their template: a
   notes offering under the strategic/product template (M3), a commercial paper program
   under the demand/guidance/contract template (M7) and an earnings release under the
-  strategic/product template (M9). The template routing on those cells needs a check
-  before the 600-case continuation.
+  strategic/product template (M9). This bullet first read that as a template fault. The
+  routing check addendum below corrects it: in none of the three was the template wrong.
 - **Guide ruling.** Annotation guide-v1.2 rules on the four gaps here and on the two the
   first audit left open. Section 5.4 adds eight T1 amount rules: what a new program, an
   increase by an amount and an increase to an amount each put in the slots, the reading
@@ -248,6 +254,61 @@ has no seed.
 - **Not re-scored.** `summary.json` stands under `DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING`.
   The addendum lives in `audit/regrade_malformed.json` and `audit/audit_malformed.json`
   only.
+
+### Routing check addendum
+
+The malformed-slot audit found three cards whose filing did not fit the template. This
+addendum checks, on a sample of the whole graded draw, whether each case pairs a real
+event with a filing that reports it. It labels routing only. It re-grades no slot.
+
+- **How the draw routes.** `tape_draw` picks the template from headline patterns, takes
+  the issuer from the first headline token that resolves to a ticker, and attaches up to
+  three qualifying 8-Ks (items 1.01, 2.02, 7.01, 8.01) that the issuer filed in the
+  session window. Nothing checks that an attached filing reports the headline's event.
+- **Sample.** 40 of the 157 graded cases (seed 20261016, case ids sorted), plus the three
+  cases behind cards M3, M7 and M9 (`audit/sample_routing.json`). The seat read each
+  headline against its attached filings and classed the case (`audit/routing_verdicts.json`):
+  `MATCH` (the headline reports an event of the routed template family at the resolved
+  issuer, and an attached filing reports it), `NO_EVENT` (the headline reports no issuer
+  event), `OTHER_EVENT` (the event is real and the issuer is right, but no attached filing
+  reports it) and `WRONG_ISSUER` (the resolved issuer is not the headline's subject).
+- **Result.** 15 of 40 are `MATCH` (0.375, Wilson 95% [0.242, 0.530]). The other 25
+  (0.625, [0.470, 0.758]) are 15 `NO_EVENT`, 7 `WRONG_ISSUER` and 3 `OTHER_EVENT`.
+
+  | Template | `MATCH` | `NO_EVENT` | `OTHER_EVENT` | `WRONG_ISSUER` |
+  |---|---|---|---|---|
+  | T1 | 7 | 8 | 3 | 0 |
+  | T2 | 7 | 7 | 0 | 3 |
+  | T3 | 1 | 0 | 0 | 4 |
+
+- **Causes.** The `NO_EVENT` headlines are commentary (7), market reports (5), a list, a
+  quote page and a solicitation (1 each). The `WRONG_ISSUER` cases are another company as
+  the subject (2), a named partner (1), a private company (1), a private company whose
+  name collides with a listed one (1), a one-letter ticker (1) and a common-word ticker
+  (1). The 3 `OTHER_EVENT` cases are real events with no attached filing about them.
+- **The template was not the fault.** M3 is `OTHER_EVENT`: the headline reports a product
+  expansion and the attached filing reports a different event. M7 is `NO_EVENT`: the
+  headline is a price-quote page. M9 is `WRONG_ISSUER`: a one-letter ticker resolved to an
+  unrelated issuer. The failures sit in three draw steps: event detection, issuer
+  resolution and body attachment.
+- **Automated flags are not enough to gate on.** `tools/build_routing_check.py` computes
+  three flags from codes alone: no template-family pattern anywhere in the attached body,
+  issuer name and ticker both absent from the headline, and a T1 or T3 case whose only
+  qualifying item is 2.02 (earnings). Together they flag 20 of the 40 cases with precision
+  0.85 and recall 0.68 against the verdicts. They miss 8 of the 25 off-event cases, and the
+  cases they let through are 12 of 20 `MATCH` (0.60). Across the 157 they flag 0.446.
+- **Agreement does not imply on-event.** Of the 10 sampled slots where both families
+  agreed on a present value, 4 sit on cases that are not `MATCH` (2 `NO_EVENT`, 2
+  `WRONG_ISSUER`). Two families can agree exactly on a figure from a filing about
+  something else.
+- **Ruling.** The labels and `summary.json` stand. Their reading is narrowed to
+  extraction from the attached filing (see "What the numbers cover"). The 600-case
+  continuation adds three gates to the draw before any labeling: a non-event headline
+  filter, an issuer-resolution guard and a body-to-event match check. See
+  `DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES` and
+  `DSC:NEWS-IMPACT-W2-ROUTING-MOSTLY-OFF-EVENT`.
+- **Not re-scored.** The addendum lives in `audit/sample_routing.json`,
+  `audit/routing_verdicts.json` and `audit/routing_check.json` only.
 
 ### Eval receipts
 
@@ -263,8 +324,9 @@ sample alone, with cluster bootstrap (9,999 reps, seed 20261012).
 | disposition_accounting_complete | 1.0 | 1.0 |
 | unsupported_ticker_to_supplier_count | 0 | 0 |
 
-No kill fired. Material-event routing was not labelled in this wave, so routing recall is
-not reported.
+No kill fired. Material-event routing was not labelled by the families in this wave. The
+routing check addendum gives seat routing labels for 43 cases, which measure the draw's
+precision only. Routing recall needs a labelled reject set and is not reported.
 
 **Span replay.** fam_a returned 1,515 spans and fam_b 1,451. Every span replayed (157 of
 157 cases each; Wilson lower bound 0.997). Neither family flagged an injection, and neither
@@ -375,6 +437,9 @@ entries and 1 CORRECTION.
 | `audit/audit_absent.json` | Addendum verdicts and summary, with paraphrased notes |
 | `audit/regrade_malformed.json` | Counterfactual class of each `malformed_value` slot (ids and classes only) |
 | `audit/audit_malformed.json` | Malformed-slot verdicts and summary, with paraphrased notes |
+| `audit/sample_routing.json` | The 40 routing-check cases plus the three motivating cases (ids only) |
+| `audit/routing_verdicts.json` | Seat routing verdicts per case, with paraphrased notes |
+| `audit/routing_check.json` | Routing codes, flags, verdicts, class rates and flag precision and recall |
 | `tools/build_label_lanes.py` | Builds the labeling lane trees and packets |
 | `tools/label_batch.template.txt` | Lane packet prompt-v1.0 (64 cases per family) |
 | `tools/label_batch.template.v1.1.txt` | Lane packet prompt-v1.1 (93 cases per family) |
@@ -384,6 +449,7 @@ entries and 1 CORRECTION.
 | `tools/build_audit.py` | Draws the audit sample |
 | `tools/build_audit_absent.py` | Draws the addendum sample and runs its positive control |
 | `tools/build_audit_malformed.py` | Period-shape census and counterfactual re-grade of the `malformed_value` slots |
+| `tools/build_routing_check.py` | Draws the routing sample and scores the routing verdicts (needs Python 3.11) |
 | `tools/score_benchmark.py` | Produces `summary.json`, `critical_slots.jsonl` and the receipts |
 
 Registration: sampler `ni-sampler-1`, sampling seed 20261014. Bootstrap 9,999 reps, seed
@@ -416,11 +482,16 @@ PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchm
   SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark --census
 PYTHONPATH=. python3 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_audit_malformed.py \
   SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark AUDIT_OUT
+# routing check: draw the sample, then score the committed verdicts (imports tape_draw: Python 3.11)
+PYTHONPATH=. python3.11 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_routing_check.py \
+  SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark AUDIT_OUT \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/routing_verdicts.json
 ```
 
 `build_audit.py` also writes `batch_*.txt` audit cards, `build_audit_absent.py` writes
-`batch_absent_*.txt` cards, and `build_audit_malformed.py` writes `batch_malformed_*.txt`
-cards. All three quote filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
+`batch_absent_*.txt` cards, `build_audit_malformed.py` writes `batch_malformed_*.txt`
+cards and `build_routing_check.py` writes `batch_routing_*.txt` cards. All four quote
+headlines or filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
 tool's output.
 
 Checked at commit time from the committed tools and the committed `audit/audit.json`:
@@ -428,16 +499,17 @@ Checked at commit time from the committed tools and the committed `audit/audit.j
 receipts byte for byte, and `build_audit.py` reproduces `audit/sample.json` byte for byte.
 `build_audit_absent.py` reproduces `audit/sample_absent.json` byte for byte, and its
 control reports 40 hits and 0 misses. `build_audit_malformed.py` reproduces
-`audit/regrade_malformed.json` byte for byte.
+`audit/regrade_malformed.json` byte for byte. `build_routing_check.py` reproduces
+`audit/sample_routing.json` and `audit/routing_check.json` byte for byte.
 
 ## Next
 
-1. Run a third family (GLM after 2026-10-19 05:16Z) on the disputed slots under
-   prompt-v1.2 and annotation guide-v1.2: set
+1. Build the three routing gates in the draw (non-event headline filter, issuer-resolution
+   guard, body-to-event match), freeze them, then validate them on a fresh gated-in
+   sample and a gated-out audit as `DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES` registers.
+2. Run a third family (GLM after 2026-10-19 05:16Z) under prompt-v1.2 and annotation
+   guide-v1.2 on the disputed slots of gated-in cases only: set
    `LABEL_TEMPLATE=tools/label_batch.template.v1.2.txt` for `tools/build_label_lanes.py`.
-   Every class now has an audit.
-2. Check the template routing of the cells behind cards M3, M7 and M9 before the
-   600-case continuation.
 3. Record two candidates for the next contract version without editing the frozen v1
    contract: a per-share basis for a T1 dividend amount, and a total-authorization slot.
 4. Decide per-slot against per-case publication.

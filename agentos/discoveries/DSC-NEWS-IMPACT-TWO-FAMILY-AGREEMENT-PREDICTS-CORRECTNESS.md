@@ -20,6 +20,9 @@ so_what: >
   population. Agreed absences, the largest class (129 of 293 slots), were audited
   separately (DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS: 0 shared misses in 20). This is a
   routing input, not a promotion: n is 20 per stratum and the auditor was the seat model.
+  Scope: "right" means faithful to the attached filing, not to the headline's event; 4 of
+  the 10 agreed-present slots in the routing-check sample sat on off-event cases
+  (DSC:NEWS-IMPACT-W2-ROUTING-MOSTLY-OFF-EVENT).
 kind: data
 verified_at: 2026-10-14
 verified_by: >

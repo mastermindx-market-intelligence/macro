@@ -43,6 +43,7 @@ do_not_redo:
   - "Benchmark bodies are settled by DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE: issuer 8-Ks through the existing SEC owners, internal_only. Do not reopen vendor article bodies or write a second EDGAR client."
   - "The w2 two-family labeling of 157 cases and the 40-slot audit (seed 20261014) are ACCEPTED under DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING. Add a third family on top; never relabel or redraw them. The absent-slot addendum audit (seed 20261015, 26 slots) is ACCEPTED under DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION; extend it with new strata, never redraw it."
   - "The malformed-slot audit (all 11 malformed_value slots, no sampling) is ACCEPTED under DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES; the v1 labels are not relabeled under guide-v1.2 and summary.json is not re-scored."
+  - "The routing check (seed 20261016, 40 sampled cases plus the three cases behind malformed cards M3, M7 and M9) is ACCEPTED under DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES; extend it with new samples, never redraw it. The w2 labels and summary.json are not re-scored; their reading is narrowed to extraction from the attached filing."
 waves:
   - id: p0
     title: Phase 0 — recovery census, three-candidate commission A, seat freeze of event templates + closed schemas
@@ -67,12 +68,12 @@ waves:
     title: Wave 2 — commission D 600-case graded benchmark (200 capital allocation / 200 demand-guidance / 200 strategic-partnership)
     status: in_progress
     depends_on: [w1]
-    next_action: The draw (PR #9290, 157 of 600 cases) and the two-family results (DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING) are done. The absent-slot addendum audit (seed 20261015, DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS) and annotation guide-v1.1 (DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION) are done. The malformed-slot audit (all 11 slots, DSC:NEWS-IMPACT-MINIMAX-V10-NULL-PERIOD) and annotation guide-v1.2 with lane packet prompt-v1.2 (DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES, which also rules on the T1 per-share dividend and "increase up to $X" gaps) are done. Next - a third family labels the disputed slots under prompt-v1.2 once GLM resets after 2026-10-19 05:16Z; the template routing of the cells behind malformed cards M3, M7 and M9 is checked; MiniMax lanes get a usage capture; then the 600-case continuation.
+    next_action: The draw (PR #9290, 157 of 600 cases) and the two-family results (DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING) are done. The absent-slot addendum audit (seed 20261015, DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS) and annotation guide-v1.1 (DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION) are done. The malformed-slot audit (all 11 slots, DSC:NEWS-IMPACT-MINIMAX-V10-NULL-PERIOD) and annotation guide-v1.2 with lane packet prompt-v1.2 (DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES, which also rules on the T1 per-share dividend and "increase up to $X" gaps) are done. The routing check (DSC:NEWS-IMPACT-W2-ROUTING-MOSTLY-OFF-EVENT: 15 of 40 sampled cases on-event, the template never the fault) is done. Next - build, freeze and validate the three draw gates registered by DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES (non-event headline filter, issuer-resolution guard, body-to-event match; seed 20261017, MATCH at least 34 of 40, gated-out loss printed); a third family (GLM after 2026-10-19 05:16Z, prompt-v1.2) labels the disputed slots of gated-in cases only; MiniMax lanes get a usage capture; then the 600-case continuation.
   - id: w3
     title: Wave 3 — Phase 1 measured packet producer wired to the existing event ledger, context_only, behind the benchmark gate
     status: todo
     depends_on: [w2]
-next_action: Wave w2 - third-family labeling of the disputed slots under prompt-v1.2 and annotation guide-v1.2 after GLM resets (2026-10-19 05:16Z), a template-routing check on the cells behind malformed cards M3, M7 and M9, a MiniMax usage capture, then the 600-case continuation; keep the v1 contract byte-frozen. Wave w3 follows.
+next_action: Wave w2 - build, freeze and validate the three routing gates in the draw (DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES), then third-family labeling of the disputed slots of gated-in cases under prompt-v1.2 and annotation guide-v1.2 after GLM resets (2026-10-19 05:16Z), a MiniMax usage capture, then the 600-case continuation; keep the v1 contract byte-frozen. Wave w3 follows.
 ---
 
 # Prophet news-to-business-impact
