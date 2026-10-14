@@ -406,3 +406,39 @@ on their original identities. Fabric Integration's latest turn failed with429;
 no recovery completion is inferred. The official Linux tunnel403 and originalDCR
 unknown effect remain preserved. Writer qualification and production readiness
 are stillfalse. Evidence lives under the original Research Vault completion root.
+
+## 2026-10-14 bounded reader verification and materialization continuation
+
+Materialize-only runs38528630873 and38530089324 both succeeded under the
+existing noncanceling workflow and unchanged budgets. They produced131 and129
+canonical derivatives respectively, with zero extraction failures and zero mutable
+publications. The second run's snapshot has2880 catalog members and800 remaining
+candidates. Neither run adopts the generation writer or proves95percent coverage.
+The existing feed now owns queued38531418295 and pending38532806943; root does
+not add another dispatch while those incumbents occupy the group.
+
+The bounded strict reader verification repair admits at most four members per
+window for exact R2Store transports with the literal read-safety qualification,
+including their exact canonical corpus-budget wrapper. Unknown or subclass stores
+remain serial. Failures cancel pending reads and drain started reads before returning;
+no next window starts before the prior window succeeds. Digest/decoder, source,
+corpus,95percent and final catalog fences are unchanged. Causal preimage tests
+failed on both public selection paths; repaired source passes127 focused tests
+plus5subtests,2CI curation checks and2558 trigger closures with zero gaps.
+
+A read-only Linux probe verified the same71 already-full members in16.714s serially
+and5.715s with the candidate window, with an unchanged catalog fence and78820KiB
+peak RSS. A prior mixed-availability sample failed strict qualification; its cause
+was not captured and no speedup is claimed from it. Neither sample is a whole-cohort
+census, installation or runtime acceptance. Root source review is recorded in
+runtime-composition/qualification-window/root-source-review.json under the original
+evidence root. This carrier remains Draft/HOLD95.
+
+Fabric rv-qualification-window-01a13301-r1 returned a terminal provider429 quota
+refusal with no patch. Root consumed the exact result, recorded no quality verdict,
+did not retry or switch providers, and performed the owned source repair directly.
+rv-runtime-composition-review-01a13301-r1 reached verified terminal rc65 with
+ARTIFACT_DELIVERY_CONTRACT_FAILED. Its retained stdout was consumed, but the report
+artifact was not received or accepted; same-run capsule diagnosis was refused.
+Summary findings are hypotheses to validate against actual source, not accepted
+review evidence. Original frozen operations and runtime/auth/transport gates remain.

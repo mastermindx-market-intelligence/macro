@@ -14198,7 +14198,7 @@ jobs:
       # API security, source-bound evidence and F11 use this same environment.
       # Combine the incumbent calls rather than adding packing step overhead.
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_producer_generation.py tests/test_research_vault_generation_selection.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
+        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_producer_generation.py tests/test_research_vault_generation_window.py tests/test_research_vault_generation_selection.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
