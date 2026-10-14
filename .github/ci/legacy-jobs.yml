@@ -5834,6 +5834,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -6850,7 +6851,9 @@ jobs:
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
+          tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_closed_bundle.py
+          tests/test_capital_structure_funding.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
@@ -8970,6 +8973,8 @@ jobs:
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
           tests/test_market_memory_e0_control_records.py
+          tests/test_market_memory_evidence_accounting.py
+          tests/test_market_memory_evidence_accounting_parent.py
           tests/test_research_factory_market_memory_evidence.py
           tests/test_research_factory_contextual_only.py
           tests/test_research_codegen_accounting_contract.py
@@ -11671,6 +11676,124 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation pre-registered study harness
         run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+
+  leadership-measured-read:
+    if: ${{ false }}
+    gate: code
+    # LR T17 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): one bounded display-tier measured
+    # group read — engine/leadership_rotation_context.py measured_group_read() appended
+    # section + the engine/sector_central.py wiring (measured_read key) + the frozen
+    # producer->parser fixture the Terminal lane parses with its real TS reader.
+    timeout-minutes: 10
+    # CURATED SCOPE (2026-10-14, LR T17). `scope: exclusive` makes the paths below
+    # REPLACE inference: the suite is pure-synthetic (no data/, site/ or research/
+    # reads), so the inferred data/**, site/**, research/** and parquet fallback
+    # tiers are smear. The list is the measured literal import/read closure
+    # (scripts.run_ci_pack inference, full checkout) plus package initializers and
+    # the observed runtime test-support reads; widen it, never narrow it.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "config.yml"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_intl.py"
+      - "engine/baskets_region.py"
+      - "engine/canon.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/conditions.py"
+      - "engine/cross_asset.py"
+      - "engine/crowding.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/equity_factors.py"
+      - "engine/extension.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading.py"
+      - "engine/hazard_score.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/leadership_receipt.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/name_score_grader.py"
+      - "engine/narrative_rotation.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_central.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/session_anchor.py"
+      - "engine/sue.py"
+      - "engine/technicals.py"
+      - "engine/theme_crowding.py"
+      - "engine/theme_validation.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_sector_central.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "site/marketdata/rotation_events.json"
+      - "site/sectordata/sector_central.json"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/fixtures/leadership_rotation/measured_read_v1.json"
+      - "tests/test_leadership_measured_read.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests jinja2
+      - name: leadership measured group read contract
+        run: TZ=UTC python -m pytest tests/test_leadership_measured_read.py -q -p no:cacheprovider
 
   hk-confirming-turn:
     if: ${{ false }}
@@ -17318,6 +17441,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -20828,6 +20952,7 @@ jobs:
       - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       - "engine/rate_inflation_transmission.py"
+      - "engine/rates_command_basis.py"
       - "engine/rates_inflation_command.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime.py"
@@ -21602,6 +21727,8 @@ jobs:
       # E0-G (#8373): tests/test_dashboard_template_render.py renders the Fed dialog's Inflation Read
       # through the owner (engine.rates_inflation_command._build_inflation_row), so the dashboard
       # suite pulls that module into this job's closure (contract-delta: widen, never narrow).
+      # T0: the owner now imports the B0 basis contract, so that module joins the closure too.
+      - "engine/rates_command_basis.py"
       - "engine/rates_inflation_command.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
@@ -23177,7 +23304,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -24748,6 +24875,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_brain_citations.py
       - scripts/initialize_market_memory_w1a.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -25941,7 +26069,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest numpy pandas pyyaml
       - name: basket read band + board group-pulse column (GR1)
-        run: python -m pytest tests/test_group_read_surface.py -q -rs
+        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py -q -rs
 
   group-earnings-pulse:
     # Group Reads W-GR2: engine/group_earnings.py -> site/basketdata/earnings_pulse.json,
@@ -26835,6 +26963,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -29190,7 +29319,8 @@ jobs:
   # binding, F3 basis consts) and its owner-payload conformance (documents.py /
   # events.py minted spans, absences and fiscal periods), plus the Phase 1
   # engine/news_impact leaf: semantic validator + hostile corpus, sampler,
-  # cluster adapter, issuer resolver.
+  # cluster adapter, issuer resolver, and the W2 benchmark tools (tape draw
+  # with the body-available frame, EDGAR body fetch; hermetic, no network).
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -29207,6 +29337,25 @@ jobs:
       - "engine/__init__.py"
       - "lib/__init__.py"
       - "lib/config.py"
+      - "collectors/base.py"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fred.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_request_pacer.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/gdelt_client.py"
+      - "engine/macro_surprise.py"
+      - "engine/news_common.py"
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "tests/test_news_impact_*.py"
       - "tests/fixtures/news_impact/**"
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
@@ -29219,13 +29368,15 @@ jobs:
         with:
           python-version: "3.12"
       - name: install news impact contract test dependencies
-        run: pip install pytest jsonschema pyyaml pandas pyarrow
+        run: pip install pytest jsonschema pyyaml pandas pyarrow requests
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
         run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
       - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement)
         run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py -q
+      - name: news impact w2 benchmark (tape draw, edgar body)
+        run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
