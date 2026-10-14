@@ -79,9 +79,11 @@ unresolved:
   After the a1bb review, a new deadline-fit invalidator was reproduced: a legal 10.25-second
   source observation exceeds the installed Workspace client's 10-second default, while the
   sealed source owner permits 15 seconds. A v4-only client-deadline correction at
-  a7dc701a27f8f3959d9d377f04fc07ee939d1fe3 passes 117 affected checks and awaits its narrow review;
-  existing operations and physical source limits remain unchanged. Hold consumer readiness until
-  this correction is independently accepted and composed by the existing owner.
+  a7dc701a27f8f3959d9d377f04fc07ee939d1fe3 passes 117 affected checks. OriginalParent accepted
+  the narrow correction with no findings in receipt SHA256
+  f913b73ccf71ce865ccfe8fa4f3b0a524615b3a44d68e6b41e3a8a823d1d1db1; the root verified its exact artifacts.
+  The source hold from this mismatch is cleared; existing operations and physical source limits
+  remain unchanged. Existing-owner integration and physical installed fit remain required.
 - >-
   Original receiver review r2-principal-control-local-review-01a13315 remains unsettled.
   Chairman allowed a fresh source review while preserving it; that permission never closes it.
