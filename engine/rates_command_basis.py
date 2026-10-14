@@ -203,7 +203,10 @@ def _cutoff_violation(cutoff: Any, *stamps: Any) -> Optional[str]:
     ``evidence_time_unparsable`` or ``after_cutoff`` -- or None when the
     cutoff parses, every non-None stamp parses, and every non-None stamp can
     be shown at or before the cutoff. None evidence stamps stay UNKNOWN and
-    admitted (freeze rule; FREEZE-QUESTION: unknown evidence time admitted).
+    admitted (freeze rule; FREEZE-QUESTION: unknown evidence time admitted);
+    qualify_observation then carries that unknown as a visible limitation
+    ('evidence_time_unknown' / 'first_public_evidence_unknown'), never
+    silently as known. A refused record (violation) gets neither tag.
     """
     if _parse_stamp(cutoff) is None:
         return "cutoff_unparsable"
@@ -350,7 +353,11 @@ def qualify_observation(
     leaks past its cutoff. A cutoff or evidence stamp that cannot be parsed
     refuses the value ('cutoff_unparsable' / 'evidence_time_unparsable')
     rather than admitting it: a number that cannot be shown to be at or
-    before its publication cutoff is never present. The refusal is decided
+    before its publication cutoff is never present. An unknown evidence
+    time (both stamps None, or only first_public_evidence None) stays
+    ADMITTED but is carried as a visible limitation ('evidence_time_unknown'
+    / 'first_public_evidence_unknown'); a refused record gets neither tag.
+    The refusal is decided
     BEFORE the record is constructed, so a tampered record carrying a leaked
     number is rejected by the constructor itself.
     """
@@ -375,6 +382,20 @@ def qualify_observation(
     quality = meta.get("quality") or ()
     if isinstance(quality, str):
         quality = (quality,)
+    limitations = meta.get("limitations") or ()
+    if isinstance(limitations, str):
+        limitations = (limitations,)
+    if violation is None:
+        # FQ2: an unknown evidence time stays admitted, but is surfaced as a
+        # visible limitation -- never silently as if its timing were known.
+        if meta.get("first_public_evidence") is None:
+            tag = (
+                "evidence_time_unknown"
+                if meta.get("observation_time") is None
+                else "first_public_evidence_unknown"
+            )
+            if tag not in limitations:
+                limitations = limitations + (tag,)
     obs = QualifiedObservation(
         subject=meta.get("subject", ""),
         evidence_class=EvidenceClass(meta.get("evidence_class")),
@@ -404,7 +425,7 @@ def qualify_observation(
         vintage=meta.get("vintage"),
         rights=meta.get("rights", "unknown"),
         quality=tuple(quality),
-        limitations=tuple(meta.get("limitations") or ())
+        limitations=tuple(limitations)
         + ((violation,) if violation is not None else ()),
     )
     return obs
@@ -903,18 +924,31 @@ _GRID_OFFSETS = (-2.0, -1.0, 0.0, 1.0, 2.0)
 _GRID_PATH_CAP = 50
 
 
+def _step_supplied(assumptions: PathAssumptions) -> bool:
+    """True iff rate_step_bp names a usable grid step (F3: never defaulted).
+
+    An invalid step -- 0, negative, NaN, infinity, a bool, or anything that
+    is not a real number -- counts as NOT supplied.
+    """
+    step = assumptions.rate_step_bp
+    if step is None or isinstance(step, bool):
+        return False
+    if not isinstance(step, (int, float)):
+        return False
+    return 0 < step < float("inf")
+
+
 def _grid_step_pct(assumptions: PathAssumptions) -> float:
-    step = assumptions.rate_step_bp if assumptions.rate_step_bp else 50.0
-    return float(step) / 100.0 / 2.0
+    if not _step_supplied(assumptions):
+        raise ValueError("grid step (rate_step_bp) is not supplied")
+    return float(assumptions.rate_step_bp) / 100.0 / 2.0
 
 
 def _grid_step_tags(assumptions: PathAssumptions) -> Tuple[str, ...]:
     """Assumption tags naming the grid step actually used (additive F3: no
-    status ever depends on them). Mirrors _grid_step_pct's defaulting."""
-    defaulted = not assumptions.rate_step_bp
-    step_bp = 50.0 if defaulted else float(assumptions.rate_step_bp)
-    tags = ("rate_step_bp=%g" % step_bp,)
-    return tags + (("rate_step_defaulted",) if defaulted else ())
+    status ever depends on them). Only reached when the step is supplied;
+    there is no default step to name."""
+    return ("rate_step_bp=%g" % float(assumptions.rate_step_bp),)
 
 
 def _paths_result(
@@ -1093,7 +1127,14 @@ def solve_reference_average(
     inside = sorted({d for d in assumptions.effective_dates if start_iso <= d <= end_iso})
 
     if not assumptions.effective_dates:
-        # nothing supplied: the average alone does not identify a path
+        # nothing supplied: the average alone does not identify a path, and
+        # F3 forbids minting one from a default grid step
+        if not _step_supplied(assumptions):
+            return PathIdentification(
+                PathStatus.MISSING_INPUTS, None, (), None,
+                base_used + ("no_effective_date_supplied", "rate_step_unsupplied"),
+                ("rate_step_bp",),
+            )
         paths, best_bp = _grid_unknown_split(start, end, n_days, avg, assumptions, tol_pct)
         return _paths_result(
             paths, best_bp, tol_pct,
@@ -1145,7 +1186,11 @@ def solve_reference_average(
         )
         if assumptions.pre_change_rate is None:
             used = used + ("pre_change_rate_source=realised_average",)
-            if assumptions.realised_through is not None:
+            if assumptions.realised_through is None:
+                # V1: the pre-rate is carried without a known window -- say
+                # so instead of showing it as if its timing were known.
+                used = used + ("realised_through_unknown",)
+            else:
                 used = used + ("realised_through=%s" % assumptions.realised_through,)
         return PathIdentification(
             PathStatus.IDENTIFIED_CONDITIONAL,
@@ -1157,18 +1202,35 @@ def solve_reference_average(
         )
 
     if len(inside) == 1:
-        paths, best_bp = _grid_known_split(
-            start, end, inside[0], n_days, avg, assumptions, tol_pct
-        )
         used = base_used + (
-            "effective_date=%s" % inside[0], "pre_change_rate_unknown", "grid_enumeration",
+            "effective_date=%s" % inside[0], "pre_change_rate_unknown",
         )
         if (
             assumptions.realised_average is not None
             and assumptions.pre_change_rate is None
         ):
             used = used + ("realised_average_unusable_as_pre_rate",)
+        if not _step_supplied(assumptions):
+            # F3: no usable pre-change rate and no supplied step -- there is
+            # nothing to enumerate against, so no path may be minted.
+            return PathIdentification(
+                PathStatus.MISSING_INPUTS, None, (), None,
+                used + ("rate_step_unsupplied",),
+                ("pre_change_rate",),
+            )
+        paths, best_bp = _grid_known_split(
+            start, end, inside[0], n_days, avg, assumptions, tol_pct
+        )
+        used = used + ("grid_enumeration",)
     else:
+        if not _step_supplied(assumptions):
+            # F3: multiple inside dates identify nothing without a supplied
+            # step; a default grid may not mint candidate end rates.
+            return PathIdentification(
+                PathStatus.MISSING_INPUTS, None, (), None,
+                base_used + ("effective_dates=%s" % ",".join(inside), "rate_step_unsupplied"),
+                ("rate_step_bp",),
+            )
         paths, best_bp = _grid_multi_segment(
             start_iso, end_iso, inside, n_days, avg, assumptions, tol_pct
         )
