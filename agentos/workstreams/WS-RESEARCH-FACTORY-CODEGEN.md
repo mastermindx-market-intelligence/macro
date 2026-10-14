@@ -31,7 +31,8 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Commit and push the independently reviewed PID-observer source and calendar evidence.
+next_action: Obtain the pending explicit authorization to send the corrected-canary
+  v2 recovery request; the reviewed PID observer and calendar evidence are pushed.
   The corrected-canary v2 retrieval-only message awaits explicit cross-chat authorization;
   original rc65 and unresolved inner effects remain preserved. Normal dependency
   controller owns refresh and landing. The US calendar patch is prepared externally
@@ -68,3 +69,5 @@ Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; runti
 Current physical limit: v1 recovery complete, originalrc65unaccepted. V2 passed107Linuxprechecks/2subtests andonecarrierreturned after17seconds; completeinnerreceiptunread because decorated/repeatedmanifest causedrc65deliveryfailure. New retrieval-only cross-chat authorization pending. No physicalphase/installation/cleanup acceptance inferred. The separateCLIleafsummary remainsunaccepted. Purehostidentitydecoder independentreview accepted and36checks passed; nohostread orcurrentcapsule inclusion.
 
 Adjacent qualification: root corrected the unaccepted calendar census using complete official 2014–2023 notices. Regular closures match the immutable legacy calendar; 20 early closes and annual verification remain absent from the live adapter. A tested external patch preserves the shared calendar source while PR #8721 owns its CN extension. 2010–2013 primary annual notice gaps remain. The PID-observer Fabric implementation ended quota429 without source; root implemented directly and verified 52 hermetic tests with one opt-in Linux skip. Independent review `rf-proc-observer-review-01a1333c-v1` returned no actionable findings and root accepted its bounded source verdict. Neither helper is in the current canary capsule.
+
+Linux helper qualification limit: `rf-proc-observer-linux-01a1333c-v1` returned UNQUALIFIED on a Mac before creating files or a child. Its supplied hashes were not execution verification. Root prepared `rf-proc-observer-linux-01a1333c-v2` with a retained result artifact, using the installed artifact path's explicit Linux admission. The router refused before launch with Ubuntu0 disk, Ubuntu1 load, Ubuntu2/3 lane-ceiling and telemetry-source constraints. No worker/test/child launched and no threshold or host was forced. This preserves source-only acceptance. The earlier capacity request stays here as Chris directed.
