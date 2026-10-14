@@ -1024,3 +1024,29 @@ jobs:
 
     with pytest.raises(AssertionError, match="exactly one producer seed"):
         test_daily_collector_keeps_us_panel_seed_cache_authority()
+
+
+def test_collect_job_has_publication_headroom_after_oct14_timeout_loss():
+    """A real four-hour collect ended mid-push with just 6m08s left at entry.
+
+    GH job 115629246223: 2026-10-14 01:20:35Z -> push at 05:14:27Z,
+    cancelled at 05:25:36Z before GitHub received the original commit.
+    An alarm-bounded push is 420s, plus fetch/rebase and retry overhead.
+    Require at least one hour of reserved room from that observed entry
+    point before raising another producer budget or claiming acceptance.
+    """
+    spec = yaml.safe_load(DAILY.read_text(encoding="utf-8"))["jobs"]["collect"]
+    cap = spec["timeout-minutes"]
+    assert type(cap) is int and cap <= 360
+    observed_push_start = 3 * 3600 + 53 * 60 + 52
+    required_reserve = 60 * 60
+    assert cap * 60 - observed_push_start >= required_reserve, (
+        "collect's clock leaves less than one hour for its existing "
+        "market publisher after the observed October 14 producer duration"
+    )
+    market_push = [
+        step for step in spec["steps"]
+        if step.get("name", "").startswith("push market data")
+    ]
+    assert len(market_push) == 1
+    assert "PUSH_ALARM=420" in market_push[0].get("run", "")
