@@ -1,0 +1,18 @@
+{
+  "base": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "changed_jobs": [
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes"
+  ],
+  "job_population_before_after": [
+    313,
+    313
+  ],
+  "all_job_commands_dependencies_gates_timeouts_unchanged": true,
+  "test_ast_unchanged_except_curated_registry": true,
+  "packing_thresholds_unchanged": true,
+  "files": {
+    ".github/ci/legacy-jobs.yml": "4e170c1baa6f28e3ed0a8f0c4dcc7ad230d007e34e01c3253935d580d1d4da6c",
+    "tests/test_ci_pack.py": "4ae1ac91c2eeda6f8457dace64d2d2500e089558f0334629337aa73ede05c35b"
+  }
+}

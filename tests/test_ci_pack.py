@@ -4793,6 +4793,10 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-14 baseline heal: retain all 42/68 named dependencies while
+    # removing only opaque engine/template fallback from hermetic LR jobs.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
 }
 
 

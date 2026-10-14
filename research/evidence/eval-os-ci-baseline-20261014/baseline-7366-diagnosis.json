@@ -1,0 +1,3930 @@
+{
+  "head": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "baseline_failed": "703477f0a822",
+  "baseline_run": 38530059577,
+  "note": "derived scopes for 205/313 jobs; 107 declared exclusive",
+  "rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 136,
+      "weight": 5678,
+      "packs": 10,
+      "max_jobs": 135,
+      "max_weight": 5803,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 136/313 jobs (1 unscoped always-on, 135 scoped matches)",
+      "selected": [
+        {
+          "id": "c19-wp19-integrated-answer-pins",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "inline-js",
+          "weight": 124,
+          "tier": [
+            "templates/index.html",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "board-shadow-substrate",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "signal-gate-pair-coherence",
+          "weight": 8,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "gh-annotation-line-start",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "no-module-leak",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "admin-js-no-undef",
+          "weight": 14,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "rebase-css-autoresolve",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "conflict-markers",
+          "weight": 2,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "title-i18n",
+          "weight": 2,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "signal-contract",
+          "weight": 134,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "trial-budgets",
+          "weight": 37,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "breakdown-control-seed-determinism",
+          "weight": 9,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "outcome-spine",
+          "weight": 34,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chronicle-suite",
+          "weight": 6,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-ontology-js",
+          "weight": 2,
+          "tier": null,
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-forward-log",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "tier-gate",
+          "weight": 41,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "regwall-boundary",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-grading-stats",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "engine-render-guards",
+          "weight": 875,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-lab",
+          "weight": 49,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "attested-history-guards",
+          "weight": 60,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "express-render-guards",
+          "weight": 150,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collector-registry",
+          "weight": 17,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capital-structure-intelligence",
+          "weight": 247,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "stock-seasonality",
+          "weight": 29,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-collectors",
+          "weight": 53,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-board-breadth",
+          "weight": 6,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "synapse-read-gate",
+          "weight": 44,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web",
+          "weight": 37,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web-core",
+          "weight": 89,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "workflow-yaml",
+          "weight": 90,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "causal-factory",
+          "weight": 22,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dag-conformance",
+          "weight": 21,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ontology-explorer",
+          "weight": 15,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-factory-authority",
+          "weight": 22,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-pattern-authority",
+          "weight": 8,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ruling-graph",
+          "weight": 13,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-cohorts",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signals-ledger",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signal-cohorts",
+          "weight": 30,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "qledger-cluster-honest-ci",
+          "weight": 53,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-w2",
+          "weight": 13,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "wri-risk-core",
+          "weight": 34,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "house-law-registry",
+          "weight": 18,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims",
+          "weight": 39,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims-source",
+          "weight": 2,
+          "tier": [
+            "templates/index.html",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "design-governance",
+          "weight": 18,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "p0b-receipt-closure",
+          "weight": 8,
+          "tier": [
+            "templates/index.html",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "template-site-sync",
+          "weight": 36,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "data-base-shim",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "self-mod-fence",
+          "weight": 44,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capability-broker",
+          "weight": 74,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "font-ui-defined",
+          "weight": 96,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "hk-robustness-w5",
+          "weight": 35,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "basket-staleness-warn",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "live-flow-ops",
+          "weight": 9,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ird-substrate-engines",
+          "weight": 25,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "altdata-brain-govern",
+          "weight": 6,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "lr-rotation-evidence-modes",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": true
+        },
+        {
+          "id": "codex-research-engine",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "metab-throttle-ux",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "admin-live-runs",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ccw-w4-credit-desk",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "support-email-spine",
+          "weight": 47,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-emails",
+          "weight": 23,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-offers",
+          "weight": 9,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "site-gate",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "pick-lab-liquidity",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collect-identity",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault",
+          "weight": 39,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault-api",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-evidence",
+          "weight": 14,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-contracts",
+          "weight": 52,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-deploy-integration",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-regulatory",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-social-publisher",
+          "weight": 42,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-media-pipeline",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-engine",
+          "weight": 250,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-scoring-optional",
+          "weight": 5,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-data",
+          "weight": 39,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "publish-r2-client",
+          "weight": 48,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render-data",
+          "weight": 11,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "portfolio-ctx",
+          "weight": 15,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prelaunch-hardening",
+          "weight": 45,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "free-content-estate",
+          "weight": 11,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "public-render-fastlane",
+          "weight": 22,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "press-lane",
+          "weight": 28,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-dsr",
+          "weight": 35,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-oracle-desk",
+          "weight": 21,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-marketing-desk",
+          "weight": 13,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-grading-board",
+          "weight": 40,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-libraries",
+          "weight": 101,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-data-plane",
+          "weight": 52,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-government-revenue",
+          "weight": 101,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-factor-research",
+          "weight": 58,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-serving-admin",
+          "weight": 23,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-ops-workers",
+          "weight": 25,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-render",
+          "weight": 43,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-nav-chrome",
+          "weight": 30,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-stores",
+          "weight": 129,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-site-surfaces",
+          "weight": 49,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-release-forecast",
+          "weight": 52,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-desks",
+          "weight": 61,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-register-honesty",
+          "weight": 25,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-neuralweb-cortex",
+          "weight": 28,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-baskets",
+          "weight": 33,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-anticipation-intake",
+          "weight": 34,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-page-guards",
+          "weight": 50,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-us-context-and-grades",
+          "weight": 29,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-prophet-learning-loop",
+          "weight": 15,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-collectors",
+          "weight": 32,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-russell-breadth",
+          "weight": 13,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-gateway",
+          "weight": 57,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-macro-panels",
+          "weight": 62,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-market-plumbing",
+          "weight": 114,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-publish-ops",
+          "weight": 65,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-import-hygiene",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "price-basis-census",
+          "weight": 12,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-scoring-engine",
+          "weight": 33,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-template-chips",
+          "weight": 31,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-pit-probes",
+          "weight": 13,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-dark-guards",
+          "weight": 26,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-hk-board",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "zh-filing-term",
+          "weight": 6,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "market-memory-contract",
+          "weight": 416,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "group-read-surface",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "falsifier-tripwires",
+          "weight": 33,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "product-experience-registry",
+          "weight": 10,
+          "tier": [
+            "templates/index.html",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "reference-integrity",
+          "weight": 9,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dataos-identity-seams",
+          "weight": 7,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "sni-public-exposure-scan",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ric-f0-a10-canonical-calendar",
+          "weight": 6,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "c19-wp24-consumer-states",
+          "weight": 4,
+          "tier": [
+            "templates/index.html",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        }
+      ]
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5475,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 134/313 jobs (1 unscoped always-on, 133 scoped matches)",
+      "selected": [
+        {
+          "id": "integrated-answer-v0",
+          "weight": 8,
+          "tier": [
+            "scripts/build_free_content.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "c19-wp19-integrated-answer-pins",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "board-shadow-substrate",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "gh-annotation-line-start",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "all-exports-resolve",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "no-module-leak",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "admin-js-no-undef",
+          "weight": 14,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "path-prune-lint",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "rebase-css-autoresolve",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "conflict-markers",
+          "weight": 2,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "signal-contract",
+          "weight": 134,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "trial-budgets",
+          "weight": 37,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "breakdown-control-seed-determinism",
+          "weight": 9,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "outcome-spine",
+          "weight": 34,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chronicle-suite",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-ontology-js",
+          "weight": 2,
+          "tier": null,
+          "new_since_ec6e": false
+        },
+        {
+          "id": "tier-gate",
+          "weight": 41,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-grading-stats",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "engine-render-guards",
+          "weight": 875,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-lab",
+          "weight": 49,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "attested-history-guards",
+          "weight": 60,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "express-render-guards",
+          "weight": 150,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collector-registry",
+          "weight": 17,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capital-structure-intelligence",
+          "weight": 247,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "stock-seasonality",
+          "weight": 29,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-collectors",
+          "weight": 53,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-board-breadth",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "synapse-read-gate",
+          "weight": 44,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web",
+          "weight": 37,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web-core",
+          "weight": 89,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cn-standout-audit",
+          "weight": 12,
+          "tier": [
+            "scripts/build_free_content.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "workflow-yaml",
+          "weight": 90,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "causal-factory",
+          "weight": 22,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "nyse-calendar-freshness",
+          "weight": 19,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dag-conformance",
+          "weight": 21,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ontology-explorer",
+          "weight": 15,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-factory-authority",
+          "weight": 22,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-pattern-authority",
+          "weight": 8,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "private-boundary",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ruling-graph",
+          "weight": 13,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "uk-policy-desk",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signals-ledger",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signal-cohorts",
+          "weight": 30,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "qledger-cluster-honest-ci",
+          "weight": 53,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-w2",
+          "weight": 13,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "wri-risk-core",
+          "weight": 34,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "house-law-registry",
+          "weight": 18,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims",
+          "weight": 39,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims-source",
+          "weight": 2,
+          "tier": [
+            "scripts/build_free_content.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "design-governance",
+          "weight": 18,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "template-site-sync",
+          "weight": 36,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "data-base-shim",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "self-mod-fence",
+          "weight": 44,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capability-broker",
+          "weight": 74,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "hk-robustness-w5",
+          "weight": 35,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "basket-staleness-warn",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "live-flow-ops",
+          "weight": 9,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ird-substrate-engines",
+          "weight": 25,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "altdata-brain-govern",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "sa-w4-improvement-lanes",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "codex-research-engine",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "metab-throttle-ux",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "admin-live-runs",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "support-email-spine",
+          "weight": 47,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-emails",
+          "weight": 23,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-offers",
+          "weight": 9,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "site-gate",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collect-identity",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault",
+          "weight": 39,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault-api",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-evidence",
+          "weight": 14,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-contracts",
+          "weight": 52,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-deploy-integration",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-social-publisher",
+          "weight": 42,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-media-pipeline",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-engine",
+          "weight": 250,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-scoring-optional",
+          "weight": 5,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-data",
+          "weight": 39,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "publish-r2-client",
+          "weight": 48,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render-data",
+          "weight": 11,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "portfolio-ctx",
+          "weight": 15,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prelaunch-hardening",
+          "weight": 45,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "free-content-estate",
+          "weight": 11,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "public-render-fastlane",
+          "weight": 22,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "press-lane",
+          "weight": 28,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-dsr",
+          "weight": 35,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-oracle-desk",
+          "weight": 21,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-marketing-desk",
+          "weight": 13,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-grading-board",
+          "weight": 40,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-libraries",
+          "weight": 101,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-data-plane",
+          "weight": 52,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-government-revenue",
+          "weight": 101,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-factor-research",
+          "weight": 58,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-serving-admin",
+          "weight": 23,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-ops-workers",
+          "weight": 25,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-render",
+          "weight": 43,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-nav-chrome",
+          "weight": 30,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-stores",
+          "weight": 129,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-site-surfaces",
+          "weight": 49,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-release-forecast",
+          "weight": 52,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-desks",
+          "weight": 61,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-register-honesty",
+          "weight": 25,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-neuralweb-cortex",
+          "weight": 28,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-baskets",
+          "weight": 33,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-anticipation-intake",
+          "weight": 34,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-page-guards",
+          "weight": 50,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-us-context-and-grades",
+          "weight": 29,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-prophet-learning-loop",
+          "weight": 15,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-collectors",
+          "weight": 32,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-russell-breadth",
+          "weight": 13,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-gateway",
+          "weight": 57,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-macro-panels",
+          "weight": 62,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-market-plumbing",
+          "weight": 114,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-publish-ops",
+          "weight": 65,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-import-hygiene",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "price-basis-census",
+          "weight": 12,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-scoring-engine",
+          "weight": 33,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-template-chips",
+          "weight": 31,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-pit-probes",
+          "weight": 13,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-dark-guards",
+          "weight": 26,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-hk-board",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ohlc-basis-coherence",
+          "weight": 5,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "zh-filing-term",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "market-memory-contract",
+          "weight": 416,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "falsifier-tripwires",
+          "weight": 33,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "product-experience-registry",
+          "weight": 10,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "product-experience-capture",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "reference-integrity",
+          "weight": 9,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dataos-identity-seams",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "no-client-supplied-identity",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "house-law-registry-code",
+          "weight": 7,
+          "tier": [
+            "scripts/build_free_content.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ric-f0-a10-canonical-calendar",
+          "weight": 6,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "c19-wp24-consumer-states",
+          "weight": 4,
+          "tier": [
+            "scripts/build_free_content.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        }
+      ]
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 130,
+      "weight": 5441,
+      "packs": 10,
+      "max_jobs": 129,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 130/313 jobs (1 unscoped always-on, 129 scoped matches)",
+      "selected": [
+        {
+          "id": "integrated-answer-v0",
+          "weight": 8,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "c19-wp19-integrated-answer-pins",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "board-shadow-substrate",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "gh-annotation-line-start",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "all-exports-resolve",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "no-module-leak",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "path-prune-lint",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "conflict-markers",
+          "weight": 2,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "signal-contract",
+          "weight": 134,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "trial-budgets",
+          "weight": 37,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "breakdown-control-seed-determinism",
+          "weight": 9,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "outcome-spine",
+          "weight": 34,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chronicle-suite",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-ontology-js",
+          "weight": 2,
+          "tier": null,
+          "new_since_ec6e": false
+        },
+        {
+          "id": "tier-gate",
+          "weight": 41,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-grading-stats",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "engine-render-guards",
+          "weight": 875,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-lab",
+          "weight": 49,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "attested-history-guards",
+          "weight": 60,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "express-render-guards",
+          "weight": 150,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collector-registry",
+          "weight": 17,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capital-structure-intelligence",
+          "weight": 247,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "stock-seasonality",
+          "weight": 29,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-collectors",
+          "weight": 53,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-board-breadth",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "synapse-read-gate",
+          "weight": 44,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web",
+          "weight": 37,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "intelligence-registry",
+          "weight": 23,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "neural-web-core",
+          "weight": 89,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cn-standout-audit",
+          "weight": 12,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "workflow-yaml",
+          "weight": 90,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "causal-factory",
+          "weight": 22,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "nyse-calendar-freshness",
+          "weight": 19,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dag-conformance",
+          "weight": 21,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ontology-explorer",
+          "weight": 15,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-factory-authority",
+          "weight": 22,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "cycle-pattern-authority",
+          "weight": 8,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ruling-graph",
+          "weight": 13,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "uk-policy-desk",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signals-ledger",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "flow-signal-cohorts",
+          "weight": 30,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "qledger-cluster-honest-ci",
+          "weight": 53,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "china-native-w2",
+          "weight": 13,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "wri-risk-core",
+          "weight": 34,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "house-law-registry",
+          "weight": 18,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims",
+          "weight": 39,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "validated-claims-source",
+          "weight": 2,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "template-site-sync",
+          "weight": 36,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "data-base-shim",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "self-mod-fence",
+          "weight": 44,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "capability-broker",
+          "weight": 74,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "leadership-rotation-contract",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": true
+        },
+        {
+          "id": "hk-robustness-w5",
+          "weight": 35,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "basket-staleness-warn",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "live-flow-ops",
+          "weight": 9,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ird-substrate-engines",
+          "weight": 25,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "altdata-brain-govern",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "sa-w4-improvement-lanes",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "codex-research-engine",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "metab-throttle-ux",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "admin-live-runs",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ccw-w3-credit-momentum",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "support-email-spine",
+          "weight": 47,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-emails",
+          "weight": 23,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "billing-offers",
+          "weight": 9,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "site-gate",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "collect-identity",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault",
+          "weight": 39,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "research-vault-api",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-evidence",
+          "weight": 14,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-contracts",
+          "weight": 52,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "biocatalyst-deploy-integration",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-social-publisher",
+          "weight": 42,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-media-pipeline",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-engine",
+          "weight": 250,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-scoring-optional",
+          "weight": 5,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "marketing-data",
+          "weight": 39,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "publish-r2-client",
+          "weight": 48,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "chart-render-data",
+          "weight": 11,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "portfolio-ctx",
+          "weight": 15,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prelaunch-hardening",
+          "weight": 45,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "public-render-fastlane",
+          "weight": 22,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "press-lane",
+          "weight": 28,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-dsr",
+          "weight": 35,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-oracle-desk",
+          "weight": 21,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-marketing-desk",
+          "weight": 13,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-grading-board",
+          "weight": 40,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-libraries",
+          "weight": 101,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-data-plane",
+          "weight": 52,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-government-revenue",
+          "weight": 101,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-factor-research",
+          "weight": 58,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-serving-admin",
+          "weight": 23,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-ops-workers",
+          "weight": 25,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-render",
+          "weight": 43,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-nav-chrome",
+          "weight": 30,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-builders-stores",
+          "weight": 129,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-site-surfaces",
+          "weight": 49,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-release-forecast",
+          "weight": 52,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-desks",
+          "weight": 61,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-register-honesty",
+          "weight": 25,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-neuralweb-cortex",
+          "weight": 28,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-vector-baskets",
+          "weight": 33,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-anticipation-intake",
+          "weight": 34,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "coiled-mtf-anchor-era",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "declared"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-page-guards",
+          "weight": 50,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "prophet-us-context-and-grades",
+          "weight": 29,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-prophet-learning-loop",
+          "weight": 15,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-intl-collectors",
+          "weight": 32,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-russell-breadth",
+          "weight": 13,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-brain-gateway",
+          "weight": 57,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-macro-panels",
+          "weight": 62,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-market-plumbing",
+          "weight": 114,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-publish-ops",
+          "weight": 65,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-import-hygiene",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "price-basis-census",
+          "weight": 12,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-scoring-engine",
+          "weight": 33,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-template-chips",
+          "weight": 31,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-pit-probes",
+          "weight": 13,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-dark-guards",
+          "weight": 26,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "unrun-hk-board",
+          "weight": 10,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "zh-filing-term",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "market-memory-contract",
+          "weight": 416,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "falsifier-tripwires",
+          "weight": 33,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "mastermindx-selector-capture-attestation",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "reference-integrity",
+          "weight": 9,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "dataos-identity-seams",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "house-law-registry-code",
+          "weight": 7,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "owned"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "ric-f0-a10-canonical-calendar",
+          "weight": 6,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        },
+        {
+          "id": "c19-wp24-consumer-states",
+          "weight": 4,
+          "tier": [
+            "engine/prophet/plan_book.py",
+            "fallback"
+          ],
+          "new_since_ec6e": false
+        }
+      ]
+    }
+  ],
+  "new_jobs": [
+    {
+      "id": "leadership-rotation-contract",
+      "paths": [
+        "collectors/base.py",
+        "collectors/fred.py",
+        "config/sector_legs.json",
+        "engine/__init__.py",
+        "engine/basket_index.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/cycle_ontology.py",
+        "engine/cycles.py",
+        "engine/hazard_score.py",
+        "engine/indicators.py",
+        "engine/inputs.py",
+        "engine/leadership_receipt.py",
+        "engine/leadership_rotation_context.py",
+        "engine/oracle/__init__.py",
+        "engine/oracle/ratio_lens.py",
+        "engine/pit.py",
+        "engine/pit_lag_recorder.py",
+        "engine/rotation_corr.py",
+        "engine/rotation_events.py",
+        "engine/rotation_flows.py",
+        "engine/rotation_universe.py",
+        "engine/rotation_velocity.py",
+        "engine/sector_cycles.py",
+        "engine/sector_legs.py",
+        "engine/session_anchor.py",
+        "engine/technicals.py",
+        "engine/vol_forecast.py",
+        "engine/vol_regime.py",
+        "engine/yield_momentum.py",
+        "lib/__init__.py",
+        "lib/cn_calendar.py",
+        "lib/config.py",
+        "lib/exchange_holidays.py",
+        "lib/hk_calendar.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/nyse_calendar.py",
+        "lib/store.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py",
+        "tests/test_leadership_rotation_contract.py"
+      ],
+      "fallback": [
+        "collectors/**/*.parquet",
+        "collectors/**/*.parquet/**",
+        "data/**/*.parquet",
+        "data/**/*.parquet/**",
+        "engine/**"
+      ],
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "code",
+        "timeout-minutes": 10,
+        "paths": [
+          "engine/leadership_rotation_context.py",
+          "engine/leadership_receipt.py",
+          "engine/oracle/ratio_lens.py",
+          "engine/rotation_events.py",
+          "engine/sector_cycles.py",
+          "lib/nyse_calendar.py",
+          "tests/test_leadership_rotation_contract.py"
+        ],
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyarrow pyyaml scipy requests"
+          },
+          {
+            "name": "leadership rotation measured-product contract",
+            "run": "TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lr-rotation-evidence-modes",
+      "paths": [
+        "collectors/base.py",
+        "collectors/fred.py",
+        "collectors/holdings.py",
+        "config/sector_legs.json",
+        "engine/__init__.py",
+        "engine/alerts.py",
+        "engine/axes.py",
+        "engine/base_effect.py",
+        "engine/basket_index.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/cycle_forward_log.py",
+        "engine/cycle_ontology.py",
+        "engine/cycles.py",
+        "engine/election_cycle.py",
+        "engine/etf_board.py",
+        "engine/etf_pulse.py",
+        "engine/falsifier_tripwires.py",
+        "engine/hazard_score.py",
+        "engine/holdings_signals.py",
+        "engine/i18n.py",
+        "engine/indicators.py",
+        "engine/inputs.py",
+        "engine/mtf_monitor.py",
+        "engine/neuralweb/read.py",
+        "engine/oracle/__init__.py",
+        "engine/oracle/ratio_lens.py",
+        "engine/oracle/washout_counterread.py",
+        "engine/pit.py",
+        "engine/pit_lag_recorder.py",
+        "engine/regime.py",
+        "engine/regime_one.py",
+        "engine/risk_radar.py",
+        "engine/risk_radar_backtest.py",
+        "engine/risk_state.py",
+        "engine/rotation_corr.py",
+        "engine/rotation_events.py",
+        "engine/rotation_flows.py",
+        "engine/rotation_universe.py",
+        "engine/rotation_velocity.py",
+        "engine/sector_cycles.py",
+        "engine/sector_legs.py",
+        "engine/session_anchor.py",
+        "engine/technicals.py",
+        "engine/vol_forecast.py",
+        "engine/vol_regime.py",
+        "engine/yield_momentum.py",
+        "lib/__init__.py",
+        "lib/cn_calendar.py",
+        "lib/config.py",
+        "lib/exchange_holidays.py",
+        "lib/hk_calendar.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/nyse_calendar.py",
+        "lib/pages.py",
+        "lib/store.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py",
+        "scripts/__init__.py",
+        "scripts/_cycles_payload.py",
+        "scripts/_narrative_epoch.py",
+        "scripts/_narrative_ttl.py",
+        "scripts/build_sector_cycles.py",
+        "scripts/validate_regime_fwd.py",
+        "tests/test_rotation_events.py",
+        "tests/test_rotation_evidence_modes.py",
+        "tests/test_sector_cycles.py"
+      ],
+      "fallback": [
+        "collectors/**/*.parquet",
+        "collectors/**/*.parquet/**",
+        "config/**/*.parquet",
+        "config/**/*.parquet/**",
+        "content/**/*.parquet",
+        "content/**/*.parquet/**",
+        "contracts/**/*.parquet",
+        "contracts/**/*.parquet/**",
+        "data/**",
+        "data/**/*.parquet",
+        "data/**/*.parquet/**",
+        "docs/**/*.parquet",
+        "docs/**/*.parquet/**",
+        "engine/**/*.parquet",
+        "engine/**/*.parquet/**",
+        "ops/**/*.parquet",
+        "ops/**/*.parquet/**",
+        "research/**/*.parquet",
+        "research/**/*.parquet/**",
+        "site/**",
+        "site/**/*.html",
+        "site/**/*.html/**",
+        "site/**/*.parquet",
+        "site/**/*.parquet/**",
+        "templates/**",
+        "templates/**/*.html",
+        "templates/**/*.html/**",
+        "templates/**/*.parquet",
+        "templates/**/*.parquet/**"
+      ],
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "code",
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install deps",
+            "run": "pip install pytest pandas numpy scipy pyyaml pyarrow jinja2"
+          },
+          {
+            "name": "LR-T06 rotation evidence-mode fences",
+            "run": "python -m pytest tests/test_rotation_evidence_modes.py -q"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ric-d0-fed-path-provenance",
+      "paths": [
+        "collectors/__init__.py",
+        "collectors/base.py",
+        "collectors/rate_futures.py",
+        "engine/__init__.py",
+        "engine/bonds.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/fed_path.py",
+        "engine/indicators.py",
+        "lib/__init__.py",
+        "lib/cn_calendar.py",
+        "lib/config.py",
+        "lib/exchange_holidays.py",
+        "lib/hk_calendar.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/nyse_calendar.py",
+        "lib/store.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py",
+        "tests/test_fed_path.py"
+      ],
+      "fallback": [
+        "collectors/**/*.parquet",
+        "collectors/**/*.parquet/**",
+        "data/**/*.parquet",
+        "data/**/*.parquet/**"
+      ],
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "code",
+        "timeout-minutes": 10,
+        "paths": [
+          "engine/fed_path.py",
+          "collectors/rate_futures.py",
+          "tests/test_fed_path.py"
+        ],
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyarrow pyyaml requests"
+          },
+          {
+            "name": "ric-d0-fed-path-provenance",
+            "run": "python -m pytest tests/test_fed_path.py -q -p no:cacheprovider"
+          }
+        ]
+      }
+    }
+  ],
+  "breaches": [
+    [
+      "templates/index.html",
+      "jobs",
+      136,
+      135
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      "jobs",
+      130,
+      129
+    ]
+  ],
+  "elapsed_s": 128.22931783400418
+}
