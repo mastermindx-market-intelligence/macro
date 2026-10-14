@@ -357,3 +357,52 @@ with an unchanged catalog fence and72824KiB peak RSS. The catalog had2877 rows;
 the fixed first50/last50 lexical sample contained44 full,55 missing and1 none.
 These are sample classifications, not whole-cohort coverage or95-percent proof.
 No source, catalog, corpus, receipt, derivative or service mutation occurred.
+
+
+## 2026-10-14 07:33 source and producer continuation
+
+The complete exact-head CI run38522645406 now succeeds at
+b638653750327fcf84b27b83b7a0e344b3f06f0b: all12packs,ci-gate, contract/fence
+and required authority checks are green. The inactive merge-queue-pilot authority
+check remains the already-qualified nonbinding failure. This closes the new-mode
+activation hold; it does not rewrite the earlier premature ordinary merge into a
+protected merge. Future Macro changes retain the merge-on-green controller.
+
+Ordinary producer38524960402 completed successfully at06:59:59Z:172 additional
+full-text derivatives, no extraction failures,1385remaining candidates and2878
+catalog members. Corpus/catalog published and source freshness passed. Its fine
+timers show9.271s corpus publication,1.994s catalog publication and100.178s
+receipt indexing. These are pass counters, not a whole-cohort95percent proof.
+One new materialize-only invocation38528630873 was explicitly dispatched after
+CI success with all other publication/census flags false, using the existing
+noncanceling research-ingest group and original200-attempt/180s/600s bounds.
+Its actual source3af7a7be2f299ac4488ca29675fcf3fd24df82fc matches the reviewed
+producer source. It is pending behind incumbent ordinary run38528093541; no new
+schedule, parallel publisher, generation adoption or readiness assertion exists.
+
+Mastermind1453 is now merged through its protected queue at
+4c64aec43f9817016f6e0b06b50a45cdc520b04e, tree
+4775b4c7d1b45d1bba34f26d0e1a31ab9b7bf9f7. The exact clean667-member MM archive
+is staged inertly, SHA256
+9a6c10ce4d287d17859ecdb7a65050a20be130d07084f316b96726d68ee9c00b.
+Final Macro source, installation, auth/transport and actualC4 acceptance remain.
+
+A finite read-only Linux sample verified100 actual member receipts/derivatives
+serially in24.268s; the same100-member four-window writer census took7.883s.
+Both catalog fences matched. This is a runtime-cost sample, not an alternative
+U01census. New bounded Fabric operationrv-qualification-window-01a13301-r1
+(GLM5.3Flash,C1fix_build,Ubuntu1) owns only an artifact proposal to use at most
+four strict verification tasks for exact eligible R2 and its canonical budgeted
+wrapper; unknown/subclass stores must stay serial and failure must drain reads.
+Newrv-runtime-composition-review-01a13301-r1 (Qwen3.8Max,C2review,Ubuntu1)
+reviews actual production factory composition only. Both retain original root
+and immediate parent01a13301-995f-7631-8cee-d675d7de5671. Launch attempts and
+controller polling are recorded; neither has a delivered/accepted result yet.
+The supported observation of the review returned original_run_observation_unconfirmed;
+no alternate observation path was attempted.
+
+The original frozen retrieval, citation, U01 and reading-order operations remain
+on their original identities. Fabric Integration's latest turn failed with429;
+no recovery completion is inferred. The official Linux tunnel403 and originalDCR
+unknown effect remain preserved. Writer qualification and production readiness
+are stillfalse. Evidence lives under the original Research Vault completion root.
