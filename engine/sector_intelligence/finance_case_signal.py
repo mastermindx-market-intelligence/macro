@@ -1,8 +1,9 @@
 """Pure case-row falsifier for the Finance Intelligence page.
 
 No I/O, network, clock, or store. Does not read research/finance.
-``compose_finance_projection`` keeps emitting empty falsifier lists; a later
-owner places these objects with :func:`attach_falsifiers`.
+``compose_finance_projection`` keeps emitting empty falsifier lists; the only
+public placement path is :func:`finance_page_signal.apply_page_signal`, which
+routes admitted rows through the module-private :func:`_attach_falsifiers`.
 
 A row is admitted only when ``formal_causal_outcome`` is ``UNMEASURED`` and
 ``slice_id`` is a member of ``finance_projection._FINANCE_SLICE_IDS``. Every
@@ -63,7 +64,7 @@ def project_falsifier(row: Mapping[str, Any]) -> dict[str, str]:
     }
 
 
-def attach_falsifiers(
+def _attach_falsifiers(
     slice_doc: MutableMapping[str, Any],
     falsifiers: Sequence[Mapping[str, Any]],
 ) -> None:
