@@ -131,12 +131,12 @@ unresolved:
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
   byte-custody witness. All model, historical availability and adoption obligations remain open.
 - Current published A1 b1db2fc7510b has exact-head CI38601317870/attempt1 still running. Its
-  contract-delta and packs1/2/3 passed at17:07:10; nine packs remain running. The old1b failure
+  contract-delta and packs1/2/3/6/9/10 passed at17:12:45; six packs remain running. The old1b failure
   remains historical evidence, not the current source verdict. Binding completion and incumbent
   landing remain owed. No raw-log escape, duplicate producer or release bypass.
 next_actions:
 - Consume original CI38601317870/attempt1 for published A1 b1db2fc7510b3121bb9494f7f55a4351e6a48c77.
-  Last observation17:07:10UTC; next observation no earlier than17:12:16UTC. Repair a real failure
+  Last observation17:12:45UTC; next observation no earlier than17:17:52UTC. Repair a real failure
   or let the incumbent perform final merge and any subsequent admitted base refresh. Chris's
   one-time integration exception is consumed in7e; no second manual integration, force push,
   rerun, duplicate controller or producer.
@@ -164,17 +164,18 @@ prs:
 
 The active Chairman assignment is end-to-end programme ownership by Fable with bounded Sol coordination and the existing M2 Fabric. The current original root is `01a1333d-b0c0-7f33-9259-dd718391d9e4`. Historical receiver restrictions describe their retired operations; they do not assign another writer. This record is continuity, not a runtime queue or release grant.
 
-## Current source and execution — 2026-10-14T17:07Z
+## Current source and execution — 2026-10-14T17:12Z
 
 This section and the structured next_actions above supersede historical carrier
 instructions below. A1 is published on the original PR6651 at full SHA
 b1db2fc7510b3121bb9494f7f55a4351e6a48c77. The one-time Chairman-approved base
 integration was consumed in7e; the incumbent exclusively owns final merge and
 subsequent admitted refresh. Fresh hosted run38601317870/attempt1 has passed
-contract-delta and packs1/2/3; nine packs remain running, including A1 pack6.
-No nonpilot binding failure was observed. The current PR is open and mergeable;
-mergeable_state=unstable is not release qualification. Original hosted observation
-bytes are retained in a1-hosted-plan-20261014/hosted-observation-1707.json.gz (lossless original bytes).
+contract-delta and packs1/2/3/6/9/10; six packs remain running. A1 pack6 passed.
+No nonpilot binding failure was observed. The current PR is open atb1;
+mergeabilityUNKNOWN is not a demonstrated conflict or release qualification.
+Original hosted observations are retained losslessly as1707/1712 gzip records
+in a1-hosted-plan-20261014/.
 
 Follow-on runtime/order remains b0ca with published evidence-containing head19ab
 at the start of this update. No follow-on PR, model/PIT, installed adoption or
@@ -479,3 +480,23 @@ checks and incumbent merge remain owed. PRbody edits are not CI lifecycle trigge
 (the checked workflow starts only opened/synchronize/reopened), so the metadata
 update introduced no extra proof producer. The release verification tab remains
 actualbrowser2 numeric ID2/tab1925922370, authenticated in the original profile.
+
+
+## 2026-10-14 — natural owner verification contract
+
+The canonical production-readiness record normal-owner-verification-contract-20261014.json
+traces six exactb1 source blobs. Normal authoritative Build B is scheduled18:30
+America/New_York (next intended slot2026-10-14T22:30Z), subject to its actual
+regime gate, launch and qualified source. Collection invokes the grader, but
+ordinary grader/readiness failures are nonfatal: a green collect job alone does
+not prove the owner published. After release, correlate original scheduled run,
+qualified source, actual owner publication and normal installation with the
+authenticated engines[].evidence_provider.recorded_snapshot and rendered detail.
+A page observed_at, file mtime or reload is insufficient. Native comparison may
+remain deferred and all-input/task/price qualification stays unavailable.
+
+This is a source-bound observation contract, not a producer launch or successful
+owner receipt. Recheck changed source contracts on final qualified landing; do
+not dispatch, force re-derive, read sealed corpora or reset clocks to obtain proof.
+If release misses that normal owner execution, retain the next normal eligible
+owner progression obligation. Final flags remainfalse.

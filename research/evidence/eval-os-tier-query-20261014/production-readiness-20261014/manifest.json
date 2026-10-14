@@ -20,6 +20,11 @@
       "file": "browser-readiness-recovery-20261014.json",
       "sha256": "a5980eadec7d90cdba61bfaf576d7fb1975e46d14dbb71321cb39976e2ab7b68",
       "bytes": 1541
+    },
+    {
+      "file": "normal-owner-verification-contract-20261014.json",
+      "sha256": "6405422f8cfdfdc7304e211f8e0ec7e23f849de2a667ebfbe31165495efd00f7",
+      "bytes": 3310
     }
   ],
   "production_proven": false

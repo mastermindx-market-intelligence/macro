@@ -22,6 +22,14 @@
       "encoding": "gzip",
       "decoded_sha256": "5853c0e276b8932e272f9fb9d7e3459e66e57f63eb8caf703718529c521fb5db",
       "decoded_bytes": 268638
+    },
+    {
+      "file": "hosted-observation-1712.json.gz",
+      "sha256": "ed008a0279772fc63a75616ea116629f6e4af867a1888d6a6cd45c1a1052463e",
+      "bytes": 12605,
+      "encoding": "gzip",
+      "decoded_sha256": "a3da9c32cc18cd761f2397dea9002a65054cca349f1307d228137c73092809e3",
+      "decoded_bytes": 270509
     }
   ],
   "scope": "Original hosted semantic plan artifact, source identity and exact-head contract success; remaining packs and release unproved",
