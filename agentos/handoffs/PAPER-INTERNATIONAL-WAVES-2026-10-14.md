@@ -76,6 +76,9 @@ changed:
 - path: research/paper_international_wave1_wave2/LIBRARY_SERVED_RETURN_BOUNDARY.json
   what: Record actual served Library search/tool navigation and the new human-only Chrome extension boundary; no
     return success inferred.
+- path: research/paper_international_wave1_wave2/LIBRARY_KEYBOARD_IME_JOURNEY_ACCEPTANCE.json
+  what: Bind eight complete Library keyboard/synthetic-IME/native-research/Back source journeys, without product
+    changes or persistent query storage.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -211,6 +214,12 @@ verified:
   command: 'CUA original Chrome tab: search 经济体板块与股票 -> actual link -> original-tab destination inspection; library-served-return-20261014-r1/BOUNDARY.json.'
   result: Stock route and separate data/generation dates observed. Back REFUSED by Chrome because another extension
     UI is open. Original tab preserved with markHandoff; no retry, alternate control or confirmed return.
+- claim: Complete Library source workflow preserves committed composition results, native keyboard reachability
+    and same-document return.
+  command: library-keyboard-ime-20261014-r1/journey.py --smoke and --remaining; ACCEPTED_JOURNEY.json.
+  result: 8 distinct PASS across Dark/Light EN/ZH1440/320;26 assets. Native2-Tab2pxfocus/Enter/Clear; exact nodes
+    and draft retained through same-document Back and group history. Synthetic composition events only. Initial
+    Python URL-property harness error rejected.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -247,9 +256,10 @@ unresolved:
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- After the human dismisses/completes the Chrome extension UI, resume the original Library return tab and verify
-  Back/query behavior against the session-only/no-storage contract. Until then advance a bounded independent gap;
-  do not retry the refused browser effect or invent persistent query/Saved storage.
+- Original live Library Stock return awaits Chris dismissing/completing the open Chrome extension UI; preserve tab,
+  no retry/alternate control. Eight independent keyboard/composition/native-anchor journeys now pass. Next inspect
+  the remaining owned Compare common-window chart/attribution input obligation against accepted source contracts;
+  advance only a genuine independent gap, preserving qualification/rights and no invented data.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
