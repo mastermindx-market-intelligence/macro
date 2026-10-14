@@ -83,9 +83,14 @@ function mkEl(id) {
     querySelectorAll: function (sel) { return __query(sel); }
   };
   if (id) __els[id] = el;
+  // Like a browser, a parent's innerHTML reflects later writes into its
+  // children (a revision marker stands in for the serialisation).
   Object.defineProperty(el, 'innerHTML', {
-    get: function () { return el.html; },
-    set: function (v) { el.html = String(v); __harvest(el); }
+    get: function () { return el.__rev ? el.html + '<!--rev ' + el.__rev + '-->' : el.html; },
+    set: function (v) {
+      el.html = String(v); el.__rev = 0; __harvest(el);
+      for (var p = el.__parent; p; p = p.__parent) p.__rev = (p.__rev || 0) + 1;
+    }
   });
   return el;
 }
@@ -109,8 +114,19 @@ function __harvest(el) {
     if (m[1].indexOf('mr-row') >= 0) __rows.push(b);
     if (m[1].indexOf('mr-segbtn') >= 0) __segbtns.push(b);
   }
+  // Browser-faithful: an innerHTML write DETACHES every node it replaces and the
+  // ids in the new markup resolve to FRESH nodes, so a region that caches a
+  // reference across a reset is caught writing into a detached node.
+  (el.__owned || []).forEach(__drop);
+  el.__owned = [];
   var reid = /id="([^"]+)"/g, im;
-  while ((im = reid.exec(el.html))) { if (!__els[im[1]]) __els[im[1]] = mkEl(im[1]); }
+  while ((im = reid.exec(el.html))) { mkEl(im[1]).__parent = el; el.__owned.push(im[1]); }
+}
+function __drop(id) {
+  var e = __els[id];
+  if (!e) return;
+  (e.__owned || []).forEach(__drop);
+  delete __els[id];
 }
 var __docEl = mkEl('html');
 var __document = {
@@ -209,7 +225,7 @@ function obsClick() {
 function collect() {
   return {body: html('mr-body'), sub: html('mr-sub'), status: html('mr-status'),
           cov: html('mr-cov'), list: html('mr-list'), un: html('mr-unmeasured'),
-          unHidden: elOf('mr-unmeasured').hidden, detail: html('mr-detail'),
+          unHidden: elOf('mr-unmeasured') ? elOf('mr-unmeasured').hidden : null, detail: html('mr-detail'),
           hist: html('mr-hist'), early: html('mr-early'), rows: rows().map(function (r) {
             return [r.getAttribute('data-g'), r.getAttribute('aria-pressed')];
           }),
@@ -670,3 +686,57 @@ def test_16_panel_script_is_closed_and_the_router_still_parses():
     _P(convert_charrefs=True).feed(src)
     assert "si_workspace.js" in seen, \
         "si_workspace.js must parse as a <script> element, not as script text"
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# 17 — a runtime language switch re-renders into LIVE nodes (LR-T18-EV1R finding)
+# ══════════════════════════════════════════════════════════════════════════════════
+
+@needs_node
+def test_17_langchange_rerender_keeps_the_list_and_selection_visible():
+    """EV1R found the list blank after a runtime EN→ZH switch: render() reset
+    #mr-body to the skeleton and kept writing into the detached nodes. The
+    harness now detaches replaced nodes like a browser does, so a stale cached
+    reference shows up here as an empty live list."""
+    out = _run(body="""
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        show();
+    """, cfg={"search": "?g=XLE", "cycles": CYC})
+    assert [g for g, _ in out["rows"]][:9] == RANKED, out["rows"]
+    assert dict(out["rows"])["XLE"] == "true"
+    assert "能源" in out["list"] and "Energy" not in out["list"]
+    assert "能源" in out["detail"] and "XLE" in out["detail"]
+    assert "未测 — 今日缺少该板块价格数据" in out["un"]
+    assert out["unHidden"] is False
+    assert "已测 9 / 11" in out["cov"], out["cov"]
+    assert "预测：无" in out["early"]
+    assert "按价格重建" in out["hist"]
+
+
+@needs_node
+def test_17b_a_state_view_then_valid_data_restores_a_live_grid():
+    out = _run(body="""
+        __window.SECTOR_CENTRAL = {as_of: '2026-10-09', measured_read: MR};
+        dispatchDoc('langchange');
+        show();
+    """, cfg={"central": "absent", "cycles": CYC})
+    assert [g for g, _ in out["rows"]][:9] == RANKED, out["rows"]
+    assert "Energy" in out["list"]
+    assert "mx-empty" not in out["body"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# 18 — 390 px: 44 px touch targets and the unmeasured rows stay legible
+# ══════════════════════════════════════════════════════════════════════════════════
+
+def test_18_mobile_touch_targets_and_unmeasured_rows_stack():
+    src = PAGE.read_text(encoding="utf-8")
+    i = src.index("@media (max-width:760px){ .mr-grid")
+    block = src[i:src.index("}\n", src.index(".mr-row-na .mr-why", i)) + 1]
+    m = re.search(r"([^{}]*)\{min-height:44px\}", block)
+    assert m, block
+    targets = {t.strip() for t in m.group(1).split(",")}
+    assert {".mr-row", ".mr-segbtn", ".mr-link"} <= targets, targets
+    assert ".mr-row-na{grid-template-columns:minmax(0,1fr);" in block, block
+    assert ".mr-name{white-space:normal}" in block, block

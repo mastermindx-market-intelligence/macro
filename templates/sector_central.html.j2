@@ -667,7 +667,7 @@ html[data-theme="light"] .mr-row:hover{background:var(--ff-tint-muted-8)}
 html[data-theme="light"] .mr-row[aria-pressed="true"]{background:var(--ff-tint-info-8)}
 html[data-theme="light"] .mr-detail,html[data-theme="light"] .mr-early{background:var(--panel);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
-@media (max-width:760px){ .mr-grid{grid-template-columns:minmax(0,1fr)} .mr-row{min-height:44px} .mr-head,.mr-row{grid-template-columns:minmax(0,1fr) 58px 58px} .mr-row-na{grid-template-columns:minmax(0,1fr) auto} }
+@media (max-width:760px){ .mr-grid{grid-template-columns:minmax(0,1fr)} .mr-row,.mr-segbtn,.mr-link{min-height:44px} .mr-head,.mr-row{grid-template-columns:minmax(0,1fr) 58px 58px} .mr-name{white-space:normal} .mr-row-na{grid-template-columns:minmax(0,1fr);gap:2px} .mr-row-na .mr-why{text-align:left} }
 </style>
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
@@ -3683,6 +3683,13 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       esc(L('history ' + X + ', current read ' + Y + '. Not drawn, so the two are never mixed.',
             '历史 ' + X + '，当前读数 ' + Y + '。不绘制，避免混用。')) + '</div>';
   }
+  function bindGrid() {
+    covEl = document.getElementById('mr-cov');
+    listEl = document.getElementById('mr-list');
+    unEl = document.getElementById('mr-unmeasured');
+    detailEl = document.getElementById('mr-detail');
+    earlyEl = document.getElementById('mr-early');
+  }
   function selGroup() {
     if (SEL == null || !M) return null;
     for (var i = 0; i < M.groups.length; i++) {
@@ -3720,7 +3727,11 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     GEN = M.generation || {};
     COHORT = M.cohort || {};
     PAGE_D = D;
-    if (bodyEl.innerHTML !== GRID_HTML) bodyEl.innerHTML = GRID_HTML;
+    // Restore the grid only when a state view replaced it, then re-bind: a
+    // reset detaches every cached grid node, so a langchange re-render that
+    // kept the old references wrote into detached nodes (blank list).
+    if (!document.getElementById('mr-list')) bodyEl.innerHTML = GRID_HTML;
+    bindGrid();
     renderSub();
     renderStatus();
     renderCov();
