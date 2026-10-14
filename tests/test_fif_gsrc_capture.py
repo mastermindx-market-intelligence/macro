@@ -949,11 +949,11 @@ _VERDICT_PIN: dict[str, tuple[str, str]] = {
     ),
     "0000018230-26-000046": (
         "0007a8da08646f22132d8f653325c3686248d97b927cd795e94da966a6100832",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000018230-26-000021": (
         "60e12190a7f6825e5898c03c99b2b8e32441bda1542951cadabbd0098e8b6d04",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000018230-25-000040": (
         "08846e666e59d28250e15cfe6ef42cf6b9f435d4af658c2654762d5dc4a01cd4",
@@ -961,19 +961,19 @@ _VERDICT_PIN: dict[str, tuple[str, str]] = {
     ),
     "0000070858-26-000157": (
         "88deec70816cfcebfed5b13ba6aae010199a5c9b1a26aea5fc47853b98b6503b",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000070858-25-000139": (
         "81e4206c6d0e179aa4ef95902b71fea0d98fb2159454b4f16a0eddac97555237",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000070858-26-000394": (
         "7b69baf66ab6aac4f56063667deb959b38c2cf3a1a8d546a11f2c02a75a27afa",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000070858-26-000249": (
         "de2caccf73f9952769b980ea120b58c1fb74acdbbea1579039086002e5aac73d",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000070858-25-000268": (
         "ce90fbf6044e4a78d87699d1337166f203976b8c67d77a61ff821e39a692e138",
@@ -1027,13 +1027,13 @@ _VERDICT_PIN: dict[str, tuple[str, str]] = {
 _VERDICT_COUNTS: dict[str, dict[str, object]] = {
     "0000018230": {
         "packages": 5,
-        "admitted": 2,
-        "refusals": {"not_admitted": 1, "primary_unparseable": 2},
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
     },
     "0000070858": {
         "packages": 5,
-        "admitted": 0,
-        "refusals": {"not_admitted": 1, "primary_unparseable": 4},
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
     },
     "0001640147": {
         "packages": 6,
@@ -1071,6 +1071,35 @@ def test_committed_g_src_verdicts_match_the_pin() -> None:
     assert got == _VERDICT_PIN, _VERDICT_REPIN
 
 
+# The classifier's closed role-refusal grammar (``classify_statement_roles``):
+# one part per failing kind, in kind order, each kind at most once, joined by
+# "; ". A part is ``statement_roles_missing:<kind>`` or
+# ``statement_roles_ambiguous:<kind>:<title> | <title>[ | <title>...]`` with
+# stripped, non-empty, single-line titles (at least two: one candidate is a
+# pick, not an ambiguity).
+_ROLE_KINDS = ("income_statement", "balance_sheet", "cash_flow")
+_ROLE_KIND = "(income_statement|balance_sheet|cash_flow)"
+_ROLE_TITLE = r"\S(?:[^\n]*?\S)?"
+_ROLE_REFUSAL_PART = re.compile(
+    "statement_roles_missing:" + _ROLE_KIND
+    + "|statement_roles_ambiguous:" + _ROLE_KIND
+    + ":" + _ROLE_TITLE + r"(?: \| " + _ROLE_TITLE + ")+"
+)
+
+
+def _is_typed_role_refusal(state: object) -> bool:
+    if not isinstance(state, str) or not state:
+        return False
+    kinds: list[str] = []
+    for part in re.split(r"; (?=statement_roles_(?:missing|ambiguous):)", state):
+        match = _ROLE_REFUSAL_PART.fullmatch(part)
+        if match is None:
+            return False
+        kinds.append(match.group(1) or match.group(2))
+    order = [_ROLE_KINDS.index(kind) for kind in kinds]
+    return order == sorted(set(order))
+
+
 def test_pinned_verdicts_are_drawn_from_the_closed_typed_set() -> None:
     from engine.fundamental_forensics.admitted_filing_package import (
         AdmittedFilingPackageError,
@@ -1082,12 +1111,52 @@ def test_pinned_verdicts_are_drawn_from_the_closed_typed_set() -> None:
             if row["selection"] == "capture_only":
                 assert verdict == gsrc.CAPTURE_ONLY_ADMISSION, accession
             elif row["statement_roles_state"] != "extracted":
-                # Capture-side role refusal carries the classifier's own state.
+                # Capture-side role refusal carries the classifier's own state,
+                # which must itself parse under the closed role grammar above.
+                assert _is_typed_role_refusal(row["statement_roles_state"]), accession
                 assert verdict == row["statement_roles_state"], accession
             elif verdict != "ADMITTED":
                 # D1's typed refusal constructor rejects any code outside its
                 # closed set, so a hand-edited or stale code fails here.
                 assert AdmittedFilingPackageError("pin", code=verdict).code == verdict
+
+
+def test_role_refusal_grammar_admits_classifier_output_and_nothing_else() -> None:
+    produced = [
+        gsrc.classify_statement_roles(_syn_pre(roles), _SYN_SCHEMA)
+        for roles in (
+            ["r:ops", "r:ops_plain", "r:bs", "r:cf"],
+            ["r:ops", "r:bs"],
+            ["r:ops", "r:ops_plain", "r:bs"],
+            [],
+        )
+    ]
+    for roles, state in produced:
+        assert roles is None, state
+        assert _is_typed_role_refusal(state), state
+    assert produced[2][1] == (
+        "statement_roles_ambiguous:income_statement:"
+        "Consolidated Statements of Operations | Statements of Income; "
+        "statement_roles_missing:cash_flow"
+    )
+    for bad in (
+        None,
+        "",
+        "extracted",
+        "primary_unparseable",
+        "not_admitted:capture_only",
+        "statement_roles_missing:equity",
+        "statement_roles_missing:cash_flow ",
+        "statement_roles_missing:cash_flow; statement_roles_missing:cash_flow",
+        "statement_roles_missing:cash_flow; statement_roles_missing:income_statement",
+        "statement_roles_missing:balance_sheet;statement_roles_missing:cash_flow",
+        "statement_roles_ambiguous:income_statement:",
+        "statement_roles_ambiguous:income_statement:Statements of Income",
+        "statement_roles_ambiguous:income_statement: | Statements of Income",
+        "statement_roles_ambiguous:income_statement:Statements of Income | ",
+        "statement_roles_ambiguous:equity:Statements of Income | Operations",
+    ):
+        assert not _is_typed_role_refusal(bad), bad
 
 
 def test_pinned_counts_agree_with_the_capture_report_rule() -> None:

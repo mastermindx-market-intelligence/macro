@@ -882,6 +882,10 @@ lanes:
           cl_gex:
             - scripts.build_gex_board
             - scripts.build_vol_regime
+            # Grey Deer pullback prospective lane: SPY issue + grade over the restored
+            # Massive store. NIGHTLY ONLY (forward-ledger advancer; not in the render
+            # lanes' cl_gex). Writer/grader refuse off COLLECT_LANE=nightly.
+            - scripts.grey_deer_pullback_nightly
             # MSP W1 (scripts.build_market_structure) MOVED OUT of this band to the serial
             # spine before build_site — OEU M-FIX. It used to sit here, i.e. AFTER build_site
             # had already rendered market_structure.html, so the page always described the
@@ -1413,6 +1417,24 @@ lanes:
                    data/treasury/tga.parquet,
                    data/treasury_auctions/auctions.parquet]
           outputs: [data/neuralweb/liquidity_plumbing.json]
+      - id: build_global_liquidity_transmission
+        module: scripts.build_global_liquidity_transmission
+        note: >
+          non-fatal; W-LIQ.1 global liquidity transmission producer
+          (global_liquidity_transmission.v1, frozen #6296) — pure local reads, no
+          network calls, display tier, validated=False. Wired 2026-10-13 (GLT T06):
+          before this no workflow invoked the producer (its only .github reference
+          was a CI test lane's paths filter), so the published state never
+          advanced. Runs AFTER the plumbing step so
+          data/regime/latest.json is present.
+          inputs: [data/fred/BUSLOANS.parquet,
+                   data/china_credit/tsf.parquet,
+                   data/regime/latest.json,
+                   config/global_liquidity_transmission_v1.yml]
+          outputs: [site/liquiditydata/global_liquidity_transmission.json,
+                    data/global_liquidity_transmission/state_history.parquet,
+                    data/global_liquidity_transmission/state_history_meta.json,
+                    data/global_liquidity_transmission/factor_comparison_btc_4w.json]
       - id: build_price_pressure
         module: scripts.build_price_pressure
         note: >
@@ -1759,6 +1781,18 @@ lanes:
           step via a shell loop ('for mod in scripts.build_canada_library ...; do python -m
           $mod; done') which the conformance parser cannot extract (variable expansion).
           They are intentionally omitted from declared steps.
+      - id: fif_saved_research_notifications
+        module: scripts.run_fif_saved_research_notifications
+        note: >
+          X2-n FIF saved-research notifications — enqueue-only producer over
+          the designated "Filing Forensics" watchlist (R2) and LOCAL trigger
+          inputs (FIF private state; the broad-sec receipt and production
+          pointer mirrors are R2-only today and read as no-event, R5).
+          Fail-soft (absent creds/tables/inputs -> typed unavailable,
+          0 rows, exit 0). Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1
+          and ALERT_DRAIN_ENABLE=1. Delivery is F08's drain, never this
+          step. Last step of the engine lane: after every render-critical
+          step (census C5).
 
   # ── daily.yml / factor_panel ───────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -4657,6 +4691,30 @@ modules:
       Step cost: reads options_surface parquets (small, ~single-digit MB committed);
       opex_risk.snapshot() is a cheap read-only join on committed data — no network,
       no heavy compute. Measured added cost on main: <2s (deterministic composer).
+
+  - module: scripts.grey_deer_pullback_nightly
+    reads:
+      - data/massive_stock_day/*.parquet
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+    writes:
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+      - data/grey_deer_pullback/forward_log_refusals.jsonl
+    impure: false
+    needs_secrets: false
+    event_driven: false
+    note: >
+      Grey Deer pullback prospective lane (WS:GREY-DEER-RISK-INTELLIGENCE O7/W5).
+      Issues tonight's SPY rows with the frozen writer
+      (engine/grey_deer_pullback_forward.py), then grades matured rows with the
+      frozen grader (engine/grey_deer_pullback_forward_grade.py). Both are
+      append-only and refuse unless COLLECT_LANE=nightly and their
+      GREY_DEER_PULLBACK_{WRITER,GRADER}_IDENTITY pins equal daily.yml:engine, so
+      the nightly is the sole advancer. Never fatal (every problem is a
+      line-start ::warning, rc 0). Display/research tier only; no trial_ledger
+      append, no rank/size/gate authority. Cost: one ticker read from the
+      already-restored store plus the frozen writer and grader.
 
   - module: scripts.build_gex_board
     reads:
