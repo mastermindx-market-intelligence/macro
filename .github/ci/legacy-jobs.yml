@@ -19831,7 +19831,7 @@ jobs:
       # progressive-enhancement client, and the date-scoped Release Radar
       # selector join the producer lane that owns the release-forecast estate.
       - name: CPI bridge + official-event live client + Release Radar date selection
-        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py -q
+        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py tests/test_release_radar_ui.py -q
       # Unrun backfill 2026-08-09: Release Radar canonical inflation truth
       # (#5153) landed five suites named by no run: step — the unrun-suite gate
       # reds main on them.  They join the producer lane that owns the
