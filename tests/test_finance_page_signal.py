@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 import copy
 import json
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, MutableMapping
 from pathlib import Path
 from typing import Any
 
@@ -379,6 +379,77 @@ def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
         apply_page_signal(document, page)
     assert _ids(page) == before
     assert page == before_full
+
+
+class _RaisingReratingLookup(MutableMapping[str, Any]):
+    """Slice mapping whose ``get("rerating")`` raises ``exc``.
+
+    Every other key behaves like the underlying plain dict, so building
+    the id-to-slice index succeeds; only the ``rerating`` lookup raises.
+    The override is required for the KeyError param: an inherited
+    ``Mapping.get`` would swallow a KeyError from ``__getitem__`` and
+    return its default instead of letting it propagate.
+    """
+
+    def __init__(self, store: dict[str, Any], exc: BaseException) -> None:
+        self._store = store
+        self._exc = exc
+
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "rerating":
+            raise self._exc
+        return self._store.get(key, default)
+
+    def __getitem__(self, key: str) -> Any:
+        return self._store[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._store[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self._store[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._store)
+
+    def __len__(self) -> int:
+        return len(self._store)
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        pytest.param(
+            RuntimeError("rerating lookup exploded"), id="runtime_error"
+        ),
+        pytest.param(
+            KeyError("rerating"), id="key_error_from_overridden_get"
+        ),
+    ],
+)
+def test_raising_rerating_lookup_leaves_both_slices_untouched(exc) -> None:
+    """A caller-supplied lookup that raises leaves the page as it was.
+
+    The document routes one falsifier to each of the two slices. The
+    second slice's ``get("rerating")`` raises, so the first slice's
+    falsifiers and the second slice's own placement must both stay
+    unwritten: every lookup on a caller-supplied slice happens before
+    the first caller-visible write. The raised exception propagates.
+    """
+    first = _slice("card_networks", "sentinel-card")
+    second: dict[str, Any] = {
+        "slice_id": "exchanges_trading_venues",
+        "falsifiers": [],
+        "rerating": {"falsifier_ids": []},
+    }
+    page = {"slices": [first, _RaisingReratingLookup(second, exc)]}
+    before_first = copy.deepcopy(first)
+    before_second = copy.deepcopy(second)
+    with pytest.raises(type(exc)) as caught:
+        apply_page_signal(_document(), page)
+    assert caught.value is exc
+    assert first == before_first
+    assert second == before_second
 
 
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:
