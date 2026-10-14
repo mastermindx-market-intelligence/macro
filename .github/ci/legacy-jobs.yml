@@ -11110,12 +11110,15 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These ten whole-file suites exercise the knowledge compiler and its
+    # These eleven whole-file suites exercise the knowledge compiler and its
     # committed records. Audit: 43 concrete transitive files plus the complete
     # Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
+    # test_agentos_records_draft.py drives scripts/agentos_records_draft.py,
+    # which imports scripts/agentos.py; its git subprocess builds fixture
+    # repositories under tmp_path and reads only this checkout's HEAD.
     scope: exclusive
     paths:
       - agentos/**
@@ -11144,6 +11147,7 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
       - scripts/linear_portfolio_plan.py
@@ -11155,6 +11159,7 @@ jobs:
       - tests/linear_portfolio_plan_live_cases.py
       - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_compile.py
+      - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
@@ -11176,7 +11181,7 @@ jobs:
           # This direct invocation fails when a sparse store would skip pytest.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
+            tests/test_agentos_compile.py tests/test_agentos_records_draft.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
