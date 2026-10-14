@@ -1634,4 +1634,3 @@ test('T-NIT2-store: a stored row carrying an unknown key stays listed but refuse
   // The refused row stays deletable.
   sameJson(store.remove(row.id), { ok: true, deleted: true });
 });
-

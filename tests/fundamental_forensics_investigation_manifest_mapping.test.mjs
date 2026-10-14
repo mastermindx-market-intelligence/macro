@@ -897,4 +897,3 @@ test('oracle literals: a ZWJ emoji sequence and a combining-mark title are pinne
   }
   assertNoNetwork(Briefcase);
 });
-
