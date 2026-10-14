@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Crop Progress private source consumed; never repeat two known-complete inbox writes. Consume normal committed/installed catalog and public report, then governed selection with five held peers. Original9209 protected install precedes SAME follow-on PR/install33groups; application61b2cd38 locally verified, publication0of10.
+next_action: Crop Progress catalog/excerpts installed and16pageviewer accepted; dedicatedpage pending normalrender. Actualplanner rank35/unheld23/pool8 does not select it; no force or blind generation. Never repeat2inboxwrites; preserve5held peers. Original9209 protected install precedes SAME follow-on PR/install33groups; application61b2cd38 locally verified, publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
@@ -1342,3 +1342,37 @@ Application61b2cd38/434tests/33portablegroups unchanged; follow-on has no PR/ins
 no duplicate read/CI/observer/manualrefresh. Protected9209install precedes SAME
 reviewed follow-onPR/install. Publication/cutoverfalse,D140/10; all source holds,
 original dirty histories, refused/unknown effects and existing ownership preserved.
+
+## 2026-10-14 17:10 continuation — Crop Progress installed and viewer accepted; selection remains gated
+
+Normal ingest38602255888 completedSUCCESS16:59:19. Canonical Git and stable
+installed0ce6fe978863a9becf8137362367ae1e6346965b match catalog d11960cb and
+excerpts80d3e41c exactly. Installed report probe17:02 matches all12render sources,
+exact8point summary and7excerpt paragraphs/4196characters; dedicated site and
+site.served page absent, so PENDING_INCUMBENT_RENDER. The old engine render38558417917
+finished15:35 before this intake; current render38553964455 is IN_PROGRESS and
+engine-render38602321014 PENDING. No producer dispatch or replay. A redundant
+request for terminal ingest logs was refused pre-dispatch by CIwaitguard; no retry.
+
+Actual Chrome existingprofile1 began signed out. Normal saved-credential autofill
+and Sign in succeeded without reading/exporting secrets; after the normal start
+redirect, the exact doc URL opened the original16page Crop Progress PDF. Screenshot
+and DOM show agency,October13release,1/16 and no horizontal overflow at1728x694.
+No Download,signup,follow or entitlement change. This proves the authenticated
+viewer, not the still-missing dedicated public landing page or a new Press story.
+
+Actual installed planner17:07 atstable3a316a30 considered207eligible reports:
+CropProgress ranked35,unheld23,pool8,NOT_SELECTED. All524read inputs stayed unchanged.
+The original5held stage sources/seedrefs were carried into the prior exclusion
+set; no draft,score,pool,date or cadence was changed. Actual selected1d9feb private
+report has no qualified public-article receipt in current evidence; do not blind
+generate it or force CropProgress into the pool. Continue rights-qualified source
+review against real ranking after actual publicpage installation. Visible Alaska
+alert is the same excluded dated policy recap; no fresh-event/ticker admission.
+
+Application61b2cd38 remains locally verified434tests/1skip and33portablegroups;
+no follow-onPR/install. Original9209 once-read15:09 remainsa18ec982/oldgreenstale;
+next wake reads exact controller once and consumes admitted protected release.
+Current checkpoint/AgentOS/GitHub retain every known effect;2Cropinboxwrites are
+KNOWN_COMPLETE,never reupload/alias. Publication/cutoverfalse,D140/10. Existing
+heartbeat remains active for this incomplete mission; no new observer or worker.

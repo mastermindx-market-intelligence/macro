@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Crop Progress private source consumed with exact final receipt/PDF/sidecar/fulltext; never reupload. Verify normal committed/installed catalog and public report/browser, then fresh governed selection preserving five held peers. Original9209 protected install then SAME follow-on PR/install33groups; source61b2cd38 verified locally only.
+  - Crop Progress catalog/excerpts installed and16pageviewer accepted; never reupload2inboxwrites. Dedicatedpage awaits normalrender; actualplanner rank35/unheld23/pool8 does not select it. Preserve5held peers; no forced selection or unqualified private-report generation. Original9209 protected install then SAME follow-on PR/install33groups; source61b2cd38 verified locally only.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -3038,3 +3038,37 @@ Application61b2cd38/434tests/33portablegroups unchanged; follow-on has no PR/ins
 no duplicate read/CI/observer/manualrefresh. Protected9209install precedes SAME
 reviewed follow-onPR/install. Publication/cutoverfalse,D140/10; all source holds,
 original dirty histories, refused/unknown effects and existing ownership preserved.
+
+## 2026-10-14 17:10 continuation — Crop Progress installed and viewer accepted; selection remains gated
+
+Normal ingest38602255888 completedSUCCESS16:59:19. Canonical Git and stable
+installed0ce6fe978863a9becf8137362367ae1e6346965b match catalog d11960cb and
+excerpts80d3e41c exactly. Installed report probe17:02 matches all12render sources,
+exact8point summary and7excerpt paragraphs/4196characters; dedicated site and
+site.served page absent, so PENDING_INCUMBENT_RENDER. The old engine render38558417917
+finished15:35 before this intake; current render38553964455 is IN_PROGRESS and
+engine-render38602321014 PENDING. No producer dispatch or replay. A redundant
+request for terminal ingest logs was refused pre-dispatch by CIwaitguard; no retry.
+
+Actual Chrome existingprofile1 began signed out. Normal saved-credential autofill
+and Sign in succeeded without reading/exporting secrets; after the normal start
+redirect, the exact doc URL opened the original16page Crop Progress PDF. Screenshot
+and DOM show agency,October13release,1/16 and no horizontal overflow at1728x694.
+No Download,signup,follow or entitlement change. This proves the authenticated
+viewer, not the still-missing dedicated public landing page or a new Press story.
+
+Actual installed planner17:07 atstable3a316a30 considered207eligible reports:
+CropProgress ranked35,unheld23,pool8,NOT_SELECTED. All524read inputs stayed unchanged.
+The original5held stage sources/seedrefs were carried into the prior exclusion
+set; no draft,score,pool,date or cadence was changed. Actual selected1d9feb private
+report has no qualified public-article receipt in current evidence; do not blind
+generate it or force CropProgress into the pool. Continue rights-qualified source
+review against real ranking after actual publicpage installation. Visible Alaska
+alert is the same excluded dated policy recap; no fresh-event/ticker admission.
+
+Application61b2cd38 remains locally verified434tests/1skip and33portablegroups;
+no follow-onPR/install. Original9209 once-read15:09 remainsa18ec982/oldgreenstale;
+next wake reads exact controller once and consumes admitted protected release.
+Current checkpoint/AgentOS/GitHub retain every known effect;2Cropinboxwrites are
+KNOWN_COMPLETE,never reupload/alias. Publication/cutoverfalse,D140/10. Existing
+heartbeat remains active for this incomplete mission; no new observer or worker.

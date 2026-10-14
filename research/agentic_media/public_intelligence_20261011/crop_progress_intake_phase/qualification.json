@@ -40,5 +40,7 @@
   "canonical_effect": "KNOWN_COMPLETE_DO_NOT_REUPLOAD_OR_ALIAS",
   "canonical_consumer_state": "CANONICAL_SOURCE_AND_FULLTEXT_VERIFIED",
   "canonical_consumer_observed_at": "2026-10-14T16:59:14.424504+00:00",
-  "installed_catalog_and_public_report": "PENDING_NORMAL_COMMIT_INSTALL_RENDER"
+  "installed_catalog_and_public_report": "Catalog/excerpts exact at canonical and installed0ce6fe97; dedicatedpage PENDING_INCUMBENT_RENDER at17:02",
+  "authenticated_viewer": "Actual original16pageviewer accepted after normal saved-credential signin; no Download/signup/follow",
+  "press_selection": "NOT_SELECTED: ranked35/unheld23/pool8 at17:07; no override"
 }

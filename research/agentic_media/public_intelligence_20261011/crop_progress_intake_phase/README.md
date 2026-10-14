@@ -74,3 +74,22 @@ After the normal ingest commits and updater installs the catalog, run
 Verify canonical Git/install parity and actual public HTTP/browser/viewer before
 any governed Press selection. All five prior held drafts remain excluded; this
 source has no Press attempt. Publication/cutover remain false and credit0/10.
+
+## Installed source and authenticated viewer acceptance
+
+The normal ingest completed at16:59:19. `committed_installed_parity.json` binds
+the exact canonical catalog/excerpts to installed0ce6fe97. At17:02 the portable
+report check verified all12renderer dependencies and exact summary/excerpts, but
+the dedicated page remained absent: PENDING_INCUMBENT_RENDER. The incumbent
+render38553964455 is active; engine-render38602321014 is pending. Do not dispatch.
+
+The actual16page viewer is accepted through normal saved-credential sign-in.
+`browser_viewer_acceptance.json` records scope; no Download/signup/follow action.
+The viewer route works even while the separate static report page awaits render.
+
+`installed_planner_preflight.json` is decisive for the next Press step: this source
+is eligible but rank35/unheld23 exceeds the unchanged8candidate pool. It was not
+selected. The original5held peers and all existing exclusions are retained in
+`planner_hold_binding.json`. Do not manipulate ranking or invent exclusions to
+force selection; the actual selected private report still needs its own rights
+qualification. No Crop Progress writer attempt, publication or acceptance credit.
