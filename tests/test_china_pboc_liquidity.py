@@ -238,6 +238,23 @@ def test_negative_values_raise():
     assert held.injection_cny_bn is None
 
 
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf")])
+def test_non_finite_values_raise(bad):
+    # NaN compares False against every bound; unguarded, a NaN day would sum
+    # into a NaN net and fall through to net_drain.
+    with pytest.raises(ValueError, match="finite"):
+        _day(0, bad, 0.0, 1)
+    with pytest.raises(ValueError, match="finite"):
+        _day(0, 0.0, bad, 1)
+    days = _span(-2, 3, 10.0, 10.0, 1)
+    with pytest.raises(ValueError, match="finite"):
+        _read(days, mlf=bad)
+    with pytest.raises(ValueError, match="finite"):
+        _read(days, fr007=bad)
+    with pytest.raises(ValueError, match="finite"):
+        _read(days, policy=bad)
+
+
 def test_inconsistent_op_count_raises():
     with pytest.raises(ValueError, match="inconsistent bulletin"):
         _day(0, 1.0, 0.0, 0)

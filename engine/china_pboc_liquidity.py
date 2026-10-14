@@ -8,11 +8,19 @@ money-market rate agrees.
 from __future__ import annotations
 
 import datetime
+import math
 from dataclasses import dataclass
 
 SCHEMA = "china_pboc_liquidity.v1"
 
 _MIN_OBSERVED_DAYS = 3
+
+
+def _require_finite(name: str, value: float | int | None) -> None:
+    # NaN compares False against every bound, so without this a NaN amount
+    # sails past the >= 0 check and lands in net_drain.
+    if value is not None and not math.isfinite(value):
+        raise ValueError(f"{name} must be finite, got {value}")
 
 # Display copy. Plain words only: these strings are what a reader sees.
 LABELS: dict[str, dict[str, str]] = {
@@ -60,6 +68,7 @@ class OmoDay:
             ("maturity_cny_bn", self.maturity_cny_bn),
             ("op_count", self.op_count),
         ):
+            _require_finite(name, value)
             if value is not None and value < 0:
                 raise ValueError(f"{name} must be >= 0, got {value}")
         if (
@@ -144,6 +153,9 @@ def classify_liquidity(
     """
     if window_days < 0:
         raise ValueError("window_days must be non-negative")
+    _require_finite("mlf_net_cny_bn", inputs.mlf_net_cny_bn)
+    _require_finite("fr007_pct", inputs.fr007_pct)
+    _require_finite("policy_rate_7d_pct", inputs.policy_rate_7d_pct)
 
     for day in inputs.window:
         if day.date > inputs.asof:
