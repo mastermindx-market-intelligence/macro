@@ -899,8 +899,11 @@ def _grid_multi_segment(
     change dates by premise)."""
     g = _grid_step_pct(assumptions)
     bounds = [start_iso] + list(inside) + [end_iso]
+    # segment i runs [bounds[i], bounds[i+1]); the final segment carries the
+    # month-end day itself, so its length gains one day
     lengths = [
         (date.fromisoformat(bounds[i + 1]) - date.fromisoformat(bounds[i])).days
+        + (1 if i == len(bounds) - 2 else 0)
         for i in range(len(bounds) - 1)
     ]
     offsets = list(_GRID_OFFSETS) if len(lengths) <= 4 else (-1.0, 0.0, 1.0)
