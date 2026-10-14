@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_performance_reading_render.py; tests/intl_workspace_page.test.cjs
+  what: Correct FX contribution to percentage points, preserve unavailable periods and keyboard entry, and repair measured8px narrow return bars without changing owner arithmetic.
 - path: templates/intl.html.j2; tests/test_intl_rotation_reading_render.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
   what: Expose signed Leadership composite scores, scope weighting and missing-window semantics, preserve escaped owner notes and restore keyboard Library reading.
 - path: templates/intl.html.j2; tests/test_intl_correlation_coverage_render.py; tests/intl_workspace_page.test.cjs
@@ -201,6 +203,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Performance has three render and six unique browser cases; eight canonical and twelve focused source views retain units, useful missing-period behavior and readable narrow bars.
+  command: python3 -m pytest -q tests/test_intl_performance_reading_render.py; node --test --test-name-pattern="^Performance (FX contribution|unavailable period)" tests/intl_workspace_page.test.cjs; performance-fx-contribution capture.py, inspect_focus.py and inspect_empty.py
+  result: performance-fx-contribution-20261014-r1 logs and PERFORMANCE_FX_CONTRIBUTION_ACCEPTANCE.json; original unit/focus/empty/geometry reds and initial captures retained. Counts overlap; source not deployed.
 - claim: Leadership composite reading has six render and four browser cases across eight width states; eight canonical and eight focused source views retain signed scores and narrow keyboard access.
   command: python3 -m pytest -q tests/test_intl_rotation_reading_render.py; node --test --test-name-pattern="Leadership composite reading keyboard" tests/intl_workspace_page.test.cjs; leadership-score-reading capture.py and inspect_focus.py
   result: leadership-score-reading-20261014-r1 PYTHON_GREEN, BROWSER_GREEN and capture logs; LEADERSHIP_SCORE_READING_ACCEPTANCE.json. Five render and one browser original failures retained; source not deployed and review pending.

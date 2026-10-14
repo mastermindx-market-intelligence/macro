@@ -347,6 +347,7 @@
   .lb-legend i { display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:middle; margin-right:5px; }
   @media (max-width:1180px){ .lb-row { grid-template-columns:236px minmax(110px,1fr) minmax(200px,340px) 168px; gap:12px; } }
   @media (max-width:760px){ .lb-row { grid-template-columns:108px 1fr 92px; gap:9px; } .lb-spark { display:none; } }
+  @media (max-width:640px){ .lb-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .lb-row .eco { grid-column:1;grid-row:1; } .lb-row .lb-vals { grid-column:2;grid-row:1; } .lb-row .lb-bar { grid-column:1 / -1;grid-row:2; } }
 
   /* ===== RRG rotation scatter ===== */
   .rrg { position:relative; height:340px; border:1px solid var(--line); border-radius:12px; margin-top:10px; overflow:hidden;
@@ -892,13 +893,13 @@
 {% endif %}{# end turn_board guard #}
 
 <!-- ===== ACT 2 — Who's leading in dollars? (performance) ===== -->
-<div class="act-h"><span class="aq">{{ t("Who's leading in dollars?", '谁在以美元计领先？') }}</span><span class="as">{{ t('Local stock move + currency = your return in US dollars.', '本币股市 + 汇率 = 你的美元收益。') }}</span></div>
+<div class="act-h"><span class="aq">{{ t("Who's leading in dollars?", '谁在以美元计领先？') }}</span><span class="as">{{ t('Local return and FX contribution, shown separately.', '分别展示本币收益与汇率贡献。') }}</span></div>
 
 <!-- ===== USD performance leaderboard (centerpiece) ===== -->
 {% if LB %}
 <div class="panel accent">
-  <div class="sec-h"><h2>{{ t('Performance in US dollars', '以美元计的表现') }} {{ help('Shows each market in USD, split into local stock return and currency effect. Price return only. Default sort: rotation rank (fast 20d momentum, state-gated). 12m sort still available via buttons.', '以美元看各市场表现，并拆成股市涨跌与汇率影响。仅价格回报。默认排序：轮动排名（20日快速动能，受状态约束）。12月排序仍可通过按钮切换。') }}</h2>
-    <span class="sub">{{ t('local equity + currency = USD return', '本币股票 + 货币 = 美元收益') }}</span>
+  <div class="sec-h"><h2 id="intl-performance-heading" tabindex="-1">{{ t('Performance in US dollars', '以美元计的表现') }} {{ help('Price returns on the same observation grid. FX contribution is USD return minus local return, in percentage points; it includes the interaction with the equity return and is not the currency return alone. Display values are rounded. Rotation order uses the separate weighted composite with state adjustments; its bars show 12m returns when available. Otherwise the default is 12m USD return. Horizon buttons sort only markets with that supplied period.', '在同一观测日期网格上计算价格收益。汇率贡献为美元收益减本币收益，以百分点计；包含与股市收益的交互项，并非单独的汇率收益。显示值已四舍五入。轮动排序采用另一个经状态调整的加权综合分数；可用时条形显示12月收益。否则默认按12月美元收益排序。期间按钮仅排序具有该期间数据的市场。') }}</h2>
+    <span class="sub">{{ t('Local return + FX contribution = USD return', '本币收益 + 汇率贡献 = 美元收益') }}</span>
     {% if bench_note is defined and bench_note %}<span class="muted small" style="margin-left:4px">{{ bench_note }}</span>{% endif %}
     <span style="flex:1"></span>
     <div class="seg" id="lb-seg">
@@ -906,11 +907,12 @@
       {% for h in perf.horizons %}<button type="button" data-h="{{ h.key }}"{% if not rotation_ranks and h.key == '12m' %} class="on"{% endif %}>{{ t(h.en, h.zh) }}</button>{% endfor %}
     </div>
   </div>
-  <div class="lb" id="lb-board"></div>
+  <div class="lb" id="lb-board" tabindex="-1" role="region" aria-labelledby="intl-performance-heading"></div>
+  <p class="muted small">{{ t('FX contribution (percentage points)', '汇率贡献（百分点）') }}</p>
   <div class="lb-legend">
     <span><i style="background:color-mix(in srgb,var(--info) 55%,transparent)"></i>{{ t('local equity', '本币股票') }}</span>
-    <span><i style="background:var(--up)"></i>{{ t('currency tailwind', '货币顺风') }}</span>
-    <span><i style="background:var(--down)"></i>{{ t('currency drag', '货币拖累') }}</span>
+    <span><i style="background:var(--up)"></i>{{ t('positive FX contribution', '正汇率贡献') }}</span>
+    <span><i style="background:var(--down)"></i>{{ t('negative FX contribution', '负汇率贡献') }}</span>
     <span><i style="background:var(--text);width:3px;height:13px;border-radius:2px"></i>{{ t('net USD return', '美元净收益') }}</span>
   </div>
 </div>
@@ -2236,6 +2238,7 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
   P.leaderboard.forEach(function(r){ if (r.turn) { turnLookup[r.cc] = r.turn; } });
 
   function fmt(x){ return (x >= 0 ? '+' : '') + x.toFixed(1) + '%'; }
+  function fxPoints(x){ return (x >= 0 ? '+' : '') + x.toFixed(1); }
   function stateChip(cc){
     var t = turnLookup[cc]; if (!t) return '';
     return '<span class="ts-chip ts-' + t.state + '" style="margin-left:4px">'
@@ -2288,7 +2291,7 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
           + '<div class="lb-spark">' + (r.spark_svg || '') + '</div>'
           + barHtml
           + '<div class="lb-vals"><span class="big">' + rankLabel + '</span>'
-            + (x ? '<small><span class="l-en">12m USD </span><span class="l-zh">12月美元 </span>' + fmt(usd) + '</small>' : '')
+            + (x ? '<small><span class="l-en">12m USD </span><span class="l-zh">12月美元 </span>' + fmt(usd) + '</small>' : '<small><span class="l-en">12m USD unavailable</span><span class="l-zh">12月美元不可用</span></small>')
             + noteHtml + '</div>'
           + '</div>';
       }).join('');
@@ -2316,10 +2319,11 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
             + '<div class="lb-usd" style="left:' + xu + '%"></div></div>'
           + '<div class="lb-vals"><span class="big ' + (usd >= 0 ? 'pos' : 'neg') + '">' + fmt(usd) + '</span>'
             + '<small><span class="l-en">eq </span><span class="l-zh">股 </span>' + fmt(loc)
-            + ' · <span class="l-en">fx </span><span class="l-zh">汇 </span>' + fmt(fxc) + '</small></div>'
+            + ' · <span class="l-en">FX contribution ' + fxPoints(fxc) + 'pp</span><span class="l-zh">汇率贡献 ' + fxPoints(fxc) + '百分点</span></small></div>'
           + '</div>';
       }).join('');
     }
+    if (!rows.length) board.innerHTML = '<p class="muted" data-lb-empty><span class="l-en">No returns available for the selected period. Choose another supplied period.</span><span class="l-zh">所选期间暂无可用收益。可选择其他已提供数据的期间。</span></p>';
   }
   // Default: rotation rank if available, else 12m
   var defaultH = window.INTL_RANKS ? '__rank__' : '12m';

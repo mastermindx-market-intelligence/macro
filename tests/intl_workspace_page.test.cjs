@@ -54,6 +54,42 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const lang of ['en','zh']) {
+  test(`Performance unavailable period remains useful ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_performance_reading_render import performance_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf=performance_fixture(short_only=True)))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      const board=page.locator('#lb-board');assert.equal(await board.locator('.lb-row').count(),0);
+      assert.ok((await board.innerText()).includes(lang==='zh'?'所选期间暂无可用收益':'No returns available for the selected period'));
+      await page.locator('#lb-seg button[data-h="1m"]').focus();await page.keyboard.press('Enter');
+      assert.equal(await board.locator('.lb-row').count(),3);assert.equal(await board.locator('[data-lb-empty]').count(),0);
+      await page.locator('#lb-seg button[data-h="12m"]').focus();await page.keyboard.press('Enter');assert.equal(await board.locator('[data-lb-empty]').count(),1);
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library#lb-board'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Performance FX contribution keyboard ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_performance_reading_render import performance_fixture; from tests.test_intl_rotation_reading_render import rotation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf=performance_fixture(),rotation_ranks=rotation_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]'),query=lang==='zh'?'汇率':'currency';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#lb-board"]');await link.focus();await page.keyboard.press('Enter');
+        const board=page.locator('#lb-board');assert.equal(await board.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await board.locator('.lb-row').count(),3);assert.ok((await board.innerText()).includes(lang==='zh'?'12月美元不可用':'12m USD unavailable'));
+        await page.keyboard.press('Shift+Tab');assert.equal(await page.evaluate(()=>document.activeElement.dataset.h),'12m');await page.keyboard.press('Enter');
+        assert.equal(await board.locator('.lb-row').count(),2);
+        const text=await board.innerText();assert.ok(text.includes(lang==='zh'?'汇率贡献 -3.2百分点':'FX contribution -3.2pp'),text);assert.ok(text.includes(lang==='zh'?'汇率贡献 +0.0百分点':'FX contribution +0.0pp'),text);
+        const bars=await board.locator('.lb-bar').evaluateAll(ns=>ns.map(n=>n.getBoundingClientRect().width));assert.ok(bars.every(w=>w>=80),JSON.stringify({width,bars}));
+        const one=page.locator('#lb-seg button[data-h="1m"]');await one.focus();await page.keyboard.press('Enter');assert.equal(await board.locator('.lb-row').count(),3);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Leadership composite reading keyboard ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_rotation_reading_render import rotation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rotation_ranks=rotation_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
