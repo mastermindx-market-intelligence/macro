@@ -102,6 +102,8 @@ changed:
   what: Add eight actual-page contrast regressions across Dark/Light, EN/ZH and320/1440, with causal fail-before evidence.
 - path: research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
   what: Bind both source repairs, bounded contrast census, tests,16 canonical captures and explicit pending independent/live acceptance.
+- path: research/paper_international_wave1_wave2/TEXT_SPACING_OBSERVATION.json
+  what: Record new user-spacing source-fixture observations without product changes; scope excludes whole accessibility certification.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -282,6 +284,9 @@ verified:
     Final added-line design0blocking,115template/site pairs match and visual guardexit0.
     Isolated live_config404 and launcher overlap retained. Risk evidence predates only the hidden Library placeholder rule;
     exact input hashes preserved and scope-equivalence documented. Review remains pending under the original refusal.
+- claim: Scoped source-fixture text-spacing behavior across both themes/languages and320/1440 is observed.
+  command: python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-spacing-20261014-r1/matrix.py
+  result: Eight cases pass with80state observations and6672direct-text observations; no detected hidden/clip ancestor clipping or page overflow. Inspector Escape/focus, Scenario1.85 and Library Clear/focus pass8each. Rendered samples verify three spacing values; separate override_effectiveness.py verifies all four over pre-rendered markup and full workspace text equality in8configurations. Matrix text signatures retain120characters per node. Existing launcher overlap persists; no whole-standard/nativezoom/live acceptance.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -326,6 +331,7 @@ next_actions:
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
+- Do not repeat the eight text-spacing cases/80samples unchanged. The initial seven-state smoke overlaps; computed styles and geometric checks are bounded observations, not complete accessibility.
 - Reuse contrast proof until relevant source/input/browser/acceptance changes. Do not repeat40state direct-text census, eight browser regressions or16captures unchanged. Risk captures precede only hidden Library placeholder CSS; retain original hashes.
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.

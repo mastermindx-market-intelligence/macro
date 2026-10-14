@@ -145,6 +145,7 @@ next_action: Resume the original live Library Stock return after Chris completes
   advances require a genuinely new acceptance gap or actual owner contract/admission; preserve all IW2, qualification,
   review, rights, Saved, migration and release holds. No repeated journeys or speculative contracts.
 artifacts:
+- research/paper_international_wave1_wave2/TEXT_SPACING_OBSERVATION.json
 - research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -260,3 +261,8 @@ A separate anchor census then exposed14undersized Compare calculation-window lin
 A new40state direct-text contrast census on the actual optimized page found five low-contrast green Risk value observations in Light. They were22px/600 text at3.61:1 on white. The two Risk declarations now consume the existing --ink-up/--ink-down tokens, preserving Dark hues and EN/ZH directional conventions; Light green becomes5.60:1. A separate shown-placeholder probe found Chromium default grey at3.85:1 on the dark Library input. The owned placeholder now uses existing --muted with opacity1, reaching5.73:1 Dark and7.03:1 Light.
 
 Eight permanent actual-page browser cases have valid fail-before/pass-after proof across two widths, both themes and languages. Risk113Python checks pass with14 inherited temporary cleanup warnings. Sixteen fresh canonical full-page captures cover1440/390, Dark/Light, EN/ZH; parent viewed four per panel. Risk captures precede only the later hidden-Library placeholder rule and retain their original input hashes. Final design, asset parity and evidence guards pass. The isolated fixture still records live_config.js404 and shared-launcher overlap. No source qualification, whole accessibility/Paper parity, independent review or deployment acceptance follows. Existing review-policy refusal, original Chrome extension handoff and all release/custody holds persist.
+
+
+### User spacing observation, 2026-10-14
+
+A distinct four-property user-spacing condition was exercised on the unchanged5694source in eight Dark/Light EN/ZH320/1440cases. Across80states, no hidden/clip ancestor clipping or document overflow was detected. Inspector hierarchical Escape/focus, Scenario5/-3=1.85 and Library Clear/focus pass in each combination. Two Scenario images were viewed; existing launcher overlap persists. The receipt explicitly limits120character rendered text signatures and geometric coverage. A separate precondition check verifies all four computed spacing properties, including paragraph margin, over pre-rendered markup and confirms full workspace text equality in8configurations; hidden markup adds no rendered coverage. This is new scoped fixture evidence, not full SC1.4.12, nativezoom, independent review or live acceptance. Product bytes and all retained holds remain unchanged.
