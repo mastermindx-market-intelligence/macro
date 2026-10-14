@@ -8044,6 +8044,7 @@ jobs:
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
       - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
       - "tests/test_ci_plan_workflow.py"
       - "tests/test_ci_semantic_proof.py"
@@ -8142,7 +8143,7 @@ jobs:
       - name: ci-plan/ci-pack/ci-gate workflow structure contract
         run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py -q
       - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # The merge-gate reliability report is the progress metric for
       # research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md, so a silent
       # regression in it would make that program's acceptance gate meaningless.
@@ -8965,6 +8966,7 @@ jobs:
           tests/test_research_factory_market_memory.py
           tests/test_market_memory_e0_control_records.py
           tests/test_research_factory_market_memory_evidence.py
+          tests/test_research_factory_contextual_only.py
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
@@ -11502,6 +11504,32 @@ jobs:
       - name: ratio lens test suite
         run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
 
+  leadership-rotation-contract:
+    if: ${{ false }}
+    gate: code
+    # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
+    # engine/leadership_rotation_context.py — a stateless display-only projection over the
+    # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
+    timeout-minutes: 10
+    paths:
+      - "engine/leadership_rotation_context.py"
+      - "engine/leadership_receipt.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_events.py"
+      - "engine/sector_cycles.py"
+      - "lib/nyse_calendar.py"
+      - "tests/test_leadership_rotation_contract.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
+      - name: leadership rotation measured-product contract
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
+
   hk-confirming-turn:
     if: ${{ false }}
     gate: code
@@ -13235,6 +13263,25 @@ jobs:
       - name: SA-W4 standout review test suite
         run: python -m pytest tests/test_standout_review.py -v
 
+  lr-rotation-evidence-modes:
+    if: ${{ false }}
+    gate: code
+    # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
+    # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
+    # as_of) and never built from later prices; retained ledger receipts are never rewritten
+    # or deduplicated; reconstructed and retained vocabularies stay disjoint.
+    # Network-free: synthetic panels + temp ledgers.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy scipy pyyaml pyarrow jinja2
+      - name: LR-T06 rotation evidence-mode fences
+        run: python -m pytest tests/test_rotation_evidence_modes.py -q
+
   rc-r14-china-rotation-events:
     if: ${{ false }}
     gate: code
@@ -13252,7 +13299,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: RC-R14 China + HK rotation events test suite
-        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v
+        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v tests/test_rotation_replay_isolation.py
 
   codex-research-engine:
     if: ${{ false }}
@@ -13941,6 +13988,26 @@ jobs:
       - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
         run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
 
+  ric-d0-fed-path-provenance:
+    if: ${{ false }}
+    gate: code
+    # RIC D0 (A14/A15/A19, 2026-10-14): engine/fed_path.py records futures + SEP provenance and the SR3 basis identity (basis=sr3_compounded_sofr; fed-funds slot absent; missing_source:zq) through a keyword-only interface; omitted keywords stay byte-identical (golden control). tests/test_fed_path.py was previously unwired. Hermetic: monkeypatched store, synthetic frames, no data/ reads or writes, no network. The compute rule pin is governed by regime-outlook-mapping.
+    timeout-minutes: 10
+    paths:
+      - "engine/fed_path.py"
+      - "collectors/rate_futures.py"
+      - "tests/test_fed_path.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: ric-d0-fed-path-provenance
+        run: python -m pytest tests/test_fed_path.py -q -p no:cacheprovider
+
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -14053,6 +14120,17 @@ jobs:
       - "lib/store.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      # 2026-10-14 RIC D0 #9252 (contract-delta on head 0061be7a): engine/fed_path.py now lazily
+      # imports collectors.rate_futures for futures/SEP provenance, so the closure reaches the
+      # collector and its calendar/session libs. Declared exactly, widening only; ceilings unchanged.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/rate_futures.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
@@ -14211,7 +14289,7 @@ jobs:
       # suites with the ingestion/page tests while preserving their full inferred
       # dependency ownership. No extra interpreter is needed.
       - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
-        run: python -m pytest tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -22878,6 +22956,25 @@ jobs:
       - name: Brain history, principal isolation and narrow-screen controls
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
 
+  ric-y0-yield-momentum:
+    if: ${{ false }}
+    gate: code
+    # RIC Y0 (A20/A21, 2026-10-14): engine/yield_momentum.py extensions on the #8030 v4 contract. tests/test_yield_momentum.py is also listed in unrun-macro-panels, but that job is gate: data and is never packed on pull requests, so this code-gate job is what proves the suite on a PR. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    timeout-minutes: 10
+    paths:
+      - "engine/yield_momentum.py"
+      - "tests/test_yield_momentum.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: ric-y0-yield-momentum
+        run: python -m pytest tests/test_yield_momentum.py -q -p no:cacheprovider
+
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
@@ -28505,6 +28602,10 @@ jobs:
       # W8-B: hold the source-edition section until a selector ruling.
       - "engine/company_intelligence/industrials_edition_record.py"
       - "tests/test_industrials_edition_record.py"
+      # IND-R206: a revenue_share_pct cell is refused unless its
+      # segment/denominator pair is one of the two synthetic pairs.
+      - "engine/fundamental_forensics/industrials_denominator_guard.py"
+      - "tests/test_industrials_denominator_guard.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -28522,7 +28623,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_denominator_guard.py -q
 
   house-law-registry-code:
     if: ${{ false }}
@@ -29468,6 +29569,8 @@ jobs:
     # A33 and kin) plus S2 seal-adjacent pins; rows stay PARTIAL.
     # INT5 adds DRAFT guards for A02/A07/A12/A14/A16/A18 plus the MUT6
     # mutation-sweep suites; rows stay PARTIAL.
+    # INT6 adds the MUT7 mutation sweeps, property/metamorphic suites,
+    # red-team pins and composition checks; rows stay PARTIAL.
     # Hermetic: committed bytes, synthetic frames and
     # tmp_path only; no git history, no network. Every authority flag false.
     # Curated exclusive so the sys.path imports cannot widen inference; the
@@ -29655,6 +29758,20 @@ jobs:
       - "tests/test_sni_mut6_run_s1_cli.py"
       - "tests/test_sni_mut6_run_s1_frames.py"
       - "tests/test_sni_mut6_scanners.py"
+      - "tests/test_sni_a04_identity_property.py"
+      - "tests/test_sni_a12_session_state_property.py"
+      - "tests/test_sni_a29_proper_score_repro.py"
+      - "tests/test_sni_class_duplicate_guard.py"
+      - "tests/test_sni_guard_chain_composition.py"
+      - "tests/test_sni_guard_family_invariants.py"
+      - "tests/test_sni_mut7_a.py"
+      - "tests/test_sni_mut7_b.py"
+      - "tests/test_sni_mut7_c.py"
+      - "tests/test_sni_mut7_d.py"
+      - "tests/test_sni_mut7_e.py"
+      - "tests/test_sni_mut7_f.py"
+      - "tests/test_sni_mut7_g.py"
+      - "tests/test_sni_three_clock_guard.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29664,7 +29781,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: sni acceptance evidence (PARTIAL rows)
-        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py tests/test_sni_correction_lineage_guard.py tests/test_sni_copy_guard_literals.py tests/test_sni_entitlement_guard.py tests/test_sni_counter_relation_guard.py tests/test_sni_then_known_guard.py tests/test_sni_session_state_guard.py tests/test_sni_mut6_run_s2_cli.py tests/test_sni_mut6_collapse_p04.py tests/test_sni_mut6_common_seal.py tests/test_sni_mut6_seal_full_check_cli.py tests/test_sni_mut6_run_s2_core.py tests/test_sni_mut6_eval_ledger.py tests/test_sni_mut6_stress_set.py tests/test_sni_mut6_run_s1_cli.py tests/test_sni_mut6_run_s1_frames.py tests/test_sni_mut6_scanners.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py tests/test_sni_correction_lineage_guard.py tests/test_sni_copy_guard_literals.py tests/test_sni_entitlement_guard.py tests/test_sni_counter_relation_guard.py tests/test_sni_then_known_guard.py tests/test_sni_session_state_guard.py tests/test_sni_mut6_run_s2_cli.py tests/test_sni_mut6_collapse_p04.py tests/test_sni_mut6_common_seal.py tests/test_sni_mut6_seal_full_check_cli.py tests/test_sni_mut6_run_s2_core.py tests/test_sni_mut6_eval_ledger.py tests/test_sni_mut6_stress_set.py tests/test_sni_mut6_run_s1_cli.py tests/test_sni_mut6_run_s1_frames.py tests/test_sni_mut6_scanners.py tests/test_sni_a04_identity_property.py tests/test_sni_a12_session_state_property.py tests/test_sni_a29_proper_score_repro.py tests/test_sni_class_duplicate_guard.py tests/test_sni_guard_chain_composition.py tests/test_sni_guard_family_invariants.py tests/test_sni_mut7_a.py tests/test_sni_mut7_b.py tests/test_sni_mut7_c.py tests/test_sni_mut7_d.py tests/test_sni_mut7_e.py tests/test_sni_mut7_f.py tests/test_sni_mut7_g.py tests/test_sni_three_clock_guard.py -q -p no:cacheprovider
 
   c19-wp11-reader-pins:
     if: ${{ false }}
