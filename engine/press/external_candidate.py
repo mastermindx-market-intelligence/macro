@@ -4,6 +4,10 @@ This consumes the existing sentinel's retained bytes. It is not a rights
 registry, publisher, provider or automatic feed admission. Qualification is a
 reviewed input pinned by its caller; hashes prove identity, not legal authority.
 The return is deliberately not a writer slot and ordinary plan() never calls it.
+Selected first-party measurements can satisfy the existing numerical receipt
+floor. That floor proves neither coverage of the external claims nor causality;
+source fidelity and relevant interpretation require separate editorial review.
+No minimum number of external quantities is inferred for non-numeric events.
 """
 from __future__ import annotations
 
@@ -82,6 +86,12 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
 
     A relevance note records editorial judgment, not automatic proof of it.
     These contextual measurements never establish the external event's effects.
+    Omit first_party_context for no selection; when present it must be a nonempty
+    reviewed list (null is not a completed context review). Unlike derived_share,
+    there is no required arithmetic decision to record when context is absent.
+    Artifact paths, including their parents, may not be symlinks. JSONL must be
+    complete object rows: silently skipping damaged evidence is inappropriate
+    for a qualification pinned to an exact artifact snapshot.
     """
     from engine.press import desk_planner as planner
 
@@ -105,9 +115,15 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
             raise ValueError("reviewed context artifact must not traverse a symlink")
         if rel not in snapshots:
             raw = _read_bound(path, digest, 8_000_000)
-            payload = ([json.loads(line) for line in raw.splitlines() if line.strip()]
-                       if path.suffix == ".jsonl" else json.loads(raw))
-            snapshots[rel] = (digest, extractors[rel](payload, rel))
+            try:
+                payload = ([json.loads(line) for line in raw.splitlines() if line.strip()]
+                           if path.suffix == ".jsonl" else json.loads(raw))
+                if path.suffix == ".jsonl" and any(not isinstance(row, dict) for row in payload):
+                    raise ValueError("JSONL evidence requires object rows")
+                candidates = extractors[rel](payload, rel)
+            except Exception as exc:
+                raise ValueError("reviewed context artifact is malformed") from exc
+            snapshots[rel] = (digest, candidates)
         saved_digest, candidates = snapshots[rel]
         if saved_digest != digest:
             raise ValueError("reviewed context has conflicting artifact revisions")

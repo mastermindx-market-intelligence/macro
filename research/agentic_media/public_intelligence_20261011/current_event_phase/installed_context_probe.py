@@ -68,6 +68,19 @@ with tempfile.TemporaryDirectory(prefix='mmx-press-installed-acceptance-') as d:
         try:invoke(**kwargs)
         except ValueError as e:rejected.append({'control':name,'error':str(e)})
         else:raise AssertionError('Negative control accepted: '+name)
+    # Repaired error boundary: malformed but exactly pinned engine bytes refuse.
+    artifact.write_text(json.dumps({**payload, 'components': {'trend': 70}})+'\n')
+    row['sha256']=hashlib.sha256(artifact.read_bytes()).hexdigest()
+    try:invoke(change=with_context)
+    except ValueError as e:
+        assert str(e)=='reviewed context artifact is malformed'
+        rejected.append({'control':'malformed-extractor','error':str(e)})
+    else:raise AssertionError('Malformed extractor accepted')
+    artifact.write_text(json.dumps(payload)+'\n')
+    row['sha256']=hashlib.sha256(artifact.read_bytes()).hexdigest()
+    try:invoke(change=lambda d,q:q['external_planning'].update(first_party_context=None))
+    except ValueError as e:rejected.append({'control':'null-context','error':str(e)})
+    else:raise AssertionError('Null context accepted')
     assert not list((fixture/'data/press/staging').glob('*.json'))
 after=snapshot();end=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
 assert before==after and head==end

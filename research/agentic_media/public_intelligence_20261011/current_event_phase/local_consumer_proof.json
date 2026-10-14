@@ -1,9 +1,9 @@
 {
   "schema": "press.reviewed_context_installed_consumer.v1",
-  "observed_at": "2026-10-13T23:52:56.869453+00:00",
-  "head": "2df04150e5302d4e9fd595315b5b953345c798aa",
-  "head_after": "2df04150e5302d4e9fd595315b5b953345c798aa",
-  "source_sha256": "6c18f0286d7a3042c704212652861713bd7df43359ff825b8ea1cb71c36259d2",
+  "observed_at": "2026-10-14T00:14:53.170791+00:00",
+  "head": "bc0a4182568b3a055bc9cc1f516d22fabfd4e175",
+  "head_after": "bc0a4182568b3a055bc9cc1f516d22fabfd4e175",
+  "source_sha256": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
   "positive_historical_fixture_routes": [
     "fact-sheets",
     "research",
@@ -46,6 +46,14 @@
     {
       "control": "duplicate",
       "error": "reviewed context identity or relevance invalid"
+    },
+    {
+      "control": "malformed-extractor",
+      "error": "reviewed context artifact is malformed"
+    },
+    {
+      "control": "null-context",
+      "error": "bounded reviewed first-party context required"
     }
   ],
   "runtime_inputs_unchanged": true,

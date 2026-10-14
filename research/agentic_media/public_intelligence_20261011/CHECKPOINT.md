@@ -3,6 +3,18 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Review repair accepted locally — October 14 00:18 UTC
+
+Independent Qwen review returned; the real malformed-engine exception was repaired
+with a ValueError boundary and strict object-only JSONL qualification. Nineteen added
+edge cases bring affected suites to 277 passing tests in 17.00s. Local standalone
+consumer passes four historical positives and eleven refusals, with unchanged inputs
+and zero provider/staging writes. Exact hashes and parent disposition are retained in
+current_event_phase/review_validation.json and context_review_adjudication.md. The
+external consumer remains planning-only; numerical receipts do not approve a story.
+The separate admitted writer-vintage worker remains in progress. No new article or
+publication approval. Capacity must be rechecked before the protected PR starts CI.
+
 ## Active current-source and real staging phase — October 14 00:11 UTC
 
 Current carrier remains `claude/ssd-mmx-press-current-event-20261013-3acef99375769a7f`

@@ -182,7 +182,7 @@ def test_reviewed_context_rejects_symlinked_artifact(inputs, tmp_path):
         P.plan_external_candidate(**inputs)
 
 
-def test_context_receipts_reach_existing_validator_without_lowering_its_floor(inputs):
+def test_selected_measurements_meet_receipt_floor_but_do_not_approve_story(inputs):
     from engine.press import validators as V
     plain = P.plan_external_candidate(**inputs)['validation_context']
     path, row = qualify_context(inputs)
@@ -398,4 +398,119 @@ def test_aggregate_admission_does_not_bypass_freshness_or_rights(inputs):
     inputs['as_of'] = '2026-10-11T23:00:00Z'
     mutate(inputs, 'qualification', lambda q: q['rights_basis'].update(qualification='unqualified'))
     with pytest.raises(ValueError, match='rights qualification'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('payload', [
+    {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': {'trend': 70}},
+    {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': 7},
+])
+def test_malformed_extractor_payload_rejects_as_value_error(inputs, payload):
+    path, row = qualify_context(inputs)
+    row['sha256'] = dump(path, payload)
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='artifact is malformed'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('rows', [None, {}, 'none', [], [{}] * 21])
+def test_context_presence_requires_nonempty_bounded_review_not_null(inputs, rows):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=rows))
+    with pytest.raises(ValueError, match='bounded reviewed'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('artifact', ['/data/market_state/latest.json', 'data/../data/market_state/latest.json'])
+def test_context_artifact_identity_is_canonical_relative_path(inputs, artifact):
+    _, row = qualify_context(inputs)
+    row['artifact'] = artifact
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='identity'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_conflicting_context_revisions_reject_without_rereading(inputs, monkeypatch):
+    from engine.press import external_candidate as E
+    _, row = qualify_context(inputs)
+    other = {**row, 'id': 'market_state_trend', 'sha256': 'a' * 64}
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row, other]))
+    read, calls = E._read_bound, []
+    def count(path, *args):
+        calls.append(path)
+        return read(path, *args)
+    monkeypatch.setattr(E, '_read_bound', count)
+    with pytest.raises(ValueError, match='conflicting artifact revisions'):
+        P.plan_external_candidate(**inputs)
+    assert calls.count(inputs['root'] / row['artifact']) == 1
+
+
+def test_reviewed_context_rejects_symlinked_parent_even_for_identical_bytes(inputs, tmp_path):
+    path, _ = qualify_context(inputs)
+    outside = tmp_path / 'engine-data'
+    path.parent.rename(outside)
+    path.parent.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match='traverse a symlink'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+    artifact = 'data/risk_radar/forward_log.jsonl'
+    path = inputs['root'] / artifact
+    path.parent.mkdir(parents=True, exist_ok=True)
+    history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                    drawdown_prob={'h21': 0.12}),
+               dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                    drawdown_prob={'h21': 0.19, 'h10': 0.11, 'h5': 0.06})]
+    path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+    row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+               relevance='Dated risk backdrop, not evidence of the event effect.')
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    if suffix:
+        with pytest.raises(ValueError, match='artifact is malformed'):
+            P.plan_external_candidate(**inputs)
+    else:
+        fact = P.plan_external_candidate(**inputs)['validation_context']['facts'][-1]
+        assert fact['id'] == 'risk_radar' and fact['dated'] == '2026-10-10'
+        assert fact['values'] == ['70', '0.19', '0.11', '0.06']
+        assert fact['receipt'] == 'sha256:' + row['sha256']
+
+
+def test_no_share_plus_context_changes_candidate_identity_and_writes_nothing(inputs):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(derived_share=None))
+    plain = P.plan_external_candidate(**inputs)
+    qualify_context(inputs)
+    snapshot = lambda: {str(p): p.read_bytes() for p in inputs['root'].rglob('*') if p.is_file()}
+    before = snapshot()
+    result = P.plan_external_candidate(**inputs)
+    assert result['candidate_id'] != plain['candidate_id']
+    assert result['validation_context']['facts'][:-1] == plain['validation_context']['facts']
+    assert len(result['validation_context']['facts']) == len(plain['validation_context']['facts']) + 1
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+    assert snapshot() == before
+
+
+@pytest.mark.parametrize('relevance', ['  ', 'x' * 501])
+def test_context_relevance_must_be_bounded_substantive_metadata(inputs, relevance):
+    _, row = qualify_context(inputs)
+    row['relevance'] = relevance
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='relevance'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_external_literals_alone_do_not_count_as_our_measurements(inputs):
+    from engine.press import validators as V
+    plain = P.plan_external_candidate(**inputs)['validation_context']
+    draft = {'body_html': '<p>' + '. '.join(f['text'] for f in plain['facts']) + '.</p>'}
+    cfg = P.load_config(inputs['root'])
+    assert V.check_receipts(draft, plain, cfg)['ok'] is False
+    assert V.check_our_value(draft, plain, cfg)['ok'] is False
+
+
+def test_reviewed_context_cannot_admit_lexicon_violating_engine_text(inputs):
+    path, row = qualify_context(inputs)
+    row['sha256'] = dump(path, {'asof': '2026-10-10', 'score': 53, 'verdict': 'guaranteed'})
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='Press lexicon'):
         P.plan_external_candidate(**inputs)
