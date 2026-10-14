@@ -49,7 +49,7 @@ import threading
 import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence
 
 import yaml
 
@@ -1731,6 +1731,106 @@ def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[s
         if uncovered:
             misses[job_id] = uncovered
     return misses
+
+
+# Ancestor inits are not part of the curated-exclusive closure audit, but they
+# execute every time Python imports a sibling — a curated job that misses one
+# has the same shape of silent false green. The allow-list ships empty: naming
+# entries is a later reviewed decision, so the census reports every pair.
+ANCESTOR_INIT_ALLOWLIST: frozenset[str] = frozenset()
+
+
+class AncestorInitFinding(NamedTuple):
+    """One ``(job, declared_path, init_path)`` triple the audit must cover.
+
+    ``init_bytes`` comes from ``os.stat`` only — the function never opens the
+    file. Missing inits (namespace packages) are not findings; the census
+    only emits when the path exists on disk.
+    """
+
+    job: str
+    declared_path: str
+    init_path: str
+    init_bytes: int
+
+
+def _ancestor_init_paths(declared_path: str) -> tuple[str, ...]:
+    """Return each ancestor directory strictly below the synthesized root.
+
+    The function then resolves each against ``repo_root`` independently —
+    keeping this helper purely lexical means the disk truth stays a single
+    ``os.stat`` call, never a traversal of the real working directory.
+    """
+    parts = declared_path.split("/")
+    if len(parts) < 2:
+        return ()
+    return tuple("/".join(parts[:depth]) for depth in range(1, len(parts)))
+
+
+def ancestor_init_census(
+    jobs: Iterable[LegacyJob],
+    *,
+    repo_root: Path,
+    allowlist: frozenset[str] = ANCESTOR_INIT_ALLOWLIST,
+) -> tuple[AncestorInitFinding, ...]:
+    """Tally ``__init__.py`` files that executed-but-weren't-declared.
+
+    The curated-exclusive tier REPLACES inference, so the declared ``paths:``
+    ARE the entire scope. Importing ``pkg/sub/mod.py`` executes
+    ``pkg/__init__.py`` AND ``pkg/sub/__init__.py``, but the curated closure
+    check above (``curated_exclusive_closure_findings``) only walks the files
+    Python's importer named — not the ancestor inits that ran alongside
+    them. A curated job that names the module without either parent init
+    stops running the moment one of those inits changes, while every
+    adjacent curated job still claims ``scope: exclusive`` is honest.
+
+    Rule, per curated-exclusive job and per NON-GLOB declared path: walk
+    each ancestor directory strictly below ``repo_root``; whenever
+    ``<dir>/__init__.py`` EXISTS on disk and is not (i) declared literally,
+    (ii) matched by one of the job's declared globs, nor (iii) in
+    ``allowlist``, emit one candidate. Deduplicate per ``(job, init_path)``
+    keeping the lexicographically first ``declared_path``.
+
+    A missing init (namespace package) is never a finding. The file is
+    never read — ``os.stat`` size only. The function does not import the
+    module under any name.
+    """
+    repo_root_resolved = repo_root.resolve()
+    raw: dict[tuple[str, str], AncestorInitFinding] = {}
+    for job in jobs:
+        if not job.exclusive:
+            continue
+        declared_set = frozenset(job.paths)
+        for declared in job.paths:
+            if _has_glob(declared):
+                continue
+            for rel_dir in _ancestor_init_paths(declared):
+                init_path = f"{rel_dir}/__init__.py"
+                if init_path in declared_set:
+                    continue
+                if _matches_any(job.paths, init_path):
+                    continue
+                if init_path in allowlist:
+                    continue
+                abs_dir = repo_root_resolved / rel_dir
+                abs_init = abs_dir / "__init__.py"
+                try:
+                    stat = abs_init.stat()
+                except OSError:
+                    # No init on disk: a namespace package (or an unreadable
+                    # path) runs no ancestor code, so it is never a finding.
+                    continue
+                key = (job.job_id, init_path)
+                candidate = AncestorInitFinding(
+                    job=job.job_id,
+                    declared_path=declared,
+                    init_path=init_path,
+                    init_bytes=stat.st_size,
+                )
+                existing = raw.get(key)
+                if existing is None or candidate.declared_path < existing.declared_path:
+                    raw[key] = candidate
+    return tuple(sorted(raw.values(), key=lambda item: (item.job, item.init_path)))
 
 
 def packing_probe_measurements(
@@ -4639,6 +4739,78 @@ def _run_exact_base_replays(
                     step["base_replay"] = replay
 
 
+def _find_repo_root(workflow_path: Path) -> Path:
+    """Resolve the repo root for the ancestor-init census.
+
+    Prefers ``git rev-parse --show-toplevel`` from the workflow's directory —
+    the canonical answer when the call is real. When the workflow sits in a
+    non-repo tree (a fixture under ``tmp_path``, for example), git fails
+    closed and the function falls back to the workflow's parent directory.
+    The ``relative_to`` sanity check keeps a silently-discovered parent
+    repo from being honoured when the manifest lives elsewhere.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=str(workflow_path.resolve().parent),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            candidate = Path(result.stdout.strip()).resolve()
+            try:
+                workflow_path.resolve().relative_to(candidate)
+                return candidate
+            except ValueError:
+                pass
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return workflow_path.resolve().parent
+
+
+def _run_ancestor_init_census(args: argparse.Namespace) -> int:
+    """Print the report-only ancestor-init census and exit 0.
+
+    The census is informational only: every curated-exclusive job's declared
+    NON-GLOB paths are walked for ancestor inits, and each undeclared init
+    that exists on disk is emitted as one finding. The flag never validates,
+    gates, or fails — the curator already owns failure in
+    ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
+    is the published baseline; per-init rows follow sorted by cross-job
+    count descending then path.
+    """
+    jobs = load_legacy_jobs(args.workflow)
+    repo_root = _find_repo_root(Path(args.workflow))
+    findings = ancestor_init_census(jobs, repo_root=repo_root)
+    per_init_count: dict[str, int] = {}
+    per_init_bytes: dict[str, int] = {}
+    jobs_with: set[str] = set()
+    nonempty = 0
+    for finding in findings:
+        jobs_with.add(finding.job)
+        per_init_count[finding.init_path] = (
+            per_init_count.get(finding.init_path, 0) + 1
+        )
+        per_init_bytes.setdefault(finding.init_path, finding.init_bytes)
+        if finding.init_bytes > 0:
+            nonempty += 1
+    n_exclusive = sum(1 for job in jobs if job.exclusive)
+    print(
+        f"ANCESTOR_INIT_CENSUS pairs={len(findings)} "
+        f"jobs={len(jobs_with)}/{n_exclusive} "
+        f"nonempty_pairs={nonempty} distinct_inits={len(per_init_count)}"
+    )
+    for init_path, count in sorted(
+        per_init_count.items(), key=lambda item: (-item[1], item[0])
+    ):
+        print(
+            f"{init_path} bytes={per_init_bytes[init_path]} jobs={count}"
+        )
+    return 0
+
+
 def execute_pack(
     jobs: list[LegacyJob],
     *,
@@ -5016,6 +5188,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument(
+        "--ancestor-init-census",
+        action="store_true",
+        help=(
+            "report-only: list ``__init__.py`` files a curated-exclusive job "
+            "executes on import but never declares — never gates, never "
+            "validates, always exits 0; pairs the curated-tier closure audit "
+            "with the silent ancestor-init blind spot the closure audit "
+            "cannot see"
+        ),
+    )
+    parser.add_argument(
         "--plan-json",
         type=Path,
         default=None,
@@ -5167,6 +5350,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
+        if args.ancestor_init_census:
+            return _run_ancestor_init_census(args)
         if args.semantic_replay_job:
             jobs = load_legacy_jobs(args.workflow)
             target = next(
