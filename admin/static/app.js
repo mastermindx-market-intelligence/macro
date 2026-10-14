@@ -4425,10 +4425,18 @@ function iosReasonCard(c) {
     <div>${rows.map(r => `<span class="statpill s-mut mono">${esc(r.code)} · ${esc(String(r.n))}</span>`).join(" ")}</div></div>`;
 }
 
+let IOS_RENDER_SEQUENCE = 0;
 RENDER.intelligence_os = async () => {
+  const sequence = ++IOS_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  // The estate can take several seconds to derive. Never let an older success
+  // replace a newer page, engine-detail view, or a second Intelligence OS read.
+  const obsolete = () => sequence !== IOS_RENDER_SEQUENCE ||
+    routeEpoch !== ADMIN_RENDER_EPOCH || CURRENT !== "intelligence_os" ||
+    location.hash !== "#/page/intelligence_os";
   const v = $("#view");
   v.innerHTML = `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card" style="height:220px"></div>`;
   const d = await api("/api/intelligence_os");
+  if (obsolete()) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Could not derive the estate", (d && d.error) || "panel error"); return; }
   IOS.data = d; IOS.rows = d.engines || []; IOS.page = 1;
   const c = d.census || {};
@@ -4450,6 +4458,7 @@ RENDER.intelligence_os = async () => {
        module's own 5-minute cache — anything less returns the same bytes and looks like
        a no-op button. */
     const fresh = await api("/api/intelligence_os?force=1", { cache: "no-store" });
+    if (obsolete()) return;
     if (fresh && fresh.ok) { IOS.data = fresh; IOS.rows = fresh.engines || []; RENDER.intelligence_os(); }
     else { rf.disabled = false; rf.textContent = "Re-derive"; toast((fresh && fresh.error) || "re-derive failed", true); }
   };

@@ -432,6 +432,58 @@ for (const unknown of [undefined, {}, {available:false}, {available:true,memory:
 """)
 
 
+def test_slow_intelligence_os_result_cannot_overwrite_newer_navigation():
+    _node_assert("""
+const rendererSource = block('RENDER.intelligence_os = async () => {', '/* ---- Intelligence OS · engine detail');
+function scenario() {
+  const view = {innerHTML:''}, refresh = {disabled:false,textContent:'',onclick:null};
+  const pending = [];
+  const api = url => new Promise(resolve => pending.push({url, resolve}));
+  const build = new Function('api','view','refresh', `
+    let CURRENT = 'intelligence_os', ADMIN_RENDER_EPOCH = 1, IOS_RENDER_SEQUENCE = 0;
+    const location = {hash:'#/page/intelligence_os'}, RENDER = {}, IOS = {};
+    const $ = selector => selector === '#view' ? view : selector === '#ios-refresh' ? refresh : null;
+    const nwEmpty = () => '<p>unavailable</p>';
+    const iosHero = () => '<h2>Intelligence OS</h2>', iosReasonCard = () => '';
+    const fmtNum = value => String(value), iosRenderChips = () => {}, iosRenderTable = () => {};
+    const toast = () => {}, go = () => {};
+    ${rendererSource}
+    return {
+      run: () => RENDER.intelligence_os(),
+      navigate: id => { CURRENT = id; ADMIN_RENDER_EPOCH++; location.hash = '#/page/' + id; },
+      IOS
+    };
+  `);
+  return {view, refresh, pending, ...build(api,view,refresh)};
+}
+// A late successful response must not repaint the user's newer page.
+const away = scenario(), pendingAway = away.run();
+away.navigate('users'); away.view.innerHTML = 'Users active';
+away.pending.shift().resolve({ok:true,engines:[],census:{}});
+await pendingAway;
+assert.equal(away.view.innerHTML, 'Users active');
+assert.equal(away.IOS.data, undefined);
+// Even returning to the same route cannot let an older request win.
+const roundtrip = scenario(), pendingOld = roundtrip.run();
+roundtrip.navigate('users'); roundtrip.navigate('intelligence_os');
+roundtrip.view.innerHTML = 'Newer Intelligence request';
+roundtrip.pending.shift().resolve({ok:true,engines:[],census:{}});
+await pendingOld;
+assert.equal(roundtrip.view.innerHTML, 'Newer Intelligence request');
+// A current response must continue to render normally.
+const current = scenario(), currentRead = current.run();
+current.pending.shift().resolve({ok:true,engines:[],census:{}});
+await currentRead;
+assert.match(current.view.innerHTML, /Intelligence OS/);
+// A forced re-derive finishing after navigation must not reopen its old page.
+const forced = current.refresh.onclick();
+current.navigate('users'); current.view.innerHTML = 'Users after forced refresh';
+current.pending.shift().resolve({ok:true,engines:[],census:{}});
+await forced;
+assert.equal(current.view.innerHTML, 'Users after forced refresh');
+""")
+
+
 def test_status_refresh_keeps_last_good_data_and_discards_obsolete_success():
     _node_assert("""
 const pending = [], state = [];
