@@ -7,7 +7,7 @@ Frozen at commit fafdaf094f7271bb09c2bf605f1fd4bcc6ad7ceb (§7–§8 dependence 
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -331,6 +331,28 @@ def clause1(point: float, margin: float, p_holm: float) -> bool:
     return point >= margin and p_holm < ALPHA_ONE_SIDED
 
 
+# Prereg V2.1 §2 (R1/R2): the closed outcome-class vocabulary. ``VOIDED`` is
+# always emitted with its invalidator number (``VOIDED:<k>``, V1 §12 / V2 §7 /
+# V2.1 §1 items 1–11). ``INSUFFICIENT`` is non-binding: the point estimate met its
+# practical margin and every non-inferiority clause held, but the Holm-adjusted
+# p-value or the stability clause did not — inconclusive, never NOT_SUPPORTED.
+VERDICT_CLASSES: Tuple[str, ...] = (
+    "VOIDED",
+    "NOT_EXECUTABLE",
+    "SOURCE_LIMITED",
+    "IMMATURE",
+    "UNDERPOWERED",
+    "DEVELOPMENT_PASS",
+    "DEVELOPMENT_FAIL",
+    "NOT_SUPPORTED",
+    "INSUFFICIENT",
+    "CONSISTENT",
+    "SUPPORTED",
+)
+MAX_INVALIDATOR = 11
+PARTITIONS: Tuple[str, ...] = ("P0", "P1", "P2", "P3")
+
+
 def verdict(
     partition: str,
     *,
@@ -338,25 +360,62 @@ def verdict(
     source_limited: bool,
     immature: bool,
     honest_n: int,
-    clause1_ok: bool,
+    margin_met: Optional[bool],
+    p_holm: float,
     stable: bool,
     coverage: float,
-    h2_safety_ok: bool = True,
+    ni_ok: bool = True,
+    powered_in_principle: Optional[bool] = None,
+    voided: Optional[int] = None,
 ) -> str:
-    """Verdict labels with development vs binding classes (R14)."""
+    """Prereg V2.1 §2 clause→outcome table (R2). FIRST MATCH WINS.
+
+    1. ``voided`` set                         → ``VOIDED:<k>``
+    2. not executable                         → NOT_EXECUTABLE
+    3. source-limited input                   → SOURCE_LIMITED
+    4. P2/P3 and not POWERED_IN_PRINCIPLE     → NOT_EXECUTABLE   (V2 §4.3)
+    5. immature                               → IMMATURE
+    6. honest-N < 20                          → UNDERPOWERED
+    7. all-event coverage < 0.80 (or NaN)     → SOURCE_LIMITED   (V1 §7 clause 3)
+    8. P0/P1: margin, Holm p < α, stability and non-inferiority all hold
+                                              → DEVELOPMENT_PASS, else DEVELOPMENT_FAIL
+    9. P2/P3: point estimate undefined        → NOT_EXECUTABLE
+              margin missed or an NI/safety clause failed → NOT_SUPPORTED (binding)
+              margin met but Holm p ≥ α or unstable       → INSUFFICIENT (non-binding)
+              otherwise                       → CONSISTENT (P2) / SUPPORTED (P3)
+
+    No failure reaches NOT_SUPPORTED by exhaustion: only a margin miss or an
+    NI/safety failure does. The P0/P1 pass set is exactly V1's (clause 1 ∧ 2 ∧ 3 ∧
+    safety), so no size count moves.
+    """
+    if partition not in PARTITIONS:
+        raise ValueError(f"unknown partition: {partition}")
+    if voided is not None:
+        if isinstance(voided, bool) or not isinstance(voided, int) or not 1 <= voided <= MAX_INVALIDATOR:
+            raise ValueError(f"invalidator number must be an int in 1..{MAX_INVALIDATOR}, got {voided!r}")
+        return f"VOIDED:{voided}"
     if not executable:
         return "NOT_EXECUTABLE"
     if source_limited:
         return "SOURCE_LIMITED"
+    if partition in ("P2", "P3") and powered_in_principle is not True:
+        return "NOT_EXECUTABLE"
     if immature:
         return "IMMATURE"
     if honest_n < MIN_HONEST_N:
         return "UNDERPOWERED"
-    passed = clause1_ok and stable and coverage >= COVERAGE_MIN and h2_safety_ok
+    if not (coverage >= COVERAGE_MIN):
+        return "SOURCE_LIMITED"
+    p_ok = bool(p_holm < ALPHA_ONE_SIDED)
+    stable_ok = stable is True
+    ni = ni_ok is True
     if partition in ("P0", "P1"):
+        passed = margin_met is True and p_ok and stable_ok and ni
         return "DEVELOPMENT_PASS" if passed else "DEVELOPMENT_FAIL"
-    if partition == "P2":
-        return "CONSISTENT" if passed else "NOT_SUPPORTED"
-    if partition == "P3":
-        return "SUPPORTED" if passed else "NOT_SUPPORTED"
-    raise ValueError(f"unknown partition: {partition}")
+    if margin_met is None:
+        return "NOT_EXECUTABLE"
+    if margin_met is not True or not ni:
+        return "NOT_SUPPORTED"
+    if not (p_ok and stable_ok):
+        return "INSUFFICIENT"
+    return "CONSISTENT" if partition == "P2" else "SUPPORTED"
