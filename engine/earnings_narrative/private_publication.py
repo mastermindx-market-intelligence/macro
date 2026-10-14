@@ -836,6 +836,63 @@ def _safe_field(mapping: Mapping[str, Any], key: str, default: Any = None) -> An
     except (KeyError, TypeError, ValueError) as exc:
         raise EarningsPrivateClosureError("malformed_native_section") from exc
 
+def _check_record_chain_outside_selections(
+    record: Mapping[str, Any],
+    native: Mapping[str, Any],
+    objects: Mapping[str, bytes],
+) -> None:
+    """A dossier omitted from selections still has a workspace chain to check.
+
+    Wire records and unavailable interpretations have no chain. A carried
+    dossier's workspace bytes are verified here; a mismatch is digest_mismatch
+    and a named workspace that was not supplied is missing_artifact.
+    """
+    if record.get("schema") != RECORD_SCHEMA_V2 or record.get("page") != DOSSIER_PAGE:
+        return
+    interpretation = record.get("economic_interpretation")
+    if type(interpretation) is not dict or "interpretation_id" not in interpretation:
+        return
+    observations = interpretation.get("observations")
+    if type(observations) is not list:
+        return
+    generation_ids: list[str] = []
+    for observation in observations:
+        if type(observation) is not dict:
+            continue
+        handle = observation.get("handle")
+        if type(handle) is not dict:
+            continue
+        generation_id = handle.get("workspace_generation_id")
+        if type(generation_id) is str and generation_id not in generation_ids:
+            generation_ids.append(generation_id)
+    for generation_id in generation_ids:
+        if generation_id not in native["workspaces"]:
+            raise EarningsPrivateClosureError("missing_artifact")
+        receipt = native["workspaces"][generation_id]
+        body = objects.get(receipt["object_key"])
+        if body is None:
+            raise EarningsPrivateClosureError("missing_artifact")
+        _verify_body(body, receipt, MAX_NATIVE_WORKSPACE_BYTES)
+        workspace = _native_json(body, maximum=MAX_NATIVE_WORKSPACE_BYTES, name="native workspace")
+        event_id = workspace.get("event_id")
+        generated_at = workspace.get("generated_at")
+        computed = _seam(
+            lambda event_id=event_id, workspace=workspace, generated_at=generated_at: (
+                event_workspace.preview_generation_identity(
+                    {event_id: workspace},
+                    generated_at,
+                    previous_generation_id=None,
+                )
+            ),
+            "malformed_native_section",
+        )
+        if (
+            computed != workspace.get("generation_id")
+            or workspace.get("generation_id") != generation_id
+        ):
+            raise EarningsPrivateClosureError("digest_mismatch")
+
+
 def validate_native_closure(
     manifest: Mapping[str, Any],
     objects: Mapping[str, bytes],
@@ -891,6 +948,7 @@ def validate_native_closure(
             records[slug] = record
             chains[slug] = []
             if slug not in native["selections"]:
+                _check_record_chain_outside_selections(record, native, objects)
                 continue
             selection = native["selections"][slug]
             for index, entry in enumerate(selection["chain"], start=1):
@@ -2114,6 +2172,37 @@ def _native_objects_for_slug(
     return objects
 
 
+def _stored_record_is_carried_dossier(
+    store: Store,
+    manifest: Mapping[str, Any],
+    slug: str,
+) -> bool:
+    """True when the stored bytes are a v2 economic dossier with an interpretation.
+
+    Absence from selections is not enough to call a wire article a dossier.
+    """
+    receipt = manifest["records"][slug]
+    body = _bounded_read(store, receipt["object_key"], maximum=receipt["bytes"])
+    if (
+        body is None
+        or len(body) != receipt["bytes"]
+        or sha256(body).hexdigest() != receipt["sha256"]
+    ):
+        return False
+    try:
+        record = json.loads(body)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return False
+    interpretation = record.get("economic_interpretation") if type(record) is dict else None
+    return (
+        type(record) is dict
+        and record.get("schema") == RECORD_SCHEMA_V2
+        and record.get("page") == DOSSIER_PAGE
+        and type(interpretation) is dict
+        and "interpretation_id" in interpretation
+    )
+
+
 def load_economic_closure(
     store: Store,
     *,
@@ -2134,10 +2223,21 @@ def load_economic_closure(
     if (
         value.get("schema") != MANIFEST_SCHEMA_V2
         or slug not in value.get("records", {})
-        or slug not in value.get("native", {}).get("selections", {})
     ):
         raise EarningsEconomicNotFound("unknown_record")
-    objects = _native_objects_for_slug(store, value, slug)
+    # A v1 wire article outside selections stays unknown_record. A v2 dossier
+    # that records still carries is a record even when selections omit it.
+    outside_selections = slug not in value.get("native", {}).get("selections", {})
+    if outside_selections and not _stored_record_is_carried_dossier(store, value, slug):
+        raise EarningsEconomicNotFound("unknown_record")
+    if outside_selections:
+        receipt = value["records"][slug]
+        body = _bounded_read(store, receipt["object_key"], maximum=receipt["bytes"])
+        objects = {}
+        if body is not None:
+            objects[receipt["object_key"]] = body
+    else:
+        objects = _native_objects_for_slug(store, value, slug)
     if interpretation == "stale_ok":
         try:
             stale = _load_stale_economic_entry(value, objects, slug)
