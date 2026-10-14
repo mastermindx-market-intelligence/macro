@@ -67,6 +67,11 @@ _IDENTITY_FOLDED = {name.casefold() for name in _IDENTITY_ID_KEYS}
 _THEN_KNOWN_TICKER_FIELDS = ("ticker", "listing")
 _THEN_KNOWN_BENCH_FIELD = "sector_etf"
 
+# Mutant hooks (module attributes). Hardening tests monkeypatch these only.
+_REFUSE_NON_ASCII_KEYS = True
+_STRIP_LEADING_ZEROS = True
+_IDENTITY_STATE_ALLOWED = (None, "UNRESOLVED")
+
 
 def _authority_refuse(key):
     return "authority flag %s must be literal False" % key
@@ -142,10 +147,22 @@ def authority_flags(**kwargs):
 
 
 def _walk_refuse(obj):
-    """Refuse non-False authority flags and non-null identity ids at any depth."""
+    """Refuse non-False authority flags and non-null identity ids at any depth.
+
+    A mapping key that is a str and not key.isascii() is refused. The
+    message uses repr of the key and never echoes values. Census of
+    committed SNI YAML under research/single_name_intelligence found no
+    non-ASCII keys, so the full isascii rule is shipped (not the narrowed
+    NFKC/skeleton collision rule).
+    """
     if isinstance(obj, dict):
         for key, value in obj.items():
-            folded = key.strip().casefold() if isinstance(key, str) else None
+            if isinstance(key, str):
+                if _REFUSE_NON_ASCII_KEYS and not key.isascii():
+                    raise ValueError("non-ASCII profile key refused: %s" % repr(key))
+                folded = key.strip().casefold()
+            else:
+                folded = None
             if folded in _AUTHORITY_FOLDED:
                 canonical = _AUTHORITY_CANONICAL[folded]
                 if key != canonical or value is not False:
@@ -183,7 +200,12 @@ def check_profile(profile):
     under the canonical spelling; case/spacing variants raise. A present
     cohort_selection block must keep hindsight True, survivorship True, and
     transfer_evidence False. then_known is optional (synthetic test profiles
-    may omit it).
+    may omit it). identity_state, if present at the top level, must be
+    None or the literal string UNRESOLVED; SNI never self-admits identity.
+    A display_name that matches a committed coverage-profile issuer name
+    is refused when the profile ticker is not in that issuer's committed
+    listing set (local_code values read at load time). This module
+    consumes those owner-supplied values; it does not mint identifiers.
     """
     if not isinstance(profile, dict):
         raise ValueError("profile must be a mapping")
@@ -192,6 +214,16 @@ def check_profile(profile):
         raise ValueError("authority must be a mapping")
     _walk_refuse(profile)
     _check_cohort_selection(profile)
+    if "identity_state" in profile:
+        if profile["identity_state"] not in _IDENTITY_STATE_ALLOWED:
+            raise ValueError("identity_state must be null or UNRESOLVED")
+    display = profile.get("display_name")
+    if isinstance(display, str) and display.strip():
+        listings = _reference_issuer_listings().get(display.strip().casefold())
+        if listings is not None:
+            token = _ticker_refusal_key(profile.get("ticker"))
+            if token not in listings:
+                raise ValueError("display_name listing mismatch refused")
     return profile
 
 
@@ -337,14 +369,88 @@ def _load_yaml(text):
     return yaml.safe_load(text)
 
 
+def _ticker_refusal_key(ticker):
+    """Collision-check token from a ticker or listing code.
+
+    strip, upper, drop a .<VENUE> suffix, and if the remainder is all
+    digits, lstrip("0") when _STRIP_LEADING_ZEROS is True. The token is
+    a collision check only: never stored, returned, or exported as an
+    identifier. Missing/blank ticker yields None.
+    """
+    if ticker is None:
+        return None
+    text = str(ticker).strip().upper()
+    if not text:
+        return None
+    if "." in text:
+        text = text.rsplit(".", 1)[0]
+    if text.isdigit() and _STRIP_LEADING_ZEROS:
+        text = text.lstrip("0")
+    return text
+
+
+_REFERENCE_ISSUER_LISTINGS = None
+
+
+def _reference_issuer_listings():
+    """Committed issuer display_name -> listing tokens (collision keys).
+
+    Reads coverage-profile YAML at load time. Tokens come from each
+    counter's local_code after _ticker_refusal_key. Never minted from a
+    ticker or company literal in this source file.
+    """
+    global _REFERENCE_ISSUER_LISTINGS
+    if _REFERENCE_ISSUER_LISTINGS is not None:
+        return _REFERENCE_ISSUER_LISTINGS
+    gathered = {}
+    cov = (
+        Path(__file__).resolve().parents[3]
+        / "config"
+        / "single_name_intelligence"
+        / "coverage_profiles"
+    )
+    if cov.is_dir():
+        for path in sorted(cov.iterdir()):
+            if not path.is_file() or path.suffix.lower() not in (".yml", ".yaml"):
+                continue
+            try:
+                obj = _load_yaml(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if not isinstance(obj, dict):
+                continue
+            name = obj.get("display_name")
+            if not isinstance(name, str) or not name.strip():
+                continue
+            folded = name.strip().casefold()
+            tokens = set()
+            counters = obj.get("counters")
+            if isinstance(counters, dict):
+                for counter in counters.values():
+                    if not isinstance(counter, dict):
+                        continue
+                    token = _ticker_refusal_key(counter.get("local_code"))
+                    if token is not None:
+                        tokens.add(token)
+            if tokens:
+                gathered.setdefault(folded, set()).update(tokens)
+    _REFERENCE_ISSUER_LISTINGS = {
+        name: frozenset(tokens) for name, tokens in gathered.items()
+    }
+    return _REFERENCE_ISSUER_LISTINGS
+
+
 def load_profiles(profiles_dir):
     """Parse YAML profiles in *profiles_dir* keyed by filename stem.
 
     Refuses any profile with an authority flag other than literal False
-    or a non-null identity id at any depth.
+    or a non-null identity id at any depth. After parsing every file,
+    two profiles whose ticker refusal keys collide raise, naming both
+    file stems. The refusal key is not stored on the payload.
     """
     directory = Path(profiles_dir)
     out = {}
+    refusal_owners = {}
     files = sorted(
         p
         for p in directory.iterdir()
@@ -360,6 +466,14 @@ def load_profiles(profiles_dir):
         else:
             payload["authority"] = AuthorityMap()
         check_profile(payload)
+        token = _ticker_refusal_key(payload.get("ticker"))
+        if token is not None:
+            prior = refusal_owners.get(token)
+            if prior is not None:
+                raise ValueError(
+                    "ticker alias collision refused: %s %s" % (prior, path.stem)
+                )
+            refusal_owners[token] = path.stem
         out[path.stem] = payload
     return out
 

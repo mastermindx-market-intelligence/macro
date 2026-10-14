@@ -390,3 +390,10 @@
 {"asof": "2026-10-09", "domain": "commodity", "field": "commodity_favored", "from_value": "Copper, Oil \u00b7 WTI, Silver", "to_value": "Gold, Copper", "macro_context_id": "d8d600c3106015e8"}
 {"asof": "2026-10-09", "domain": "china", "field": "china_property_regime", "from_value": "Contraction", "to_value": "Deep contraction", "macro_context_id": "d8d600c3106015e8"}
 {"asof": "2026-10-09", "domain": "intl", "field": "intl_in_quad", "from_value": "Q3", "to_value": "Q4", "macro_context_id": "d8d600c3106015e8"}
+{"asof": "2026-10-14", "domain": "us", "field": "us_liquidity_quality", "from_value": "neutral-hollow", "to_value": "contracting", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "us", "field": "us_liquidity_overlay", "from_value": "neutral", "to_value": "contracting", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "fx", "field": "fx_liquidity_dir", "from_value": "supportive", "to_value": "soft", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "fx", "field": "fx_regime_radar", "from_value": "dollar_wrecking_ball", "to_value": "em_crisis_capital_flight", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "china", "field": "china_fe_band", "from_value": "Neutral", "to_value": "Fear", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "hk", "field": "hk_quad", "from_value": "Q4", "to_value": "Q2", "macro_context_id": "56c676d4e74b52a5"}
+{"asof": "2026-10-14", "domain": "hk", "field": "hk_risk_state", "from_value": "Neutral", "to_value": "Risk-on", "macro_context_id": "56c676d4e74b52a5"}
