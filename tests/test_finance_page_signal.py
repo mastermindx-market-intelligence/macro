@@ -9,7 +9,9 @@ from __future__ import annotations
 import ast
 import copy
 import json
+from collections.abc import Iterator, Mapping
 from pathlib import Path
+from typing import Any
 
 import jsonschema
 import pytest
@@ -199,30 +201,43 @@ def test_compose_keeps_empty_falsifiers() -> None:
         assert sl["rerating"]["falsifier_ids"] == []
 
 
-def test_attach_falsifiers_is_not_a_public_placement_path() -> None:
-    """Falsifiers reach a page only through apply_page_signal.
+def _falsifier_writer_names(module: object) -> list[str]:
+    """Public functions of ``module`` that write falsifiers.
 
-    The placement helper is module-private in finance_case_signal and is not
-    re-exported by finance_page_signal; among that module's public function
-    definitions, ``apply_page_signal`` is the only one that touches the
-    ``falsifiers`` key at all.
+    A function counts if it names ``falsifiers``, holds the string
+    ``"falsifiers"``, or names the placement helper ``_attach_falsifiers``.
     """
-    assert not hasattr(finance_case_signal, "attach_falsifiers")
-    assert hasattr(finance_case_signal, "_attach_falsifiers")
-    assert not hasattr(finance_page_signal, "attach_falsifiers")
-    tree = ast.parse(Path(finance_page_signal.__file__).read_text(encoding="utf-8"))
-    writers = [
+    tree = ast.parse(Path(module.__file__).read_text(encoding="utf-8"))
+    return [
         node.name
         for node in tree.body
         if isinstance(node, ast.FunctionDef)
         and not node.name.startswith("_")
         and any(
-            (isinstance(child, ast.Name) and child.id == "falsifiers")
+            (
+                isinstance(child, ast.Name)
+                and child.id in ("falsifiers", "_attach_falsifiers")
+            )
             or (isinstance(child, ast.Constant) and child.value == "falsifiers")
             for child in ast.walk(node)
         )
     ]
-    assert writers == ["apply_page_signal"]
+
+
+def test_attach_falsifiers_is_not_a_public_placement_path() -> None:
+    """Falsifiers reach a page only through apply_page_signal.
+
+    The placement helper is module-private in finance_case_signal and is not
+    re-exported by finance_page_signal. Across both modules,
+    ``apply_page_signal`` is the only public function that writes the
+    ``falsifiers`` key or calls the helper; ``project_falsifier`` projects
+    one row and places nothing.
+    """
+    assert not hasattr(finance_case_signal, "attach_falsifiers")
+    assert hasattr(finance_case_signal, "_attach_falsifiers")
+    assert not hasattr(finance_page_signal, "attach_falsifiers")
+    assert _falsifier_writer_names(finance_page_signal) == ["apply_page_signal"]
+    assert _falsifier_writer_names(finance_case_signal) == []
 
 
 @pytest.mark.parametrize(
@@ -269,14 +284,113 @@ def test_bad_cases_value_is_refused_with_no_rows(shape) -> None:
     assert _ids(page) == before
 
 
+class _TwoReadDocument(Mapping[str, Any]):
+    """Case document whose ``"cases"`` answer changes on a second read.
+
+    The first read returns the admitted rows; every later read returns a
+    different list. Any routing that re-reads the raw document after
+    admission would place the second list's rows against the first list's
+    falsifiers.
+    """
+
+    def __init__(self, first: list[dict[str, Any]], later: list[dict[str, Any]]) -> None:
+        self._lists = [list(first), list(later)]
+        self.cases_reads = 0
+        self._top: dict[str, Any] = {
+            "formal_causal_outcomes_measured": 0,
+            "prospective_validation_started": False,
+            "cases": self._lists[0],
+        }
+
+    def __getitem__(self, key: str) -> Any:
+        if key == "cases":
+            index = min(self.cases_reads, len(self._lists) - 1)
+            self.cases_reads += 1
+            return self._lists[index]
+        return self._top[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._top)
+
+    def __len__(self) -> int:
+        return len(self._top)
+
+
+def test_routing_reads_only_the_admitted_rows() -> None:
+    """apply_page_signal routes the rows admission captured, never a re-read.
+
+    Admission reads ``document["cases"]`` once. This document hands a
+    different list to any later read: the second list swaps the beta row
+    for a gamma row on ``custody_asset_servicing``. Routing that re-reads
+    the document would attach beta's falsifier to gamma's slice and
+    clobber the kept falsifier there. The admitted-pairs path places the
+    falsifiers of the admitted rows only, so beta lands on
+    ``exchanges_trading_venues`` and custody is left as it was.
+    """
+    first = copy.deepcopy(_document()["cases"])
+    gamma = copy.deepcopy(first[1])
+    gamma["canonical_case_id"] = "syn-fin-case-gamma"
+    gamma["slice_id"] = "custody_asset_servicing"
+    document = _TwoReadDocument(first, [first[0], gamma])
+    page = _page()
+    apply_page_signal(document, page)
+    assert document.cases_reads == 1, document.cases_reads
+    by_id = {sl["slice_id"]: sl for sl in page["slices"]}
+    venue = by_id["exchanges_trading_venues"]
+    assert [item["falsifier_id"] for item in venue["falsifiers"]] == ["syn-fin-case-beta"]
+    assert venue["rerating"]["falsifier_ids"] == ["syn-fin-case-beta"]
+    kept = by_id["custody_asset_servicing"]
+    assert [item["falsifier_id"] for item in kept["falsifiers"]] == ["kept-id"]
+    assert kept["rerating"]["falsifier_ids"] == ["kept-id"]
+
+
+def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
+    """A placement that raises on the second slice leaves the first untouched.
+
+    apply_page_signal pre-validates every slice's falsifier list through a
+    throwaway slice before writing any real slice, so a
+    :func:`_attach_falsifiers` that fails part-way through the slice loop
+    cannot leave an earlier slice rewritten. The monkeypatched helper fails
+    on its second call; both grouped slices come from the ordinary two-row
+    fixture (card_networks, exchanges_trading_venues).
+    """
+    page = _page()
+    before = _ids(page)
+    real = finance_page_signal._attach_falsifiers
+    calls: list[object] = []
+
+    def flaky(slice_doc, falsifiers):
+        calls.append(slice_doc.get("slice_id"))
+        if len(calls) == 2:
+            raise finance_case_signal.FinanceCaseSignalRefusal("boom")
+        return real(slice_doc, falsifiers)
+
+    monkeypatch.setattr(finance_page_signal, "_attach_falsifiers", flaky)
+    with pytest.raises(finance_case_signal.FinanceCaseSignalRefusal) as caught:
+        apply_page_signal(_document(), page)
+    assert str(caught.value) == "boom"
+    assert _ids(page) == before
+
+
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:
     """Neither signal module reads research/ or touches files or the network.
 
     Neither finance_case_signal nor finance_page_signal may import anything
-    under research/, nor import open/pathlib/io/os/requests/urllib/socket,
-    nor call the builtin open().
+    under research/, nor import builtins/io/os/pathlib/requests/socket/
+    urllib, nor call open() as a name or an attribute (``builtins.open``),
+    nor hold a ``research/`` path in a string other than a docstring.
+    Docstrings are exempt because both module docstrings name
+    research/finance to promise they never read it.
     """
-    forbidden_roots = {"io", "os", "pathlib", "requests", "socket", "urllib"}
+    forbidden_roots = {
+        "builtins",
+        "io",
+        "os",
+        "pathlib",
+        "requests",
+        "socket",
+        "urllib",
+    }
     for module in (finance_case_signal, finance_page_signal):
         tree = ast.parse(Path(module.__file__).read_text(encoding="utf-8"))
         imported: set[str] = set()
@@ -297,3 +411,31 @@ def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:
             and isinstance(node.func, ast.Name)
             and node.func.id == "open"
         ], module.__name__
+        assert not [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "open"
+        ], (module.__name__, "attribute .open() call")
+        docstrings = {
+            id(node.body[0].value)
+            for node in ast.walk(tree)
+            if isinstance(
+                node,
+                ast.Module | ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef,
+            )
+            and node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        }
+        path_constants = [
+            node.value
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and "research/" in node.value
+            and id(node) not in docstrings
+        ]
+        assert not path_constants, (module.__name__, path_constants)
