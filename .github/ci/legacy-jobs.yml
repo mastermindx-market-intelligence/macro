@@ -13817,6 +13817,36 @@ jobs:
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
 
+  global-liquidity-transmission-contracts:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # GLT T03–T05 contract suites (offline, synthetic inputs): the v2 source
+    # manifest and its lag/rights rows, the knowledge-time (point-in-time
+    # availability) rules, and the monetary-accounting identities the W-LIQ.1
+    # producer above consumes. A sibling job rather than extra steps on the
+    # producer so the two lanes can evolve without editing each other's step
+    # list. No trading, alerting, routing, or downstream transmission authority.
+    paths:
+      - "config/global_liquidity_sources_v2.yml"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "engine/global_liquidity_accounting.py"
+      - "engine/global_liquidity_knowledge_time.py"
+      - "engine/global_liquidity_transmission.py"
+      - "tests/test_global_liquidity_accounting.py"
+      - "tests/test_global_liquidity_knowledge_time.py"
+      - "tests/test_global_liquidity_sources_v2.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install GLT contract test dependencies
+        run: pip install pytest pandas numpy pyyaml
+      - name: global liquidity T03–T05 contracts — source manifest, knowledge time, monetary accounting
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py -q
+
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
