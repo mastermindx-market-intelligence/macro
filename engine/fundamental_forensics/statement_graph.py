@@ -91,15 +91,17 @@ _MONTH_TOKEN = (
 )
 # Word boundaries keep month tokens from matching inside words ("Decor. 31, 2025"
 # is not December). The optional period covers EDGAR viewer dates ("Dec. 31, 2025").
+# A month token may also start at a lowercase-to-capital seam, where "\b" does
+# not fire, so glued banner text like "As ofMarch 31, 2025" still yields a date.
 _DATE_RE = re.compile(
-    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2}),\s*(\d{4})\b",
+    r"(?:\b|(?-i:(?<=[a-z])(?=[A-Z])))(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2}),\s*(\d{4})\b",
     re.I,
 )
 # A month-day phrase WITHOUT a year ("Fiscal Year Ended January 31,"): the
 # negative lookahead rejects the day whenever a 4-digit year follows it, so a
 # full date never doubles as a bare month-day phrase.
 _MONTH_DAY_RE = re.compile(
-    r"\b(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2})(?!\s*,?\s*\d{4})\b",
+    r"(?:\b|(?-i:(?<=[a-z])(?=[A-Z])))(" + _MONTH_TOKEN + r")\.?\s+(\d{1,2})(?!\s*,?\s*\d{4})\b",
     re.I,
 )
 _YEAR_CELL_RE = re.compile(r"^\d{4}$")
@@ -721,10 +723,26 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     for row_index in range(row_count):
         row_map = occupied.get(row_index, {})
         row_cells: list[dict[str, Any]] = []
+        # k is one past this row's highest occupied column. A hole below k (or a
+        # row with no occupied slot at all, k is None) is still unsupported;
+        # missing slots from k to the table's right edge belong to a banner row
+        # narrower than the body (the GOOGL and SNOW income shape) and are
+        # padded fact-free so the row expands onto the body's grid.
+        k = max(row_map) + 1 if row_map else None
         for column in range(max_col):
             cell = row_map.get(column)
-            if cell is None:
+            if cell is None and (k is None or column < k):
                 raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+            if cell is None:
+                cell = _grid_slot(
+                    text="",
+                    facts=[],
+                    colspan=1,
+                    rowspan=1,
+                    rowspan_carry=False,
+                    colspan_carry=True,
+                )
+                cell["edge_pad"] = True
             row_cells.append(cell)
         grid.append(row_cells)
     return grid
@@ -784,6 +802,18 @@ class _StatementTableParser(HTMLParser):
             return
         self._grid_finalized = True
         self.rows = _expand_displayed_statement_grid(self.rows)
+
+    def _capture_has_facts(self) -> bool:
+        return any(cell.get("facts") for cells in self.rows for cell in cells)
+
+    def _discard_factless_capture(self) -> None:
+        # A capture with zero inline-XBRL numeric facts is not the statement
+        # (a table of contents naming it carries none): drop it and keep
+        # parsing, so the next title hit starts a fresh capture.
+        self.rows = []
+        self.chrome_row_indices = set()
+        self._capturing = False
+        self._seen_title = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self._ended:
@@ -877,9 +907,12 @@ class _StatementTableParser(HTMLParser):
                 elif self._capturing or self._seen_title:
                     self._capturing = True
                     if "see accompanying notes" in joined.lower():
-                        self._ended = True
                         self._row_cells = []
-                        self._finalize_grid()
+                        if self._capture_has_facts():
+                            self._ended = True
+                            self._finalize_grid()
+                        else:
+                            self._discard_factless_capture()
                         return
                     self.rows.append(self._row_cells)
             self._row_cells = []
@@ -887,8 +920,11 @@ class _StatementTableParser(HTMLParser):
         if tag == "table" and self._table_depth:
             self._table_depth -= 1
             if self._capturing and self._table_depth == 0:
-                self._ended = True
-                self._finalize_grid()
+                if self._capture_has_facts():
+                    self._ended = True
+                    self._finalize_grid()
+                else:
+                    self._discard_factless_capture()
         if self._ix_open is not None and _is_ix_numeric(tag):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
