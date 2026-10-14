@@ -38,14 +38,22 @@
       "bytes": 3398
     },
     {
-      "file": "reviewable-post-update-correction.patch",
-      "sha256": "0b9f209bfd91106ea7586d217f3463f583f05eabc371a5716e325559adb59058",
-      "bytes": 3692
+      "file": "reviewable-post-update-correction.patch.gz",
+      "sha256": "408e03ba536ebb674417f680861e0c1f27c17fea303596ed8f9ffa1cb8cb1686",
+      "bytes": 1677,
+      "decoded_sha256": "0b9f209bfd91106ea7586d217f3463f583f05eabc371a5716e325559adb59058",
+      "decoded_bytes": 3692,
+      "encoding": "gzip"
     },
     {
       "file": "reviewable-correction.json",
       "sha256": "3fc3196a588dd3b117abefa6c05352aa599669399fead64a2d554c91ab6c1a75",
       "bytes": 1989
+    },
+    {
+      "file": "chairman-exception-approved.json",
+      "sha256": "c817d7468443e1083f2a6cdfa849aa7340c6488b8d702660d2559645e84cb370",
+      "bytes": 808
     }
   ]
 }
