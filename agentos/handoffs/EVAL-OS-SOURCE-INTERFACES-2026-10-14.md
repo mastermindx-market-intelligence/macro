@@ -140,3 +140,14 @@ Fabric `eval-t12-cli-01a1333d-c1` settled rc0 at07:34; retained result, artifact
 The new `--project-findings INPUT.json` mode accepts only a bounded supplied snapshot. It emits the pure owner result and input-byte digest, refuses incompatible modes before input reads, and keeps invalid/missing inputs unknown. Synthetic producer-to-existing-Discovery draft/validator integration passes; actual rights-qualified research finding adoption remains owed. No new Discovery was published. Separate protected release/installation and hosted checks remain required.
 
 A1 remains Open05a at07:40. Controller38529475357 at07:38 again deferred required freshness update for main3af7a7be2f29 with9 indexed CI runs/cap8/0slots. No controller bypass or production effect occurred.
+
+
+## Release dependency reconciled — 2026-10-14T09:42Z
+
+The main packing failure is now repaired by the incumbent sibling PR #9288, merged at09:25:27 as152f5018dbae55bf67d0153108b24bbec29e22b0. Its67/93 declared paths strictly contain every42/68 path in this programme's unpublished-PR candidate0b1bef04406e and add observed config/runtime support and package initializers. The two execution definitions and both curated-registry entries are preserved. Keep the landed source; our separate repair branch is superseded and must not receive a duplicate PR. No source branch was deleted or reset.
+
+Original Fabric scope review eval-ci-scope-review-01a1333d-c1 settled rc0 and retained234334bytes, SHA65658c14a57e8b417e0234d2af06d8a10f85a0dc6819550a33caf54fbf4a2266. Its final findings were consumed and accepted through the same adapter after root adjudication. It corroborates removal of the AST/render fallback; its registry finding was already implemented in0b1bef, and the landed sibling also covers its config.yml recommendation. This is useful independent review, not an independent PASS on the final sibling bytes. See baseline-repair-supersession-9288.json and baseline-scope-review-final.txt beside the programme receipts.
+
+Old semantic-main38531352007 conclusively failed the same packing test (643passed/1failed/1skipped); all11 other packs passed. That old failure is not the verdict on repaired main. Fresh normally triggered main proof and the existing controller still govern A1 freshness and landing. PR6651 remainsOpen05a at09:40, and the same-cadence load census is15 activePR proofs versus cap8. No new CI, controller, refresh or repair PR was launched.
+
+Separate CLI review eval-t12-cli-review-01a1333d-c1 remains unresolved: same-run retained status09:42 has no result or terminal evidence; the prior original-observation refusal stays binding. Original experience uncertainty remains separate. Follow-on source985346 remains qualified but not shipped. All programme/production completion flags remain false.
