@@ -2519,23 +2519,48 @@ _EXPECTED_EMITTED_KEYS = {
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
                 RESULT_KEY_ADVERTISING_NET_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
             },
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE: _WITHHELD_REASON,
                 # The net row's own envelopes stay clean here; it withholds
                 # as a dependent of the withheld revenue-change constituent.
                 RESULT_KEY_ADVERTISING_NET_CHANGE: "dependency_suppressed",
+                # The ratio withholds as a dependent of its withheld numerator.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
             },
         ),
         (
             _mutate_total_revenue_unit,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
         (
             _mutate_total_revenue_scale,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
     ],
     ids=[
@@ -2612,3 +2637,152 @@ def test_availability_lead_and_emitted_rows_agree_under_contradictions(
             "advertising-expense changes, but at least one of them emitted "
             "no value"
         )
+
+
+#: W15-F-FVA item 3 -- an INDEPENDENT oracle of the derived-row dependency
+#: mapping, hand-written from the build function (the net derivation is
+#: ``ar_change - ae_change`` of the two advertising change rows, engine
+#: near :1712-1715; the ratio's numerator is advertising_revenue_change
+#: and its denominator total_revenue_change, engine near :1792-1800).
+#: Deliberately NOT read from the engine table it checks below.
+_ORACLE_DERIVED_CONSTITUENTS = {
+    RESULT_KEY_ADVERTISING_NET_CHANGE: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    ),
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    ),
+}
+
+
+def test_no_published_derived_row_has_a_withheld_constituent() -> None:
+    """A derived row never publishes a value computed from a withheld row.
+
+    (a) the engine's private ``_DERIVED_ROW_CONSTITUENTS`` equals the
+    independent oracle above (read through the same function-local
+    ``import ... as mod`` pattern the private-name tests already use);
+    (b) the cascade holds over a grid: every single-fact contradiction of
+    ``display_quantum`` / ``unit`` / ``scale_power10`` -- the field names
+    the ``_mutate_*`` helpers use -- applied to each of the six PLNT
+    facts (6 facts x 3 fields = 18 grid points). At each point every
+    derived row that publishes a value must have every constituent also
+    publishing (or absent from the emitted document entirely).
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    assert mod._DERIVED_ROW_CONSTITUENTS == _ORACLE_DERIVED_CONSTITUENTS
+
+    base_facts = _plnt_facts()
+    for index in range(len(base_facts)):
+        fact_key = base_facts[index]["key"]
+        for field, value in (
+            ("display_quantum", "5_thousand"),
+            ("unit", "EUR"),
+            ("scale_power10", 6),
+        ):
+            facts = [dict(fact) for fact in base_facts]
+            _contradict(facts, fact_key, field, value)
+            document = project_economic_change(_plnt_case(facts=facts))
+            rows = {r["key"]: r for r in document["results"]}
+            for derived_key, constituents in (
+                _ORACLE_DERIVED_CONSTITUENTS.items()
+            ):
+                derived = rows.get(derived_key)
+                if derived is None or derived["value_text"] is None:
+                    continue
+                for constituent_key in constituents:
+                    constituent = rows.get(constituent_key)
+                    suppressed = constituent is not None and (
+                        constituent["value_text"] is None
+                    )
+                    assert not suppressed, (
+                        f"grid point fact[{index}]={fact_key} "
+                        f"field={field}: derived row {derived_key} "
+                        f"publishes {derived['value_text']!r} while "
+                        f"constituent {constituent_key} is withheld "
+                        f"({constituent['withheld_reason']!r})"
+                    )
+
+
+def test_screen_withheld_rows_are_recorded_in_degraded_dependencies() -> None:
+    """W15-F-FVA item 2: screen withholdings are recorded, ALWAYS.
+
+    The module docstring's dependency-local rule promises a suppressed
+    result is "recorded in ``degraded_dependencies``". The
+    stated-definition screen used to withhold rows without recording
+    them, so the all-six display_quantum contradiction reached
+    availability "unavailable" with an empty ``degraded_dependencies``
+    and died in the document's own contract self-check (HEAD c334b9ba:
+    CaseShapeError, engine :1473). Block 1 builds that case exactly as
+    the two quantum/unit DECLINED tests build it (mutate every fact of
+    ``_plnt_case``) and asserts (a) availability, (b) the EXACT set of
+    ``(dependency, reason)`` pairs the screen contributed -- every
+    emitted result key, once -- and (c) the module's own validator
+    accepts the recorded document. Block 2 pins one partial case, the
+    D2 ``_mutate_total_revenue_unit`` mutator: availability stays
+    "ready" and the list gains exactly the withheld rows' entries.
+
+    Reason vocabulary, measured (not guessed): five of the six rows
+    fail their OWN stated-definition check in the all-six quantum case
+    -- including ``advertising_net_change``, whose envelopes contradict
+    directly, exactly as in the committed d1 grid param -- so they
+    record ``result_envelope_contradicts_stated_definition``. Only the
+    ``_pct`` ratio is exempt from its own envelope check and is
+    withheld by the ``_DERIVED_ROW_CONSTITUENTS`` cascade, recording
+    ``dependency_suppressed``.
+    """
+    case = _plnt_case()
+    for fact in case["facts"]:
+        fact["display_quantum"] = "5_thousand"
+    document = project_economic_change(case)
+
+    # (a) every row withheld -> unavailable, never an empty ready.
+    assert document["availability"] == "unavailable"
+
+    # (b) the exact pairs the screen contributed: each of the six
+    # emitted result keys, once.
+    emitted_keys = {result["key"] for result in document["results"]}
+    assert emitted_keys == {
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    }
+    contributed = {
+        (entry["dependency"], entry["reason"])
+        for entry in document["degraded_dependencies"]
+    }
+    assert contributed == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_EXPENSE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_NET_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    assert len(document["degraded_dependencies"]) == 6
+
+    # (c) the module's own validator accepts the recorded document --
+    # the same call the self-check tests use.
+    _assert_document_matches_contract_shape(document)
+
+    # -- Block 2: the D2 total_revenue_unit partial case -------------
+    facts = [dict(fact) for fact in _plnt_facts()]
+    _mutate_total_revenue_unit(facts)
+    partial = project_economic_change(_plnt_case(facts=facts))
+    assert partial["availability"] == "ready"
+    pairs = {
+        (entry["dependency"], entry["reason"])
+        for entry in partial["degraded_dependencies"]
+    }
+    assert pairs == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    _assert_document_matches_contract_shape(partial)
