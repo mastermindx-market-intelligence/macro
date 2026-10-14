@@ -13224,7 +13224,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: RC-R14 China + HK rotation events test suite
-        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v
+        run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v tests/test_rotation_replay_isolation.py
 
   codex-research-engine:
     if: ${{ false }}
