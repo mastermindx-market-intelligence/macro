@@ -51,6 +51,22 @@ _RELEVANT_FED_FEED_URLS = frozenset(
 )
 _ET = ZoneInfo("America/New_York")
 _CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
+_POLICY_EVENT_DIR = Path("data") / "europe_news_vector"
+_POLICY_EVENT_EVENTS = _POLICY_EVENT_DIR / "events.parquet"
+_POLICY_EVENT_COVERAGE = _POLICY_EVENT_DIR / "coverage.parquet"
+_POLICY_EVENT_MAX_BYTES = 16 * 1024 * 1024
+_POLICY_EVENT_ROW_CAP = 5_000
+_POLICY_EVENT_ITEM_CAP = 6
+_POLICY_EVENT_WINDOW = timedelta(days=14)
+_POLICY_EVENT_COVERAGE_STALE = timedelta(hours=36)
+_POLICY_EVENT_THEMES = frozenset({
+    "competition_antitrust",
+    "financial_stability",
+    "fiscal_policy",
+    "monetary_policy",
+    "regulatory",
+    "trade_policy",
+})
 
 
 def build_current(root: Path, now: datetime | None = None) -> dict:
@@ -68,6 +84,242 @@ def build_current(root: Path, now: datetime | None = None) -> dict:
         "headlines": headlines,
         "statement": statement,
         "comparison": comparison,
+    }
+
+
+def build_policy_event_feed(root: Path, now: datetime | None = None) -> dict:
+    """Read-only Policy Watch discovery view over existing Europe event artifacts.
+
+    The feed never mints event identity, lifecycle stages, scores, or market
+    authority. Publisher time, first-seen time, and source-check time remain
+    separate clocks.
+    """
+    root = Path(root)
+    clock = _normalize_now(now)
+    unavailable = {
+        "schema": "policy_watch_event_feed.v1",
+        "state": "unavailable",
+        "fresh": False,
+        "coverage_checked_at": None,
+        "sources": [],
+        "items": [],
+        "is_context_only": True,
+        "can_rank": False,
+        "can_gate": False,
+        "can_size": False,
+        "can_trade": False,
+    }
+
+    try:
+        from engine import europe_news_intel
+        import pandas as pd
+    except Exception as exc:  # noqa: BLE001
+        log.warning("policy event feed dependencies unavailable: %s", exc)
+        return unavailable
+
+    source_specs: dict[str, dict] = {}
+    for source in europe_news_intel.sources():
+        if str(source.get("rights_state") or "") != "VERIFIED_PUBLIC_REUSE":
+            continue
+        key = str(source.get("key") or "").strip()
+        try:
+            host = (urlparse(str(source.get("url") or "")).hostname or "").lower()
+        except ValueError:
+            continue
+        if not key or not host:
+            continue
+        source_specs[key] = {
+            "source_key": key,
+            "publisher": str(source.get("publisher") or key),
+            "jurisdiction": str(source.get("jurisdiction") or ""),
+            "host": host,
+        }
+    if not source_specs:
+        return {**unavailable, "state": "no_coverage"}
+
+    def _read(path: Path):
+        try:
+            if not path.is_file() or path.stat().st_size > _POLICY_EVENT_MAX_BYTES:
+                return None
+            frame = pd.read_parquet(path)
+            if len(frame) > _POLICY_EVENT_ROW_CAP:
+                return None
+            return frame
+        except Exception as exc:  # noqa: BLE001
+            log.warning("policy event artifact unreadable %s: %s", path, exc)
+            return None
+
+    events = _read(root / _POLICY_EVENT_EVENTS)
+    coverage = _read(root / _POLICY_EVENT_COVERAGE)
+    if events is None or coverage is None:
+        return unavailable
+
+    def _text(value: object) -> str:
+        if value is None:
+            return ""
+        try:
+            if pd.isna(value):
+                return ""
+        except (TypeError, ValueError):
+            pass
+        return str(value).strip()
+
+    def _strict_instant(value: object) -> datetime | None:
+        raw = _text(value)
+        if not raw:
+            return None
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            return None
+        return parsed
+
+    latest: dict[str, tuple[datetime, dict]] = {}
+    for row in coverage.to_dict(orient="records"):
+        key = _text(row.get("source_key"))
+        if key not in source_specs:
+            continue
+        if _text(row.get("rights_state")) != "VERIFIED_PUBLIC_REUSE":
+            continue
+        checked = _strict_instant(row.get("fetch_clock_utc"))
+        if checked is None or checked > clock:
+            continue
+        prior = latest.get(key)
+        if prior is None or checked > prior[0]:
+            latest[key] = (checked, row)
+
+    source_rows: list[dict] = []
+    checked_values: list[datetime] = []
+    for key in sorted(source_specs):
+        spec = source_specs[key]
+        record = latest.get(key)
+        if record is None:
+            state = "NO_COVERAGE"
+            checked_at = None
+        else:
+            checked_at, row = record
+            checked_values.append(checked_at)
+            state = _text(row.get("coverage_state")) or "NO_COVERAGE"
+            if clock - checked_at > _POLICY_EVENT_COVERAGE_STALE:
+                state = "STALE"
+        source_rows.append({
+            "source_key": key,
+            "publisher": spec["publisher"],
+            "jurisdiction": spec["jurisdiction"],
+            "coverage_state": state,
+            "checked_at": (
+                checked_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+                if checked_at is not None else None
+            ),
+        })
+
+    latest_checked = max(checked_values) if checked_values else None
+    covered = sum(row["coverage_state"] == "COVERED" for row in source_rows)
+    degraded = sum(row["coverage_state"] != "COVERED" for row in source_rows)
+    delayed = any(row["coverage_state"] == "DELAYED_SOURCE" for row in source_rows)
+    outage = any(row["coverage_state"] == "SOURCE_OUTAGE" for row in source_rows)
+    stale = any(row["coverage_state"] == "STALE" for row in source_rows)
+    if covered and not degraded:
+        state = "current"
+    elif covered or delayed:
+        state = "partial"
+    elif outage:
+        state = "source_outage"
+    elif stale:
+        state = "stale"
+    else:
+        state = "no_coverage"
+
+    def _admit_url(raw_value: object, expected_host: str) -> str | None:
+        raw = _text(raw_value)
+        if not raw or _CONTROL_CHARS_RE.search(raw):
+            return None
+        try:
+            parsed = urlparse(raw)
+            if parsed.scheme != "https" or parsed.username or parsed.password:
+                return None
+            if parsed.port is not None:
+                return None
+            host = (parsed.hostname or "").lower()
+        except ValueError:
+            return None
+        if host != expected_host:
+            return None
+        return urlunparse(("https", host, parsed.path or "/", "", parsed.query, ""))
+
+    def _source_tier(value: object) -> int:
+        if isinstance(value, bool):
+            return 99
+        try:
+            tier = int(value)
+        except (TypeError, ValueError, OverflowError):
+            return 99
+        return tier if 1 <= tier <= 99 else 99
+
+    selected: list[dict] = []
+    seen_urls: set[str] = set()
+    oldest = clock - _POLICY_EVENT_WINDOW
+    for row in events.to_dict(orient="records"):
+        key = _text(row.get("source"))
+        spec = source_specs.get(key)
+        if spec is None:
+            continue
+        theme = _text(row.get("theme"))
+        if theme not in _POLICY_EVENT_THEMES:
+            continue
+        if _text(row.get("timestamp_quality")) != "PUBLISHER_STATED":
+            continue
+        published = _strict_instant(row.get("seendate"))
+        known = _strict_instant(row.get("first_seen_utc") or row.get("fetch_clock_utc"))
+        if published is None or known is None:
+            continue
+        if published > clock or known > clock or published < oldest:
+            continue
+        event_id = _text(row.get("event_id"))
+        title = _text(row.get("title"))
+        if not event_id or _CONTROL_CHARS_RE.search(event_id):
+            continue
+        if not title or _CONTROL_CHARS_RE.search(title):
+            continue
+        admitted_url = _admit_url(row.get("url"), spec["host"])
+        if admitted_url is None or admitted_url in seen_urls:
+            continue
+        seen_urls.add(admitted_url)
+        selected.append({
+            "event_id": event_id,
+            "title": title,
+            "url": admitted_url,
+            "publisher": spec["publisher"],
+            "source_key": key,
+            "jurisdiction": _text(row.get("jurisdiction")) or spec["jurisdiction"],
+            "theme": theme,
+            "published_at": published.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "source_date": published.date().isoformat(),
+            "known_at": known.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "source_tier": _source_tier(row.get("source_tier")),
+        })
+    selected.sort(key=lambda row: (row["published_at"], -row["source_tier"], row["url"]), reverse=True)
+    selected = selected[:_POLICY_EVENT_ITEM_CAP]
+    if state == "current" and not selected:
+        state = "no_recent_events"
+
+    return {
+        "schema": "policy_watch_event_feed.v1",
+        "state": state,
+        "fresh": covered > 0,
+        "coverage_checked_at": (
+            latest_checked.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+            if latest_checked is not None else None
+        ),
+        "sources": source_rows,
+        "items": selected,
+        "is_context_only": True,
+        "can_rank": False,
+        "can_gate": False,
+        "can_size": False,
+        "can_trade": False,
     }
 
 
