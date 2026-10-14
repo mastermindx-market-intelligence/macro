@@ -31,7 +31,7 @@ waves:
     title: Crypto H5 authority closure
     status: in_progress
     depends_on: [P0A]
-    pr: [8901, 9118, 9117, 9123, 9151, 9162, 9164, 9166]
+    pr: [8901, 9118, 9117, 9123, 9151, 9162, 9164, 9166, 9182]
     next_action: >
       Phase 2: (a) DONE — collector capture-gap packet (record_unavailable() in
       collectors/_crypto_observations.py + bgeo/okx call sites + tests, ruling R9) built by
@@ -54,10 +54,12 @@ waves:
       live repaint honouring the flat cut-off) is PR #9166 (lane/cx-p3-polish-w3-20261013,
       head 8f3be876a7d4): Opus two-theme review PASS-WITH-NITS (ruling R33), p0b zero-FOUC
       receipts re-minted for the live.js change (ruling R34), MERGED 2026-10-13 20:48Z
-      (squash 7e16897a6cac, 38/38 paths landed on origin/main). Frontier after #9166 is
-      wave 4 (TERMINAL): H'' context line never carries a tone class + N3 data-flat
-      one-decimal repaint, commissioned to ORCH-E as lane/cx-p4-terminal-20261013
-      (R32 + addenda R33/R34). P0B closes at
+      (squash 7e16897a6cac, 38/38 paths landed on origin/main). (f) wave 4 (TERMINAL: L' methodology into "?" LENS tips, M' one named series per
+      Drivers row, H'' context line never carries a tone class, N3 data-flat one-decimal
+      repaint) is PR #9182 (lane/cx-p4-terminal-20261013, head 40d72cd8dc8c): Opus two-
+      theme review PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (ruling R39), MERGED 2026-10-13 23:25Z (squash
+      0b53c5df4617, 54 paths identical, 0 differing, 0 bad deletes). The Phase-2 design frontier is CLOSED; no further wave is
+      commissioned. P0B closes at
       its acceptance boundary once the nightly data lane commits again and the live crypto
       hero shows a current as-of date on the Phase-1 templates.
     note: >
@@ -86,8 +88,9 @@ next_action: >
   green); the 27 superseded lane PRs are CLOSED; wave-2 polish (items A–K) is PR #9164 (head
   449a2c47cd3a), review PASS (R26), MERGED (squash 7fc0d068e03f); wave-3 polish (L / M / H' /
   two sign nits) is PR #9166 (head 8f3be876a7d4), review PASS-WITH-NITS (R33), MERGED (squash
-  7e16897a6cac); the frontier is wave 4 (TERMINAL: H'' + N3, lane/cx-p4-terminal-20261013,
-  commissioned to ORCH-E). P0B's acceptance boundary waits on the nightly data lane
+  7e16897a6cac); wave 4 (TERMINAL: L' / M' / H'' / N3) is PR #9182 (head 40d72cd8dc8c), review
+  PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (R39), MERGED (squash 0b53c5df4617); the Phase-2 design frontier is
+  CLOSED and the only open boundary is P0B acceptance. P0B's acceptance boundary waits on the nightly data lane
   committing again so the live crypto hero carries a current as-of date.
 blocked_by:
   - >
@@ -179,6 +182,7 @@ artifacts:
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-25-personal-pro-ingress-unblock.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-12-grok-fanout.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md
+  - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-wave4-terminal.md
   - agentos/decisions/DEC-CRYPTO-H5-BTC-BUDGET-AUTHORITY.md
   - agentos/discoveries/DSC-CRYPTO-H5-BYPASSES-BTC-DECISION.md
   - agentos/discoveries/DSC-PERSONAL-PRO-INGRESS-PRINCIPAL-GAP.md
