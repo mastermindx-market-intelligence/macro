@@ -1298,3 +1298,323 @@ def test_body_frame_malformed_status_map_fails_closed(tmp_path, payload):
     sm_path.write_text(payload)
     with pytest.raises(TD.TapeDrawError):
         TD.load_body_frame(str(sm_path))
+
+
+# ----------------------------------------------------------------- routing gates
+# DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES. Every headline, company name and filing
+# sentence below is synthetic (DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE).
+
+from engine.news_impact import routing_gates as RG
+
+_ZNTX_COVER = (
+    "FORM 8-K CURRENT REPORT Date of Report (Date of earliest event reported): "
+    "October 1, 2026 ZENTRIX ROBOTICS, INC. (Exact name of registrant as specified "
+    "in its charter) "
+)
+_FORDHAM_COVER = (
+    "FORM 8-K CURRENT REPORT Date of Report (Date of earliest event reported): "
+    "October 1, 2026 FORDHAM MOTORS COMPANY (Exact name of registrant as specified "
+    "in its charter) "
+)
+_DIVIDEND = "Item 8.01 Other Events. The Board of Directors declared a quarterly cash dividend payable to holders of record."
+_SPECIAL = "Item 8.01 Other Events. The Board of Directors declared a special cash dividend payable to holders of record."
+_RESIGN = "Item 5.02 Departure of Directors. A director resigned from the Board."
+_COLLAB = "Item 1.01 Entry into a Material Definitive Agreement. The Company entered into a strategic collaboration agreement for warehouse automation."
+_GUIDE = "Item 7.01 Regulation FD Disclosure. The Company raised its full-year guidance."
+
+
+def _gdoc(text, items=("8.01",), doc_type="8-K", cover=_ZNTX_COVER):
+    return RG.GateDocument(doc_type, tuple(items), cover + text)
+
+
+def _status(title, template, ticker, docs):
+    return RG.classify(title, template, ticker, docs).status()
+
+
+@pytest.mark.parametrize(
+    "title, code",
+    [
+        ("Industrial Robot Market Size Report 2026-2032", "g1_market_report"),
+        ("ZNTX Stock Quote and News", "g1_quote_page"),
+        ("SHAREHOLDER ALERT: Investors in Zentrix Robotics urged to contact the firm", "g1_solicitation"),
+        ("3 Robotics Stocks to Buy Before Year End", "g1_commentary"),
+        ("Zentrix Robotics declares quarterly dividend", None),
+    ],
+)
+def test_g1_non_event_headlines(title, code):
+    assert RG.non_event_code(title) == code
+
+
+def test_g1_precedes_the_issuer_and_body_gates():
+    # the quote page names the ticker and the body carries T1 language; G1 still decides
+    assert _status("ZNTX Stock Quote and News", "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == "gated_out:g1_quote_page"
+
+
+def test_issuer_event_with_matching_filing_is_gated_in():
+    verdict = RG.classify("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", [_gdoc(_DIVIDEND)])
+    assert verdict.gated_in and verdict.gate is None and verdict.status() == RG.GATED_IN
+
+
+def test_no_documents_is_no_body_and_bad_inputs_raise():
+    verdict = RG.classify("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", [])
+    assert verdict.status() == "gated_out:no_body" and verdict.gate == "G0"
+    with pytest.raises(RG.RoutingGateError):
+        RG.classify("Zentrix Robotics declares quarterly dividend", "T9", "ZNTX", [_gdoc(_DIVIDEND)])
+    for bad in ("", None):
+        with pytest.raises(RG.RoutingGateError):
+            RG.classify("Zentrix Robotics declares quarterly dividend", "T1", bad, [_gdoc(_DIVIDEND)])
+
+
+def test_g2_one_letter_ticker_needs_name_or_cashtag():
+    docs = [_gdoc(_DIVIDEND, cover=_FORDHAM_COVER)]
+    assert _status("Automaker declares quarterly dividend", "T1", "F", docs) == "gated_out:g2_ambiguous_ticker"
+    assert _status("F declares quarterly dividend", "T1", "F", docs) == "gated_out:g2_ambiguous_ticker"
+    assert _status("Fordham Motors declares quarterly dividend", "T1", "F", docs) == RG.GATED_IN
+    assert _status("$F declares quarterly dividend", "T1", "F", docs) == RG.GATED_IN
+
+
+def test_g2_unnamed_issuer_needs_filing_coverage():
+    docs = [_gdoc(_SPECIAL)]
+    # 5 of 6 content tokens appear in the filing
+    assert _status("Board declares special dividend payable to holders", "T1", "ZNTX", docs) == RG.GATED_IN
+    # 2 of 6 content tokens appear in the filing
+    assert _status("Board declares special payout amid robot boom", "T1", "ZNTX", docs) == "gated_out:g2_issuer_absent"
+    # fully covered, but under COVERAGE_MIN_TOKENS content tokens
+    assert RG.headline_coverage("Dividend declared", RG._word_set(_SPECIAL))[0] < RG.COVERAGE_MIN_TOKENS
+    assert _status("Dividend declared", "T1", "ZNTX", docs) == "gated_out:g2_issuer_absent"
+
+
+def test_g2_headline_led_by_another_company_is_not_about_the_issuer():
+    title = "Brightwell Systems picks Zentrix Robotics for warehouse partnership"
+    assert _status(title, "T3", "ZNTX", [_gdoc(_COLLAB)]) == "gated_out:g2_issuer_not_subject"
+    # the lead company appears in the filing: the filing reports the same event
+    with_counterparty = _COLLAB.replace("agreement for", "agreement with Brightwell Systems for")
+    assert _status(title, "T3", "ZNTX", [_gdoc(with_counterparty)]) == RG.GATED_IN
+    # an exempt lead word is never another company
+    assert _status("Analysts praise Zentrix Robotics warehouse partnership", "T3", "ZNTX", [_gdoc(_COLLAB)]) == RG.GATED_IN
+
+
+def test_g2_dateline_prefix_is_stripped_before_the_subject_test():
+    title = "Market Wrap: Zentrix Robotics declares quarterly dividend"
+    names = RG.registrant_tokens([_gdoc(_DIVIDEND)])
+    assert RG.issuer_mention_index(title, "ZNTX", names) == 2  # "Market" would lead unstripped
+    assert _status(title, "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == RG.GATED_IN
+
+
+def test_g3_filing_must_carry_the_template_language():
+    assert (
+        _status("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", [_gdoc(_RESIGN, items=("5.02",))])
+        == "gated_out:g3_no_family_language"
+    )
+
+
+def test_g3_results_headline_needs_an_item_202_filing():
+    title = "Zentrix Robotics beats estimates, raises guidance"
+    assert _status(title, "T2", "ZNTX", [_gdoc(_GUIDE, items=("7.01",))]) == "gated_out:g3_results_without_202"
+    assert _status(title, "T2", "ZNTX", [_gdoc(_GUIDE, items=("2.02", "9.01"))]) == RG.GATED_IN
+
+
+@pytest.mark.parametrize(
+    "title, ticker, expected",
+    [
+        ("Shares of $F rise", "F", True),
+        ("F declares dividend", "F", False),
+        ("Chipmaker (AI) wins order", "AI", True),
+        ("AI chip demand lifts orders", "AI", False),
+        ("ZNTX declares dividend", "ZNTX", True),
+        ("NASDAQ: ZNTX declares dividend", "ZNTX", True),
+        ("ZNTXS declares dividend", "ZNTX", False),
+        ("zntx declares dividend", "ZNTX", False),
+    ],
+)
+def test_ticker_mention_forms(title, ticker, expected):
+    assert RG._ticker_mentioned(title, ticker) is expected
+
+
+def test_registrant_tokens_read_only_8k_cover_pages():
+    other = "OTHERCO HOLDINGS (Exact name of registrant as specified in its charter) "
+    assert RG.registrant_tokens([RG.GateDocument("EX-99.1", ("8.01",), other + _DIVIDEND)]) == frozenset()
+    assert RG.registrant_tokens([_gdoc(_DIVIDEND)]) == {"zentrix", "robotics"}
+    assert RG.registrant_tokens([_gdoc(_DIVIDEND, doc_type="8-k")]) == {"zentrix", "robotics"}
+
+
+def test_every_gate_code_is_a_valid_gate_status():
+    assert RG.STATUS_RE is TD.GATE_STATUS_RE
+    assert RG.STATUS_RE.match(RG.GATED_IN)
+    for code, gate in RG.CODES.items():
+        assert RG.STATUS_RE.match(f"gated_out:{code}"), code
+        assert gate in {"G0", "G1", "G2", "G3"}
+
+
+def _gate_inputs(tmp_path):
+    """Synthetic candidates, bodies.jsonl and texts/ in the edgar_body layout."""
+    import hashlib
+
+    texts = tmp_path / "texts"
+    texts.mkdir()
+
+    def body(item_id, text, items=("8.01",), status="available", doc_status="available"):
+        sha = hashlib.sha256(text.encode()).hexdigest()
+        (texts / f"{sha}.txt").write_text(text)
+        return {
+            "item_id": item_id,
+            "status": status,
+            "filings": [
+                {
+                    "items": list(items),
+                    "documents": [{"status": doc_status, "doc_type": "8-K", "text_sha256": sha}],
+                }
+            ],
+        }
+
+    candidates = [
+        {"item_id": "c3", "title": "Zentrix Robotics declares quarterly dividend", "template": "T1", "ticker": "ZNTX"},
+        {"item_id": "c1", "title": "Board declares special payout amid robot boom", "template": "T1", "ticker": "ZNTX"},
+        {"item_id": "c2", "title": "Zentrix Robotics declares quarterly dividend", "template": "T1", "ticker": None},
+        {"item_id": "c4", "title": "Zentrix Robotics declares quarterly dividend", "template": "T1", "ticker": "ZNTX"},
+        {"item_id": "c5", "title": "Zentrix Robotics declares quarterly dividend", "template": "T1", "ticker": "ZNTX"},
+    ]
+    bodies = [
+        body("c3", _ZNTX_COVER + _DIVIDEND),
+        body("c1", _ZNTX_COVER + _SPECIAL),
+        body("c2", _ZNTX_COVER + _DIVIDEND, status="body_unavailable:no_qualifying_8k"),
+        body("c4", _ZNTX_COVER + _DIVIDEND, doc_status="fetch_failed"),
+        # c5 has no bodies row at all
+    ]
+    return candidates, bodies, texts
+
+
+def test_build_gate_map_statuses_and_no_body_paths(tmp_path):
+    candidates, bodies, texts = _gate_inputs(tmp_path)
+    gate_map = RG.build_gate_map(candidates, {b["item_id"]: b for b in bodies}, texts)
+    assert list(gate_map) == ["c1", "c2", "c3", "c4", "c5"]
+    assert gate_map == {
+        "c1": "gated_out:g2_issuer_absent",
+        "c2": "gated_out:no_body",  # unavailable body; the missing ticker is never read
+        "c3": "gated_in",
+        "c4": "gated_out:no_body",  # no available document
+        "c5": "gated_out:no_body",  # no bodies row
+    }
+
+
+def test_build_gate_map_fails_closed(tmp_path):
+    candidates, bodies, texts = _gate_inputs(tmp_path)
+    by_id = {b["item_id"]: b for b in bodies}
+    with pytest.raises(RG.RoutingGateError):
+        RG.build_gate_map(candidates + [candidates[0]], by_id, texts)
+    for f in texts.iterdir():
+        f.unlink()
+    with pytest.raises(RG.RoutingGateError):
+        RG.build_gate_map(candidates, by_id, texts)
+
+
+def test_routing_gates_cli_writes_ids_and_codes_only(tmp_path):
+    import hashlib
+
+    candidates, bodies, texts = _gate_inputs(tmp_path)
+    cand_path = tmp_path / "candidates.jsonl"
+    cand_path.write_text("".join(json.dumps(c) + "\n" for c in candidates))
+    bodies_path = tmp_path / "bodies.jsonl"
+    bodies_path.write_text("".join(json.dumps(b) + "\n" for b in bodies))
+    out, report = tmp_path / "gate_map.json", tmp_path / "gate_report.json"
+    argv = ["--candidates", str(cand_path), "--bodies", str(bodies_path), "--texts", str(texts),
+            "--out", str(out), "--report", str(report)]
+    assert RG.main(argv) == 0
+    gate_map = json.loads(out.read_text())
+    assert set(gate_map) == {c["item_id"] for c in candidates}
+    summary = json.loads(report.read_text())
+    assert summary["gates_version"] == RG.GATES_VERSION
+    assert summary["n_candidates"] == 5 and summary["n_gated_in"] == 1
+    assert summary["gate_map_sha256"] == hashlib.sha256(out.read_bytes()).hexdigest()
+    assert summary["bodies_sha256"] == hashlib.sha256(bodies_path.read_bytes()).hexdigest()
+    for path in (out, report):
+        blob = path.read_bytes().lower()
+        for word in (b"zentrix", b"robotics", b"dividend", b"payout"):
+            assert word not in blob
+    cand_path.write_text("not json\n")
+    assert RG.main(argv) == 2
+    cand_path.write_text(json.dumps({"item_id": "c3", "title": "x", "ticker": "ZNTX"}) + "\n")
+    assert RG.main(argv) == 2  # an available body with no template is a KeyError, not a verdict
+
+
+def _gate_frame_setup(tmp_path):
+    paths = _frame_inputs(tmp_path)
+    cand_path = tmp_path / "candidates.jsonl"
+    assert _cli(paths, tmp_path / "full", "--candidates-out", str(cand_path)) == 0
+    ids = [json.loads(l)["item_id"] for l in cand_path.read_text().splitlines() if l.strip()]
+    assert len(ids) >= 2
+    sm_path = tmp_path / "status_map.json"
+    sm_path.write_text(json.dumps({i: "available" for i in ids}, sort_keys=True))
+    assert _cli(paths, tmp_path / "bodied", "--body-frame", str(sm_path)) == 0
+    return paths, ids, sm_path
+
+
+def test_gate_frame_restricts_draw_and_records_gates(tmp_path):
+    import hashlib
+
+    paths, ids, sm_path = _gate_frame_setup(tmp_path)
+    keep = set(ids[: len(ids) // 2])
+    gm_path = tmp_path / "gate_map.json"
+    gm_path.write_text(json.dumps({i: ("gated_in" if i in keep else "gated_out:g2_issuer_absent") for i in ids}))
+    assert _cli(paths, tmp_path / "gated", "--body-frame", str(sm_path), "--gate-frame", str(gm_path)) == 0
+    drawn = {json.loads(l)["item_id"] for l in (tmp_path / "gated" / "cases.jsonl").read_text().splitlines() if l.strip()}
+    assert drawn and drawn <= keep
+    report = json.loads((tmp_path / "gated" / "draw_report.json").read_text())
+    assert report["frame"]["kind"] == "body_available"
+    gate = report["gate_frame"]
+    assert gate["kind"] == "routing_gates"
+    assert gate["gate_map_sha256"] == hashlib.sha256(gm_path.read_bytes()).hexdigest()
+    assert gate["n_gate_entries"] == len(ids)
+    assert gate["n_candidates_pre_gate"] == len(ids)
+    assert gate["n_candidates_gated_in"] == len(keep)
+    assert gate["excluded_codes"] == {"g2_issuer_absent": len(ids) - len(keep)}
+    assert sum(sum(v.values()) for v in gate["gated_cells"].values()) == len(keep)
+    # without a gate frame the report carries no gate record
+    assert "gate_frame" not in json.loads((tmp_path / "bodied" / "draw_report.json").read_text())
+
+
+def test_gate_frame_all_gated_in_draws_the_body_framed_cases_and_replays(tmp_path):
+    paths, ids, sm_path = _gate_frame_setup(tmp_path)
+    gm_path = tmp_path / "gate_map.json"
+    gm_path.write_text(json.dumps({i: "gated_in" for i in ids}))
+    for name in ("a", "b"):
+        assert _cli(paths, tmp_path / name, "--body-frame", str(sm_path), "--gate-frame", str(gm_path)) == 0
+    for name in ("cases.jsonl", "manifest.json", "draw_report.json"):
+        assert (tmp_path / "a" / name).read_bytes() == (tmp_path / "b" / name).read_bytes()
+    assert (tmp_path / "a" / "cases.jsonl").read_bytes() == (tmp_path / "bodied" / "cases.jsonl").read_bytes()
+
+
+def test_gate_frame_requires_body_frame(tmp_path, capsys):
+    paths, ids, _ = _gate_frame_setup(tmp_path)
+    gm_path = tmp_path / "gate_map.json"
+    gm_path.write_text(json.dumps({i: "gated_in" for i in ids}))
+    capsys.readouterr()
+    assert _cli(paths, tmp_path / "gated", "--gate-frame", str(gm_path)) == 2
+    assert "requires body_frame" in capsys.readouterr().err
+
+
+def test_gate_frame_must_cover_the_pool_with_body_consistent_statuses(tmp_path):
+    paths, ids, sm_path = _gate_frame_setup(tmp_path)
+    gm_path = tmp_path / "gate_map.json"
+    gm_path.write_text(json.dumps({i: "gated_in" for i in ids[1:]} | {"zz-outside": "gated_in"}))
+    assert _cli(paths, tmp_path / "missing", "--body-frame", str(sm_path), "--gate-frame", str(gm_path)) == 2
+    gm_path.write_text(json.dumps({i: "gated_in" for i in ids} | {ids[0]: "gated_out:no_body"}))
+    assert _cli(paths, tmp_path / "stale", "--body-frame", str(sm_path), "--gate-frame", str(gm_path)) == 2
+
+
+@pytest.mark.parametrize(
+    "payload",
+    ['{"x": "maybe"}', '{"x": "gated_out:"}', '{"x": "gated_out:G2"}', "[]", "{}", "not json"],
+)
+def test_gate_frame_malformed_map_fails_closed(tmp_path, payload):
+    gm_path = tmp_path / "gate_map.json"
+    gm_path.write_text(payload)
+    with pytest.raises(TD.TapeDrawError):
+        TD.load_gate_frame(str(gm_path))
+
+
+def test_routing_gates_source_has_no_clock_network_or_proxy_cell_read():
+    text = Path(RG.__file__).read_text()
+    for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
+                   '"proxy_cell"', "'proxy_cell'"):
+        assert needle not in text, f"forbidden source fragment: {needle!r}"

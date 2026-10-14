@@ -2296,6 +2296,11 @@ def test_real_producer_row_pins_the_coverage_only_with_rows_shape(monkeypatch):
     Key shape only — the producer reads the wall clock, so ages/dates here
     would drift. Reuses this file's _summary_row/_capture fixtures and the
     monkeypatched-MOLECULE_THEME_MAP pattern of the status-correction test.
+    The ``assert "molecules_checked" in row`` below pins the top-level
+    mirror that ``format_theme_feed_chip`` reads live in engine/fda_scarcity.py
+    (``"molecules_checked": scarcity_row.get("molecules_checked")``), which
+    ``compute_foresight_cascade`` in engine/foresight_cascade.py calls, so the
+    mirror is a consumer contract, not merely the shape the producer emits.
     """
     import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity
