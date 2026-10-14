@@ -2555,3 +2555,85 @@ def test_no_published_derived_row_has_a_withheld_constituent() -> None:
                         f"constituent {constituent_key} is withheld "
                         f"({constituent['withheld_reason']!r})"
                     )
+
+
+def test_screen_withheld_rows_are_recorded_in_degraded_dependencies() -> None:
+    """W15-F-FVA item 2: screen withholdings are recorded, ALWAYS.
+
+    The module docstring's dependency-local rule promises a suppressed
+    result is "recorded in ``degraded_dependencies``". The
+    stated-definition screen used to withhold rows without recording
+    them, so the all-six display_quantum contradiction reached
+    availability "unavailable" with an empty ``degraded_dependencies``
+    and died in the document's own contract self-check (HEAD c334b9ba:
+    CaseShapeError, engine :1473). Block 1 builds that case exactly as
+    the two quantum/unit DECLINED tests build it (mutate every fact of
+    ``_plnt_case``) and asserts (a) availability, (b) the EXACT set of
+    ``(dependency, reason)`` pairs the screen contributed -- every
+    emitted result key, once -- and (c) the module's own validator
+    accepts the recorded document. Block 2 pins one partial case, the
+    D2 ``_mutate_total_revenue_unit`` mutator: availability stays
+    "ready" and the list gains exactly the withheld rows' entries.
+
+    Reason vocabulary, measured (not guessed): five of the six rows
+    fail their OWN stated-definition check in the all-six quantum case
+    -- including ``advertising_net_change``, whose envelopes contradict
+    directly, exactly as in the committed d1 grid param -- so they
+    record ``result_envelope_contradicts_stated_definition``. Only the
+    ``_pct`` ratio is exempt from its own envelope check and is
+    withheld by the ``_DERIVED_ROW_CONSTITUENTS`` cascade, recording
+    ``dependency_suppressed``.
+    """
+    case = _plnt_case()
+    for fact in case["facts"]:
+        fact["display_quantum"] = "5_thousand"
+    document = project_economic_change(case)
+
+    # (a) every row withheld -> unavailable, never an empty ready.
+    assert document["availability"] == "unavailable"
+
+    # (b) the exact pairs the screen contributed: each of the six
+    # emitted result keys, once.
+    emitted_keys = {result["key"] for result in document["results"]}
+    assert emitted_keys == {
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    }
+    contributed = {
+        (entry["dependency"], entry["reason"])
+        for entry in document["degraded_dependencies"]
+    }
+    assert contributed == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_EXPENSE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_NET_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    assert len(document["degraded_dependencies"]) == 6
+
+    # (c) the module's own validator accepts the recorded document --
+    # the same call the self-check tests use.
+    _assert_document_matches_contract_shape(document)
+
+    # -- Block 2: the D2 total_revenue_unit partial case -------------
+    facts = [dict(fact) for fact in _plnt_facts()]
+    _mutate_total_revenue_unit(facts)
+    partial = project_economic_change(_plnt_case(facts=facts))
+    assert partial["availability"] == "ready"
+    pairs = {
+        (entry["dependency"], entry["reason"])
+        for entry in partial["degraded_dependencies"]
+    }
+    assert pairs == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    _assert_document_matches_contract_shape(partial)

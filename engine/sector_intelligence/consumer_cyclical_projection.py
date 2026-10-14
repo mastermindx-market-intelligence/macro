@@ -1865,7 +1865,50 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # ``state``, so availability, the lead and the emitted rows agree
     # (independent PR #9285 review, defects D1/D2: the check used to live
     # only inside ``_emit_result``, which runs after both).
+    # Snapshot the rows withheld BEFORE the screen runs: a row already
+    # withheld at build time keeps its existing bookkeeping exactly (its
+    # entries come from ``_compose_changes`` and the omission loops, not
+    # from this block).
+    _keys_withheld_before_screen = {
+        _r.get("key") for _r in all_results if _r.get("withheld_reason")
+    }
     _screen_stated_definition(all_results)
+
+    # The module docstring's dependency-local rule: a suppressed result
+    # "records them in ``degraded_dependencies``". The stated-definition
+    # screen withheld rows without recording them, so a case whose screen
+    # withholds every row reached availability "unavailable" with an
+    # empty ``degraded_dependencies`` and failed the contract's own
+    # if/then self-check (consumer_cyclical_intelligence_read_model.v1
+    # .schema.json ``then`` branch: minItems 1). Record every row THIS
+    # call newly withheld -- including rows the
+    # ``_DERIVED_ROW_CONSTITUENTS`` cascade withheld. Unconditional on
+    # availability: one row's bookkeeping must not depend on unrelated
+    # rows. Entries follow ``all_results`` order and dedupe by
+    # ``dependency`` against the entries already in ``degraded_facts``.
+    # ``state`` keeps ``_degraded``'s default "unavailable": the schema's
+    # ``$defs/degraded_dependency.state`` enum admits only
+    # "available"/"partial"/"unavailable" -- none names withholding.
+    # Each ``reason`` is the row's non-empty ``withheld_reason`` string,
+    # satisfying the schema's reason constraint (string or null,
+    # minLength 1).
+    _deps_already_recorded = {
+        _d.get("dependency")
+        for _d in degraded_facts
+        if isinstance(_d, Mapping)
+    }
+    for _result in all_results:
+        _key = _result.get("key")
+        _reason = _result.get("withheld_reason")
+        if not _key or not _reason:
+            continue
+        if _key in _keys_withheld_before_screen:
+            continue
+        _entry = _degraded(str(_key), str(_reason))
+        if _entry["dependency"] in _deps_already_recorded:
+            continue
+        _deps_already_recorded.add(_entry["dependency"])
+        degraded_facts.append(_entry)
 
     # ---- Availability ----------------------------------------------------
     has_any_ready = any(r.get("state") == "READY" for r in all_results)
