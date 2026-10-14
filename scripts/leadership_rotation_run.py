@@ -16,7 +16,7 @@ import math
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -627,6 +627,217 @@ def _aggregate_arms(cores: Sequence[dict]) -> dict:
     return arms_out
 
 
+C2_STRATA = ("both_up", "both_down", "mixed", "unmeasured")
+C2_MIN_N = 5
+C2_NOTE = "prereg V2 §6 direction stratification (CHAL GATES #2); NOT the sealed Trend-Persistence-era study also called 'C2', which stays closed"
+
+
+def _direction_labeler(ps: PairSeries) -> Callable[[int], str]:
+    """prereg V2 §6 C2: label a session ``t`` by the CONTRACT's absolute_direction.
+
+    The direction rule is NEVER re-implemented here -- it is read from
+    ``engine.leadership_rotation_context.pair_interpretation`` through the
+    existing contract consumer ``st.entry_context``.  Both legs are built as
+    ``pd.Series`` ONCE per pair and each distinct ``t`` is evaluated once
+    (memoised), so a stratum sweep costs one contract call per session, not one
+    per (session, hypothesis).
+
+    ``unmeasured`` is a distinct label: it is never zero and never a direction.
+    """
+    num_s = pd.Series(ps.num)
+    den_s = pd.Series(ps.den)
+    memo: Dict[int, str] = {}
+
+    def _label_once(t: int) -> str:
+        lookback = int(st.Z_LOOKBACK)
+        if t < lookback:
+            return "unmeasured"
+        legs = (ps.num[t], ps.den[t], ps.num[t - lookback], ps.den[t - lookback])
+        if not all(np.isfinite(leg) and leg > 0 for leg in legs):
+            return "unmeasured"
+        try:
+            result = st.entry_context(num_s, den_s, t)
+        except (ValueError, ZeroDivisionError):
+            return "unmeasured"
+        if not isinstance(result, dict) or "absolute_direction" not in result:
+            return "unmeasured"
+        return result["absolute_direction"]
+
+    def label(t: int) -> str:
+        key = int(t)
+        if key not in memo:
+            memo[key] = _label_once(key)
+        return memo[key]
+
+    return label
+
+
+# prereg V2 §6 direction stratification (CHAL GATES #2); NOT the sealed Trend-Persistence-era study also called 'C2', which stays closed
+def _c2_strata(group: str, pairs: Sequence[PairSeries], cores: Sequence[dict]) -> dict:
+    """Descriptive direction strata of H1/H2/H3 (prereg V2 §6 control C2).
+
+    POINTS ONLY -- no p-values, no verdicts, no Holm, and no margin is applied.
+    This block is additive: nothing reads it for any decision and it changes no
+    existing number.  A field that cannot be truthfully filled is reported with
+    a ``None`` point and a reason, never a filled fake value.
+    """
+    all_phases = [ph for c in cores for ph in c["phases"]]
+    # session_w_total is the 252-session constant, NOT the realised pair-session
+    # weight of the read: BOTH reported points are ratios/differences in which
+    # the denominator cancels (delay_reduction is a difference of two medians;
+    # burden_cut_b is 1 - burden_A1/burden_A0, and burden is burden_w divided by
+    # session_w_total/252).  Per-stratum burden LEVELS are NOT reported, so the
+    # level distortion this constant introduces is never observable downstream.
+    session_w_total = 252.0
+    labelers = [_direction_labeler(ps) for ps in pairs]
+    zipped = list(zip(pairs, cores, labelers))
+
+    def _metrics(records: Sequence[dict]) -> dict:
+        return _episode_metrics_unit(records, all_phases, session_w_total)
+
+    def _resolve(
+        stratum: str, n: int, points: Sequence[Tuple[str, float, str]]
+    ) -> Tuple[str, Optional[str], List[Tuple[str, Optional[float]]]]:
+        """points are (key, value, cause-when-non-finite) in reported order."""
+        if stratum == "unmeasured":
+            return "UNMEASURED", "label_unmeasured", [(k, None) for k, _v, _c in points]
+        if n < C2_MIN_N:
+            return "SOURCE_LIMITED", f"n={n} < {C2_MIN_N}", [(k, None) for k, _v, _c in points]
+        kept: List[Tuple[str, Optional[float]]] = []
+        causes: List[str] = []
+        for key, value, cause in points:
+            if np.isfinite(value):
+                kept.append((key, float(value)))
+            else:
+                kept.append((key, None))
+                causes.append(cause)
+        if causes:
+            return "NOT_EXECUTABLE", ",".join(causes), kept
+        return "COMPUTED", None, kept
+
+    def _entry(
+        n_items: int,
+        n: int,
+        stratum: str,
+        points: Sequence[Tuple[str, float, str]],
+        comparator_basis: Optional[str] = None,
+    ) -> dict:
+        status, reason, kept = _resolve(stratum, n, points)
+        out: Dict[str, Any] = {"n_items": n_items, "n": n, "status": status}
+        for key, value in kept:
+            out[key] = value
+        if comparator_basis is not None:
+            out["comparator_basis"] = comparator_basis
+        out["reason"] = reason
+        return out
+
+    def _matured(core: dict, arm_key: str, field: str, label, stratum: str) -> List[float]:
+        return [
+            float(r[field]["y"])
+            for r in core.get(arm_key, [])
+            if r[field]["state"] == "MATURED"
+            and r[field]["y"] is not None
+            and label(int(r["t"])) == stratum
+        ]
+
+    h1: Dict[str, dict] = {}
+    h2: Dict[str, dict] = {}
+    h3: Dict[str, dict] = {}
+    for stratum in C2_STRATA:
+        a1_records: List[dict] = []
+        a2_records: List[dict] = []
+        a0_records: List[dict] = []
+        items_h1: List[inf.Item] = []
+        items_h2: List[inf.Item] = []
+        items_h3: List[inf.Item] = []
+        b1_y: List[float] = []
+        b2_y: List[float] = []
+        b3_res: List[float] = []
+        a1_y: List[float] = []
+        a1_res: List[float] = []
+        for ps, core, label in zipped:
+            for rec in core["a1_class"]:
+                if label(int(rec["index"])) != stratum:
+                    continue
+                a1_records.append(rec)
+                if rec["cls"] == "MATCHED":
+                    items_h1.append((group, ps.pair_id, int(rec["index"])))
+            a2_records.extend(
+                rec for rec in core["a2_class"] if label(int(rec["index"])) == stratum
+            )
+            a0_records.extend(
+                rec for rec in core["a0_class"] if label(int(rec["index"])) == stratum
+            )
+            a1_y.extend(_matured(core, "a1_out", "y20", label, stratum))
+            items_h2.extend(
+                (group, ps.pair_id, int(r["t"]))
+                for r in core.get("a1_out", [])
+                if r["y20"]["state"] == "MATURED"
+                and r["y20"]["y"] is not None
+                and label(int(r["t"])) == stratum
+            )
+            b1_y.extend(_matured(core, "b1_out", "y20", label, stratum))
+            b2_y.extend(_matured(core, "b2_out", "y20", label, stratum))
+            a1_res.extend(_matured(core, "a1_out", "y_res_20", label, stratum))
+            items_h3.extend(
+                (group, ps.pair_id, int(r["t"]))
+                for r in core.get("a1_out", [])
+                if r["y_res_20"]["state"] == "MATURED"
+                and r["y_res_20"]["y"] is not None
+                and label(int(r["t"])) == stratum
+            )
+            b3_res.extend(_matured(core, "b3_out", "y_res_20", label, stratum))
+
+        m_a1 = _metrics(a1_records)
+        m_a2 = _metrics(a2_records)
+        m_a0 = _metrics(a0_records)
+        delay_reduction = float(m_a2["median_delay"]) - float(m_a1["median_delay"])
+        burden_a0 = float(m_a0["burden"])
+        burden_cut_b = (
+            1.0 - float(m_a1["burden"]) / burden_a0
+            if np.isfinite(burden_a0) and burden_a0 != 0
+            else float("nan")
+        )
+        n_h1 = _cluster_n(items_h1)
+        h1[stratum] = _entry(
+            len(items_h1),
+            n_h1,
+            stratum,
+            (
+                ("delay_reduction", delay_reduction, "no_matched_delay"),
+                ("burden_cut_b", burden_cut_b, "no_A0_burden"),
+            ),
+        )
+
+        n_h2 = _cluster_n(items_h2)
+        h2[stratum] = _entry(
+            len(items_h2),
+            n_h2,
+            stratum,
+            (("point", _h2_point_subset(a1_y, b1_y, b2_y), "no_same_stratum_comparator"),),
+            comparator_basis="same_stratum",
+        )
+
+        n_h3 = _cluster_n(items_h3)
+        h3[stratum] = _entry(
+            len(items_h3),
+            n_h3,
+            stratum,
+            (("point", _h3_point_subset(a1_res, b3_res), "no_same_stratum_comparator"),),
+            comparator_basis="same_stratum",
+        )
+
+    return {
+        "label_source": "engine.leadership_rotation_context.pair_interpretation absolute_direction via study.entry_context (lookback Z_LOOKBACK sessions, both legs)",
+        "label_time": "H1: alarm index (A1/A2/A0 records); H2/H3: entry t of each outcome record",
+        "note": C2_NOTE,
+        "min_n": C2_MIN_N,
+        "H1": h1,
+        "H2": h2,
+        "H3": h3,
+    }
+
+
 def evaluate_group(
     pairs: Sequence[PairSeries],
     *,
@@ -887,6 +1098,7 @@ def evaluate_group(
     else:
         stab_h3 = _stab_default
 
+    c2 = _c2_strata(group, pairs, cores)
     pair_legs = {ps.pair_id: (ps.num_sym, ps.den_sym) for ps in pairs}
 
     return _json_sanitize(
@@ -941,6 +1153,7 @@ def evaluate_group(
                 "interval_90": inf.interval_90(h3_reps),
                 "lower_bound": inf.lower_bound(h3_reps),
             },
+            "c2_strata": c2,
         }
     )
 

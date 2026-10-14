@@ -524,3 +524,282 @@ def test_evaluate_group_h1_carries_a0_raw_metrics(monkeypatch):
     left["H1"].pop("A0_raw")
     right["H1"].pop("A0_raw")
     assert left == right
+
+
+# --- prereg V2 §6 C2 direction stratification (c2_strata) -------------------
+#
+# Deterministic synthetic group whose BOTH legs move, so the contract's
+# `absolute_direction` lands in every measured stratum.  Built in this file's
+# existing inline style (no data/, no network, no real-data read).
+_C2_START = 252  # st.WARMUP
+_C2_TAIL = 70  # past the last formation session so entries mature
+
+
+def _c2_group(n: int = 1200, n_pairs: int = 6, seed: int = 17):
+    rng = np.random.default_rng(seed)
+    mkt = rng.normal(0.0003, 0.009, n)
+    spy = 100.0 * np.exp(np.cumsum(mkt))
+    common = rng.normal(0.0, 0.005, n)
+    pairs = []
+    for i in range(n_pairs):
+        idio = rng.normal(0.0, 0.005, n)
+        drift = np.where(((np.arange(n) // 80) + i) % 4 == 0, 0.0025, 0.0)
+        u = common + idio + drift
+        num = 100.0 * np.exp(np.cumsum(0.8 * mkt + u / 2.0 + rng.normal(0.0, 0.004, n)))
+        den = 100.0 * np.exp(np.cumsum(1.1 * mkt - u / 2.0 + rng.normal(0.0, 0.004, n)))
+        pairs.append(
+            PairSeries(f"c2_{i}", "defensive_sector", f"N{i}", f"D{i}", num, den, spy)
+        )
+    return pairs
+
+
+def _c2_window(pairs):
+    return _C2_START, len(pairs[0].spy) - _C2_TAIL
+
+
+def _c2_run(pairs, reps: int = 4) -> dict:
+    n = len(pairs[0].spy)
+    start, end = _c2_window(pairs)
+    W = inf.stationary_bootstrap_weights(n, reps=reps, seed=1)
+    return evaluate_group(pairs, start=start, end=end, partition="P0", W=W)
+
+
+def _c2_leaves(obj, path: str = "c2_strata"):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            yield from _c2_leaves(v, f"{path}.{k}")
+    elif isinstance(obj, (list, tuple)):
+        for i, v in enumerate(obj):
+            yield from _c2_leaves(v, f"{path}[{i}]")
+    else:
+        yield path, obj
+
+
+def _c2_keys(obj):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            yield k
+            yield from _c2_keys(v)
+    elif isinstance(obj, (list, tuple)):
+        for v in obj:
+            yield from _c2_keys(v)
+
+
+# MUTATION: scripts/leadership_rotation_run.py:641 drop the per-pair memo (recompute every call) and let an unmeasurable leg fall through to a direction
+def test_c2_direction_labeler_cases(monkeypatch):
+    from scripts.leadership_rotation_run import _direction_labeler
+
+    n = 60
+    spy = np.full(n, 100.0)
+
+    def _pair(num40: float, den40: float, *, num20: float = 100.0) -> PairSeries:
+        num = np.full(n, 100.0)
+        den = np.full(n, 100.0)
+        num[20] = num20
+        den[20] = 100.0
+        num[40] = num40
+        den[40] = den40
+        return PairSeries("c2lab", "g", "N", "D", num, den, spy)
+
+    # t = 40, Z_LOOKBACK = 20 -> the contract reads [20, 40] on BOTH legs.
+    assert _direction_labeler(_pair(110.0, 120.0))(40) == "both_up"
+    assert _direction_labeler(_pair(90.0, 80.0))(40) == "both_down"
+    assert _direction_labeler(_pair(110.0, 80.0))(40) == "mixed"
+    # t below the lookback is unmeasured, NOT a direction and NOT zero.
+    assert _direction_labeler(_pair(110.0, 120.0))(5) == "unmeasured"
+    # a NaN leg at t - Z_LOOKBACK is unmeasured.
+    assert _direction_labeler(_pair(110.0, 120.0, num20=float("nan")))(40) == "unmeasured"
+
+    calls = []
+    real = st.entry_context
+
+    def _counting(num, den, t, lookback=st.Z_LOOKBACK):
+        calls.append(int(t))
+        return real(num, den, t, lookback)
+
+    monkeypatch.setattr(st, "entry_context", _counting)
+    label = _direction_labeler(_pair(110.0, 120.0))
+    first = label(40)
+    second = label(40)
+    assert first == second == "both_up"
+    assert calls == [40]
+
+
+# MUTATION: scripts/leadership_rotation_run.py:738 emit the strata in sorted()/insertion-arbitrary order, rename a frozen entry key, or leave a NaN point in the block
+def test_c2_strata_present_with_frozen_shape():
+    from scripts.leadership_rotation_run import C2_MIN_N, C2_NOTE, C2_STRATA
+
+    out = _c2_run(_c2_group())
+    c2 = out["c2_strata"]
+    assert c2["note"] == C2_NOTE
+    assert c2["min_n"] == C2_MIN_N == 5
+    assert list(c2) == ["label_source", "label_time", "note", "min_n", "H1", "H2", "H3"]
+    assert c2["label_source"].startswith(
+        "engine.leadership_rotation_context.pair_interpretation absolute_direction"
+    )
+    assert "Z_LOOKBACK" in c2["label_source"]
+    assert c2["label_time"].startswith("H1: alarm index")
+
+    frozen = {
+        "H1": ["n_items", "n", "status", "delay_reduction", "burden_cut_b", "reason"],
+        "H2": ["n_items", "n", "status", "point", "comparator_basis", "reason"],
+        "H3": ["n_items", "n", "status", "point", "comparator_basis", "reason"],
+    }
+    allowed = {"COMPUTED", "SOURCE_LIMITED", "UNMEASURED", "NOT_EXECUTABLE"}
+    seen = set()
+    for h in ("H1", "H2", "H3"):
+        assert list(c2[h]) == list(C2_STRATA)
+        for s in C2_STRATA:
+            entry = c2[h][s]
+            assert list(entry) == frozen[h]
+            assert entry["status"] in allowed
+            seen.add(entry["status"])
+            if h in ("H2", "H3"):
+                assert entry["comparator_basis"] == "same_stratum"
+            if entry["status"] in ("UNMEASURED", "SOURCE_LIMITED"):
+                assert entry["reason"] is not None
+    assert {"COMPUTED", "SOURCE_LIMITED", "UNMEASURED"} <= seen
+
+    for path, value in _c2_leaves(c2):
+        assert not isinstance(value, float) or math.isfinite(value), path
+    # POINTS ONLY: no p-value, no verdict, no Holm anywhere in the block.
+    assert not {"p", "p_a", "p_b", "verdict", "holm", "adjusted"} & set(_c2_keys(c2))
+
+
+# MUTATION: scripts/leadership_rotation_run.py:696 gate the stratum on n_items (raw count) instead of the clustered n, or drop C2_MIN_N to 1
+def test_c2_source_limited_below_min_n(monkeypatch):
+    import scripts.leadership_rotation_run as lrr
+    from scripts.leadership_rotation_run import C2_MIN_N, _evaluate_pair_core
+
+    pairs = _c2_group()
+    start, end = _c2_window(pairs)
+    cores = [_evaluate_pair_core(ps, start=start, end=end) for ps in pairs]
+    matched = {
+        int(rec["index"]) for c in cores for rec in c["a1_class"] if rec["cls"] == "MATCHED"
+    }
+    matured = {
+        int(r["t"])
+        for c in cores
+        for r in c["a1_out"]
+        if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None
+    }
+    both = sorted(matched & matured)
+    assert both, "fixture must yield at least one MATCHED and MATURED A1 entry"
+    t0 = both[0]
+
+    monkeypatch.setattr(
+        lrr,
+        "_direction_labeler",
+        lambda ps: (lambda t: "both_up" if int(t) == t0 else "mixed"),
+    )
+    c2 = _c2_run(pairs)["c2_strata"]
+    point_keys = {
+        "H1": ("delay_reduction", "burden_cut_b"),
+        "H2": ("point",),
+        "H3": ("point",),
+    }
+    for h, keys in point_keys.items():
+        entry = c2[h]["both_up"]
+        # exactly one clustered item -> 1 <= n < C2_MIN_N
+        assert entry["n_items"] >= 1
+        assert entry["n"] == 1 < C2_MIN_N
+        assert entry["status"] == "SOURCE_LIMITED"
+        assert entry["reason"] == f"n={entry['n']} < {C2_MIN_N}"
+        for k in keys:
+            assert entry[k] is None
+
+
+# MUTATION: scripts/leadership_rotation_run.py:827 omit the "unmeasured" stratum from the H2/H3 dicts so the strata no longer partition the group's records
+def test_c2_h2_partition_is_complete():
+    from scripts.leadership_rotation_run import C2_STRATA, _evaluate_pair_core
+
+    pairs = _c2_group()
+    start, end = _c2_window(pairs)
+    c2 = _c2_run(pairs)["c2_strata"]
+    cores = [_evaluate_pair_core(ps, start=start, end=end) for ps in pairs]
+
+    def _count(field: str) -> int:
+        return sum(
+            1
+            for c in cores
+            for r in c["a1_out"]
+            if r[field]["state"] == "MATURED" and r[field]["y"] is not None
+        )
+
+    n20 = _count("y20")
+    nres = _count("y_res_20")
+    assert n20 > 0 and nres > 0
+    assert sum(c2["H2"][s]["n_items"] for s in C2_STRATA) == n20
+    assert sum(c2["H3"][s]["n_items"] for s in C2_STRATA) == nres
+
+
+# MUTATION: scripts/leadership_rotation_run.py:809 take the B1/B2 comparators from the WHOLE group instead of the same stratum
+def test_c2_h2_point_matches_manual_subset(monkeypatch):
+    import scripts.leadership_rotation_run as lrr
+    from scripts.leadership_rotation_run import (
+        C2_MIN_N,
+        _evaluate_pair_core,
+        _h2_point_subset,
+    )
+
+    pairs = _c2_group()
+    start, end = _c2_window(pairs)
+    strata = ("both_up", "both_down", "mixed")
+    block = 25
+
+    def _rule(t: int) -> str:
+        return strata[(int(t) // block) % 3]
+
+    monkeypatch.setattr(lrr, "_direction_labeler", lambda ps: _rule)
+    c2 = _c2_run(pairs)["c2_strata"]
+    cores = [_evaluate_pair_core(ps, start=start, end=end) for ps in pairs]
+
+    checked = 0
+    for s in strata:
+        a1_y: list = []
+        b1_y: list = []
+        b2_y: list = []
+        for core in cores:
+            for r in core["a1_out"]:
+                if (
+                    r["y20"]["state"] == "MATURED"
+                    and r["y20"]["y"] is not None
+                    and _rule(r["t"]) == s
+                ):
+                    a1_y.append(float(r["y20"]["y"]))
+            for arm_key, bucket in (("b1_out", b1_y), ("b2_out", b2_y)):
+                for r in core[arm_key]:
+                    if (
+                        r["y20"]["state"] == "MATURED"
+                        and r["y20"]["y"] is not None
+                        and _rule(r["t"]) == s
+                    ):
+                        bucket.append(float(r["y20"]["y"]))
+        entry = c2["H2"][s]
+        assert entry["n_items"] == len(a1_y)
+        assert entry["n"] >= C2_MIN_N
+        assert entry["status"] == "COMPUTED"
+        assert entry["reason"] is None
+        assert abs(entry["point"] - _h2_point_subset(a1_y, b1_y, b2_y)) < 1e-12
+        checked += 1
+    assert checked == 3
+
+
+# MUTATION: scripts/leadership_rotation_run.py:1092 let the C2 sweep mutate cores/records in place or recompute an existing H1/H2/H3 number
+def test_c2_does_not_change_existing_outputs(monkeypatch):
+    import scripts.leadership_rotation_run as lrr
+
+    pairs = _c2_group()
+    with_c2 = _c2_run(pairs)
+    assert with_c2["c2_strata"]
+
+    monkeypatch.setattr(lrr, "_c2_strata", lambda *_a, **_k: {})
+    without_c2 = _c2_run(pairs)
+
+    def _strip(out: dict) -> dict:
+        assert "c2_strata" in out
+        return {k: v for k, v in out.items() if k != "c2_strata"}
+
+    assert json.dumps(_strip(with_c2), sort_keys=True) == json.dumps(
+        _strip(without_c2), sort_keys=True
+    )
