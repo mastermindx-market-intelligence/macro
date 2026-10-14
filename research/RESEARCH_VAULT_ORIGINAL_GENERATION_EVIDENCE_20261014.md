@@ -32,7 +32,10 @@ the total. Before every covered write, its intent must also leave64KiB for the
 synchronous result, catalog readback and possible COMPLETE terminal record.
 Opaque catalog versions are bounded to4096UTF-8bytes, so even their worst JSON
 escaping fits that reserve. Budget exhaustion therefore refuses before the
-effect; an actual disk/I/O failure after it still leaves an uncertain operation.
+effect. Each publication plan also reserves the known remainder of its serial
+corpus/catalog/receipt batch before the first corpus effect. This includes the
+following catalog intent, bounded versions and receipt envelopes. An actual
+disk/I/O failure after an effect still leaves an uncertain operation.
 Corpus and PDF bodies are not copied into this file. Actual catalog
 intents and pending receipt bodies are private and must stay on the original
 private run/artifact carrier. Nothing writes them to the repository mirror,
@@ -118,7 +121,7 @@ journal despite a confirmed corpus write. Three discriminators fail on that
 source and pass with the frozen batch: original catalog retention, exact later
 publication bytes, and refusal of a body changed after capture. Additional tests
 cover later publication clocks and conflict-withheld receipts. The final affected
-suite contains670passing tests with no skips.
+suite contains671passing tests with no skips.
 
 A separate local sizing probe retained three4,623,772-byte synthetic catalog
 intents plus thirty2KiB receipt plans. It used the current2889-item public
@@ -128,3 +131,19 @@ inspection took0.563seconds, and process peak RSS was88,883,200bytes on macOS.
 These figures neither qualify the production runner nor establish source custody.
 They describe the earlier capture layout, before exact intended catalog bytes
 were also included in each publication plan, and are not the new run budget.
+
+The focused publication review of82e131770576a421fe68e955db34e8b78807abb4
+found that an individually affordable corpus intent could leave insufficient
+capacity for the next catalog intent. A causal test on that exact writer records
+the corpus PUT before the catalog is refused. Reserving the rest of the known
+serial batch at publication_plan now refuses before that PUT. The first version
+of this test was too tight and refused both versions early; it is retained as
+nondiscriminating evidence, not counted as a causal failure.
+
+That review also identified an avoidable serialization and a misleading failure
+payload. Prepared-catalog refusals now retain the original planned bytes, use
+separate errors for missing session, invalid bytes and a changed body, and share
+the existing normal serializer. The peer report is accepted as an adjudicated
+review of82e131; root verified the repair postimage. This does not claim that the
+peer reviewed the later commit. Existing Linux filesystem evidence remains
+applicable because generation_evidence.py is unchanged.

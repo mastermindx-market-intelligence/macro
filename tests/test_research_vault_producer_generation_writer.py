@@ -206,6 +206,37 @@ def test_unpersisted_publication_plan_blocks_the_entire_batch(seeded, tmp_path, 
     assert json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]["state"] == "BUILDING"
 
 
+def test_publication_budget_includes_following_catalog_before_corpus_effect(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    store.events.clear()
+    monkeypatch.setattr(ingest, "_list_inbox_pdfs", lambda _: [])
+    path = tmp_path / "original.jsonl"
+    planned = []
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        original = evidence.append
+        def tight_batch(kind, payload, **kwargs):
+            if kind == "publication_plan":
+                planned.append(True)
+                # Measure the actual record, then leave room for the corpus
+                # intent's acknowledgement reserve but not the catalog intent.
+                probe = tmp_path / "size-only.jsonl"
+                with FileGenerationEvidence.create(probe, IDENTITY) as sizing:
+                    before = probe.stat().st_size
+                    sizing.append(kind, payload)
+                    record_bytes = probe.stat().st_size - before
+                evidence._bound = path.stat().st_size + record_bytes + writer.POST_EFFECT_EVIDENCE_BYTES + 2000
+            return original(kind, payload, **kwargs)
+        monkeypatch.setattr(evidence, "append", tight_batch)
+        try:
+            ingest.run(store, tmp_path / "working.sqlite", now=NOW,
+                       generation_identity=IDENTITY, generation_evidence=evidence)
+        except writer.GenerationWriteUnavailable:
+            pass
+    assert planned == [True]
+    assert store.events == [("cas", catalog.CATALOG_KEY)]
+
+
 def test_original_catalog_survives_loss_after_acknowledged_corpus(seeded, tmp_path, monkeypatch):
     store, doc = seeded
     _seed_real_corpus(store, tmp_path)
@@ -242,6 +273,7 @@ def test_changed_catalog_after_freeze_refuses_before_visibility(seeded):
     result = catalog.publish(wrapped, doc, now=NOW, prepared_bytes=frozen)
     assert result.published is False
     assert "prepared catalog changed" in result.error
+    assert result.data == frozen
     assert store.events == prior
 
 

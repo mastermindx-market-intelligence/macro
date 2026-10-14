@@ -259,6 +259,14 @@ class ProducerGenerationSession:
             pending = [{"key": key, "sha256": _sha(data), "bytes": len(data),
                         "body_base64": base64.b64encode(data).decode("ascii")}
                        for key, data in pending_receipts]
+            # Reserve the rest of this serial batch before its first effect:
+            # catalog base64 fits within 2x raw bytes; two bounded opaque
+            # versions plus fixed corpus/catalog metadata fit within 64KiB;
+            # retain another 64KiB for the last intent's acknowledgement check.
+            # Each receipt needs two fixed-size envelopes and its escaped key
+            # (at most six JSON bytes per UTF-8 input byte), never its body again.
+            reserve = (2 * len(catalog_bytes) + 2 * POST_EFFECT_EVIDENCE_BYTES
+                       + sum(6 * len(row["key"].encode("utf-8")) + 4096 for row in pending))
             self._evidence("publication_plan", {
                 "epoch": self.record["epoch"],
                 "catalog_predecessor_sha256": _sha(self.catalog_bytes),
@@ -266,7 +274,7 @@ class ProducerGenerationSession:
                 "catalog_sha256": _sha(catalog_bytes), "catalog_bytes": len(catalog_bytes),
                 "catalog_base64": base64.b64encode(catalog_bytes).decode("ascii"),
                 "corpus_sha256": digest.hexdigest(), "corpus_bytes": before.st_size,
-                "pending_receipts": pending})
+                "pending_receipts": pending}, reserve_bytes=reserve)
         except GenerationWriteUnavailable:
             raise
         except Exception as exc:
