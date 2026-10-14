@@ -869,6 +869,7 @@ def test_stage_maps_an_lstat_error_on_the_source_body_to_a_typed_refusal(
             return self._real.lstat(path, *args, **kwargs)
 
     _permit(monkeypatch, tmp_path)
+    permitted_registry = private_publication.NATIVE_RIGHTS_REGISTRY_PATH
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
     closure = receipt.closure
     assert closure is not None
@@ -877,17 +878,23 @@ def test_stage_maps_an_lstat_error_on_the_source_body_to_a_typed_refusal(
     shutil.copytree(receipt.private_dir, stage)
 
     gate = _LstatGate(os_module)
-    monkeypatch.setattr(stage_module, "os", gate)
-    with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
-        augment_private_stage(
-            stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
-        )
+    with monkeypatch.context() as patch:
+        patch.setattr(stage_module, "os", gate)
+        with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
+            augment_private_stage(
+                stage, acquisition=None, prior_closure=closure,
+                observed_at=LATER_OBSERVED_AT,
+            )
+    # The os gate is scoped by its own context, so this test's permit
+    # precondition is still installed after the gate is released.
+    assert private_publication.NATIVE_RIGHTS_REGISTRY_PATH is permitted_registry, (
+        "releasing the os gate also reverted this test's own permit"
+    )
     assert gate.denied, "the body probe never reached native/source_bodies"
     assert gate.denied[0].endswith(f"{digest}.txt")
     assert not (stage / "native" / "latest.json").exists()
 
     # CONTROL: with the real ``os`` the same replay still writes.
-    monkeypatch.undo()
     control = tmp_path / "stage-lstat-control"
     shutil.copytree(receipt.private_dir, control)
     written = augment_private_stage(
@@ -1232,7 +1239,7 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
     scripts/build_earnings_public_wire.py:1850. The probe now appends an
     ``except OSError`` mapped to ``unreadable_stage_file`` (FileNotFoundError
     still matches first), the same code the source-body probe already uses
-    (private_economic_stage.py:535-536). The ``OSError`` arm over the swap is
+    (private_economic_stage.py:543-544). The ``OSError`` arm over the swap is
     pinned by ``test_stage_maps_write_block_oserrors_to_a_typed_refusal``.
     """
     import os as os_module
@@ -1271,7 +1278,9 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
 
     for needle, expected_tail, refuses_first_write in (
         ("native/workspaces", f"{generation_id}.json", True),
-        # latest.json is written last, so earlier chain files legitimately land.
+        # native/latest.json (engine:583) is written after the native chain
+        # files; records/<slug>.json follows (engine:584-587). Earlier chain
+        # files therefore legitimately land before this denial.
         ("native/latest.json", "latest.json", False),
     ):
         stage = tmp_path / f"stage-path-lstat-{needle.rsplit('/', 1)[-1]}"
@@ -1311,7 +1320,7 @@ def test_stage_maps_lstat_errors_on_workspace_and_manifest_paths_to_typed_refusa
     assert written["wrote"] is True
 
 
-@pytest.mark.parametrize("fail_on", ("open", "fdopen", "replace"))
+@pytest.mark.parametrize("fail_on", ("open", "fdopen", "replace", "records"))
 def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fail_on: str,
 ) -> None:
@@ -1321,13 +1330,18 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     Independent review W15-V-9105f on 2a311019: reverting only the write block's
     ``except OSError`` arm (private_economic_stage.py:428-440) left the whole
     owning job green, because every existing arm denies ``os.lstat`` inside
-    ``_write_stage_file`` and never reaches the write itself. A full device is an
+    ``_write_stage_file`` or ``_write_stage``'s body probe (engine:540) and never
+    reaches the write itself. A full device is an
     ``OSError`` that is not a ``FileNotFoundError``, so ENOSPC on each of
     ``os.open``, ``os.fdopen`` and ``os.replace`` must refuse with
     ``unreadable_stage_file`` — the code this module already uses — instead of
     leaking raw past the CLI tuple at
     scripts/build_earnings_public_wire.py:1850, and the refusal must still unlink
-    its private temp so no ``.``-prefixed residue survives in the stage.
+    its private temp so no ``.``-prefixed residue survives in the stage. The
+    ``records`` param denies only the final ``os.replace`` onto
+    ``records/<slug>.json`` (private_economic_stage.py:584-587); its temp lands
+    outside ``native/``, so the stage-wide ``.*`` scan is the only probe that
+    reaches it.
     """
     import errno as errno_module
     import os as os_module
@@ -1335,7 +1349,10 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
     from engine.earnings_narrative import private_economic_stage as stage_module
 
     class _WriteGate:
-        """Every ``os`` attribute delegates; only ``fail_on`` denies a stage write."""
+        """Every ``os`` attribute delegates; only ``fail_on`` denies a stage write.
+
+        ``records`` narrows the denial to ``os.replace`` onto the records dir.
+        """
 
         def __init__(self, real: object, fail_on: str, stage: Path) -> None:
             self._real = real
@@ -1364,11 +1381,23 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
 
         def fdopen(self, fd, *args, **kwargs):
             if self._fail_on == "fdopen" and fd in self._stage_fds:
+                # _deny raises, so fdopen never takes ownership of this fd;
+                # the engine's finally only unlinks the temp path. Close it
+                # here and drop it from the bookkeeping set, or every run of
+                # this param leaks one raw descriptor.
+                self._stage_fds.discard(fd)
+                self._real.close(fd)
                 self._deny(f"fd={fd}")
             return self._real.fdopen(fd, *args, **kwargs)
 
         def replace(self, src, dst, *args, **kwargs):
             if self._fail_on == "replace" and self._in_stage(dst):
+                self._deny(str(dst))
+            if (
+                self._fail_on == "records"
+                and self._in_stage(dst)
+                and Path(str(dst)).parts[-2] == "records"
+            ):
                 self._deny(str(dst))
             return self._real.replace(src, dst, *args, **kwargs)
 
@@ -1392,11 +1421,23 @@ def test_stage_maps_write_block_oserrors_to_a_typed_refusal(
                 stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
             )
     assert raised.value.reason == "unreadable_stage_file"
-    assert gate.denied, f"the write block never called os.{fail_on}"
-    laid = _file_names(stage / "native", "*")
-    assert laid == [], f"the denied write still laid bytes: {laid}"
+    denied_via = "replace" if fail_on == "records" else fail_on
+    assert gate.denied, f"the write block never called os.{denied_via}"
     residue = _file_names(stage, ".*")
     assert residue == [], f"the refusal left temp residue in the stage: {residue}"
+    laid = _file_names(stage / "native", "*")
+    if fail_on == "records":
+        # The denial lands on the final write (engine:584-587); the native
+        # chain legitimately landed first (engine:526-554, latest.json :583).
+        assert (stage / "native" / "latest.json").is_file()
+        refused = Path(gate.denied[0])
+        assert refused.parts[-2] == "records", f"denied target not in records: {refused}"
+        baseline_bytes = (baseline / "records" / refused.name).read_bytes()
+        assert refused.read_bytes() == baseline_bytes, (
+            "the denied records write still laid bytes"
+        )
+    else:
+        assert laid == [], f"the denied write still laid bytes: {laid}"
 
     # CONTROL: with the real ``os`` and no gate the same replay still writes.
     control = tmp_path / f"stage-write-{fail_on}-control"
