@@ -32,15 +32,15 @@ verified:
     5cc87e6bf93cd712ab80734050e110f412d400f1cb2154e9e383bbc86d58d03b.
   result: >-
     ACCEPT_SCOPED_READ_ONLY_SOURCE; no findings. Root consumption verified exact bytes.
-    270 distinct Python cases across scoped runs, 147 final TypeScript cases and typecheck
-    passed. A233 predecessor returns 404 on the exact authenticated new-route test.
+    Retained runs contain 270 distinct Python cases across scopes, 147 final TypeScript cases
+    and passing typecheck; the source reviewer matched hashes without rerunning those suites. A233 predecessor returns 404 on the exact authenticated new-route test.
 - claim: Local complete read composition withholds unearned acceptance.
   command: >-
-    Run tests/test_product_acceptance_full_read_chain.py at 89fad09ef;
+    Consume the retained actual run of tests/test_product_acceptance_full_read_chain.py at 89fad09ef;
     retained companion manifest SHA256 9e7fe01d4e9f64e32429aeb31630474f4102fed2de34d5130da31243d5f4512a.
   result: >-
-    Four cases pass: exact accepted original parent, pending parent, missing issuer
-    consumption and corrected intent. Unauthenticated requests never reach the provider;
+    The retained run has four passing cases: exact accepted original parent, pending parent,
+    missing issuer consumption and corrected source. Unauthenticated requests never reach the provider;
     reads append no Runtime events. Account keys, Context/Relay and cache inputs are fixtures.
 - claim: Sole-host physical qualification passed within the original limits.
   command: >-
@@ -49,15 +49,17 @@ verified:
     plus their referenced artifacts, against the sole CODEX-01 host receipts.
   result: >-
     Candidate 4200's two admission observations took 43.8535 seconds under one 60-second
-    limit. The complete collector took 10.0504 seconds under its unchanged 28-second limit;
-    each Git child retained its 10-second limit. These do not prove installation or product
+    limit (32 Git children rc0; 46 loaded dependencies unchanged). The complete collector took 10.0504 seconds under its unchanged 28-second limit;
+    each Git child retained its 10-second limit (29 Git children rc0; 50 loaded dependencies unchanged). These do not prove installation or product
     acceptance. Knowledge inputs remain explicitly stale/truncated; old 51786 failure remains failed.
 - claim: The installed Macro source lacks the R2 acceptance declaration.
   command: >-
-    Compare exact Git objects 88804ed7079700c598bb8e04aa64307d1335402d and accepted
+    Read the immutable Git commit metadata and compare exact objects
+    88804ed7079700c598bb8e04aa64307d1335402d and accepted
     402b57defb301fc611ab81242f685a96e085d035 for WS-CHAIRMAN-CONTROL-ROOM and its October 12 R2 handoff.
   result: >-
-    The sole-host-selected September 27 Macro pin has no R2 acceptance contract or handoff.
+    Git metadata dates the sole-host-selected Macro pin to 2026-09-27T01:28:35-07:00.
+    That pin has no R2 acceptance contract or handoff.
     Accepted PR9149 contains both; its declaration still has execution_commission_refs: [].
     The records also match local tracking ref 18c4805cea60da91c2ffc5f1fb22c9b34b8be783;
     that observation is not a fresh remote-head claim.
@@ -73,6 +75,13 @@ unverified:
     the distinct native Project Chat lane, eligible accounts, responsiveness and a genuine
     seven-day installed campaign. Local source fixtures do not satisfy those obligations.
 unresolved:
+- >-
+  After the a1bb review, a new deadline-fit invalidator was reproduced: a legal 10.25-second
+  source observation exceeds the installed Workspace client's 10-second default, while the
+  sealed source owner permits 15 seconds. A v4-only client-deadline correction at
+  a7dc701a27f8f3959d9d377f04fc07ee939d1fe3 passes 117 affected checks and awaits its narrow review;
+  existing operations and physical source limits remain unchanged. Hold consumer readiness until
+  this correction is independently accepted and composed by the existing owner.
 - >-
   Original receiver review r2-principal-control-local-review-01a13315 remains unsettled.
   Chairman allowed a fresh source review while preserving it; that permission never closes it.
@@ -129,3 +138,13 @@ The source review and root consumption are retained under
 The latter has SHA256 `341e252a52617071f866b173ec0e3437a576bab9eea5c0774124b074d55c7d9f`.
 These paths identify retained evidence; they neither authorize effects nor replace
 GitHub source, Executive runtime ownership or the protected release procedure.
+
+Exact binding values for the original source package are manifest
+`3fa7576b40039708b533cdcce6d511789c46fd2a3cc4ced29a4e9e2c2b41e7fc`,
+patch `1dcf4fc9184265ce9bf36797e0b1e501f9d88f3832329352aba91b1294bebb56`,
+and test companion patch `82f50cdeda9ad3fdbb426456278ed703cf2fbe3313958318eda9d1692ee7455e`.
+The reviewer initially refused a HEAD==a1bb assertion before any receipt or mutation
+because the test-only89fad companion had advanced HEAD; all18 original source
+postimages then rematched. That intake failure is retained in its review receipt.
+The `prs` field refers only to Macro9149's accepted declaration; it does not assert
+publication, installation or acceptance of the prepared consumer source.
