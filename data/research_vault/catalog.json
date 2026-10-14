@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T12:27:02.054261+00:00",
-  "count": 2894,
+  "generated_at": "2026-10-14T13:56:50.200380+00:00",
+  "count": 2899,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -96,6 +96,7 @@
     "The PunchLine",
     "The Punchline",
     "Trump Xi Preview",
+    "U.S. Department of Agriculture",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -229,6 +230,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m63trk0wyl9-eca602",
+      "title": "JGB Strategy",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:14:20Z",
+      "summary_points": [
+        "Red Trifecta Election Risk: Republican control of both houses (red trifecta) triggers largest market impact; historical data shows Trump wins (2016/2024) → USD strength, while Dems winning House (2018) or losing (2020) → USD weakness, directly affecting yen rates.",
+        "BOJ Short-Term Distortion: Elevated BOJ ownership in 2y (12.9%) and 5y (10.1%) JGBs distorts short-term yield dynamics, with absorption rates declining to 21.2% (down from 22.9%).",
+        "Tariff Divergence: April 2025 tariffs caused Dollar Index decline post-2024 election, breaking historical pattern of Republican control strengthening USD, making tariffs a critical risk factor for dollar-yen flows.",
+        "Geopolitical Inflation Spillover: Iran war intensifying US inflation prolongs Fed hikes, pressuring yen via 10y UST yield linkage and dollar-yen dynamics, accelerating BOJ rate hikes through 2026.",
+        "Red Trifecta Curve Impact: Fiscal concerns (e.g., Trump’s $5k proposal) weaken dollar vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
@@ -495,6 +517,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yaadjp5qoz0-bcf414",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T07:39:54Z",
+      "summary_points": [
+        "Earnings Season Growth Expectation Gap: S&P 500 growth expected at 34% YoY (vs consensus 27%) amid Q3 earnings season start, but tech sell-off driven by Chinese AI competition fears.",
+        "Chinese AI Competition Catalyst: South China Morning Post report on China’s CXMT memory chip progress triggered 4th consecutive drop in Philly semiconductor index (-2.67%), with Micron (-3.88%), Samsung (-7.98%), SK Hynix (-8.72%) declining.",
+        "Geopolitical Energy Shock: Houthi attack on Riyadh + Russia-Ukraine ceasefire uncertainty amplified Brent crude to $106/bbl, spiking European inflation fears (Euro 1yr swaps +4.7bps, Franco-German 10yr spread at 142bps post-2022 high)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-jwvuj75ku1d-91707f",
       "title": "JPM US Market Intelligence Afternoon Briefing Oct 12",
       "institution": "J.P. Morgan",
@@ -753,6 +794,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xjuuyadj9qu-e30850",
+      "title": "October 12 House View full set 2026",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:27Z",
+      "summary_points": [
+        "Central Bank Hawkishness & Yield Pressures: ECB/Fed rate hikes (25bps) amid inflation/fiscal concerns and hyperscaler debt pressure global bonds; policymakers signal aggressive tightening.",
+        "EM Yield Opportunities & Risk: EM sovereign/corporate yields (7.2%/7%) offer carry cushion but may underperform high-single-digit returns over 12 months amid fiscal risks.",
+        "AI Capex & Semiconductor Risk: AI capex to reach $1.2T by 2027, but semiconductor volatility (Philadelphia Index -4.3%) and frontier-model revenue concerns signal exposure risk.",
+        "Geopolitical Energy Disruption: Middle East tensions (Houthi attacks, tanker strikes) sustain Brent crude volatility ($105/bbl) and European gas near cycle highs (EUR 83/MWh), threatening energy flows.",
+        "Portfolio Strategy & Fiscal Risks: Prioritize short-to-medium-term European fixed income (agency, covered, corporate bonds); France/Italy fiscal risks (debt-service costs to 6% by 2030) demand selective positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g9izgbzute3-9281fa",
+      "title": "JPM JPM PI Weekly Wrap",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:53:11Z",
+      "summary_points": [
+        "HF Positioning Shifts: HFs bought US Banks (Large Caps > Regionals) for 2nd straight week, sold Semis (most net sold), EU Banks sold despite high positioning (+3z vs LT).",
+        "EU vs US Positioning Gap: EU positioning down to ~13th %-tile vs US steady at 46th %-tile, bearishness building in Europe.",
+        "EU Banks as Key Risk Factor: EU Banks identified as critical risk factor amid high positioning and selling pressure.",
+        "Sector Sentiment Divergence: Biotech stabilizing but weak; EU Banks bearishness contrasts with US bank buying flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
@@ -2330,6 +2412,34 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "institution": "U.S. Department of Agriculture",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-09T16:00:00Z",
+      "summary_points": [
+        "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year.",
+        "USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre.",
+        "USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook.",
+        "USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre.",
+        "USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel.",
+        "These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts."
+      ],
+      "tags": [
+        "agriculture",
+        "wheat",
+        "corn",
+        "soybeans",
+        "forecast"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
       "language": "en",
       "needs_metadata": false
     },

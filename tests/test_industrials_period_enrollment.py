@@ -149,19 +149,42 @@ def _cell_without_period() -> dict:
 
 # A shape error elsewhere in the input would raise its own refusal; the
 # tolerance check runs first, so the tolerance refusal is the one raised.
+# Two-sided: each param also names the refusal the SAME input raises once the
+# tolerance is valid. Without that half, the preemption assertion would pass
+# on an input that raises nothing at all.
 _SHAPE_ERRORS = [
-    pytest.param(_cell_without_period, id="cell-without-period"),
-    pytest.param(lambda: _one_release(cells="nope"), id="cells-not-a-list"),
+    pytest.param(
+        _cell_without_period,
+        ValueError,
+        "cell period is required",
+        id="cell-without-period",
+    ),
+    pytest.param(
+        lambda: _one_release(cells="nope"),
+        TypeError,
+        "cells must be a list",
+        id="cells-not-a-list",
+    ),
+    pytest.param(
+        lambda: "not-a-case",
+        ValueError,
+        "edition input must be a synthetic case",
+        id="case-not-a-mapping",
+    ),
 ]
 
 
-@pytest.mark.parametrize("build", _SHAPE_ERRORS)
-def test_bad_tolerance_preempts_shape_errors(build: Callable[[], dict]) -> None:
-    """A bad ``tolerance_days`` is refused before a case- or cell-shape error."""
+@pytest.mark.parametrize("build,expected,message", _SHAPE_ERRORS)
+def test_bad_tolerance_preempts_shape_errors(
+    build: Callable[[], object], expected: type[Exception], message: str
+) -> None:
+    """A bad ``tolerance_days`` preempts a shape error the same input does raise."""
     with pytest.raises(
         TypeError, match=re.escape("tolerance_days must be an int, not bool")
     ):
         enroll_stated_period(build(), tolerance_days=True)
+    with pytest.raises(expected, match=re.escape(message)):
+        enroll_stated_period(build(), tolerance_days=3)
 
 
 # Pins for the branches of ``_shared_label`` and ``_with_stated_end`` that had
@@ -211,22 +234,58 @@ def test_non_iso_period_end_is_refused() -> None:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
 
 
-# A malformed ISO date string is refused with the offending field named, not
-# with ``date.fromisoformat``'s bare message.
-_MALFORMED_ENDS = [
-    pytest.param("2026-13-45", id="impossible-month-day"),
+# Refusal shape is documented on ``_with_stated_end``. The two lists below
+# split the malformed strings by WHICH branch refuses them, and the chained
+# ``__cause__`` proves which branch ran: the ASCII-only shape gate chains its
+# own synthetic "expected exactly YYYY-MM-DD" error, the parser chains
+# ``date.fromisoformat``'s message. Measured on this 3.12: the parser ADMITS
+# "2026-W27" (date(2026, 6, 29)) and "02071203:6" (date(207, 12, 3)), so only
+# the gate can refuse those, and it also refuses "20260703". The fullwidth
+# form is refused by both branches, so it is the flag discriminator: without
+# ``flags=re.ASCII`` the gate's digit class matches fullwidth digits, the gate
+# admits the string, and the parser's different message is what gets chained.
+_SHAPE_REFUSED_ENDS = [
+    pytest.param("20260703", id="basic-format"),
+    pytest.param("２０２６-０７-０３", id="fullwidth-digits"),
     pytest.param("not-a-date", id="not-a-date"),
+    pytest.param("2026-W27", id="week-without-day"),
+    pytest.param("02071203:6", id="trailing-garbage"),
+]
+
+# Exact ASCII ``YYYY-MM-DD`` shape, so the gate admits them and the parser
+# refuses them on value range alone.
+_PARSE_REFUSED_ENDS = [
+    pytest.param("2026-13-45", id="impossible-month-day"),
+    pytest.param("2026-02-30", id="impossible-day"),
+    pytest.param("0000-01-01", id="year-zero"),
 ]
 
 
-@pytest.mark.parametrize("raw_end", _MALFORMED_ENDS)
-def test_malformed_period_end_names_the_field(raw_end: str) -> None:
-    """A malformed ``period.end`` string chains the parse error under a named one."""
+def _case_with_end(raw_end: object) -> dict:
+    """The synthetic release with one cell whose ``period.end`` is ``raw_end``."""
     cell = deepcopy(case("same_number_two_headers")["cells"][0])
     cell["period"] = dict(cell["period"])
     cell["period"]["end"] = raw_end
+    return _one_release(cells=[cell])
+
+
+@pytest.mark.parametrize("raw_end", _SHAPE_REFUSED_ENDS)
+def test_shape_refused_period_end_names_the_field(raw_end: str) -> None:
+    """The shape gate refuses before parsing and chains ITS OWN shape error."""
     with pytest.raises(
         ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
     ) as caught:
-        enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
+        enroll_stated_period(_case_with_end(raw_end), tolerance_days=3)
     assert isinstance(caught.value.__cause__, ValueError)
+    assert "expected exactly YYYY-MM-DD" in str(caught.value.__cause__)
+
+
+@pytest.mark.parametrize("raw_end", _PARSE_REFUSED_ENDS)
+def test_parse_refused_period_end_chains_the_parser_error(raw_end: str) -> None:
+    """The gate admits these, so the parser's own error is what gets chained."""
+    with pytest.raises(
+        ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
+    ) as caught:
+        enroll_stated_period(_case_with_end(raw_end), tolerance_days=3)
+    assert isinstance(caught.value.__cause__, ValueError)
+    assert "expected exactly" not in str(caught.value.__cause__)

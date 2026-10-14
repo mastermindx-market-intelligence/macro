@@ -11647,6 +11647,7 @@ jobs:
       - "engine/oracle/ratio_lens.py"
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
       - "engine/rotation_corr.py"
       - "engine/rotation_events.py"
       - "engine/rotation_flows.py"
@@ -26120,6 +26121,7 @@ jobs:
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
+          tests/test_market_memory_identity_candidate.py
           tests/test_market_memory_identity_observation.py
           tests/test_market_memory_identity_store.py
           tests/test_market_memory_identity_observation_deploy.py

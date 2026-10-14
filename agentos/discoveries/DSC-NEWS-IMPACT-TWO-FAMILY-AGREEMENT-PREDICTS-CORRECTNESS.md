@@ -8,8 +8,8 @@ claim: >
   with Wilson 95% upper bound 0.168. When they dispute, both sides are mostly wrong. Over
   20 disputed slots, fam_a was 3 correct, 11 wrong and 6 ambiguous (error 0.786 of decided,
   Wilson 95% 0.524–0.924). fam_b was 5 correct, 8 wrong and 7 ambiguous (0.615, Wilson 95%
-  0.355–0.823). Agreed absences (129 slots) were not audited, so the claim does not cover
-  them.
+  0.355–0.823). Agreed absences (129 slots) are not part of this claim; the addendum audit
+  covers them in DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS.
 falsifier: >
   A fresh audit of agree_present slots, by an independent auditor, that finds 2 or more
   wrong out of 20 for either family. Or a third family that rejects agreed present values
@@ -17,8 +17,8 @@ falsifier: >
 so_what: >
   A third family is needed mainly where the first two dispute. Third-family cost should
   scale with the disputed rate (0.423 of critical slots in w2), not with the whole
-  population. Agreed absences still need their own audit before anyone relies on them,
-  because agree_absent is the largest class (129 of 293 slots) and is unmeasured. This is a
+  population. Agreed absences, the largest class (129 of 293 slots), were audited
+  separately (DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS: 0 shared misses in 20). This is a
   routing input, not a promotion: n is 20 per stratum and the auditor was the seat model.
 kind: data
 verified_at: 2026-10-14
@@ -37,4 +37,4 @@ confidence: probable
 
 Agreed present values: 0 wrong out of 19 decided per family. Disputed values: most of both
 sides were wrong. A third family pays off on disputes, not on agreement. Agreed absences
-were not audited.
+are covered by DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS.

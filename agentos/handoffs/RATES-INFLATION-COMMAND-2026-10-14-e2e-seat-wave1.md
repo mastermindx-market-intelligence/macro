@@ -53,20 +53,26 @@ verified:
   - claim: The F1 first-print track record is live on www.mastermind-x.com macro.html.
     command: curl -s https://www.mastermind-x.com/macro.html | grep -c "against the official first print"
     result: 6 matches at 2026-10-14 10:5xZ, after render 38518460036 (head 818a571b) pushed 57e1bba1 at 10:38Z.
+  - claim: M0/X0 retrospective runs (#9282) are squash-merged and landed.
+    command: land_check 2dd2f856 against 470a3700, then git log origin/main --grep="(#9282)"
+    result: 470a3700 is on main; the head's paths are byte-identical on main.
+  - claim: Main is proven green under the T0 and #9282 CI-authority edits.
+    command: gh run view 38554196758 --json conclusion,headSha
+    result: success at 470a3700 (ci.yml workflow_dispatch on main).
+  - claim: Y1a curve accounting (A22-A24, curve_accounting.v1 on yield_momentum) is squash-merged and landed.
+    command: land_check c3967956 against 407b89a6, then git grep -n build_curve_accounting origin/main -- engine/yield_momentum.py
+    result: Landed as 407b89a6. The legacy-jobs.yml hunk has the same git patch-id --stable (f1d49015) in the PR diff and the squash diff; main had moved under it. The grep hits lines 1 and 15.
 unverified:
   - claim: The T0 board fields (no default policy-rate gap, per-row basis and rights, qualified CPI row) are served.
-    what_would_verify: The Rates Command artifact is built only by daily.yml (scripts.build_rates_command). The 2026-10-14 nightly (ddfadfeb, 09:28Z) ran before the T0 merge (10:13Z), so data/rates_command/latest.json has no qualified_comparisons key and no row basis yet. The first nightly after the merge (2026-10-15) must write them; then read latest.json on main and the live Fed Path card. Never dispatch daily.yml from this programme.
-  - claim: M0/X0 retrospective runs are merged.
-    what_would_verify: PR #9282 merged at head 2dd2f856 after concluded-green CI, then a land check.
+    what_would_verify: The Rates Command artifact is built only by daily.yml (scripts.build_rates_command). The 2026-10-14 nightly (ddfadfeb, 09:28Z) ran before the T0 merge (10:13Z), so data/rates_command/latest.json has no qualified_comparisons key and no row basis yet. The next nightly whose own headSha contains T0 and whose engine job LANDS must write them. The 10-13 (38340204231) and 10-14 (38495183073) nightlies cancelled the engine job (owner prophet-outage #9050 and prophet_rescue), so data/release_forecast has stood since f6d765cb (10-09). Then read latest.json on main and the live Fed Path card. Never dispatch or cancel daily.yml from this programme.
 unresolved:
-  - "#9282 (M0 + X0 retrospective runners and their one recorded run) is in CI at head 2dd2f856. The CI job is scope: exclusive and listed in CURATED_EXCLUSIVE."
-  - "T0 and #9282 both edit CI-authority paths. One green main ci.yml baseline on a descendant of both merges is owed; dispatch only over a clear field."
-  - "D1 (A16-A19), Y1 (A22-A24) and I0 (A12-A13) are being built under the RIC ORCH-B orchestrator. I0 waits for fabric admission after a disk-reserve refusal. ORCH-B also owes the 2027 FOMC calendar."
+  - "Y1a edits .github/ci, so it owes its own main ci.yml baseline postdating 407b89a6. Run 38563973832 was dispatched over a clear field; never re-dispatch over it."
+  - "Seat rulings for A0 and E1 are folded into the A0/E1 packets, which stay DRAFT until P1 lands. The target epoch implements E0 section 2.H1 and section 5 with no E0 revision. interval_pending applies below n=30. causal_frontier reads canonical_scored_rows only. market_packet _rates_block gets an additive qualified key."
+  - "D1 (A16-A19), Y1b (producer wiring of curve_accounting into rate_inflation_transmission, display_only, export false) and I0 (A12-A13) are being built under the RIC ORCH-B orchestrator. ORCH-B also owes the 2027 FOMC calendar."
   - "The C0 composition packet is written except its S5 slot (owners and merged heads of D1, Y1, I0) and its lane base. The C0 PR also carries the amendment to B0 doc section 7."
 next_actions:
-  - "Merge #9282 on concluded green with --match-head-commit, land-check it, then run the one main baseline."
-  - "Ship D1, Y1 and I0 as each returns, each with its suites wired in .github/ci/legacy-jobs.yml."
-  - "Launch C0 after D1, Y1 and I0 land, then P1, X1, V0-pre, A0, E1, P2, G0, S0, V0-post, E2, B1, A1 and Z0 per the masterplan section 13 task graph."
+  - "Ship D1, Y1b and I0 as each returns, each with its suites wired in .github/ci/legacy-jobs.yml."
+  - "Launch C0 after D1, Y1b and I0 land, then P1, X1, V0-pre, A0, E1, P2, G0, S0, V0-post, E2, B1, A1 and Z0 per the masterplan section 13 task graph."
   - "G0 expected family status: CPI supported, PCE partial, NFP and claims supported, ZQ meeting gap, SR3 gap, yield/premium partial (KW only). Print gaps; do not fill them."
 do_not_redo:
   - "M0 and X0 ran once against the frozen E0 protocol. Never re-run them; their recorded output is the result."
@@ -82,7 +88,7 @@ decisions:
   - DEC:RIC-BASIS-CONTRACT-V1-QUALIFIED-COMPARISON
   - DEC:RIC-F1-EVALUATION-TARGET-IS-PUBLISHED-FIRST-PRINT
   - DEC:RIC-E0-RETROSPECTIVE-FALSIFIES-PROSPECTIVE-PROMOTES
-prs: [9206, 9212, 9222, 9232, 9233, 9252, 9253, 9254, 9282]
+prs: [9206, 9212, 9222, 9232, 9233, 9252, 9253, 9254, 9282, 9317]
 ---
 
 ## Notes

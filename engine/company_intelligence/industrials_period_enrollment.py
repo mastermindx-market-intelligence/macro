@@ -7,6 +7,7 @@ it writes each cell's stated end back without applying ``tolerance_days``.
 """
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, replace
@@ -91,12 +92,31 @@ def _with_stated_end(
     *,
     tolerance_days: int,
 ) -> tuple[dict[str, Any], date]:
+    """Return ``(cell copy, stated end)``. A non-mapping ``period`` is refused
+    as ``cell period is required``; a non-``str`` or malformed ``period.end``
+    is refused as ``cell period.end must be a YYYY-MM-DD string``, naming the
+    field instead of leaking ``date.fromisoformat``'s bare message. Chaining
+    differs per branch: a non-``str`` end is a bare ``raise`` and chains
+    nothing (``__cause__`` is ``None``); the shape gate below chains a
+    SYNTHETIC shape error whose text is ``expected exactly YYYY-MM-DD``, not a
+    parse error; only the parser branch chains ``date.fromisoformat``'s own
+    ``ValueError``. The gate runs before the parser and admits exactly the
+    ASCII ``YYYY-MM-DD`` shape, so it also refuses forms that the 3.12 parser
+    itself accepts — ``20260703``, week-without-day ``2026-W27`` and
+    trailing-garbage ``02071203:6``. ``flags=re.ASCII`` is load-bearing for
+    fullwidth digits: an unflagged ``\\d`` matches them, the gate admits the
+    string, and the parser's message lands in ``__cause__`` instead.
+    """
     period = cell.get("period")
     if not isinstance(period, Mapping):
         raise ValueError("cell period is required")
     raw_end = period.get("end")
     if not isinstance(raw_end, str):
         raise ValueError("cell period.end must be a YYYY-MM-DD string")
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw_end, flags=re.ASCII) is None:
+        raise ValueError("cell period.end must be a YYYY-MM-DD string") from ValueError(
+            f"expected exactly YYYY-MM-DD, got {raw_end!r}"
+        )
     try:
         parsed_end = date.fromisoformat(raw_end)
     except ValueError as exc:
