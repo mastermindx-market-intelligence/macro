@@ -4,8 +4,8 @@ session: claude/rates-inflation-fable-masterplan (Fable Meta-CEO seat fc3dfe4b)
 model: opus
 ended_because: ci_handoff
 mission: >
-  Chairman masterplan 2026-10-13 (research/rates_inflation_command/e2e_20261013/MASTERPLAN.md
-  at fd5c6600, section 12 = the commission): recover and complete the included core of Rates &
+  Chairman masterplan 2026-10-13 (research/rates_inflation_command/e2e_20261013/MASTERPLAN.md,
+  immutable at commit fd5c6600, which is not on main; section 12 = the commission): recover and complete the included core of Rates &
   Inflation Command plus Macro Release Intelligence. Real release and rates evidence must reach
   matched-basis calculations and the existing entitled user/machine consumers with target, model,
   vintage, basis and rights intact. All six reference families, independent scientific and
@@ -22,8 +22,10 @@ changed:
     what: Custody and effects ledger for the programme (#9206).
   - path: research/rates_inflation_command/seat_20261014/B0_BASIS_CONTRACT_FREEZE.md
     what: Frozen basis-contract design for matched-basis comparisons (#9206).
-  - path: research/rates_inflation_command/e2e_20261013/
-    what: E0 frozen research protocol and the P0 workflow design spec (#9212, f57ee3a7).
+  - path: research/rates_inflation_command/seat_20261014/E0_RESEARCH_PROTOCOL.md
+    what: E0 frozen research protocol, with DEC:RIC-E0-RETROSPECTIVE-FALSIFIES-PROSPECTIVE-PROMOTES (#9212, f57ee3a7).
+  - path: research/rates_inflation_command/seat_20261014/P0_WORKFLOW_DESIGN_SPEC.md
+    what: P0 workflow design spec for the three macro.html workflows (#9212).
   - path: engine/event_window.py
     what: F0 gap A10 — reads the canonical calendar at call time; the HK desk reads it too; drift ledgers pinned empty (#9222, 9947bf53).
   - path: scripts/build_release_forecast.py
