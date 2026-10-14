@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Controller38566348871 defers9209 a18ec982 stale-proof refresh at8/cap8 after f1d834 changed checks. Consume admitted refresh/exact-head CI/protected landing/install, then SAME reviewed follow-on31groups. New real-PDF Research intake passes19+2 controls; qualify whole-document rights before live inbox. Dedicated Research strict reads work; EIA cover-photo hold and CBO403 remain unretried.
+next_action: Consume normal Research ingest of USDA source usda-2026-10-09-wasde-676, conditionally created/readback-verified13:37; installed source receipt still absent13:40. Run the retained read-only consumer probe; never reupload. Continue admitted9209 refresh/exact-head protected release/install, then SAME reviewed follow-on31groups. Preserve source dates/holds and0of10publication gate.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
@@ -1091,3 +1091,61 @@ are retained outside Git under recovery-20261014-1252. Publication/cutoverfalse,
 D140/10; no new ticker association, signup/follow or live article claim. Continue with
 a whole-document-qualified source through this tested intake; preserve CBO403 and
 all earlier holds/refusals/unknown effects. No new human action is requested.
+
+## 2026-10-14 12:52 continuation — USDA source submitted to canonical Research inbox
+
+Actual source delivery at13:37:01Z: the original October9 USDA WASDE676 PDF and
+its six-point attributed sidecar were conditionally created at research_inbox/
+usda-2026-10-09-wasde-676.{json,pdf}. Both existing R2Store create-if-absent calls
+returned true; exact readbacks match PDF6cc97c08be7e and sidecar1a215b20c745.
+The sidecar was written first. The fresh fence inspected all2897canonical catalog
+rows, refused source/hash/October-WASDE aliases, and confirmed all four candidate
+inbox/receipt/vault keys absent. No existing source was overwritten. Dedicated
+Research credentials stayed on the VPS; no provider, workflow dispatch, corpus,
+catalog, Press staging or publication write occurred. The incumbent hourly ingester
+remains the only publisher. The two successful source writes are KNOWN_COMPLETE;
+never submit this pair again or mint an alias to obtain another candidate.
+
+The private Research intake qualification covers this agency-authored original
+report and attributed textual summary under USDA's published distribution policy.
+Parent interpretation: agency marks retained inside the unmodified official report
+identify its source; no separate logo, signature, flyer artwork, article illustration
+or endorsement use is authorized. No third-party photo/license notice was found in
+the40-page original. This is source intake, not a public-article rights/editorial
+approval. October9 publication and2026/27 forecast qualifiers stay intact; it is
+inside Research's21-day window but outside Brief's3-day window. No stock ticker,
+issuer causality, follow/signup or fresh market-event claim was invented.
+
+Local proof:19actual-PDF intake checks,2refusal controls,12source-text fact anchors
+and6consumer-probe controls pass. The read-only consumer probe rejects wrong receipt
+hash, date, promoted PDF and derivative; a missing producer receipt is PENDING,
+not acceptance. Original local fixtures remain byte-identical. Fabric checker
+mmx-press-usda-sidecar-check-20261014-001 was TERMINALrc75/admission with
+active_lane_limit_reached; retained result consumed, no quality verdict, no accept,
+retry or carrier replacement. The parent's independent factual/rights review is
+recorded explicitly, not attributed to that unavailable worker.
+
+Installed probe at13:40:20Z on stablea511bc976d02527e07db193467d987882f5ce3b4
+finds zero canonical rows for this source and no processed receipt: normal ingestion
+is pending. The tested inspect_usda_consumption.py is ready to verify producer
+receipt, exact promoted bytes, sidecar, date, catalog and stored fulltext without
+extracting on VPS or changing production. The first census wrapper's constructor
+TypeError occurred before any R2 call; it was corrected to the existing build_store
+factory. No permission or uncertain effect was retried.
+
+Release remains the once-read12:53snapshot:9209 a18ec982 OPEN/merge-on-green,
+oldgreen38553111016 stale; fullcontroller38566348871 deferred refresh at8/cap8
+afterf1d834 changed checks. No additional PR/controller poll or release mutation.
+Application8eb467 is unchanged; no follow-onPR. Preserve all original24source/
+3page/fourprobe install obligations and the reviewed31-group follow-on.
+
+verified: usda_research_intake_phase contains source/download/qualification hashes,
+original worker refusal,19+2local results,6consumer controls, paired-write intent/
+stdout/readbacks, canonical preflight and installed pending receipt. Private PDF
+and transport payload remain outsideGit under recovery-20261014-1252/usda-intake.
+Next: consume the normal ingester's exact source receipt and stored derivative, then
+verify committed/installed catalog and actual public Research destination before
+considering one new governed Press attempt. Continue controller-admitted9209release,
+then SAME follow-on release. Preserve EIAphoto/CBO403/Fedauthor holds, all previous
+held drafts, original3dirty accounting histories, Oct11EFFECT_UNKNOWN, refused issuer
+review, Commission19 andCatalyst8678. Publication/cutoverfalse, D140/10.
