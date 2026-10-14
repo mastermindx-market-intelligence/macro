@@ -6820,6 +6820,7 @@ jobs:
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
           tests/test_capital_structure_term_integration.py
+          tests/test_capital_structure_instrument_resolution.py
           tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
           tests/test_capital_structure_graph.py
