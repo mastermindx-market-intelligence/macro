@@ -648,9 +648,250 @@ def test_hostile_document_id_cannot_dedup_away_a_newly_prepared_document(
         observed_at=LATER_OBSERVED_AT,
     )
     assert written["wrote"] is True
+    assert forged["chain"]._negative_reads == 2, "the forged stored id never reached the same_document comparison"
     links = _links(stage, slug)
     assert len(links) == 2, f"hostile __eq__ silently dropped the prepared document: links={links}"
     assert links[-1]["document"] != links[0]["document"]
+
+
+def test_stage_refuses_a_content_digest_from_a_hostile_str_subclass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``mismatched_source`` must compare the computed digest, not the caller's answer.
+
+    The guard reads ``content_digest != item["document"].get("content_sha256")``
+    (private_economic_stage.py:521): the right operand is caller data, and for a
+    proper ``str`` subclass Python tries the reflected ``__ne__`` first, so a lie
+    of ``False`` makes the comparison read "not unequal" and a stored document
+    declaring a wrong digest is staged anyway. The guard now reads the declared
+    digest into a local and refuses anything that is not an exact ``str`` before
+    comparing it, the idiom private_publication.py:1005-1007 uses.
+    """
+
+    class LieNe(str):
+        def __eq__(self, other: object) -> bool:
+            return True
+
+        def __ne__(self, other: object) -> bool:
+            return False
+
+        def __hash__(self) -> int:
+            return 12345
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    stored_digest = closure["chain"][-1]["document"]["content_sha256"]
+    assert type(stored_digest) is str
+    wrong = sha256(b"a different source body").hexdigest()
+    assert wrong != stored_digest
+
+    forged = copy.deepcopy(closure)
+    forged["chain"][-1]["document"]["content_sha256"] = LieNe(wrong)
+    stage = tmp_path / "stage-digest-hostile"
+    shutil.copytree(receipt.private_dir, stage)
+    with pytest.raises(PrivateEconomicStageError, match="mismatched_source"):
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+        )
+    assert not (stage / "native" / "latest.json").exists()
+
+    # CONTROL: the same replay with a plain-str correct digest stays admitted.
+    control = tmp_path / "stage-digest-control"
+    shutil.copytree(receipt.private_dir, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+    assert written["source_sha256"] == stored_digest
+
+
+def test_stage_refuses_a_non_str_text_on_an_older_chain_item(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Every chain item is encoded, so every item's text type must be checked.
+
+    Only the newest item is type-checked today: ``text = newest["text"]`` then
+    ``if type(text) is not str`` (private_economic_stage.py:472-474), while the
+    body loop encodes every item with ``item["text"].encode("utf-8")``
+    (private_economic_stage.py:519). An older stored item carrying bytes or an
+    int therefore leaks a bare ``AttributeError`` past the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850 instead of a typed refusal.
+    """
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    newest = closure["chain"][-1]
+    baseline = tmp_path / "older-text-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    for label, bad_text in (("bytes", b"bytes are not a source text"), ("int", 7)):
+        older = copy.deepcopy(newest)
+        older["workspace"]["generation_id"] = sha256(label.encode("utf-8")).hexdigest()[:24]
+        older["text"] = bad_text
+        forged = copy.deepcopy(closure)
+        forged["chain"] = [older, copy.deepcopy(newest)]
+        stage = tmp_path / f"stage-older-text-{label}"
+        shutil.copytree(baseline, stage)
+        with pytest.raises(PrivateEconomicStageError, match="mismatched_source"):
+            augment_private_stage(
+                stage, acquisition=None, prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+            )
+        assert not (stage / "native" / "latest.json").exists()
+
+    # CONTROL: the same two-item chain with plain-str texts is admitted.
+    honest_older = copy.deepcopy(newest)
+    honest_older["workspace"]["generation_id"] = sha256(b"control-item").hexdigest()[:24]
+    control_closure = copy.deepcopy(closure)
+    control_closure["chain"] = [honest_older, copy.deepcopy(newest)]
+    control = tmp_path / "stage-older-text-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=control_closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+
+def test_stage_does_not_take_the_malformed_branch_for_a_hostile_outcome_str(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``_malformed_marker`` may not ask a caller-owned object what it equals.
+
+    ``acquisition.get("outcome") == "malformed"`` (private_economic_stage.py:321)
+    compares the caller-controlled operand on the left with ``==``, while its
+    sibling ``_withdrawn`` (private_economic_stage.py:316) already insists on
+    ``is True``. A ``str`` subclass answering ``True`` therefore selects the
+    malformed branch and the freshly prepared document is dropped. The seam is
+    the public ``augment_private_stage``: the malformed branch reuses the stored
+    closure only (one link, ``newer_source_pending``), while an honest fresh
+    acquisition appends its own document (two links, the prepared currentness).
+    """
+
+    class LieEq(str):
+        def __eq__(self, other: object) -> bool:
+            return True
+
+        def __ne__(self, other: object) -> bool:
+            return False
+
+        def __hash__(self) -> int:
+            return 12345
+
+    def _links(stage: Path, slug: str) -> list:
+        latest = json.loads((stage / "native" / "latest.json").read_bytes())
+        return latest["selections"][slug]["chain"]
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    slug = closure["record"]["slug"]
+    amendment = _acquire("amendment_sequence", currentness="up_to_date", checked_at=PENDING_CLOCK)
+
+    # PRECONDITION: the lie really does claim to be the malformed marker.
+    liar = LieEq("not_a_malformed_marker")
+    assert liar == "malformed"
+    assert type(liar) is not str
+
+    honest = tmp_path / "stage-marker-honest"
+    shutil.copytree(receipt.private_dir, honest)
+    honest_written = augment_private_stage(
+        honest, acquisition=copy.deepcopy(amendment), prior_closure=closure,
+        observed_at=LATER_OBSERVED_AT,
+    )
+    assert honest_written["wrote"] is True
+    honest_links = _links(honest, slug)
+    assert len(honest_links) == 2, f"the fixture must append a prepared document: {honest_links}"
+
+    hostile = copy.deepcopy(amendment)
+    hostile["outcome"] = LieEq("not_a_malformed_marker")
+    stage = tmp_path / "stage-marker-hostile"
+    shutil.copytree(receipt.private_dir, stage)
+    written = augment_private_stage(
+        stage, acquisition=hostile, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert len(_links(stage, slug)) == len(honest_links), (
+        f"a hostile outcome str selected the malformed branch and dropped the "
+        f"prepared document: written={written}"
+    )
+    assert written["currentness"] == honest_written["currentness"]
+
+    # CONTROL: a plain "malformed" outcome still selects the malformed branch.
+    marker = copy.deepcopy(amendment)
+    marker["outcome"] = "malformed"
+    control = tmp_path / "stage-marker-control"
+    shutil.copytree(receipt.private_dir, control)
+    control_written = augment_private_stage(
+        control, acquisition=marker, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert control_written["currentness"] == "newer_source_pending"
+    assert len(_links(control, slug)) == 1
+
+
+def test_stage_maps_an_lstat_error_on_the_source_body_to_a_typed_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Only ``FileNotFoundError`` means "absent"; any other ``OSError`` must refuse.
+
+    The module does a plain ``import os`` (private_economic_stage.py:19) and the
+    body probe calls ``os.lstat(body_path)`` inside ``try``/``except
+    FileNotFoundError`` only (private_economic_stage.py:524-527), so a
+    ``PermissionError`` or ``NotADirectoryError`` on the source-body path escapes
+    raw. That is uncaught by the CLI tuple at
+    scripts/build_earnings_public_wire.py:1850
+    (``except (PublicWireBuildError, PrivateEconomicStageError) as exc:``). The
+    probe now maps any other ``OSError`` to ``unreadable_stage_file``, the code
+    the body read beside it already uses (private_economic_stage.py:533-534).
+    """
+    import os as os_module
+
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    class _LstatGate:
+        """Every ``os`` attribute delegates; only a source-body ``lstat`` is denied."""
+
+        def __init__(self, real: object) -> None:
+            self._real = real
+            self.denied: list[str] = []
+
+        def __getattr__(self, name: str):
+            return getattr(self._real, name)
+
+        def lstat(self, path, *args, **kwargs):
+            as_text = os_module.fspath(path)
+            if "source_bodies" in as_text:
+                self.denied.append(as_text)
+                raise PermissionError(13, "Permission denied", as_text)
+            return self._real.lstat(path, *args, **kwargs)
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    digest = closure["chain"][-1]["document"]["content_sha256"]
+    stage = tmp_path / "stage-lstat-denied"
+    shutil.copytree(receipt.private_dir, stage)
+
+    gate = _LstatGate(os_module)
+    monkeypatch.setattr(stage_module, "os", gate)
+    with pytest.raises(PrivateEconomicStageError, match="unreadable_stage_file"):
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+        )
+    assert gate.denied, "the body probe never reached native/source_bodies"
+    assert gate.denied[0].endswith(f"{digest}.txt")
+    assert not (stage / "native" / "latest.json").exists()
+
+    # CONTROL: with the real ``os`` the same replay still writes.
+    monkeypatch.undo()
+    control = tmp_path / "stage-lstat-control"
+    shutil.copytree(receipt.private_dir, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
 
 
 def test_stage_refuses_a_symlinked_source_body_before_reading_it(

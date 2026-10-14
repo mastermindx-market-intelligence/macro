@@ -318,7 +318,10 @@ def _withdrawn(acquisition: Mapping[str, Any] | None) -> bool:
 
 
 def _malformed_marker(acquisition: Mapping[str, Any] | None) -> bool:
-    return type(acquisition) is dict and acquisition.get("outcome") == "malformed"
+    if type(acquisition) is not dict:
+        return False
+    outcome = acquisition.get("outcome")
+    return type(outcome) is str and _plain_str(outcome) == "malformed"
 
 
 def _require_clock(value: str | None) -> str:
@@ -516,15 +519,21 @@ def _write_stage(
         document_body = canonical_json_bytes(item["document"])
         document_digest = sha256(document_body).hexdigest()
         _write_stage_file(documents / f"{document_digest}.json", document_body)
-        text_body = item["text"].encode("utf-8")
+        item_text = item["text"]
+        if type(item_text) is not str:
+            raise PrivateEconomicStageError("mismatched_source")
+        text_body = item_text.encode("utf-8")
         content_digest = sha256(text_body).hexdigest()
-        if content_digest != item["document"].get("content_sha256"):
+        declared = item["document"].get("content_sha256")
+        if type(declared) is not str or content_digest != declared:
             raise PrivateEconomicStageError("mismatched_source")
         body_path = bodies / f"{content_digest}.txt"
         try:
             body_status = os.lstat(body_path)
         except FileNotFoundError:
             body_status = None
+        except OSError as exc:
+            raise PrivateEconomicStageError("unreadable_stage_file") from exc
         if body_status is not None:
             if stat.S_ISLNK(body_status.st_mode) or body_status.st_nlink > 1:
                 raise PrivateEconomicStageError("hardlinked_stage_file")
