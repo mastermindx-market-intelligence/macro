@@ -102,7 +102,7 @@ class KpiSeriesVerdict:
 
     allowed: bool
     reasons: tuple[str, ...]
-    reported_periods: tuple[object, ...]
+    reported_periods: tuple[object, ...]  # expected_periods order: caller-supplied expected_periods iteration
 
     def __post_init__(self) -> None:
         refuse_nonfalse_authority(AUTHORITY_FLAGS)
@@ -232,6 +232,12 @@ def check_kpi_series(
 
     Reports every applicable reason, de-duplicated, in REASONS order.
     ``allowed`` is True iff the reason tuple is empty.
+
+    ``reported_periods`` follows the expected_periods order: it is built by
+    iterating ``expected_periods`` in the caller-supplied order and keeping
+    only those periods that are present in the series AND whose record
+    state is "reported". The order is the expected_periods order even when
+    the input records are in a different order.
     """
     refuse_nonfalse_authority()
     records = _as_records(series)
@@ -239,7 +245,7 @@ def check_kpi_series(
 
     reasons: list[str] = []
     present_ids: list[object] = []
-    reported_acc: list[object] = []
+    reported_present: set[object] = set()
     duplicate = False
 
     for rec in records:
@@ -261,8 +267,8 @@ def check_kpi_series(
         if state == "reported":
             if not _finite_number(value):
                 reasons.append("REPORTED_VALUE_INVALID")
-            if not _blank(period_id) and not _contains(reported_acc, period_id):
-                reported_acc.append(period_id)
+            if not _blank(period_id):
+                reported_present.add(period_id)
         elif state in _NON_REPORTED_STATES:
             if value is not None:
                 reasons.append("MISSING_CARRIES_VALUE")
@@ -278,6 +284,13 @@ def check_kpi_series(
     for period_id in expected:
         if not _contains(present_ids, period_id):
             reasons.append("PERIOD_ABSENT")
+
+    # Walk expected_periods in caller order so reported_periods is in the
+    # expected_periods order, regardless of input record order (X8C-03).
+    reported_acc: list[object] = []
+    for period_id in expected:
+        if period_id in reported_present:
+            reported_acc.append(period_id)
 
     frozen = _freeze_reasons(reasons)
     return KpiSeriesVerdict(

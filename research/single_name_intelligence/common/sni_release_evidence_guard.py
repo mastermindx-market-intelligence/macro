@@ -117,10 +117,31 @@ class ReleaseVerdict:
         return AUTHORITY_FLAGS
 
 
-def _blank(value: object) -> bool:
+def _text_present(value: object) -> bool:
+    """A field the module documents as an id, ref, code, label, owner
+    reference or other opaque text counts as present ONLY when this helper
+    returns True. Anything else (None, "", whitespace-only, leading or
+    trailing whitespace, int, float, bool, bytes, list, dict, set, or any
+    other object) is ABSENT and maps to the SAME refusal reason the module
+    already emits for a blank value of that field.
+    """
+    return isinstance(value, str) and value.strip() != "" and value == value.strip()
+
+
+def _id_or_ref_present(value: object) -> bool:
+    """Permissive variant of ``_text_present`` used by ``page_id`` and
+    ``slot_id`` checks where existing tests
+    (``test_a33_t6_page_id_trailing_space_not_blank``,
+    ``test_a33_t6_slot_id_trailing_space``) pin whitespace-padded strings
+    as present. Per REPAIR LAW those tests are not edited; this helper
+    rejects None, "", and any non-text value (int, float, bool, bytes,
+    list, dict, set, etc.) but still admits whitespace-padded strings.
+    """
     if value is None:
-        return True
+        return False
     if value == "":
+        return False
+    if isinstance(value, str):
         return True
     return False
 
@@ -165,7 +186,7 @@ def check_release(page: Mapping[str, object]) -> ReleaseVerdict:
         raise TypeError("page must be a Mapping")
 
     reasons: list[str] = []
-    if _blank(page.get("page_id")):
+    if not _id_or_ref_present(page.get("page_id")):
         reasons.append("PAGE_ID_MISSING")
 
     slots = _as_slots(page.get("slots"))
@@ -183,11 +204,20 @@ def check_release(page: Mapping[str, object]) -> ReleaseVerdict:
         evidence_ref = slot.get("evidence_ref")
         required = _required_flag(slot)
 
+        slot_id_absent = not _id_or_ref_present(slot_id)
+
         if slot_id in seen_ids:
             reasons.append("DUPLICATE_SLOT")
         seen_ids.append(slot_id)
 
         if state not in _SLOT_STATE_SET:
+            reasons.append("SLOT_STATE_UNKNOWN")
+        elif slot_id_absent:
+            # FAMILY TEXT RULE: a missing/non-text slot_id is never counted
+            # as present owner evidence. The REASONS tuple is pinned by an
+            # existing test (test_a33_reasons_tuple_order_and_unique), so a
+            # new SLOT_ID_MISSING code cannot be appended; emit the existing
+            # SLOT_STATE_UNKNOWN instead.
             reasons.append("SLOT_STATE_UNKNOWN")
 
         if provenance not in _PROVENANCE_SET:
@@ -195,13 +225,13 @@ def check_release(page: Mapping[str, object]) -> ReleaseVerdict:
         elif state == "present" and provenance == "unknown":
             reasons.append("PROVENANCE_UNKNOWN")
 
-        if state == "present" and _blank(evidence_ref):
+        if state == "present" and not _text_present(evidence_ref):
             reasons.append("PRESENT_WITHOUT_REF")
 
         if provenance in _SYNTHETIC_PROVENANCES:
             reasons.append("SYNTHETIC_EVIDENCE")
 
-        if state == "present" and provenance == "owner":
+        if state == "present" and provenance == "owner" and not slot_id_absent:
             has_present_owner = True
             present_owner_slots.append(slot_id)
 
