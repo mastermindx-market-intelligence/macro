@@ -920,3 +920,13 @@ def test_financial_quantity_scale_cannot_be_invented(source, draft, expected):
                          'text': source, 'values': [str(value)]}])
     row = V.check_fact_anchor(F.draft(draft, fold=False), slot, F.config())
     assert row['ok'] is expected, row
+
+
+@pytest.mark.parametrize('source', ['$1,000 expressed in millions',
+                                     '$1,000, expressed in millions',
+                                     '$1,000 EXPRESSED IN millions'])
+def test_explicit_magnitude_phrase_does_not_require_comma(source):
+    slot = F.slot(facts=[{'id':'amount','tier':'third_party','ref':'official_feed:test',
+                         'text':source,'values':['1000']}])
+    assert V.check_fact_anchor(F.draft('$1,000 million',fold=False),slot,F.config())['ok'] is True
+    assert V.check_fact_anchor(F.draft('$1,000',fold=False),slot,F.config())['ok'] is False

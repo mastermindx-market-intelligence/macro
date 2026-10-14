@@ -33,3 +33,9 @@ Current release PR9209 is independent and still on its protected controller.
 Integrate the sole existing writer-contract return, review this bounded diff,
 then consume landed main and create a separate protected follow-on only after
 PR9209 is installed. Do not reset or reuse its squash-merged branch.
+
+Native independent review at 317ce found a real no-comma expressed-in scale gap.
+The original NOT PASS stands. Parent reproduced two failures (no comma and
+uppercase phrase), repaired the parser and passed all 167 affected validators/
+staging tests in 7.62s. Child turn_context confirms gpt-5.6-terra/medium,
+thread 01a13852-fe0d-79d2-b4ba-0604efb6029a. Same reviewer rereview follows.

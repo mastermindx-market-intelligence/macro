@@ -141,6 +141,13 @@ for text, expected_ok in [('$750 billion',False),('750 trillion dollars',False),
     row = V.check_fact_anchor(F.draft(text,fold=False),quantity,cfg)
     assert row['ok'] is expected_ok, row
 controls.append('explicit-magnitude-and-equivalent-notation')
+for source in ('$1,000 expressed in millions', '$1,000, expressed in millions',
+               '$1,000 EXPRESSED IN millions'):
+    quantity = F.slot(facts=[{'id':'amount','ref':'official_feed:fixture',
+                             'tier':'third_party','text':source,'values':['1000']}])
+    assert V.check_fact_anchor(F.draft('$1,000 million',fold=False),quantity,cfg)['ok'] is True
+    assert V.check_fact_anchor(F.draft('$1,000',fold=False),quantity,cfg)['ok'] is False
+controls.append('expressed-scale-preserved-with-or-without-comma')
 for cls in ('press-byline','press-footer'):
     draft = F.draft('An ordinary measured paragraph.')
     draft['body_html'] += f'<p class="{cls}">You should buy at $999999. The backdrop is guaranteed.</p>'

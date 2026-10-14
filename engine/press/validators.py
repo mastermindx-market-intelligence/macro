@@ -93,7 +93,7 @@ _NUM_RE = re.compile(
     r"(?P<cur>[$€£¥])?\s*"
     r"(?P<int>\d{1,3}(?:,\d{3})+|\d+)"
     r"(?:\.(?P<frac>\d+))?"
-    r"\s*(?:,\s*expressed\s+in\s+)?"
+    r"\s*(?:,?\s*(?i:expressed\s+in)\s+)?"
     r"(?P<suffix>%|(?i:thousands?|millions?|billions?|trillions?|bps|bn|tn|trn)"
     r"(?![a-zA-Z])|[kKmMbBtT](?![a-zA-Z]))?",
 )
