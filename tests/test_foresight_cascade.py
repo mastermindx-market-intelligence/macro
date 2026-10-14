@@ -2311,4 +2311,5 @@ def test_real_producer_row_pins_the_coverage_only_with_rows_shape(monkeypatch):
     }
     row = compute_fda_scarcity(frame)["glp1_obesity"]
     assert "molecules_with_rows" not in row
+    assert "molecules_checked" in row
     assert {"molecules_checked", "molecules_with_rows"} <= set(row["summary"]["coverage"])

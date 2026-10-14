@@ -6861,6 +6861,7 @@ jobs:
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
+          tests/test_capital_structure_rule_applicability.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
@@ -11624,7 +11625,7 @@ jobs:
     if: ${{ false }}
     gate: code
     # LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the pre-registered study harness for
-    # research/LEADERSHIP_ROTATION_PREREG_V1.md — loader/arms/outcomes, zig-zag episodes,
+    # research/LEADERSHIP_ROTATION_PREREG_V1.md (+ the V2 amendment pinned since #9327) — loader/arms/outcomes, zig-zag episodes,
     # clustered paired bootstrap + Holm, group/family composer, P0 synthetic grid + size audit.
     # DEVELOPMENT HARNESS: synthetic arrays and tmp git fixtures only; no data/ read in CI.
     # scope: exclusive — paths = the union of scripts.ci_scope_dependencies.suite_dependency_closure
@@ -11647,6 +11648,7 @@ jobs:
       - "engine/oracle/ratio_lens.py"
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
       - "engine/rotation_corr.py"
       - "engine/rotation_events.py"
       - "engine/rotation_flows.py"
@@ -11671,6 +11673,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
       - "scripts/__init__.py"
       - "scripts/leadership_rotation_episodes.py"
       - "scripts/leadership_rotation_inference.py"
@@ -14654,6 +14657,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      # 2026-10-14 RIC D1 (EFFR meeting-path identification, A16-A19): engine/fed_path.py now lazily
+      # imports engine.rates_command_basis (B0 basis qualification) and engine.event_calendar (FOMC
+      # meeting dates), so the closure reaches both. Declared exactly, widening only; ceilings unchanged.
+      - "engine/event_calendar.py"
+      - "engine/rates_command_basis.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
@@ -26120,6 +26128,7 @@ jobs:
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
+          tests/test_market_memory_identity_candidate.py
           tests/test_market_memory_identity_observation.py
           tests/test_market_memory_identity_store.py
           tests/test_market_memory_identity_observation_deploy.py
