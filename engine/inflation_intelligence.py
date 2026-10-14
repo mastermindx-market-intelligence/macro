@@ -909,43 +909,6 @@ _SURVEY_SERIES = {
 _NEXT_PRINT_RELEASE_TYPE = {"headline": "cpi_headline", "core": "cpi_core"}
 
 
-def _stub_qualified(rcb: Any, lens_id: str, *, fallback_unit: str, fallback_basket: str) -> Any:
-    """Build a value_state='missing' QualifiedObservation for a missing lens.
-
-    Used by the comparison builder so B0's operand-availability check returns
-    the canonical ``operand_missing:<side>`` refusal rather than the caller
-    having to mint its own verdict.
-    """
-    return rcb.QualifiedObservation(
-        subject=lens_id,
-        evidence_class=rcb.EvidenceClass.OFFICIAL_MEASUREMENT,
-        value=None,
-        value_state=rcb.ValueState.MISSING,
-        unit=fallback_unit,
-        target="",
-        basket_or_index=fallback_basket,
-        cutoff="1970-01-01",
-        rights="public_official",
-        limitations=(),
-    )
-
-
-def _qualified_or_stub(
-    rcb: Any,
-    lens_id: str,
-    qualified_dict: Any,
-    *,
-    fallback_unit: str,
-    fallback_basket: str,
-) -> Any | None:
-    if isinstance(qualified_dict, dict):
-        try:
-            return rcb.QualifiedObservation.from_dict(qualified_dict)
-        except Exception:  # noqa: BLE001
-            return _stub_qualified(rcb, lens_id, fallback_unit=fallback_unit, fallback_basket=fallback_basket)
-    return _stub_qualified(rcb, lens_id, fallback_unit=fallback_unit, fallback_basket=fallback_basket)
-
-
 def _street_consensus() -> dict[str, Any]:
     return {
         "value": None,
@@ -964,58 +927,17 @@ def _period_bounds(month_str: Any) -> tuple[str | None, str | None]:
     return per.start_time.date().isoformat(), per.end_time.date().isoformat()
 
 
-def _shift_date(iso: str, days: int) -> str:
-    from datetime import timedelta as _td  # local import per §2.2
+def _add_years(iso: str, years: int) -> str:
+    """Add ``years`` calendar years to an ISO date string.
+
+    Feb 29 only collapses to Feb 28 when the destination year is not a leap
+    year; no other field is normalized.
+    """
     base = date.fromisoformat(iso)
-    shifted = base + _td(days=days)
-    if shifted.month == 2 and shifted.day == 29:
-        shifted = shifted.replace(day=28)
-    return shifted.isoformat()
-
-
-def _missing_lens_record(
-    *,
-    lens_id: str,
-    label_en: str,
-    source_class: str,
-    scope: str,
-    frequency: str,
-    unit: str,
-    horizon: str,
-    transform: str,
-    source: str,
-    series_id: str | None,
-    basket_or_index: str | None,
-    measure: str,
-    lens_limitations: list[str],
-    gap: str | None = None,
-) -> dict[str, Any]:
-    limitations = list(lens_limitations)
-    if gap is not None:
-        limitations.append(gap)
-    return {
-        "lens_id": lens_id,
-        "label_en": label_en,
-        "source_class": source_class,
-        "evidence_class": None,
-        "measure": measure,
-        "basket_or_index": basket_or_index,
-        "scope": scope,
-        "frequency": frequency,
-        "transform": transform,
-        "unit": unit,
-        "horizon": horizon,
-        "reference_period": {"start": None, "end": None},
-        "value": None,
-        "value_state": "missing",
-        "interval": None,
-        "observation_date": None,
-        "source": source,
-        "series_id": series_id,
-        "blend_inputs": None,
-        "limitations": sorted(limitations),
-        "qualified": None,
-    }
+    try:
+        return base.replace(year=base.year + years).isoformat()
+    except ValueError:
+        return base.replace(year=base.year + years, day=28).isoformat()
 
 
 def _qualified_lens_record(
@@ -1075,7 +997,15 @@ def _official_lens(
     family: str,
     m: str,
     unit: str,
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], Any]:
+    """Build one official CPI or PCE lens (present OR missing).
+
+    Both branches produce the live B0 object through B0's public
+    ``qualify_observation``; the missing branch passes raw=None and leaves
+    reference_start/end/observation_time None. Returns
+    ``(record, qualified)`` so the builder can keep the live B0 object in
+    its local ``objs`` dict for direct ``compare_qualified`` calls.
+    """
     from engine import rates_command_basis as rcb  # local import per §2.2
 
     if family == "cpi":
@@ -1100,55 +1030,33 @@ def _official_lens(
     if unit == "pct_yoy":
         base_limitations.append("yoy_from_sa_index_not_published_nsa_yoy")
     series, _ = _read_fred_series(repo, series_id, column, as_of, lens_gaps)
-    if series is None or series.empty:
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en=label_en,
-            source_class="official_measurement",
-            scope=m,
-            frequency="monthly",
-            unit=unit,
-            horizon=("1m" if unit == "pct_mom" else "12m"),
-            transform=unit,
-            source=f"fred:{series_id}",
-            series_id=series_id,
-            basket_or_index=basket,
-            measure="index_level_change",
-            lens_limitations=base_limitations,
-        )
-    monthly = _monthly_levels(series)
-    if monthly.empty or pd.isna(monthly.iloc[-1]):
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en=label_en,
-            source_class="official_measurement",
-            scope=m,
-            frequency="monthly",
-            unit=unit,
-            horizon=("1m" if unit == "pct_mom" else "12m"),
-            transform=unit,
-            source=f"fred:{series_id}",
-            series_id=series_id,
-            basket_or_index=basket,
-            measure="index_level_change",
-            lens_limitations=base_limitations,
-        )
-    last_period = monthly.index[-1]
-    months = 12 if unit == "pct_yoy" else 1
-    raw = _level_change(monthly, months, False)
-    period_str = str(last_period)
-    period_start, period_end = _period_bounds(period_str)
-    if unit == "pct_yoy":
-        ref_start, _ = _period_bounds(str(last_period - 11))
-    else:
-        ref_start = period_start
-    ref_end = period_end
+    raw = None
+    ref_start = None
+    ref_end = None
+    quality: tuple = ()
+    monthly = None
+    if series is not None and not series.empty:
+        monthly = _monthly_levels(series)
+        if not monthly.empty and not pd.isna(monthly.iloc[-1]):
+            last_period = monthly.index[-1]
+            months = 12 if unit == "pct_yoy" else 1
+            raw = _level_change(monthly, months, False)
+            period_str = str(last_period)
+            period_start, period_end = _period_bounds(period_str)
+            if unit == "pct_yoy":
+                ref_start, _ = _period_bounds(str(last_period - 11))
+            else:
+                ref_start = period_start
+            ref_end = period_end
+            age = _month_age(period_str, as_of)
+            if age is not None and _monthly_freshness(age) == "stale":
+                quality = ("stale",)
     lens_limitations = list(base_limitations)
-    quality = ()
-    age = _month_age(period_str, as_of)
-    if age is not None and _monthly_freshness(age) == "stale":
-        quality = ("stale",)
-        lens_limitations.append(f"source_stale:{age}m")
+    if "stale" in quality and monthly is not None and not monthly.empty and not pd.isna(monthly.iloc[-1]):
+        period_str = str(monthly.index[-1])
+        age = _month_age(period_str, as_of)
+        if age is not None:
+            lens_limitations.append(f"source_stale:{age}m")
     meta = {
         "subject": lens_id,
         "evidence_class": rcb.EvidenceClass.OFFICIAL_MEASUREMENT.value,
@@ -1159,7 +1067,7 @@ def _official_lens(
         "reference_end": ref_end,
         "tenor": None,
         "observation_time": None,
-        "observation_precision": rcb.Precision.UNKNOWN.value,
+        "observation_precision": "unknown",
         "seasonal_treatment": "sa",
         "rate_index": "n/a",
         "averaging_law": "n/a",
@@ -1167,7 +1075,7 @@ def _official_lens(
         "source_version": None,
         "content_ref": series_id,
         "first_public_evidence": None,
-        "first_public_precision": rcb.Precision.UNKNOWN.value,
+        "first_public_precision": "unknown",
         "model_id": None,
         "target_epoch": None,
         "rights": "public_official",
@@ -1175,7 +1083,7 @@ def _official_lens(
         "limitations": tuple(lens_limitations),
     }
     qualified = rcb.qualify_observation(raw, meta, cutoff=as_of.isoformat())
-    return _qualified_lens_record(
+    record = _qualified_lens_record(
         qualified=qualified,
         lens_id=lens_id,
         label_en=label_en,
@@ -1193,6 +1101,7 @@ def _official_lens(
         observation_date=None,
         lens_limitations=lens_limitations,
     )
+    return record, qualified
 
 
 def _daily_lens(
@@ -1213,48 +1122,47 @@ def _daily_lens(
     basket_or_index: str | None,
     rights: str,
     lens_limitations: list[str],
-    ref_end_days: int,
+    ref_end_years: int,
     curve_convention: str | None = None,
     model_id: str | None = None,
     target_epoch: str | None = None,
     quality: tuple = (),
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], Any]:
+    """Build one daily lens (present OR missing).
+
+    The reference end is ``obs_date + ref_end_years`` years (calendar years
+    via ``_add_years``). For breakeven/forward breakeven the builder passes
+    tenor="10y" with ``ref_end_years=10`` (end) and tenor="5y5y" with the
+    same ``ref_end_years=10`` (the function also derives the +5y start).
+    Returns ``(record, qualified)`` so the builder can keep the live B0
+    object in its local ``objs`` dict for direct ``compare_qualified``
+    calls.
+    """
     from engine import rates_command_basis as rcb  # local import per §2.2
 
     series, _ = _read_fred_series(repo, series_id, column, as_of, lens_gaps)
-    if series is None or series.empty:
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en=label_en,
-            source_class=source_class,
-            scope=scope,
-            frequency="daily",
-            unit=unit,
-            horizon=tenor,
-            transform=unit,
-            source=f"fred:{series_id}",
-            series_id=series_id,
-            basket_or_index=basket_or_index,
-            measure="market_price",
-            lens_limitations=lens_limitations,
-        )
-    obs_date = series.index[-1].date()
-    obs_iso = obs_date.isoformat()
-    ref_start = obs_iso
-    if tenor == "10y":
-        ref_end = _shift_date(obs_iso, 365 * 10)
-    elif tenor == "5y5y":
-        ref_start = _shift_date(obs_iso, 365 * 5)
-        ref_end = _shift_date(obs_iso, 365 * 10)
-    else:
-        ref_end = _shift_date(obs_iso, ref_end_days)
-    raw = _number(series.iloc[-1])
+    raw = None
+    obs_iso: str | None = None
+    obs_date = None
+    ref_start: str | None = None
+    ref_end: str | None = None
+    if series is not None and not series.empty:
+        obs_date = series.index[-1].date()
+        obs_iso = obs_date.isoformat()
+        ref_start = obs_iso
+        if tenor == "5y5y":
+            ref_start = _add_years(obs_iso, 5)
+            ref_end = _add_years(obs_iso, ref_end_years)
+        else:
+            ref_end = _add_years(obs_iso, ref_end_years)
+        raw = _number(series.iloc[-1])
     obs_quality = list(quality)
     obs_limitations = list(lens_limitations)
-    age_days = (as_of - obs_date).days
-    if age_days is not None and age_days > 7:
-        obs_quality.append("stale")
-        obs_limitations.append(f"observation_age_days:{age_days}")
+    if obs_date is not None:
+        age_days = (as_of - obs_date).days
+        if age_days is not None and age_days > 7:
+            obs_quality.append("stale")
+            obs_limitations.append(f"observation_age_days:{age_days}")
     meta = {
         "subject": lens_id,
         "evidence_class": evidence_class_value,
@@ -1265,7 +1173,7 @@ def _daily_lens(
         "reference_end": ref_end,
         "tenor": tenor,
         "observation_time": obs_iso,
-        "observation_precision": rcb.Precision.DAY.value,
+        "observation_precision": "day",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
         "averaging_law": "n/a",
@@ -1274,7 +1182,7 @@ def _daily_lens(
         "source_version": None,
         "content_ref": series_id,
         "first_public_evidence": None,
-        "first_public_precision": rcb.Precision.UNKNOWN.value,
+        "first_public_precision": "unknown",
         "model_id": model_id,
         "target_epoch": target_epoch,
         "rights": rights,
@@ -1282,7 +1190,7 @@ def _daily_lens(
         "limitations": tuple(obs_limitations),
     }
     qualified = rcb.qualify_observation(raw, meta, cutoff=as_of.isoformat())
-    return _qualified_lens_record(
+    record = _qualified_lens_record(
         qualified=qualified,
         lens_id=lens_id,
         label_en=label_en,
@@ -1300,6 +1208,7 @@ def _daily_lens(
         observation_date=obs_iso,
         lens_limitations=obs_limitations,
     )
+    return record, qualified
 
 
 def _monthly_exp_lens(
@@ -1320,56 +1229,38 @@ def _monthly_exp_lens(
     rights: str,
     model_id: str | None,
     lens_limitations: list[str],
-    ref_end_days: int,
-) -> dict[str, Any]:
+    ref_end_years: int,
+) -> tuple[dict[str, Any], Any]:
+    """Build one monthly expected-inflation lens (present OR missing).
+
+    Reference period = month-t start .. month-t start + ``ref_end_years``
+    calendar years. Returns ``(record, qualified)`` so the builder can keep
+    the live B0 object in its local ``objs`` dict for direct
+    ``compare_qualified`` calls.
+    """
     from engine import rates_command_basis as rcb  # local import per §2.2
 
     series, _ = _read_fred_series(repo, series_id, column, as_of, lens_gaps)
-    if series is None or series.empty:
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en=label_en,
-            source_class=source_class,
-            scope=scope,
-            frequency="monthly",
-            unit="pct_ann_rate",
-            horizon=tenor,
-            transform="pct_ann_rate",
-            source=f"fred:{series_id}",
-            series_id=series_id,
-            basket_or_index=basket_or_index,
-            measure=("expected_inflation" if source_class != "household_survey" else "household_survey"),
-            lens_limitations=lens_limitations,
-        )
-    monthly = _monthly_levels(series)
-    if monthly.empty or pd.isna(monthly.iloc[-1]):
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en=label_en,
-            source_class=source_class,
-            scope=scope,
-            frequency="monthly",
-            unit="pct_ann_rate",
-            horizon=tenor,
-            transform="pct_ann_rate",
-            source=f"fred:{series_id}",
-            series_id=series_id,
-            basket_or_index=basket_or_index,
-            measure=("expected_inflation" if source_class != "household_survey" else "household_survey"),
-            lens_limitations=lens_limitations,
-        )
-    last_period = monthly.index[-1]
-    period_str = str(last_period)
-    period_start, _ = _period_bounds(period_str)
-    ref_start = period_start
-    ref_end = _shift_date(period_start, ref_end_days)
-    raw = _number(monthly.iloc[-1])
+    raw = None
+    ref_start: str | None = None
+    ref_end: str | None = None
+    obs_quality: tuple = ()
+    period_str: str | None = None
+    if series is not None and not series.empty:
+        monthly = _monthly_levels(series)
+        if not monthly.empty and not pd.isna(monthly.iloc[-1]):
+            last_period = monthly.index[-1]
+            period_str = str(last_period)
+            period_start, _ = _period_bounds(period_str)
+            ref_start = period_start
+            ref_end = _add_years(period_start, ref_end_years)
+            raw = _number(monthly.iloc[-1])
     obs_limitations = list(lens_limitations)
-    obs_quality = ()
-    age = _month_age(period_str, as_of)
-    if age is not None and _monthly_freshness(age) == "stale":
-        obs_quality = ("stale",)
-        obs_limitations.append(f"source_stale:{age}m")
+    if period_str is not None:
+        age = _month_age(period_str, as_of)
+        if age is not None and _monthly_freshness(age) == "stale":
+            obs_quality = ("stale",)
+            obs_limitations.append(f"source_stale:{age}m")
     meta = {
         "subject": lens_id,
         "evidence_class": evidence_class_value,
@@ -1380,7 +1271,7 @@ def _monthly_exp_lens(
         "reference_end": ref_end,
         "tenor": tenor,
         "observation_time": None,
-        "observation_precision": rcb.Precision.UNKNOWN.value,
+        "observation_precision": "unknown",
         "seasonal_treatment": "n/a",
         "rate_index": "n/a",
         "averaging_law": "n/a",
@@ -1388,7 +1279,7 @@ def _monthly_exp_lens(
         "source_version": None,
         "content_ref": series_id,
         "first_public_evidence": None,
-        "first_public_precision": rcb.Precision.UNKNOWN.value,
+        "first_public_precision": "unknown",
         "model_id": model_id,
         "target_epoch": None,
         "rights": rights,
@@ -1396,7 +1287,7 @@ def _monthly_exp_lens(
         "limitations": tuple(obs_limitations),
     }
     qualified = rcb.qualify_observation(raw, meta, cutoff=as_of.isoformat())
-    return _qualified_lens_record(
+    record = _qualified_lens_record(
         qualified=qualified,
         lens_id=lens_id,
         label_en=label_en,
@@ -1414,6 +1305,7 @@ def _monthly_exp_lens(
         observation_date=None,
         lens_limitations=obs_limitations,
     )
+    return record, qualified
 
 
 def _next_release_entry(
@@ -1464,12 +1356,22 @@ def _next_print_lens(
     radar: dict[str, Any] | None,
     m: str,
     kind: str,
-) -> dict[str, Any]:
-    """kind is one of: house, combined, cleveland, expectation, market."""
+) -> tuple[dict[str, Any], Any]:
+    """Build one next-print lens (qualified or unqualified; grouped or absent).
+
+    Qualified kinds (house, combined, market) go through B0's
+    ``qualify_observation`` even when no next-release entry exists; the
+    raw is then None and entry-derived meta fields (reference, model_id,
+    target_epoch, first_public_evidence, content_ref, source) are also
+    None. Unqualified kinds (cleveland, expectation_read) keep
+    ``evidence_class None / qualified None`` regardless.
+    Returns ``(record, qualified_or_none)`` so the builder can keep the
+    live B0 object in its local ``objs`` dict for direct
+    ``compare_qualified`` calls.
+    """
     from engine import rates_command_basis as rcb  # local import per §2.2
 
     release_type = _NEXT_PRINT_RELEASE_TYPE[m]
-    lens_prefix = f"{kind}_{m}_next_mom"
     if kind == "house":
         lens_id = f"house_radar_cpi_{m}_next_mom"
     elif kind == "combined":
@@ -1491,58 +1393,44 @@ def _next_print_lens(
         "frequency": "monthly",
         "scope": m,
     }
-    if grouped is None or release_type not in grouped:
-        lens_gaps.append("no_next_release_entry")
-        return _missing_lens_record(
-            lens_id=lens_id,
-            label_en="",
-            source_class="",
-            scope=m,
-            frequency="monthly",
-            unit="pct_mom",
-            horizon="next_print",
-            transform="pct_mom",
-            source="",
-            series_id=None,
-            basket_or_index="CPI-U",
-            measure="next_release",
-            lens_limitations=[],
-            gap="no_next_release_entry",
-        )
-    entry = grouped[release_type]
-    period = entry.get("period")
-    period_start, period_end = _period_bounds(str(period) if period else "")
+    entry = grouped.get(release_type) if isinstance(grouped, dict) else None
     radar_asof = str(radar.get("asof")) if radar and radar.get("asof") else None
+    period = entry.get("period") if isinstance(entry, dict) else None
+    period_start, period_end = _period_bounds(str(period) if period else "")
     ref_start = period_start
     ref_end = period_end
+    has_entry = entry is not None
 
     if kind == "house":
-        proj = entry.get("projection") if isinstance(entry.get("projection"), dict) else {}
-        raw = _number(proj.get("point"))
-        interval = _projection_interval(entry)
+        proj = entry.get("projection") if isinstance(entry, dict) and isinstance(entry.get("projection"), dict) else {}
+        raw = _number(proj.get("point")) if has_entry else None
+        interval = _projection_interval(entry) if has_entry else {}
         meta = {
             **base_meta,
             "evidence_class": rcb.EvidenceClass.HOUSE_ESTIMATE.value,
-            "reference_start": ref_start,
-            "reference_end": ref_end,
+            "reference_start": ref_start if has_entry else None,
+            "reference_end": ref_end if has_entry else None,
             "tenor": None,
-            "observation_time": radar_asof,
-            "observation_precision": rcb.Precision.MINUTE.value,
+            "observation_time": radar_asof if has_entry else None,
+            "observation_precision": "minute",
             "seasonal_treatment": "sa",
             "rate_index": "n/a",
             "averaging_law": "n/a",
-            "source": "release_radar",
+            "source": "release_radar" if has_entry else None,
             "source_version": None,
             "content_ref": None,
-            "first_public_evidence": radar_asof,
-            "first_public_precision": rcb.Precision.MINUTE.value,
-            "model_id": entry.get("model_epoch"),
-            "target_epoch": entry.get("target_epoch"),
+            "first_public_evidence": radar_asof if has_entry else None,
+            "first_public_precision": "minute",
+            "model_id": entry.get("model_epoch") if has_entry else None,
+            "target_epoch": entry.get("target_epoch") if has_entry else None,
             "rights": "display_only",
             "quality": (),
             "limitations": (),
         }
         qualified = rcb.qualify_observation(raw, meta, cutoff=as_of.isoformat())
+        lens_limitations = [] if has_entry else ["no_next_release_entry"]
+        if not has_entry:
+            lens_gaps.append("no_next_release_entry")
         record = _qualified_lens_record(
             qualified=qualified,
             lens_id=lens_id,
@@ -1553,46 +1441,49 @@ def _next_print_lens(
             unit="pct_mom",
             horizon="next_print",
             transform="pct_mom",
-            source="release_radar",
+            source="release_radar" if has_entry else "",
             series_id=None,
             basket_or_index="CPI-U",
             measure="next_release",
             reference_period={"start": ref_start, "end": ref_end},
             observation_date=None,
-            lens_limitations=[],
+            lens_limitations=lens_limitations,
         )
         record["interval"] = interval
-        return record
+        return record, qualified
 
     if kind == "combined":
-        combined = entry.get("combined") if isinstance(entry.get("combined"), dict) else {}
-        raw = _number(combined.get("combined_point"))
-        interval = _combined_interval(entry)
-        inputs_used = []
+        combined = entry.get("combined") if isinstance(entry, dict) and isinstance(entry.get("combined"), dict) else {}
+        raw = _number(combined.get("combined_point")) if has_entry else None
+        interval = _combined_interval(entry) if has_entry else {}
+        inputs_used: list[str] = []
         cc = combined.get("combined_components") if isinstance(combined.get("combined_components"), dict) else {}
         for x in cc.get("inputs_used") or []:
             inputs_used.append(str(x))
-        limitations = []
+        limitations: list[str] = []
         if any("cleveland" == x for x in inputs_used):
             limitations.append("house_blend_includes_external_inputs")
+        if not has_entry:
+            limitations.append("no_next_release_entry")
+            lens_gaps.append("no_next_release_entry")
         meta = {
             **base_meta,
             "evidence_class": rcb.EvidenceClass.HOUSE_ESTIMATE.value,
-            "reference_start": ref_start,
-            "reference_end": ref_end,
+            "reference_start": ref_start if has_entry else None,
+            "reference_end": ref_end if has_entry else None,
             "tenor": None,
-            "observation_time": radar_asof,
-            "observation_precision": rcb.Precision.MINUTE.value,
+            "observation_time": radar_asof if has_entry else None,
+            "observation_precision": "minute",
             "seasonal_treatment": "sa",
             "rate_index": "n/a",
             "averaging_law": "n/a",
-            "source": "release_radar",
+            "source": "release_radar" if has_entry else None,
             "source_version": None,
             "content_ref": None,
-            "first_public_evidence": radar_asof,
-            "first_public_precision": rcb.Precision.MINUTE.value,
-            "model_id": combined.get("model_epoch"),
-            "target_epoch": combined.get("target_epoch"),
+            "first_public_evidence": radar_asof if has_entry else None,
+            "first_public_precision": "minute",
+            "model_id": combined.get("model_epoch") if has_entry else None,
+            "target_epoch": combined.get("target_epoch") if has_entry else None,
             "rights": "display_only",
             "quality": (),
             "limitations": tuple(limitations),
@@ -1608,7 +1499,7 @@ def _next_print_lens(
             unit="pct_mom",
             horizon="next_print",
             transform="pct_mom",
-            source="release_radar",
+            source="release_radar" if has_entry else "",
             series_id=None,
             basket_or_index="CPI-U",
             measure="next_release",
@@ -1618,18 +1509,16 @@ def _next_print_lens(
         )
         record["interval"] = interval
         record["blend_inputs"] = list(inputs_used)
-        return record
+        return record, qualified
 
     if kind == "cleveland":
-        benchmark_set = entry.get("benchmark_set") if isinstance(entry.get("benchmark_set"), dict) else {}
-        raw = _number(benchmark_set.get("cleveland_nowcast"))
-        if raw is None:
-            value_state = "missing"
+        if not has_entry:
+            lens_gaps.append("no_next_release_entry")
         else:
-            value_state = "present"
-        # The house lens drives the timing inheritance: if refused, we mirror.
-        house_lens_id = f"house_radar_cpi_{m}_next_mom"
-        # Reconstruct the same house meta to check timing against the cutoff.
+            lens_gaps.append("b0_evidence_class_absent:external_model_nowcast")
+        benchmark_set = entry.get("benchmark_set") if isinstance(entry, dict) and isinstance(entry.get("benchmark_set"), dict) else {}
+        raw = _number(benchmark_set.get("cleveland_nowcast")) if has_entry else None
+        # The house lens drives the timing inheritance: if refused, mirror.
         house_meta = {
             "evidence_class": rcb.EvidenceClass.HOUSE_ESTIMATE.value,
             "unit": "pct_mom",
@@ -1638,28 +1527,30 @@ def _next_print_lens(
             "reference_start": ref_start,
             "reference_end": ref_end,
             "observation_time": radar_asof,
-            "observation_precision": rcb.Precision.MINUTE.value,
+            "observation_precision": "minute",
             "first_public_evidence": radar_asof,
-            "first_public_precision": rcb.Precision.MINUTE.value,
+            "first_public_precision": "minute",
         }
-        # We can't easily know the house result here; reconstruct the timing
-        # violation by calling B0 with a sentinel house meta to get the
-        # violation tag (if any). Use the actual raw of the house entry.
-        proj = entry.get("projection") if isinstance(entry.get("projection"), dict) else {}
-        house_raw = _number(proj.get("point"))
+        house_lens_id = f"house_radar_cpi_{m}_next_mom"
+        proj = entry.get("projection") if isinstance(entry, dict) and isinstance(entry.get("projection"), dict) else {}
+        house_raw = _number(proj.get("point")) if has_entry else None
         house_violation_meta = dict(house_meta)
         house_violation_meta["subject"] = house_lens_id
         house_q = rcb.qualify_observation(house_raw, house_violation_meta, cutoff=as_of.isoformat())
         inherited_limitations: list[str] = []
         if house_q.value_state.value == "refused":
-            value_state = "refused"
             raw = None
             for tag in house_q.limitations:
                 if tag in ("after_cutoff", "cutoff_unparsable", "evidence_time_unparsable"):
                     inherited_limitations.append(tag)
-        lens_gaps.append("b0_evidence_class_absent:external_model_nowcast")
+        if raw is None:
+            value_state = "refused" if inherited_limitations else "missing"
+        else:
+            value_state = "present"
         limitations = ["rights_unknown"] + inherited_limitations
-        return {
+        if not has_entry:
+            limitations.append("no_next_release_entry")
+        record = {
             "lens_id": lens_id,
             "label_en": f"Cleveland Fed nowcast (third-party model), next CPI-U {m} print, % m/m",
             "source_class": "external_model_nowcast",
@@ -1676,22 +1567,23 @@ def _next_print_lens(
             "value_state": value_state,
             "interval": None,
             "observation_date": None,
-            "source": "release_radar:benchmark_set.cleveland_nowcast",
+            "source": "release_radar:benchmark_set.cleveland_nowcast" if has_entry else "",
             "series_id": None,
             "blend_inputs": None,
             "limitations": sorted(set(limitations)),
             "qualified": None,
         }
+        return record, None
 
     if kind == "expectation":
-        exp_read = entry.get("expectation_read") if isinstance(entry.get("expectation_read"), dict) else {}
-        raw = _number(exp_read.get("expectation_median"))
-        if raw is None:
-            value_state = "missing"
+        if not has_entry:
+            lens_gaps.append("no_next_release_entry")
         else:
-            value_state = "present"
-        proj = entry.get("projection") if isinstance(entry.get("projection"), dict) else {}
-        house_raw = _number(proj.get("point"))
+            lens_gaps.append("b0_evidence_class_absent:external_benchmark_blend")
+        exp_read = entry.get("expectation_read") if isinstance(entry, dict) and isinstance(entry.get("expectation_read"), dict) else {}
+        raw = _number(exp_read.get("expectation_median")) if has_entry else None
+        proj = entry.get("projection") if isinstance(entry, dict) and isinstance(entry.get("projection"), dict) else {}
+        house_raw = _number(proj.get("point")) if has_entry else None
         house_meta = {
             "evidence_class": rcb.EvidenceClass.HOUSE_ESTIMATE.value,
             "unit": "pct_mom",
@@ -1700,24 +1592,28 @@ def _next_print_lens(
             "reference_start": ref_start,
             "reference_end": ref_end,
             "observation_time": radar_asof,
-            "observation_precision": rcb.Precision.MINUTE.value,
+            "observation_precision": "minute",
             "first_public_evidence": radar_asof,
-            "first_public_precision": rcb.Precision.MINUTE.value,
+            "first_public_precision": "minute",
         }
         house_q = rcb.qualify_observation(
             house_raw, house_meta, cutoff=as_of.isoformat()
         )
-        inherited_limitations = []
+        inherited_limitations: list[str] = []
         if house_q.value_state.value == "refused":
-            value_state = "refused"
             raw = None
             for tag in house_q.limitations:
                 if tag in ("after_cutoff", "cutoff_unparsable", "evidence_time_unparsable"):
                     inherited_limitations.append(tag)
-        lens_gaps.append("b0_evidence_class_absent:external_benchmark_blend")
-        sources_list = [str(x) for x in (exp_read.get("sources") or [])]
+        if raw is None:
+            value_state = "refused" if inherited_limitations else "missing"
+        else:
+            value_state = "present"
+        sources_list = [str(x) for x in (exp_read.get("sources") or [])] if has_entry else []
         limitations = ["blend_of_external_benchmarks_not_street_economist_survey_median"] + inherited_limitations
-        return {
+        if not has_entry:
+            limitations.append("no_next_release_entry")
+        record = {
             "lens_id": lens_id,
             "label_en": f"Release Radar expectation median (blend of external benchmarks), next CPI-U {m} print, % m/m",
             "source_class": "external_benchmark_blend",
@@ -1734,21 +1630,23 @@ def _next_print_lens(
             "value_state": value_state,
             "interval": None,
             "observation_date": None,
-            "source": "release_radar:expectation_read.expectation_median",
+            "source": "release_radar:expectation_read.expectation_median" if has_entry else "",
             "series_id": None,
             "blend_inputs": list(sources_list),
             "limitations": sorted(set(limitations)),
             "qualified": None,
         }
+        return record, None
 
     # kind == "market"
-    benchmark_set = entry.get("benchmark_set") if isinstance(entry.get("benchmark_set"), dict) else {}
+    if not has_entry:
+        lens_gaps.append("no_next_release_entry")
+    benchmark_set = entry.get("benchmark_set") if isinstance(entry, dict) and isinstance(entry.get("benchmark_set"), dict) else {}
     market_implied = benchmark_set.get("market_implied")
     if not isinstance(market_implied, dict):
         # Try the entry-level fallback (some radars nest differently).
-        market_implied = entry.get("market_implied")
+        market_implied = entry.get("market_implied") if isinstance(entry, dict) else None
     if not isinstance(market_implied, dict):
-        value_state = "missing"
         raw = None
         market_source = None
         event_ticker = None
@@ -1758,23 +1656,22 @@ def _next_print_lens(
         market_source = market_implied.get("source")
         event_ticker = market_implied.get("event_ticker")
         market_asof = market_implied.get("asof")
-        value_state = "present" if raw is not None else "missing"
     meta = {
         **base_meta,
         "evidence_class": rcb.EvidenceClass.MARKET_IMPLIED_EXPECTATION.value,
-        "reference_start": ref_start,
-        "reference_end": ref_end,
+        "reference_start": ref_start if has_entry else None,
+        "reference_end": ref_end if has_entry else None,
         "tenor": None,
-        "observation_time": market_asof,
-        "observation_precision": rcb.Precision.DAY.value,
+        "observation_time": market_asof if has_entry else None,
+        "observation_precision": "day",
         "seasonal_treatment": "sa",
         "rate_index": "n/a",
         "averaging_law": "n/a",
         "source": str(market_source) if market_source is not None else None,
         "source_version": None,
         "content_ref": str(event_ticker) if event_ticker is not None else None,
-        "first_public_evidence": radar_asof,
-        "first_public_precision": rcb.Precision.MINUTE.value,
+        "first_public_evidence": radar_asof if has_entry else None,
+        "first_public_precision": "minute",
         "model_id": None,
         "target_epoch": None,
         "rights": "unknown",
@@ -1782,7 +1679,7 @@ def _next_print_lens(
         "limitations": (),
     }
     qualified = rcb.qualify_observation(raw, meta, cutoff=as_of.isoformat())
-    return _qualified_lens_record(
+    record = _qualified_lens_record(
         qualified=qualified,
         lens_id=lens_id,
         label_en=f"Prediction-market implied median ({market_source or 'unknown'}), next CPI-U {m} print, % m/m",
@@ -1798,40 +1695,51 @@ def _next_print_lens(
         measure="next_release",
         reference_period={"start": ref_start, "end": ref_end},
         observation_date=(str(market_asof) if market_asof is not None else None),
-        lens_limitations=[],
+        lens_limitations=([] if has_entry else ["no_next_release_entry"]),
     )
+    return record, qualified
 
 
-def _build_matched_lenses(
+def _matched_lenses(
     repo: Path,
     as_of: date,
     radar: dict[str, Any] | None,
     entries: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    """Build the ``matched_lenses`` block (the §2.1+ appended code path).
+
+    Each lens helper returns ``(record, qualified)``. The builder stores the
+    live B0 object in a local ``objs[lens_id]`` map and passes
+    those objects DIRECTLY to ``rcb.compare_qualified`` -- never rebuilds an
+    operand from a dict and never mints a stub.
+    """
     from engine import rates_command_basis as rcb  # local import per §2.2
 
     lens_gaps: list[str] = []
     lenses: dict[str, dict[str, Any]] = {}
+    objs: dict[str, Any] = {}
 
     for family in ("cpi", "pce"):
         for m in ("headline", "core"):
-            for unit, horizon in (("pct_mom", "1m"), ("pct_yoy", "12m")):
-                record = _official_lens(repo, as_of, lens_gaps, family=family, m=m, unit=unit)
+            for unit in ("pct_mom", "pct_yoy"):
+                record, qualified = _official_lens(repo, as_of, lens_gaps, family=family, m=m, unit=unit)
+                objs[record["lens_id"]] = qualified
                 lenses[record["lens_id"]] = record
 
     grouped = _next_release_entry(entries, as_of)
     radar_for_lens = radar
     for kind in ("house", "combined", "cleveland", "expectation", "market"):
         for m in ("headline", "core"):
-            record = _next_print_lens(
+            record, qualified = _next_print_lens(
                 repo, as_of, lens_gaps,
                 grouped=grouped, radar=radar_for_lens, m=m, kind=kind,
             )
+            objs[record["lens_id"]] = qualified
             lenses[record["lens_id"]] = record
 
     # market_breakeven_10y
     sid, col, tenor, target = _BREAKEVEN_SERIES["10y"]
-    lenses["market_breakeven_10y"] = _daily_lens(
+    record, qualified = _daily_lens(
         repo, as_of, lens_gaps,
         series_id=sid, column=col,
         lens_id="market_breakeven_10y",
@@ -1845,12 +1753,15 @@ def _build_matched_lenses(
         basket_or_index=None,
         rights="public_official",
         lens_limitations=["compensation_includes_risk_and_liquidity_premia"],
-        ref_end_days=365 * 10,
+        ref_end_years=10,
         curve_convention="par",
     )
+    objs["market_breakeven_10y"] = qualified
+    lenses["market_breakeven_10y"] = record
+
     # market_forward_5y5y
     sid, col, tenor, target = _BREAKEVEN_SERIES["5y5y"]
-    lenses["market_forward_5y5y"] = _daily_lens(
+    record, qualified = _daily_lens(
         repo, as_of, lens_gaps,
         series_id=sid, column=col,
         lens_id="market_forward_5y5y",
@@ -1864,14 +1775,17 @@ def _build_matched_lenses(
         basket_or_index=None,
         rights="public_official",
         lens_limitations=["compensation_includes_risk_and_liquidity_premia"],
-        ref_end_days=365 * 10,
+        ref_end_years=10,
         curve_convention="par",
     )
+    objs["market_forward_5y5y"] = qualified
+    lenses["market_forward_5y5y"] = record
+
     # Cleveland expected inflation 1y/5y/10y
-    for tenor_key, ref_days in (("1y", 365), ("5y", 365 * 5), ("10y", 365 * 10)):
+    for tenor_key, ref_years in (("1y", 1), ("5y", 5), ("10y", 10)):
         sid, col, tenor = _EXPINF_SERIES[tenor_key]
         lens_id = f"model_cleveland_expected_inflation_{tenor_key}"
-        lenses[lens_id] = _monthly_exp_lens(
+        record, qualified = _monthly_exp_lens(
             repo, as_of, lens_gaps,
             series_id=sid, column=col,
             lens_id=lens_id,
@@ -1885,11 +1799,14 @@ def _build_matched_lenses(
             rights="unknown",
             model_id="cleveland_expinf",
             lens_limitations=[],
-            ref_end_days=ref_days,
+            ref_end_years=ref_years,
         )
+        objs[lens_id] = qualified
+        lenses[lens_id] = record
+
     # MICH survey
     sid, col, tenor = _SURVEY_SERIES["1y"]
-    lenses["survey_umich_1y"] = _monthly_exp_lens(
+    record, qualified = _monthly_exp_lens(
         repo, as_of, lens_gaps,
         series_id=sid, column=col,
         lens_id="survey_umich_1y",
@@ -1903,8 +1820,10 @@ def _build_matched_lenses(
         rights="unknown",
         model_id=None,
         lens_limitations=["household_survey_not_cpi_specific"],
-        ref_end_days=365,
+        ref_end_years=1,
     )
+    objs["survey_umich_1y"] = qualified
+    lenses["survey_umich_1y"] = record
 
     # Fixed comparisons via B0
     comparisons: list[dict[str, Any]] = []
@@ -1935,18 +1854,8 @@ def _build_matched_lenses(
         ),
     ]
     for comparison_id, rule, left_id, right_id in pairs:
-        left_lens = lenses.get(left_id)
-        right_lens = lenses.get(right_id)
-        left_q = left_lens["qualified"] if left_lens else None
-        right_q = right_lens["qualified"] if right_lens else None
-        # Reconstruct the QualifiedObservation objects (already-qualified
-        # dicts) for compare_qualified. If a lens was not qualified (e.g.
-        # missing input), build a stub QualifiedObservation carrying
-        # value_state=missing so B0 emits the canonical refusal.
-        left_obj = _qualified_or_stub(rcb, left_id, left_q, fallback_unit="pct_mom", fallback_basket="CPI-U")
-        right_obj = _qualified_or_stub(rcb, right_id, right_q, fallback_unit="pct_mom", fallback_basket="CPI-U")
-        if left_obj is None or right_obj is None:
-            continue
+        left_obj = objs[left_id]
+        right_obj = objs[right_id]
         result = rcb.compare_qualified(left_obj, right_obj, rule)
         comparisons.append({
             "comparison_id": comparison_id,
@@ -1954,7 +1863,7 @@ def _build_matched_lenses(
             "left_lens": left_id,
             "right_lens": right_id,
             "status": result.status.value,
-            "reason": [result.reason],
+            "reason": result.reason,
             "difference": result.difference,
             "limitations": list(result.limitations),
         })
@@ -2023,7 +1932,7 @@ def _matched_lenses_safe(
     entries: list[dict[str, Any]],
 ) -> dict[str, Any]:
     try:
-        return _build_matched_lenses(repo, as_of, radar, entries)
+        return _matched_lenses(repo, as_of, radar, entries)
     except Exception as exc:  # noqa: BLE001 - display-only boundary
         return {
             "schema": "inflation_matched_lenses.v1",

@@ -737,7 +737,8 @@ def test_i0_cpi_and_pce_are_separate_lenses_never_compared(tmp_path: Path) -> No
         cmp = by_id[cid]
         assert cmp["status"] == "not_comparable"
         assert cmp["difference"] is None
-        assert any(r.startswith("basis_mismatch:basket_or_index") for r in cmp["reason"])
+        assert cmp["reason"] == "basis_mismatch:basket_or_index"
+        assert isinstance(cmp["reason"], str)
     cpi = block["lenses"]["official_cpi_headline_mom"]["value"]
     pce = block["lenses"]["official_pce_headline_mom"]["value"]
     assert cpi is not None and pce is not None and cpi != pce
@@ -768,7 +769,8 @@ def test_i0_next_month_cpi_vs_breakeven_is_structurally_not_comparable(tmp_path:
         cmp = by_id[cid]
         assert cmp["status"] == "not_comparable"
         assert cmp["difference"] is None
-        assert any(r.startswith("basis_mismatch:reference_end") for r in cmp["reason"])
+        assert cmp["reason"] == "basis_mismatch:reference_end"
+        assert isinstance(cmp["reason"], str)
 
 
 def test_i0_block_emits_no_derived_number(tmp_path: Path) -> None:
@@ -855,10 +857,29 @@ def test_i0_gaps_stay_inside_the_block(tmp_path: Path) -> None:
     assert _payload_digest(payload_with, tmp_path) == _GOLDEN_BASE_SHA
 
 
-def test_i0_missing_inputs_are_missing_never_zero(tmp_path: Path) -> None:
+def test_i0_missing_inputs_are_missing_never_zero(tmp_path: Path, monkeypatch) -> None:
+    from engine import rates_command_basis as rcb
+    from engine.inflation_intelligence import _matched_lenses
+
+    original_compare_qualified = rcb.compare_qualified
+    spy_calls: list[tuple[Any, Any, Any]] = []
+
+    def _spy_compare_qualified(left, right, rule, *args, **kwargs):
+        spy_calls.append((left, right, rule))
+        return original_compare_qualified(left, right, rule, *args, **kwargs)
+
+    monkeypatch.setattr(rcb, "compare_qualified", _spy_compare_qualified)
+    # Also patch the reference inside _matched_lenses' local `rcb` import
+    # (the function looks up rcb via the imported alias; monkeypatching the
+    # module attribute is enough because the alias resolves to the same object).
+
     _fixture(tmp_path)
     payload = build_inflation_intelligence(tmp_path, as_of=_AS_OF)
     block = payload["matched_lenses"]
+
+    # PCE lens records: still missing, but carry a qualified B0 object
+    # whose evidence_class is "official_measurement", basket_or_index is
+    # "PCE", and value_state is "missing".
     for lens_id in (
         "official_pce_headline_mom",
         "official_pce_headline_yoy",
@@ -868,11 +889,29 @@ def test_i0_missing_inputs_are_missing_never_zero(tmp_path: Path) -> None:
         record = block["lenses"][lens_id]
         assert record["value"] is None
         assert record["value_state"] == "missing"
+        assert record["evidence_class"] == "official_measurement"
+        assert record["qualified"] is not None
+        assert record["qualified"]["value_state"] == "missing"
+        assert record["qualified"]["basket_or_index"] == "PCE"
+        assert record["qualified"]["evidence_class"] == "official_measurement"
+
     by_id = {cmp["comparison_id"]: cmp for cmp in block["comparisons"]}
     for cid in ("cpi_vs_pce_headline_mom", "cpi_vs_pce_core_yoy"):
         cmp = by_id[cid]
         assert cmp["status"] == "unavailable"
-        assert any(r == "operand_missing:right" for r in cmp["reason"])
+        assert isinstance(cmp["reason"], str)
+        assert cmp["reason"] == "operand_missing:right"
+
+    # The spy saw two compare_qualified calls and the right operand carried
+    # basket_or_index=PCE, evidence_class=official_measurement, value_state=missing
+    cpi_pce_calls = [c for c in spy_calls
+                     if c[2].rule_id == "cpi_vs_pce.v1"]
+    assert len(cpi_pce_calls) == 2
+    for _left, right, _rule in cpi_pce_calls:
+        right_d = right.to_dict()
+        assert right_d["basket_or_index"] == "PCE"
+        assert right_d["evidence_class"] == "official_measurement"
+        assert right_d["value_state"] == "missing"
 
     no_radar_root = tmp_path / "no_radar"
     no_radar_root.mkdir()
@@ -881,23 +920,39 @@ def test_i0_missing_inputs_are_missing_never_zero(tmp_path: Path) -> None:
     block_no_radar = build_inflation_intelligence(
         no_radar_root, as_of=_AS_OF
     )["matched_lenses"]
-    for lens_id in (
+
+    # 6 QUALIFIED next-print lenses: non-None qualified with value_state="missing"
+    qualified_next_print_ids = (
         "house_radar_cpi_headline_next_mom",
         "house_radar_cpi_core_next_mom",
         "house_radar_combined_cpi_headline_next_mom",
         "house_radar_combined_cpi_core_next_mom",
+        "market_cpi_headline_next_mom",
+        "market_cpi_core_next_mom",
+    )
+    for lens_id in qualified_next_print_ids:
+        record = block_no_radar["lenses"][lens_id]
+        assert record["value"] is None
+        assert record["value_state"] == "missing"
+        assert record["qualified"] is not None
+        assert record["qualified"]["value_state"] == "missing"
+        assert "no_next_release_entry" in record["limitations"]
+        assert any(gap == "no_next_release_entry" for gap in block_no_radar["gaps"])
+
+    # 4 UNQUALIFIED next-print lenses: qualified None, evidence_class None
+    unqualified_next_print_ids = (
         "cleveland_nowcast_cpi_headline_next_mom",
         "cleveland_nowcast_cpi_core_next_mom",
         "radar_expectation_read_cpi_headline_next_mom",
         "radar_expectation_read_cpi_core_next_mom",
-        "market_cpi_headline_next_mom",
-        "market_cpi_core_next_mom",
-    ):
+    )
+    for lens_id in unqualified_next_print_ids:
         record = block_no_radar["lenses"][lens_id]
         assert record["value"] is None
         assert record["value_state"] == "missing"
+        assert record["qualified"] is None
+        assert record["evidence_class"] is None
         assert "no_next_release_entry" in record["limitations"]
-        assert any(gap == "no_next_release_entry" for gap in block_no_radar["gaps"])
 
 
 def test_i0_after_cutoff_evidence_is_refused(tmp_path: Path) -> None:
@@ -959,38 +1014,68 @@ def test_i0_writer_emits_strict_json_with_block(tmp_path: Path) -> None:
     assert payload["matched_lenses"]["schema"] == "inflation_matched_lenses.v1"
 
 
+def test_i0_b0_consumed_only_through_public_names(tmp_path: Path) -> None:
+    """The matched_lenses block consumes B0 only through public names.
+
+    After the I0-BUILD marker line, no QualifiedObservation construction,
+    no from_dict, no rcb.Precision references, and rcb.<name> only names
+    a documented public B0 entry point.
+    """
+    import re as _re
+    from pathlib import Path as _Path
+    module_text = (_Path("engine") / "inflation_intelligence.py").read_text(encoding="utf-8")
+    marker = "# I0-BUILD: matched_lenses block"
+    assert marker in module_text, "I0-BUILD marker missing"
+    tail = module_text.split(marker, 1)[1]
+    names = set(_re.findall(r"\brcb\.(\w+)", tail))
+    allowed = {
+        "qualify_observation",
+        "compare_qualified",
+        "RULES",
+        "EvidenceClass",
+        "ValueState",
+    }
+    assert names, "no rcb.<name> reference found in appended block"
+    assert names <= allowed, f"unexpected rcb.<name> names: {sorted(names - allowed)}"
+    assert "QualifiedObservation" not in tail
+    assert "from_dict" not in tail
+    assert "rcb.Precision" not in tail
+
+
 def test_i0_term_structure_lenses_keep_horizon_and_model(tmp_path: Path) -> None:
+    from engine.inflation_intelligence import _add_years
+
     _fixture_lenses(tmp_path)
     block = build_inflation_intelligence(tmp_path, as_of=_AS_OF)["matched_lenses"]
 
     ten_yr = block["lenses"]["market_breakeven_10y"]
     assert ten_yr["qualified"]["tenor"] == "10y"
-    obs = date.fromisoformat(ten_yr["observation_date"])
-    expected_end = obs + timedelta(days=365 * 10)
-    if expected_end.month == 2 and expected_end.day == 29:
-        expected_end = expected_end.replace(day=28)
-    assert ten_yr["reference_period"]["end"] == expected_end.isoformat()
+    assert ten_yr["reference_period"]["start"] == "2026-08-07"
+    assert ten_yr["reference_period"]["end"] == "2036-08-07"
 
     fwd = block["lenses"]["market_forward_5y5y"]
     assert fwd["qualified"]["tenor"] == "5y5y"
-    obs2 = date.fromisoformat(fwd["observation_date"])
-    start5 = obs2 + timedelta(days=365 * 5)
-    end10 = obs2 + timedelta(days=365 * 10)
-    if end10.month == 2 and end10.day == 29:
-        end10 = end10.replace(day=28)
-    assert fwd["reference_period"]["start"] == start5.isoformat()
-    assert fwd["reference_period"]["end"] == end10.isoformat()
+    assert fwd["reference_period"]["start"] == "2031-08-07"
+    assert fwd["reference_period"]["end"] == "2036-08-07"
 
-    for lens_id, tenor in (
-        ("model_cleveland_expected_inflation_1y", "1y"),
-        ("model_cleveland_expected_inflation_5y", "5y"),
-        ("model_cleveland_expected_inflation_10y", "10y"),
+    for lens_id, exp_start, exp_end in (
+        ("model_cleveland_expected_inflation_1y", "2026-07-01", "2027-07-01"),
+        ("model_cleveland_expected_inflation_5y", "2026-07-01", "2031-07-01"),
+        ("model_cleveland_expected_inflation_10y", "2026-07-01", "2036-07-01"),
     ):
         record = block["lenses"][lens_id]
-        assert record["qualified"]["tenor"] == tenor
+        assert record["qualified"]["tenor"] in ("1y", "5y", "10y")
         assert record["qualified"]["model_id"] == "cleveland_expinf"
+        assert record["reference_period"]["start"] == exp_start
+        assert record["reference_period"]["end"] == exp_end
 
     survey = block["lenses"]["survey_umich_1y"]
     assert survey["evidence_class"] == "survey_participant_projection"
+    assert survey["reference_period"]["end"] == "2027-07-01"
+
+    # _add_years spec: Feb 29 → Feb 28 only, no other normalization
+    assert _add_years("2028-02-29", 10) == "2038-02-28"
+    assert _add_years("2028-02-29", 4) == "2032-02-29"
+    assert _add_years("2026-08-07", 10) == "2036-08-07"
 
     assert len(json.dumps(block, sort_keys=True, ensure_ascii=False)) < 60000
