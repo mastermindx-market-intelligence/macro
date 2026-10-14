@@ -115,6 +115,17 @@ def _blank(value: object) -> bool:
     return False
 
 
+def _text_present(value: object) -> bool:
+    """A field the module documents as an id, ref, code, label, owner
+    reference or other opaque text counts as present ONLY when this helper
+    returns True. Anything else (None, "", whitespace-only, leading or
+    trailing whitespace, int, float, bool, bytes, list, dict, set, or any
+    other object) is ABSENT and maps to the SAME refusal reason the module
+    already emits for a blank value of that field.
+    """
+    return isinstance(value, str) and value.strip() != "" and value == value.strip()
+
+
 def _present(fact: Mapping[str, object], key: str) -> bool:
     return not _blank(fact.get(key))
 
@@ -177,7 +188,7 @@ def _opaque_id(body: Mapping[str, object] | None, key: str) -> str | None:
     if body is None:
         return None
     value = body.get(key)
-    if isinstance(value, str) and not _blank(value):
+    if _text_present(value):
         return value
     return None
 
@@ -208,12 +219,36 @@ def _display_needles(listing: Mapping[str, object]) -> list[str]:
     return needles
 
 
+def _id_pair_equal(left: object, right: object) -> bool:
+    """Equality check for two caller-supplied ids (X8C-12 FAMILY TEXT RULE).
+
+    Equality is evaluated only after both sides pass ``_text_present``. A
+    non-text side is ABSENT and never equal to anything (so ``1``, ``True``
+    and ``1.0`` never match each other and never collide). Two ABSENT sides
+    are also not equal, which keeps a record whose value is missing/mistyped
+    from being treated as matching the rest of the chain.
+    """
+    if not _text_present(left) or not _text_present(right):
+        return False
+    return left == right
+
+
 def _id_looks_derived(
     request: Mapping[str, object],
     listing: Mapping[str, object] | None,
     security: Mapping[str, object] | None,
     issuer: Mapping[str, object] | None,
 ) -> bool:
+    """Substring match against ``_collected_ids``.
+
+    SEAT RULING (X8C-02): the matcher uses a substring rule with a 3-character
+    minimum needle length; this is intentional, not a defect. Owner ids are
+    opaque caller-supplied strings owned by Stock Identity / Data OS, and an
+    id that embeds a display code or display-name substring goes to human
+    review rather than auto-pass — false refusals are the fail-closed direction
+    under program law. A 2-character display code never enters the needle set
+    (see ``_display_needles``). False positives are accepted by design.
+    """
     if listing is None:
         return False
     needles = _display_needles(listing)
@@ -285,21 +320,21 @@ def bind_identity(
         reasons.append("ISSUER_RECORD_MISSING")
 
     for record in (listing, security, issuer):
-        if record is not None and _blank(record.get("owner_ref")):
+        if record is not None and not _text_present(record.get("owner_ref")):
             reasons.append("OWNER_REF_MISSING")
 
     if listing is not None:
-        if request.get("listing_id") != listing.get("listing_id"):
+        if not _id_pair_equal(request.get("listing_id"), listing.get("listing_id")):
             reasons.append("LISTING_ID_MISMATCH")
     if listing is not None and security is not None:
-        if listing.get("security_id") != security.get("security_id"):
+        if not _id_pair_equal(listing.get("security_id"), security.get("security_id")):
             reasons.append("LISTING_SECURITY_MISMATCH")
     if security is not None and issuer is not None:
-        if security.get("issuer_id") != issuer.get("issuer_id"):
+        if not _id_pair_equal(security.get("issuer_id"), issuer.get("issuer_id")):
             reasons.append("SECURITY_ISSUER_MISMATCH")
     if security is not None:
         request_issuer_id = request.get("issuer_id")
-        if request_issuer_id is not None and request_issuer_id != sec_issuer_id:
+        if request_issuer_id is not None and not _id_pair_equal(request_issuer_id, sec_issuer_id):
             reasons.append("REQUEST_ISSUER_MISMATCH")
     if listing is not None:
         if request.get("currency") != listing.get("currency"):
@@ -319,9 +354,7 @@ def bind_identity(
         issuer_id = None
     else:
         raw_issuer = security.get("issuer_id")
-        if raw_issuer is None:
-            issuer_id = None
-        elif isinstance(raw_issuer, str):
+        if _text_present(raw_issuer):
             issuer_id = raw_issuer
         else:
             issuer_id = None
