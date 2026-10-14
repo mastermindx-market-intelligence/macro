@@ -8957,6 +8957,8 @@ jobs:
           tests/test_research_codegen_review_projection.py
           tests/test_research_codegen_admin_projection.py
           tests/test_research_codegen_admin_tokens.py
+          tests/test_holdout_vault.py
+          tests/test_promotion_gate.py
           -q
 
   cycle-pattern-authority:
