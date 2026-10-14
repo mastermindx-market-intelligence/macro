@@ -213,5 +213,11 @@ Run from the lane worktree; `PY` = `~/lanes/venv/bin/python`.
 * `PY -m py_compile tests/verification/journey_a01.py tests/verification/test_journey_a01.py` → `compile-ok`.
 * Hermeticity grep (see P4): one hit, the word "subprocess" inside the module
   docstring's promise "no subprocess"; all writes go to the tmp corpus only.
-* `PY scripts/check_contract_delta.py --base 15bc4a7b…` →
-  `contract-delta: 0 introduced, 0 inherited (base 15bc4a7b)`.
+* `PY scripts/check_contract_delta.py --base 15bc4a7b… 2>&1 | tail -8` →
+  `::error title=contract-delta::tests/verification/test_journey_a01.py is a new
+  pytest suite named by no run: step in any workflow — wire it into the job that
+  owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to
+  config/unrun_test_waivers.yml` / `contract-delta: 1 introduced, 0 inherited
+  (base 15bc4a7b)`. This "introduced" finding naming the unwired test file is
+  EXPECTED: the suite is not yet wired into CI (the orchestrator applies the
+  `.github/ci/legacy-jobs.yml` patch).
