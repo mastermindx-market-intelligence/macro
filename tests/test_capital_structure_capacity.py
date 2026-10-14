@@ -1302,7 +1302,7 @@ def test_c10_13_receipt_digests_the_inputs_and_the_interface_takes_three_paramet
     assert envelope.receipt.implementation_digest == sha256_of(
         {"contract": STATE_CONTRACT_VERSION, "implementation": IMPLEMENTATION}
     )
-    assert IMPLEMENTATION == "capital_structure.capacity.c2_adapter.v1+" + capacity_joint.IMPLEMENTATION
+    assert IMPLEMENTATION == "capital_structure.capacity.c2_adapter.v2+" + capacity_joint.IMPLEMENTATION
     assert envelope.state_id == state.state_id
     assert envelope.state_id != state.receipt.input_digest
     validate_state_record("capacity_envelope", record)
