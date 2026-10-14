@@ -1,0 +1,56 @@
+{
+  "base_head": "a4996e7397543b352a0e6043c92905bc1f04006f",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Actual correlation_matrix over synthetic constant and varying USD prices. Preserve unavailable diagonals, unique-pair coverage and native table access. No owner computation or input qualification change.",
+  "counterexample": "Four constant synthetic USD streams yield owner cells None, including every diagonal; original template rendered four diagonal ones.",
+  "repair": [
+    "Respect unavailable cells before diagonal styling; preserve genuine zero and signed estimates.",
+    "Expose available unique-pair count, weekly USD basis and configured rather than observed window.",
+    "Remove summary safety promise; scope existing owner interpretation to historical pairwise estimates.",
+    "Native heading focus, labelled keyboard-scrollable table with row/column headers, existing help and context-preserving Back."
+  ],
+  "tests": {
+    "render_unique_pass": 4,
+    "browser_unique_pass": 4,
+    "browser_width_states": 8,
+    "original_render_red": 3,
+    "original_browser_red": 1,
+    "red_scope": "Constant and partial fixtures fail on fabricated diagonal availability. Real-zero display control already retained 0.00 and failed on missing coverage. Separate source assertion binds former lower-equals-safer copy.",
+    "counts_overlap": true,
+    "warnings": "14 inherited pytest cleanup warnings",
+    "zero_control": "Explicitly overridden display-only fixture value, not owner finding."
+  },
+  "visual": {
+    "canonical": 8,
+    "focused_partial": 8,
+    "focused_absent": 4,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "parent": "All twelve focused views inspected. Narrow table intentionally scrolls within labelled focusable region; header, count, unavailable text and footer wrap inside page. Dark and Light retain existing separate material treatments. Constant fixture shows no valid diagonal or all-clear read.",
+    "manifest_sha256": "712bf7eecd665a66861dbee142ad68fd87899b1fd24aad85603de1a6a4eb82c6",
+    "limits": "Parent source-fixture review only. No independent review, live acceptance, physical input, speech or native zoom proof."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "3f6998753d07ea973c33231ede5c250cab019776be91d18510c787284f5149f9",
+    "tests/test_intl_correlation_coverage_render.py": "cd57775e2beee48bf7ecbe79fb09e88896125acc08a0f693d6bd674690fe24cf",
+    "tests/intl_workspace_page.test.cjs": "79456b5f1afa8e7a4840310bcd7dc94e0acb8e227909a9fbdfa5179d1c2a87bf"
+  },
+  "owners_unchanged": {
+    "engine/intl_performance.py": "4aaed61e435ca87ba6845bd93eb0bc815eb5969d651d8ff81526b0401ecb2038",
+    "engine/intl_inputs.py": "bbb2a634bbe0ae06c8e8b21f5bf9882a8697bf4eb5a57252e7593759a1ba11ae",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/correlation-coverage-20261014-r1"
+}

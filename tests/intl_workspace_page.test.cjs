@@ -55,6 +55,36 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Correlation availability keyboard journey ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf={'correlation':correlation_fixture()}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]');const query=lang==='zh'?'相关':'correlation';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-cross-market-correlation"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-cross-market-correlation');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        assert.equal(await panel.locator('td.diag').count(),3);assert.equal(await panel.locator('[data-correlation-unavailable]').count(),7);
+        assert.ok((await panel.locator('[data-correlation-coverage]').innerText()).includes('3 / 6'));
+        const region=panel.locator('[data-correlation-scroll]');await region.focus();assert.equal(await region.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await region.getAttribute('aria-labelledby'),'intl-cross-market-correlation');
+        if(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1)){
+          await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('[data-correlation-scroll]').scrollLeft>0);
+        }
+        const text=await panel.innerText();assert.ok(text.includes(lang==='zh'?'美元周收益':'weekly USD returns'));assert.ok(text.includes(lang==='zh'?'配置窗口':'Configured window'));
+        await heading.focus();await page.keyboard.press('Tab');const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});assert.ok((await lens.innerText()).includes(lang==='zh'?'缺失值':'Missing values'));
+        await page.keyboard.press('Escape');await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
+        assert.equal(new URL(page.url()).searchParams.get('market'),'JP');assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');assert.equal(new URL(page.url()).searchParams.get('basis'),'local');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Regime map missing coordinate journey ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_regime_map_absence_render import map_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(heatmap=map_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
     await pageFixture(async page=>{

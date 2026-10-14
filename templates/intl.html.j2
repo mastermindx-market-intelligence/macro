@@ -652,7 +652,7 @@
       {% if CR and CR.avg_offdiag is not none %}
       <div class="vk">{{ t('Avg correlation', '平均相关性') }}</div>
       <div class="vv">{{ '%.2f'|format(CR.avg_offdiag) }}</div>
-      <div class="vs">{{ t('cross-market, lower = safer', '跨市场，越低越分散') }}</div>
+      <div class="vs">{{ t('weekly USD returns', '美元周收益') }}</div>
       {% else %}
       <div class="vk">{{ t('Drawdown-watch', '回撤观察') }}</div>
       <div class="vv">{{ S.drawdown_watch }}</div>
@@ -2024,20 +2024,34 @@
 
 <!-- ===== Correlation & diversification heatmap ===== -->
 {% if CR %}
+{% set correlation_coverage = namespace(available=0) %}
+{% for row in CR.cells %}
+  {% set ri = loop.index0 %}
+  {% for v in row %}
+    {% if loop.index0 > ri and v is number and v is not boolean and -1 <= v <= 1 %}
+      {% set correlation_coverage.available = correlation_coverage.available + 1 %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% set correlation_total = (CR.order | length) * ((CR.order | length) - 1) // 2 %}
 <div class="panel">
-  <div class="sec-h"><h2 id="intl-cross-market-correlation">{{ t('Cross-market correlation', '跨市场相关性') }} {{ help('Shows whether markets are moving together. Lower correlation means better diversification.', '显示各市场是否同涨同跌。相关性越低，分散越好。') }}</h2>
-    <span style="flex:1"></span>{% if CR.avg_offdiag is not none %}<span class="sub">{{ t('avg', '平均') }} <b style="color:var(--text)">{{ '%.2f'|format(CR.avg_offdiag) }}</b> · {{ CR.window_d }}d</span>{% endif %}</div>
-  <div class="heatwrap">
+  <div class="sec-h"><h2 id="intl-cross-market-correlation" tabindex="-1">{{ t('Cross-market correlation', '跨市场相关性') }} {{ help('Pairwise correlations of supplied weekly USD returns. Pairs may use different overlapping observations. Missing values are unavailable, not zero or perfect correlation. Historical correlation does not establish portfolio safety or future diversification.', '所供美元周收益的成对相关性。各市场对可能使用不同的重叠观测。缺失值表示不可用，不等于零或完全相关。历史相关性不能证明组合安全或未来分散效果。') }}</h2>
+    <span style="flex:1"></span>{% if CR.avg_offdiag is not none %}<span class="sub">{{ t('avg of available pairs', '可用市场对均值') }} <b style="color:var(--text)">{{ '%.2f'|format(CR.avg_offdiag) }}</b></span>{% endif %}</div>
+  <p class="caveat" data-correlation-coverage>{{ correlation_coverage.available }} / {{ correlation_total }} {{ t('unique market pairs available', '个不重复市场对可用') }} · {{ t('weekly USD returns', '美元周收益') }} · {{ t('Configured window', '配置窗口') }}: {{ CR.window_d }}d</p>
+  {% if not correlation_coverage.available %}
+  <p class="caveat">{{ t('No available pairwise correlations.', '暂无可用的成对相关性。') }}</p>
+  {% endif %}
+  <div class="heatwrap" data-correlation-scroll tabindex="0" role="region" aria-labelledby="intl-cross-market-correlation">
     <table class="heat">
-      <thead><tr><th></th>{% for k in CR.order %}<th>{{ CR.labels[k].flag }} {{ k }}</th>{% endfor %}</tr></thead>
+      <thead><tr><th scope="col">{{ t('Market', '市场') }}</th>{% for k in CR.order %}<th scope="col">{{ CR.labels[k].flag }} {{ k }}</th>{% endfor %}</tr></thead>
       <tbody>
       {% for rk in CR.order %}
         {% set ri = loop.index0 %}
-        <tr><th class="l">{{ CR.labels[rk].flag }} {{ rk }}</th>
+        <tr><th scope="row" class="l">{{ CR.labels[rk].flag }} {{ rk }}</th>
           {% for ck in CR.order %}
             {% set v = CR.cells[ri][loop.index0] %}
-            {% if rk == ck %}<td class="diag" style="background:var(--muted)">1</td>
-            {% elif v is none %}<td style="background:var(--panel2);color:var(--muted)">—</td>
+            {% if v is not number or v is boolean or not (-1 <= v <= 1) %}<td data-correlation-unavailable style="background:var(--panel2);color:var(--muted)">{{ t('Unavailable', '不可用') }}</td>
+            {% elif rk == ck %}<td class="diag" style="background:var(--muted)">{{ '%.2f'|format(v) }}</td>
             {% else %}{% set pct = ([[v, 0]|max, 1]|min * 100)|round|int %}
             <td style="background:color-mix(in srgb, var(--down) {{ pct }}%, var(--up))">{{ '%.2f'|format(v) }}</td>{% endif %}
           {% endfor %}
@@ -2046,7 +2060,7 @@
       </tbody>
     </table>
   </div>
-  <p class="caveat" style="margin-top:9px">{% if CR.read_en %}{{ t(CR.read_en, CR.read_zh) }} · {% endif %}{{ t('Red = more correlated; green = more diversifying. Display-only.', '红 = 相关更高；绿 = 更能分散。仅展示。') }}</p>
+  <p class="caveat" style="margin-top:9px">{% if CR.read_en %}{{ t(CR.read_en, CR.read_zh) }} · {% endif %}{{ t('Historical pairwise estimates; coverage and overlapping observations may differ. Missing values are not zero. Display-only.', '历史成对估计；覆盖范围与重叠观测可能不同。缺失值不等于零。仅展示。') }}</p>
 </div>
 {% endif %}
 

@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_correlation_coverage_render.py; tests/intl_workspace_page.test.cjs
+  what: Preserve unavailable correlation diagonals and unique-pair coverage, scope weekly USD estimates and restore keyboard table/method navigation.
 - path: templates/intl.html.j2; tests/test_intl_regime_map_absence_render.py; tests/intl_workspace_page.test.cjs
   what: Keep missing Regime-map axes unplotted, preserve real zero and partial coordinates, and restore native Library focus with a keyboard disclosure.
 - path: templates/intl.html.j2; tests/test_intl_trade_pressure_method_render.py; tests/intl_workspace_page.test.cjs
@@ -197,6 +199,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Correlation availability has four render and four browser cases across eight width states; eight canonical and twelve focused source views retain partial and absent owner coverage.
+  command: python3 -m pytest -q tests/test_intl_correlation_coverage_render.py; node --test --test-name-pattern="Correlation availability keyboard journey" tests/intl_workspace_page.test.cjs; correlation-coverage capture.py, inspect_focus.py and inspect_absent.py
+  result: correlation-coverage-20261014-r1 GREEN_RENDER, GREEN_BROWSER and capture logs; CORRELATION_COVERAGE_ACCEPTANCE.json. Original three render and one browser reds retained; source not deployed.
 - claim: Regime map eleven unique render and four browser cases pass across eight width states; eight canonical and eight focused views are source-fixture proof only.
   command: python3 -m pytest -q tests/test_intl_regime_map_absence_render.py; targeted owner-text escaping; node --test --test-name-pattern="Regime map missing coordinate journey" tests/intl_workspace_page.test.cjs
   result: regime-map-absence-20261014-r1 GREEN_RENDER, GREEN_BROWSER and ESCAPING_TEST logs; REGIME_MAP_ABSENCE_ACCEPTANCE.json. Captured fixture HTML unchanged after text escaping.
