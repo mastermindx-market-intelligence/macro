@@ -121,7 +121,7 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
                 "field_status": {name: "observed" if feature["state"].get(name) is not None
                                  and feature["state"].get(name) != "unknown" else "unavailable"
                                  for name in use.FIELDS},
-                "saved_output": {"path": "/api/market-memory/v1/context/" + receipt["context_id"],
+                "saved_output": {"path": "/api/market-memory/v1/macro/retained/saved",
                                  "packet_sha256": receipt["packet_sha256"]},
             })
         entries.sort(key=lambda x: (cohort.utc_instant(x["as_known_at"]),

@@ -766,19 +766,24 @@ def as_known_at(
         )
     try:
         params = _exact_pit_query(request)
-        reader = _pit_reader()
-        if params["mode"] != reader.mode:
-            raise market_memory_pit.MarketMemoryQueryError(
-                "W1A supports operational_pit mode only"
+        from engine.neuralweb.market_memory_retained_legacy_guard import guard_trusted_legacy_reader
+        with guard_trusted_legacy_reader(_pit_reader(), root=_repo_root(), user_id=str(_user.get("id") or "")) as guard:
+            reader = guard.reader
+            if params["mode"] != reader.mode:
+                raise market_memory_pit.MarketMemoryQueryError(
+                    "W1A supports operational_pit mode only"
+                )
+            stored = reader.read_stored_as_known_at(
+                subject={
+                    "subject_id": params["subject_id"],
+                    "instrument_id": params["instrument_id"],
+                },
+                event_time=params["event_time"],
+                as_known_at=params["as_known_at"],
             )
-        stored = reader.read_stored_as_known_at(
-            subject={
-                "subject_id": params["subject_id"],
-                "instrument_id": params["instrument_id"],
-            },
-            event_time=params["event_time"],
-            as_known_at=params["as_known_at"],
-        )
+            guard.final_authorize()
+    except PermissionError as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except market_memory_pit.MarketMemoryQueryError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except market_memory_pit.MarketMemoryContextNotFound as exc:
@@ -810,7 +815,12 @@ def context_by_id(
             headers={"Retry-After": str(int(_SYMBOL_RATE_WINDOW_SECONDS))},
         )
     try:
-        stored = _pit_reader().read_stored_context_id(context_id)
+        from engine.neuralweb.market_memory_retained_legacy_guard import guard_trusted_legacy_reader
+        with guard_trusted_legacy_reader(_pit_reader(), root=_repo_root(), user_id=str(_user.get("id") or "")) as guard:
+            stored = guard.reader.read_stored_context_id(context_id)
+            guard.final_authorize()
+    except PermissionError as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except market_memory_pit.MarketMemoryQueryError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except market_memory_pit.MarketMemoryContextNotFound as exc:
@@ -858,9 +868,14 @@ def operational_playback_catalog(
             headers={"Retry-After": str(_SYMBOL_FETCH_BUSY_RETRY_SECONDS)},
         )
     try:
-        payload = market_memory_playback.read_operational_playback_catalog(
-            reader=_pit_reader(), **params
-        )
+        from engine.neuralweb.market_memory_retained_legacy_guard import guard_trusted_legacy_reader
+        with guard_trusted_legacy_reader(_pit_reader(), root=_repo_root(), user_id=str(_user.get("id") or "")) as guard:
+            payload = market_memory_playback.read_operational_playback_catalog(
+                reader=guard.reader, **params
+            )
+            guard.final_authorize()
+    except PermissionError as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except (
         market_memory_playback.MarketMemoryPlaybackContractError,
         market_memory_pit.MarketMemoryQueryError,
@@ -1111,3 +1126,56 @@ def retained_catalog(request: Request, _user: dict = Depends(require_site_full_u
                or (request.client.host if request.client else "unknown"))[:160]
     value = retained_catalog_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
     return _response(value)
+
+
+def retained_saved_for_user(root: Path, user_id: str, request_spec: dict,
+                            *, peer: str | None = None) -> dict:
+    """Disclose one original capture under the same finite request admission."""
+    from engine.neuralweb import market_memory_retained_saved as saved
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_retained_use as use
+
+    use._enforce_current_site_user(user_id)
+    required = {"generation_id", "generation_sha256", "query_id", "context_id",
+                "capture_id", "subject_id", "query_cutoff"}
+    if type(request_spec) is not dict or set(request_spec) != required:
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    with _symbol_rate_lock:
+        now = time.monotonic()
+        allowed = _book_symbol_rate(f"playback-user:{user_id}", limit=_PLAYBACK_USER_LIMIT, now=now)
+        if allowed and peer is not None:
+            allowed = _book_symbol_rate(f"playback-peer:{peer[:160]}", limit=_PLAYBACK_PEER_LIMIT, now=now)
+    if not allowed:
+        raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
+    if not _playback_slots.acquire(blocking=False):
+        raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
+    try:
+        # Both capability admission and final owner re-read share this allowance.
+        with market_memory_pit.bounded_owner_reads(maximum_bytes=cohort.MAX_OWNER_BYTES):
+            capability = saved.read_retained_saved(root, user_id=user_id, **request_spec)
+            return saved.disclose_retained_saved(capability)
+    except (use.RetainedUseError, saved.RetainedSavedAccessError) as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
+    except saved.RetainedSavedCutoffUnsupported as exc:
+        raise HTTPException(422, detail={"state": "CUTOFF_NOT_SUPPORTED"}) from exc
+    except market_memory_pit.MarketMemoryQueryError as exc:
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"}) from exc
+    except market_memory_pit.MarketMemoryContextNotFound as exc:
+        raise HTTPException(404, detail={"state": "EXACT_CAPTURE_NOT_FOUND"}) from exc
+    except market_memory_pit.OwnerReadBudgetError as exc:
+        raise HTTPException(503, detail={"state": "OWNER_READ_BUDGET_EXCEEDED"}) from exc
+    except (market_memory_pit.MarketMemoryPITError, cohort.RetainedContextCohortError) as exc:
+        raise HTTPException(503, detail={"state": "EXACT_SAVED_OUTPUT_UNAVAILABLE"}) from exc
+    finally:
+        _playback_slots.release()
+
+
+@router.get("/macro/retained/saved")
+def retained_saved(request: Request, _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    items = list(request.query_params.multi_items())
+    if len({key for key, _value in items}) != len(items):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    peer = str(request.headers.get(_SYMBOL_TRUSTED_PEER_HEADER)
+               or (request.client.host if request.client else "unknown"))[:160]
+    value = retained_saved_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
+    return _response(value, headers={"ETag": '"' + value["exact_refs"]["packet"]["sha256"] + '"'})
