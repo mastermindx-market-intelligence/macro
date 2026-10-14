@@ -29355,6 +29355,12 @@ jobs:
       # T07 evidence-drawer review pin and date-only cutoff. Closure of
       # tests/test_mining_updates.py adds no path this job does not already list.
       - "tests/test_mining_updates.py"
+      # Wave 10 build W10-2: publish the copper estimate-vs-actual row through the
+      # composer's existing mev path. Closure of tests/test_mining_witness_expectations.py
+      # adds no path this job does not already list (tests/mining_casebook.py is already in paths:,
+      # engine/market_ontology/mining_theme_research.py is too, and the only stdlib import
+      # is ``dataclasses.replace``).
+      - "tests/test_mining_witness_expectations.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29367,7 +29373,7 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py tests/test_mining_witness_expectations.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
