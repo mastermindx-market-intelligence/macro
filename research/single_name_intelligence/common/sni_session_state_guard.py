@@ -23,6 +23,15 @@ bounds are half-open and a halt overrides only the open state. All
 wall-clock and zone values live with the caller; the module source
 carries none.
 
+Every owner-supplied calendar-day field is checked: ``calendar_id``
+(text-present under the FAMILY TEXT RULE, ABSENT -> ``CALENDAR_MISSING``),
+``owner_ref`` (the existing blank check), ``timezone`` (IANA exact-case),
+``trading_date`` (strict YYYY-MM-DD), ``day_kind`` (closed set),
+``sessions`` (half-open, no overlap), and ``halts`` (half-open, offset-
+aware). A field the module documents as a caller-supplied opaque id or
+ref (``calendar_id``) counts as present only when ``_text_present`` is
+true.
+
 Nothing here feeds a ranker, gate, sizer, signal, escalation, or trade
 path. Every authority flag is literal false. A caller that tries to set
 any of them true is refused (raise). Residuals and stress statistics
@@ -129,6 +138,37 @@ class SessionStateVerdict:
     @property
     def authority_flags(self) -> Mapping[str, bool]:
         return AUTHORITY_FLAGS
+
+
+def _is_whitespace_char(ch: str) -> bool:
+    """Return True for ASCII whitespace characters. Avoids .strip /
+    .lower / .upper / .casefold / .replace (the static-source scan
+    test_a12_static_module_source_scan forbids them on any attribute
+    name); only an explicit ``in ' \\t\\n\\r\\f\\v'`` membership test."""
+    return ch in " \t\n\r\f\v"
+
+
+def _text_present(value: object) -> bool:
+    """True only for a non-empty, unpadded, non-whitespace ``str`` (per
+    the X8BREP FAMILY TEXT RULE). The implementation walks the string
+    directly instead of calling ``.strip()`` so the no-normalisation
+    static scan test_a12_static_module_source_scan stays green: the
+    module never folds, strips, or normalises caller-supplied ids.
+    Used for ``calendar_id``: any value other than a clean caller-
+    supplied opaque ``str`` (None, empty, whitespace-only, padded, int,
+    float, bool, bytes, list, dict, set, any other object) is ABSENT and
+    maps to ``CALENDAR_MISSING`` (the existing reason; no new code per
+    X8B-06)."""
+    if not isinstance(value, str):
+        return False
+    if value == "":
+        return False
+    if _is_whitespace_char(value[0]) or _is_whitespace_char(value[-1]):
+        return False
+    for symbol in value:
+        if not _is_whitespace_char(symbol):
+            return True
+    return False
 
 
 def _blank(value: object) -> bool:
@@ -288,7 +328,8 @@ def session_state(calendar: Mapping[str, object] | None, *, at: object) -> Sessi
     is present. Reports every applicable reason, de-duplicated, in
     REASONS order. Session bounds are half-open; a halt overrides only
     the open state; the day_kind decides closed days (no weekday or
-    holiday logic lives here).
+    holiday logic lives here). ``calendar_id`` is required under the
+    FAMILY TEXT RULE: not text-present -> ``CALENDAR_MISSING``.
     """
     refuse_nonfalse_authority()
     if calendar is not None and not isinstance(calendar, Mapping):
@@ -299,6 +340,11 @@ def session_state(calendar: Mapping[str, object] | None, *, at: object) -> Sessi
         )
 
     reasons: list[str] = []
+    # X8BREP FAMILY TEXT RULE: calendar_id must be a non-empty,
+    # unpadded, non-whitespace str. ABSENT -> CALENDAR_MISSING (existing
+    # reason; no new code per X8B-06).
+    if not _text_present(calendar.get("calendar_id")):
+        reasons.append("CALENDAR_MISSING")
     if _blank(calendar.get("owner_ref")):
         reasons.append("OWNER_REF_MISSING")
 
