@@ -97,7 +97,7 @@ def test_seven_class_real_panel_detail_composition(tmp_path, output_class, varia
     IOS._CACHE.clear()
 
 
-def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(tmp_path, record_property):
+def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(tmp_path, record_property, monkeypatch):
     """Real readiness positive control reaches the consumer, without task qualification.
 
     Reuses incumbent QLedger fixture constructors; registrar clocks exist solely
@@ -131,6 +131,18 @@ def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(
     qledger_evidence_clock.record_start("stock_desk",horizon_d=21,horizon_unit="trading_days",
         root=root,now="2025-01-01T00:00:00+00:00")
     assert q.promotion_check_dispatch("stock_desk",21,root=root).eligible
+    # The accepted A1 reader consumes the owner artifact, never recomputes it.
+    # Publish through the actual owner before the no-write boundary; suppress
+    # only external alert delivery for this synthetic estate.
+    from scripts import grade_qledger as grader
+    (root/"site/qledger").mkdir(parents=True)
+    monkeypatch.setattr(grader,"_fire_readiness_alert",lambda *_a,**_k: None)
+    published=grader.run_readiness_post_step(root,len(grades),len(claims),today="2026-10-12")
+    assert "error" not in published
+    recorded=json.loads((root/"site/qledger/track_record.json").read_text())
+    assert recorded["promotion_readiness"]["stock_desk"]["21"]["ready"] is True
+    monkeypatch.setattr(grader,"compute_promotion_readiness",
+                        lambda *_a,**_k: pytest.fail("the consumer must not recompute readiness"))
     before=_snapshot(root)
     IOS._CACHE.clear()
     panel=IOS.panel(root=root,force=True)
@@ -138,11 +150,16 @@ def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(
     assert panel["ok"] and detail["ok"]
     row=panel["engines"][0]
     assert row["evidence_provider"]["family"]=="stock_desk"
-    assert row["evidence_provider"]["read_status"]=="ok"
+    assert row["evidence_provider"]["read_status"]=="partial"
+    context=row["evidence_provider"]["recorded_snapshot"]
+    assert context["available"] is True
+    assert context["receipt_status"]=="recorded_provenance"
+    assert context["current_source_qualification"]=="unavailable"
     assert row["evidence_ruler"]["selected_qledger_rung"]=="21"
     assert row["evidence_maturity"]["rungs"]["21"]["ready"] is True
-    assert row["evidence_status"]=="Accruing"
-    assert "owner_validation_scope_unqualified" in row["evidence_reason_codes"]
+    assert row["evidence_status"]=="Degraded"
+    assert "owner_recorded_snapshot_current_unqualified" in row["evidence_reason_codes"]
+    assert row["evidence_owner_scope"]["qualified_task_scope"] is None
     assert row["evidence_status"]==detail["engine"]["evidence_status"]
     assert _snapshot(root)==before
     record_property("advisory_readiness","PASS: actual matched-control ready owner")

@@ -1,0 +1,81 @@
+........................................................................ [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+...................................F.................................... [ 77%]
+........................................................................ [ 96%]
+.............                                                            [100%]
+=================================== FAILURES ===================================
+_ test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority __
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1512/test_ready_matched_owner_does_0')
+record_property = <function record_property.<locals>.append_property at 0x10d2a1f30>
+
+    def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(tmp_path, record_property):
+        """Real readiness positive control reaches the consumer, without task qualification.
+
+        Reuses incumbent QLedger fixture constructors; registrar clocks exist solely
+        under tmp_path before the no-write snapshot. No outcome or production access.
+        """
+        from engine import qledger as q, qledger_evidence_clock
+        import importlib.util
+        spec=importlib.util.spec_from_file_location("eval_os_incumbent_control_fixtures",
+            Path(__file__).with_name("test_qledger_control_policy.py"))
+        fixtures=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(fixtures)
+        _cohort,_write_store,_start_clock=fixtures._cohort,fixtures._write_store,fixtures._start_clock
+
+        root=tmp_path/"estate"
+        eid=_estate(root,"predictive",0)
+        doc=yaml.safe_load((root/"config/synapse.yml").read_text())
+        old_ledger=root/doc["artifacts"]["fixture"]["path"]
+        new_ledger="data/stock_desk/theses.jsonl"
+        target=root/new_ledger
+        target.parent.mkdir(parents=True,exist_ok=True)
+        target.write_bytes(old_ledger.read_bytes())
+        old_ledger.unlink()
+        doc["artifacts"]["fixture"]["path"]=new_ledger
+        (root/"config/synapse.yml").write_text(yaml.safe_dump(doc))
+        species=json.loads((root/"data/species/registry.json").read_text())
+        species["species"][0]["ledger_binding"]["ledger"]=new_ledger
+        (root/"data/species/registry.json").write_text(json.dumps(species))
+        claims,grades=_cohort("stock_desk",30,controlled=30)
+        _write_store(root,claims,grades)
+        _start_clock(root,"stock_desk")
+        qledger_evidence_clock.record_start("stock_desk",horizon_d=21,horizon_unit="trading_days",
+            root=root,now="2025-01-01T00:00:00+00:00")
+        assert q.promotion_check_dispatch("stock_desk",21,root=root).eligible
+        before=_snapshot(root)
+        IOS._CACHE.clear()
+        panel=IOS.panel(root=root,force=True)
+        detail=IOS.engine_detail(eid,root=root)
+        assert panel["ok"] and detail["ok"]
+        row=panel["engines"][0]
+        assert row["evidence_provider"]["family"]=="stock_desk"
+>       assert row["evidence_provider"]["read_status"]=="ok"
+E       AssertionError: assert 'unreadable' == 'ok'
+E
+E         - ok
+E         + unreadable
+
+tests/test_eval_os_adversarial_acceptance.py:141: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=============================== warnings summary ===============================
+tests/test_eval_os_adversarial_acceptance.py: 14 warnings
+  tests/test_eval_os_adversarial_acceptance.py:65: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize("output_class", list(CLASS_PAYLOADS))
+
+tests/test_eval_os_adversarial_acceptance.py::test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority
+  tests/test_eval_os_adversarial_acceptance.py:100: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(tmp_path, record_property):
+
+tests/test_eval_os_adversarial_acceptance.py: 16 warnings
+  tests/test_eval_os_adversarial_acceptance.py:167: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize("case_id", _MEASUREMENT_IDS)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_eval_os_adversarial_acceptance.py::test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority
+1 failed, 372 passed, 31 warnings in 24.18s

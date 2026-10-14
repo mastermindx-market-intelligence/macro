@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # A1 pure product/finite QA must run on code PRs without the legacy data job.
+    "eval-os-a1",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4773,6 +4775,47 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
+    """A data-only Neural Web job must not make an A1 code PR falsely green."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    assert "eval-os-a1" in jobs, "Eval OS acceptance needs an ordinary PR code job"
+    job = jobs["eval-os-a1"]
+    commands = "\n".join(step["run"] for step in _yaml(MANIFEST)["jobs"][job.job_id]["steps"] if "run" in step)
+    suites = (
+        "tests/test_admin_intelligence_os.py",  # ci-trigger-closure: data
+        "tests/test_admin_intelligence_os_ui.py",  # ci-trigger-closure: data
+        "tests/test_admin_server.py",  # ci-trigger-closure: data
+        "tests/test_admin_theme_tokens.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings_ui.py",  # ci-trigger-closure: data
+        "tests/test_eval_os_adversarial_acceptance.py",  # ci-trigger-closure: data
+        "tests/test_response_eval.py",  # ci-trigger-closure: data
+    )
+    assert "node --version" in commands, "UI contracts must not silently skip without Node"
+    owner = _yaml(MANIFEST)["jobs"]["qledger-cluster-honest-ci"]
+    assert owner["gate"] == "code"
+    assert any("tests/test_w6_readiness_monitor.py" in step.get("run", "") for step in owner["steps"])  # ci-trigger-closure: data
+    for suite in suites:
+        assert suite in commands, suite
+    for dependency in (*suites,
+        "tests/test_qledger_control_policy.py",  # ci-trigger-closure: data
+        ".gitignore",  # ci-trigger-closure: data
+        ".github/workflows/brain-eval.yml",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_bear_steepener_2026-07-29.json",  # ci-trigger-closure: data
+        "admin/intelligence_os.py",  # ci-trigger-closure: data
+        "admin/static/index.html",  # ci-trigger-closure: data
+        "admin/static/app.js",  # ci-trigger-closure: data
+        "admin/static/styles.css",  # ci-trigger-closure: data
+        "scripts/grade_qledger.py",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",  # ci-trigger-closure: data
+    ):
+        assert dependency in job.paths, dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, _ = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
