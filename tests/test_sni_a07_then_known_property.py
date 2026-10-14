@@ -524,7 +524,9 @@ def test_p6_fail_closed_for_each_reason():
     total = 0
     for code in codes:
         for case in range(_VALIDATION_CASES):
-            rng = random.Random(BASE_SEED + 6 + hash((code, case)) % 100000)
+            # str hash() is salted per process (PYTHONHASHSEED); derive the
+            # seed from the code's position so every run replays the same cases.
+            rng = random.Random(BASE_SEED + 6 + codes.index(code) * 100000 + case)
             cutoff = _gen_cutoff(rng)
             items = _fixture_for(rng, code, cutoff)
             view = then_known_view(items, cutoff=_iso(cutoff))
