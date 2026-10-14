@@ -166,3 +166,39 @@ def test_original_sparse_minter_refuses_unqualified_fabric_destination(
     ) == 1
     assert not destination.exists()
     assert _git(repo, "branch", "--list", "lane/unqualified-worker") == ""
+
+def test_fabric_mint_cli_pinned_commit_and_strict_no_reuse(
+    checkouts, monkeypatch,
+):
+    repo, _, _, home = checkouts
+    sha = _git(repo, "rev-parse", "HEAD")
+    monkeypatch.setattr(ws, "ROOT", repo)
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.main(["fabric-mint", "lane-alpha", sha]) == 0
+    dest = home / "lanes" / "wt" / "lane-alpha"
+    assert _git(dest, "rev-parse", "HEAD") == sha
+    assert _git(dest, "branch", "--show-current") == "lane/lane-alpha"
+    assert _git(dest, "config", "--get", "core.sparseCheckout") == "true"
+    assert _git(dest, "status", "--porcelain") == ""
+    for name in ("data", "site", "mockups", "verify_shots"):
+        assert not (dest / name / "tracked.txt").exists()
+    # A repeated command is not a resume or a grant to reset an incumbent.
+    assert ws.main(["fabric-mint", "lane-alpha", sha]) == 1
+    assert _git(dest, "rev-parse", "HEAD") == sha
+
+
+def test_fabric_mint_cli_requires_explicit_new_workspace_owner(
+    checkouts, monkeypatch,
+):
+    repo, _, _, home = checkouts
+    sha = _git(repo, "rev-parse", "HEAD")
+    monkeypatch.setattr(ws, "ROOT", repo)
+    monkeypatch.delenv("MASTERMIND_FABRIC_SPARSE_NEW", raising=False)
+    assert ws.main(["fabric-mint", "lane-beta", sha]) == 1
+    assert not (home / "lanes" / "wt" / "lane-beta").exists()
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.main(["fabric-mint", "lane-beta", "0" * 40]) == 1
+    assert ws.main(["fabric-mint", "../unsafe", sha]) == 1
+    assert ws.main(["fabric-mint", "lane-beta", "not-a-commit"]) == 1
+    assert not (home / "lanes" / "wt" / "lane-beta").exists()
+    assert _git(repo, "branch", "--list", "lane/lane-beta") == ""
