@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_prophet_workspace.css.j2
+  - templates/theme.js
+  - site/theme.js
+manifest: mockups/evidence/prophet-comparison-study-20261014/manifest.json

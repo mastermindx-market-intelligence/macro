@@ -5967,6 +5967,130 @@
   function bilingual(parent, en, zh) {
     parent.append(node('span', 'l-en', en), node('span', 'l-zh', zh)); return parent;
   }
+  /* Explicit study selection is display state over the original published nodes.
+     It is neither another Today selector nor an assessment/comparability receipt. */
+  var study = null, studyUIs = [], studyQueued = false;
+  var studyTodayKeys = ['data-today-source-sha256','data-today-pair-id','data-today-selection-receipt','data-today-roster-size','data-today-served','data-today-native-state'];
+  function studyClass(el, name, on) {
+    if (el.classList.contains(name) !== on) el.classList[on ? 'add' : 'remove'](name);
+  }
+  function studyStamp(row) {
+    var today = row.closest('#us-today');
+    return sourceStamp(row) + '|' + (today ? studyTodayKeys.map(function (k) { return today.getAttribute(k) || ''; }).join('|') : '');
+  }
+  function studyEntry(row, grid) {
+    var details = row.querySelector('.pv-setup-inline'), href = journeyNative(row);
+    if (!details || !href || !/^stock\.html#[^\s]+$/.test(href)) return null;
+    return {row:row, grid:grid, details:details, href:href, stamp:studyStamp(row), ticker:row.getAttribute('data-ticker') || ''};
+  }
+  function studyUsable(entry, reachable) {
+    return !!entry && entry.row.isConnected && entry.grid.isConnected && entry.grid.contains(entry.row) &&
+      entry.row.closest('#us-today-grid,#us-cand-grid') === entry.grid &&
+      entry.row.querySelector('.pv-setup-inline') === entry.details &&
+      journeyNative(entry.row) === entry.href && studyStamp(entry.row) === entry.stamp &&
+      (entry.row.getAttribute('data-ticker') || '') === entry.ticker &&
+      !entry.row.closest('[hidden],[aria-hidden="true"],.mx-tier-hidden,.mx-tier-blurred') &&
+      (!reachable || entry.row.getClientRects().length > 0);
+  }
+  function studyChosen(row) { return !!study && study.entries.some(function (x) { return x.row === row; }); }
+  function renderStudy() {
+    studyUIs.forEach(function (ui) {
+      var own = study && study.grid === ui.grid, count = own ? study.entries.length : 0, viewing = !!(own && study.viewing);
+      var en = count + ' of 3 selected' + (count === 3 ? ' · Remove a card to choose another' : ' · Choose 2–3 to study');
+      var zh = '已选 ' + count + ' / 3' + (count === 3 ? ' · 取消一张后可选择其他卡片' : ' · 选择 2–3 张卡片进行研究');
+      if (ui.count.textContent !== en + zh) { ui.count.replaceChildren(); bilingual(ui.count, en, zh); }
+      ui.start.disabled = count < 2; ui.clear.disabled = count === 0;
+      if (ui.start.hidden !== viewing) ui.start.hidden = viewing;
+      if (ui.back.hidden !== !viewing) ui.back.hidden = !viewing;
+      if (ui.note.hidden !== !viewing) ui.note.hidden = !viewing;
+      studyClass(ui.grid, 'pvs-study-active', viewing);
+      Array.from(ui.grid.children).forEach(function (row) {
+        studyClass(row, 'pvs-study-chosen', studyChosen(row));
+        studyClass(row, 'pvs-study-omit', viewing && !studyChosen(row));
+      });
+      ui.cards.forEach(function (card) {
+        var chosen = studyChosen(card.row), label = chosen ? 'Selected for study' : 'Select for study';
+        var zhLabel = chosen ? '已选入研究' : '选入研究';
+        if (card.button.textContent !== label + zhLabel) { card.button.replaceChildren(); bilingual(card.button, label, zhLabel); }
+        var pressed = chosen ? 'true' : 'false';
+        if (card.button.getAttribute('aria-pressed') !== pressed) card.button.setAttribute('aria-pressed', pressed);
+        card.button.disabled = !studyUsable(studyEntry(card.row, ui.grid), false) || (count === 3 && !chosen);
+      });
+    });
+  }
+  function clearStudy() { study = null; renderStudy(); }
+  function checkStudy() {
+    if (study && study.entries.some(function (entry) { return !studyUsable(entry, false); })) {
+      if (active && (studyChosen(active.row) || (journey && active.row === journey.planCard))) dismiss(true);
+      clearJourney(); clearStudy();
+    }
+  }
+  function toggleStudy(row, grid) {
+    checkStudy();
+    var entry = studyEntry(row, grid);
+    if (!studyUsable(entry, true)) return;
+    if (!study || study.grid !== grid) { clearStudy(); study = {grid:grid, entries:[], viewing:false}; }
+    var at = study.entries.findIndex(function (x) { return x.row === row; });
+    if (at >= 0) study.entries.splice(at, 1);
+    else if (study.entries.length < 3) study.entries.push(entry);
+    if (study.entries.length < 2) study.viewing = false;
+    renderStudy();
+  }
+  function mountStudy() {
+    // A hydration may copy markup into a new grid. Only newly bound live nodes count.
+    studyUIs = studyUIs.filter(function (ui) {
+      if (ui.grid.isConnected && ui.bar.isConnected) return true;
+      ui.bar.remove(); return false;
+    });
+    ['us-today-grid','us-cand-grid'].forEach(function (id) {
+      var grid = document.getElementById(id);
+      if (!grid || !grid.closest('#us-standouts')) return;
+      var rows = Array.from(grid.querySelectorAll('.pvcard.pv-has-setup'));
+      var ui = studyUIs.find(function (x) { return x.grid === grid; });
+      if (!ui && !rows.some(function (row) { return studyUsable(studyEntry(row, grid), false); })) return;
+      if (!ui) {
+        var bar = node('div', 'pvs-study-bar'), copy = node('div', 'pvs-study-copy'), actions = node('div', 'pvs-study-actions');
+        bar.setAttribute('data-pvs-study-for', id);
+        var count = node('p', 'pvs-study-count'); count.setAttribute('role', 'status'); count.setAttribute('aria-live', 'polite');
+        var title = bilingual(node('strong'), 'Study selected cards', '研究所选卡片');
+        var note = node('div', 'pvs-study-note');
+        note.append(bilingual(node('strong'), 'Comparison eligibility unverified', '比较资格未验证'),
+          bilingual(node('p'), 'Read each card independently. Strategy, research window, assessment time and price basis are not bound for comparison. Matching quote dates do not establish comparability.',
+            '请独立研究每张卡片。策略、研究窗口、评估时间与价格口径尚未绑定用于比较；报价日期相同不代表可比。'));
+        var start = bilingual(node('button', 'gbtn pvs-study-start'), 'Study selected', '研究所选卡片');
+        var back = bilingual(node('button', 'gbtn pvs-study-back'), 'Return to all cards', '返回全部卡片');
+        var clear = bilingual(node('button', 'gbtn pvs-study-clear'), 'Clear selection', '清除选择');
+        [start, back, clear].forEach(function (btn) { btn.type = 'button'; });
+        copy.append(title, count); actions.append(start, back, clear); bar.append(copy, actions, note); grid.before(bar);
+        ui = {grid:grid, bar:bar, count:count, start:start, back:back, clear:clear, note:note, cards:[]}; studyUIs.push(ui);
+        start.addEventListener('click', function () {
+          checkStudy();
+          if (!study || study.grid !== grid || study.entries.length < 2 || study.entries.some(function (e) { return !studyUsable(e, true); })) return;
+          study.x = window.scrollX; study.y = window.scrollY; study.viewing = true; renderStudy(); back.focus({preventScroll:true});
+        });
+        back.addEventListener('click', function () {
+          checkStudy(); if (!study || study.grid !== grid) return;
+          study.viewing = false; renderStudy();
+          window.scrollTo({left:study.x, top:study.y, behavior:'instant'}); start.focus({preventScroll:true});
+        });
+        clear.addEventListener('click', function () { clearStudy(); });
+      }
+      ui.cards = ui.cards.filter(function (card) { return grid.contains(card.row) && card.row.contains(card.button); });
+      rows.forEach(function (row) {
+        if (ui.cards.some(function (card) { return card.row === row; })) return;
+        if (!studyUsable(studyEntry(row, grid), false)) return;
+        var copied = row.querySelector('.pvs-study-pick'); if (copied) copied.remove();
+        var button = node('button', 'gbtn pvs-study-pick'); button.type = 'button';
+        (row.querySelector('.pv-bd') || row).append(button); ui.cards.push({row:row, button:button});
+        button.addEventListener('click', function (e) { e.preventDefault(); toggleStudy(row, grid); });
+      });
+    });
+    renderStudy();
+  }
+  function queueStudyCheck() {
+    if (studyQueued) return; studyQueued = true;
+    Promise.resolve().then(function () { studyQueued = false; checkStudy(); mountStudy(); });
+  }
   function build() {
     if (dialog) return;
     dialog = node('dialog', 'pv-setup-dialog'); dialog.id = 'pv-setup-dialog';
@@ -6221,11 +6345,12 @@
   /* Hydration replaces the current board, and an auth/tier turn can take
      entitlement away with it: both end any journey. A language turn does not — the
      action carries its own EN/ZH pair — but the open detail still returns to its row. */
-  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); }, true);
   document.addEventListener('langchange', function () { dismiss(true); });
-  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); });
-  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); });
   new MutationObserver(function () {
+    if (study || studyUIs.length) queueStudyCheck();
     if (journey) queueJourneyCheck();
     if (!active) return;
     if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
@@ -6233,7 +6358,7 @@
         !active.row.contains(active.details) ||
         active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
           !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
-  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof'].concat(studyTodayKeys)});
   /* The plan-link owner in dashboard.html.j2 is the only caller: it snapshots while
      this owner still holds the live candidate source (before its own .pvs-close),
      and only claims the journey after USProphetLife.selectPlan confirmed the target. */
@@ -6270,10 +6395,12 @@
       return true;
     },
     abandon: function () { clearJourney(); },
-    clear: function () { clearJourney(); },
+    clear: function () { clearJourney(); clearStudy(); },
     available: function () { return !!journey && journeyUsable(journey, false); },
     run: function () { return returnToCandidate(); }
   };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountStudy);
+  else if (document.readyState === 'interactive' || document.readyState === 'complete') mountStudy();
 })();
 
 /* Mastermind Terminal overlay — first-party full-screen bridge.
