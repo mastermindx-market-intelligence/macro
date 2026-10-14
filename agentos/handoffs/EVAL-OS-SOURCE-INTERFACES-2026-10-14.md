@@ -410,3 +410,24 @@ Use actual browser ID2 and tab1925922370 on continuation, not the stale aliases.
 The original lease-owner CI has11packs plus contract-deltaPASS at16:42, only
 pack2stillrunning. Event-triggered canonical admission remained9/cap8, so A1
 publication is still held. All final flags remainfalse.
+
+
+## 2026-10-14T16:49Z — approved repair published on existing A1 PR
+
+Canonical admission16:47:52 returned7active PRproofs/cap8 with0unindexed
+reservations. The original source carrier still pointed exactly to1b7916353dd4.
+Root verified clean localb1, ancestry, custody, and a clean read-only preview
+against currentmain9b8cb7526390 (treed554b237e7466ecec0b0d69fd36b417bc351605d).
+The ordinary non-force push completed and exact remote readback at16:49:12
+proved PR6651's branch now containsb1db2fc7510b3121bb9494f7f55a4351e6a48c77.
+No second manual base integration occurred. The prepared description was updated
+on PR6651 and its write response confirmedOPEN/b1 at16:49:46. Labels, merge,
+base and checks were not mutated by that metadata edit. Four original receipts
+are in research/evidence/eval-os-tier-query-20261014/a1-admitted-publication-20261014/.
+
+The approved source dependency repair has reached publication. Hosted run
+identity and fresh binding conclusions for b1 are still unobserved; earlier
+head successes do not qualify it. First next observation respects the300second
+boundary (conservatively after16:54:53). Incumbent owns final merge and any
+subsequent admitted base refresh. Deployment probes stay unbound until real
+qualified A1 landing. Original effects/refusals remain untouched; finalflagsfalse.
