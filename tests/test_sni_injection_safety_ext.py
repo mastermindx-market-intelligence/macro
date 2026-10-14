@@ -598,7 +598,7 @@ def _scan_sni_artifacts() -> dict[str, list[tuple[str, int, str]]]:
     for path in sorted(SNI_ROOT.rglob("*")):
         if not path.is_file():
             continue
-        if "__pycache__" in path.parts:
+        if "__pycache__" in path.relative_to(SNI_ROOT).parts:
             continue
         suffix = path.suffix.lower()
         if suffix not in _DATA_SUFFIXES:
