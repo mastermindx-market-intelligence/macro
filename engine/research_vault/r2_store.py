@@ -311,6 +311,9 @@ class R2Store:
 
     def __init__(self, bucket: str, client=None):
         self.bucket = bucket
+        # Only our prebuilt ordinary client is qualified for receipt read threads.
+        # Injected clients retain the original serial caller semantics.
+        self._receipt_reads_thread_safe = client is None
         self._s3 = client if client is not None else _r2_client()
         self.last_put_error: BaseException | None = None
 

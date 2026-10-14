@@ -64,16 +64,16 @@ EMERGE_MIN = 1.0          # emerging_score bar — only meaningful accelerating 
 REGION = "us"
 
 
-def _dir():
-    return config.data_dir() / "subsector_rotation"
+def _dir(data_root=None):
+    return (data_root or config.data_dir()) / "subsector_rotation"
 
 
 def _state_path():
     return _dir() / "state.json"
 
 
-def _path():
-    return _dir() / "alerts.jsonl"
+def _path(data_root=None):
+    return _dir(data_root) / "alerts.jsonl"
 
 
 def load_state() -> dict:
@@ -282,8 +282,8 @@ def _f(v):
     return "—" if v is None else (("+" if v > 0 else "") + f"{v:.1f}")
 
 
-def load_events() -> list[dict]:
-    p = _path()
+def load_events(data_root=None) -> list[dict]:
+    p = _path(data_root)
     if not p.exists():
         return []
     out = []
@@ -297,8 +297,8 @@ def load_events() -> list[dict]:
     return out
 
 
-def write_events(events: list[dict]) -> None:
-    p = _path()
+def write_events(events: list[dict], data_root=None) -> None:
+    p = _path(data_root)
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "w") as fh:
         for e in events:
