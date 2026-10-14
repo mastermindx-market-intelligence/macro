@@ -6850,6 +6850,7 @@ jobs:
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
+          tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
           tests/test_nwqs_c_dilution.py
