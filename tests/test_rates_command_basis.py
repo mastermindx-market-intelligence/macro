@@ -1,0 +1,704 @@
+"""Tests for engine/rates_command_basis.py (B0 seat ruling para-8)."""
+
+import json
+from pathlib import Path
+
+import jsonschema
+import pytest
+
+from engine.rates_command_basis import (
+    NA,
+    ComparisonRule,
+    PathAssumptions,
+    PathStatus,
+    QualifiedObservation,
+    RULES,
+    SCHEMA_VERSION,
+    compare_qualified,
+    qualify_observation,
+    solve_reference_average,
+)
+
+CUTOFF = "2026-10-14T00:00"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCHEMA_PATH = REPO_ROOT / "contracts" / "rates_command_basis.v1.schema.json"
+MODULE_PATH = REPO_ROOT / "engine" / "rates_command_basis.py"
+
+
+def _meta(**over):
+    base = dict(
+        subject="TEST_SERIES",
+        evidence_class="official_measurement",
+        unit="pct_mom",
+        target="cpi_u_all_items_mom_sa_first_print",
+        basket_or_index="CPI-U",
+        reference_start="2026-09-01",
+        reference_end="2026-09-30",
+        observation_time="2026-10-01T08:30",
+        observation_precision="minute",
+        seasonal_treatment="sa",
+        rate_index=NA,
+        averaging_law=NA,
+        curve_convention=NA,
+        tenor=NA,
+        model_id=NA,
+        target_epoch=NA,
+        source="test:series",
+        rights="public_official",
+        first_public_evidence="2026-10-01T08:30",
+        first_public_precision="minute",
+    )
+    base.update(over)
+    return base
+
+
+def _obs(value=0.2, cutoff=CUTOFF, **over):
+    return qualify_observation(value, _meta(**over), cutoff)
+
+
+def _zq_obs(value=4.25, cutoff=CUTOFF):
+    return qualify_observation(
+        value,
+        dict(
+            subject="ZQX26",
+            evidence_class="market_implied_expectation",
+            unit="pct_ann_rate",
+            target="effr_monthly_average",
+            basket_or_index="EFFR",
+            reference_start="2026-09-01",
+            reference_end="2026-09-30",
+            observation_time="2026-09-30",
+            observation_precision="day",
+            seasonal_treatment=NA,
+            rate_index="EFFR",
+            averaging_law="arithmetic_calendar_day",
+            curve_convention=NA,
+            tenor=NA,
+            model_id=NA,
+            target_epoch=NA,
+            source="rate_futures:ZQ",
+            rights="public_official",
+            first_public_evidence="2026-09-30",
+            first_public_precision="day",
+        ),
+        cutoff,
+    )
+
+
+def test_unknown_basis_refuses_numeric_comparison():
+    rule = RULES["same_basis_level_change.v1"]
+    left = _obs(value=0.2)
+    right = _obs(value=0.3, seasonal_treatment=None)
+    result = compare_qualified(left, right, rule)
+    assert result.status == "not_comparable"
+    assert result.reason == "unknown_basis:seasonal_treatment"
+    assert result.difference is None
+    assert result.range is None
+
+
+def test_missing_is_not_zero():
+    missing = _obs(value=None)
+    assert missing.value_state == "missing"
+    assert missing.value is None
+    result = compare_qualified(missing, _obs(value=0.3), RULES["same_basis_level_change.v1"])
+    assert result.status == "unavailable"
+    assert result.reason == "operand_missing:left"
+    assert result.difference is None  # never 0.0, never a silent neutral
+
+
+def test_after_cutoff_value_never_leaks():
+    late = _obs(value=0.2, observation_time="2026-10-20T09:00")
+    assert late.value_state == "refused"
+    assert late.value is None
+    assert "after_cutoff" in late.limitations
+    late_public = _obs(value=0.2, first_public_evidence="2026-10-15")
+    assert late_public.value_state == "refused"
+    assert late_public.value is None
+    assert "after_cutoff" in late_public.limitations
+    result = compare_qualified(late, _obs(value=0.3), RULES["same_basis_level_change.v1"])
+    assert result.status == "unavailable"
+    assert result.reason == "operand_refused:left"
+    assert result.difference is None
+
+
+def test_sr3_vs_zq_refused_without_basis():
+    sr3 = _obs(
+        value=4.10,
+        subject="SR3Z26",
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        target="sofr_compounded_quarter",
+        basket_or_index="SOFR",
+        reference_start="2026-09-16",
+        reference_end="2026-12-15",
+        observation_time="2026-09-15",
+        rate_index="SOFR",
+        averaging_law="compounded_business_day",
+        source="rate_futures:SR3",
+        first_public_evidence="2026-09-15",
+    )
+    zq = _zq_obs()
+    result = compare_qualified(sr3, zq, RULES["sr3_vs_zq.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:rate_index"
+    assert result.difference is None
+
+
+def test_par_vs_zero_refused():
+    kwargs = dict(
+        subject="DGS10",
+        unit="pct_ann_rate",
+        basket_or_index="UST",
+        reference_start="2026-10-13",
+        reference_end="2036-10-15",
+        observation_time="2026-10-13",
+        observation_precision="day",
+        first_public_evidence="2026-10-13",
+        first_public_precision="day",
+        seasonal_treatment=NA,
+        rate_index=NA,
+        averaging_law=NA,
+        source="fred:DGS10",
+    )
+    par = _obs(value=4.02, target="ust_par_yield", curve_convention="par", tenor="10y", **kwargs)
+    zero = _obs(value=3.95, target="ust_zero_yield", curve_convention="zero", tenor="10y", **kwargs)
+    result = compare_qualified(par, zero, RULES["par_vs_zero.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:curve_convention"
+    assert result.difference is None
+
+
+def test_cpi_vs_pce_not_comparable():
+    cpi = _obs(value=0.2)
+    pce = _obs(
+        value=0.18,
+        subject="PCEPI",
+        target="pce_headline_mom_sa",
+        basket_or_index="PCE",
+        source="fred:PCEPI",
+    )
+    result = compare_qualified(cpi, pce, RULES["cpi_vs_pce.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:basket_or_index"
+    assert result.difference is None
+
+
+def test_forecast_vs_revised_value_rejected_for_first_print_rule():
+    rule = RULES["forecast_vs_first_print.v1"]
+    forecast = _obs(
+        value=0.2,
+        evidence_class="house_estimate",
+        source="release_forecast:v2",
+        model_id="release_forecast:v2",
+    )
+    revised = _obs(value=0.3, target="cpi_u_all_items_mom_sa_revised")
+    rejected = compare_qualified(forecast, revised, rule)
+    assert rejected.status == "not_comparable"
+    assert rejected.reason == "constraint:target:right"
+    assert rejected.difference is None
+    first_print = _obs(value=0.3)
+    ok = compare_qualified(forecast, first_print, rule)
+    assert ok.status == "directly_comparable"
+    assert ok.difference == pytest.approx(-10.0)  # (0.2 - 0.3) pct -> bp
+    assert ok.unit == "bp"
+
+
+def test_monthly_average_two_paths_same_average_nonunique():
+    # canonical witness (A16/A17): 30-day month, 15d @4.50 + 15d @4.00
+    average = (4.50 * 15 + 4.00 * 15) / 30.0
+    assert average == pytest.approx(4.25)
+    average_change_bp = (average - 4.50) * 100.0
+    level_change_bp = (4.00 - 4.50) * 100.0
+    assert average_change_bp == pytest.approx(-25.0)
+    assert level_change_bp == pytest.approx(-50.0)
+    obs = _zq_obs(value=average)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions("2026-09-01", "2026-09-30", rate_step_bp=50.0),
+    )
+    assert result.status is PathStatus.FEASIBLE_ALTERNATIVES
+    assert result.identified is None
+    assert len(result.alternatives) >= 2
+    # the canonical 15/15 path is among the feasible alternatives
+    assert any(
+        p["segments"][0][1] == "2026-09-16"
+        and p["segments"][0][2] == pytest.approx(4.50)
+        and p["end_rate"] == pytest.approx(4.00)
+        for p in result.alternatives
+    )
+
+
+def test_one_meeting_identified_conditional_with_pre_rate():
+    obs = _zq_obs(value=4.25)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions(
+            "2026-09-01",
+            "2026-09-30",
+            effective_dates=("2026-09-16",),
+            pre_change_rate=4.50,
+            rate_step_bp=50.0,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    identified = result.identified
+    assert identified is not None
+    seg0, seg1 = identified["segments"]
+    assert seg0[0] == "2026-09-01" and seg0[1] == "2026-09-16"
+    assert seg0[2] == pytest.approx(4.50)
+    assert seg1[0] == "2026-09-16" and seg1[1] == "2026-09-30"
+    assert seg1[2] == pytest.approx(4.00)
+    assert identified["end_rate"] == pytest.approx(4.00)
+    # level change vs the pre-change rate is -50 bp, not the -25 bp average change
+    assert (identified["end_rate"] - 4.50) * 100.0 == pytest.approx(-50.0)
+    assert result.end_rate_range is not None
+    assert result.end_rate_range[0] <= 4.00 <= result.end_rate_range[1]
+
+
+def test_yield_move_attribution_not_identified_lists_alternatives():
+    move = _obs(
+        value=30.0,
+        subject="DGS10",
+        unit="bp",
+        target="ust_par_yield_move",
+        reference_start="2026-10-10",
+        reference_end="2026-10-13",
+        observation_time="2026-10-13",
+        observation_precision="day",
+        first_public_evidence="2026-10-13",
+        first_public_precision="day",
+        source="fred:DGS10",
+    )
+    other = _obs(
+        value=20.0,
+        subject="DGS10",
+        unit="bp",
+        target="term_premium_move_kw",
+        reference_start="2026-10-10",
+        reference_end="2026-10-13",
+        observation_time="2026-10-13",
+        observation_precision="day",
+        first_public_evidence="2026-10-13",
+        first_public_precision="day",
+        source="kw:model",
+    )
+    result = compare_qualified(move, other, RULES["yield_move_attribution.v1"])
+    assert result.status == "not_identified"
+    assert result.reason == "underidentified:decomposition"
+    assert result.difference is None
+    joined = " | ".join(result.limitations)
+    assert "expected_short=+10bp + term_premium=+20bp" in joined
+    assert "expected_short=-10bp + term_premium=+40bp" in joined
+
+
+def test_obs_id_is_stable_content_hash():
+    base = _obs()
+    twin = _obs()
+    assert base.obs_id == twin.obs_id
+    assert len(base.obs_id) == 16
+    int(base.obs_id, 16)  # 16 hex chars
+    # obs_id excludes itself: a forged obs_id is recomputed away
+    forged = QualifiedObservation.from_dict({**base.to_dict(), "obs_id": "ffffffffffffffff"})
+    assert forged.obs_id == base.obs_id
+    # any other field changing changes the digest
+    mutations = dict(
+        value=0.4,
+        subject="OTHER_SERIES",
+        cutoff="2026-10-15T00:00",
+        rights="display_only",
+        vintage="2026-10-revision",
+        source="test:other",
+        observation_time="2026-10-01T09:30",
+        quality="stale",
+        limitations="extra note",
+        seasonal_treatment="nsa",
+    )
+    for key, new_value in mutations.items():
+        if key == "cutoff":
+            mutated = _obs(cutoff=new_value)
+        else:
+            mutated = _obs(**{key: new_value})
+        assert mutated.obs_id != base.obs_id, key
+
+
+def _record_validator(record):
+    full = json.loads(SCHEMA_PATH.read_text())
+    schema = {"$schema": full["$schema"], "$defs": full["$defs"], "$ref": "#/$defs/%s" % record}
+    return jsonschema.Draft202012Validator(schema)
+
+
+def test_schema_round_trip_validates():
+    assert SCHEMA_VERSION == "rates_command_basis.v1"
+    observation = _obs()
+    comparison = compare_qualified(
+        _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2"),
+        _obs(value=0.3),
+        RULES["forecast_vs_first_print.v1"],
+    )
+    path = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", rate_step_bp=50.0),
+    )
+    for record, instance in (
+        ("QualifiedObservation", observation),
+        ("ComparisonResult", comparison),
+        ("PathIdentification", path),
+    ):
+        as_dict = instance.to_dict()
+        wire = json.loads(json.dumps(as_dict))  # pure-JSON round trip
+        _record_validator(record).validate(wire)
+        restored = type(instance).from_dict(wire)
+        assert restored == instance, record
+
+
+def test_module_is_pure():
+    source = MODULE_PATH.read_text()
+    for token in (
+        "requests",
+        "urllib",
+        "open(",
+        "datetime.now",
+        "date.today",
+        "time.time",
+        "from engine",
+        "import engine",
+        "subprocess",
+    ):
+        assert token not in source, token
+
+
+def test_zq_vs_midpoint_underidentified_without_explicit_basis():
+    zq = _zq_obs(value=4.25)
+    midpoint = _obs(
+        value=4.375,
+        subject="FED_FUNDS_TARGET",
+        unit="pct_ann_rate",
+        target="fed_funds_target_midpoint",
+        basket_or_index="EFFR",
+        reference_start="2026-09-01",
+        reference_end="2026-09-30",
+        observation_time="2026-09-16",
+        observation_precision="day",
+        seasonal_treatment=NA,
+        averaging_law="point",
+        curve_convention=NA,
+        tenor=NA,
+        model_id=NA,
+        target_epoch=NA,
+        source="fomc:target_range",
+        first_public_evidence="2026-09-16",
+        first_public_precision="day",
+    )
+    rule = RULES["zq_month_vs_policy_midpoint.v1"]
+    bare = compare_qualified(zq, midpoint, rule)
+    assert bare.status == "not_identified"
+    assert bare.reason == "underidentified:effr_target_basis"
+    assert bare.difference is None
+    supplied = compare_qualified(zq, midpoint, rule, context={"effr_minus_midpoint_bp": -12.5})
+    assert supplied.status == "comparable_after_transformation"
+    assert supplied.transform == "monthly_average_vs_level"
+    assert supplied.difference == pytest.approx(-12.5)
+    assert "effr_minus_midpoint_bp=-12.5" in supplied.assumptions
+
+
+def test_sep_vs_market_needs_year_end_interval_containment():
+    kwargs = dict(
+        unit="pct_ann_rate",
+        basket_or_index=NA,
+        seasonal_treatment=NA,
+        rate_index=NA,
+        averaging_law=NA,
+        curve_convention=NA,
+        tenor=NA,
+        model_id=NA,
+        target_epoch=NA,
+        observation_time="2026-10-01",
+        observation_precision="day",
+        first_public_evidence="2026-10-01",
+        first_public_precision="day",
+    )
+    sep = _obs(
+        value=3.9,
+        subject="sep_median_2026",
+        evidence_class="survey_participant_projection",
+        target="sep_fed_funds_year_end_median",
+        reference_start="2026-12-01",
+        reference_end="2026-12-31",
+        source="fomc:sep",
+        **kwargs,
+    )
+    market_kwargs = dict(kwargs, evidence_class="market_implied_expectation", source="rate_futures:ZQ")
+    covering = _obs(
+        value=4.1,
+        subject="ZQZ26",
+        target="effr_monthly_average",
+        reference_start="2026-10-01",
+        reference_end="2026-12-31",
+        **market_kwargs,
+    )
+    rule = RULES["sep_vs_market_year_end.v1"]
+    ok = compare_qualified(sep, covering, rule)
+    assert ok.status == "comparable_after_transformation"
+    assert ok.transform == "year_end_interval_match"
+    assert "participant appropriate-policy projection, not a committee promise or probability" in ok.limitations
+    not_covering = _obs(
+        value=4.1,
+        subject="ZQU26",
+        target="effr_monthly_average",
+        reference_start="2026-07-01",
+        reference_end="2026-09-30",
+        **market_kwargs,
+    )
+    refused = compare_qualified(sep, not_covering, rule)
+    assert refused.status == "not_comparable"
+    assert refused.reason == "basis_mismatch:reference_end"
+
+
+def test_curve_decomposition_rules_are_explicit_transforms():
+    kwargs = dict(
+        subject="DGS10",
+        unit="pct_ann_rate",
+        basket_or_index="UST",
+        reference_start="2026-10-13",
+        reference_end="2036-10-15",
+        observation_time="2026-10-13",
+        observation_precision="day",
+        seasonal_treatment=NA,
+        rate_index=NA,
+        averaging_law=NA,
+        tenor="10y",
+        model_id=NA,
+        target_epoch=NA,
+        source="fred:DGS10",
+        first_public_evidence="2026-10-13",
+        first_public_precision="day",
+    )
+    nominal = _obs(value=4.02, target="ust_par_yield", curve_convention="par", **kwargs)
+    real_kwargs = {k: v for k, v in kwargs.items() if k not in ("basket_or_index", "source")}
+    real = _obs(
+        value=1.77,
+        target="ust_real_par_yield",
+        curve_convention="real_par",
+        basket_or_index="TIPS",
+        source="fred:DFII10",
+        **real_kwargs,
+    )
+    compensation = compare_qualified(nominal, real, RULES["inflation_compensation.v1"])
+    assert compensation.status == "comparable_after_transformation"
+    assert compensation.transform == "nominal_minus_real"
+    assert compensation.difference == pytest.approx(225.0)
+    assert len(compensation.limitations) >= 3  # liquidity / indexation lag / basis
+    premium_kwargs = {
+        k: v for k, v in kwargs.items() if k not in ("subject", "model_id", "source")
+    }
+    kw = _obs(
+        value=1.50,
+        target="term_premium_kw",
+        curve_convention=NA,
+        model_id="kw_v2",
+        source="kw:model",
+        **premium_kwargs,
+    )
+    acm = _obs(
+        value=1.10,
+        subject="ACM10",
+        target="term_premium_acm",
+        curve_convention=NA,
+        model_id="acm_v1",
+        source="acm:model",
+        **premium_kwargs,
+    )
+    disagreement = compare_qualified(kw, acm, RULES["term_premium_kw_vs_acm.v1"])
+    assert disagreement.status == "comparable_after_transformation"
+    assert disagreement.difference == pytest.approx(40.0)
+    assert "model disagreement, not a forecast or signal" in disagreement.limitations
+
+
+def test_cpi_month_vs_breakeven_horizons_differ():
+    cpi_next = _obs(value=0.2, reference_start="2026-10-01", reference_end="2026-10-31")
+    breakeven = _obs(
+        value=2.25,
+        subject="T10YIE",
+        unit="pct_yoy",
+        target="inflation_compensation",
+        basket_or_index=NA,
+        reference_start="2026-10-13",
+        reference_end="2036-10-15",
+        tenor="10y",
+        source="fred:T10YIE",
+    )
+    result = compare_qualified(cpi_next, breakeven, RULES["cpi_month_vs_breakeven_10y.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:reference_end"
+
+
+def test_same_basis_level_change_direct_difference():
+    left = _obs(value=0.2)
+    right = _obs(value=0.3, reference_start="2026-08-01", reference_end="2026-08-31")
+    result = compare_qualified(left, right, RULES["same_basis_level_change.v1"])
+    assert result.status == "directly_comparable"
+    assert result.transform is None
+    assert result.difference == pytest.approx(-10.0)
+
+
+def test_rights_unknown_blocks_export_purpose():
+    export_rule = ComparisonRule(
+        rule_id="export_probe.v1",
+        version="1",
+        purpose="export",
+        left_constraints={},
+        right_constraints={},
+        match_fields=("unit",),
+        transform=None,
+        output_unit="bp",
+    )
+    left = _obs(value=0.2, rights="unknown")
+    result = compare_qualified(left, _obs(value=0.3), export_rule)
+    assert result.status == "not_comparable"
+    assert result.reason == "rights_unknown"
+    assert result.difference is None
+
+
+def test_every_comparison_status_reachable():
+    seen = set()
+    seen.add(
+        compare_qualified(_obs(value=None), _obs(value=0.3), RULES["cpi_vs_pce.v1"]).status.value
+    )
+    seen.add(compare_qualified(_obs(), _obs(basket_or_index="PCE", subject="PCEPI", target="pce_headline_mom_sa"), RULES["cpi_vs_pce.v1"]).status.value)
+    seen.add(
+        compare_qualified(_obs(), _obs(value=0.2, seasonal_treatment=None), RULES["same_basis_level_change.v1"]).status.value
+    )
+    seen.add(compare_qualified(_obs(), _obs(value=0.3), RULES["same_basis_level_change.v1"]).status.value)
+    seen.add(compare_qualified(
+        _obs(value=4.02, curve_convention="par", target="ust_par_yield"),
+        _obs(value=1.77, curve_convention="real_par", target="ust_real_par_yield"),
+        RULES["inflation_compensation.v1"],
+    ).status.value)
+    seen.add(compare_qualified(
+        _obs(value=30.0, unit="bp", target="ust_par_yield_move"),
+        _obs(value=20.0, unit="bp", target="term_premium_move_kw"),
+        RULES["yield_move_attribution.v1"],
+    ).status.value)
+    assert seen == {
+        "directly_comparable",
+        "comparable_after_transformation",
+        "not_comparable",
+        "not_identified",
+        "unavailable",
+    }
+
+
+def test_all_registry_rules_present_and_exercised():
+    assert len(RULES) == 11
+    probes = {
+        "forecast_vs_first_print.v1": lambda: compare_qualified(
+            _obs(value=0.2, evidence_class="house_estimate", model_id="release_forecast:v2"),
+            _obs(value=0.3),
+            RULES["forecast_vs_first_print.v1"],
+        ),
+        "same_basis_level_change.v1": lambda: compare_qualified(
+            _obs(), _obs(value=0.3, reference_start="2026-08-01", reference_end="2026-08-31"),
+            RULES["same_basis_level_change.v1"],
+        ),
+        "zq_month_vs_policy_midpoint.v1": lambda: compare_qualified(
+            _zq_obs(), _zq_obs(), RULES["zq_month_vs_policy_midpoint.v1"]
+        ),
+        "sr3_vs_zq.v1": lambda: compare_qualified(_zq_obs(), _zq_obs(), RULES["sr3_vs_zq.v1"]),
+        "par_vs_zero.v1": lambda: compare_qualified(
+            _obs(), _obs(value=0.3, curve_convention="zero"), RULES["par_vs_zero.v1"]
+        ),
+        "cpi_vs_pce.v1": lambda: compare_qualified(
+            _obs(), _obs(value=0.3, basket_or_index="PCE", subject="PCEPI", target="pce_headline_mom_sa"),
+            RULES["cpi_vs_pce.v1"],
+        ),
+        "cpi_month_vs_breakeven_10y.v1": lambda: compare_qualified(
+            _obs(), _obs(value=2.25, subject="T10YIE", unit="pct_yoy", target="inflation_compensation",
+                         basket_or_index=NA, tenor="10y", reference_start="2026-10-13",
+                         reference_end="2036-10-15", source="fred:T10YIE"),
+            RULES["cpi_month_vs_breakeven_10y.v1"],
+        ),
+        "yield_move_attribution.v1": lambda: compare_qualified(
+            _obs(value=30.0, unit="bp", target="ust_par_yield_move"),
+            _obs(value=20.0, unit="bp", target="term_premium_move_kw"),
+            RULES["yield_move_attribution.v1"],
+        ),
+    }
+    for rule_id, probe in probes.items():
+        result = probe()
+        assert result.rule_id == rule_id
+        assert result.status.value in (
+            "directly_comparable", "comparable_after_transformation",
+            "not_comparable", "not_identified", "unavailable",
+        )
+
+
+def test_no_meeting_month_identified_conditional():
+    obs = _zq_obs(value=4.25)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-10-21",)),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert result.identified["end_rate"] == pytest.approx(4.25)
+    assert "no_intra_month_change" in result.assumptions_used
+
+
+def test_realised_average_over_elapsed_days_identifies_post_rate():
+    obs = _zq_obs(value=4.25)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions(
+            "2026-09-01",
+            "2026-09-30",
+            effective_dates=("2026-09-16",),
+            realised_through="2026-09-15",
+            realised_average=4.50,
+            rate_step_bp=50.0,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert result.identified["end_rate"] == pytest.approx(4.00)
+
+
+def test_missing_inputs_without_average():
+    result = solve_reference_average((), PathAssumptions("2026-09-01", "2026-09-30"))
+    assert result.status is PathStatus.MISSING_INPUTS
+    assert "monthly_average" in result.missing
+
+
+def test_inconsistent_when_no_grid_path_fits():
+    obs = _zq_obs(value=4.25)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-03",),  # d_pre=2, d_post=28: no +-grid change path fits
+            rate_step_bp=50.0,
+        ),
+    )
+    assert result.status is PathStatus.INCONSISTENT
+    assert result.alternatives == ()
+    assert result.residual_bp is not None
+
+
+def test_multi_segment_paths_fit_average():
+    obs = _zq_obs(value=4.25)
+    result = solve_reference_average(
+        (obs,),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-11", "2026-09-21"),
+            rate_step_bp=50.0,
+        ),
+    )
+    assert result.status is PathStatus.FEASIBLE_ALTERNATIVES
+    assert result.identified is None
+    assert result.alternatives
+    for path in result.alternatives:
+        days = 0
+        total = 0.0
+        for seg in path["segments"]:
+            days += 10  # each segment spans 10 calendar days (1-11, 11-21, 21-30 incl end)
+            total += seg[2] * 10
+        assert days == 30
+        assert total / 30.0 == pytest.approx(4.25)
