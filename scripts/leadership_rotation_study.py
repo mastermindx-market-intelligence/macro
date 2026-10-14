@@ -103,6 +103,11 @@ PREREG_BLOB_SHA = "9d1313e0fc0c5c9720dc1aeb16c9ebf273d70abe"
 # and is still required unchanged at every reading head (V2 section 0).
 PREREG_V2_PATH = "research/LEADERSHIP_ROTATION_PREREG_V2.md"
 PREREG_V2_BLOB_SHA = "1fcd151cfc4cdeb321789feb50d3fbb127cce056"
+# V2.1 amendment (research/LEADERSHIP_ROTATION_PREREG_V2_1.md, 2026-10-14): VOIDED verdict
+# class, clause->outcome-class table, alarm first-match precedence, Option A
+# matching precision. Required landed and unchanged before any P1 read (run_p1).
+PREREG_V2_1_PATH = "research/LEADERSHIP_ROTATION_PREREG_V2_1.md"
+PREREG_V2_1_BLOB_SHA = "0000000000000000000000000000000000000000"  # re-pinned when the doc is final
 SEED = 20261014
 H_PRIMARY = 20
 H_SECONDARY = 63
