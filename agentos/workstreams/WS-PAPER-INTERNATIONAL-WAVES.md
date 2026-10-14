@@ -140,8 +140,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Check native keyboard Library to Contagion method reading and return on isolated source fixtures; repair only reproduced reachability issues, preserve original live tab and all holds.
+next_action: Discriminate Fragility absent/partial coverage and date claims against the existing owner; repair only reproduced presentation mismatch without new acquisition, qualification or market assertions.
 artifacts:
+- research/paper_international_wave1_wave2/CONTAGION_KEYBOARD_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/ECB_BALANCE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json

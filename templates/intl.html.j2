@@ -1445,7 +1445,7 @@
     <!-- CONTAGION BOARD -->
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-contagion">{{ t('Contagion board', '传导看板') }} {{ help('The model fits rolling ETF volatility, not daily returns: 20-observation Garman-Klass volatility, with a close-return volatility proxy when OHLC is absent. Generalized forecast-error variance shares are row-normalized. The total is the mean share attributed to other tracked series within each series, excluding its own share. These are model variance shares, not transmission speed or causal price-move shares.', '模型拟合滚动ETF波动率，而非日度收益：20期Garman-Klass波动率；缺少OHLC时使用收盘收益波动率代理。广义预测误差方差份额逐行归一化。总指标是各序列中归于其他受监测序列份额的均值，剔除自身份额。这是模型方差份额，非传播速度或价格变动的因果占比。') }}</h2>
+        <h2 id="intl-contagion" tabindex="-1">{{ t('Contagion board', '传导看板') }} {{ help('The model fits rolling ETF volatility, not daily returns: 20-observation Garman-Klass volatility, with a close-return volatility proxy when OHLC is absent. Generalized forecast-error variance shares are row-normalized. The total is the mean share attributed to other tracked series within each series, excluding its own share. These are model variance shares, not transmission speed or causal price-move shares.', '模型拟合滚动ETF波动率，而非日度收益：20期Garman-Klass波动率；缺少OHLC时使用收盘收益波动率代理。广义预测误差方差份额逐行归一化。总指标是各序列中归于其他受监测序列份额的均值，剔除自身份额。这是模型方差份额，非传播速度或价格变动的因果占比。') }}</h2>
         <span class="sub">{{ t('Modelled volatility links', '模型波动率关联') }}</span>
       </div>
 
@@ -1480,12 +1480,12 @@
         </div>
         {%- for tx in TXDISP[:3] %}
         {%- set bar_pct = (tx.to_others_pct / tx_max.v * 100) | round | int if tx_max.v > 0 else 0 %}
-        <div class="ird-tx-row"
-             data-tip-en="{{ tx.ticker }} · {{ '%.1f' | format(tx.to_others_pct) }} summed percentage points across other series' normalized variance rows, excluding its own row; may exceed 100. Not stress units or a causal share."
-             data-tip-zh="{{ tx.ticker }} · 其他序列归一化方差行中的份额合计 {{ '%.1f' | format(tx.to_others_pct) }} 个百分点，剔除自身行；可超过100。非压力单位或因果占比。">
+        {%- set tx_tip_en = tx.ticker ~ ' · ' ~ ('%.1f' | format(tx.to_others_pct)) ~ " summed percentage points across other series' normalized variance rows, excluding its own row; may exceed 100. Not stress units or a causal share." %}
+        {%- set tx_tip_zh = tx.ticker ~ ' · 其他序列归一化方差行中的份额合计 ' ~ ('%.1f' | format(tx.to_others_pct)) ~ ' 个百分点，剔除自身行；可超过100。非压力单位或因果占比。' %}
+        <div class="ird-tx-row" data-tip-en="{{ tx_tip_en|e }}" data-tip-zh="{{ tx_tip_zh|e }}">
           <span class="ird-tx-rank">#{{ loop.index }}</span>
           <span class="ird-tx-flag">{{ tx.flag }}</span>
-          <span class="ird-tx-name">{{ t(tx.name_en, tx.name_zh) }}</span>
+          <span class="ird-tx-name">{{ t(tx.name_en, tx.name_zh) }} {{ help(tx_tip_en, tx_tip_zh) }}</span>
           <div class="ird-tx-bar-wrap">
             <div class="ird-tx-bar" style="width:{{ bar_pct }}%"></div>
           </div>

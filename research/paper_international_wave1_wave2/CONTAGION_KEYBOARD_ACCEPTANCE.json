@@ -1,0 +1,47 @@
+{
+  "base_head": "854a25965226396d3a237a67b8a36a51d610e304",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Native Library activation focuses Contagion heading; canonical help controls expose model and outbound contribution methods by keyboard; Escape and local Back preserve query and JP/3m/local context.",
+  "source_hashes": {
+    "templates/intl.html.j2": "fc683d965f7ad3f023964d1782364726929abf5b3ea046004f6c9a23dd5cd03b",
+    "tests/intl_workspace_page.test.cjs": "ff917e5c925c2e7b6eddb4fb8bd977c4b5cdaf1a5ea734e9cadaadc3bc1699d3",
+    "templates/theme.js": "f5142480e0e71544fb702b64a295a473ae971103cc26772aea0ee53766346df0",
+    "templates/theme.css": "1b9403386cfd2c85c9f5aefdae212d3d0deecf08cb1e51c80740da003baf54d3",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8"
+  },
+  "verification": {
+    "red": "Original native Enter left BODY focused; heading-only candidate then failed because0of3outbound help controls existed. Separate first helper path failure occurred before browser launch.",
+    "green": "4new browser cases pass over8width journeys320/1440;8affected Connectedness render tests pass with14inherited warnings. Counts overlap prior render coverage.",
+    "canonical": "8DarkLightENZH1440/390 captures with27boundassets; synthetic normalized matrix, not qualified market data."
+  },
+  "parent_visual_review": {
+    "files": [
+      "destination-1440-dark-en.png",
+      "destination-1440-light-en.png",
+      "destination-320-dark-zh.png",
+      "destination-320-light-zh.png",
+      "outbound-method-1440-dark-en.png",
+      "outbound-method-1440-light-en.png",
+      "outbound-method-320-dark-zh.png",
+      "outbound-method-320-light-zh.png"
+    ],
+    "result": "8final actual images viewed:4native heading-focus and4settled outbound-method views. Dark command surfaces and Light white research panels retain readable focus, method text and mobile sheet close clearance. Not independent review.",
+    "capture_correction": {
+      "initial": "Four tooltip screenshots captured during opening animation; destination images remain valid",
+      "repair": "Wait for computed opacity1 plus300ms motion settle, capture only four tooltip states",
+      "product_changed": false,
+      "old_images": "before-tooltip-settle/",
+      "tests_replayed": false
+    }
+  },
+  "canonical_manifest_sha256": "e47c063ca0b0dd1ce4135558ff4f1de00987b2dc068afece68f280febacd1e78",
+  "limits": [
+    "Source fixture only; original signed-in Chrome handoff tab untouched.",
+    "No source calculations, qualifications, data acquisition or shared interaction implementation changed.",
+    "Not speech, nativezoom, physicaltouch, current rights or served acceptance.",
+    "All frozen-effect, review, CI, release, Saved, migration and IW2 holds persist."
+  ],
+  "next": "Discriminate Fragility absent/partial coverage and date claims against the existing owner; repair only reproduced presentation mismatch without new acquisition, qualification or market assertions."
+}

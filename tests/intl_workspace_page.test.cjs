@@ -55,6 +55,45 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Contagion keyboard method journey ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_connectedness_scope_render import connectedness_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=connectedness_fixture('matrix')))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const query=lang==='zh'?'传导':'contagion';
+        const input=page.locator('[data-im-library-search]');await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-contagion"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-contagion');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        assert.ok(await heading.evaluate(n=>getComputedStyle(n).outlineStyle!=='none'));
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        assert.equal(await panel.locator('.ird-tx-row .help.help-upgraded[tabindex="0"]').count(),3,'each contribution method has the canonical keyboard trigger');
+        const lens=page.locator('.lens-pop.open');
+        await page.keyboard.press('Tab');await lens.waitFor({state:'visible'});
+        assert.ok((await lens.innerText()).includes(lang==='zh'?'逐行归一化':'row-normalized'));
+        await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        for(const value of ['160.0','20.0','20.0']) {
+          await page.keyboard.press('Tab');await lens.waitFor({state:'visible'});
+          const text=await lens.innerText();assert.ok(text.includes(value)&&text.includes(lang==='zh'?'可超过100':'may exceed 100'),text);
+          await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        }
+        await page.keyboard.press('Tab');await lens.waitFor({state:'visible'});
+        assert.ok((await lens.innerText()).includes(lang==='zh'?'分母':'Denominator'));
+        await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');
+        assert.equal(await input.inputValue(),query);assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+        assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');assert.equal(new URL(page.url()).searchParams.get('basis'),'local');
+        assert.equal(await page.locator('.lens-pop.open').count(),0);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Connectedness read keeps model scope ${theme} ${lang}`,async()=>{
     const kind=theme==='dark'?'matrix':'absent';
     const connectedHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',

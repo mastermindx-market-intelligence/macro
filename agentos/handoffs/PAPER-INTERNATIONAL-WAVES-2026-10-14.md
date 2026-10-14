@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/intl_workspace_page.test.cjs
+  what: Focus the native Contagion destination and expose contribution methods through existing keyboard help controls.
 - path: templates/intl.html.j2; tests/test_intl_connectedness_scope_render.py; tests/intl_workspace_page.test.cjs
   what: Preserve connectedness numbers while correcting volatility-model method, variance denominators, coverage and clock scope.
 - path: templates/intl.html.j2; tests/test_intl_em_coverage_render.py; tests/intl_workspace_page.test.cjs
@@ -185,6 +187,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Contagion method reading and return are keyboard reachable on the scoped source fixture.
+  command: node --test --test-name-pattern="Contagion keyboard method journey" tests/intl_workspace_page.test.cjs; pytest tests/test_intl_connectedness_scope_render.py; contagion-keyboard capture.py and inspect_keyboard_settled.py
+  result: 4newbrowserPASS8widthjourneys;8affectedrenderPASS14warnings;8canonicalcaptures;4focus and4settled-method images viewed. Original focus/control failures and capture timing correction retained.
 - claim: ECB balance read preserves rounded uncertainty and labels its weekly-bin date.
   command: pytest tests/test_intl_ecb_scope_render.py plus targeted word-match correction; selected ECB Node cases; ecb-balance-scope-20261014-r1/capture.py and inspect_cards.py
   result: 12uniquePythonPASS14warnings;4uniquebrowserPASS8widthstates;8canonicalcaptures4focusedparentviews. Original substring harness errors retained.
@@ -611,3 +616,5 @@ Transmission coverage: actual-owner synthetic counterexamples,10fail-before rend
 EM coverage: `python3 -m pytest -q tests/test_intl_em_coverage_render.py` passed11after11causal failures. New EM headline browser pattern passed12unique cases/24widthstates following1original failure.8canonical/4actual focused images; source receipt EM_STRESS_COVERAGE_ACCEPTANCE.json. Review pending and source not deployed. Next: reproduced connectedness model semantics.
 
 Connectedness: actual owner spillover and normalized-matrix counterexamples reproduce semantic mismatch. `python3 -m pytest -q tests/test_intl_connectedness_scope_render.py` initially8FAIL, candidate5PASS3label-container-harnessFAIL, targeted3PASS after correction. New Connectedness browser pattern4PASS/8widthstates.8canonical/4focused actual images; CONNECTEDNESS_METHOD_SCOPE_ACCEPTANCE.json. Review and deployment held. Next: native Library Contagion method/focus journey, not original live-tab retry.
+
+Contagion keyboard: original Enter left BODY focused, then heading-only repair exposed missing keyboard contribution controls. Final four bilingual dual-theme browser cases pass across320/1440, with eight affected render cases. Native help owner is reused, no shared JS/CSS change. Four initial tooltip images caught opening animation and remain retained; four settled replacements were actually viewed alongside the four valid destination images. `CONTAGION_KEYBOARD_ACCEPTANCE.json` binds source proof. Next: Discriminate Fragility absent/partial coverage and date claims against the existing owner; repair only reproduced presentation mismatch without new acquisition, qualification or market assertions.
