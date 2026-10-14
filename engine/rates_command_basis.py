@@ -385,6 +385,7 @@ def qualify_observation(
     limitations = meta.get("limitations") or ()
     if isinstance(limitations, str):
         limitations = (limitations,)
+    limitations = tuple(limitations)
     if violation is None:
         # FQ2: an unknown evidence time stays admitted, but is surfaced as a
         # visible limitation -- never silently as if its timing were known.

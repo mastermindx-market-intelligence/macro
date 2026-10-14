@@ -1227,3 +1227,38 @@ def test_string_limitation_is_one_entry():
         "2026-10-14T00:00",
     )
     assert obs.limitations == ("extra note",)
+
+
+def test_list_limitations_with_unknown_evidence_time_is_tagged():
+    # A list-valued limitations sequence is coerced to a tuple before the
+    # FQ2 tag append, so a list input can never crash the qualification.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+        limitations=["a", "b"],
+    )
+    cutoff = "2026-10-14T00:00+00:00"
+    unstamped = qualify_observation(4.25, meta, cutoff)
+    assert unstamped.value_state == "present"
+    assert unstamped.limitations == ("a", "b", "evidence_time_unknown")
+    only_observation = qualify_observation(
+        4.25, dict(meta, observation_time="2026-10-01T08:30"), cutoff
+    )
+    assert only_observation.limitations == ("a", "b", "first_public_evidence_unknown")
+
+
+def test_unknown_evidence_time_tag_survives_to_dict():
+    # The FQ2 tag must reach every consumer payload (T0 board rows, C0
+    # to_dict call), not only the dataclass; a round trip keeps the tag.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+    )
+    unstamped = qualify_observation(4.25, meta, "2026-10-14T00:00+00:00")
+    payload = unstamped.to_dict()
+    assert "evidence_time_unknown" in payload["limitations"]
+    assert "evidence_time_unknown" in QualifiedObservation.from_dict(payload).limitations
