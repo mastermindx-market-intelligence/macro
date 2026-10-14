@@ -11679,11 +11679,13 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/leadership_rotation_episodes.py"
       - "scripts/leadership_rotation_inference.py"
+      - "scripts/leadership_rotation_null.py"
       - "scripts/leadership_rotation_p0.py"
       - "scripts/leadership_rotation_run.py"
       - "scripts/leadership_rotation_study.py"
       - "tests/test_leadership_rotation_episodes.py"
       - "tests/test_leadership_rotation_inference.py"
+      - "tests/test_leadership_rotation_null.py"
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
@@ -11697,7 +11699,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation pre-registered study harness
-        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py tests/test_leadership_rotation_null.py -q -p no:cacheprovider
 
   leadership-measured-read:
     if: ${{ false }}

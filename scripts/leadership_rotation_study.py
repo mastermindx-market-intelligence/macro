@@ -107,7 +107,7 @@ PREREG_V2_BLOB_SHA = "1fcd151cfc4cdeb321789feb50d3fbb127cce056"
 # class, clause->outcome-class table, alarm first-match precedence, Option A
 # matching precision. Required landed and unchanged before any P1 read (run_p1).
 PREREG_V2_1_PATH = "research/LEADERSHIP_ROTATION_PREREG_V2_1.md"
-PREREG_V2_1_BLOB_SHA = "0000000000000000000000000000000000000000"  # re-pinned when the doc is final
+PREREG_V2_1_BLOB_SHA = "8f48509b65c70f7f3786402cba9b21940a907e83"
 SEED = 20261014
 H_PRIMARY = 20
 H_SECONDARY = 63

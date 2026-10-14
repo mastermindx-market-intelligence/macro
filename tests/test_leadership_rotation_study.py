@@ -631,3 +631,21 @@ def test_zscore_vectorized_is_bitwise_identical_to_v1_loop():
         if k % 7 == 0:
             R[: int(rng.integers(0, n))] = np.nan
         assert np.array_equal(study.zscore(R), _zscore_v1_loop(R), equal_nan=True), k
+
+
+def test_prereg_pins_match_the_committed_documents():
+    """Every prereg blob pin equals the git blob of the document it names (V1, V2,
+    V2.1 §0), so a doc edit without a re-pin — or a re-pin without the doc — fails."""
+    import hashlib
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    for path, pin in (
+        (study.PREREG_PATH, study.PREREG_BLOB_SHA),
+        (study.PREREG_V2_PATH, study.PREREG_V2_BLOB_SHA),
+        (study.PREREG_V2_1_PATH, study.PREREG_V2_1_BLOB_SHA),
+    ):
+        data = (root / path).read_bytes()
+        blob = hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+        assert blob == pin, f"{path}: blob {blob} != pin {pin}"
+    assert study.PREREG_V2_1_BLOB_SHA != "0" * 40
