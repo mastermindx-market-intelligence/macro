@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume admitted9209 exact-head protected install then SAME follow-on31groups. Use tested USDA installed-report probe after existing renderer38558417917 settles; preserve browser refusal and known-complete intake. Fresh OCC90 source is scoped/held: full-document intake and relevant own receipts remain unqualified; no generation or source rewrite. Preserve0of10publication gate.
+next_action: Consume admitted9209 exact-head protected install then SAME follow-on31groups. Use tested USDA installed-report probe after existing renderer38558417917 settles; preserve browser refusal and known-complete intake. Fresh OCC90 source is scoped/held; full-document intake and relevant own receipts remain unqualified; no generation or source rewrite. Preserve0of10publication gate.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288

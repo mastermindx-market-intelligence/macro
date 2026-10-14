@@ -6,5 +6,14 @@
   "pdf_verification_passed": 10,
   "chart_visual_verified": true,
   "download_complete": true,
-  "new_source_admission": false
+  "new_source_admission": false,
+  "agentos_validation": {
+    "command": "python3 -B scripts/agentos.py validate",
+    "initial_errors": 2,
+    "repair": "Replaced an unquoted colon in the new next_action prose; the dangling reference was caused by that same parse failure. No application change.",
+    "after_repair_exit_code": 0,
+    "records": 1734,
+    "errors": 0,
+    "existing_warnings": 164
+  }
 }
