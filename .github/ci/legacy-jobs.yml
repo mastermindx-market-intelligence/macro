@@ -3512,6 +3512,11 @@ jobs:
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
       - "scripts/publish_company_disclosure.py"
+      # Base-sync 10 CI (merge ref with origin/main 54195c10, 2026-10-14):
+      # main's engine/neuralweb/market_memory_retained_use.py (PR #9170), reached
+      # through app.main, names its authority record; contract-delta job
+      # 115687457728 at 7ad23edf named exactly this one.
+      - "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
       # The vertical's own subjects first, then the app.main import closure the
       # transport suites drag in — the same glob closure `defense-rail-laws`
       # (gate: code, also imports app.main) declares, minus that job's own
