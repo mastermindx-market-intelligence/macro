@@ -19,6 +19,7 @@ _SECTIONS = {
     "leadership_rotation": "intl-leadership-rotation",
     "cross_country": "intl-cross-country",
     "market_turns": "intl-market-turns",
+    "recovery_quality": "intl-recovery-quality",
     "rates_curves_carry": "intl-rates-curves",
     "central_banks_liquidity": "intl-central-banks",
     "credit_bonds": "intl-credit-bonds",

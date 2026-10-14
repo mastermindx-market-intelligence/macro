@@ -55,7 +55,7 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
@@ -66,6 +66,8 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl
         vm["perf"] = perf
     if cgl is not None:
         vm["CGL"] = cgl
+    if turn_board is not None:
+        vm["turn_board"] = turn_board
     if workspace:
         vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
@@ -73,6 +75,60 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl
     catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
     pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue)
     return pages[1] if mode == "stocks" else pages[0]
+
+
+
+def library_recovery_fixture():
+    """Supplied synthetic owner assessments; no data I/O or qualification."""
+    from engine.intl_recovery_quality import apply_recovery_naming
+    states = {
+        "JP": dict(state="recovery", above_ma20=True, macd_state="bull", mom20_pct=8.2),
+        "HK": dict(state="recovery", above_ma20=False, macd_state="bear", mom20_pct=-1.0),
+        "AU": dict(state="uptrend", state_en="Uptrend", state_zh="上升趋势",
+                   stance_en="Trend intact", stance_zh="趋势完好", mom20_pct=2.0),
+    }
+    apply_recovery_naming(states)
+    names = {"JP": ("Japan", "日本"), "HK": ("Hong Kong", "香港"), "AU": ("Australia", "澳大利亚")}
+    return [dict(s, cc=cc, name=names[cc][0], name_zh=names[cc][1], flag="",
+                 since=None, peak_date=None, ext_pctile=None, dd_pct=None)
+            for cc, s in states.items()]
+
+
+@pytest.mark.parametrize("kind,expected", [
+    ("absent", []), ("empty", []), ("no_assessment", []),
+    ("partial_bilingual", ["HK"]), ("complete", ["JP", "HK"]),
+])
+def test_library_recovery_destination_preserves_supplied_assessments(kind, expected):
+    rows = library_recovery_fixture()
+    if kind == "absent": rows = None
+    elif kind == "empty": rows = []
+    elif kind == "no_assessment": rows = [rows[2]]
+    elif kind == "partial_bilingual": rows[0]["recovery_assessment"].pop("read_zh")
+    original = deepcopy(rows)
+    soup = BeautifulSoup(render_fixture(turn_board=rows), "html.parser")
+    tool = soup.select_one('[data-im-library-tool="recovery_quality"]')
+    targets = soup.select('#intl-recovery-quality')
+    assert len(targets) == int(bool(expected))
+    assert bool(tool.select('a[href="#intl-recovery-quality"]')) == bool(expected)
+    if expected:
+        detail = targets[0].find_parent('details')
+        assert detail is not None and not detail.has_attr('open')
+        assert [n['data-recovery-market'] for n in detail.select('[data-recovery-market]')] == expected
+        assert 'Partial coverage' in detail.get_text() and '部分覆盖' in detail.get_text()
+        for row in rows:
+            if row['cc'] not in expected: continue
+            entry = detail.select_one('[data-recovery-market="'+row['cc']+'"]')
+            assert row['name'] in entry.get_text() and row['name_zh'] in entry.get_text()
+            for field in ('read_en','read_zh','label_en','label_zh','stance_en','stance_zh'):
+                assert row['recovery_assessment'][field] in entry.get_text()
+    from lib.intl_library_mount import attach_public_library
+    catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
+    bound = attach_public_library(_workspace_overviews(None), catalogue=catalogue,
+                                  macro_html=str(soup), stocks_rendered=True)
+    entry = next(t for t in bound["library"]["tools"] if t["presentation_key"] == "recovery_quality")
+    assert entry["data_state"] == "unknown" and entry["metrics"] == []
+    assert rows == original
+    assert not BeautifulSoup(render_fixture(mode="stocks", turn_board=rows), 'html.parser').select('#intl-recovery-quality')
 
 
 def library_trade_fixture():

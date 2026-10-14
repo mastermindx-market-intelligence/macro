@@ -1,0 +1,27 @@
+{# Optional study depth for supplied owner reads; no assessment or coverage inference. #}
+{% set recovery_rows = [] %}
+{% for tile in turn_board %}
+  {% set qa = tile.get('recovery_assessment') %}
+  {% set complete = namespace(value=qa is mapping) %}
+  {% if complete.value %}
+    {% for field in ['label_en', 'label_zh', 'read_en', 'read_zh', 'stance_en', 'stance_zh'] %}
+      {% if qa.get(field) is not string or not qa.get(field)|trim %}{% set complete.value = false %}{% endif %}
+    {% endfor %}
+  {% endif %}
+  {% if complete.value %}{% set _ = recovery_rows.append(tile) %}{% endif %}
+{% endfor %}
+{% if recovery_rows %}
+<details class="ref-fold">
+  <summary id="intl-recovery-quality"><span class="rf-t">{{ t('Recovery quality', '修复质量') }}</span><span class="rf-s">{{ t('Read the supplied market assessments · partial coverage', '查看已有市场评估 · 部分覆盖') }}</span><span class="rf-caret" aria-hidden="true">▾</span></summary>
+  <div class="panel">
+    <p class="muted small">{{ t('Partial coverage: only markets with a supplied recovery assessment are listed. This cross-market read does not change your selected research market.', '部分覆盖：仅列出已有修复评估的市场。此跨市场解读不会更改您选定的研究市场。') }}</p>
+    {% for tile in recovery_rows %}
+    {% set qa = tile.recovery_assessment %}
+    <section data-recovery-market="{{ tile.cc|e }}">
+      <h3><span class="l-en">{{ tile.name|e }} — {{ qa.label_en|e }}</span><span class="l-zh">{{ tile.name_zh|e }} — {{ qa.label_zh|e }}</span></h3>
+      <p><span class="l-en">{{ qa.read_en|e }} <strong>{{ qa.stance_en|e }}</strong></span><span class="l-zh">{{ qa.read_zh|e }} <strong>{{ qa.stance_zh|e }}</strong></span></p>
+    </section>
+    {% endfor %}
+  </div>
+</details>
+{% endif %}

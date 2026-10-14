@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl_recovery_quality.html.j2; templates/intl.html.j2; lib/intl_library_mount.py
+  what: Expose complete supplied recovery reads in existing native reference-fold depth and bind the real Library destination; preserve owner wording, market identity and partial coverage.
+- path: tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs; research/paper_international_wave1_wave2/LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json; mockups/evidence/paper-international-library/recovery-quality/
+  what: Bind five new render cases, five distinct browser cases and eight canonical captures; independent review and served acceptance remain pending.
 - path: lib/intl_library_mount.py; templates/intl.html.j2; tests/test_intl_library_mount.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
   what: Bind Library Trade & supply links only to its already-rendered unique CGL heading; retain absence and numerical qualification, with seven new Python cases and four browser regressions.
 - path: research/paper_international_wave1_wave2/LIBRARY_TRADE_LINKS_ACCEPTANCE.json; mockups/evidence/paper-international-library/trade-links/
@@ -123,6 +127,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Recovery quality exposes actual supplied owner reads through native keyboard disclosure without qualifying data.
+  command: library-recovery-quality-20261014-r1 Python red/green, scoped Node browser and no-JavaScript commands; LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json.
+  result: Original2PythonFAIL3PASS and1browserFAIL; final41Python and4EN/ZH-Dark/Light browser cases pass over8width states, plus1native JavaScript-disabled fallback. Eight canonical captures retain partial-coverage caveats.
 - claim: Library reaches the already-rendered CGL panel without granting numerical availability.
   command: library-trade-links-20261014-r1 python red/green and scoped Node browser commands; LIBRARY_TRADE_LINKS_ACCEPTANCE.json.
   result: Valid Python red2FAIL2PASS and browser red1FAIL; final36Python and4browser tests pass, with8width states.
@@ -439,3 +446,5 @@ Final accessible-name source retains an explicit CSS semicolon after its existin
 Final History table source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1`.
 
 Library trade-link source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1`. The two-line source repair binds only a unique existing guarded CGL panel. Its model-context notice and numerical unavailability remain unchanged. Rejected fixture assumptions are retained; no frozen review or original live-browser effect was retried.
+
+Recovery-quality source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-recovery-quality-20261014-r1`. Native disclosure reuses complete supplied bilingual owner text and existing material components. No new assessment, qualification or controller. Original review refusal, live Chrome boundary and all custody/release holds persist.

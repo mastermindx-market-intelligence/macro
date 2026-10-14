@@ -55,6 +55,65 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Library opens supplied recovery assessments by keyboard ${theme} ${lang}`,async()=>{
+    const recoveryHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      'from tests.test_intl_workspace_integration import render_fixture,library_recovery_fixture; print(render_fixture(turn_board=library_recovery_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      const input=page.locator('[data-im-library-search]:visible');
+      const query=lang==='zh'?'修复质量':'Recovery quality';
+      await input.fill(query);
+      const link=page.locator('[data-im-library-tool="recovery_quality"] a[href="#intl-recovery-quality"]');
+      assert.equal(await link.count(),1);
+      const origin=page.url();
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await link.focus();await page.keyboard.press('Enter');
+        const target=page.locator('#intl-recovery-quality');
+        const detail=target.locator('..');
+        assert.equal(await detail.evaluate(n=>n.open),true);
+        assert.equal(await target.evaluate(n=>document.activeElement===n),true);
+        assert.equal(new URL(page.url()).hash,'#intl-recovery-quality');
+        assert.equal(await detail.locator('[data-recovery-market]').count(),2);
+        assert.equal(await detail.locator('[data-recovery-market="AU"]').count(),0);
+        assert.match(await detail.innerText(),lang==='zh'?/部分覆盖/:/Partial coverage/);
+        const jp=detail.locator('[data-recovery-market="JP"]');
+        const hk=detail.locator('[data-recovery-market="HK"]');
+        assert.match(await jp.innerText(),lang==='zh'?/日本[\s\S]*修复尝试[\s\S]*确认仍不完整/:/Japan[\s\S]*Repair attempt[\s\S]*confirmation is incomplete/);
+        assert.match(await hk.innerText(),lang==='zh'?/香港[\s\S]*反弹失败/:/Hong Kong[\s\S]*Rebound failed/);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.keyboard.press('Space');
+        assert.equal(await detail.evaluate(n=>n.open),false);
+        await page.keyboard.press('Space');
+        assert.equal(await detail.evaluate(n=>n.open),true);
+        await page.goBack();assert.equal(page.url(),origin);
+        assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:recoveryHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+test('Library recovery disclosure remains native without JavaScript',async()=>{
+  const recoveryHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+    'from tests.test_intl_workspace_integration import render_fixture,library_recovery_fixture; print(render_fixture(turn_board=library_recovery_fixture()))'],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+  await pageFixture(async page=>{
+    const link=page.locator('[data-im-library-tool="recovery_quality"] a[href="#intl-recovery-quality"]');
+    await link.focus();await page.keyboard.press('Enter');
+    const target=page.locator('#intl-recovery-quality');
+    const detail=target.locator('..');
+    assert.equal(await target.evaluate(n=>document.activeElement===n),true);
+    assert.equal(await detail.evaluate(n=>n.open),false);
+    await page.keyboard.press('Space');
+    assert.equal(await detail.evaluate(n=>n.open),true);
+    assert.match(await detail.locator('[data-recovery-market="JP"]').innerText(),/confirmation is incomplete/);
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  },{htmlOverride:recoveryHtml,javaScriptEnabled:false,width:320});
+});
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Library opens rendered trade links and returns to research ${theme} ${lang}`,async()=>{
     const tradeHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
       'from tests.test_intl_workspace_integration import render_fixture, library_trade_fixture; print(render_fixture(cgl=library_trade_fixture()))'],
