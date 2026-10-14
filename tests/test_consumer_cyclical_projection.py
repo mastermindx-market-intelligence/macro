@@ -2361,6 +2361,69 @@ def test_emit_result_backstop_withholds_row_without_current_envelope() -> None:
     assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
 
 
+@pytest.mark.parametrize(
+    ("present", "prior_value"),
+    [
+        pytest.param(False, None, id="absent_prior_side"),
+        pytest.param(True, "n/a", id="malformed_prior_side_non_mapping"),
+    ],
+)
+def test_emit_result_backstop_publishes_row_with_absent_or_malformed_prior_side(
+    present: bool, prior_value: Any
+) -> None:
+    """W15-F-FWA item 1: pin the ABSENT-PRIOR-SIDE half of the backstop asymmetry.
+
+    The ``_emit_result`` comment block and the ``_envelope_side_contradicts``
+    docstring both state that an absent PRIOR side stays non-contradicting --
+    the backstop is deliberately stricter on the CURRENT side only, because
+    ``main`` never read the prior side and withholding for its absence would be
+    a new tightening beyond the restored #9343 baseline. The neighbouring
+    ``test_emit_result_backstop_withholds_row_without_current_envelope`` pinned
+    the CURRENT half of that asymmetry; NOTHING pinned the PRIOR half, so the
+    W15-V-9343c review mutants d2 and d3 both survived:
+
+    - d2 appended ``or not isinstance(filled.get("prior_period_fact"),
+      Mapping)`` to the backstop's prior-side read, so a row was withheld just
+      because its prior side is missing or malformed. This test FAILS under d2.
+    - d3 made the per-side check return True for a non-Mapping side, erasing
+      the deliberate difference between the predicate and the backstop's
+      CURRENT-side-only strictness. This test FAILS under d3: it asserts
+      ``_stated_definition_contradicted(row) is False``.
+
+    The fixture is the neighbouring test's, mirrored: a CLEAN current envelope
+    (unit / scale_power10 / display_quantum all matching the stated definition)
+    and a prior side that is either absent entirely (``present=False``) or
+    present but non-Mapping (``"n/a"``). Observed at the seed HEAD before this
+    test existed -- BOTH cases published ``value_text='24344'`` with
+    ``withheld_reason=None`` and the predicate returned False. The malformed
+    case is therefore NOT withheld on HEAD, so it is pinned as the same
+    invariant here rather than declined.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+    }
+    if present:
+        row["prior_period_fact"] = prior_value
+        assert row["prior_period_fact"] == prior_value
+    else:
+        assert "prior_period_fact" not in row
+    assert _stated_definition_contradicted(row) is False, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] == "24344", emitted
+    assert emitted["withheld_reason"] is None, emitted
+
+
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
     """The golden case, untouched."""
 

@@ -893,9 +893,11 @@ def _envelope_side_contradicts(side: Any) -> bool:
     The per-side logic of ``_stated_definition_contradicted``'s side loop,
     factored out (W15-F-FUY item 1) so the ``_emit_result`` backstop checks
     BOTH envelope sides with the SAME comparisons instead of duplicating
-    them. A non-Mapping side cannot contradict: the envelope is simply
-    absent, and the predicate shares that behaviour -- it treats an absent
-    side as non-contradicting. The ``_emit_result`` BACKSTOP is
+    them. A non-Mapping side cannot contradict: whether the envelope is
+    absent or malformed (present but not a Mapping), there are no stated
+    unit/scale/quantum fields for it to compare against, so the predicate
+    treats such a side -- missing or unusable alike -- as
+    non-contradicting. The ``_emit_result`` BACKSTOP is
     deliberately stricter on the CURRENT side only: it withholds a
     non-``_pct`` row whose ``current_period_fact`` is not a Mapping at
     all, because ``main`` read that missing side's quantum as ``None`` and
