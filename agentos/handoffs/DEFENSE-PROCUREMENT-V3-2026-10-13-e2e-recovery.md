@@ -768,3 +768,28 @@ repair matches current source; no duplicate implementation. Original capacity
 reviews, P2/Q3 Fabric effects, Terminal778 custody and second entitled subject
 remain as recorded. Next: full proof on this source, samePR exact-head gates,
 then existing protected merge/natural publisher/fresh CAS/release order.
+
+
+### October14 V14 complete proof and measured performance debt
+
+Source3d715806076f71dcac406678fa238026640ffc45 now has a full sealed proof:
+104passed,1explicit skip,879.83s; receipt81244ed007d6b16893b04d76d68a600af4fc349e6fac88b4246d0298d21aa0a7
+binds7639dependencies,109outputs and the unchanged642-row generation. Committed
+witness passes. Four complete CI scope/packing checks pass; new24-state browser
+matrix passes and parent samples are visually reviewed. Actual API modules and
+all runtime data inputs equalV13, preserving its bounded concurrency evidence.
+
+Fresh ten-sample throttledHTTP1.1 timing is complete but not all green:9/10under3s,
+median2.796s,p95/max3.687s. Sample4 uses warm readers, has no long task and shows
+initial resource fetch/finance-response delay; cause is unestablished. Retain the
+miss and prior V13miss; no relaxed target, installed performance or acceptance.
+See combined_generation_v14_proof/ADJUDICATION.json and indexed raw artifacts.
+
+Separate oversight prep5c53fcf2be2d fixes an actual fully-rehashed future-report
+admission gap in loader/dossier/browser;228tests pass. No canonical facts admitted.
+Original capacity source/code reviews remain ACTIVE_OR_WAITING without retained
+result; status reads did not retry refused observation or start replacements.
+Terminal778 is unchanged, no new ACK. Cost snapshot preserves partial observed
+usage and expressly disallows native/Fabric double counting or efficiency claims.
+Next: samePR9066 exact-head hosted qualification, protected release chain, then
+remaining real-source, performance, two-subject and independent acceptance.
