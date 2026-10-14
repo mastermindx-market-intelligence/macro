@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T06:26:09.663793+00:00",
-  "count": 2876,
+  "generated_at": "2026-10-14T06:39:42.676283+00:00",
+  "count": 2877,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -344,6 +344,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tmrof9t6rjp-c38770",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T07:45:13Z",
+      "summary_points": [
+        "Tech Sell-Off & Competition Threats: Broadening tech weakness with broken technicals (SOX, KOSPI) and rising competition (MSFT’s Maia chip, NVDA’s Reflection AI, CXMT memory progress) as key risk factors.",
+        "DRAM Market Concentration: Samsung (39%), SK hynix (26%), Micron (25%) control 90% of DRAM supply, signaling strategic pricing power and supply chain vulnerability.",
+        "French Budget Political Risk: Article 49.3 no-confidence vote risk amid budget debate; OATs cheap but political backdrop deters long positions despite fiscal urgency.",
+        "Earnings Concentration Volatility: S&P500 earnings peak (26-Oct, 38% market cap) with minimal November reporting (23-Nov: 2%), driving high sentiment volatility risk.",
+        "EU-US Positioning Gap: EU net selling (-1.7z) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
