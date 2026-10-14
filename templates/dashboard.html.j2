@@ -9422,6 +9422,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
   .rr-shadow-warn{font-size:9.5px;color:var(--ink-down, var(--down));font-style:italic;
     border-left:2px solid var(--down);padding-left:6px;margin-top:4px;line-height:1.4}
+  .rr-shadow-retired{font-size:10.5px;color:var(--muted);line-height:1.45}
   /* surprise anatomy mini-table */
   .rr-anatomy-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:4px}
   .rr-anatomy-table th{font-size:9.5px;font-weight:700;text-transform:uppercase;
@@ -10159,6 +10160,19 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     /* MRI-R24: v3_factor challenger shadow row */
     function v3FactorRow(v3, isClaims, isNfp){
       if (!v3) return '';
+      /* RIC-M0: a withdrawn claim shows no number, only a plain note */
+      if (v3.claim_withdrawn){
+        return '<div class="rr-shadow-row">'
+          +'<div class="rr-shadow-label">'
+          +'<span class="l-en">V3 Factor · comparison model</span>'
+          +'<span class="l-zh">V3 因子 · 对比模型</span>'
+          +'</div>'
+          +'<div class="rr-shadow-retired">'
+          +'<span class="l-en">Withdrawn: on the first-print retest it did worse than its simple baseline, so no number is shown.</span>'
+          +'<span class="l-zh">已撤下：首发值复测中不及简单基准，故不显示数值。</span>'
+          +'</div>'
+          +'</div>';
+      }
       var useK = isClaims || isNfp;
       var ptStr = v3.point != null ? (useK ? fmtK(v3.point) : fmtNum(v3.point,2)) : '—';
       var warning = v3.warning || '';
