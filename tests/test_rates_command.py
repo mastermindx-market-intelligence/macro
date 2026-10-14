@@ -1583,3 +1583,93 @@ class TestT0FixBBasisContract:
         b2 = fresh["inflation_row"]["nearest_cpi"]["basis"]
         assert b2 is not None
         assert b2["value"] == 0.37 and b2["value_state"] == "present"
+
+    # 13. FQ2: unstamped rate row is admitted, tagged, round-trips ----------
+    def test_unstamped_rate_row_is_admitted_and_tagged(self, tmp_path):
+        from engine.rates_command_basis import QualifiedObservation
+
+        CUT = "2026-10-14T00:00+00:00"
+        root = self._write(tmp_path / "unstr", fed_path=self._fed_path(asof=None))
+        b = build_board(root=root, cutoff=CUT)["board"]["rate_path_row"]["basis"]
+        assert b is not None
+        self._schema().validate(b)
+        assert b["value"] == 3.2
+        assert b["value_state"] == "present"
+        assert "evidence_time_unknown" in b["limitations"]
+        assert b["observation_time"] is None
+        assert b["first_public_evidence"] is None
+        # The tag must survive the payload round trip for C0 to refuse on it.
+        assert QualifiedObservation.from_dict(b).to_dict() == b
+
+    # 14. FQ2: unstamped CPI row is admitted, tagged, row display untouched --
+    def test_unstamped_cpi_row_is_admitted_and_tagged(self, tmp_path):
+        from engine.rates_command_basis import QualifiedObservation
+
+        CUT = "2026-10-14T00:00+00:00"
+        art = _t0_release_forecast_artifact()
+        del art["asof"]
+        root = self._write(tmp_path / "uncpi", artefact=art)
+        nc = build_board(root=root, cutoff=CUT)["board"]["inflation_row"]["nearest_cpi"]
+        b = nc["basis"]
+        assert b is not None
+        self._schema().validate(b)
+        assert b["value"] == 0.37
+        assert b["value_state"] == "present"
+        assert "evidence_time_unknown" in b["limitations"]
+        assert b["observation_time"] is None
+        assert b["first_public_evidence"] is None
+        assert QualifiedObservation.from_dict(b).to_dict() == b
+        # The basis never edits the row's display fields.
+        assert nc["point"] == 0.37
+
+    # 15. Control: stamped rows carry no unknown-time tags --------------------
+    def test_stamped_rows_carry_no_unknown_time_tag(self, tmp_path):
+        CUT = "2026-10-14T00:00+00:00"
+        root = self._write(
+            tmp_path / "stamped",
+            fed_path=self._fed_path(),
+            artefact=_t0_release_forecast_artifact(),
+        )
+        board = build_board(root=root, cutoff=CUT)["board"]
+        for b in (
+            board["rate_path_row"]["basis"],
+            board["inflation_row"]["nearest_cpi"]["basis"],
+        ):
+            assert b is not None
+            assert b["value_state"] == "present"
+            assert "evidence_time_unknown" not in b["limitations"]
+            assert "first_public_evidence_unknown" not in b["limitations"]
+
+    # 16. Empty-string evidence time is refused, never tagged unknown --------
+    def test_empty_string_evidence_time_is_refused_not_tagged(self, tmp_path):
+        CUT = "2026-10-14T00:00+00:00"
+        art = _t0_release_forecast_artifact()
+        art["asof"] = ""
+        root = self._write(
+            tmp_path / "emptystr",
+            fed_path=self._fed_path(asof=""),
+            artefact=art,
+        )
+        board = build_board(root=root, cutoff=CUT)["board"]
+        for b in (
+            board["rate_path_row"]["basis"],
+            board["inflation_row"]["nearest_cpi"]["basis"],
+        ):
+            assert b is not None
+            assert b["value"] is None
+            assert b["value_state"] == "refused"
+            assert "evidence_time_unparsable" in b["limitations"]
+            assert "evidence_time_unknown" not in b["limitations"]
+
+    # 17. No cutoff + unstamped ⇒ no basis at all (build time is not one) ----
+    def test_unstamped_rows_without_cutoff_have_no_basis(self, tmp_path):
+        art = _t0_release_forecast_artifact()
+        del art["asof"]
+        root = self._write(
+            tmp_path / "nocut",
+            fed_path=self._fed_path(asof=None),
+            artefact=art,
+        )
+        board = build_board(root=root)["board"]
+        assert board["rate_path_row"]["basis"] is None
+        assert board["inflation_row"]["nearest_cpi"]["basis"] is None
