@@ -3993,14 +3993,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -15039,14 +15044,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
@@ -15750,14 +15760,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -19275,14 +19290,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -19719,14 +19739,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -24794,14 +24819,19 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
-      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
-      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
-      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
-      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
