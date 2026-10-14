@@ -73,6 +73,18 @@ def test_candidate_is_detached_and_does_not_publish_or_read(supplied, monkeypatc
         result.published = True
 
 
+def test_candidate_does_not_claim_records_are_decoded_from_artifact_bytes(supplied):
+    original = compile_supplied(supplied)
+    changed = dict(supplied[1])
+    changed["vendor_aliases.parquet"] = b"different supplied serialization"
+    candidate = compile_supplied(supplied, artifact_bytes=changed)
+    assert candidate.alias_semantic_sha256 == original.alias_semantic_sha256
+    assert candidate.artifact_sha256 != original.artifact_sha256
+    assert candidate.generation_id != original.generation_id
+    assert not candidate.records_bound_to_artifacts
+    assert not candidate.published and not candidate.identity_admitted
+
+
 @pytest.mark.parametrize("key", ["publication", "identity_observations"])
 @pytest.mark.parametrize("value", [None, {}, {"attempts": []}])
 def test_existing_owner_context_is_never_reset(supplied, key, value):

@@ -17,6 +17,12 @@ from lib.dataos import identity as native
 
 @dataclass(frozen=True, slots=True)
 class InitialReferenceCandidate:
+    """Detached preparation metadata, not publication or source-authenticity proof.
+
+    ``original_receipt_sha256`` binds the exact supplied byte spelling. Candidate
+    bytes are canonicalized separately. The false status fields are descriptions
+    of this function's work, not access-control or publisher authorization tokens.
+    """
     candidate_receipt_bytes: bytes
     original_receipt_sha256: str
     candidate_receipt_sha256: str
@@ -26,6 +32,7 @@ class InitialReferenceCandidate:
     master_semantic_sha256: str
     published: bool = field(default=False, init=False)
     identity_admitted: bool = field(default=False, init=False)
+    records_bound_to_artifacts: bool = field(default=False, init=False)
 
 
 def build_initial_reference_candidate(
@@ -54,10 +61,10 @@ supplied records are not independently bound to their Parquet bytes here.
     native._ob_require(type(artifact_bytes) is dict
                        and set(artifact_bytes) == set(native._ARTIFACT_NAMES),
                        "candidate complete artifact bytes")
-    for name, raw in artifact_bytes.items():
+    artifacts = dict(artifact_bytes)
+    for name, raw in artifacts.items():
         native._ob_require(type(raw) is bytes and 0 < len(raw) <= 64 * native._MIB,
                            "candidate artifact byte bound " + name)
-    artifacts = dict(artifact_bytes)
     aliases = native._ob_records(alias_records)
     master = native._ob_records(master_records)
     rows = json.loads(aliases)
@@ -97,7 +104,7 @@ supplied records are not independently bound to their Parquet bytes here.
     candidate = native._ob_json(receipt, 9 * native._MIB)
     native.validate_reference_snapshot(
         candidate, artifacts, candidate,
-        alias_records=json.loads(aliases), master_records=json.loads(master),
+        alias_records=rows, master_records=json.loads(master),
     )
     return InitialReferenceCandidate(
         candidate_receipt_bytes=candidate,
