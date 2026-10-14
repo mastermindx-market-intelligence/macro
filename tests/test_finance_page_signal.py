@@ -140,6 +140,38 @@ def test_prospective_validation_blocks_admission() -> None:
     assert _ids(page) == before
 
 
+def test_row_with_measured_outcome_blocks_admission() -> None:
+    case = _document()
+    assert case["formal_causal_outcomes_measured"] == 0
+    case["cases"][0]["formal_causal_outcome"] = "MEASURED"
+    page = _page()
+    before = _ids(page)
+    with pytest.raises(SynthesisAdmissionRefusal) as caught:
+        apply_page_signal(case, page)
+    assert str(caught.value) == "row_outcome_not_unmeasured"
+    assert _ids(page) == before
+
+
+def test_page_without_slices_is_refused() -> None:
+    page: dict = {}
+    with pytest.raises(SynthesisAdmissionRefusal) as caught:
+        apply_page_signal(_document(), page)
+    assert str(caught.value) == "no_slices"
+    assert page == {}
+
+
+def test_row_naming_an_absent_slice_writes_nothing() -> None:
+    beta = _row("syn-fin-case-beta")
+    assert beta["slice_id"] == "exchanges_trading_venues"
+    page = {"slices": [_slice("card_networks", "sentinel-card")]}
+    before = _ids(page)
+    with pytest.raises(SynthesisAdmissionRefusal) as caught:
+        apply_page_signal(_document(), page)
+    assert str(caught.value) == "slice_absent"
+    assert _ids(page) == before
+    assert page["slices"][0]["rerating"]["falsifier_ids"] == ["sentinel-card"]
+
+
 def test_descriptive_measured_stays_not_yet_evaluable() -> None:
     alpha = _row("syn-fin-case-alpha")
     assert alpha["descriptive_evidence_state"] == "MARKET_AND_VALUATION_MEASURED"
