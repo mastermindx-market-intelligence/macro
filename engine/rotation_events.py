@@ -1700,6 +1700,11 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
     A positive two-session relative move is a descriptive shift. Retailer detail
     does not count as sector confirmation. All price observations share one
     conservative dependency group; no probability, severity or risk score exists.
+
+    Coverage additionally carries ``positive_2s_by_absolute`` per group and in
+    total, counting the positive 2-session pairs by absolute leg direction
+    (``both_up``/``both_down``/``mixed``) — descriptive context on how a
+    positive relative shift was carried, never an input to ``state``.
     """
     from copy import deepcopy
     from lib import nyse_calendar
@@ -1713,7 +1718,13 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
         "coverage": {
             "registered_pairs": 0, "evaluable_2s": 0, "positive_2s": 0,
             "missing_pair_ids": [],
-            "groups": {g: {"registered": 0, "evaluable_2s": 0, "positive_2s": 0}
+            # T07 r2: absolute-direction census of the counted positives, per
+            # group and in total — descriptive context, never a state input.
+            # Initialised for every group so a valid-empty group reports zeros,
+            # never a missing key.
+            "positive_2s_by_absolute": {"both_up": 0, "both_down": 0, "mixed": 0},
+            "groups": {g: {"registered": 0, "evaluable_2s": 0, "positive_2s": 0,
+                           "positive_2s_by_absolute": {"both_up": 0, "both_down": 0, "mixed": 0}}
                        for g in groups},
         },
         "availability": {"status": "UNKNOWN", "available_at": None},
@@ -1853,6 +1864,16 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
             relative = window["ratio_return_pct"]
             if relative > 0:
                 counts["positive_2s"] += 1
+                # T07 r2: census this counted positive by its absolute leg
+                # direction. Eligibility already required finite legs, so the
+                # direction is one of the three measured keys; a None/garbage
+                # direction counts under a defensively-added "unmeasured" key
+                # rather than raising.
+                direction = row["absolute_2s"]["absolute_direction"]
+                if direction not in ("both_up", "both_down", "mixed"):
+                    counts["positive_2s_by_absolute"].setdefault("unmeasured", 0)
+                    direction = "unmeasured"
+                counts["positive_2s_by_absolute"][direction] += 1
                 # T07 A18: derive from the MEASURED signs, never a trusted label.
                 if recv_state == "DOWN" and donor_state == "DOWN":
                     row["interpretation"] = "RELATIVE_RESILIENCE"
@@ -1908,6 +1929,15 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
     for field in ("registered", "evaluable_2s", "positive_2s"):
         total = sum(coverage["groups"][g][field] for g in groups)
         coverage["registered_pairs" if field == "registered" else field] = total
+    # T07 r2: the summed absolute-direction map over the same groups the
+    # positive_2s total sums — "unmeasured" appears only if a group ever
+    # counted one, so the invariant sum(values) == positive_2s holds per
+    # group and in total.
+    by_absolute: dict[str, int] = {}
+    for g in groups:
+        for direction, count in coverage["groups"][g]["positive_2s_by_absolute"].items():
+            by_absolute[direction] = by_absolute.get(direction, 0) + count
+    coverage["positive_2s_by_absolute"] = by_absolute
     coverage["missing_pair_ids"].sort()
     # T07: per-leg missingness over the canonical (deduplicated) registered rows —
     # additive receipt only; no existing coverage key, count, state or reason changes.

@@ -634,3 +634,57 @@ def test_t07_a24_valid_empty_never_revives_prior_positive(tmp_path, monkeypatch)
                             universe=universe, closes=closes)
     assert second["early_context"]["state"] is None
     assert second["early_context"]["pairs"] == []
+
+
+# ---------------------------------------------------------------- T07 r2 ----
+# Group-level absolute-direction census of the counted positive 2-session
+# pairs: a group reader must be able to see that a "broadening" verdict was
+# carried entirely by pairs that fell less than the donor, without walking the
+# rows. Mirrors the published incidence measured on origin/main
+# (2026-10-09): four of nine positives both_down, all three broadening_proxy
+# pairs among them. Descriptive context only — never a state input.
+
+
+def test_t07r2_group_absolute_counts_mirror_published_incidence():
+    out = context(
+        receipt(num="XLU", den="XLK", num_daily=-.0011, den_daily=-.0105),  # both down, ratio up
+        receipt(num="XLP", den="XLK", num_daily=.0098, den_daily=-.0105),   # receiver up, donor down
+        receipt("broadening_proxy", -.0028, -.008, "DIA", "QQQ"),
+        receipt("broadening_proxy", -.0067, -.008, "IWM", "QQQ"),
+        receipt("broadening_proxy", -.0011, -.008, "RSP", "QQQ"),
+    )
+    assert out["state"] == "MIXED_ROTATION"  # parity — unchanged
+    groups = out["coverage"]["groups"]
+    assert groups["broadening_proxy"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 3, "mixed": 0}
+    assert groups["defensive_sector"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 1, "mixed": 1}
+    assert groups["retailer_context"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 0, "mixed": 0}
+    assert out["coverage"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 4, "mixed": 1}
+    for g, counts in groups.items():
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
+    assert sum(out["coverage"]["positive_2s_by_absolute"].values()) == out["coverage"]["positive_2s"] == 5
+
+
+def test_t07r2_valid_empty_reports_zero_maps():
+    out = context()
+    assert out["state"] is None  # unchanged
+    zero = {"both_up": 0, "both_down": 0, "mixed": 0}
+    for g, counts in out["coverage"]["groups"].items():
+        assert counts["positive_2s_by_absolute"] == zero
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"] == 0
+    assert out["coverage"]["positive_2s_by_absolute"] == zero
+    assert sum(out["coverage"]["positive_2s_by_absolute"].values()) == out["coverage"]["positive_2s"]
+
+
+def test_t07r2_nonpositive_rows_not_counted():
+    out = context(receipt(num_daily=.001, den_daily=.003))  # eligible, ratio < 0
+    assert out["pairs"][0]["eligible_2s"] is True
+    assert out["coverage"]["positive_2s"] == 0
+    zero = {"both_up": 0, "both_down": 0, "mixed": 0}
+    for g, counts in out["coverage"]["groups"].items():
+        assert counts["positive_2s_by_absolute"] == zero
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
+    assert out["coverage"]["positive_2s_by_absolute"] == zero
