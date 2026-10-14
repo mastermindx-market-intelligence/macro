@@ -1056,9 +1056,9 @@ def test_c2_identity_and_receipt_cover_the_new_inputs() -> None:
     evaluation, state, scenario = evaluate(**path_kwargs(path=PRICE_PATH, programme=ATM_PROGRAMME))
     envelope = evaluation.envelope
     assert c2.IMPLEMENTATION == (
-        "capital_structure.capacity.c2_adapter.v1+" + capacity_joint.IMPLEMENTATION
+        "capital_structure.capacity.c2_adapter.v2+" + capacity_joint.IMPLEMENTATION
     )
-    assert evaluation.inputs["adapter"] == "capital_structure.capacity.c2_adapter.v1"
+    assert evaluation.inputs["adapter"] == "capital_structure.capacity.c2_adapter.v2"
     assert evaluation.inputs["implementation"] == c2.IMPLEMENTATION
     assert envelope.receipt.implementation_digest == sha256_of(
         {"contract": C1.STATE_CONTRACT_VERSION, "implementation": c2.IMPLEMENTATION}
