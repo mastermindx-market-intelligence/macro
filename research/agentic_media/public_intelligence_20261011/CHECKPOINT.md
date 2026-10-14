@@ -1,3 +1,31 @@
+## 2026-10-14 15:48 direct continuation — original history restored for safe staging
+
+Selected-slot Fabric review is consumed/accepted as diagnosis; parent-reviewed
+writerc8027347 is bound in the current24-source postlanding manifest.432tests/1skip and33portablegroups
+remain applicable; no follow-onPR/install. New readonly staging seam verifies the
+existing AI_COSTS_STATE_ROOT/METABOLISM_STATE_ROOT mechanisms point all3ledgers to
+original runtime8f705 without copying/resetting history. The default new-code root
+would use different accounting and must not be used for this continuation.
+
+The original runtime now contains FOUR held drafts: its two existing records plus
+exclusive restoration of the two retainedOctober11 records as quarantined peers.
+Both creates KNOWN_COMPLETE; do not repeat. Drafts/slots/attempts/oldreports unchanged;
+original source records remain exact, existing two stages/summary and3ledgers exact.
+Actual inspector sees4/blocks4. No provider/replay, no credit. Latest preflight has
+zero missing peers and estimated7128token reservation within24000 (not a hardcap).
+Original runtimecatalog predates USDA; consume fresh canonical selectedslot after
+publicpage acceptance, never blindly discover against the stale localcatalog.
+
+Installed9b4bd85a mover check finds October8/9observations despite today's rebuild;
+no freshBrief admission. Preserve all existing source holds. PR/controller observations
+remain the once-read15:09state below; no additional polling/CI/observer/refresh.
+Next: incumbentpublicpage acceptance and freshly bound original-history singleattempt;
+protected9209install then samefollow-onPR/install33groups. Publication/cutoverfalse,
+D140/10. Evidence:usda_research_intake_phase/staging_runtime_preflight_20261014_1548/.
+
+
+Manifest correction: current postlanding/mmx-current-expected-hashes.json matches24/24. Phase-root expected-source-hashes.json is historical b35/558ca, predating3accepted repairs; retain its old pins. Only current postlanding writerhash was rebound. No application drift.
+
 ## 2026-10-14 15:07 direct continuation — real USDA selection and attribution repair
 
 The installed planner at stable918fad1eb52bd62731e9c3aa85734644f739ebf4 selects
@@ -15,18 +43,22 @@ and evidence-gap wording without changing receipt tiers, floors, facts, dates or
 source ownership.432affected tests pass/1existing sparse skip. Brief/externalBrief/
 admittedearnings prompts are byte-identical. Expanded integrity probe12groups PASS
 locally, wrong writer hash refuses before fixture execution. Other21accepted portable
-groups unchanged. Sourcewriter c8027347; active bundle not yet rebound pending review.
+groups unchanged. Sourcewriter c8027347; only this hash is rebound in the current24-source postlanding manifest.
+Other23hashes/3pages unchanged. Eleven actual-slot magnitude controls also PASS.
 
 Fabric mmx-press-usda-slot-review-20261014-001 is the sole selected-slot review,
-controller ACTIVE_OR_WAITING with launch/lease retained. No result or verdict yet;
-consume sameid, no retry/replacement. This distinct context review does not retry
+completed rc0 and retained result consumed. Verdict NOT PASS of the old prompt
+confirms both defects; parent accepted the diagnosis and reviewed final repair.
+Do not claim an independent final-code PASS. Supplemental observe-run refused
+original_run_observation_unconfirmed; no retry/alternate observation carrier.
+The original request/result completed normally. This distinct context review does not retry
 USDA sidecar refusal or issuer-review refusal. Original runtime8f705/twohelddrafts
 and all3dirty accounting hashes remain exact. No provider/staging/source upload.
 
 Once-read9209 OPEN/armed a18ec982; oldgreen stale. Completedcontroller38586265876
 reports8proofs/cap8,0slots; current38586600906 running. Existingrenderer38558417917
 still in page render,38553964455queued. No newobserver/CI/manualrefresh/dispatch.
-Next consume retained review and bind tested correction, then incumbentpublicpage
+Next consume incumbentpublicpage
 and original-history singleattempt preflight. Consume protected9209landing/install
 using actualmergeSHA/normalupdater, then SAME follow-onPR/install with33groups.
 Publication/cutoverfalse,0/10; all other holds/refusals/unknown effects preserved.

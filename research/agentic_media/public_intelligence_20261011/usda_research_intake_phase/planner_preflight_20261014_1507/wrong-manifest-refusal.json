@@ -1,0 +1,6 @@
+{
+  "wrong_writer_hash_refused": true,
+  "returncode": 1,
+  "stdout_empty": true,
+  "scope": "refused before historical fixture construction or mock writer call; imports occur before manifest check"
+}

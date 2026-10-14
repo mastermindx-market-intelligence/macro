@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume retained USDA slot review and bind the tested attribution correction. Installed planner selects USDA naturally; public report page remains pending incumbent render. Consume admitted9209 protected install then SAME follow-on33groups. Preserve original histories and all holds; publication0of10.
+next_action: USDA slot review consumed and diagnosis accepted; attribution correction tested and hash-bound. Installed planner selects USDA naturally; public report page remains pending incumbent render. Consume admitted9209 protected install then SAME follow-on33groups. Original runtime now has four held peers; preserve all histories/holds. Publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288

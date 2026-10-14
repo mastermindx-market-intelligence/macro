@@ -62,3 +62,18 @@ legacy/malformed/nonfinite/mismatched refusals and valid zero. Total portable
 acceptance is31 groups (10+5+9+7), all passed locally with zero real provider or
 production writes; a wrong hash refuses before import. Do not mistake a fixture
 probe for a model-quality, source-rights or public-story approval.
+
+
+October14 selected-USDA prompt correction (applicationf9ffebd74ed5): only writer
+changes to c8027347e46b4ba36e40ae65b3b1c5f7218dd169a1735e1bd015fe86112111af.
+The other23source hashes and3page bindings are unchanged. Exact slot inspection
+found external USDA forecasts called our own measurements and a forced comparison
+with unrelated equity data. Four regression cases failed;432affected tests pass
+with1existing sparse skip after the Research-only correction. Brief/externalBrief/
+admittedearnings prompts remain byte-identical. See ../../usda_research_intake_phase/
+planner_preflight_20261014_1507/review_binding.json for accepted independent diagnosis
+and parent review of final source; never present the old-prompt NOT PASS as a
+reviewer PASS of unobserved final code. The integrity probe is now12groups (two
+additional Research desk/note attribution controls); other21groups retain their
+unchanged accepted evidence. Total installed acceptance is33groups, not31.
+The12groups and bad-writer-hash refusal pass locally; no production execution.

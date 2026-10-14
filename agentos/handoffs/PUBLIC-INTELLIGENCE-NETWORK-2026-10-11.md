@@ -2915,3 +2915,27 @@ release/install claim. Application8eb467 and accepted checks unchanged;0/10.
 ## October14 15:07 direct continuation
 
 Installed918fad1e naturally selects USDA slot593acfb87c11, ranked2/firstunheld among200reports.524readfiles/head stable; dedicated report page still absent. Four red prompt regressions exposed misattribution of USDA forecasts and forced cross-market agreement. Root Research-only correction passes432tests/1existing sparse skip; three Brief/earnings prompts byte-identical,12integritygroups pass locally, other21groups reusable. No writer call or staged USDA draft. Active manifest is not yet rebound. Sole Fabric slot-review mmx-press-usda-slot-review-20261014-001 ACTIVE_OR_WAITING; consume exact result, no replay. Original8f705/twohelddrafts/3accounting hashes unchanged. Once-read9209a18ec982 OPEN/armed;controller38586265876 deferred8/cap8;incumbent38558417917renderer active. Next review consumption, correctedsource binding, normalpublicpage acceptance, then original-history singleattemptpreflight. Protected9209install precedes samefollow-onPR/install33groups. Evidence/commands in usda_research_intake_phase/planner_preflight_20261014_1507.
+
+Selected-slot review completed15:34UTC and was consumed/accepted as a diagnosis of
+the original prompt (NOT PASS), not as a PASS of final source. Parent reviewed
+corrected writerc8027347 against findings and432tests/parity/12portablegroups; only
+writer is rebound in the current24-source postlanding manifest.11actual-slot magnitude controls pass.
+Other23source/3page bindings unchanged; total installedprobe requirement33groups.
+Supplemental observe-run refusal preserved; original request/result completed
+normally, no retry/carrier switch. No staging/provider/publication or installed
+code claim. Full review semantics/provenance in review_binding.json.
+
+## October14 15:48 staging history seam
+
+Original runtime8f705 now has4quarantined peers after two exclusive KNOWN_COMPLETE
+history restores from unchangedOctober11 evidence. Drafts/slots/attempts/reports
+unchanged; original two stages/run summary/3accounting histories exact. Inspector
+sees4andblocks4; no provider/replay/credit. Existing telemetry-state overrides
+verified point newcode to original histories, not an empty newtree. Default old
+runtimecatalog lacks USDA: use fresh bound canonical slot only after publicpage
+acceptance. See usda_research_intake_phase/staging_runtime_preflight_20261014_1548/.
+Mover artifacts remainOct8/9 atstable9b4bd85a; no freshBrief or producer rewrite.
+Review accepted as diagnosis; finalcode parent-reviewed atf9ff/c802,24hashes bound,
+33groups required. #9209 remains once-read15:09a18ec982 pending protected release.
+
+Manifest correction: current postlanding/mmx-current-expected-hashes.json matches24/24. Phase-root expected-source-hashes.json is historical b35/558ca, predating3accepted repairs; retain its old pins. Only current postlanding writerhash was rebound. No application drift.

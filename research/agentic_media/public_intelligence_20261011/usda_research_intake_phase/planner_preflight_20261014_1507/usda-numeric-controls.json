@@ -1,0 +1,90 @@
+[
+  {
+    "name": "wheat-original",
+    "text": "USDA projects 740 million bushels.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "wheat-equivalent",
+    "text": "USDA projects 0.74 billion bushels.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "wheat-inflation",
+    "text": "USDA projects 740 billion bushels.",
+    "expected_ok": false,
+    "actual_ok": false,
+    "pass": true,
+    "detail": "originated number(s) not in the source facts: ['740 billion']"
+  },
+  {
+    "name": "corn-original",
+    "text": "USDA forecasts 16.0 billion bushels.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "corn-deflation",
+    "text": "USDA forecasts 16 million bushels.",
+    "expected_ok": false,
+    "actual_ok": false,
+    "pass": true,
+    "detail": "originated number(s) not in the source facts: ['16 million']"
+  },
+  {
+    "name": "soy-original",
+    "text": "USDA forecasts 4.56 billion bushels.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "soy-inflation",
+    "text": "USDA forecasts 4.56 trillion bushels.",
+    "expected_ok": false,
+    "actual_ok": false,
+    "pass": true,
+    "detail": "originated number(s) not in the source facts: ['4.56 trillion']"
+  },
+  {
+    "name": "stocks-original",
+    "text": "USDA projects 315 million bushels.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "stocks-deflation",
+    "text": "USDA projects 315 thousand bushels.",
+    "expected_ok": false,
+    "actual_ok": false,
+    "pass": true,
+    "detail": "originated number(s) not in the source facts: ['315 thousand']"
+  },
+  {
+    "name": "yield-original",
+    "text": "USDA forecasts 181.2 bushels per acre.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  },
+  {
+    "name": "soy-price-original",
+    "text": "USDA forecasts $12.00 per bushel.",
+    "expected_ok": true,
+    "actual_ok": true,
+    "pass": true,
+    "detail": "every number and quote resolves to a source fact"
+  }
+]

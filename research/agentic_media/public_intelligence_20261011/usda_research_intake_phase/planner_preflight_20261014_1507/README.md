@@ -42,8 +42,14 @@ fixture proof only, not installed acceptance or writer quality.
 
 Fabric `mmx-press-usda-slot-review-20261014-001` is the sole independent review
 of this selected slot's prompt/context. It is distinct from the earlier refused
-sidecar-check operation, which remains unreplayed. Consume this same retained
-result before recording its verdict; process success alone is not acceptance.
+sidecar-check operation, which remains unreplayed. The same retained result completed and was consumed. Its NOT PASS of the old
+prompt confirms both reproduced defects. Parent accepted that diagnosis through
+the existing owner, then reviewed the implemented Research-only replacement and
+its checks. This is not an independent PASS of final code; see review_binding.json.
+Only the writer hash is rebound in the current 24-source postlanding manifest; the other 23 hashes
+and three page bindings remain unchanged. Eleven actual-slot magnitude controls
+also pass. Original supplemental observation refusal remains preserved; the
+original request/result completed normally without another observation carrier.
 
 Original runtime remains at `8f705cb32a77987f7e5c025e99194f3b479a6382` with the
 same two held staged items and all three accounting hashes unchanged. No reset,

@@ -9,7 +9,7 @@
   "engine/earnings_narrative/story_store.py": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b",
   "engine/earnings_narrative/admission.py": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5",
   "scripts/stage_earnings_story_press.py": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c",
-  "engine/press/writer.py": "c0ae6a5785ec2a3b358bd523a8833c72888f98b90fdd6fc877ae550fa94275fd",
+  "engine/press/writer.py": "c8027347e46b4ba36e40ae65b3b1c5f7218dd169a1735e1bd015fe86112111af",
   "scripts/publish_earnings_story_packets_r2.py": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf",
   ".github/workflows/earnings-story-packets.yml": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb",
   "engine/press/external_candidate.py": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
