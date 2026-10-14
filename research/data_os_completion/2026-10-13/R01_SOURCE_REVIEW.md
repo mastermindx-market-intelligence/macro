@@ -256,7 +256,13 @@ PYTHONDONTWRITEBYTECODE=1 PY -m pytest tests/verification/test_r01_prior_finding
 git diff --name-only 15bc4a7b… HEAD; git diff --name-only --diff-filter=M 15bc4a7b… HEAD   # owned paths only / empty
 PY -m py_compile tests/verification/test_r01_prior_findings.py && echo compile-ok
 grep -n "datetime.now\|time\.time\|date.today\|requests\|urllib\|socket\|subprocess\|data/" tests/verification/test_r01_prior_findings.py   # zero hits
-PY scripts/check_contract_delta.py --base 15bc4a7b…  # 0 introduced, 0 inherited
+PY scripts/check_contract_delta.py --base 15bc4a7b…  # pre-commit: 0 introduced, 0 inherited;
+                                                     # final HEAD: 1 introduced, 0 inherited — the
+                                                     # expected row for this lane's unwired suite
+                                                     # ("tests/verification/test_r01_prior_findings.py
+                                                     # is a new pytest suite named by no run: step");
+                                                     # .github/ci is outside this lane's owned paths,
+                                                     # so the wiring is left to the seat
 # P6 discrimination (detached, then git worktree remove --force):
 git worktree add --detach ~/lanes/wt/dataos-r01-1-old 7ab2bc9d && cp <test file> …/tests/verification/
 PY -m pytest … -q   # collection error: cannot import ReinvestPolicy (pre-heal); read_contract absent on that branch
