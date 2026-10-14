@@ -7,7 +7,7 @@ objective: >
   Forward Path synthesis and learning. Done means real current inputs traverse production into the
   actual user/machine consumers with all authority ceilings, nulls, evidence clocks and failure states
   intact; CI or merged infrastructure alone is not completion.
-status: awaiting_ci
+status: active
 program: rates-inflation-command
 repos: [macro]
 owner: ceo-sol
@@ -32,11 +32,8 @@ depends_on: []
 waves:
   - id: F0
     title: Recovery, capability ledger and architecture freeze
-    status: awaiting_ci
+    status: done
     pr: 6543
-    next_action: >
-      Independently review and accept PR #6543 only after exact-head semantic/fence CI completes
-      green; no product/runtime behavior is changed by F0.
   - id: F1
     title: Release and event truth/intelligence closure
     status: todo
@@ -67,6 +64,7 @@ waves:
     depends_on: [F5, F6]
 decisions:
   - DEC:RIC-CANONICAL-COMPOSITION-BOUNDARIES
+  - DEC:RIC-BASIS-CONTRACT-V1-QUALIFIED-COMPARISON
 discoveries:
   - DSC:RIC-RECOVERY-FOUND-STATUS-DRIFT-AND-W3-W4-DISCONNECT
 landmines:
@@ -84,11 +82,14 @@ artifacts:
   - research/RATES_INFLATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/MACRO_RELEASE_INTEL_MASTERPLAN_BY_FABLE.md
   - research/TRANSMISSION_INTELLIGENCE_MASTERPLAN_BY_FABLE.md
+  - research/rates_inflation_command/seat_20261014/R0_CUSTODY_LEDGER.md
+  - research/rates_inflation_command/seat_20261014/B0_BASIS_CONTRACT_FREEZE.md
 next_action: >
-  RIC F3: confirm fixed_grid_origin.v4 liveness on the first nightly data/transmission/latest.json
-  after PR #8030 (merged 2026-09-25), then execute W3 — the display-only yield_momentum consumer
-  block in engine/credit_momentum.py beside interim_tlt (handoff RATES-INFLATION-COMMAND-2026-09-25).
-  RIC-F1/F2 packets still go through canonical Executive admission as disjoint operations.
+  E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b): R0 custody
+  ledger and B0 basis-contract freeze recorded under research/rates_inflation_command/seat_20261014/.
+  B0 (pure engine/rates_command_basis.py + schema) and T0 (A03-A05 board qualification repair) are
+  in flight, then D0/Y0 provenance, then D1/Y1/I0 and C0 composition. F0 merged in #6543 is reused,
+  never redone; held #7909 and the GRI programme (#8317) are preserved.
 ---
 
 ## Why this workstream exists

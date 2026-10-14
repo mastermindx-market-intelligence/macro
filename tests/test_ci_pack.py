@@ -4757,18 +4757,33 @@ CURATED_EXCLUSIVE = {
     # probe selected it (templates/index.html 5815 > 5800). It declares its
     # scanned surfaces instead and pins them in its own test.
     "sni-public-exposure-scan",
+    # 2026-10-13 SNI INT2: the acceptance-evidence suite (A03/A04/A07/A10/A12,
+    # copy guard, A33, A36, A39, P03 ULP, register consistency) imports the
+    # acceptance/, residual/, event_response/ and us_stress/ modules through
+    # sys.path inserts; pinned to its measured closure like sni-program-guards.
+    "sni-acceptance-evidence",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
     # exclusive pins it to that measured closure (57 paths once W4 added the
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
+    # the frozen stage-1 runner, whose lazy risk_radar closure made inference
+    # select the job on the plan_book (130 > 129) and build_free_content
+    # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
+    # measured 63-path closure; closure findings (); ceilings stay fixed.
+    "grey-deer-pullback-forward",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 Grey Deer GD-4C: the stdlib-only PBOC liquidity classifier.
+    # As a step in china-native-collectors it moved templates/index.html to
+    # 5,816 > 5,800; its own exclusive job keeps the import closure only.
+    "grey-deer-pboc-liquidity",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those

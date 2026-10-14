@@ -475,6 +475,39 @@ def _prepare_s1_imports(hint: Path) -> Path:
     return repo_root
 
 
+S1_BUILD_SEAL_MODULE = "sni_residual_build_seal"
+
+
+def _load_s1_build_seal(repo_root: Path):
+    """Load residual/build_seal.py by file path under a private module name.
+
+    residual/ and event_response/ both ship a build_seal.py. A bare
+    `import build_seal` binds whichever directory sits earlier on sys.path, or
+    whatever is already cached in sys.modules, so a caller that put
+    event_response/ first got the S2 builder (AttributeError: no build_all).
+    Its sibling imports still resolve through residual/ on sys.path; those
+    basenames are unique across the SNI subdirectories.
+    """
+    import importlib.util  # noqa: WPS433
+
+    path = (Path(repo_root) / "research" / "single_name_intelligence" / "residual"
+            / "build_seal.py").resolve()
+    cached = sys.modules.get(S1_BUILD_SEAL_MODULE)
+    if cached is not None and getattr(cached, "__file__", None) == str(path):
+        return cached
+    spec = importlib.util.spec_from_file_location(S1_BUILD_SEAL_MODULE, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"cannot load S1 seal builder from {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[S1_BUILD_SEAL_MODULE] = module
+    try:
+        spec.loader.exec_module(module)
+    except BaseException:
+        sys.modules.pop(S1_BUILD_SEAL_MODULE, None)
+        raise
+    return module
+
+
 def regenerate_s1(repo_root: Path, input_ref: str, out_dir: Path) -> None:
     """Invoke S1 the way residual/run_s1.py --check does, plus the seal builder.
 
@@ -494,7 +527,7 @@ def regenerate_s1(repo_root: Path, input_ref: str, out_dir: Path) -> None:
     from s1_prereg import AUTHORITY_FLAGS as S1_FLAGS  # noqa: WPS433
     from s1_prereg import BASE, INPUT_PINS, assert_authority_false  # noqa: WPS433
     import run_s1  # noqa: WPS433
-    import build_seal as s1_build_seal  # noqa: WPS433
+    s1_build_seal = _load_s1_build_seal(repo_root)
 
     assert_authority_false(S1_FLAGS)
     store = GitBlobStore(repo_root, input_ref, dict(INPUT_PINS))
