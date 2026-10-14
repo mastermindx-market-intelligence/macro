@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume controller-admitted9209 refresh after11proofs/cap8, then exact-head protected install and SAME follow-on31groups. Use tested inspect_usda_report_install.py after incumbent38558417917 render; all12sources and USDA inputs match but public report pages remain absent. Preserve browser refusal, known-complete intake and0of10publication gate.
+next_action: Consume admitted9209 exact-head protected install then SAME follow-on31groups. Use tested USDA installed-report probe after existing renderer38558417917 settles; preserve browser refusal and known-complete intake. Fresh OCC90 source is scoped/held: full-document intake and relevant own receipts remain unqualified; no generation or source rewrite. Preserve0of10publication gate.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
@@ -1231,3 +1231,15 @@ main17cb5357; head remainsa18ec982 OPEN/merge-on-green. No release mutation/extr
 verified: CHECKPOINT.md and usda_research_intake_phase/report_install_20261014_1423/
 verification.json retain exact commands, controls, release/owner snapshots and
 installed proof. Publication/cutoverfalse,0/10; all holds/unknown effects persist.
+
+## Fresh OCC lead, 2026-10-14 14:43
+
+NR2026-90 is a new October14 bank-supervision report, distinct from the held BAC
+assessment. Exact feed/release/47-page PDF retained;10source checks plus asset-chart
+visual review pass. Underlying policy/complaint/asset vintages and the agency's
+explicit limits on totals and bank rankings are preserved. RSS-only intake rejects
+quantity nine; full-report intake, reuse and bank-specific first-party receipts
+remain unqualified. No source upload, generation, staging or publication. Exact
+proof is source_qualification_20261014_1443/. Once-read9209 remainsa18ec982/armed;
+controllers running/pending, existing renderer38558417917 still running. No new
+release/install claim. Application8eb467 and accepted checks unchanged;0/10.

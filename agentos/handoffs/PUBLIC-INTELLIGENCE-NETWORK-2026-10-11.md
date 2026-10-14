@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Consume admitted9209 refresh/CI/protected install, then SAME reviewed follow-on31groups. The19-control read-only report probe returns PENDING_INCUMBENT_RENDER at stable8a378df8 with12source hashes and USDA summary/excerpt exact. Existing38558417917 renders; no redispatch. Dedicated public page and browser acceptance remain pending; preserve prior client refusal and known-complete intake.
+  - Consume admitted9209 exact-head protected install then SAME reviewed follow-on31groups; existing USDA renderer remains active. New OCC90 official report is distinct from held BAC; ten source checks pass, but full-document intake, reuse and relevant first-party receipts remain unqualified. Do not generate from a thin RSS summary or widen grammar/rights gates.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -2898,3 +2898,15 @@ main17cb5357; head remainsa18ec982 OPEN/merge-on-green. No release mutation/extr
 verified: CHECKPOINT.md and usda_research_intake_phase/report_install_20261014_1423/
 verification.json retain exact commands, controls, release/owner snapshots and
 installed proof. Publication/cutoverfalse,0/10; all holds/unknown effects persist.
+
+## Fresh OCC lead, 2026-10-14 14:43
+
+NR2026-90 is a new October14 bank-supervision report, distinct from the held BAC
+assessment. Exact feed/release/47-page PDF retained;10source checks plus asset-chart
+visual review pass. Underlying policy/complaint/asset vintages and the agency's
+explicit limits on totals and bank rankings are preserved. RSS-only intake rejects
+quantity nine; full-report intake, reuse and bank-specific first-party receipts
+remain unqualified. No source upload, generation, staging or publication. Exact
+proof is source_qualification_20261014_1443/. Once-read9209 remainsa18ec982/armed;
+controllers running/pending, existing renderer38558417917 still running. No new
+release/install claim. Application8eb467 and accepted checks unchanged;0/10.

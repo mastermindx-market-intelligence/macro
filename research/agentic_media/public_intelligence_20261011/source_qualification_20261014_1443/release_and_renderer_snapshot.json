@@ -1,0 +1,645 @@
+{
+  "observed_at": "2026-10-14T14:43:41.502277+00:00",
+  "pr9209": {
+    "autoMergeRequest": null,
+    "headRefOid": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      }
+    ],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:59:24Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115815580851",
+        "name": "ci-plan",
+        "startedAt": "2026-10-14T10:56:53Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:59Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553103941/job/115815556964",
+        "name": "ci-authority",
+        "startedAt": "2026-10-14T10:56:49Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:59Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553110839/job/115815580322",
+        "name": "fence-pack",
+        "startedAt": "2026-10-14T10:56:53Z",
+        "status": "COMPLETED",
+        "workflowName": "fences"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:51Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553110839/job/115815582230",
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+        "startedAt": "2026-10-14T10:56:51Z",
+        "status": "COMPLETED",
+        "workflowName": "fences"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:11:14Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115815581228",
+        "name": "contract-delta",
+        "startedAt": "2026-10-14T10:56:53Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:59:24Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816541863",
+        "name": "trusted-ci",
+        "startedAt": "2026-10-14T10:59:24Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:51Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553110839/job/115815582473",
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+        "startedAt": "2026-10-14T10:56:51Z",
+        "status": "COMPLETED",
+        "workflowName": "fences"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:51Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553110839/job/115815582118",
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+        "startedAt": "2026-10-14T10:56:51Z",
+        "status": "COMPLETED",
+        "workflowName": "fences"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:29:16Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540158",
+        "name": "ci-pack-0",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:11:11Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816539994",
+        "name": "ci-pack-1",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:10:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540183",
+        "name": "ci-pack-2",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:40:29Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540149",
+        "name": "ci-pack-3",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:10:15Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540015",
+        "name": "ci-pack-4",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:10:25Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540022",
+        "name": "ci-pack-5",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:18:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540217",
+        "name": "ci-pack-6",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:15:20Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540123",
+        "name": "ci-pack-7",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:16:00Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540057",
+        "name": "ci-pack-8",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:27:59Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540013",
+        "name": "ci-pack-9",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:12:56Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540203",
+        "name": "ci-pack-10",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:18:03Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115816540243",
+        "name": "ci-pack-11",
+        "startedAt": "2026-10-14T10:59:26Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:40:41Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553111016/job/115832587447",
+        "name": "ci-gate",
+        "startedAt": "2026-10-14T11:40:31Z",
+        "status": "COMPLETED",
+        "workflowName": "ci"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:57Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/115815614417",
+        "name": "ci-authority/codex/merge-queue-pilot",
+        "startedAt": "2026-10-14T10:56:57Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:54Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/115815978965",
+        "name": "capability-broker",
+        "startedAt": "2026-10-14T10:57:54Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:57Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/115815616850",
+        "name": "ci-authority/main",
+        "startedAt": "2026-10-14T10:56:57Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:55Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/115815982673",
+        "name": "grader-manifest",
+        "startedAt": "2026-10-14T10:57:55Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:54Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/mastermindx-market-intelligence/macro/runs/115815975283",
+        "name": "self-mod-fence",
+        "startedAt": "2026-10-14T10:57:54Z",
+        "status": "COMPLETED",
+        "workflowName": "ci-authority"
+      }
+    ]
+  },
+  "controller": [
+    {
+      "conclusion": "",
+      "createdAt": "2026-10-14T14:43:25Z",
+      "databaseId": 38583056702,
+      "event": "workflow_run",
+      "headSha": "874c8fff2e26637334a4979f9d2786120beea1c3",
+      "status": "pending",
+      "updatedAt": "2026-10-14T14:43:26Z"
+    },
+    {
+      "conclusion": "cancelled",
+      "createdAt": "2026-10-14T14:43:18Z",
+      "databaseId": 38583039277,
+      "event": "workflow_run",
+      "headSha": "874c8fff2e26637334a4979f9d2786120beea1c3",
+      "status": "completed",
+      "updatedAt": "2026-10-14T14:43:27Z"
+    },
+    {
+      "conclusion": "",
+      "createdAt": "2026-10-14T14:43:09Z",
+      "databaseId": 38583016376,
+      "event": "workflow_run",
+      "headSha": "874c8fff2e26637334a4979f9d2786120beea1c3",
+      "status": "in_progress",
+      "updatedAt": "2026-10-14T14:43:18Z"
+    },
+    {
+      "conclusion": "cancelled",
+      "createdAt": "2026-10-14T14:42:54Z",
+      "databaseId": 38582977942,
+      "event": "workflow_run",
+      "headSha": "874c8fff2e26637334a4979f9d2786120beea1c3",
+      "status": "completed",
+      "updatedAt": "2026-10-14T14:43:11Z"
+    }
+  ],
+  "engine_render": {
+    "conclusion": "",
+    "createdAt": "2026-10-14T11:42:02Z",
+    "databaseId": 38558417917,
+    "headSha": "4b9379eb06c96d743a4a5d8c060814d761aaf1bd",
+    "jobs": [
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 115849744718,
+        "name": "engine-render",
+        "startedAt": "2026-10-14T14:06:58Z",
+        "status": "in_progress",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T14:07:00Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T14:06:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:00Z",
+            "conclusion": "success",
+            "name": "Set up runner",
+            "number": 2,
+            "startedAt": "2026-10-14T14:07:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:00Z",
+            "conclusion": "success",
+            "name": "clear any sparse checkout a sibling job left in this shared workspace",
+            "number": 3,
+            "startedAt": "2026-10-14T14:07:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:03Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 4,
+            "startedAt": "2026-10-14T14:07:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:03Z",
+            "conclusion": "success",
+            "name": "Run git pull origin main",
+            "number": 5,
+            "startedAt": "2026-10-14T14:07:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:04Z",
+            "conclusion": "success",
+            "name": "python 3.12 venv (self-hosted runner; Linux render-linux, Homebrew fallback)",
+            "number": 6,
+            "startedAt": "2026-10-14T14:07:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:04Z",
+            "conclusion": "success",
+            "name": "zstd parity for remaining cache-backed breadth inputs",
+            "number": 7,
+            "startedAt": "2026-10-14T14:07:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:04Z",
+            "conclusion": "success",
+            "name": "Run pip install -r requirements.txt",
+            "number": 8,
+            "startedAt": "2026-10-14T14:07:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:17Z",
+            "conclusion": "success",
+            "name": "restore attention store from R2 (wiki chip reads it at render)",
+            "number": 9,
+            "startedAt": "2026-10-14T14:07:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:19Z",
+            "conclusion": "success",
+            "name": "restore Russell 2000 breadth close cache",
+            "number": 10,
+            "startedAt": "2026-10-14T14:07:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:20Z",
+            "conclusion": "success",
+            "name": "restore china breadth close cache",
+            "number": 11,
+            "startedAt": "2026-10-14T14:07:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:21Z",
+            "conclusion": "success",
+            "name": "restore hk breadth close cache",
+            "number": 12,
+            "startedAt": "2026-10-14T14:07:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:23Z",
+            "conclusion": "success",
+            "name": "restore intraday (4H) cache",
+            "number": 13,
+            "startedAt": "2026-10-14T14:07:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:07:23Z",
+            "conclusion": "success",
+            "name": "price-store freshness check (last SPY bar vs expected NYSE session; check-only)",
+            "number": 14,
+            "startedAt": "2026-10-14T14:07:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:09:11Z",
+            "conclusion": "success",
+            "name": "recompute signals + regime from committed data (no collect / no LLM / no network)",
+            "number": 15,
+            "startedAt": "2026-10-14T14:07:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:09:12Z",
+            "conclusion": "success",
+            "name": "build world state (neural-web W1 \u2014 express lane)",
+            "number": 16,
+            "startedAt": "2026-10-14T14:09:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:09:13Z",
+            "conclusion": "success",
+            "name": "build mastermind context (NW bridge)",
+            "number": 17,
+            "startedAt": "2026-10-14T14:09:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:09:14Z",
+            "conclusion": "success",
+            "name": "restore options_skew ledger from R2 (W2-2 store-host accrual)",
+            "number": 18,
+            "startedAt": "2026-10-14T14:09:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T14:09:15Z",
+            "conclusion": "success",
+            "name": "restore options_payoff_lab from R2 (W2-5a store-host producer)",
+            "number": 19,
+            "startedAt": "2026-10-14T14:09:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "re-render pages from the freshly recomputed engine output (resilient)",
+            "number": 20,
+            "startedAt": "2026-10-14T14:09:15Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "render ticker dossiers from rebuilt US stockdata",
+            "number": 21,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "guard \u2014 stock dossier integrity (sentinel + identity)",
+            "number": 22,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "ensure node for the inline-JS guard",
+            "number": 23,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "guard \u2014 inline JS must parse",
+            "number": 24,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "guard \u2014 no dead site references",
+            "number": 25,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "guard \u2014 market-state board coherence (ui.ms_board_coherence)",
+            "number": 26,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "publish rebuilt US stockdata to R2 (browser data plane)",
+            "number": 27,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "inject data-base shim (site-wide; a re-render would strip it otherwise)",
+            "number": 28,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "guard \u2014 finalized site has no dead references",
+            "number": 29,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "commit rendered site (site/ ONLY \u2014 never data/, so every ledger stays pristine)",
+            "number": 30,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post restore Russell 2000 breadth close cache",
+            "number": 59,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 60,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          }
+        ],
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38558417917/job/115849744718"
+      }
+    ],
+    "status": "in_progress",
+    "updatedAt": "2026-10-14T14:06:59Z"
+  },
+  "render": {
+    "conclusion": "",
+    "createdAt": "2026-10-14T11:04:04Z",
+    "databaseId": 38553964455,
+    "headSha": "470a3700e61f74bace44f0cfb06f5d00f2959eb3",
+    "jobs": [
+      {
+        "completedAt": "2026-10-14T11:05:13Z",
+        "conclusion": "success",
+        "databaseId": 115818830658,
+        "name": "self-mod-fence",
+        "startedAt": "2026-10-14T11:05:13Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/115818830658"
+      },
+      {
+        "completedAt": "2026-10-14T11:05:14Z",
+        "conclusion": "success",
+        "databaseId": 115818833812,
+        "name": "capability-broker",
+        "startedAt": "2026-10-14T11:05:14Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/115818833812"
+      },
+      {
+        "completedAt": "2026-10-14T11:05:14Z",
+        "conclusion": "success",
+        "databaseId": 115818836258,
+        "name": "grader-manifest",
+        "startedAt": "2026-10-14T11:05:14Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/115818836258"
+      },
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 115898827884,
+        "name": "render",
+        "startedAt": "2026-10-14T14:06:56Z",
+        "status": "queued",
+        "steps": [],
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38553964455/job/115898827884"
+      }
+    ],
+    "status": "queued",
+    "updatedAt": "2026-10-14T14:06:56Z"
+  }
+}

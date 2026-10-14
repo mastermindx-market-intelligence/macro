@@ -1,3 +1,38 @@
+## 2026-10-14 14:43 wake — new OCC event qualified as a lead, not a writer slot
+
+The supported OCC feed added NR2026-90 at2026-10-14T11:15:00Z: today's debanking
+review of nine named national banks, distinct from held BAC assessmentNR2026-89.
+Retrieved exact RSS d91f0d52, agency release6ca72ab5 and47-page original report
+5b59b52d/9,486,556bytes; one download completed, no retry/inbox write/alias.
+The incumbent wire parser preserves the complete summary. Ten source checks and
+physical11/printed10 visual chart inspection pass. Policy review2020-September2025,
+complaintsJanuary2020-December2025 and assetsSeptember30,2025 stay separate from
+today's report date. The OCC cannot quantify total extent/cost, and expressly says
+example counts do not establish banks' relative volume of problematic decisions.
+These limitations are retained before any candidate can reach a writer.
+
+This is not yet an admitted source: unchanged OCC intake is RSS-only and its
+quantity grammar refuses the word nine. Full report qualifiers are outside that
+contract; bank-specific first-party measurements and whole-report reuse are not
+qualified. No grammar change, source/producer rewrite, issuer invention, provider
+call or staging. Private originals remain outsideGit. Source review and exact
+hashes/commands are in source_qualification_20261014_1443/. Public-domain status
+is not assumed for third-party bank quotations or reproduced material.
+
+Once-read14:43 release: #9209 remains OPEN/merge-on-green a18ec982. Controller
+38583016376 is running;38583056702 pending. No new admission verdict or current
+capacity count is inferred. Existing engine-render38558417917/job115849744718
+continues its page-render step;38553964455 remains queued. Do not duplicate them.
+USDA's last installed probe14:34 remains pending; no new installed/public claim.
+
+Accepted application8eb467,429tests+1real-data and31groups unchanged. Next:
+consume normal USDA render through the19-control installed probe, preserve its
+browser client refusal, then governed single-attempt preflight. Independently
+consume admitted9209 refresh/exact-headCI/protected merge and actual installation
+before SAME reviewed follow-on PR/install31groups. Preserve all held/refused/unknown
+effects,3dirty histories,Commission19,Catalyst8678 and10unedited mixed-desk passes.
+Publication/cutoverfalse; D140/10. This save is source qualification, not release.
+
 ## 2026-10-14 14:23 wake — tested report-install acceptance and actual renderer custody
 
 Added portable stdlib-only inspect_usda_report_install.py plus discriminating

@@ -1,0 +1,27 @@
+{
+  "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-90.html",
+  "final_url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-90.html",
+  "status": 200,
+  "observed_at": "2026-10-14T14:48:13.087899+00:00",
+  "sha256": "6ca72ab5325094cc380ec4501ac11fdf54126b3a804fd61704a8f918ed3520c9",
+  "bytes": 61371,
+  "retry": false,
+  "links": [
+    {
+      "text": "Executive Order",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/08/guaranteeing-fair-banking-for-all-americans/"
+    },
+    {
+      "text": "Guaranteeing Fair Banking for All Americans",
+      "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-90a.pdf"
+    },
+    {
+      "text": "Guaranteeing Fair Banking for All Americans",
+      "url": "https://www.occ.gov/topics/charters-and-licensing/fair-banking/index-guaranteeing-fair-banking.html"
+    },
+    {
+      "text": "Privacy Policy",
+      "url": "https://www.occ.gov/about/policies/web-privacy-policy.html"
+    }
+  ]
+}

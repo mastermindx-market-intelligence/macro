@@ -1,0 +1,132 @@
+{
+  "observed_at": "2026-10-14T14:55:40.001689+00:00",
+  "pdf_sha256": "5b59b52dd51300e1b05d0fc454261d49cacaed20e340a9784f818e7a26db9390",
+  "pages": 47,
+  "page_text_sha256": {
+    "1": "dc3d6eed42248e114a2ae037a2c980a1dca08adbd40d633f26c6c1676f679f40",
+    "2": "49b093cf75abc8010ec43c94ed36ce5f276f0fd56121c2feb84fe8e6e268d8d7",
+    "3": "783f58d037a491b36f7735c63f4757928028b1429b09becb331d430793cbcb0b",
+    "4": "7c2176b0617dbd9dc8fedcdb471e1563eba685efe5c047dbe8a72c0effdf96b5",
+    "5": "fc79ed079b5a17dbde11e348c30a447cc0e95cb9a9070bfd7b1e86b048448379",
+    "6": "c10983c1c756f117c6ad5684922ebd17ed14b6bff8d812428da5af0fe0c32bfb",
+    "7": "fc5c2b2b02bcfd3dcb281d6af51efa29417b4b0848eaf2af9910716ae493dddc",
+    "8": "b554a744c84abeb8521ab5dbf321a6c7729d0b0b96a3d7310ecc19b0ecb14b4f",
+    "9": "311ceb15321d93b33b63ab5353df7ce34523a57f1c7aacfda0d150ad6519da6a",
+    "10": "db8cd5abe54043a82ea50bb6af397b73e27a739da55faf9034f76ed46d9ed65b",
+    "11": "fffe9e91edb6d5d8a29873feb8b154c1342f17629b3f678297c589fe5021ac5f",
+    "12": "b3017bdf70bd91f402e1c8926d07932f9115d2343603bd97d1b462ecd793350c",
+    "13": "4cd18952b64f477fe63b5bdec392dc52b470201bccfbe2942e8a1f9e71d61b24",
+    "14": "d09c848370843fd7f5e02a22e0b77cf57ac3b17b812fd6c18c9e2448226f643a",
+    "15": "50126483d049bcd5a9ee6463f7f3e0ee065dd164f5663680d02a3d927b639626",
+    "16": "646c5818660122d567b71dd424f92c9ef36b49324bd854455eeed83cb8581fa5",
+    "17": "f51f3e87cd64f662e21a5d3119626fd8a735991c3ccd6857768755d1bc5cadcf",
+    "18": "eb07ef55b587019adc9cd48e59c94619cb0e72bb88853b1ce87fe4936db988e3",
+    "19": "8bc93d93119603e4b35b80601175c3bcc9b130f5a3ee436280217a39280be90c",
+    "20": "63b4334076bc5eb14421659d869bfddb57080eec6d4e89c67dbad90d3b6cf8a0",
+    "21": "1392785064600fb19014e11a53f307b474ad40435cb14045d2ff0da5cbca8731",
+    "22": "1d0c32adf31296d2b7a4bced2fc13903b842f44551358a2835527935240e82aa",
+    "23": "96107d5e12d866009668f61021b220e29ae4cb9a297d31e81164b17fef8dfc94",
+    "24": "459c90a558bd0301e7e8d796eb43679b42824fcade6d48b9dd0a6e25e28fea51",
+    "25": "74c6a196f1e0ecba5e20e4c87184b5ef68dc1c7b1381dedcd26f4e6d9f0c22c9",
+    "26": "3685e8febac361214be40fb67a6c5bc8b3a0efc122aad43e5f744c67a28059da",
+    "27": "568b2a2d91c9abc62ca9c9d367398b7ba50f143899632423f6dda70c72a5de1f",
+    "28": "7f1a804c8d6ac3f6947aed193557c80066f946c250aaa79a78d8f79cf5c702bb",
+    "29": "8b439b2d9ffeb6b87e3f30947591acd9c726519f5a31ab01b5d16b8d0c19fe31",
+    "30": "226262b9d5c6f19854109675bc27e236c2a7481076f3419c3a9b542fcab3a436",
+    "31": "ef11275b30aa2f981d2e7b5ba286e3684a92f39d25151f2adca50c04c7512e37",
+    "32": "ef6a9ea35e3911a745a943303968228fd9f625e1c3eba432c8e5991fc11b6234",
+    "33": "fc3f2e9e497252757b69f19eb7f1e6e6b09190586b63ff1c02515df98e482c0f",
+    "34": "b4bb47665db94740b5139ede98674dd684e2a6f55393221ebfd5323fd420249e",
+    "35": "e97019db013148368230a0c210054479dfedc283ad4656856ac186d76651f72b",
+    "36": "d1e1fc883918a455747a0f536907046338d5d764f4fbf52de3d34af6e22d33a1",
+    "37": "74ae9ee18b15700165fb201bf5d3cea357124aa6ae45e4b926282bfea3a786bf",
+    "38": "6bb53b0916612d5df4ab662d8f621257513c978617756bd5d475d1d4a6a40c1a",
+    "39": "4d2a90a1f4fddc98c0a35a6cf4a53a750d34999d18451b084367bf94631f217a",
+    "40": "b561fadee0263befc520d96c1fa364177672482e3dd3cec34c13be285c78ce66",
+    "41": "514fb6b067886610929d01b1fa7ec5beada6500831ad6eb68a4d48125a44430b",
+    "42": "dc8c00f4e83d10b2f25ecd2fd8af86d2414c6e6c6497f2106eedb618b6748ae5",
+    "43": "1f098b501efe8113f633c44def68f772ae272cfddf1563411d7b76861de46e6c",
+    "44": "9110d45442c8cd9326ad61bb27c448128620a824812eac9bb3dda6708b2ffb92",
+    "45": "f52d4629e45d854ee8035ef7e1a9512fc6261248b2c284c3653b70871a97d9c5",
+    "46": "1ff2c633e0e2bb1622e9dcea29efc2b9672de1256c465a3a1a2e6e9b3b41c1f1",
+    "47": "241412f6e3121cc11508f942f001c95e3540030543e7ecbc424b658d592510ae"
+  },
+  "reviewed_physical_pages": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    10,
+    11,
+    12,
+    13,
+    14,
+    18,
+    43
+  ],
+  "asset_chart_visual_inspection": {
+    "physical_page": 11,
+    "printed_page": 10,
+    "screenshot_sha256": "078c900defd4a292f044ca61e332e2e536601c93637dcc5840b00d0d579cab42",
+    "checked": "Nine named bank asset labels, OCC commercial denominator and September 30 2025 vintage match extracted text."
+  },
+  "checks": [
+    {
+      "check": "complete_original_pdf_47_pages",
+      "passed": true
+    },
+    {
+      "check": "review_period_distinct_from_report_publication",
+      "passed": true
+    },
+    {
+      "check": "asset_denominator_occ_regulated_commercial_not_all_us_banks",
+      "passed": true
+    },
+    {
+      "check": "asset_vintage_2025_not_current_2026",
+      "passed": true
+    },
+    {
+      "check": "complaint_window_not_same_as_bank_policy_review",
+      "passed": true
+    },
+    {
+      "check": "agency_cannot_quantify_total_frequency_or_cost",
+      "passed": true
+    },
+    {
+      "check": "unequal_evidence_counts_cannot_rank_banks",
+      "passed": true
+    },
+    {
+      "check": "findings_not_claimed_exhaustive",
+      "passed": true
+    },
+    {
+      "check": "recent_policy_changes_effect_uncertain",
+      "passed": true
+    },
+    {
+      "check": "full_report_contains_third_party_bank_expression",
+      "passed": true
+    }
+  ],
+  "editorial_constraints": [
+    "Attribute findings to the OCC; do not present agency characterizations as independent court findings.",
+    "Keep report date October 14 2026 separate from policy review period 2020-September 2025 and complaint window January 2020-December 2025.",
+    "Counts of examples are not bank-by-bank wrongdoing rates; the OCC explicitly limits such inference.",
+    "Complaint and document counts are review workload, not confirmed victims or financial damages.",
+    "Asset chart is September 30 2025 OCC-regulated commercial institutions, not current consolidated parent assets or the entire US banking sector.",
+    "No whole-report public reuse qualification: private retention is for analysis; bank quotations and reproduced material do not receive a blanket public-domain grant.",
+    "No first-party bank-specific measurements or stock-market reaction qualified; do not pad with unrelated market statistics."
+  ],
+  "existing_adapter_outcome": "RSS complete but its only quantity is nine, outside the unchanged reviewed-literal grammar; full report is outside current OCC intake.",
+  "source_admitted": false,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "known_effect": "One public PDF download complete; no retry or source inbox writes."
+}
