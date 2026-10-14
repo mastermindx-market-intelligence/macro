@@ -30,6 +30,64 @@ def rates_render_fixture():
                 rows=rows, liquidity=None, periphery=None)
 
 
+def rates_geometry_fixture():
+    """Synthetic endpoint edge cases; these are not market observations."""
+    rates = rates_render_fixture()
+    row = rates['rows'][0]
+    rates['rows'] = []
+    for i, (short, y10) in enumerate([
+        (-0.4, -0.1), (2.01, 2.02), (8.0, 12.0), (0.0, 0.0),
+        (3.0, 3.0), (-0.2, -0.2), (2.02, 2.01), (0.0, -0.01),
+    ]):
+        item = dict(row, cc=f'T{i}', name=f'Fixture {i + 1}', name_zh=f'样例 {i + 1}',
+                    short=short, y10=y10, curve=round(y10-short, 2),
+                    shape='inverted' if y10 < short else 'flat' if y10 == short else 'normal')
+        item.update(shape_en=item['shape'].capitalize(),
+                    shape_zh={'inverted': '倒挂', 'flat': '平坦', 'normal': '正常'}[item['shape']])
+        rates['rows'].append(item)
+    return rates
+
+
+@pytest.mark.parametrize('index', range(8))
+def test_curve_orders_supplied_yields_without_clipping_or_merging_labels(index):
+    rates = rates_geometry_fixture()
+    before = deepcopy(rates)
+    soup = BeautifulSoup(render_fixture(rates=rates), 'html.parser')
+    card = soup.select('#intl-rates-curves')[0].find_parent('div', class_='panel').select('.rcard')[index]
+    short, y10 = rates['rows'][index]['short'], rates['rows'][index]['y10']
+    labels = [label.get_text(' ', strip=True) for label in card.select('.curve .lab')]
+    assert labels == [f'3m {short:.2f}%', f'10y {y10:.2f}%']
+    line = card.select_one('.curve line')
+    assert line is not None
+    sy, ty = float(line['y1']), float(line['y2'])
+    assert 0 < sy < 100 and 0 < ty < 100
+    assert (sy > ty) == (short < y10)
+    assert (sy == ty) == (short == y10)
+    assert float(line['x1']) < float(line['x2'])
+    assert rates == before
+
+
+def test_zero_only_curve_has_finite_shared_scale():
+    rates = rates_geometry_fixture()
+    rates['rows'] = [rates['rows'][3]]
+    soup = BeautifulSoup(render_fixture(rates=rates), 'html.parser')
+    line = soup.select_one('.curve line')
+    assert line is not None
+    assert float(line['y1']) == float(line['y2'])
+    assert 0 < float(line['y1']) < 100
+
+
+def test_equal_yields_across_cards_use_the_same_vertical_scale():
+    rates = rates_geometry_fixture()
+    rates['rows'] = [dict(rates['rows'][0], short=2.0, y10=3.0),
+                     dict(rates['rows'][1], short=2.0, y10=12.0)]
+    soup = BeautifulSoup(render_fixture(rates=rates), 'html.parser')
+    lines = soup.select('.curve line')
+    assert len(lines) == 2
+    assert float(lines[0]['y1']) == float(lines[1]['y1'])
+    assert float(lines[0]['y2']) > float(lines[1]['y2'])
+
+
 @pytest.fixture(autouse=True)
 def no_data_io(monkeypatch):
     def forbidden(*args, **kwargs):

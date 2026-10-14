@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_rates_render.py; tests/intl_workspace_page.test.cjs
+  what: Separate maturity endpoints, preserve supplied signed yields on one shared vertical scale and prevent label overlap; bound fixture optimizer cleanup.
+- path: research/paper_international_wave1_wave2/RATES_CURVE_GEOMETRY_ACCEPTANCE.json; mockups/evidence/paper-international-library/rates-curve-geometry/
+  what: Retain ten causal Python red cases, three product browser reds plus a separate harness stall, passing affected checks and eight final captures; review and deployment held.
 - path: templates/intl.html.j2; tests/test_intl_rates_render.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
   what: Stop drawing an absent3m as zero and printing absent US2y as Nonepercent; retain supplied10y and real0/negative values.
 - path: research/paper_international_wave1_wave2/RATES_MISSING_ENDPOINTS_ACCEPTANCE.json; mockups/evidence/paper-international-library/rates-missing-endpoints/
@@ -135,6 +139,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Rates negative/high/near/equal endpoints retain numerical order and readable labels.
+  command: pytest tests/test_intl_rates_render.py tests/test_intl_workspace_integration.py; Node Rates endpoint geometry and missing endpoints; rates-curve-geometry-20261014-r1/capture.py.
+  result: 47PythonPASS14inheritedwarnings;8browserPASS including64endpoint-pair observations. Functional green precedes only an equivalent canonical circle token repair;8final captures remade on final source;4final geometry browser cases also pass. Independent review pending.
 - claim: Missing rates endpoints remain unavailable without suppressing supplied zero or negative readings.
   command: pytest tests/test_intl_rates_render.py; Node tests/intl_workspace_page.test.cjs with Rates missing endpoints name pattern.
   result: Original2PythonFAIL6PASS and1browserFAIL; final8PythonPASS14inheritedwarnings,4browserPASS8width states with native Library Enter/Back. Negative geometry itself is unchanged and not newly qualified.
@@ -470,3 +477,5 @@ Market-turns visual scope: canonical capture retains8rest and8forced-focus cells
 Rates missing-endpoint evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/rates-missing-endpoints-20261014-r1`. Template-only absence repair, supplied owner output fixture and eight render/four browser cases; all earlier accepted checks reused. Data owner/source, rights and all release/custody/refusal boundaries remain unchanged.
 
 Rates visual scope: eight current1440/390 Dark/Light EN/ZH canonical captures; four parent-viewed. Missing3m copy/known10y and US2y dash are readable. The synthetic negative pair reveals an inherited4percent endpoint floor and overlapping labels; no whole-Rates visual acceptance is claimed. This is the next distinct causal geometry investigation, retained in rates-missing-endpoints-20261014-r1/NEXT_NEGATIVE_GEOMETRY.json.
+
+Rates geometry evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/rates-curve-geometry-20261014-r1`. Endpoint labels are in document flow; shared vertical scale uses only complete supplied pairs plus zero. No curve interior observations or market qualifications added. The next distinct source gap is existing Rates clocks discarded by presentation; `NEXT_RATES_CLOCKS.json` records exact owner semantics.

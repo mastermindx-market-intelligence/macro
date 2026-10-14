@@ -140,12 +140,13 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Investigate the newly evidenced Rates negative/near-equal endpoint collapse and overlapping labels;
-  missing-endpoint repair, Market-turns keyboard reading and Recovery/Trade destinations are locally verified.
+next_action: Expose the already supplied Rates10y/CPI observation months and US10y date with exact field scope;
+  retain missing-date copy and do not invent3m/US2y clocks or freshness qualification. Geometry repair is locally verified.
   Original live Library Stock Back awaits Chris completing/dismissing the Chrome extension UI; preserve its tab.
   Independent review, served publication, genuine owner qualification and Saved admission remain held.
   No repeated accepted checks, invented contracts or transferred IW2 work.
 artifacts:
+- research/paper_international_wave1_wave2/RATES_CURVE_GEOMETRY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_MISSING_ENDPOINTS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/MARKET_TURNS_KEYBOARD_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json

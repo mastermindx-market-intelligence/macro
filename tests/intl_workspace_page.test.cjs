@@ -11,14 +11,14 @@ const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
 async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null, published=false, bootLanguage=null, browserLocale='en-US', initialSearch=''}={}) {
-  const browser = await chromium.launch({headless:true,
-    ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
   let fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname,'test_intl_workspace_integration.py'),'macro',state],
     {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
   if (published) fixtureHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
     'import sys; from pathlib import Path; from scripts.optimize_assets import make_optimizer; p=Path("templates").resolve(); print(make_optimizer(p)(sys.stdin.read(),p))'],
-    {cwd:root,env:{...process.env,PYTHONPATH:root},input:fixtureHtml,encoding:'utf8',maxBuffer:4*1024*1024});
+    {cwd:root,env:{...process.env,PYTHONPATH:root},input:fixtureHtml,encoding:'utf8',maxBuffer:4*1024*1024,timeout:30000});
+  const browser = await chromium.launch({headless:true,
+    ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
   const context = await browser.newContext({javaScriptEnabled, locale:browserLocale, viewport:{width,height:900}});
   if (bootLanguage) await context.addInitScript(lang=>localStorage.setItem('lang',lang),bootLanguage);
   const page = await context.newPage();
@@ -53,6 +53,44 @@ async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440
 const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Rates endpoint geometry stays readable and truthful ${theme} ${lang}`,async()=>{
+    const ratesHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      'from tests.test_intl_rates_render import rates_geometry_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=rates_geometry_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      const expected=[[-0.4,-0.1],[2.01,2.02],[8,12],[0,0],[3,3],[-0.2,-0.2],[2.02,2.01],[0,-0.01]];
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const heading=page.locator('#intl-rates-curves');await heading.scrollIntoViewIfNeeded();
+        const cards=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]').locator('.rdesk > .rcard');
+        assert.equal(await cards.count(),expected.length);
+        for(let i=0;i<expected.length;i++) {
+          const measured=await cards.nth(i).evaluate(card=>{
+            const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,w:r.width,h:r.height};};
+            return {card:rect(card),dots:[...card.querySelectorAll('.curve .d')].map(rect),
+              labels:[...card.querySelectorAll('.curve .lab')].map(n=>({...rect(n),text:n.textContent.trim()}))};
+          });
+          const [a,b]=measured.labels;
+          assert.ok(a.right<=b.x || b.right<=a.x || a.bottom<=b.y || b.bottom<=a.y,`endpoint labels overlap: case${i}/${width}`);
+          const [short,y10]=expected[i];
+          assert.equal(a.text,`3m ${short.toFixed(2)}%`);assert.equal(b.text,`10y ${y10.toFixed(2)}%`);
+          const [s,t]=measured.dots;assert.ok(t.x-s.x>20,'maturity endpoints remain distinct, even for equal yields');
+          if(short===y10) assert.ok(Math.abs(s.y-t.y)<0.02,'equal yields stay level');
+          else assert.equal(s.y>t.y,short<y10,'yield order is not clipped or reversed');
+          for(const box of [...measured.labels,...measured.dots]) {
+            assert.ok(box.x>=measured.card.x && box.right<=measured.card.right);
+            assert.ok(box.y>=measured.card.y && box.bottom<=measured.card.bottom);
+          }
+        }
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:ratesHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-rates-curves'});
+  });
+}
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Rates missing endpoints never draw a zero curve ${theme} ${lang}`,async()=>{
