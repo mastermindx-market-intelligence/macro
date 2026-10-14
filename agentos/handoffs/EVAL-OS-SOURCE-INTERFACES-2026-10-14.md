@@ -5,8 +5,9 @@ model: fable
 ended_because: ci_handoff
 mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and
   actual consumer adoption. This is a continuity checkpoint; the active root continues.
-state_before: A1 PR6651 remains OPEN05a and is now CONFLICTING against main; controller declined refresh
-  at11:56. Follow-on published0302 before this evidence-tool change.
+state_before: A1 PR6651 OPEN05a; main479 introduced five more additive scope conflicts and invalidated
+  unpublisheda8d9. Revised single-parent1b7916353dd4 preserves309jobs and22path entries across9lists and
+  merges cleanly with observedmain. Follow-on final runtimefa9 locally qualified; release still gated.
 changed:
 - path: engine/intelligence_registry.py
   what: Expose exact registered-producer evaluation requirements without claiming earned evaluation.
@@ -25,6 +26,9 @@ changed:
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py
   what: Observe two installed follow-on CLI consumers after lawful release, with direct source identity
     and bounded subprocess evidence; no acceptance authority.
+- path: engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json
+  what: Add one bounded official-release diagnostic separating announcement, implementation, runoff caps
+    and realized effects; keep historical byte availability unverified.
 verified:
 - claim: Follow-on integration preserved the owned source and passed its affected checks.
   command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
@@ -75,6 +79,21 @@ verified:
     relocated across4jobs. Proposed single-parent head merges cleanly. Not published or hosted-qualified.
     Probe13testsPASS after4identityRED witnesses; seven-blob offline binding matches0302. No product CLI
     or production action.
+- claim: New official-release case preserves answer/oracle separation, prior cases, evaluator logic and
+    all314 CI execution definitions.
+  command: Retained source hashes,119 final harness controls,3canonical CI controls, actual e2 tracked
+    inventory, full closure, strict packing and final fa9 text-only correction comparison.
+  result: 13 supplied-text cases plus unchanged legacybear. Final fa9:119PASS, no failures/errors/skips;
+    scope e2:3PASS/zero closure misses/134-134-128jobs and10-10-9packs. Source/oracle leakage caught and
+    repaired; current HTTP timestamps are not historical byte custody. Canonical fomc-clock-20261014 contains18
+    original-hash records. Root adjudication only; no independent model run, PIT or production/adoption
+    claim.
+- claim: Current A1 conflict repair retains every job definition and path membership.
+  command: Exact original05a/currentmain479 merge-tree and full normalized-YAML equivalence.
+  result: Olda8d9 previewRED with5new scope conflicts. Replacement1b7916353dd4 has soleparent05a; all309jobs/order/path
+    counts preserved and merge-treePASS against479. Moves22existing readiness entries across9lists. No
+    source branch/remote update or base refresh. Canonical a1-conflict-v2-20261014 retains both RED and
+    GREEN.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
   what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the
@@ -88,14 +107,15 @@ unresolved:
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
-- 'At12:04:40,11 indexed PR proofs/cap8: A1 source-repair publication remains unadmitted. Fabric probe
-  task eval-followon-adoption-probe-01a1333d-c1 refused before launch for remote host/mode capacity; no
-  retry or replacement.'
+- At12:41:10 A1 remains05a;9active PR CI proofs/cap8 and no refresh lease. Latest incumbent38565699943
+  is pending. Earlier12:35 census was unreadable after TCP timeouts, not an empty pool. No A1 source publication,
+  base refresh or merge by root.
+- Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
+  byte-custody witness. All model, historical availability and adoption obligations remain open.
 next_actions:
-- When shared CI capacity admits a source repair, revalidate exact current A1/main and publish only the
-  prepared semantic-preserving path-list relocation on the original A1 carrier; no base merge, force push
-  or duplicate PR. The incumbent alone continues base refresh and merge. Proposal a8d9f1952dd621a80e30525374145aee71ff3a7f
-  is a single-parent child of05a, and must be invalidated if source custody/head changes.
+- When shared CI capacity admits, revalidate current A1/main/custody and publish only source correction1b7916353dd4609e2e092e16d466e93ca1597fd1
+  (soleparent05a) on original6651 carrier. Olda8d9 is superseded by new observed conflicts. No main merge,
+  force push or duplicate PR; incumbent alone refreshes base and merges with fresh checks.
 - After controller refresh, fresh checks and A1 merge, bind both original A1 tools to the final qualified
   source and verify normal installation, served bytes, authenticated UI and genuine owner progression.
 - Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
@@ -227,3 +247,11 @@ Controller38559944080 exposed a genuine A1 merge conflict at11:56; it made no up
 The separate follow-on now has a bounded observation tool for its two installed CLI consumers. Its13 fake-consumer tests pass after four reproduced identity defects were corrected. It rejects changed source, wrong query identity, invalid JSON/contracts, excessive output and hung children, while preserving unknown/null requirements and output-health count units. It records seven direct source files and actual CLI stdout/stderr hashes without exporting raw observations, source reports or exception strings. No actual production invocation occurred. QLedger rights, Discovery admission/adoption, natural owner progression and operator comprehension remain distinct obligations. Canonical qualification and the prepared A1 patch are in research/evidence/eval-os-tier-query-20261014/adoption-probe-20261014/.
 
 Fabric eval-followon-adoption-probe-01a1333d-c1 returned75 before launch: no eligible remote mode, with disk/thermal/lane capacity blockers. Root performed permitted bounded source work directly, without changing host policy, retrying the refused request or replacing any original operation. Original experience and CLI-review effects remain unresolved. One read-only CI capacity diagnosis at11:48 occurred only163seconds after the prior observation; that cadence lapse is recorded, not described as compliant. Later observations at11:57 and12:04 respect the300second boundary.
+
+
+## 2026-10-14 official policy-clock diagnostic
+
+Final source `fa9fc2d424a9267e4ff8889148c087b67ff07e06` adds one official-release case and corrects answer-input leakage before publication. Qualification: `research/evidence/eval-os-tier-query-20261014/fomc-clock-20261014/final-qualification.json`. A1 repair remains the same sole-parent `a8d9f1952dd6`, unpublished while shared capacity is full. The incumbent controller and original-root heartbeat retain the release return path. Source qualification does not establish PIT, model quality, protected landing, live use or acceptance.
+
+
+A1 repair correction at12:45Z: currentmain479 invalidated the priora8d9 proposal. Revised `1b7916353dd4609e2e092e16d466e93ca1597fd1` remains source-only with soleparent05a;22entries/9lists, all309jobs and memberships preserved, merge-treePASS against479. Old proposal remains historical evidence and must not be published.
