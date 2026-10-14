@@ -165,13 +165,9 @@ def default_tier1_dates_loader(
                     ppi.add(val)
         gdp: set[str] = set()
         for row in gdp_receipt.get("rows", []):
-            for key, val in row.items():
-                if (
-                    isinstance(key, str)
-                    and key.endswith("realtime_start")
-                    and isinstance(val, str)
-                    and _ISO_DAY_RE.match(val)
-                ):
+            for key in ("gdp_first_realtime_start", "gdpc1_first_realtime_start"):
+                val = row.get(key)
+                if isinstance(val, str) and _ISO_DAY_RE.match(val):
                     gdp.add(val)
         return {
             "CPI": rt_dates("CPILFESL"),
@@ -197,8 +193,39 @@ def default_response_loader() -> Callable[[str], pd.Series]:
     return load
 
 
-def default_trial_ledger() -> TrialLedger:
-    return TrialLedger()
+def default_trial_ledger(root=None) -> TrialLedger:
+    if root is None:
+        return TrialLedger()
+    return TrialLedger(Path(root) / "data" / "trial_ledger.jsonl")
+
+
+def _hash_file(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _set_digest(values) -> str:
+    return hashlib.sha256("\n".join(sorted(values)).encode("utf-8")).hexdigest()
+
+
+def _rel(path: Path, root: Path) -> str:
+    """Path relative to ``root`` so a committed receipt carries no host path."""
+    try:
+        return Path(path).resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        return Path(path).as_posix()
+
+
+def default_input_files(root: Path) -> list[Path]:
+    """Every file the default loaders open (E0 section 8 input provenance)."""
+    from collectors.fred import _vintage_path
+    from lib.store import _path as _store_path
+
+    cands = [Path(_vintage_path())]
+    cands += [
+        Path(default_vintage_path(root, s)) for s in ("CPILFESL", "CPIAUCSL", "PAYEMS")
+    ]
+    cands += [Path(_store_path("fred", n)) for n in RESPONSES]
+    return cands
 
 
 def _read_receipt(path: Path) -> tuple[dict, str]:
@@ -521,15 +548,33 @@ def _compute_tests(all_episodes: list[dict]) -> dict:
             block["eras"][era] = stat
         tests[test_id] = block
     # Holm needs every test's p first; fill in a second pass.
+    # E0 fixes m=8 per era: a degenerate test (p=None) enters Holm as p=1.0 so
+    # it can never shrink m and ease the other seven; its own label stays
+    # NOT_IDENTIFIED through its degenerate reason.
     for era in _ERA_KEYS:
-        pnorm = {tid: tests[tid]["eras"][era]["p_normal"] for tid in TEST_IDS}
-        pt = {tid: tests[tid]["eras"][era]["p_t"] for tid in TEST_IDS}
+        pnorm = {
+            tid: (
+                tests[tid]["eras"][era]["p_normal"]
+                if tests[tid]["eras"][era]["p_normal"] is not None
+                else 1.0
+            )
+            for tid in TEST_IDS
+        }
+        pt = {
+            tid: (
+                tests[tid]["eras"][era]["p_t"]
+                if tests[tid]["eras"][era]["p_t"] is not None
+                else 1.0
+            )
+            for tid in TEST_IDS
+        }
         holm_n = holm_adjust(pnorm)
         holm_t = holm_adjust(pt)
         for tid in TEST_IDS:
             blk = tests[tid]["eras"][era]
-            blk["p_holm_normal"] = holm_n[tid]
-            blk["p_holm_t"] = holm_t[tid]
+            # the 1.0 stand-in only protects m; a test with no p reports none
+            blk["p_holm_normal"] = holm_n[tid] if blk["p_normal"] is not None else None
+            blk["p_holm_t"] = holm_t[tid] if blk["p_t"] is not None else None
             ok_n = blk["p_holm_normal"] is not None and blk["p_holm_normal"] < ALPHA
             ok_t = blk["p_holm_t"] is not None and blk["p_holm_t"] < ALPHA
             blk["clears"] = bool(ok_n and ok_t)
@@ -775,6 +820,19 @@ def _write_markdown(receipt: dict) -> str:
     add("")
     add(f"As-of: {receipt['asof']}")
     add("")
+    inputs = receipt.get("inputs", {})
+    add("## Inputs")
+    add("")
+    add("| input | sha256 | rights |")
+    add("|---|---|---|")
+    for key in ("ppi_dates", "gdp_dates"):
+        blk = inputs.get(key) or {}
+        rights = blk.get("rights") or {}
+        licence = rights.get("licensing", "not recorded")
+        add(f"| {blk.get('path', key)} | {blk.get('sha256', '—')} | {licence} |")
+    for entry in inputs.get("files", []):
+        add(f"| {entry['path']} | {entry['sha256']} | — |")
+    add("")
     add("Windows: h0 = prior trading-day close to release-day close (the only "
         "tested window). h1 = release-day close to next trading-day close "
         "(descriptive only).")
@@ -890,10 +948,26 @@ def run(
     out_dir = Path(out_dir)
     loaders = dict(loaders or {})
 
+    # A drifted protocol may never produce a receipt (or a ledger row) that
+    # claims E0: fail closed before declaring or writing anything.
+    protocol_file = root / PROTOCOL_PATH
+    protocol_sha = (
+        hashlib.sha256(protocol_file.read_bytes()).hexdigest()
+        if protocol_file.is_file()
+        else None
+    )
+    if protocol_sha is not None and protocol_sha != PROTOCOL_SHA256:
+        raise MissingInput(
+            f"protocol sha256 mismatch: expected {PROTOCOL_SHA256}, found {protocol_sha}"
+        )
+
     # The declared budget is logged exactly once, before any computation,
-    # only when the flag is set.
+    # only when the flag is set. The default ledger is bound to ``root`` so
+    # the run never appends to a cwd-relative ledger.
     if declare_budget:
-        ledger_factory = loaders.get("trial_ledger") or default_trial_ledger
+        ledger_factory = loaders.get("trial_ledger") or (
+            lambda: default_trial_ledger(root)
+        )
         ledger = ledger_factory() if callable(ledger_factory) else ledger_factory
         ledger.log_declared_budget(
             TRIAL_BUDGET,
@@ -921,6 +995,19 @@ def run(
     asof_str = pd.Timestamp(asof_ts).strftime("%Y-%m-%d")
 
     tier1 = tier1_loader()
+
+    # Hash every file the default loaders open; an injected loader opens no
+    # default file, so the list is only built when all four are defaults.
+    files: list[dict[str, str]] = []
+    file_lister = loaders.get("input_files")
+    if file_lister is None and not any(
+        k in loaders for k in ("release_target", "periods", "tier1_dates", "response")
+    ):
+        file_lister = default_input_files
+    if file_lister is not None:
+        for p in file_lister(root):
+            if Path(p).is_file():
+                files.append({"path": _rel(p, root), "sha256": _hash_file(p)})
 
     all_episodes: list[dict] = []
     for release in RELEASES:
@@ -957,13 +1044,6 @@ def run(
         for label in ("DESCRIPTIVE_ONLY", "NOT_IDENTIFIED")
     }
 
-    protocol_file = root / PROTOCOL_PATH
-    protocol_sha = (
-        hashlib.sha256(protocol_file.read_bytes()).hexdigest()
-        if protocol_file.is_file()
-        else None
-    )
-
     receipt: dict[str, Any] = {
         "schema": SCHEMA,
         "protocol": {"path": PROTOCOL_PATH, "sha256": protocol_sha},
@@ -983,20 +1063,29 @@ def run(
                 for name, s in responses.items()
             },
             "ppi_dates": {
-                "path": str(ppi_path),
+                "path": _rel(ppi_path, root),
                 "sha256": ppi_sha,
                 "rows": len(ppi_receipt.get("rows", [])),
+                "rights": ppi_receipt.get("rights"),
             },
             "gdp_dates": {
-                "path": str(gdp_path),
+                "path": _rel(gdp_path, root),
                 "sha256": gdp_sha,
                 "rows": len(gdp_receipt.get("rows", [])),
+                "rights": gdp_receipt.get("rights"),
             },
-            "ppi_date_disagreements": ppi_receipt.get("inputs", {}).get(
-                "ppi_date_disagreements", []
-            ),
+            "ppi_date_disagreements": [
+                r.get("period")
+                for r in ppi_receipt.get("rows", [])
+                if r.get("agree") is False
+            ],
             "tier1_counts": {key: len(tier1.get(key, set())) for key in TIER1_KEYS},
+            "tier1_digests": {
+                key: _set_digest(tier1.get(key, set())) for key in TIER1_KEYS
+            },
+            "files": files,
         },
+        "deviations": [],
         "trial": {
             "family": TRIAL_FAMILY,
             "budget": TRIAL_BUDGET,

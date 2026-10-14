@@ -1206,6 +1206,7 @@ def test_cli_main_roundtrip(tmp_path, monkeypatch):
                         lambda p, g: world["loaders"]["tier1_dates"])
     monkeypatch.setattr(x0, "default_response_loader",
                         lambda: world["loaders"]["response"])
+    monkeypatch.setattr(x0, "default_input_files", lambda root: [])
     root = tmp_path / "cliroot"
     ppi_path, gdp_path = _write_receipts(root)
     out = tmp_path / "cliout"
@@ -1256,7 +1257,6 @@ def test_ppi_disagreements_listed(tmp_path, monkeypatch):
             },
             disagreements[0],
         ],
-        "inputs": {"ppi_date_disagreements": disagreements},
     }
     gdp_rec = {
         "rows": [
@@ -1292,6 +1292,170 @@ def test_ppi_disagreements_listed(tmp_path, monkeypatch):
     ppi_path, gdp_path = _write_receipts(root, ppi=ppi_rec, gdp=gdp_rec)
     receipt = x0.run(root, tmp_path / "out", loaders=loaders,
                      ppi_dates_path=ppi_path, gdp_dates_path=gdp_path)
-    assert receipt["inputs"]["ppi_date_disagreements"] == disagreements
+    # SF1: read from the receipt's own rows (the real receipt has no inputs key)
+    assert receipt["inputs"]["ppi_date_disagreements"] == ["2010-02"]
     assert receipt["inputs"]["tier1_counts"]["PPI"] == 4
     assert receipt["inputs"]["tier1_counts"]["GDP_ADVANCE"] == 3
+
+
+def test_gdp_keys_are_pinned_not_suffix_matched(monkeypatch):
+    frame = pd.DataFrame({
+        "series": ["CPILFESL"], "period": [pd.Timestamp("2010-01-01")],
+        "realtime_start": [pd.Timestamp("2010-01-15")], "value": [1.0],
+    })
+    gdp_rec = {"rows": [{
+        "period": "2019Q4",
+        "gdp_first_realtime_start": "2020-01-30",
+        "gdpc1_first_realtime_start": "2020-01-31",
+        "other_realtime_start": "2020-02-03",
+    }]}
+    monkeypatch.setattr(x0, "load_vintages", lambda: frame)
+    tier1 = x0.default_tier1_dates_loader({"rows": []}, gdp_rec)()
+    assert tier1["GDP_ADVANCE"] == {"2020-01-30", "2020-01-31"}
+
+
+def test_input_files_and_tier1_digests_recorded(tmp_path):
+    world = _big_world()
+    root = tmp_path / "root"
+    ppi_path, gdp_path = _write_receipts(root)
+    a = root / "data" / "fred" / "A.parquet"
+    a.parent.mkdir(parents=True, exist_ok=True)
+    a.write_bytes(b"alpha")
+    b = root / "data" / "fred_vintage" / "B.parquet"
+    b.parent.mkdir(parents=True, exist_ok=True)
+    b.write_bytes(b"beta")
+    missing = root / "data" / "fred" / "absent.parquet"
+    loaders = dict(world["loaders"])
+    loaders["input_files"] = lambda r: [a, b, missing]
+    receipt = x0.run(root, tmp_path / "out", loaders=loaders,
+                     ppi_dates_path=ppi_path, gdp_dates_path=gdp_path)
+    import hashlib
+    assert receipt["inputs"]["files"] == [
+        {"path": "data/fred/A.parquet",
+         "sha256": hashlib.sha256(b"alpha").hexdigest()},
+        {"path": "data/fred_vintage/B.parquet",
+         "sha256": hashlib.sha256(b"beta").hexdigest()},
+    ]
+    digests = receipt["inputs"]["tier1_digests"]
+    assert set(digests) == set(x0.TIER1_KEYS)
+    tier1 = world["loaders"]["tier1_dates"]()
+    for key in x0.TIER1_KEYS:
+        assert digests[key] == x0._set_digest(tier1.get(key, set()))
+    # SF7: receipt paths are relative to root, never host paths
+    assert receipt["inputs"]["ppi_dates"]["path"] == x0._rel(ppi_path, root)
+    assert not receipt["inputs"]["ppi_dates"]["path"].startswith("/")
+    assert not receipt["inputs"]["gdp_dates"]["path"].startswith("/")
+    assert receipt["deviations"] == []
+
+
+RIGHTS = {"registry_id": "macro.fred.vintages", "licensing": "public_domain",
+          "source": "FRED/ALFRED (St. Louis Fed)"}
+
+
+def test_receipt_rights_carried_into_output(tmp_path):
+    world = _big_world()
+    root = tmp_path / "root"
+    root.mkdir(parents=True, exist_ok=True)
+    ppi_path = root / "ppi_receipt.json"
+    gdp_path = root / "gdp_receipt.json"
+    ppi_path.write_text(json.dumps({**PPI_RECEIPT, "rights": RIGHTS}))
+    gdp_path.write_text(json.dumps(GDP_RECEIPT))
+    receipt = x0.run(root, tmp_path / "out", loaders=world["loaders"],
+                     ppi_dates_path=ppi_path, gdp_dates_path=gdp_path)
+    assert receipt["inputs"]["ppi_dates"]["rights"] == RIGHTS
+    # a receipt without a rights stanza reports none, never a guessed licence
+    assert receipt["inputs"]["gdp_dates"]["rights"] is None
+
+
+def test_committed_date_receipts_carry_rights():
+    base = ROOT / "research" / "rates_inflation_command" / "seat_20261014" / "x0_inputs"
+    for name in ("ppi_release_dates_receipt.json", "gdp_advance_dates_receipt.json"):
+        assert json.loads((base / name).read_text())["rights"] == RIGHTS
+
+
+def test_default_input_files_are_the_eight_opened_files():
+    rels = [x0._rel(p, ROOT) for p in x0.default_input_files(ROOT)]
+    assert rels == [
+        "data/fred_vintage/vintages.parquet",
+        "data/fred_vintage/release_targets/CPILFESL_all_vintages.parquet",
+        "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet",
+        "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
+        "data/fred/DGS2.parquet",
+        "data/fred/DGS10.parquet",
+        "data/fred/DFII10.parquet",
+        "data/fred/T10YIE.parquet",
+    ]
+
+
+def test_holm_keeps_m_at_eight_when_a_p_is_missing(monkeypatch):
+    orig = x0._slope_stat
+    calls = {"n": 0}
+
+    def _stat(pairs):
+        out = dict(orig(pairs))
+        calls["n"] += 1
+        if calls["n"] == 1:  # first (test, era) cell = TEST_IDS[0] / 2010s
+            out["p_normal"] = None
+            out["p_t"] = None
+        return out
+
+    monkeypatch.setattr(x0, "_slope_stat", _stat)
+    rng = np.random.default_rng(7)
+    eps = []
+    for rel in x0.RELEASES:
+        for era, year in (("2010s", 2015), ("2021+", 2022)):
+            for i in range(50):
+                x = float(rng.normal())
+                eps.append({
+                    "release": rel, "status": x0.STATUS_OK, "era": era,
+                    "_day_ts": pd.Timestamp(f"{year}-01-01") + pd.Timedelta(days=i),
+                    "x": x,
+                    "h0_bp": {r: 0.4 * x + float(rng.normal()) for r in x0.RESPONSES},
+                })
+    tests = x0._compute_tests(eps)
+    first = x0.TEST_IDS[0]
+    assert tests[first]["eras"]["2010s"]["p_normal"] is None
+    for era in ("2010s", "2021+"):
+        raw = {tid: tests[tid]["eras"][era]["p_normal"] for tid in x0.TEST_IDS}
+        filled = {tid: (1.0 if p is None else p) for tid, p in raw.items()}
+        expect = holm_adjust(filled)
+        for tid in x0.TEST_IDS:
+            got = tests[tid]["eras"][era]["p_holm_normal"]
+            if raw[tid] is None:
+                assert got is None
+                continue
+            assert got == pytest.approx(expect[tid])
+    # discriminating: dropping the None (m=7) would give a different adjustment
+    raw = {tid: tests[tid]["eras"]["2010s"]["p_normal"] for tid in x0.TEST_IDS}
+    shrunk = holm_adjust({t: p for t, p in raw.items() if p is not None})
+    smallest = min((t for t in raw if raw[t] is not None), key=lambda t: raw[t])
+    assert shrunk[smallest] < tests[smallest]["eras"]["2010s"]["p_holm_normal"]
+    assert tests[first]["eras"]["2010s"]["clears"] is False
+    assert tests[first]["label"] == "NOT_IDENTIFIED"
+
+
+def test_protocol_sha_mismatch_fails_closed_before_ledger(tmp_path):
+    world = _big_world()
+    root = tmp_path / "root"
+    ppi_path, gdp_path = _write_receipts(root)
+    proto = root / x0.PROTOCOL_PATH
+    proto.parent.mkdir(parents=True, exist_ok=True)
+    proto.write_bytes(b"drifted protocol\n")
+    calls = []
+
+    class _L:
+        def log_declared_budget(self, n, family, reason):
+            calls.append(n)
+
+    loaders = dict(world["loaders"])
+    loaders["trial_ledger"] = lambda: _L()
+    with pytest.raises(x0.MissingInput):
+        x0.run(root, tmp_path / "out", declare_budget=True, loaders=loaders,
+               ppi_dates_path=ppi_path, gdp_dates_path=gdp_path)
+    assert calls == []
+    assert not (tmp_path / "out").exists()
+
+
+def test_default_ledger_is_bound_to_root(tmp_path):
+    led = x0.default_trial_ledger(tmp_path)
+    assert Path(led.path) == tmp_path / "data" / "trial_ledger.jsonl"
