@@ -874,10 +874,40 @@ def test_h4_complexity_not_earned_at_ratio_one(m0, tmp_path):
     assert "COMPLEXITY_NOT_EARNED" not in v3["labels"]
 
 
+def test_holm_multiplicity_gate_uses_adjusted_p_not_raw(m0, tmp_path):
+    world = World(tmp_path)
+    # every other evaluation becomes exactly the naive prior (d = 0, p = 0.5)
+    # so the evaluation under test carries the SMALLEST raw p and sits at the
+    # strictest Holm step (multiplier 13).
+    def neutral(p):
+        return world.naive[p]
+
+    for eid in EVAL_IDS:
+        if eid != "cpi_headline.coherent_ridge_v1":
+            world._model_fns[eid] = neutral
+
+    def borderline(p):
+        i = PERIODS.index(p)
+        e_naive = world.target[p] - world.naive[p]
+        sign = 1.0 if i % 2 == 0 else -1.0
+        e_model = 0.9 * abs(e_naive) * (1.0 + 1.0 * sign)
+        return round(world.target[p] - e_model, 6)
+
+    world._model_fns["cpi_headline.coherent_ridge_v1"] = borderline
+    result = world.run(m0)
+    ev = _first_ok(result)
+    p_raw = ev["primary"]["p_normal"]
+    adj = ev["primary"]["holm_adj"]
+    # preconditions: raw p clears alpha, the Holm-adjusted p does not
+    assert p_raw is not None and p_raw < 0.05
+    assert adj is not None and adj >= 0.05
+    assert ev["verdict"] == "NOT_DEMONSTRATED"
+    assert ev["reasons"] == ["holm_not_cleared"]
+
+
 def test_h4_interval_uses_only_strictly_prior_residuals(m0, tmp_path):
     world = World(tmp_path)
     result = world.run(m0)
-    ev = _first_ok(result)
     intervals = {row["eval_id"]: row for row in result["h4"]["intervals"]}
     base = intervals["cpi_headline.coherent_ridge_v1"]
 
@@ -896,11 +926,30 @@ def test_h4_interval_uses_only_strictly_prior_residuals(m0, tmp_path):
     moved = intervals2["cpi_headline.coherent_ridge_v1"]
     assert base["n_interval_scored"] == moved["n_interval_scored"]
     assert base["covered_k"] == moved["covered_k"]
-    # and a same-release-date episode is not prior: episodes sharing a target
-    # release date never feed each other's bands (the world shares dates only
-    # per period, so this asserts the strictly-earlier rule via count: with 48
-    # episodes the first 24 have no band and are not interval-scored)
+    # with 48 distinct release dates the first 24 episodes have no band
     assert base["n_interval_scored"] == len(PERIODS) - 24
+
+    # a world where every episode shares ONE target release date: strictly
+    # prior residuals do not exist, so nothing is interval-scored.  (A <=
+    # comparison would score 24 episodes from same-date residuals.)
+    world3 = World(tmp_path / "sameday")
+    loader = world3.target_loader
+
+    def one_day_loader(release, period):
+        receipt = loader(release, period)
+        if receipt is not None:
+            receipt = dict(receipt, release_date="2021-01-13")
+        return receipt
+
+    result3 = m0.run(
+        world3.root, world3.out_dir, "2026-10-14",
+        adapters=world3.adapters(), target_loader=one_day_loader,
+    )
+    same_day = {
+        row["eval_id"]: row for row in result3["h4"]["intervals"]
+    }["cpi_headline.coherent_ridge_v1"]
+    assert same_day["n_interval_scored"] == 0
+    assert same_day["covered_k"] == 0
 
 
 def test_h4_coverage_wilson_and_not_comparable_without_naive_band(m0, tmp_path):
