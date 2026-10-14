@@ -22988,7 +22988,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       # test_factor_universe_hold.py (2026-08-06) — the DNR:HOLD-FACTOR-UNIVERSE-WIDENING
       # tripwire. engine/equity_factors.py was strictly dark: no `run:` step named its
       # suite and no ci.yml path named the module, so the board tiebreak's own source
@@ -23036,6 +23036,16 @@ jobs:
       # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
       - name: E1c4 regime-outlook publication beside the rates command board
         run: python -m pytest tests/test_build_rates_command_outlook.py -q
+      # RIC B0 (Rates & Inflation Command e2e, 2026-10-14): engine/rates_command_basis.py is the
+      # pure basis-aware comparison contract rates_command_basis.v1 (A06: no numerical gap unless
+      # basket/index/reference interval/unit/vintage and calculation rule support it). Its first
+      # consumer is the Rates Command board whose suite, tests/test_rates_command.py, is governed
+      # here, so it rides this job. Its own step so a contract regression is named rather than
+      # masked by the panel step. jsonschema joins the install line above because
+      # test_schema_round_trip_validates checks round-tripped objects against the committed
+      # contracts/rates_command_basis.v1.schema.json. Paths widened for the suite, module, contract.
+      - name: RIC B0 basis-aware comparison contract (rates_command_basis.v1)
+        run: python -m pytest tests/test_rates_command_basis.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -23069,6 +23079,9 @@ jobs:
       - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
       - "tests/test_build_rates_command_outlook.py"
+      - "tests/test_rates_command_basis.py"
+      - "engine/rates_command_basis.py"
+      - "contracts/rates_command_basis.v1.schema.json"
       - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
