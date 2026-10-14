@@ -23,6 +23,97 @@ from engine.press import validators as V  # noqa: E402
 from tests import press_fixtures as F  # noqa: E402
 
 
+def _date_draft(text):
+    return F.draft(text, fold=False, byline=False, footer=False)
+
+
+def _dated_fact_slot(*dates):
+    return F.slot(facts=[{
+        "id": f"dated_{i}", "text": "The measured composite is 50.",
+        "values": ["50"], "dated": vintage, "tier": "first_party",
+    } for i, vintage in enumerate(dates)])
+
+
+@pytest.mark.parametrize("rendered", [
+    "October 13, 2026", "October 13 2026", "October 13",
+    "13 October 2026", "13 October", "October 13th, 2026",
+])
+def test_fact_anchor_resolves_named_calendar_dates_without_creating_quantities(rendered):
+    slot = _dated_fact_slot("2026-10-13")
+    row = V.check_fact_anchor(_date_draft(f"The composite was 50 on {rendered}."), slot, F.config())
+    assert row["ok"], row
+    # Admitting a calendar date must not license its day as a metric.
+    for text in ("The reading was 13.", "The reading was 13%.", "The reading was $13."):
+        assert not V.check_fact_anchor(_date_draft(text), slot, F.config())["ok"]
+
+
+@pytest.mark.parametrize("rendered", [
+    "October 14, 2026", "September 13, 2026", "October 13, 2025",
+    "October 9, 2026", "February 30, 2026", "31 April 2026",
+])
+def test_fact_anchor_refuses_wrong_or_impossible_named_dates_even_small_days(rendered):
+    row = V.check_fact_anchor(_date_draft(f"The composite was 50 on {rendered}."),
+                              _dated_fact_slot("2026-10-13"), F.config())
+    assert not row["ok"], row
+    assert row["metrics"]["unanchored_dates"]
+
+
+@pytest.mark.parametrize("dates", [(), ("2026-02-30",), ("2025-10-13", "2026-10-13")])
+def test_named_date_needs_valid_unambiguous_fact_vintage(dates):
+    row = V.check_fact_anchor(_date_draft("As of October 13, the composite was 50."),
+                              _dated_fact_slot(*dates), F.config())
+    assert not row["ok"], row
+    assert row["metrics"]["unanchored_dates"]
+
+
+def test_named_date_can_resolve_exact_iso_date_in_source_fact_text():
+    slot = F.slot(facts=[{"text": "Observed on 2026-10-13: composite 50.", "values": ["50"]}])
+    assert V.check_fact_anchor(_date_draft("On October 13, 2026 the composite was 50."),
+                               slot, F.config())["ok"]
+
+
+def test_run_date_and_raw_document_date_do_not_authorize_a_named_fact_date():
+    slot = _dated_fact_slot("2026-10-09")
+    slot["as_of"] = "2026-10-13"
+    slot["raw_documents"] = [{"text": "2026-10-13"}]
+    row = V.check_fact_anchor(_date_draft("As of October 13, 2026 the composite was 50."),
+                              slot, F.config())
+    assert not row["ok"]
+    assert row["metrics"]["unanchored_dates"]
+
+
+@pytest.mark.parametrize("quantity", ["13%", "13 million", "13.5", "$13"])
+def test_month_name_does_not_hide_an_unsupported_quantity(quantity):
+    row = V.check_fact_anchor(_date_draft(f"October {quantity} was the reading."),
+                              _dated_fact_slot("2026-10-13"), F.config())
+    assert not row["ok"], row
+
+
+@pytest.mark.parametrize("year", ["20260", "2025.5", "2025%", "26"])
+def test_named_date_cannot_discard_a_malformed_year_matching_another_metric(year):
+    slot = _dated_fact_slot("2026-10-13")
+    slot["facts"].append({"text": "Unrelated numeric metric", "values": [year]})
+    row = V.check_fact_anchor(_date_draft(f"Observed on October 13, {year}."), slot, F.config())
+    assert not row["ok"]
+    assert row["metrics"]["unanchored_dates"]
+
+
+def test_retained_usda_draft_dates_resolve_but_copy_rejection_remains():
+    path = (_REPO / "research/agentic_media/public_intelligence_20261011/"
+            "usda_research_intake_phase/attempt_20261014_1559/stage.json")
+    before = path.read_bytes()
+    stage = json.loads(before)
+    cfg = F.config()
+    assert stage["status"] == "quarantined"
+    assert stage["validator_report"]["failed"] == ["fact_anchor", "close_paraphrase"]
+    assert V.check_fact_anchor(stage["draft"], stage["slot"], cfg)["ok"]
+    overlap = V.check_close_paraphrase(stage["draft"], stage["slot"], cfg)
+    assert not overlap["ok"]
+    assert overlap["metrics"]["max_block_jaccard"] == pytest.approx(0.3333)
+    assert overlap["metrics"]["threshold"] == 0.18
+    assert path.read_bytes() == before
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # close-paraphrase — the headline requirement
 # ─────────────────────────────────────────────────────────────────────────────

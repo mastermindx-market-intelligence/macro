@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Consume admitted9209 exact-head protected install then SAME reviewed follow-on31groups; existing USDA renderer remains active. New OCC90 official report is distinct from held BAC; ten source checks pass, but full-document intake, reuse and relevant first-party receipts remain unqualified. Do not generate from a thin RSS summary or bypass source/rights review. The literal-parser limit is a technical constraint, not a permission refusal.
+  - USDA public source page/viewer now accepted; completed single Press draft is quarantined, no regeneration/alias/edit/credit. Preserve5held peers and complete original accounting. Consume pending date-anchor review, finish source evidence, then admitted9209 protected install and SAME follow-on37planned groups. Existing release/controller gates remain binding.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -2939,3 +2939,47 @@ Review accepted as diagnosis; finalcode parent-reviewed atf9ff/c802,24hashes bou
 33groups required. #9209 remains once-read15:09a18ec982 pending protected release.
 
 Manifest correction: current postlanding/mmx-current-expected-hashes.json matches24/24. Phase-root expected-source-hashes.json is historical b35/558ca, predating3accepted repairs; retain its old pins. Only current postlanding writerhash was rebound. No application drift.
+
+## 2026-10-14 16:09 continuation — public USDA source live; single Press draft held
+
+The normal renderer/updater delivered the USDA report. At15:54 stable74a26d30,
+all12renderer sources and exact summary/excerpts match; site/site.served and
+anonymous HTTP200 share cb0dac22c1bfdc3cdec77c86f2e5872eef2b6335fbe516183417734469d2549b.
+Chrome in the original Chris profile accepted the report page at1440/390 with no
+horizontal overflow, then the actual CTA opened the original40-page viewer.
+No signup/follow/Download click. This is functional source-page acceptance, not
+new visual-design approval, a Press article, or an issuer-linked event. The earlier
+client error is retained; this same-profile check followed actual absent-to-present
+installation, with no security/profile/control-carrier change or cause inferred.
+
+Fresh installed planner40568df0 selected the same USDA slot, all fields unchanged.
+The one private writer attempt used sourcee7112006/writerc8027347, original runtime
+8f705 and all four held peers. It completed15:59:57 with one call, zero regeneration,
+estimated4353tokens. Stage7e3bea84 is QUARANTINED for fact_anchor/close_paraphrase;
+full untouched draft/attempt/report retained. Three October13 dates expose a parser
+false positive, but three independent blocks still exceed0.18 overlap. Parent also
+holds the draft for excessive irrelevant equity-context padding. No same-event
+retry, source alias, edited draft or acceptance credit. Original four peers remain
+byte-identical; all three accounting histories remain exact prefixes with1usage,
+2health and1key-ledger records appended. Current readonly cohort has5held/0accepted.
+
+Adjacent bounded named-date repair is local and pending independent Fabric review
+mmx-press-date-anchor-review-20261014-001, original root/parent01a12a2a-d7e1-77b1-9262-ab593179dd13.
+It admits only valid fact-vintage/calendar matches, never day numbers as metrics;
+wrong/impossible/ambiguous/malformed dates refuse. Existing ISO handling, source
+tiers, quote checks, overlap/receipt floors and held wrappers stay unchanged.
+Corrected-fixture baseline21fails/4passes; candidate457passes/1existing sparse skip
+plus retained-real-draft regressionPASS. Candidate16integrity groupsPASS; previous
+21other groups unchanged =37planned installed groups. Wrong-validator hash refuses
+before fixture/mock writer, though imports precede the hash gate. No source merge
+or installation claimed; the existing accepted manifest is not rebound yet.
+
+PR9209 remains at the once-read15:09 observation: OPEN/armed a18ec982, oldgreenstale,
+completedcontroller38586265876 mainGREEN8proofs/cap8/0slots. No repeated PR/controller
+poll, manual refresh, duplicate CI/observer, producer dispatch or admin merge.
+Next: consume same Fabric review and finish the bounded repair evidence, preserve
+all five held drafts, then consume admitted9209 protected landing/normal installation
+with actual mergeSHA before SAME follow-onPR/install. Pursue a different qualified
+source with relevant analytical evidence; USDA generation is settled, not pending.
+Publication/cutoverfalse; D140/10. Original unknown/refused effects unchanged.
+Evidence: usda_research_intake_phase/public_acceptance_20261014_1554/ and attempt_20261014_1559/.

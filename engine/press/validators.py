@@ -86,6 +86,19 @@ _TAG_RE = re.compile(r"<[^>]+>")
 # is one token, not the three numbers 2026, 07 and 26.
 _DATE_MASK_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?\b")
 
+_MONTHS = {name.lower(): i for i, name in enumerate((
+    "January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December",
+), 1)}
+_MONTH_NAMES = "|".join(_MONTHS)
+_NAMED_DATE_RE = re.compile(
+    rf"\b(?:(?P<month>{_MONTH_NAMES})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?"
+    rf"|(?P<day_first>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<month_last>{_MONTH_NAMES}))"
+    r"(?:(?:,\s*|\s+)(?P<year>\d+(?:\.\d+)?%?))?"
+    r"(?![\w%]|\.\d|(?:,\s*|\s+)\d|\s*(?:percent|million|billion|trillion|thousand|bps|bn)\b)",
+    re.IGNORECASE,
+)
+
 # A number literal, with optional currency prefix, sign, thousands separators,
 # decimals, a percent sign and/or a magnitude suffix.
 _NUM_RE = re.compile(
@@ -439,6 +452,46 @@ def _quantity_anchors(number: Num, sources: list[Num]) -> bool:
     return any(abs(target - abs(n.value * n.magnitude)) <= tolerance for n in sources)
 
 
+def _mask_anchored_named_dates(prose: str, slot: dict) -> tuple[str, list[str]]:
+    """Resolve named calendar dates without adding days to the quantity pool.
+
+    Only validated fact vintages and ISO dates in fact text authorize a date;
+    the run date and raw documents do not. A missing year must resolve uniquely.
+    This leaves the existing ISO extraction behavior unchanged. It is a date
+    containment check, not proof that a date belongs to a particular claim.
+    """
+    source_dates: set[date] = set()
+    for fact in slot.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        vintage = re.match(r"^\d{4}-\d{2}-\d{2}(?!\d)", str(fact.get("dated") or ""))
+        candidates = ([vintage.group(0)] if vintage else []) + [
+            m.group(0)[:10] for m in _DATE_MASK_RE.finditer(str(fact.get("text") or ""))
+        ]
+        for candidate in candidates:
+            try:
+                source_dates.add(date.fromisoformat(candidate))
+            except ValueError:
+                continue
+    unanchored: list[str] = []
+
+    def replace(match: re.Match) -> str:
+        month = _MONTHS[(match.group("month") or match.group("month_last")).lower()]
+        day = int(match.group("day") or match.group("day_first"))
+        year = match.group("year")
+        if year is not None and (len(year) != 4 or not year.isdecimal()):
+            unanchored.append(match.group(0))
+            return match.group(0)
+        matches = [d for d in source_dates if d.month == month and d.day == day
+                   and (year is None or d.year == int(year))]
+        if len(matches) != 1:
+            unanchored.append(match.group(0))
+            return match.group(0)
+        return " ␀ "
+
+    return _NAMED_DATE_RE.sub(replace, prose), unanchored
+
+
 def fact_tier_index(slot: dict) -> list[tuple[float, str]]:
     """[(value, tier)] over every number the planner supplied, tier-tagged."""
     idx: list[tuple[float, str]] = []
@@ -617,10 +670,11 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
     pool, source_text = source_number_pool(slot)
     quantities = _fact_quantity_pool(slot)
     prose = strip_tags(_prose_html(draft, cfg))
+    quantity_prose, unanchored_dates = _mask_anchored_named_dates(prose, slot)
 
     unanchored: list[str] = []
     checked = 0
-    for num in extract_quantities(prose):
+    for num in extract_quantities(quantity_prose):
         # Small bare integers are prose counts ("three drivers", "two
         # sessions"), not market data.  Anything with a decimal point, a
         # percent sign, a currency symbol or a magnitude suffix must anchor no
@@ -644,15 +698,19 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
         if window_jaccard(words(q), src_tokens, 3) < 0.6:
             bad_quotes.append(q[:80])
 
-    ok = not unanchored and not bad_quotes
+    ok = not unanchored and not bad_quotes and not unanchored_dates
     detail = "every number and quote resolves to a source fact"
     if unanchored:
         detail = f"originated number(s) not in the source facts: {unanchored[:8]}"
     if bad_quotes:
         detail = (detail + "; " if unanchored else "") + \
             f"quote(s) not found in the source documents: {bad_quotes[:3]}"
+    if unanchored_dates:
+        detail = (detail + "; " if unanchored or bad_quotes else "") + \
+            f"calendar date(s) not in the source facts: {unanchored_dates[:8]}"
     return _row("fact_anchor", ok, detail,
                 numbers_checked=checked, unanchored=unanchored,
+                unanchored_dates=unanchored_dates,
                 source_pool_size=len(pool), unsourced_quotes=bad_quotes)
 
 

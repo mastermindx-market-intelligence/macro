@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py", line 23, in <module>
+    assert hashlib.sha256((root/rel).read_bytes()).hexdigest() == expected[rel], rel
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: engine/press/validators.py
