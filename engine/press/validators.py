@@ -93,7 +93,9 @@ _NUM_RE = re.compile(
     r"(?P<cur>[$€£¥])?\s*"
     r"(?P<int>\d{1,3}(?:,\d{3})+|\d+)"
     r"(?:\.(?P<frac>\d+))?"
-    r"\s*(?P<suffix>%|bps|bn|tn|trn|[kKmMbBtT](?![a-zA-Z]))?",
+    r"\s*(?:,\s*expressed\s+in\s+)?"
+    r"(?P<suffix>%|(?i:thousands?|millions?|billions?|trillions?|bps|bn|tn|trn)"
+    r"(?![a-zA-Z])|[kKmMbBtT](?![a-zA-Z]))?",
 )
 
 # Quoted spans.  Straight and typographic double quotes.  Single quotes are NOT
@@ -261,16 +263,17 @@ class Num:
     """One numeric literal lifted out of prose."""
 
     __slots__ = ("raw", "value", "decimals", "is_pct", "has_currency",
-                 "has_suffix", "is_bare_int")
+                 "has_suffix", "is_bare_int", "magnitude")
 
     def __init__(self, raw: str, value: float, decimals: int, is_pct: bool,
-                 has_currency: bool, has_suffix: bool):
+                 has_currency: bool, has_suffix: bool, magnitude: float = 1):
         self.raw = raw
         self.value = value
         self.decimals = decimals
         self.is_pct = is_pct
         self.has_currency = has_currency
         self.has_suffix = has_suffix
+        self.magnitude = magnitude
         self.is_bare_int = (decimals == 0 and not is_pct and not has_currency
                             and not has_suffix)
 
@@ -292,6 +295,9 @@ def extract_numbers(text: str) -> list[Num]:
         except ValueError:
             continue
         suffix = (m.group("suffix") or "")
+        scale_name = suffix.lower()
+        if scale_name.endswith("ions") or scale_name == "thousands":
+            scale_name = scale_name.removesuffix("s")
         out.append(Num(
             raw=m.group(0).strip(),
             value=value,
@@ -299,6 +305,9 @@ def extract_numbers(text: str) -> list[Num]:
             is_pct=(suffix == "%"),
             has_currency=bool(m.group("cur")),
             has_suffix=bool(suffix and suffix != "%"),
+            magnitude={"k": 1e3, "thousand": 1e3, "m": 1e6, "million": 1e6,
+                       "b": 1e9, "bn": 1e9, "billion": 1e9, "t": 1e12,
+                       "tn": 1e12, "trn": 1e12, "trillion": 1e12}.get(scale_name, 1),
         ))
     return out
 
@@ -398,6 +407,36 @@ def source_number_pool(slot: dict) -> tuple[list[float], str]:
         for n in extract_quantities(text):
             vals.append(n.value)
     return vals, "\n".join(texts)
+
+
+def _fact_quantity_pool(slot: dict) -> list[Num]:
+    """Keep explicit source scales for anchoring without changing receipt credit.
+
+    Legacy facts often repeat a scaled text's coefficient in ``values``. That
+    duplicate must not also grant permission to drop the scale in the draft.
+    Bare values with no scaled counterpart retain the existing metric contract.
+    """
+    result: list[Num] = []
+    for fact in slot.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        text_nums = extract_quantities(str(fact.get("text") or ""))
+        result.extend(text_nums)
+        for value in fact.get("values") or []:
+            try:
+                number = float(str(value).replace(",", "").strip().rstrip("%"))
+            except (TypeError, ValueError):
+                continue
+            if any(n.magnitude != 1 and n.value == number for n in text_nums):
+                continue
+            result.append(Num(str(value), number, 0, False, False, False))
+    return result
+
+
+def _quantity_anchors(number: Num, sources: list[Num]) -> bool:
+    target = abs(number.value * number.magnitude)
+    tolerance = 0.5 * 10.0 ** -number.decimals * number.magnitude + 1e-9
+    return any(abs(target - abs(n.value * n.magnitude)) <= tolerance for n in sources)
 
 
 def fact_tier_index(slot: dict) -> list[tuple[float, str]]:
@@ -534,20 +573,36 @@ def check_markup_safety(draft: dict, slot: dict, cfg: dict) -> dict:
 
 
 def _prose_html(draft: dict, cfg: dict) -> str:
-    """Body with the byline and footer furniture removed.
+    """Exclude at most one genuine configured byline/footer, never classed prose.
 
-    Those two blocks are REQUIRED boilerplate; scoring them as paraphrase or
-    counting them toward our-value would measure the template, not the piece.
+    A class is mutable markup, not proof that its contents are boilerplate.
+    Unrecognized or repeated blocks stay visible to every prose validator.
     """
     v = _v(cfg)
-    body = _body(draft)
-    for cls in (str(v.get("byline_class") or "press-byline"),
-                str(v.get("footer_class") or "press-footer")):
-        body = re.sub(
-            rf"<(\w+)\b[^>]*class=\"[^\"]*\b{re.escape(cls)}\b[^\"]*\"[^>]*>.*?</\1>",
-            " ", body, flags=re.IGNORECASE | re.DOTALL,
-        )
-    return body
+    def normal(text):
+        return re.sub(r"\s+", " ", strip_tags(text)).strip().casefold()
+    bylines = {normal(d.get("byline", "")) for d in (cfg.get("desks") or {}).values()
+               if isinstance(d, dict) and d.get("byline")}
+    known = {
+        str(v.get("byline_class") or "press-byline"): bylines,
+        str(v.get("footer_class") or "press-footer"): {normal(v.get("footer_required_text") or
+            "Educational content — not investment advice. Markets involve risk.")},
+    }
+    removed: set[str] = set()
+
+    def furniture(match):
+        block = match.group(0)
+        opening = block[:block.index(">") + 1]
+        attr = re.search(r"""\bclass\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""",
+                         opening, re.IGNORECASE)
+        cls = next((x for x in attr.groups() if x is not None), "") if attr else ""
+        if cls in known and cls not in removed and normal(block) in known[cls]:
+            removed.add(cls)
+            return " "
+        return block
+
+    return re.sub(r"<p\b[^>]*>.*?</p\s*>", furniture, _body(draft),
+                  flags=re.IGNORECASE | re.DOTALL)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -560,6 +615,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
     v = _v(cfg)
     generic_max = int(v.get("generic_integer_max") or 12)
     pool, source_text = source_number_pool(slot)
+    quantities = _fact_quantity_pool(slot)
     prose = strip_tags(_prose_html(draft, cfg))
 
     unanchored: list[str] = []
@@ -576,7 +632,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
         if num.is_bare_int and 1900 <= num.value <= 2100 and str(int(num.value)) in source_text:
             continue
         checked += 1
-        if not _anchors(num, pool):
+        if not _quantity_anchors(num, quantities):
             unanchored.append(num.raw)
 
     # Attributed quotes must be findable in the sources too — a fabricated

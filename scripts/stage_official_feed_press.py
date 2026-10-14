@@ -56,6 +56,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -64,7 +65,7 @@ _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from engine.press import desk_planner, writer  # noqa: E402
+from engine.press import desk_planner, validators, writer  # noqa: E402
 from engine.press.official_feed_candidate import plan_official_feed_candidate  # noqa: E402
 # The incumbent runner owns the staging rail and its small shared helpers; a
 # thin caller imports them rather than forking copies that can drift.
@@ -177,9 +178,10 @@ def _attempt_day(row: dict, *, ledger: bool) -> str:
     Legacy records without an instant use their explicit booked date. Never
     replace a malformed clock with a date that would silently free capacity.
     """
-    instant = row.get("ts" if ledger else "staged_at")
+    key = "ts" if ledger else "staged_at"
+    instant = row.get(key)
     try:
-        if instant:
+        if key in row:
             stamp = datetime.fromisoformat(instant.replace("Z", "+00:00"))
             if stamp.tzinfo is None:
                 raise ValueError("timezone required")
@@ -255,6 +257,18 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
         return {"staged": False, "rail": STAGE_RAIL, "reason": reason,
                 "run_date": run_date, "public_article_approved": False,
                 "allow_emit": False, **identity}
+
+    # A third-party-only candidate cannot satisfy the existing own-value gate.
+    # Refuse before reserving its immutable attempt or spending provider tokens.
+    context = plan["validation_context"]
+    available = {value for value, tier in validators.fact_tier_index(context)
+                 if tier == "first_party" and math.isfinite(value)}
+    if not available:
+        return _refuse("no usable first-party numeric context for the existing own-value gate")
+    minimum = int(context.get("min_anchored_receipts")
+                  or (cfg.get("validators") or {}).get("min_anchored_receipts") or 0)
+    if len(available) < minimum:
+        return _refuse(f"insufficient distinct first-party receipts ({len(available)} of {minimum})")
 
     # 2. Existing canonical coverage blocks the same source across dates and
     #    revisions — published first, then anything live in staging, with the

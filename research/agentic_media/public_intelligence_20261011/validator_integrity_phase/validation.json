@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-14T02:49:13.821077+00:00",
+  "base": "b604fd9c1f7b1104ce42203055b19961d969254d",
+  "application_source": {
+    "engine/press/validators.py": "c8a1cdcaf1739c77728c12d33035e1a56dff87a87cd01a121419fe8f083ff99e",
+    "scripts/stage_official_feed_press.py": "ac576025a0aa060a60eec53a2079cefe648bee9a118e4a817028b5e2bcad18d5",
+    "scripts/run_press.py": "6d8d4a566d44ad3f7bb6c42763b0d1d951f6d3d850594525e85f10e84afed1fb",
+    "tests/test_press_validators.py": "52b6219969b1a33f4b6d4e617fbb3676dce00724b19de23514332193298dddbf",
+    "tests/test_press_official_staging.py": "3f23d6686363c48233160db7933cf3608c58ab1fc8cf84f5d0f36a3e9b4c1619"
+  },
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "w1_credit": 0,
+  "test_outcome": {
+    "affected": "295 passed, 1 existing sparse-site skip in 33.86s",
+    "final_targeted": "164 passed in 11.88s"
+  },
+  "review": "Parent review pending; independent implementation worker was refused before launch for host temperature. No replacement or retry.",
+  "limits": [
+    "Magnitude anchoring now normalizes explicit thousand/million/billion/trillion scales; it does not establish currency identity, percent-vs-coefficient semantics or semantic causality.",
+    "Receipt/own-value arithmetic retains its incumbent coefficient contract; equivalent alternative numeric notation can be accepted as a fact without earning new receipt credit.",
+    "Only exact configured boilerplate is excluded once per class; no class-only trust.",
+    "Research/BAC remain unedited and quarantined with zero acceptance credit.",
+    "PR9209 remote head and binding CI untouched; this is a separate local follow-on."
+  ]
+}

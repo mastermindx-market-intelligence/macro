@@ -1679,3 +1679,43 @@ review SHA and regression commands are in `independent_review_adjudication.json`
 actual invocation/result/usage/editorial evidence are `bac_*` files in the same
 phase. Local evidence is not installed source or public capability.
 
+## Isolated validator follow-on — October 14 02:42 UTC
+
+Root created the sparse SSD follow-on through the required helper, starting at
+protected main a0fa900488db2f9270a2ce5cda6f7418a87eb86f and merging the existing
+source/continuity8c4404a1 as b604fd9c1f7b1104ce42203055b19961d969254d without conflict.
+Workspace: /Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4.
+Branch: claude/ssd-mmx-press-validator-followon-20261014-c1dc27962b7d07c4.
+No second PR exists. PR9209 remains remotely5d06 with binding CI38499512292 and
+merge-on-green; the original source tree's local8c4404 continuity is deliberately
+not pushed just to restart its proof. Shared dirty accounting remains there.
+
+The follow-on fixes explicit quantity magnitudes, class-only boilerplate scoring,
+no-context provider spend, present-but-blank attempt clocks, and private emit
+identity surviving label/id stripping through facts/raw-doc refs. Evidence under
+validator_integrity_phase: 14 initial red controls, six preflight failures, and
+one isolated original-guard fixture emit before repair. Affected suites now
+295passed/1existing sparse-site skip in33.86s; final targeted163passed38.24s.
+Both historical actual drafts remain unchanged. No real provider/staging/emit.
+The scope does not solve general currency/percent/semantic units; receipt-credit
+semantics and all thresholds remain unchanged. Parent review and source commit
+are next, then incorporate the same live writer-contract return before release.
+
+Read-only current planner returned a KBH research candidate; root refuses provider
+spend because its summary contradicts its own EPS arithmetic and carries stale
+prices/truncated text. Do not silently edit or relabel the source. The new NVIDIA
+Oct13 public announcement is only a discovery lead. Existing tech-screener has
+no per-stock observation date and differs from Oct12 parquet prices, so generated
+Oct13 metadata cannot qualify it as a fresh issuer receipt. Relevant inputs must
+be date/producer/rights-bound before a new distinct story is admitted.
+
+Continue original PR9209 protected landing/installation independently. After actual
+landing, use its original unchanged24-source/3-page bundle, actual merge SHA,
+normal updater and read-only installed probes. Then integrate landed main into
+this follow-on, retain its bounded application diff and deliver its own PR.
+Missing earnings credentials are not an execution blocker; preserve original
+EFFECT_UNKNOWN, BAC no-replay and all publication/cutover/editorial gates.
+
+A redundant CI read was refused by the incumbent wait guard; no alternate read,
+observer, dispatch or timer-based retry was used. The existing heartbeat/controller
+remain the attention/release path while independent work continues here.
