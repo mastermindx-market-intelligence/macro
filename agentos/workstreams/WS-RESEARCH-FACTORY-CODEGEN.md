@@ -31,10 +31,10 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Consume the exact original v3 artifacts once through the reviewed installed
-  recovery profile after Fabric Integration returns its qualified installation receipt;
-  verify current bytes and adjudicate all physical phases. No v3 replay or fourth
-  canary to work around delivery. Continue normal source release controls.
+next_action: Consume and adjudicate the exact archive-order source review; then finalize
+  the distinct corrected v4 commission and delivery packet through normal Fabric
+  admission. Original v3 recovery is closed and its failure remains unaccepted.
+  Preserve original effects and continue existing protected release controls.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -59,6 +59,16 @@ landmines:
   denial remains closed. User directed continuation with a documented gap and actual
   execution/publisher separation.
 ---
+
+## V3 recovery closed; archive repair prepared — 2026-10-14
+
+The original parent recovered both v3 files once through the installed reviewed profile. Recovery receipt SHA256 `d2041a1de4782ed5f3455d3b197aae852f45b95aec1387df67861c6b248360ad`; carrier SHA256 `c32c2c9961427af8d859214c15893a9bb954ba8f14e118ebcaf485d9399ed5bb`. The carrier settled rc0 in21.082seconds, but the complete inner result is STOPPED_NO_RETRY at BLOCKED_ARCHIVE_ARCHIVE_MEMBER_UNEXPECTED. The repaired Docker29.1.3 runtime projection and systemd HUP preflight passed. Bundle/staging creation, config commit, reload, image and smoke did not occur; unknowns are empty. Own source/scratch/intent/archive/failure receipt remain. Original Fabricrc65 remains unaccepted. This closes recovery, not runtime qualification.
+
+The pinned archive receipt lists shim,runsc,gvisor-bin directory,then five sidecars. Scanner code incorrectly required the directory to be first; old fixtures concealed that ordering defect. Root reproduced10 failures in17 new cases, repaired the canonical directory duplicate check, and verified the actual166822039-byte public archive locally without extracting or executing it. Original source reproduces ARCHIVE_MEMBER_UNEXPECTED; repaired source verifies all8entries and6requiredmemberhashes. Installer candidate SHA256 `4bb6ed6187444d11b26c339da434bb475f0cce7df9e957ee95bbe393d9b6777f`. Scoped independent review `rf-archive-order-review-01a1333c-v1` is running on the original normal Fabric carrier.
+
+The distinct v4 source package is prepared only, not dispatched. Capsule SHA256 `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`. Affected suite:473PASS,3Linux-onlySKIP,67subtests;15pytest warnings refer to old temporary cleanup. The flat precheck was corrected with the existing relocation seam after an initial fixture import failure; final142PASS,2LinuxSKIP,2subtests. Actual Linux must pass144tests and2subtests with zero skips before privilege. No budget, resource, privilege or runtime guard was loosened. The future delivery packet must honor Qwen STATUS plus exactly one final artifact manifest; installed duplicate validation remains unchanged.
+
+The separate cgroup observer source commission ended rc75 at host lane admission before worker implementation. No alternate host/provider or retry was used; direct source work is deferred behind the concrete archive repair. Candidate generation/execution, containment, scientific inference and product activation remain unqualified.
 
 ## V3 dispatched and recovery owned — 2026-10-14 16:25 UTC
 

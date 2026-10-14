@@ -55,7 +55,7 @@ def prepare(installer, transport, *, deadline, raw_cap, before_pull, observe,
     _check(installer.status in ('OK_INSTALLED', 'OK_REUSE_EXISTING')
            and not installer.frozen, 'installer_unsettled')
     _check(installer.binding is not None and
-           installer.binding.operation_id == 'rf-fixed-smoke-runsc-01a1333c-v3', 'operation')
+           installer.binding.operation_id == 'rf-fixed-smoke-runsc-01a1333c-v4', 'operation')
     prefix = (smoke.DOCKER_BINARY, '--host', smoke.DOCKER_ENDPOINT,
               '--config', installer.docker_config_path)
     records, used = [], 0

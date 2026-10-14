@@ -1284,9 +1284,13 @@ class InstallEngine:
                     raise InstallError("ARCHIVE_MEMBER_UNSAFE")
                 if member.isdir():
                     # tarfile strips the trailing slash on read: accept both
-                    # spellings of the gvisor-bin directory entry only
-                    if name not in (OPTIONAL_DIR_MEMBER, GVISOR_BIN_DIR) or seen:
+                    # spellings of the gvisor-bin directory entry only. The
+                    # pinned publisher places it after the shim and runsc;
+                    # previous regular members are not directory duplicates.
+                    if name not in (OPTIONAL_DIR_MEMBER, GVISOR_BIN_DIR):
                         raise InstallError("ARCHIVE_MEMBER_UNEXPECTED")
+                    if OPTIONAL_DIR_MEMBER in seen:
+                        raise InstallError("ARCHIVE_MEMBER_DUPLICATE")
                     seen[OPTIONAL_DIR_MEMBER] = 0
                     continue
                 if member.issym() or member.islnk() or member.isdev() \

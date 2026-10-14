@@ -16,7 +16,7 @@ import time
 import types
 
 ROOT = '01a1333c-a475-7052-95a8-72a88eb8c17b'
-BASE = Path('/var/lib/mastermind/rf-canary-01a1333c-v3')
+BASE = Path('/var/lib/mastermind/rf-canary-01a1333c-v4')
 FILES = frozenset({'runsc_install.py', 'qualification_smoke.py',
     'qualification_runsc_smoke.py', 'fixed_smoke_probe.py', 'transport.py',
     'qualification_manifest.py', 'cli29_anonymous_config.py', 'phase_budget.py',

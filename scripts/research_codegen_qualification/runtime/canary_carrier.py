@@ -14,7 +14,7 @@ import time
 import zlib
 
 ROOT = '01a1333c-a475-7052-95a8-72a88eb8c17b'
-OPERATION = 'rf-fixed-smoke-runsc-01a1333c-v3'
+OPERATION = 'rf-fixed-smoke-runsc-01a1333c-v4'
 ARGV = ('/usr/bin/sudo', '-n', '/usr/bin/env', '-i',
         'PATH=/usr/sbin:/usr/bin:/sbin:/bin', 'LANG=C', 'LC_ALL=C',
         '/usr/bin/python3', '-I', '-S', '-')
