@@ -29781,11 +29781,20 @@ jobs:
   robotics-theme-research:
     # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
     # job for the Robotics vertical. paths: is the measured static import
-    # closure of the six suites on this head, including the #7870 shared shell
-    # (engine.theme_graph.curation_assertion, semiconductor_theme_research,
-    # theme_research_binding, rights.load_registry_snapshot) and the modules
-    # those imports reach. A dependency edit schedules this job, and
-    # contract-delta does not see the suites as unwired.
+    # closure of the eight suites on this head, including the #7870 shared
+    # shell (engine.theme_graph.curation_assertion,
+    # semiconductor_theme_research, theme_research_binding,
+    # rights.load_registry_snapshot) and the modules those imports reach.
+    # A dependency edit schedules this job, and contract-delta does not
+    # see the suites as unwired.
+    # Measured on this head after dropping config/sparse_worktree.json,
+    # engine/__init__.py and scripts/worktree_sparse.py (declared but in
+    # no suite's closure): suite_dependency_closure over the eight suites
+    # on the run line is 66 files, declared paths: is 68 (the 66 plus
+    # the two tests/fixtures/** patterns), and the shared curation check
+    # curated_exclusive_closure_findings is UNCOVERED 0. run_ci_pack
+    # weight 18 (_job_weight: one command + eight tests/test_ mentions
+    # x2 + len//800), pack 4 of the 12-way partition_jobs static census.
     # Full tracked inventory on 94b86c4 (git ls-files == git ls-tree -r HEAD,
     # 120893 paths): suite_dependency_closure of the six suites is 64 files
     # and curated_exclusive_closure_findings is UNCOVERED 0. The same 64-file
@@ -29807,7 +29816,6 @@ jobs:
     paths:
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
-      - "config/sparse_worktree.json"
       - "config/theme_crosswalk.yml"
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
@@ -29818,7 +29826,6 @@ jobs:
       - "contracts/market_ontology/robotics_theme_research.v1.schema.json"
       - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
-      - "engine/__init__.py"
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
       - "engine/company_intelligence/documents.py"
@@ -29861,7 +29868,6 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/evidence_foundation.py"
       - "lib/pages.py"
-      - "scripts/worktree_sparse.py"
       - "site/basket/robotics_automation.html"
       - "site/basketdata/foresight_cascade.json"
       - "site/state_of_themes.html"

@@ -175,6 +175,11 @@ except ImportError:  # pragma: no cover - carrier base fallback
             parse_day as _parse_day,
         )
     except ImportError:  # pragma: no cover - base without the shell
+        # Type mirror only: ResearchRefusal, generation_fingerprint,
+        # _is_instant, _le, _parse_clock and _parse_day stay unbound on a
+        # base without the shell, so this arm can mirror the frozen field
+        # order for tests/test_robotics_shared_type_mirror.py but cannot
+        # compose -- any composed path names one of these and NameErrors.
         pass
 
     def _passes_time_mode(assertion: Mapping[str, Any],
