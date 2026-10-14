@@ -67,7 +67,7 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
 
 
 def test_market_memory_assets_are_template_owned_and_byte_identical() -> None:
-    for name in ("market_memory.css", "market_memory.js"):
+    for name in ("market_memory.css", "market_memory.js", "market_memory_intent.js", "market_memory_retained.js", "market_memory_retained.css"):
         assert (ROOT / "templates" / name).read_bytes() == (
             ROOT / "site" / name
         ).read_bytes()
@@ -145,7 +145,7 @@ let lang = 'en';
 let authChanged;
 const location = new URL('https://mastermind-x.com/market_memory.html?ticker=AAPL');
 const document = {readyState:'complete',documentElement:{getAttribute:()=>lang},getElementById:id=>elements[id],addEventListener(type,fn){events[type]=fn;}};
-const context = {document,location,URL,localStorage:{getItem:()=>null,setItem(){}},history:{replaceState(_,__,url){location.href=new URL(url,location).href;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve})),window:{MDXAuth:{onChange(fn){authChanged=fn;}}}};
+const context = {document,location,URL,localStorage:{getItem:()=>null,setItem(){}},history:{replaceState(_,__,url){location.href=new URL(url,location).href;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve})),window:{addEventListener(){},MDXAuth:{onChange(fn){authChanged=fn;}}}};
 vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const summary = () => elements['mm-symbol-summary'].innerHTML;
@@ -158,11 +158,11 @@ const noEvidence = () => {assert.ok(!summary().includes('mm-symbol-ticker'),summ
  await tick(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>')); assert.ok(grids().includes('mm-grid-card'));
  submit('NVDA'); await tick(); const loading=summary(); const loadingGrids=grids(); changeLanguage(); noEvidence(); assert.equal(summary(),loading); assert.equal(grids(),loadingGrids); assert.equal(location.search,'?ticker=NVDA');
  reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>')); assert.ok(grids().includes('mm-grid-card'));
- submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),invalid); assert.equal(location.search,'?ticker=NVDA');
+ submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker')); assert.equal(location.search,'?ticker=NVDA');
  submit('MSFT'); await tick(); submit('AAPL'); await tick(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>'));
  submit('NVDA'); await tick(); reply('NVDA',503); await tick(); const failure=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),failure);
  submit('NVDA'); await tick(); reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>'));
- submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),invalidPending);
+ submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
  submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); const signedOut=summary(); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),signedOut);
  console.log('pending, invalid, latest-intent, late completion, failure, recovery, sign-out and language assertions passed');
 })().catch(error => {console.error(error);process.exitCode=1;});
@@ -197,7 +197,7 @@ let lang = 'en';
 let authChanged;
 const location = new URL('https://mastermind-x.com/market_memory.html?ticker=AAPL&view=memory');
 const document = {readyState:'complete', documentElement:{getAttribute:()=>lang}, getElementById:id=>elements[id], addEventListener(type,fn){events[type]=fn;}};
-const context = {document, location, URL, localStorage:{getItem:key=>stored[key], setItem(key,value){stored[key]=value;}}, history:{replaceState(_,__,url){location.href=new URL(url,location).href;}}, fetch:url=>new Promise(resolve=>pending.push({url,resolve})), window:{MDXAuth:{onChange(fn){authChanged=fn;}}}};
+const context = {document, location, URL, localStorage:{getItem:key=>stored[key], setItem(key,value){stored[key]=value;}}, history:{replaceState(_,__,url){location.href=new URL(url,location).href;}}, fetch:url=>new Promise(resolve=>pending.push({url,resolve})), window:{addEventListener(){},MDXAuth:{onChange(fn){authChanged=fn;}}}};
 vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const summary = () => elements['mm-symbol-summary'].innerHTML;
@@ -208,7 +208,7 @@ const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);
 (async () => {
  await tick(); reply('/symbol/AAPL',401); reply('/macro?limit=6',401); await tick();
  submit(scenario.invalid); const invalidSummary=summary(); changeLanguage();
- assert.equal(summary(),invalidSummary); assert.ok(summary().includes('Check the ticker'));
+ assert.notEqual(summary(),invalidSummary,'invalid feedback follows the new locale'); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
  if(scenario.signOut) {authChanged(null); changeLanguage();}
  const beforeSignIn=summary();
  authChanged({id:'controlled-user'}); await tick();
@@ -238,5 +238,23 @@ const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);
         [node, "-e", script, str(ROOT / relative),
          json.dumps({"invalid": invalid, "signOut": sign_out})],
         capture_output=True, text=True, timeout=20, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("suite", [
+    "market_memory_intent.test.cjs",
+    "market_memory_retained.test.cjs",
+    "market_memory_auth_return.test.cjs",
+    "market_memory_retained_state.test.cjs",
+])
+def test_retained_owner_wire_auth_and_state_regressions(suite: str) -> None:
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the retained UI acceptance suite"
+    result = subprocess.run(
+        [node, str(ROOT / "tests" / "js" / suite),
+         str(ROOT / "templates" / "market_memory_retained.js"),
+         str(ROOT / "tests" / "fixtures" / "market_memory_retained_owner_wire.json")],
+        cwd=ROOT, capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
