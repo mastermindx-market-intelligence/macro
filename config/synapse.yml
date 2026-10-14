@@ -5923,6 +5923,59 @@ artifacts:
       (RO-3/F-21). Graded field set when maturity arrives (horizon: 10d post-expiry).
       Accruing from 2026-07; maturity_date 2026-09-30. Sole writer: scripts/build_vol_regime.py.
 
+  grey-deer-pullback-forward-log:
+    path: data/grey_deer_pullback/forward_log.jsonl
+    format: jsonl
+    producer: engine/grey_deer_pullback_forward.py
+    known_extra_writers:
+      - "scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the writer; holds no model, label, gate or clock logic"
+    owner_program: grey-deer-risk-intelligence
+    cadence: daily-engine
+    storage: git
+    asof_field: asof
+    freshness_sla_hours: 96
+    schema: grey_deer_pullback_forward_issue.v1
+    tier: shadow
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/grey_deer_pullback_forward_grade.py
+    external_consumers: []
+    notes: >
+      Grey Deer pullback prospective lane (O7/W5). Append-only issue log: one
+      immutable row per (asof, ticker, horizon, config_id) for SPY at h5/h10/h21,
+      written by the frozen writer under COLLECT_LANE=nightly and the
+      daily.yml:engine identity pin. Research tier only: never displayed, never
+      ranks, sizes or gates; no trial_ledger append. Stage-1b confirmatory claims
+      were 0 of 12 (PR #9122), so this log measures prospectively and promotes
+      nothing.
+
+  grey-deer-pullback-forward-graded:
+    path: data/grey_deer_pullback/forward_log_graded.jsonl
+    format: jsonl
+    producer: engine/grey_deer_pullback_forward_grade.py
+    known_extra_writers:
+      - "scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the grader"
+    owner_program: grey-deer-risk-intelligence
+    cadence: daily-engine
+    storage: git
+    asof_field: graded_at
+    freshness_sla_hours: 96
+    schema: grey_deer_pullback_forward_grade.v1
+    tier: shadow
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - scripts/audit_grading_closure.py
+    external_consumers: []
+    notes: >
+      Grade sidecar for grey-deer-pullback-forward-log. One row per matured issue
+      key with realized outcome, revision_flag (inputs digest recomputed over the
+      grade-time prefix) and grader provenance. Same lane and identity gates as
+      the writer. Research tier only; authority all-false.
+
   options-flow-index:
     path: site/flow/index.json
     format: json
