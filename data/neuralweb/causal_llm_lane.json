@@ -1,5 +1,6 @@
 {
-  "status": "armed",
-  "asof": "2026-10-12T23:42:29+00:00",
-  "reason": "auto_loop armed (operator ruling 2026-07-09); scheduled OAuth LLM run fires on the Tuesday nightly"
+  "status": "degraded_pack_only",
+  "asof": "2026-10-13T13:06:07+00:00",
+  "reason": "generator failed: rate_limited_all",
+  "degraded": true
 }

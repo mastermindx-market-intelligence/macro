@@ -1,60 +1,61 @@
-# Pullback source / clock / basis / rights qualification — manifest v1.1.0 FREEZE-READY DRAFT (14-ticker panel)
+# Pullback source / clock / basis / rights qualification — manifest v1.1.0 FROZEN (14-ticker panel)
 
 **Program:** `WS:GREY-DEER-RISK-INTELLIGENCE` (MAS-258) · **Operation:** `risk-radar-pullback-20261009` ·
 **Carrier key:** `grey-deer-fable-orchestration-20261003-001` · **Parent execution:** `grey-deer-20261003-astra-pickup-001` ·
 **Extends:** manifest `1.0.0` (`research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md`) ·
-**Manifest version:** `1.1.0` FREEZE-READY DRAFT (2026-10-12) · **Lane:** G-XT-MANIFEST, commissioned by the Grey Deer seat (session `da1ad7ad`).
+**Manifest version:** `1.1.0` FROZEN (written 2026-10-12, frozen 2026-10-13) · **Lane:** G-XT-MANIFEST, commissioned by the Grey Deer seat (session `da1ad7ad`).
 
-**Status: FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha.**
+**Status: FROZEN — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15). The seat records this file's git blob sha outside it, in prereg v1.1 §0 and `MANIFEST_BLOB_SHA` in `scripts/research/grey_deer_pullback_stage1b.py`; changed bytes are a different file, not this manifest.**
 
-This file is a freeze-ready draft eligible-input manifest for the stage-1b panel. It is a projection over v1.0.0
+This file is the frozen eligible-input manifest for the stage-1b panel. It is a projection over v1.0.0
 plus public corporate-action notices and the seat's store receipts (as_of 2026-10-07). It is not a source store, not a rights grant, not a freeze of
 prereg v1.1, and not a fitting result. It creates no entitlement. Per-ticker missingness, content hash, subframe sha256, row count, and first and last dates in §4 are those measured receipts. Where a public notice was not found, the cell
 is `UNVERIFIED` and names the search. No sentence here is a customer-facing claim.
 
-Read-only parent: v1.0.0, quoted below only for gate wording that this draft is required to keep.
+Read-only parent: v1.0.0, quoted below only for gate wording that this manifest is required to keep.
 v1.0.0's non-panel input rows (its §4 rows 2–17) are incorporated by reference and are not reprinted.
 
 ---
 
 ## 0. Changes from v1.0.0
 
-| Item | v1.0.0 | v1.1.0 draft |
+| Item | v1.0.0 | v1.1.0 |
 |---|---|---|
 | Qualified price universe | US SPY only (§4 row 1, §5) | QQQ, IWM, DIA, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY. SPY is excluded because its stage-1 results have already been seen (seat D2). |
 | Declared window | 2021-07-06 → 2026-10-07 | Same window. A ticker whose first row falls after the window start is a refusal (`BLOCKED / PANEL_COVERAGE`). The runner never trims. Measured first date is 2021-07-06 and measured last date is 2026-10-07 on every ticker. Raw row counts are 1320 (QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, XLY) and 1321 (DIA, XLB, XLC, XLK, XLV). Intersection coverage is 1320 common sessions. |
 | Calendar | One ticker against the NYSE session set | Intersection of the 14 tickers' sessions (A1 / D15). Pinned exclusion `{"2026-08-18"}`. Any other symmetric difference is `BLOCKED / CALENDAR_MISALIGNED`. Never forward-fill (seat D3). Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. Detail is the D15 row. |
 | Identity pins | SPY subframe sha256 and row count were deferred out of the manifest (v1.0.0 §5) | Per-ticker content hash and subframe sha256 are one digest: the stage-1 normalized-subframe sha256 over IDENTITY_COLUMNS of the raw, unadjusted rows ≤ as_of in the window. Both cells hold that digest. Row counts are filled in §4. |
 | Basis and split guard | RAW `close_raw`. Discontinuity guard is S08 `SPLIT_LIKE_RATIO = 0.75` (refuse, never re-adjust). | Raw unadjusted bytes stay the identity pin. Adjustment is only the pinned D14 table, then the log(1.25) check runs on adjusted closes. Dividends stay unadjusted and that is disclosed. Detail is the D14 row. |
-| Split adjustment (A1 / D14) | v1.0.0 refuses a split-like ratio and does not re-adjust. The pre-amendment v1.1 draft left G7 open between adjust and exclude, and a declared action on a break date refused `SPLIT_UNADJUSTED`. | DECIDED. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows before 2025-12-05: open, high, low, and close divided by 2.0; volume multiplied by 2.0; transactions unchanged. The observed close ratio on 2025-12-05 must lie within ±10% of 2.0, else `BLOCKED / SPLIT_TABLE_MISMATCH`. Any remaining log(1.25) break on adjusted closes is `BLOCKED / SPLIT_DISCONTINUITY` and is never inferred. Raw subframe sha256 stays the pin. Code, pending merge: `scripts/research/grey_deer_panel_adjust.py`. |
-| Calendar exclusion (A1 / D15) | One series against the NYSE sessions, with no pinned exclusion. The pre-amendment v1.1 draft required equal session sets and refused any symmetric difference. | The panel calendar is the intersection of the 14 tickers' sessions. The pinned exclusion set is exactly `{"2026-08-18"}` (absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, XLY; present for DIA, XLB, XLC, XLK, XLV). Any other symmetric difference is `BLOCKED / CALENDAR_MISALIGNED`. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. 2026-08-18 is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge. |
+| Split adjustment (A1 / D14) | v1.0.0 refuses a split-like ratio and does not re-adjust. The pre-amendment v1.1 draft left G7 open between adjust and exclude, and a declared action on a break date refused `SPLIT_UNADJUSTED`. | DECIDED. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows before 2025-12-05: open, high, low, and close divided by 2.0; volume multiplied by 2.0; transactions unchanged. The observed close ratio on 2025-12-05 must lie within ±10% of 2.0, else `BLOCKED / SPLIT_TABLE_MISMATCH`. Any remaining log(1.25) break on adjusted closes is `BLOCKED / SPLIT_DISCONTINUITY` and is never inferred. Raw subframe sha256 stays the pin. Code: `scripts/research/grey_deer_panel_adjust.py`, landed by PR #9091. |
+| Calendar exclusion (A1 / D15) | One series against the NYSE sessions, with no pinned exclusion. The pre-amendment v1.1 draft required equal session sets and refused any symmetric difference. | The panel calendar is the intersection of the 14 tickers' sessions. The pinned exclusion set is exactly `{"2026-08-18"}` (absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, XLY; present for DIA, XLB, XLC, XLK, XLV). Any other symmetric difference is `BLOCKED / CALENDAR_MISALIGNED`. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. 2026-08-18 is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, on main via PR #9082. |
 | Gates | G1–G6 open (§8) | G1–G6 remain open. G2's wording is unchanged. G7 is DECIDED by seat amendment A1 / D14. |
-| Status | `RECORDED — owner projection` | `FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha` |
+| Status | `RECORDED — owner projection` | `FROZEN — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); file blob sha recorded by the seat outside this file` |
 | Rights | Massive tape pointer for internal SPY fitting; publication undesignated | Same tape, same pointer, no new grant. Publication remains undesignated under G2. |
 | Corporate actions | No per-ETF action table | §6, one row per panel ETF, issuer or exchange URL, or `UNVERIFIED`. |
 | Non-panel inputs | §4 rows 2–17 written in full | Incorporated by reference to v1.0.0. Not reprinted. |
 | Outcomes | Not a fitting result | Still not a fitting result. No panel outcome is computed (seat D13). Nothing is written under `research/grey_deer/pullback_stage1b/`. |
 
-The seat assigned version `1.1.0` for this panel extension. This draft does not freeze prereg v1.1,
-manifest v1.1.0, or the trial family `grey_deer_pullback_v11`. Seat D11's budget constant stays
-`PREREG_V11_PENDING` outside this file and refuses a real run.
+The seat assigned version `1.1.0` for this panel extension and froze it together with prereg v1.1
+(`research/grey_deer/PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md`). Seat D11's trial family
+`grey_deer_pullback_v11` is frozen at budget 66 in the runner. The seat's real run registers it in
+`data/trial_ledger.jsonl` before any outcome is computed.
 
 ---
 
-## 1. Determinations this draft relies on
+## 1. Determinations this manifest relies on
 
-v1.0.0 D1–D8 stand for everything this draft does not reopen. The panel additions are the seat's
+v1.0.0 D1–D8 stand for everything this manifest does not reopen. The panel additions are the seat's
 D2, D3, D4, and D5, plus amendments A1 / D14 and A1 / D15, recorded here and not re-decided.
 
 | # | Determination | Consequence |
 |---|---|---|
-| P1 | The price store for the panel is the same Massive `us_stocks_sip/day_aggs_v1` tape as v1.0.0 §4 row 1 (`equity.bars.daily.massive`, `adjustment: none` / `close_raw`). This draft did not read `data/` (sparse checkout) and does not assert that any panel parquet is present. | Per-ticker inclusion, coverage, missingness, content hash, and subframe sha256 are the seat's measured receipts in §4 (as_of 2026-10-07). The rights pointer is the same register pointer as v1.0.0 row 1. This draft does not widen that pointer into a new grant. |
+| P1 | The price store for the panel is the same Massive `us_stocks_sip/day_aggs_v1` tape as v1.0.0 §4 row 1 (`equity.bars.daily.massive`, `adjustment: none` / `close_raw`). The lane that wrote this file did not read `data/` (sparse checkout) and does not assert that any panel parquet is present. | Per-ticker inclusion, coverage, missingness, content hash, and subframe sha256 are the seat's measured receipts in §4 (as_of 2026-10-07). The rights pointer is the same register pointer as v1.0.0 row 1. This manifest does not widen that pointer into a new grant. |
 | P2 | SPY is not a panel member (seat D2). The fourteen tickers are QQQ, IWM, DIA, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY. The declared window is 2021-07-06 through 2026-10-07, the same window as v1. | A first row after the window start refuses `BLOCKED / PANEL_COVERAGE`. The sample is never trimmed to the overlap. |
 | P3 | Calendar (seat D3, as amended by A1 / D15). The fold calendar runs on the panel's common DATE axis, which is the intersection of the 14 tickers' sessions. | A symmetric difference other than the pinned exclusion in P7 refuses `BLOCKED / CALENDAR_MISALIGNED`, and the refusal names that difference. No forward-fill. A missing row is `absent`. |
 | P4 | Identity (seat D4). Each ticker is pinned by a normalized-subframe sha256 from stage-1 `normalize_subframe` / `subframe_sha256` over `IDENTITY_COLUMNS` `(date, open, high, low, close, volume, transactions)`, plus row count, first date, and last date. The pin is the raw, unadjusted rows at or before as_of. | The seat filled those pins in §4. Content hash and subframe sha256 are one digest. A runner that still holds the literal `PREREG_V11_PENDING` refuses `BLOCKED / PREREG_V11_PENDING` before any feature, label, or outcome. That runner token is not a measurement cell in this file. |
 | P5 | Price adjustment (seat D5 amended by A1 / D14), which is gate G7 and is DECIDED. See §7. Raw subframe sha256 stays the pin. | D14 adjusts from the pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date have open, high, low, and close divided by the ratio and volume multiplied by the ratio; transactions are unchanged. Each pinned split is confirmed by the observed close ratio on the effective date lying within ±10% of the ratio, else `BLOCKED / SPLIT_TABLE_MISMATCH`. The log(1.25) break check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY` (never inferred). Dividends stay unadjusted. |
 | P6 | v1.0.0 D4 / gate G2. User-facing publication of a derived pullback probability still needs the feed-specific written designation. | G2 stays OPEN in v1.0.0's words. This lane is not the rights owner. |
-| P7 | Calendar exclusion (seat amendment A1 / D15). The panel calendar is the INTERSECTION of the 14 tickers' sessions in the window. The pinned excluded set is exactly `{"2026-08-18"}`. | 2026-08-18 is absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, and XLY, and present for DIA, XLB, XLC, XLK, and XLV. It is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge. Any symmetric difference other than that pinned set is `BLOCKED / CALENDAR_MISALIGNED`. Horizons count sessions on the shared intersection calendar, so a ticker that prints 2026-08-18 drops that close before targets are built. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. The constant is `PINNED_CALENDAR_EXCLUSIONS` in `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`), lane G-ADJ, pending merge. |
+| P7 | Calendar exclusion (seat amendment A1 / D15). The panel calendar is the INTERSECTION of the 14 tickers' sessions in the window. The pinned excluded set is exactly `{"2026-08-18"}`. | 2026-08-18 is absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, and XLY, and present for DIA, XLB, XLC, XLK, and XLV. It is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, on main via PR #9082. Any symmetric difference other than that pinned set is `BLOCKED / CALENDAR_MISALIGNED`. Horizons count sessions on the shared intersection calendar, so a ticker that prints 2026-08-18 drops that close before targets are built. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. The constant is `PINNED_CALENDAR_EXCLUSIONS` in `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`), lane G-ADJ, landed by PR #9091. |
 
 Yahoo, breadth, CBOE, intl ETF, basket OHLCV, CN, and FRED rows are unchanged from v1.0.0 and stay
 out of the panel sample. CN remains under `DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT`.
@@ -82,7 +83,7 @@ The tape-level pointer supports internal fitting and evaluation only in the sens
 recorded for that tape. It does not, by itself, record a per-ticker rights receipt. User-facing publication
 stays `source_unavailable` until G2 is closed by its owner. The seat's per-ticker measurement
 receipts are in §4, and G7 is DECIDED (A1 / D14). The panel qualification as a whole is
-freeze-ready and is frozen only when the seat records this file's blob sha.
+frozen. The seat records this file's blob sha outside it (prereg v1.1 §0, runner `MANIFEST_BLOB_SHA`).
 
 ---
 
@@ -92,19 +93,19 @@ Evidence classes are v1.0.0 §2. The panel is aimed at **HISTORICALLY_AVAILABLE*
 tape (as-printed RAW bytes; the identity pin is those unadjusted rows), inside the declared window.
 The seat's store receipt attests, for each ticker, 0 NaN cells, 0 non-positive closes, first date
 2021-07-06, and last date 2026-10-07 (as_of 2026-10-07). CURRENT_VINTAGE series remain
-ineligible as panel prices. This draft produces no GENUINELY_ISSUED artifact. The D14 adjustment is a
+ineligible as panel prices. This manifest produces no GENUINELY_ISSUED artifact. The D14 adjustment is a
 later runner step on a working copy. It does not re-adjust the stored bytes.
 
 Clock rules are v1.0.0 §3, plus:
 
 1. The common DATE axis is the panel calendar: the intersection of the 14 tickers' sessions in the
    declared window (A1 / D15, rule P7). Folds, purge, and the seat D8 block bootstrap, when a later
-   frozen runner implements them, sit on that axis. This draft does not run them. Expected panel:
+   frozen runner implements them, sit on that axis. This manifest does not run them. Expected panel:
    1320 common sessions, 2021-07-06 through 2026-10-07.
 2. The pinned exclusion set is exactly `{"2026-08-18"}`. That session is absent for QQQ, IWM, XLE,
    XLF, XLI, XLP, XLRE, XLU, and XLY, and present for DIA, XLB, XLC, XLK, and XLV. It is a source gap
    routed to the `massive_stock_day` collector owner. A diagnosis exists:
-   `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge.
+   `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, on main via PR #9082.
    A symmetric difference other than that pinned set refuses `BLOCKED / CALENDAR_MISALIGNED` and the
    refusal names the difference. Nothing is carried forward from a neighboring session. Horizons count
    sessions on the shared intersection calendar, so a ticker that has 2026-08-18 drops that close
@@ -138,13 +139,13 @@ Massive store; this worktree does not hold the parquet bodies.
 
 **Common rights.** RECORDED by pointer only, the same pointer as v1.0.0 §4 row 1: register :16-20
 → entitlement record. Feed scope controlling. User-facing feed designation controlling (G2). This
-draft does not quote the entitlement record and does not add a grant.
+manifest does not quote the entitlement record and does not add a grant.
 
 **Common allowed uses.** Internal fitting and evaluation within the entitled feed scope.
 User-facing publication of a derived probability: only under the feed-specific written designation
 (register :20), which is not supplied here.
 
-**Common disposition.** Not a frozen panel row until the seat records this file's blob sha. Internal use follows the v1.0.0 tape pointer.
+**Common disposition.** Frozen panel rows (manifest v1.1.0; the seat records the blob sha outside this file). Internal use follows the v1.0.0 tape pointer.
 Publication is `source_unavailable` while G2 is OPEN. Identity, coverage, and missingness are the seat's receipts in the table below. G7 is DECIDED (§7, A1 / D14).
 
 **Common units / basis / market.** USD · **RAW** (`close_raw`) · US, New York sessions · one ETF,
@@ -194,8 +195,8 @@ An origin is not eligible for a frozen panel use until this manifest is frozen. 
 frozen, is v1.0.0 §5 applied on the common DATE axis: every input the use needs is recorded for
 that use, `available_at` is at or before the origin under a HISTORICALLY_AVAILABLE receipt, market
 and basis and units match, and §3 guards pass. The measurement cells are the seat's receipts in §4.
-No panel origin is eligible until the seat records this file's blob sha. Pre-2021-07-06 dates stay excluded (v1.0.0 D1). SPY origins stay outside this panel
-(seat D2). This draft does not count episodes or event months.
+This file is frozen, so a panel origin is eligible exactly when the conditions above hold. Pre-2021-07-06 dates stay excluded (v1.0.0 D1). SPY origins stay outside this panel
+(seat D2). This manifest does not count episodes or event months.
 
 ---
 
@@ -206,7 +207,7 @@ applies to that ticker. Quotes are from the cited page and are at most fifteen w
 
 ### 6.1 Shared Select Sector events
 
-These apply to the Select Sector index series. Membership effect is not uniform. This draft does
+These apply to the Select Sector index series. Membership effect is not uniform. This manifest does
 not invent a per-name list the notice does not give.
 
 **S1 — GICS structure, effective after the close on 2023-03-17.** S&P DJI:
@@ -292,7 +293,7 @@ special rebalance are the rows above.
 
 ## 7. Gates
 
-G1–G6 keep v1.0.0 §8's gap, owner, and closing condition. Their v1.1 state is OPEN. This draft
+G1–G6 keep v1.0.0 §8's gap, owner, and closing condition. Their v1.1 state is OPEN. This manifest
 does not close any of them. G2's wording is the v1.0.0 sentence, unchanged. G7 is DECIDED by seat amendment A1 / D14.
 
 | Id | Gap (v1.0.0 wording for G1–G6) | Owner | What closes it | v1.1 state |
@@ -303,7 +304,7 @@ does not close any of them. G2's wording is the v1.0.0 sentence, unchanged. G7 i
 | G4 | COR1M / CBOE terms (row 7). | data-source owner | A determination recorded in the register; registry row for `data/cboe/`. | OPEN |
 | G5 | `intl_etf`, `breadth`, `baskets/ohlcv` registry rows (rows 6, 8, 9). | dataset-registry owner | Registry rows with producer, basis and rights. | OPEN |
 | G6 | FRED model-use determination (register :100). | rights owner | DETERMINED-FROM-PUBLISHED-TERMS row for model use. | OPEN |
-| G7 | Price adjustment policy, decided by seat amendment A1 / D14. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date have open, high, low, and close divided by the ratio and volume multiplied by the ratio; transactions are unchanged. Each pinned split is confirmed when the observed close ratio on the effective date lies within ±10% of the ratio (`SPLIT_CONFIRM_TOL = 0.10`, the closed interval from 0.9 times the ratio to 1.1 times the ratio), else `BLOCKED / SPLIT_TABLE_MISMATCH`. The log(1.25) break check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY` (an unpinned split is never inferred). Raw subframe sha256 stays the pin on the unadjusted bytes. Dividends are unadjusted, and that is disclosed. Implementation, pending merge, is `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`, `PINNED_SPLITS`, `PINNED_CALENDAR_EXCLUSIONS`, `SPLIT_CONFIRM_TOL = 0.10`), lane G-ADJ. | Grey Deer seat | Closed by seat amendment A1 / D14, recorded in this row. | DECIDED |
+| G7 | Price adjustment policy, decided by seat amendment A1 / D14. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date have open, high, low, and close divided by the ratio and volume multiplied by the ratio; transactions are unchanged. Each pinned split is confirmed when the observed close ratio on the effective date lies within ±10% of the ratio (`SPLIT_CONFIRM_TOL = 0.10`, the closed interval from 0.9 times the ratio to 1.1 times the ratio), else `BLOCKED / SPLIT_TABLE_MISMATCH`. The log(1.25) break check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY` (an unpinned split is never inferred). Raw subframe sha256 stays the pin on the unadjusted bytes. Dividends are unadjusted, and that is disclosed. Implementation, landed by PR #9091, is `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`, `PINNED_SPLITS`, `PINNED_CALENDAR_EXCLUSIONS`, `SPLIT_CONFIRM_TOL = 0.10`), lane G-ADJ. | Grey Deer seat | Closed by seat amendment A1 / D14, recorded in this row. | DECIDED |
 
 **In-window splits under the decided rule** (issuer notice S6, positive declarations only): **XLB, XLE, XLK,
 XLU, XLY**, each 2-for-1, post-split trading 2025-12-05. The rule is the pinned table in the G7 row
@@ -318,10 +319,10 @@ them inside the window, and that negative is `UNVERIFIED` in §6 rather than a c
 
 G1–G6 do not become panel-sample blockers beyond the blocks v1.0.0 already stated. G2 still blocks
 user-facing publication. G7 is DECIDED (A1 / D14) and the measurement cells are filled, so neither
-blocks this draft. Freeze still waits on the seat recording this file's blob sha.
-None of that authorizes a real panel run. A runner whose trial budget is still
-`PREREG_V11_PENDING` refuses before any feature, label, or outcome (seat D11). Seat D13 stands: no panel outcome before prereg v1.1 and
-manifest v1.1.0 are frozen by the seat, and v1 §14's ceiling carries over (no customer odds, no
+blocks this manifest, which the seat has frozen.
+A freeze is not a run. The runner refuses before any feature, label, or outcome while any identity pin,
+blob pin, or the trial budget is put back to `PREREG_V11_PENDING` (seat D11). Seat D13 stands: no panel outcome before prereg v1.1 and
+manifest v1.1.0 are frozen by the seat and merged, and v1 §14's ceiling carries over (no customer odds, no
 publication, no capital change, nothing written to PR #8721 or PR #8188).
 
 ---
@@ -332,8 +333,8 @@ Carried from v1.0.0 §7, with the panel refusals named. This lane does not imple
 
 1. Refuse an input whose manifest row is `source_unavailable` for the declared use.
 2. Refuse before any feature, label, or outcome while the runner's identity pins or the trial budget
-   are `PREREG_V11_PENDING` (`BLOCKED / PREREG_V11_PENDING`). The pin values in §4 are the seat's fill
-   for that later freeze. This lane does not copy them into a runner.
+   are `PREREG_V11_PENDING` (`BLOCKED / PREREG_V11_PENDING`). The pin values in §4 are the seat's fill;
+   the frozen runner carries the same values in `IDENTITY_PINS`.
 3. Refuse `BLOCKED / PANEL_COVERAGE` when a ticker's first row is after 2021-07-06. Do not trim.
 4. Build the panel calendar as the intersection of the 14 tickers' sessions. The pinned exclusion
    set is exactly `{"2026-08-18"}` (A1 / D15). Refuse `BLOCKED / CALENDAR_MISALIGNED` when the
@@ -348,14 +349,14 @@ Carried from v1.0.0 §7, with the panel refusals named. This lane does not imple
    `BLOCKED / SPLIT_DISCONTINUITY` on any remaining log(1.25) break in the adjusted closes. Do not
    infer an unpinned split. The raw subframe sha256 stays the pin. Dividends stay unadjusted.
 6. Record `absent`. Do not fill. Do not treat a printed zero as absent.
-7. Emit manifest version `1.1.0` only after this draft is frozen. A result written against this
-   draft would be a draft result. This lane writes no such result.
+7. Emit manifest version `1.1.0` only against this frozen file, whose git blob sha equals the
+   runner's `MANIFEST_BLOB_SHA`. This file writes no result.
 
 ---
 
 ## 9. Versioning and what this file is not
 
-- **Version `1.1.0` FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha.**
+- **Version `1.1.0` FROZEN — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); file blob sha recorded by the seat outside this file.**
   A successor re-pins v1.0.0's file-and-line citations before relying on them, as v1.0.0 itself
   requires.
 - **Not done here:** no store read by this lane, no price download, no label, no metric,

@@ -49,14 +49,14 @@
     "note": "16841 events across 826 distinct date(s)",
     "start": "2013-04-02"
   },
-  "elapsed_s": 7.403,
+  "elapsed_s": 4.803,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "earnings_call: score projection sync: score_store_absent",
     "macro_release: 32/32 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:974fa270d22d9c23bc3c8f7c88a3bf40556108a53c10c2e127fdd6ce069e148f",
+  "inputs_hash": "sha256:ae27045e347763c249e9e1acd2e38fb81fe029c6a681c8b30d985402c735aaa4",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -74,10 +74,10 @@
       "path": "data/chronicle/state_log.jsonl",
       "present": true,
       "rows": 49,
-      "sha256": "sha256:eedf89fdc5168aa28cdc00ba7f01b1354eebbf7b91f7f7acaf8dacbb4b4e5e73"
+      "sha256": "sha256:42a333f478f434f523958cd1900e914bee6fcbb4c5a0bc26ff0a4b4e0d5bccfd"
     }
   },
-  "produced_at": "2026-10-13T06:43:38Z",
+  "produced_at": "2026-10-13T08:41:07Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
@@ -88,7 +88,7 @@
     },
     "data/chronicle/state_log.jsonl": {
       "present": true,
-      "sha256": "sha256:eedf89fdc5168aa28cdc00ba7f01b1354eebbf7b91f7f7acaf8dacbb4b4e5e73"
+      "sha256": "sha256:42a333f478f434f523958cd1900e914bee6fcbb4c5a0bc26ff0a4b4e0d5bccfd"
     },
     "data/earnings/earnings.parquet": {
       "present": true,
@@ -116,7 +116,7 @@
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,
-      "sha256": "sha256:ba4a6783209acc71fa93fb7b05864a38fe4e55b64d9f51780218962d3f6ff9c2"
+      "sha256": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
     }
   },
   "tier": "display"

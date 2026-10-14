@@ -1,20 +1,20 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-10-11",
-  "generated_utc": "2026-10-11T05:15:55Z",
+  "as_of": "2026-10-13",
+  "generated_utc": "2026-10-13T08:48:31Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 325,
     "by_state": {
-      "overdue": 123,
-      "due": 23,
+      "overdue": 126,
+      "due": 36,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 175
+      "accruing": 159
     },
     "n_acknowledged": 0,
     "top_due": {
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "146 due/overdue, 1 missing, 175 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "162 due/overdue, 1 missing, 159 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -134,7 +134,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 3810
+        "n_past_check_by": 3855
       },
       "allowed_actions": [
         "inspect",
@@ -182,7 +182,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 3810
+        "n_past_check_by": 3855
       },
       "allowed_actions": [
         "inspect",
@@ -230,7 +230,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 37028
+        "n_past_check_by": 37258
       },
       "allowed_actions": [
         "inspect",
@@ -278,7 +278,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 37028
+        "n_past_check_by": 37258
       },
       "allowed_actions": [
         "inspect",
@@ -418,7 +418,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 292,
-        "n_past_check_by": 263
+        "n_past_check_by": 271
       },
       "allowed_actions": [
         "inspect",
@@ -465,8 +465,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 6552,
-        "n_past_check_by": 5142
+        "n_open": 6672,
+        "n_past_check_by": 5273
       },
       "allowed_actions": [
         "inspect",
@@ -513,7 +513,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 94,
+        "n_open": 95,
         "n_past_check_by": 84
       },
       "allowed_actions": [
@@ -578,7 +578,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 1585,
-        "n_past_check_by": 883
+        "n_past_check_by": 934
       },
       "allowed_actions": [
         "inspect",
@@ -2383,7 +2383,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 14879,
-        "n_past_check_by": 4599
+        "n_past_check_by": 4907
       },
       "allowed_actions": [
         "inspect",
@@ -2800,7 +2800,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 63,
-        "n_past_check_by": 12
+        "n_past_check_by": 16
       },
       "allowed_actions": [
         "inspect",
@@ -2929,8 +2929,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 178,
-        "n_past_check_by": 33
+        "n_open": 181,
+        "n_past_check_by": 35
       },
       "allowed_actions": [
         "inspect",
@@ -4152,8 +4152,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-04",
       "as_of": "2026-07-04",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "L4 gate needs n >= 60 matured 21d fires on the sector-ETF PRIMARY lane; each leg additionally splits 2018-19/2020-22/2023-> (>=20/era to report an era mean). BH q<=0.10 within the 16-trial EXIT-CROWD sub-family, printed ONLY when L1-L4 all complete. Below floor => ACCRUE, never KILL (§4).",
         "cadence": "daily snapshot accrual + on-manifest run",
@@ -4184,8 +4184,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-05",
       "as_of": "2026-07-05",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Phase-0 W1. Requires ≥25 logged failed-breakout fire events for statistical feasibility (MIN_N=25 server clamp). Come-back 2026-10-05 allows one full quarter of accrual. The research queue ranker (nw-quant-synthesis B) lists S14 as its first ranked customer.",
         "cadence": "quarterly",
@@ -4216,8 +4216,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-05",
       "as_of": "2026-07-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "validation_status": "phase0",
         "deployment_status": "unshipped",
@@ -4792,13 +4792,526 @@
       "packet": null
     },
     {
+      "clock_id": "experiments:picklab-cn-cnlab_1d_blastoff",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_1d_blastoff",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_1d_phase",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_1d_phase",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_1d_pure",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_1d_pure",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_capitulation_beta",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_capitulation_beta",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_chase_avoid",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_chase_avoid",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_flagship_nogate",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_flagship_nogate",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_lowvol_defensive",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_lowvol_defensive",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_policy_put",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_policy_put",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_qvix_panic",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_qvix_panic",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_random_ctrl",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_random_ctrl",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_rev_coiled",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_rev_coiled",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_rev_lowvol",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_rev_lowvol",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_rev_pure",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_rev_pure",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_rev_washout",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_rev_washout",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-cn-cnlab_star_20cm",
+      "source_system": "experiments",
+      "subject_id": "picklab-cn-cnlab_star_20cm",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-12",
+      "as_of": "2026-07-10",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:thematic-desk",
+      "source_system": "experiments",
+      "subject_id": "thematic-desk",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-13",
+      "as_of": "2026-06-23",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "score_ledger() grades a thesis when check_by<=today; display-only, no significance gate.",
+        "cadence": "daily",
+        "status": "measuring"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/thematic_desk/track_record.json"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "rule_experiments:disp_gate_1",
       "source_system": "rule_experiments",
       "subject_id": "disp_gate_1",
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-11",
+      "due_at": "2026-10-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4830,7 +5343,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-11",
+      "due_at": "2026-10-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4862,7 +5375,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-11",
+      "due_at": "2026-10-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4894,7 +5407,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-11",
+      "due_at": "2026-10-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4965,9 +5478,14 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
+          "market",
           "reliability",
           "contradictions",
           "bottom_sensors",
+          "options_entry",
+          "macro_weather",
+          "claim_reliability",
+          "inflation_intelligence",
           "government_revenue"
         ]
       },
@@ -5051,8 +5569,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 117961,
-        "n_with_falsifier": 1196,
+        "n_claims": 118085,
+        "n_with_falsifier": 1211,
         "falsifier_coverage": "1.0%",
         "blocking_reason": "falsifier coverage 1.0%; not a promotion-grade substrate"
       },
@@ -5067,504 +5585,6 @@
       ],
       "evidence_refs": [
         "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_1d_blastoff",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_1d_blastoff",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_1d_phase",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_1d_phase",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_1d_pure",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_1d_pure",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_capitulation_beta",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_capitulation_beta",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_chase_avoid",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_chase_avoid",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_flagship_nogate",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_flagship_nogate",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_lowvol_defensive",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_lowvol_defensive",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_policy_put",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_policy_put",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_qvix_panic",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_qvix_panic",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_random_ctrl",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_random_ctrl",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_rev_coiled",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_rev_coiled",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_rev_lowvol",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_rev_lowvol",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_rev_pure",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_rev_pure",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_rev_washout",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_rev_washout",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-cn-cnlab_star_20cm",
-      "source_system": "experiments",
-      "subject_id": "picklab-cn-cnlab_star_20cm",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-12",
-      "as_of": "2026-07-10",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:thematic-desk",
-      "source_system": "experiments",
-      "subject_id": "thematic-desk",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-13",
-      "as_of": "2026-06-23",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "score_ledger() grades a thesis when check_by<=today; display-only, no significance gate.",
-        "cadence": "daily",
-        "status": "measuring"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/thematic_desk/track_record.json"
       ],
       "regenerate_cmd": null,
       "acknowledged": false,
@@ -10283,17 +10303,17 @@
     {
       "clock_id": "trial_ledger:other",
       "source_system": "trial_ledger",
-      "subject_id": "other_135_families",
+      "subject_id": "other_136_families",
       "subject_type": "family",
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-10-07",
+      "as_of": "2026-10-12",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 486,
-        "n_families": 135
+        "n_trials": 487,
+        "n_families": 136
       },
       "allowed_actions": [
         "inspect",
