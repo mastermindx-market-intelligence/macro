@@ -140,6 +140,12 @@ class GuardTests(unittest.TestCase):
         out = self.remove(w, protected=[self.root / "pool"])
         self.assertEqual(out.get("skipped"), "human-driven root")
 
+    def test_manual_workspace_does_not_get_auto_retired(self):
+        w = self.candidate()
+        w.path = self.root / "pool/manual/unknown-human-checkout"
+        result = self.remove(w)
+        self.assertEqual(result.get("skipped"), "human-driven root")
+
     def test_operator_lock_denied(self):
         w = self.candidate()
         marker = pathlib.Path((self.worktree / ".git").read_text().split(": ",1)[1].strip())
