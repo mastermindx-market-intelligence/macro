@@ -288,6 +288,61 @@ def test_duplicate_local_asset_labels_are_not_additional_supply():
     _validate(result)
 
 
+def test_changed_source_withholds_a_replaced_industrial_view():
+    """W10-1: a withdrawn economics channel also withdraws the industrial-views panel.
+
+    ``_suppress_native_blocks`` collapses ``economics.native_blocks`` to ``[]`` for every
+    mapped omission — ``changed_source`` included — while the industrial-views channel read
+    ``bundle.interpretation_blocks`` unconditionally. A changed source therefore published
+    stale causal text beside an empty economics panel: exactly the pairing
+    ``select_mining_evidence`` refuses for the drawer with ``generation_changed``.
+
+    Two arms, both load-bearing:
+
+    * WITHDRAWN (the obligation) — ``changed_source`` carrying one replaced industrial view.
+      ``native_blocks == []``, ``limitations == ['changed_source']`` and status ``degraded``
+      are the OBSERVED pre-fix baseline and must not move; the new fact is
+      ``industrial_views == []``.
+    * NOT-WITHDRAWN (the positive control) — ``copper_complete``, which carries no omission
+      and OBSERVEDly one native block, with the same view: the view must still publish.
+      Without this arm the pin is a bare negative assertion that a mutant emptying
+      ``interpretation_blocks`` wholesale would also satisfy.
+
+    Synthetic casebook via ``dataclasses.replace`` only. No fixture edit, no route, no I/O.
+    """
+    view = {
+        "stable_subject_id": "subject:ardent-copper",
+        "view_kind": "industrial",
+        "description": "fictional smelter constraint carried over from the prior source revision",
+        "evidence_refs": ["synthetic-copper-source-4"],
+    }
+
+    # Arm 1 — the obligation: withdrawal takes the causal text with it.
+    case = synthetic_case("changed_source")
+    withdrawn = composition.compose_mining_research(
+        case.query, _replace(case.bundle, interpretation_blocks=(view,))
+    )
+    assert withdrawn["economics"]["native_blocks"] == [], withdrawn["economics"]["native_blocks"]
+    assert withdrawn["limitations"] == ["changed_source"], withdrawn["limitations"]
+    assert withdrawn["summary"]["status"] == "degraded", withdrawn["summary"]
+    assert withdrawn["industrial_views"] == [], withdrawn["industrial_views"]
+    _validate(withdrawn)
+
+    # Arm 2 — the positive control: a non-withdrawn source still publishes the view.
+    copper = synthetic_case("copper_complete")
+    published = composition.compose_mining_research(
+        copper.query, _replace(copper.bundle, interpretation_blocks=(view,))
+    )
+    assert len(published["economics"]["native_blocks"]) == 1, published["economics"]["native_blocks"]
+    assert "changed_source" not in published["limitations"], published["limitations"]
+    assert [v["stable_subject_id"] for v in published["industrial_views"]] == [
+        "subject:ardent-copper"
+    ], published["industrial_views"]
+    assert published["industrial_views"][0]["description"] == view["description"]
+    assert published["industrial_views"][0]["evidence_refs"] == ["synthetic-copper-source-4"]
+    _validate(published)
+
+
 def test_internal_transfer_keeps_elimination_sign():
     """MGD-19 / W-R: an intersegment elimination row keeps its reported negative sign."""
     # The synthetic rare-earth complete case exposes no internal-transfer row; the contract
