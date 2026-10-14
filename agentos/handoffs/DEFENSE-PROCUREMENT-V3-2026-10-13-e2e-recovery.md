@@ -2,7 +2,7 @@
 workstream: WS:DEFENSE-PROCUREMENT-V3
 session: 01a13300-c75b-79c3-83f9-79b3b4c01dc7
 model: codex
-ended_because: active_execution_checkpoint
+ended_because: ci_handoff
 mission: Complete the included Defense Procurement V3 investor product under the current Chairman commission.
 state_before: Original publication failure and proof-integrity gaps; stale entitled product; incomplete issuer economics and acceptance.
 changed:
@@ -804,3 +804,30 @@ On unchanged V14 bytes, a diagnostic timing batch passes10/10(max2.860s). Earlie
 Separate oversight prep is saved at3348d3593252 after independent Fabric MiniMax review of the chronology delta. Parent corrected the review's invalid -05:00 example by checking all three actual layers: same UTC date accepted, future publication and non-UTC spelling refused. Existing Fabric ledger records reviewer acceptance of that bounded repair. Capacity/source review operations, GAO source quarantine, identity owner, Terminal778 and real-subject acceptance stay on their original gates.
 
 Next: finish affected compatibility checks, commit and push this integration to the same draft PR before running the lengthy full proof, so hosted checks and local proof can overlap. Exact-source witness, independent acceptance and protected publication gates remain required.
+
+
+### October14 12:30 UTC current-generation proof and fence correction
+
+Source3cfc492d integrates protected main a6efa04. The complete105-case proof
+passed104 plus one expected skip; seal991b1aa511ec0e9d covers this committed
+generation exactly. The24-cell actual-source ASGI capture passed all geometry,
+locale/theme, six-theme and loading checks. Fresh ten-sample mobile measurement
+passed all ten with median2789.7ms and p95/max2858.3ms. The earlierV14miss
+3686.5ms and unresolved original cause remain retained. This is explicit local
+test-principal qualification, not installed entitlement or customer acceptance.
+Evidence: research/defense_intelligence/e2e_20261011/combined_generation_v15_proof.
+
+Hosted run38560088901 pack9 failed solely on this handoff's invalid enum
+active_execution_checkpoint. The header now uses supported ci_handoff; local
+AgentOS validation passes. A proof-runtime browser attempt lacked Playwright,
+started no capture, stopped cleanly and was retained; the installed browser
+runtime then captured the unchanged stage. No product input was substituted.
+
+Adjacent capacity preparation is saved on the isolated existing carrier at
+67ea7fc02fd6: source semantics reviewed and corrected, explicit clock advancement
+fixed with329passed/1skip, historical rows preserved. PAC3worksheet check-only
+refused the unadmitted Army host; canonical data stayed unchanged. A versioned
+source-contract amendment and the original unsettled capacity code review remain
+necessary. GAOaccess, originalQ3/P2 effects, Terminal778 custody and second-real-
+subject acceptance remain open. Root continues the correctedPR9066 checks and
+protected release sequence; no financial CAS or production publication occurred.
