@@ -292,9 +292,10 @@ waves:
     title: PBOC liquidity-composition read (display/context)
     status: in_progress
     depends_on: [GD-0A]
-    # 2026-10-13: W7 Grok lane GD-W7-PBOCLIQ (grok-4.7, mmx-ubuntu0, branch
-    # lane/grey-deer-w7-pbocliq-20261013 off main eb7c4d674235) drafts the display-tier
-    # engine read + tests + doc. Judged by artifact on return; nothing is merged yet.
+    # 2026-10-14: the display-tier engine read engine/china_pboc_liquidity.py, its tests
+    # and research/grey_deer/PBOC_LIQUIDITY_COMPOSITION_2026-10-13.md merged in PR 9208
+    # (squash ed1497887c99; Grok lane GD-W7-PBOCLIQ plus a seat NaN/inf guard). No surface
+    # consumes it yet; wiring it into a display surface is uncommissioned.
   - id: GD-5A
     title: Long-end duration shock expert (shadow)
     status: todo
@@ -334,9 +335,10 @@ waves:
     title: Portfolio envelope shadow adapter (zero book mutation)
     status: todo
     depends_on: [GD-3]
-    # 2026-10-13: read-only census lane GD-W7-MMCENSUS (grok-4.7, mmx-ubuntu1) maps
-    # the Mastermind Portfolio consumer seams. The census is not the adapter, and the
-    # adapter build is still uncommissioned.
+    # 2026-10-14: the read-only census of the Mastermind Portfolio consumer seams
+    # (research/grey_deer/PORTFOLIO_SHADOW_ADAPTER_CENSUS_2026-10-13.md, Grok lane
+    # GD-W7-MMCENSUS) merged in PR 9208 (squash ed1497887c99). The census is not the adapter,
+    # and the adapter build is still uncommissioned.
   - id: GD-10
     title: Portfolio market-truth cutover (Sol + Chairman)
     status: todo
@@ -405,50 +407,57 @@ waves:
     depends_on: [GD-PB-W3]
   - id: GD-PB-W4-S1B-RUN
     title: Stage-1b frozen run on the 14-ETF panel (12 claims) plus red-team addendum
-    status: awaiting_ci
+    status: done
     pr: 9122
     # results 0 of 12 claims pass; Opus-class red team CHANGES_REQUIRED (F1-F7), answered by an addendum, never by editing results.
-    # head 728090e7be62; only red = inherited main ci-pack-0/ci-gate (packing probes), healed by sibling PR 9141. Not armed; hand-merge after update-branch.
+    # MERGED 2026-10-14T01:41:15Z, squash 1e9364f5ab8c (head da0f01841a7c); landing verified by per-path blob compare.
     depends_on: [GD-PB-W4-S1B]
   - id: GD-PB-W5
     title: Prospective SPY pullback lane in the nightly (writer, grader, readiness floor, heartbeat, grading-closure audit)
-    status: awaiting_ci
+    status: done
     pr: 9128
-    # head a4c0b146f5a8; ci-pack-0 red = test_exclusive_curation_narrows_ordinary_code_prs, which main fails too (build_free_content 5604 > 5600 s); the forward job is already scope exclusive. Heal = sibling PR 9141. Not armed; hand-merge after update-branch.
+    # MERGED 2026-10-14T02:07:20Z, squash af468522ab6e (head 3e4fecb7fa24); FWDREVIEW's 10 findings repaired on the head (FWDFIX, FWDAUDIT) before merge.
+    # PRODUCTION_PROOF pending: the first daily.yml run whose head descends from af468522ab6e must write SPY rows to data/grey_deer_pullback/forward_log.jsonl with no grey-deer-pullback-*-error annotation.
     depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
   - id: GD-PB-W7
     title: W7 Grok fan-out - power-floor projection, episode-rule options v1.2, T12 episode samples, T13/T14/T19 prereg drafts, prospective panel addendum, W5 review, GD-4C, GD-9A census
-    status: in_progress
-    # 10 grok-4.7 lanes over ssh on mmx-ubuntu0/1/2/3, launched 2026-10-13 ~12:50Z. Lane matrix: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md. Every return is a DRAFT judged by artifact; prereg drafts are not frozen and spend no trial budget.
+    status: done
+    pr: 9208
+    # squash ed1497887c99. 13 grok-4.7 lanes over ssh on mmx-ubuntu0/1/2/3, all judged by artifact (lane receipts: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md). T13/T14/T19 prereg drafts and the panel addendum are DRAFTS: not frozen, no trial budget spent.
     depends_on: [GD-PB-W4-S1B-RUN, GD-PB-W5]
+  - id: GD-PB-W8
+    title: W8 research follow-up - readiness-floor projection (exploratory) and panel episode-rule options for a v1.2 prereg (draft memo)
+    status: done
+    pr: 9215
+    # squash 54195c10bbeb. Reads only the committed stage-1/1b results (blob-pinned); no re-run, no price store, no trial ledger. FLOORPROJ: median years until every floor holds, SPY 12.48/7.01/5.54, panel 3.45/9.32/not reachable (h5/h10/h21). D9ALT: panel h21 collapses because the window reach (42 sessions) exceeds the largest event-date gap (38); candidates C1/C2/C3 named by rule structure, none frozen.
+    depends_on: [GD-PB-W4-S1B-RUN]
 next_action: >
-  Read the first nightly after PR 9128 merges: data/grey_deer_pullback/forward_log.jsonl
-  must exist on main with SPY rows and the run must carry no
-  grey-deer-pullback-*-error annotation (GD-PB-T03 and GD-PB-W4-GHB closed 2026-10-13 from
-  ledger_heartbeat_state.json ed391bf44d44). State: W0 through W4 are
-  merged (PRs 8785, 8833, 8835, 8852, 8854, 8938, 9070, 9082, 9091, 9114). Both frozen
-  retrospective runs are null - stage-1 (PR 8938, SPY only) and stage-1b (PR 9122, 14-ETF
-  panel under prereg v1.1): 0 of 12 claims pass (h5 P-all rejected and FRAGILE, h10/h21
-  underpowered, every P-active cell blocked OBSERVER_NOT_ON_MAIN). Neither run is ever
-  repeated on real data; a new configuration is a new prereg revision with its own trial
-  budget. W5 (PR 9128) runs the frozen SPY lane prospectively in the nightly cl_gex band:
-  the writer issues to forward_log.jsonl, the grader writes forward_log_graded.jsonl,
-  refusals go to forward_log_refusals.jsonl, and the log is enrolled in
-  check_ledger_advance and audit_grading_closure. It is research tier, appends nothing to
-  data/trial_ledger.jsonl and holds no rank, size or gate authority. Grading starts only
-  once each horizon has elapsed; scripts/research/grey_deer_pullback_readiness.py reports
-  when the power floor can be met. P-active stays blocked until PR 8188 lands with
-  byte-identical rules.
+  Read the first nightly whose head descends from af468522ab6e (PR 9128):
+  data/grey_deer_pullback/forward_log.jsonl must exist on main with SPY rows,
+  forward_log_refusals.jsonl must explain any refusal, and the run must carry no
+  grey-deer-pullback-*-error annotation; on clean rows record GD-PB-W5 at
+  PRODUCTION_PROOF in a records PR. Rows needing US prices after 2026-10-09 wait for US
+  collection to publish again (QLedger GH001, owner QLedger). State: W0 through W5, W7 and
+  W8 are merged (PRs 8785, 8833, 8835, 8852, 8854, 8938, 9070, 9082, 9091, 9114, 9122,
+  9128, 9208, 9215). Both frozen retrospective runs are null - stage-1 (PR 8938, SPY only)
+  and stage-1b (PR 9122, 14-ETF panel under prereg v1.1): 0 of 12 claims pass. Neither run
+  is ever repeated on real data; a new configuration is a new prereg revision with its own
+  trial budget. W8's floor projection (exploratory) puts every SPY readiness floor years
+  away and the panel h21 floor out of reach under the frozen v1.1 episode rule; its draft
+  memo names v1.2 rule candidates (C1/C2/C3) chosen by rule structure, not floor clearance.
+  Freezing a v1.2 rule or any T13/T14/T19 draft prereg is a separate seat act (blob pins,
+  its own trial family, a READ_ONLY audit before freeze). The forward lane is research tier,
+  appends nothing to data/trial_ledger.jsonl and holds no rank, size or gate authority.
+  P-active stays blocked until PR 8188 lands with byte-identical rules.
   The held 2026-10-08 incident note belongs to PR 8648 and is never written here.
   Operation risk-radar-pullback-20261009 under carrier key
   grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
   incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
   Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
-  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md.
+  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md.
   GD-UI-RADAR-1 is live and DO_NOT_REDO (PR 7467); GD-UI-RADAR-2 keeps its own
-  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/10 uncommissioned; GD-4C
-  is drafting and GD-9A has only a census running (both W7 Grok lanes, 2026-10-13).
-
+  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/10 uncommissioned; GD-4C's engine
+  read is merged (PR 9208) with no consuming surface yet; GD-9A has a merged census only.
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection
