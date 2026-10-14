@@ -13988,6 +13988,17 @@ jobs:
       - "lib/store.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      # 2026-10-14 RIC D0 #9252 (contract-delta on head 0061be7a): engine/fed_path.py now lazily
+      # imports collectors.rate_futures for futures/SEP provenance, so the closure reaches the
+      # collector and its calendar/session libs. Declared exactly, widening only; ceilings unchanged.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/rate_futures.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
