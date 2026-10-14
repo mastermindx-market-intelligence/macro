@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T16:40:58.792840+00:00",
-  "count": 2907,
+  "generated_at": "2026-10-14T16:56:00.188519+00:00",
+  "count": 2909,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,7 @@
     "The Punchline",
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
+    "U.S. Department of Agriculture, National Agricultural Statistics Service",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -111,6 +112,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vkqr7ns1tbk-88ffc3",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T14:14:12Z",
+      "summary_points": [
+        "Quality Factor Momentum Overextension: GSP1QUAL up 20% in 3 months (12m high), RSI 83, driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names (GSX1BFQS 105% call at 1.38%, 25d).",
+        "Crisis-Driven Quality Flight: GSP1QUAL outperforms USGG10YR during crises (Covid/Regional Banking), capital flows to quality as rates price risk-off sentiment.",
+        "Critical Quality-Momentum Risk: Negative correlation (-0.6433) between GSP1QUAL and AI/momentum/beta trades signals potential underperformance in quality portfolios during momentum regimes, requiring strategic adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pk35lyapk08-713b6b",
       "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
@@ -752,6 +772,36 @@
       "tickers": [],
       "top_pick": false,
       "pages": 59,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usda-nass-2026-10-13-crop-progress",
+      "title": "Crop Progress, October 13, 2026",
+      "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+        "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+        "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+        "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+        "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+        "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+        "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+        "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+      ],
+      "tags": [
+        "agriculture",
+        "corn",
+        "soybeans",
+        "harvest",
+        "crop-condition"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },

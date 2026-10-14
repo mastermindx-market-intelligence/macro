@@ -6954,19 +6954,131 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
     ], parsed
 
 
+def test_ancestor_init_census_honours_gate_flag(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """(o) the census honours ``--gate`` through the load choke point.
+
+    ``--gate`` defaults to ``None`` (whole manifest), so the published
+    census is unchanged; when present the census must filter exactly like
+    every other mode does — ``load_legacy_jobs(path, gate=...)`` is the
+    single choke point. A fixture with one ``code`` job (three ancestor
+    inits) and one ``data`` job (two ancestor inits) prints five pairs
+    whole-manifest, three under ``--gate code`` (only ``csub/`` rows), two
+    under ``--gate data`` (only ``dsub/`` rows). Before the census passed
+    ``args.gate`` every invocation printed the same five pairs (OBSERVED).
+
+    ``GIT_CEILING_DIRECTORIES`` pins ``_find_repo_root`` to the fixture
+    tree, same ceiling the CLI summary test documents.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "code-job": {
+                        **job_block,
+                        "gate": "code",
+                        "paths": ["csub/deep/mod.py", "csub/other/mod.py"],
+                    },
+                    "data-job": {
+                        **job_block,
+                        "gate": "data",
+                        "paths": ["dsub/deep/mod.py"],
+                    },
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "csub", body=b"# csub\n")
+    _aic_optional_init(tmp_path / "csub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "csub" / "other", body=b"")
+    _aic_optional_init(tmp_path / "dsub", body=b"# dsub\n")
+    _aic_optional_init(tmp_path / "dsub" / "deep", body=b"")
+    monkeypatch.setenv(
+        "GIT_CEILING_DIRECTORIES", str(tmp_path.resolve().parent)
+    )
+
+    def _census(gate_args: list[str]) -> str:
+        args = PACK.parse_args(
+            [
+                "--workflow",
+                str(workflow),
+                "--ancestor-init-census",
+                *gate_args,
+            ]
+        )
+        assert PACK._run_ancestor_init_census(args) == 0
+        return capsys.readouterr().out
+
+    whole = _census([])
+    code = _census(["--gate", "code"])
+    data = _census(["--gate", "data"])
+
+    assert whole.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=5 "), whole
+    assert "jobs=2/2" in whole.splitlines()[0], whole
+    assert code.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=3 "), code
+    assert "jobs=1/1" in code.splitlines()[0], code
+    assert data.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=2 "), data
+    assert "jobs=1/1" in data.splitlines()[0], data
+    assert "csub/" in code and "dsub/" not in code, code
+    assert "dsub/" in data and "csub/" not in data, data
+    assert {line.split()[0] for line in code.splitlines()[1:]} == {
+        "csub/__init__.py",
+        "csub/deep/__init__.py",
+        "csub/other/__init__.py",
+    }, code
+    assert whole != code and code != data and whole != data
+
+
 @pytest.mark.parametrize(
-    "other_flag", ["--execute", "--validate-only", "--plan-only"]
+    "other_flag,other_value",
+    [
+        pytest.param("--execute", None, id="--execute"),
+        pytest.param("--validate-only", None, id="--validate-only"),
+        pytest.param("--plan-only", None, id="--plan-only"),
+        pytest.param("--plan-json", "/nonexistent/plan.json", id="--plan-json"),
+        pytest.param("--emit-plan-json", "-", id="--emit-plan-json"),
+    ],
 )
-def test_ancestor_init_census_refuses_ambiguous_modes(other_flag: str) -> None:
+def test_ancestor_init_census_refuses_ambiguous_modes(
+    other_flag: str, other_value: "str | None", capsys: pytest.CaptureFixture[str]
+) -> None:
     """(n) the census is terminal: pairing it with another mode exits 2 at parse.
 
     Before this refusal ``--ancestor-init-census`` silently WON the dispatch
     in ``main`` (observed rc=0 with the paired flag ignored). ``parse_args``
     must now reject the combination the same way it rejects
     ``--execute``/``--validate-only`` — a usage error, exit code 2.
+
+    ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+    (``default=None``) are the remaining silent-win class: they are NOT
+    ``store_true``, so a plain truthiness loop misses them and the valueless
+    tokens cannot be passed bare — the pair is (flag, value) and the refusal
+    keys on ``is not None``.
+
+    rc 2 alone does not say WHICH refusal fired — any later ``parser.error``
+    would do. The exact message is part of the contract (a renamed string is
+    a silent UX break), so stderr is captured (``capsys``, as the rest of
+    this suite uses) and asserted as well.
     """
+    argv = ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
+    if other_value is not None:
+        argv.append(other_value)
     with pytest.raises(SystemExit) as excinfo:
-        PACK.parse_args(
-            ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
-        )
+        PACK.parse_args(argv)
     assert excinfo.value.code == 2
+    captured = capsys.readouterr()
+    assert (
+        "--ancestor-init-census is a terminal report-only mode" in captured.err
+    ), captured.err
