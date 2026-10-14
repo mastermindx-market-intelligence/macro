@@ -847,7 +847,7 @@ def bind_species(
     if engine_ledger == LEDGER_NONE:
         return {"validation_state": VALIDATION_STATE_DEFAULT, "bound": [], "reason": "no_ledger"}
 
-    bound: list[dict[str, str]] = []
+    bound: list[dict[str, Any]] = []
     for row in species:
         binding = ((row.get("ledger_binding") or {}).get("ledger")) or ""
         for token in _species_tokens(binding):
@@ -856,6 +856,17 @@ def bind_species(
                     {
                         "species_id": str(row.get("species_id")),
                         "validation_status": str(row.get("validation_status")),
+                        # Raw existing-owner context for readers, not empirical
+                        # qualification of another engine/task/cohort.
+                        "owner_scope": {
+                            "version": row.get("version"),
+                            "horizon_class": row.get("horizon_class"),
+                            "archetype_scope": row.get("archetype_scope"),
+                            "regime_scope": row.get("regime_scope"),
+                            "market_scope": row.get("market_scope"),
+                            "ledger": (row.get("ledger_binding") or {}).get("ledger"),
+                            "since": (row.get("ledger_binding") or {}).get("since"),
+                        },
                     }
                 )
                 break
