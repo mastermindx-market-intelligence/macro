@@ -17,6 +17,7 @@ from scripts.leadership_rotation_run import (
     FAMILY_ORDER,
     PairSeries,
     _CONTROL_NAMES,
+    build_groups,
     evaluate_family,
     evaluate_group,
     evaluate_pair,
@@ -182,8 +183,8 @@ def test_immature_precedence_over_underpowered():
         "honest_n": {"H1": 25, "H2": 5, "H3": 25},
         "test_n": {"H2": 25},
         "H1": {"decision": {"margins_met": False}, "stability": {"delay_reduction": {"holds": True}, "burden_cut_b": {"holds": True}}},
-        "H2": {"point": 0.01, "safety": {"ok": True}},
-        "H3": {"point": 0.01},
+        "H2": {"point": 0.01, "safety": {"ok": True}, "stability": {"holds": True}},
+        "H3": {"point": 0.01, "stability": {"holds": True}},
     }
     from scripts.leadership_rotation_run import _group_verdicts
 
@@ -249,3 +250,172 @@ def test_cli_controls_json_exit_zero(capsys):
     data = json.loads(out)
     assert code == 0
     assert len(data) == 10
+
+
+# MUTATION: scripts/leadership_rotation_run.py:1100 skip P2_EXCLUDED for every partition
+def test_build_groups_keeps_xlp_vs_smh_in_p1_not_p2():
+    symbols = sorted({s for _id, (_g, num, den) in st.PAIRS.items() for s in (num, den)} | {"SPY"})
+    n = 300
+    aligned = {sym: np.ones(n) for sym in symbols}
+    spy = aligned["SPY"]
+    p1 = build_groups(aligned, spy, "P1")
+    p2 = build_groups(aligned, spy, "P2")
+    p1_ids = {ps.pair_id for plist in p1.values() for ps in plist}
+    p2_ids = {ps.pair_id for plist in p2.values() for ps in plist}
+    assert "xlp_vs_smh" in p1_ids
+    assert "xlp_vs_smh" not in p2_ids
+
+
+# MUTATION: scripts/leadership_rotation_run.py:1011 set stable=True for H2 in _group_verdicts
+def test_h2_verdict_fails_when_stability_clause_fails():
+    gr = {
+        "group": "defensive_sector",
+        "executable": True,
+        "coverage": 0.95,
+        "honest_n": {"H1": 30, "H2": 30, "H3": 30},
+        "test_n": {"H2": 30, "H3": 30},
+        "H1": {
+            "decision": {"margins_met": True},
+            "stability": {"delay_reduction": {"holds": True}, "burden_cut_b": {"holds": True}},
+        },
+        "H2": {
+            "point": 0.02,
+            "safety": {"ok": True},
+            "stability": {"holds": False},
+        },
+        "H3": {"point": 0.01, "stability": {"holds": True}},
+    }
+    from scripts.leadership_rotation_run import _group_verdicts
+
+    holm = [0.01 if g == "defensive_sector" and h == "H2" else 1.0 for g, h in FAMILY_ORDER]
+    v = _group_verdicts(gr, "P0", holm, FAMILY_ORDER)
+    assert v["H2"] == "DEVELOPMENT_FAIL"
+
+
+# MUTATION: scripts/leadership_rotation_run.py:1024 set stable=True for H3 in _group_verdicts
+def test_h3_verdict_fails_when_stability_clause_fails():
+    gr = {
+        "group": "defensive_sector",
+        "executable": True,
+        "coverage": 0.95,
+        "honest_n": {"H1": 30, "H2": 30, "H3": 30},
+        "test_n": {"H2": 30, "H3": 30},
+        "H1": {
+            "decision": {"margins_met": True},
+            "stability": {"delay_reduction": {"holds": True}, "burden_cut_b": {"holds": True}},
+        },
+        "H2": {"point": 0.01, "safety": {"ok": True}, "stability": {"holds": True}},
+        "H3": {"point": 0.02, "stability": {"holds": False}},
+    }
+    from scripts.leadership_rotation_run import _group_verdicts
+
+    holm = [0.01 if g == "defensive_sector" and h == "H3" else 1.0 for g, h in FAMILY_ORDER]
+    v = _group_verdicts(gr, "P0", holm, FAMILY_ORDER)
+    assert v["H3"] == "DEVELOPMENT_FAIL"
+
+
+# MUTATION: scripts/leadership_rotation_run.py:401 append one t per day instead of out.extend([t] * c)
+def test_pair_session_third_boundaries_differ_when_pairs_start_late():
+    from scripts.leadership_rotation_run import _measured_pairs_per_day, _pair_session_indices
+
+    n = 600
+    t = np.linspace(1.0, 1.05, n)
+    spy = np.ones(n)
+    early = PairSeries("e", "g", "N", "D", t, np.ones(n), spy)
+    late_num = np.concatenate([np.full(280, np.nan), t[280:]])
+    late = PairSeries("l", "g", "N", "D", late_num, np.ones(n), spy)
+    start, end = 260, 550
+    cores = []
+    for ps in (early, late):
+        from scripts.leadership_rotation_run import _evaluate_pair_core
+
+        cores.append(_evaluate_pair_core(ps, start=start, end=end))
+    mpd = _measured_pairs_per_day([early, late], cores, end)
+    pair_sess = _pair_session_indices(mpd, start, end)
+    day_sess = [t for t in range(start, end + 1) if mpd[t] > 0]
+    s_pair = np.sort(np.asarray(pair_sess, dtype=np.int64))
+    s_day = np.sort(np.asarray(day_sess, dtype=np.int64))
+    assert len(s_pair) != len(s_day)
+    b_pair = (int(s_pair[len(s_pair) // 3]), int(s_pair[(2 * len(s_pair)) // 3]))
+    b_day = (int(s_day[len(s_day) // 3]), int(s_day[(2 * len(s_day)) // 3]))
+    assert b_pair != b_day
+
+
+# MUTATION: scripts/leadership_rotation_run.py:549 use all b1_days for b1_Wm not matured-only
+def test_h2_h3_finite_at_calendar_end_with_pending_baseline_outcomes():
+    n = 800
+    dr = np.concatenate([np.zeros(400), np.full(400, 0.012)])
+    R = np.cumsum(dr)
+    num = np.exp(R)
+    den = np.ones(n)
+    spy = np.exp(0.0005 * np.arange(n))
+    ps = PairSeries("end", "g", "N", "D", num, den, spy)
+    end = n - 1
+    W = inf.stationary_bootstrap_weights(n, reps=32, seed=7)
+    gr = evaluate_group([ps], start=300, end=end, partition="P0", W=W)
+    assert gr["H2"]["point"] is not None
+    assert gr["H3"]["point"] is not None
+    assert gr["H2"]["interval_90"][0] is not None
+    assert gr["H3"]["interval_90"][1] is not None
+
+
+# MUTATION: scripts/leadership_rotation_run.py:531 cluster B1 items via _item_coord_map instead of coords.append(t)
+def test_b1_bootstrap_replicate_sd_positive_with_own_index_weights():
+    n = 500
+    spy = np.ones(n)
+    num = np.ones(n)
+    den = np.ones(n)
+    num[200:400] = np.linspace(1.0, 1.08, 200)
+    ps = PairSeries("b1", "g", "N", "D", num, den, spy)
+    W = inf.stationary_bootstrap_weights(n, reps=64, seed=11)
+    gr = evaluate_group([ps], start=150, end=420, partition="P0", W=W)
+    from scripts.leadership_rotation_run import _evaluate_pair_core, _matured_b1_y20
+
+    core = _evaluate_pair_core(ps, start=150, end=420)
+    b1_y, b1_coords = _matured_b1_y20("g", [ps], [core])
+    assert len(b1_y) >= 100
+    b1_Wm = inf.item_weights(W, b1_coords)
+    means = inf.replicate_means(np.array(b1_y, dtype=float), b1_Wm)
+    assert float(np.nanstd(means)) > 1e-12
+
+
+# MUTATION: scripts/leadership_rotation_run.py:768 default h2_safety ok to True when fs_b2 is NaN
+def test_h2_safety_fail_closed_when_b2_unmeasurable():
+    n = 400
+    spy = np.ones(n)
+    num = np.ones(n)
+    den = np.ones(n)
+    ps = PairSeries("safe", "g", "N", "D", num, den, spy)
+    gr = evaluate_group([ps], start=0, end=n - 1, partition="P0", W=np.ones((8, n), dtype=np.int32))
+    safety = gr["H2"]["safety"]
+    assert safety["ok"] is False
+    assert safety["reason"] == "SAFETY_UNEVALUABLE"
+    from scripts.leadership_rotation_run import _group_verdicts
+
+    gr["honest_n"] = {"H1": 30, "H2": 30, "H3": 30}
+    gr["coverage"] = 0.9
+    gr["executable"] = True
+    gr["H2"]["point"] = 0.02
+    gr["H2"]["stability"] = {"holds": True}
+    holm = [0.01 if g == "g" and h == "H2" else 1.0 for g, h in FAMILY_ORDER]
+    gr["group"] = "defensive_sector"
+    v = _group_verdicts(gr, "P0", holm, FAMILY_ORDER)
+    assert v["H2"] != "DEVELOPMENT_PASS"
+
+
+# MUTATION: scripts/leadership_rotation_run.py:928 omit interval_90 on H3
+def test_h1_h3_uncertainty_interval_keys_finite_on_synthetic_group():
+    n = 800
+    dr = np.concatenate([np.zeros(400), np.full(400, 0.012)])
+    R = np.cumsum(dr)
+    num = np.exp(R)
+    den = np.ones(n)
+    spy = np.exp(0.0005 * np.arange(n))
+    ps = PairSeries("unc", "g", "N", "D", num, den, spy)
+    W = inf.stationary_bootstrap_weights(n, reps=32, seed=5)
+    gr = evaluate_group([ps], start=300, end=750, partition="P0", W=W)
+    h1_iv = gr["H1"]["interval_90"]
+    assert h1_iv["burden_cut_b"][1] is not None
+    h3_iv = gr["H3"]["interval_90"]
+    assert h3_iv[0] is not None and h3_iv[1] is not None
+    assert gr["H3"]["lower_bound"] is not None

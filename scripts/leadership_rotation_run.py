@@ -29,6 +29,7 @@ from scripts import leadership_rotation_study as st
 
 __all__ = [
     "PairSeries",
+    "build_groups",
     "evaluate_pair",
     "evaluate_group",
     "evaluate_family",
@@ -388,6 +389,19 @@ def _item_coord_map(items: List[inf.Item]) -> Tuple[List[int], Dict[int, int]]:
     return labels, pos_coord
 
 
+def _pair_session_indices(
+    measured_per_day: np.ndarray, start: int, end: int
+) -> List[int]:
+    """ORCH-SCI ruling R22: pair-session list for §7 stability thirds."""
+    out: List[int] = []
+    for t in range(int(start), int(end) + 1):
+        if 0 <= t < len(measured_per_day):
+            c = int(measured_per_day[t])
+            if c > 0:
+                out.extend([t] * c)
+    return out
+
+
 def _measured_pairs_per_day(
     pairs: Sequence[PairSeries], cores: Sequence[dict], end: int
 ) -> np.ndarray:
@@ -470,26 +484,6 @@ def _episode_metrics_unit(
     )
 
 
-def _collect_y20_res(pair_cores: Sequence[dict]) -> Tuple[List[float], List[float], List[float], List[float], List[float]]:
-    a1_y, b1_y, b2_y, a1_res, b3_res = [], [], [], [], []
-    for core in pair_cores:
-        for r in core.get("a1_out", []):
-            if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None:
-                a1_y.append(r["y20"]["y"])
-            if r["y_res_20"]["state"] == "MATURED" and r["y_res_20"]["y"] is not None:
-                a1_res.append(r["y_res_20"]["y"])
-        for r in core.get("b1_out", []):
-            if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None:
-                b1_y.append(r["y20"]["y"])
-        for r in core.get("b2_out", []):
-            if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None:
-                b2_y.append(r["y20"]["y"])
-        for r in core.get("b3_out", []):
-            if r["y_res_20"]["state"] == "MATURED" and r["y_res_20"]["y"] is not None:
-                b3_res.append(r["y_res_20"]["y"])
-    return a1_y, b1_y, b2_y, a1_res, b3_res
-
-
 def _items_from_kept(
     group: str, pairs: Sequence[PairSeries], cores: Sequence[dict], key: str
 ) -> List[inf.Item]:
@@ -502,17 +496,98 @@ def _items_from_kept(
 
 def _items_matured_a1(
     group: str, pairs: Sequence[PairSeries], cores: Sequence[dict], residual: bool
-) -> Tuple[List[inf.Item], List[int]]:
+) -> Tuple[List[inf.Item], List[int], List[float]]:
     items: List[inf.Item] = []
+    values: List[float] = []
     for ps, core in zip(pairs, cores):
         for r in core.get("a1_out", []):
             fld = "y_res_20" if residual else "y20"
             if r[fld]["state"] == "MATURED" and r[fld]["y"] is not None:
-                items.append((group, ps.pair_id, r["t"]))
+                items.append((group, ps.pair_id, int(r["t"])))
+                values.append(float(r[fld]["y"]))
+    if not items:
+        return [], [], []
+    _labels, pos_coord = _item_coord_map(items)
+    coords = [pos_coord[i] for i in range(len(items))]
+    return items, coords, values
+
+
+def _matured_b1_y20(
+    group: str, pairs: Sequence[PairSeries], cores: Sequence[dict]
+) -> Tuple[List[float], List[int]]:
+    """B1 formation days: own calendar index as bootstrap coordinate (ORCH-SCI R9)."""
+    values: List[float] = []
+    coords: List[int] = []
+    for ps, core in zip(pairs, cores):
+        for r in core.get("b1_out", []):
+            if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None:
+                t = int(r["t"])
+                values.append(float(r["y20"]["y"]))
+                coords.append(t)
+    return values, coords
+
+
+def _matured_b2_y20(
+    group: str, pairs: Sequence[PairSeries], cores: Sequence[dict]
+) -> Tuple[List[float], List[int]]:
+    items: List[inf.Item] = []
+    values: List[float] = []
+    for ps, core in zip(pairs, cores):
+        for r in core.get("b2_out", []):
+            if r["y20"]["state"] == "MATURED" and r["y20"]["y"] is not None:
+                items.append((group, ps.pair_id, int(r["t"])))
+                values.append(float(r["y20"]["y"]))
     if not items:
         return [], []
     _labels, pos_coord = _item_coord_map(items)
-    return items, [pos_coord[i] for i in range(len(items))]
+    coords = [pos_coord[i] for i in range(len(items))]
+    return values, coords
+
+
+def _matured_b3_res(
+    group: str, pairs: Sequence[PairSeries], cores: Sequence[dict]
+) -> Tuple[List[float], List[int]]:
+    items: List[inf.Item] = []
+    values: List[float] = []
+    for ps, core in zip(pairs, cores):
+        for r in core.get("b3_out", []):
+            if r["y_res_20"]["state"] == "MATURED" and r["y_res_20"]["y"] is not None:
+                items.append((group, ps.pair_id, int(r["t"])))
+                values.append(float(r["y_res_20"]["y"]))
+    if not items:
+        return [], []
+    _labels, pos_coord = _item_coord_map(items)
+    coords = [pos_coord[i] for i in range(len(items))]
+    return values, coords
+
+
+def _h2_point_subset(
+    a1_vals: Sequence[float],
+    b1_vals: Sequence[float],
+    b2_vals: Sequence[float],
+) -> float:
+    if not a1_vals:
+        return float("nan")
+    if not b1_vals and not b2_vals:
+        return float("nan")
+    m_a1 = float(np.mean(a1_vals))
+    if b1_vals and b2_vals:
+        m_b = max(float(np.mean(b1_vals)), float(np.mean(b2_vals)))
+    elif b1_vals:
+        m_b = float(np.mean(b1_vals))
+    else:
+        m_b = float(np.mean(b2_vals))
+    return m_a1 - m_b
+
+
+def _h3_point_subset(a1_res: Sequence[float], b3_res: Sequence[float]) -> float:
+    if not a1_res or not b3_res:
+        return float("nan")
+    return float(np.mean(a1_res) - np.mean(b3_res))
+
+
+def _coords_allowed(mask: np.ndarray, coord_union: np.ndarray) -> set[int]:
+    return {int(coord_union[i]) for i in range(len(coord_union)) if mask[i]}
 
 
 def _aggregate_coverage(cores: Sequence[dict]) -> float:
@@ -538,29 +613,6 @@ def _aggregate_arms(cores: Sequence[dict]) -> dict:
             "n_items": sum(c.get("arms", {}).get(arm, {}).get("n_items", 0) for c in cores)
         }
     return arms_out
-
-
-def _h1_point_on_subset(
-    records: Sequence[dict],
-    phases: Sequence[ep.UpPhase],
-    onset_coord: Dict[int, int],
-    coord_mask: np.ndarray,
-    session_w: float,
-) -> float:
-    allowed_onsets = {t for t, c in onset_coord.items() if coord_mask[c]}
-    sub_records = [
-        rec
-        for rec in records
-        if rec.get("phase_T") in allowed_onsets or (
-            rec["cls"] == "FALSE_START" and coord_mask[onset_coord.get(rec["index"], rec["index"])]
-        )
-    ]
-    sub_phases = [ph for ph in phases if ph.qualifies and ph.T in allowed_onsets]
-    if not sub_phases:
-        return float("nan")
-    m_a2 = _episode_metrics_unit(sub_records, sub_phases, session_w)
-    m_a1 = _episode_metrics_unit(sub_records, sub_phases, session_w)
-    return m_a2["median_delay"] - m_a1["median_delay"]
 
 
 def evaluate_group(
@@ -660,78 +712,71 @@ def evaluate_group(
         p_b,
     )
 
-    a1_y, b1_y, b2_y, a1_res, b3_res = _collect_y20_res(cores)
     a1_items_all = _items_from_kept(group, pairs, cores, "a1_kept")
+    _a1_items, a1_coords, a1_y = _items_matured_a1(group, pairs, cores, residual=False)
+    b1_y, b1_coords = _matured_b1_y20(group, pairs, cores)
+    b2_y, b2_coords = _matured_b2_y20(group, pairs, cores)
+    a1_res_items, a1_res_coords, a1_res = _items_matured_a1(group, pairs, cores, residual=True)
+    b3_res, b3_coords = _matured_b3_res(group, pairs, cores)
+
     honest_n_h1 = _cluster_n(onset_items)
-    honest_n_h2 = _cluster_n(_items_matured_a1(group, pairs, cores, residual=False)[0])
-    honest_n_h3 = _cluster_n(_items_matured_a1(group, pairs, cores, residual=True)[0])
+    honest_n_h2 = _cluster_n(_a1_items)
+    honest_n_h3 = _cluster_n(a1_res_items)
     test_n_h2 = _cluster_n(a1_items_all)
 
-    h2_point = inf.h2_statistic(
-        np.array(a1_y, dtype=float) if a1_y else np.array([np.nan]),
-        np.array(b1_y, dtype=float) if b1_y else np.array([np.nan]),
-        np.array(b2_y, dtype=float) if b2_y else np.array([np.nan]),
-    )
-    _a1_items, a1_coords = _items_matured_a1(group, pairs, cores, residual=False)
-    b1_items = _items_from_kept(group, pairs, cores, "b1_days")
-    b2_items = _items_from_kept(group, pairs, cores, "b2_kept")
-    _, b1_pos = _item_coord_map(b1_items) if b1_items else ([], {})
-    _, b2_pos = _item_coord_map(b2_items) if b2_items else ([], {})
-    b1_coords_list = [b1_pos[i] for i in range(len(b1_items))] if b1_items else []
-    b2_coords_list = [b2_pos[i] for i in range(len(b2_items))] if b2_items else []
-
+    a1_arr = np.array(a1_y, dtype=float)
+    b1_arr = np.array(b1_y, dtype=float) if b1_y else np.array([], dtype=float)
+    b2_arr = np.array(b2_y, dtype=float) if b2_y else np.array([], dtype=float)
+    h2_point = _h2_point_subset(a1_y, b1_y, b2_y)
     a1_Wm = inf.item_weights(W, a1_coords) if a1_coords else np.zeros((W.shape[0], 0))
-    b1_Wm = inf.item_weights(W, b1_coords_list) if b1_coords_list else np.zeros((W.shape[0], 0))
-    b2_Wm = inf.item_weights(W, b2_coords_list) if b2_coords_list else np.zeros((W.shape[0], 0))
-
+    b1_Wm = inf.item_weights(W, b1_coords) if b1_coords else np.zeros((W.shape[0], 0))
+    b2_Wm = inf.item_weights(W, b2_coords) if b2_coords else np.zeros((W.shape[0], 0))
+    if a1_y:
+        assert len(a1_y) == a1_Wm.shape[1]
+        if b1_y:
+            assert len(b1_y) == b1_Wm.shape[1]
+        if b2_y:
+            assert len(b2_y) == b2_Wm.shape[1]
     h2_reps = (
-        inf.h2_replicates(
-            np.array(a1_y, dtype=float),
-            a1_Wm,
-            np.array(b1_y, dtype=float) if b1_y else np.array([]),
-            b1_Wm,
-            np.array(b2_y, dtype=float) if b2_y else np.array([]),
-            b2_Wm,
-        )
+        inf.h2_replicates(a1_arr, a1_Wm, b1_arr, b1_Wm, b2_arr, b2_Wm)
         if a1_y
         else np.full(W.shape[0], np.nan)
     )
     p_h2, _ = inf.one_sided_p(h2_reps)
     fs_a1 = st.false_start_rate_h20(a1_y)
     fs_b2 = st.false_start_rate_h20(b2_y)
-    h2_safety = (
-        (fs_a1 - fs_b2) <= inf.H2_FALSE_START_NI
-        if np.isfinite(fs_a1) and np.isfinite(fs_b2)
-        else True
-    )
+    if np.isfinite(fs_a1) and np.isfinite(fs_b2):
+        h2_safety = {
+            "fs_a1": fs_a1,
+            "fs_b2": fs_b2,
+            "ok": (fs_a1 - fs_b2) <= inf.H2_FALSE_START_NI,
+            "reason": "EVALUATED",
+        }
+    else:
+        h2_safety = {
+            "fs_a1": fs_a1,
+            "fs_b2": fs_b2,
+            "ok": False,
+            "reason": "SAFETY_UNEVALUABLE",
+        }
 
-    h3_point = inf.h3_statistic(
-        np.array(a1_res, dtype=float) if a1_res else np.array([np.nan]),
-        np.array(b3_res, dtype=float) if b3_res else np.array([np.nan]),
-    )
-    b3_items = _items_from_kept(group, pairs, cores, "b3_kept")
-    _, b3_pos = _item_coord_map(b3_items) if b3_items else ([], {})
-    b3_coords_list = [b3_pos[i] for i in range(len(b3_items))] if b3_items else []
-    b3_Wm = inf.item_weights(W, b3_coords_list) if b3_coords_list else np.zeros((W.shape[0], 0))
-    a1_res_items, a1_res_coords = _items_matured_a1(group, pairs, cores, residual=True)
+    a1_res_arr = np.array(a1_res, dtype=float)
+    b3_arr = np.array(b3_res, dtype=float) if b3_res else np.array([], dtype=float)
+    h3_point = _h3_point_subset(a1_res, b3_res)
+    b3_Wm = inf.item_weights(W, b3_coords) if b3_coords else np.zeros((W.shape[0], 0))
     a1_res_Wm = inf.item_weights(W, a1_res_coords) if a1_res_coords else np.zeros((W.shape[0], 0))
+    if a1_res:
+        assert len(a1_res) == a1_res_Wm.shape[1]
+        if b3_res:
+            assert len(b3_res) == b3_Wm.shape[1]
     h3_reps = (
-        inf.h3_replicates(
-            np.array(a1_res, dtype=float),
-            a1_res_Wm,
-            np.array(b3_res, dtype=float) if b3_res else np.array([]),
-            b3_Wm,
-        )
+        inf.h3_replicates(a1_res_arr, a1_res_Wm, b3_arr, b3_Wm)
         if a1_res
         else np.full(W.shape[0], np.nan)
     )
     p_h3, _ = inf.one_sided_p(h3_reps)
 
-    session_indices = [
-        t
-        for t in range(start, end + 1)
-        if t < len(measured_per_day) and measured_per_day[t] > 0
-    ]
+    session_indices = _pair_session_indices(measured_per_day, start, end)
     coord_list = sorted(set(onset_coord.values()))
     coord_to_pos = {c: i for i, c in enumerate(coord_list)}
 
@@ -794,6 +839,41 @@ def evaluate_group(
     else:
         stab_delay = stab_burden = _stab_default
 
+    h2_coord_union = np.array(
+        sorted(set(a1_coords) | set(b1_coords) | set(b2_coords)), dtype=np.int64
+    )
+
+    def _h2_on_third(mask: np.ndarray) -> float:
+        allowed = _coords_allowed(mask, h2_coord_union)
+        a1_sub = [v for v, c in zip(a1_y, a1_coords) if c in allowed]
+        b1_sub = [v for v, c in zip(b1_y, b1_coords) if c in allowed]
+        b2_sub = [v for v, c in zip(b2_y, b2_coords) if c in allowed]
+        return _h2_point_subset(a1_sub, b1_sub, b2_sub)
+
+    if len(h2_coord_union) and session_indices:
+        stab_h2 = inf.stability_thirds(
+            session_indices, h2_coord_union, _h2_on_third, h2_point
+        )
+    else:
+        stab_h2 = _stab_default
+
+    h3_coord_union = np.array(
+        sorted(set(a1_res_coords) | set(b3_coords)), dtype=np.int64
+    )
+
+    def _h3_on_third(mask: np.ndarray) -> float:
+        allowed = _coords_allowed(mask, h3_coord_union)
+        a_sub = [v for v, c in zip(a1_res, a1_res_coords) if c in allowed]
+        b_sub = [v for v, c in zip(b3_res, b3_coords) if c in allowed]
+        return _h3_point_subset(a_sub, b_sub)
+
+    if len(h3_coord_union) and session_indices:
+        stab_h3 = inf.stability_thirds(
+            session_indices, h3_coord_union, _h3_on_third, h3_point
+        )
+    else:
+        stab_h3 = _stab_default
+
     pair_legs = {ps.pair_id: (ps.num_sym, ps.den_sym) for ps in pairs}
 
     return _json_sanitize(
@@ -804,6 +884,7 @@ def evaluate_group(
             "pairs": [c["pair_id"] for c in cores],
             "executable": executable,
             "honest_n": {"H1": honest_n_h1, "H2": honest_n_h2, "H3": honest_n_h3},
+            # H2 and H3 share test_n: cluster count of all kept A1 entries (R10).
             "test_n": {"H2": test_n_h2, "H3": test_n_h2},
             "shared_leg_components": inf.shared_leg_components(pair_legs),
             "coverage": _aggregate_coverage(cores),
@@ -821,16 +902,31 @@ def evaluate_group(
                 "p_b": p_b,
                 "p": max(p_a, p_b),
                 "decision": decision,
+                "interval_90": {
+                    "delay_reduction": inf.interval_90(rep_delay_red),
+                    "burden_cut_b": inf.interval_90(rep_bur_cut),
+                },
+                "lower_bound": {
+                    "delay_reduction": inf.lower_bound(rep_delay_red),
+                    "burden_cut_b": inf.lower_bound(rep_bur_cut),
+                },
                 "stability": {"delay_reduction": stab_delay, "burden_cut_b": stab_burden},
             },
             "H2": {
                 "point": h2_point,
                 "p": p_h2,
-                "safety": {"fs_a1": fs_a1, "fs_b2": fs_b2, "ok": h2_safety},
+                "safety": h2_safety,
+                "stability": stab_h2,
                 "interval_90": inf.interval_90(h2_reps),
                 "lower_bound": inf.lower_bound(h2_reps),
             },
-            "H3": {"point": h3_point, "p": p_h3},
+            "H3": {
+                "point": h3_point,
+                "p": p_h3,
+                "stability": stab_h3,
+                "interval_90": inf.interval_90(h3_reps),
+                "lower_bound": inf.lower_bound(h3_reps),
+            },
         }
     )
 
@@ -892,7 +988,7 @@ def _group_verdicts(gr: dict, partition: str, holm_adj: List[float], order) -> d
                 immature=_immature(gr, h),
                 honest_n=gr["honest_n"]["H2"],
                 clause1_ok=clause,
-                stable=True,
+                stable=gr["H2"]["stability"]["holds"],
                 coverage=cov,
                 h2_safety_ok=gr["H2"]["safety"]["ok"],
             )
@@ -905,7 +1001,7 @@ def _group_verdicts(gr: dict, partition: str, holm_adj: List[float], order) -> d
                 immature=_immature(gr, h),
                 honest_n=gr["honest_n"]["H3"],
                 clause1_ok=clause,
-                stable=True,
+                stable=gr["H3"]["stability"]["holds"],
                 coverage=cov,
             )
     out["C3"] = inf.verdict(
@@ -979,22 +1075,17 @@ def evaluate_family(
     )
 
 
-def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dict:
-    st.assert_prereg_landed(repo, head=commit)
-    symbols = sorted({s for _id, (_g, num, den) in st.PAIRS.items() for s in (num, den)} | {"SPY"})
-    closes, identity = st.load_closes_from_git(repo, commit, symbols)
-    calendar = st.session_calendar(closes["SPY"])
-    mask = st.partition_mask(calendar, "P1")
-    idx = np.flatnonzero(mask)
-    start, end = int(idx[0]), int(idx[-1])
-    aligned = {sym: st.align(closes[sym], calendar) for sym in symbols}
-    spy = aligned["SPY"]
+def build_groups(
+    aligned: dict[str, np.ndarray],
+    spy: np.ndarray,
+    partition: str,
+) -> dict[str, list[PairSeries]]:
     groups: Dict[str, List[PairSeries]] = {
         "defensive_sector": [],
         "broadening_proxy": [],
     }
     for pair_id, (group, num_sym, den_sym) in st.PAIRS.items():
-        if pair_id in st.P2_EXCLUDED:
+        if partition == "P2" and pair_id in st.P2_EXCLUDED:
             continue
         groups[group].append(
             PairSeries(
@@ -1007,6 +1098,20 @@ def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dic
                 spy=spy,
             )
         )
+    return groups
+
+
+def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dict:
+    st.assert_prereg_landed(repo, head=commit)
+    symbols = sorted({s for _id, (_g, num, den) in st.PAIRS.items() for s in (num, den)} | {"SPY"})
+    closes, identity = st.load_closes_from_git(repo, commit, symbols)
+    calendar = st.session_calendar(closes["SPY"])
+    mask = st.partition_mask(calendar, "P1")
+    idx = np.flatnonzero(mask)
+    start, end = int(idx[0]), int(idx[-1])
+    aligned = {sym: st.align(closes[sym], calendar) for sym in symbols}
+    spy = aligned["SPY"]
+    groups = build_groups(aligned, spy, "P1")
     result = evaluate_family(groups, start=start, end=end, partition="P1")
     result["inputs"] = identity
     if out:
