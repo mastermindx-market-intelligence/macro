@@ -31,14 +31,16 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: After explicit new cross-chat authorization, send the prepared corrected-canary
-  v2 retrieval-only request to Fabric Integration, then use its qualified same-run
-  current-artifact read once. Preserve original rc65 and unresolved inner effects.
-  Pure host-identity decoder review is accepted and final36sourcechecks pass.
-  Normal dependency controller remains owner; integrate main only after9099+9190land.
+next_action: Commit and push the independently reviewed PID-observer source and calendar evidence.
+  The corrected-canary v2 retrieval-only message awaits explicit cross-chat authorization;
+  original rc65 and unresolved inner effects remain preserved. Normal dependency
+  controller owns refresh and landing. The US calendar patch is prepared externally
+  against primary notices; reconcile the incumbent CN source change before application.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
+- research/research_factory_codegen/2026-10-14/US_CALENDAR_NOTICE_EVIDENCE.md
+- research/research_factory_codegen/2026-10-14/PROC_OBSERVER_SOURCE_CONTRACT.md
 do_not_redo:
 - Original rf-codegen-contracts-impl-01a1333c-v1 remains EFFECT_UNKNOWN; its refused
   artifact read stays closed. Chris authorized quarantining eventual output and a
@@ -64,3 +66,5 @@ This record carries work identity and continuity only. Existing source, runtime 
 Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; runtime source checkpoint `f6e8a8e56116e3639c3c00bd078c4d83bf9df82d`; PR #9099 current repaired head `944790254d1caa6e41f8ea19f6b5e738706a769f` passed its CI, then the controller deferred newly required proof refresh at shared capacity. Runtime capsule `e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809` is bound to its original physical commission. Exact local receipts and limits are indexed in the programme continuation.
 
 Current physical limit: v1 recovery complete, originalrc65unaccepted. V2 passed107Linuxprechecks/2subtests andonecarrierreturned after17seconds; completeinnerreceiptunread because decorated/repeatedmanifest causedrc65deliveryfailure. New retrieval-only cross-chat authorization pending. No physicalphase/installation/cleanup acceptance inferred. The separateCLIleafsummary remainsunaccepted. Purehostidentitydecoder independentreview accepted and36checks passed; nohostread orcurrentcapsule inclusion.
+
+Adjacent qualification: root corrected the unaccepted calendar census using complete official 2014–2023 notices. Regular closures match the immutable legacy calendar; 20 early closes and annual verification remain absent from the live adapter. A tested external patch preserves the shared calendar source while PR #8721 owns its CN extension. 2010–2013 primary annual notice gaps remain. The PID-observer Fabric implementation ended quota429 without source; root implemented directly and verified 52 hermetic tests with one opt-in Linux skip. Independent review `rf-proc-observer-review-01a1333c-v1` returned no actionable findings and root accepted its bounded source verdict. Neither helper is in the current canary capsule.
