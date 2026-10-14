@@ -18,13 +18,16 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "research" / "single_name_intelligence" / "evaluation"))
 
 from seal_full_check import (  # noqa: E402
+    Diff,
     INPUT_REF_DEFAULT,
     KIND_DIFFER,
     KIND_EXTRA,
     KIND_MISSING,
     KIND_ULP,
+    ULP_REL_TOL,
     ULP_TEXT_SUFFIXES,
     S1_V1_1_REL,
+    S1_V1_1_SEAL_COMMIT_PRE_SQUASH,
     S1_V1_1_TRIAL_LEDGER_PATH,
     S1_V1_TRIAL_LEDGER_PATH,
     S2_V1_1_REL,
@@ -32,6 +35,7 @@ from seal_full_check import (  # noqa: E402
     S2_V1_TRIAL_LEDGER_PATH,
     XREP03_S1_SEAL_LEDGER_PATH,
     XREP04_S2_SEAL_V1_LEDGER_PATH,
+    XREP05_S1_MANIFEST_SEAL_COMMIT,
     check_study,
     rel_files,
     s1_exceptions,
@@ -45,18 +49,17 @@ INPUT_REF = INPUT_REF_DEFAULT
 
 
 def _assert_regen_accounting(res, committed_rel: str) -> None:
-    """ULP-equivalent files are text, never counted identical, and never on
-    the Linux x86_64 platform the seal was cut on (byte identity is pinned
-    there by the XREP receipt)."""
-    import platform as _pf
-
+    """ULP-equivalent files are text, never counted identical, and never
+    counted as failures. This test suite does NOT claim byte identity of a
+    regeneration: the committed seal's byte identity on its cut platform is
+    attested by the XREP Linux receipt, and X7-01 showed a Linux x86_64
+    numpy 2.x interpreter itself drifts within ULP tolerance on the frozen
+    allow-set files."""
     ulp_rels = [d.relpath for d in res.diffs if d.kind == KIND_ULP]
     assert len(ulp_rels) == res.ulp_equivalent
     assert all(r.endswith(ULP_TEXT_SUFFIXES) for r in ulp_rels)
     assert res.failures == len(res.diffs) - res.ulp_equivalent
     assert res.identical + res.ulp_equivalent <= len(rel_files(ROOT / committed_rel))
-    if _pf.system() == "Linux" and _pf.machine() == "x86_64":
-        assert res.ulp_equivalent == 0, "seal platform must reproduce byte-identically"
 
 
 def _ensure_input_ref() -> None:
@@ -161,7 +164,58 @@ def test_schk_04_comparator_covers_every_committed_file(tmp_path: Path) -> None:
           f"s2 count={len(rel_files(ROOT / S2_V1_1_REL))}")
 
 
+# Frozen X7-01 allow-set: the ONLY S1 v1.1 paths that may regenerate
+# ulp-equivalent — the nine observations/P03_*.json files the seal CLI
+# reported on 2026-10-13 plus results/P03.json, exactly as the CLI prints
+# them. Anything else regenerating ulp-equivalent is a failure (schk_05b).
+S1_ULP_ALLOW_SET = frozenset({
+    "observations/P03_adr_baba_21.json",
+    "observations/P03_adr_baba_5.json",
+    "observations/P03_adr_baba_63.json",
+    "observations/P03_hkd_0700_21.json",
+    "observations/P03_hkd_0700_5.json",
+    "observations/P03_hkd_0700_63.json",
+    "observations/P03_hkd_9988_21.json",
+    "observations/P03_hkd_9988_5.json",
+    "observations/P03_hkd_9988_63.json",
+    "results/P03.json",
+})
+
+
+def _assert_s1_ulp_allow_set(ulp_diffs, committed_dir: Path, produced_dir: Path) -> None:
+    """Every ulp-equivalent path is inside the frozen allow-set, and its
+    recomputed worst relative difference is within the seal module's own
+    ULP_REL_TOL (imported, never restated as a number here)."""
+    for d in ulp_diffs:
+        assert d.kind == KIND_ULP
+        assert d.relpath in S1_ULP_ALLOW_SET, (
+            f"ulp-equivalent path {d.relpath!r} is outside the frozen S1 "
+            f"allow-set (X7-01): {sorted(S1_ULP_ALLOW_SET)}")
+        ok, _n_tok, worst = ulp_equivalent(
+            (committed_dir / d.relpath).read_bytes(),
+            (produced_dir / d.relpath).read_bytes(),
+        )
+        assert ok, (
+            f"{d.relpath}: classified ulp-equivalent by the comparator but "
+            "ulp_equivalent() rejects the byte pair")
+        assert worst <= ULP_REL_TOL, (
+            f"{d.relpath}: worst relative difference {worst:.3e} exceeds the "
+            "seal module tolerance ULP_REL_TOL (imported constant)")
+
+
 def test_schk_05_full_regeneration_s1(tmp_path: Path) -> None:
+    """S1 v1.1 regeneration: zero failures, and float drift confined to the
+    frozen allow-set within the module's own tolerance.
+
+    This test does NOT claim byte identity. The committed seal's byte
+    identity on Linux x86_64 is attested by the XREP Linux receipt; X7-01
+    showed that a Linux x86_64 numpy 2.x interpreter itself regenerates the
+    allow-set files ulp-equivalent (worst measured rel 4.76e-12, two orders
+    below ULP_REL_TOL), so a live `ulp_equivalent == 0` platform pin was
+    asserting something the seal never guaranteed. What the seal DOES
+    guarantee — and what is asserted here — is: no failures, every ULP path
+    inside the frozen allow-set, each within tolerance, and a complete
+    accounting of every compared file."""
     _ensure_input_ref()
     out = tmp_path / "s1"
     res = check_study("s1", ROOT, INPUT_REF, out)
@@ -175,8 +229,75 @@ def test_schk_05_full_regeneration_s1(tmp_path: Path) -> None:
         print(f"  {d.kind}: {d.relpath} {d.detail}")
     assert res.failures == 0
     assert res.compared == len(rel_files(ROOT / S1_V1_1_REL))
-    assert res.named_exception_passes >= 3  # SEAL json, SEAL md, ledger ts
+    assert res.named_exception_passes >= 4  # SEAL json, SEAL md, ledger ts, manifest seal commit
+    assert (res.identical + res.named_exception_passes + res.ulp_equivalent
+            == res.compared)
     _assert_regen_accounting(res, S1_V1_1_REL)
+    _assert_s1_ulp_allow_set(
+        [d for d in res.diffs if d.kind == KIND_ULP], ROOT / S1_V1_1_REL, out)
+
+
+def test_schk_05b_allow_set_is_tight(tmp_path: Path) -> None:
+    """NON-WEAKENING companion to schk_05: a ulp-equivalent path OUTSIDE the
+    frozen allow-set fails the assertion, and so does an in-set path whose
+    difference exceeds the module tolerance. Driven with fabricated Diff
+    objects and synthetic byte pairs — no regeneration, no input_ref."""
+    committed = tmp_path / "committed"
+    produced = tmp_path / "produced"
+    (committed / "results").mkdir(parents=True)
+    (produced / "results").mkdir(parents=True)
+    in_set = "results/P03.json"
+    (committed / in_set).write_text(f'{{"m": {_SEAL_TOK}}}\n', encoding="utf-8")
+    (produced / in_set).write_text(f'{{"m": {_MAC_TOK}}}\n', encoding="utf-8")
+
+    # in-set and within tolerance: the schk_05 assertion holds
+    _assert_s1_ulp_allow_set([Diff(KIND_ULP, in_set, "")], committed, produced)
+
+    # outside the allow-set: fails on membership alone (bytes never read)
+    outside = Diff(KIND_ULP, "observations/P99_synthetic_21.json", "")
+    with pytest.raises(AssertionError, match="outside the frozen S1"):
+        _assert_s1_ulp_allow_set([outside], committed, produced)
+
+    # in-set but beyond the module tolerance: fails the tolerance check
+    (committed / in_set).write_text('{"m": 0.123456}\n', encoding="utf-8")
+    (produced / in_set).write_text('{"m": 0.123457}\n', encoding="utf-8")
+    with pytest.raises(AssertionError):
+        _assert_s1_ulp_allow_set([Diff(KIND_ULP, in_set, "")], committed, produced)
+
+
+def test_schk_05c_tolerance_not_loosened() -> None:
+    """The imported tolerance constants equal the values the seal module
+    ships: pinned from the module attribute at import AND from an AST read
+    of the module source against this test's frozen expectation, so a silent
+    edit of either side fails (X7-01 repair: schk_05 now leans on
+    ULP_REL_TOL, so the constant itself must be pinned)."""
+    import ast
+
+    import seal_full_check as _sfc
+
+    frozen = {"ULP_REL_TOL": 1e-10, "ULP_ABS_TOL": 1e-13}
+    for name, want in frozen.items():
+        got_attr = getattr(_sfc, name)
+        assert got_attr == want, (
+            f"seal module {name} is {got_attr!r} at import; the SCHK float "
+            "tolerance was loosened")
+
+    src = Path(_sfc.__file__).read_text(encoding="utf-8")
+    literals: dict[str, object] = {}
+    for node in ast.walk(ast.parse(src)):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in frozen:
+                    assert isinstance(node.value, ast.Constant), (
+                        f"{target.id} must stay a literal constant assignment")
+                    literals[target.id] = node.value.value
+    assert set(literals) == set(frozen), (
+        f"AST read of the seal module found {sorted(literals)}; "
+        f"expected {sorted(frozen)}")
+    for name, want in frozen.items():
+        assert literals[name] == want, (
+            f"seal module source assigns {name} = {literals[name]!r}; "
+            f"expected the shipped {want!r}")
 
 
 def test_schk_06_full_regeneration_s2(tmp_path: Path) -> None:
@@ -197,6 +318,7 @@ def test_schk_06_full_regeneration_s2(tmp_path: Path) -> None:
     _assert_regen_accounting(res, S2_V1_1_REL)
     # walk_compare used the S2 exception map; XREP-04 is committed-bytes only.
     assert "SEAL_AND_BUDGET.json" not in s2_exceptions()
+    assert "LANE_MANIFEST.json" not in s2_exceptions()
     assert "trial_ledger.jsonl" in s1_exceptions()
 
 
@@ -322,3 +444,104 @@ def test_schk_10_residual_tree_is_the_sealed_v1_1_runner() -> None:
         f"receipts stamp {sealed}: the S1 runner is sealed — register a new "
         "version instead of editing residual/ under the v1.1 seal"
     )
+
+
+# --- XREP-05: S1 LANE_MANIFEST.json seal_commit_sha squash exception -------
+
+_SYNTH_MANIFEST = {
+    "lane": "s1_residual",
+    "version": "v1.1",
+    "input_ref": INPUT_REF,
+    "authority_flags": {"rank": False, "gate": False, "size": False,
+                        "signal": False, "escalation": False, "trade": False},
+}
+
+
+def _write_json(path: Path, obj: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _regen_seal_commit_sha() -> str:
+    """What residual/run_s1.py seal_commit_sha() answers on THIS checkout:
+    the last commit that touched the S1 v1.1 seal path (the squash commit on
+    any post-PR-9120 clone)."""
+    r = subprocess.run(
+        ["git", "log", "--format=%H", "-n", "1", "--",
+         f"{S1_V1_1_REL}/SEAL_AND_BUDGET.json"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert r.returncode == 0 and r.stdout.strip(), r.stderr
+    return r.stdout.strip()
+
+
+def test_xrep05_passes_on_seal_commit_only_diff(tmp_path: Path) -> None:
+    """The real defect shape: the committed manifest carries the pre-squash
+    sha, regeneration answers the post-squash git log sha, and XREP-05
+    passes (seal blob identical at both commits). Synthetic dirs, no
+    regeneration; the produced sha is what this checkout would really
+    stamp."""
+    src = ROOT / S1_V1_1_REL / "LANE_MANIFEST.json"
+    c_obj = json.loads(src.read_text(encoding="utf-8"))
+    assert c_obj["seal_commit_sha"] == S1_V1_1_SEAL_COMMIT_PRE_SQUASH
+    p_obj = dict(c_obj)
+    p_obj["seal_commit_sha"] = _regen_seal_commit_sha()
+    assert p_obj["seal_commit_sha"] != S1_V1_1_SEAL_COMMIT_PRE_SQUASH
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    assert XREP05_S1_MANIFEST_SEAL_COMMIT(c, p) == []
+    # the s1_exceptions() registration makes walk_compare report nothing
+    assert walk_compare(c.parent, p.parent, s1_exceptions()) == []
+
+
+def test_xrep05_fails_when_other_field_differs(tmp_path: Path) -> None:
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    p_obj = dict(c_obj)
+    p_obj["version"] = "v9"
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    diffs = XREP05_S1_MANIFEST_SEAL_COMMIT(c, p)
+    assert any(d.kind == KIND_DIFFER for d in diffs)
+    assert any("version" in d.detail for d in diffs)
+
+
+def test_xrep05_fails_when_committed_sha_not_pinned_constant(tmp_path: Path) -> None:
+    p_sha = _regen_seal_commit_sha()
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=p_sha)  # real hex, wrong pin
+    p_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=p_sha)
+    c = tmp_path / "committed" / "LANE_MANIFEST.json"
+    p = tmp_path / "produced" / "LANE_MANIFEST.json"
+    _write_json(c, c_obj)
+    _write_json(p, p_obj)
+    diffs = XREP05_S1_MANIFEST_SEAL_COMMIT(c, p)
+    assert any(d.kind == KIND_DIFFER for d in diffs)
+    assert any("pinned pre-squash" in d.detail for d in diffs)
+
+
+def test_xrep05_fails_on_nonhex_produced(tmp_path: Path) -> None:
+    c_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    bad_values = (
+        "not-a-sha",
+        S1_V1_1_SEAL_COMMIT_PRE_SQUASH.upper(),
+        S1_V1_1_SEAL_COMMIT_PRE_SQUASH[:-1],
+        "z" * 40,
+        12345,
+    )
+    for bad in bad_values:
+        p_obj = dict(_SYNTH_MANIFEST, seal_commit_sha=bad)
+        c = tmp_path / "committed" / "LANE_MANIFEST.json"
+        p = tmp_path / "produced" / "LANE_MANIFEST.json"
+        _write_json(c, c_obj)
+        _write_json(p, p_obj)
+        diffs = XREP05_S1_MANIFEST_SEAL_COMMIT(c, p)
+        assert any(d.kind == KIND_DIFFER for d in diffs), f"{bad!r} was accepted"
+        assert any("40-char lowercase hex" in d.detail for d in diffs), bad
+
+
+def test_xrep05_registered_for_s1_manifest_only() -> None:
+    assert s1_exceptions().get("LANE_MANIFEST.json") is XREP05_S1_MANIFEST_SEAL_COMMIT
+    assert "LANE_MANIFEST.json" not in s2_exceptions()
