@@ -7337,3 +7337,5 @@
 {"date": "2026-10-08", "ticker": "MANH", "score": 45.0, "percentile": 0.8143712574850299, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "DAR", "score": 11.0, "percentile": 0.562874251497006, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "SOUN", "score": 0.0, "percentile": 0.08982035928143713, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "ICE", "score": 7.0, "percentile": 0.23353293413173654, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "HCC", "score": 33.0, "percentile": 0.7155688622754491, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
