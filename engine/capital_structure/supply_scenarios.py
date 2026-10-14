@@ -1284,8 +1284,14 @@ class _Evaluation:
         )
         if branches is not None:
             # SPEC_I2 §1.2, §3.4: an admitted settlement_branches term names the
-            # ONLY settlements this conversion may use, `physical` included.
-            if settlement not in branches.branches:
+            # ONLY settlements this conversion may use, `physical` included.  An
+            # `automatic` term has exactly one branch (§1.5), so the contract
+            # elects it and no party does: whatever settlement the action names,
+            # that single branch is what applies (SPEC_I2 §3 step 4).
+            if branches.elected_by == "automatic":
+                _require(len(branches.branches) == 1,
+                         "supply: an automatic settlement_branches term names exactly one branch")
+            elif settlement not in branches.branches:
                 return self._refused(
                     instrument,
                     selection,
@@ -1542,6 +1548,7 @@ class _Evaluation:
             self.guards.add(GUARD_EXCLUSIVE_BRANCHES)
             if amount is None or contract_price is None or contract_price == 0 or scenario_price is None:
                 return unfinished()
+            elected_branch = branches.branches[0] if branches.elected_by == "automatic" else settlement
             elected = None
             for branch in branches.branches:
                 settled = variable_terms.settle_branch(branch, amount, contract_price, scenario_price)
@@ -1550,22 +1557,24 @@ class _Evaluation:
                         "instrument_id": instrument_id,
                         "route_id": route_id,
                         "branch": branch,
-                        "elected": branch == settlement,
+                        "elected": branch == elected_branch,
                         "shares": str(settled.shares),
                         "cash_kind": settled.cash_kind,
                         "cash_amount": _exact_string(settled.cash_amount),
                         "guard": GUARD_EXCLUSIVE_BRANCHES,
                     }
                 )
-                if branch == settlement:
+                if branch == elected_branch:
                     elected = settled
             assert elected is not None
             delivered_exact = Fraction(0) if condition_failed else Fraction(elected.shares)
             cash_kind = "no_cash" if condition_failed else elected.cash_kind
             repayment = Fraction(0) if condition_failed else elected.cash_amount
-            trace_items.append(("settlement_branch_elected", settlement))
+            trace_items.append(("settlement_branch_elected", elected_branch))
             trace_items.append(("settlement_branch_alternatives", ",".join(branches.branches)))
             trace_items.append(("settlement_branch_elected_by", branches.elected_by))
+            if elected_branch != settlement:
+                trace_items.append(("settlement_branch_named_by_the_action", settlement))
         elif condition_failed:
             delivered_exact = Fraction(0)
             cash_kind = "no_cash"
