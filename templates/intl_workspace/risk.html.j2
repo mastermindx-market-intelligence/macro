@@ -117,7 +117,8 @@
 {%- elif quality -%}{{ quality|e }}
 {%- else -%}{{ words('Unavailable', '不可用') }}
 {%- endif -%}
-{%- if reason in reason_labels -%} <small class="intl-risk__reason">{{ words(reason_labels[reason].en, reason_labels[reason].zh) }}</small>
+{%- if reason in reason_labels -%}
+{%- if quality not in quality_labels or reason_labels[reason] != quality_labels[quality] %} <small class="intl-risk__reason">{{ words(reason_labels[reason].en, reason_labels[reason].zh) }}</small>{% endif -%}
 {%- elif reason -%} <small class="intl-risk__reason">{{ reason|e }}</small>
 {%- endif -%}
 {%- endif -%}
@@ -222,10 +223,12 @@
               </div>
             </div>
             <p class="intl-risk__arithmetic">{{ words('Arithmetic', '算术') }}: (1 + local) × (1 + FX) − 1</p>
+            {% set channel_endpoint = channel.get('endpoint_policy') or (channel.get('usd_return').get('window') if channel.get('usd_return') is mapping else none) %}
+            {% if channel_endpoint is mapping or channel.get('input_evidence_refs') %}
             <details class="intl-risk__evidence">
               <summary>{{ words('Evidence', '依据') }}</summary>
               <dl>
-                {{ endpoint_block(channel.get('endpoint_policy') or (channel.get('usd_return').get('window') if channel.get('usd_return') is mapping else none)) }}
+                {{ endpoint_block(channel_endpoint) }}
                 {% set fx_metric = channel.get('fx_return_usd_per_local') %}
                 {% if fx_metric is mapping and fx_metric.get('derivation') %}
                   <div><dt>{{ words('Derivation', '推导') }}</dt><dd>{% if fx_metric.get('derivation') == 'derived_from_disclosed_returns' %}{{ words('Derived from disclosed returns', '由已披露回报推导') }}{% else %}{{ fx_metric.get('derivation')|e }}{% endif %}</dd></div>
@@ -235,6 +238,9 @@
                 {% endfor %}
               </dl>
             </details>
+            {% else %}
+            <p class="intl-risk__evidence-unavailable">{{ words('Evidence unavailable', '依据不可用') }}</p>
+            {% endif %}
           </section>
         {% endfor %}
       </div>

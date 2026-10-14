@@ -481,3 +481,48 @@ def test_local_destinations_remain_exact_real_actions(destination):
     section, registry, _ = packet()
     section["exposure_boundary"]["destination"] = {"destination": destination}
     assert collect(render(section, registry)).hrefs == [destination]
+
+
+@pytest.mark.parametrize('quality', ['unknown', 'denied'])
+def test_currency_channel_without_disclosable_evidence_has_no_empty_disclosure(quality):
+    section, registry, _ = packet()
+    channel = section['currency_channels'][0]
+    for key in ('local_return', 'usd_return', 'fx_return_usd_per_local', 'fx_contribution_pp'):
+        channel[key] = {'value': None, 'quality': quality, 'reason': 'not_supplied', 'window': None}
+    channel['endpoint_policy'] = None
+    channel['input_evidence_refs'] = []
+    html = render(section, registry)
+    block = html.split('data-im-risk-channel="0"', 1)[1].split('data-im-risk-channel=', 1)[0]
+    assert 'class="intl-risk__evidence"' not in block
+    assert 'Evidence unavailable' in block and '依据不可用' in block
+
+
+@pytest.mark.parametrize('retained', ['window', 'source_reference'])
+def test_currency_channel_retains_disclosable_metadata_without_numeric_values(retained):
+    section, registry, _ = packet()
+    channel = section['currency_channels'][0]
+    window = copy.deepcopy(channel['endpoint_policy'])
+    refs = copy.deepcopy(channel['input_evidence_refs'])
+    for key in ('local_return', 'usd_return', 'fx_return_usd_per_local', 'fx_contribution_pp'):
+        channel[key] = {'value': None, 'quality': 'denied', 'reason': 'value_denied', 'window': None}
+    channel['endpoint_policy'] = window if retained == 'window' else None
+    channel['input_evidence_refs'] = refs if retained == 'source_reference' else []
+    html = render(section, registry)
+    block = html.split('data-im-risk-channel="0"', 1)[1].split('data-im-risk-channel=', 1)[0]
+    assert 'class="intl-risk__evidence"' in block
+    assert (window['start'] if retained == 'window' else refs[0]['source_reference']) in block
+    assert 'data-im-risk-value' not in block
+
+
+@pytest.mark.parametrize('reason', ['qualification_unknown', 'support_unavailable', 'not_supplied'])
+def test_unavailable_currency_copy_does_not_repeat_identical_localized_reason(reason):
+    section, registry, _ = packet()
+    section['currency_channels'][0]['local_return'] = {
+        'value': None, 'quality': 'unknown', 'reason': reason, 'window': None,
+    }
+    html = render(section, registry)
+    card = html.split('data-im-risk-card="local"', 1)[1].split('data-im-risk-card="fx"', 1)[0]
+    assert card.count('>Unavailable</span>') == 1
+    assert card.count('>不可用</span>') == 1
+    if reason == 'not_supplied':
+        assert '>Not supplied</span>' in card and '>未提供</span>' in card

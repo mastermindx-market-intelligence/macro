@@ -59,6 +59,12 @@ changed:
 - path: research/paper_international_wave1_wave2/J06_HISTORY_TABLE_REFLOW_ACCEPTANCE.json
   what: Bind actual fragmentation red proof, nested-wrapper causal correction, final keyboard geometry and settled
     dual-theme captures.
+- path: templates/intl_workspace/risk.html.j2; tests/test_intl_workspace_risk_render.py
+  what: Replace empty evidence disclosure with localized unavailability and omit duplicate status/reason copy; retain
+    metadata-only evidence and distinct explanations.
+- path: research/paper_international_wave1_wave2/MACRO_RISK_HISTORY_JOURNEY_ACCEPTANCE.json
+  what: Bind complete Macro/Policy-Risk-History fixture workflow, four source states, independent clocks and source
+    repair evidence.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -157,6 +163,18 @@ verified:
     check_template_site_sync.py.
   result: 4 fail-before cases;4 focused tests/32states and12 actual-page cases/24settled capture positions pass.115assetpairs
     match. Full closure counts in final receipt. No live rights or nativezoom inference.
+- claim: Macro/Policy-Risk-History complete fixture journeys preserve independent clocks, source absence and return
+    context.
+  command: macro-risk-history-20261014-r1/journey_final.py and journey_final_withheld.py; UNAFFECTED_WORKFLOW_REUSE.json.
+  result: 32 full workflows pass across4 source modes and8 theme/locale/viewport cases;8 affected final-copy cases
+    rerun.24 reuse only a verified single-space difference before distinct reason labels.26 assets bound and source
+    files unchanged by browser. Synthetic grants only.
+- claim: Risk no longer offers an empty disclosure or repeated unavailable copy in repaired source.
+  command: pytest test_intl_workspace_risk_render.py test_intl_workspace_risk_ui_independent.py test_intl_risk_publication_build.py;
+    empty_evidence_final_reflow.py.
+  result: Two empty-disclosure and two duplicate-copy red cases;3 positive controls. Final118PASS with14 inherited
+    temp-cleanup warnings.8 final renders pass including320px doubled text; nativezoom not proven. Design/visual
+    mechanical guards pass.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -184,11 +202,13 @@ unresolved:
   browser test result substitutes for it.
 - Dated History table now scrolls inside its labelled region; at320px doubled text a long exact timestamp can exceed
   one viewport. Independent visual/accessibility review and nativezoom remain open.
+- New Risk absence-copy repair also awaits independent review under the retained Fabric support-publication refusal;
+  parent verification is not independent acceptance.
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- Advance incomplete Macro/Policy -> Risk -> History full workflow with independent-clock, absence and return-context
-  proof. Reuse accepted History and compass evidence within its source scope.
+- Advance the served Macro/Policy -> Risk -> History path in the existing authorized Chrome profile without claiming
+  fixture/source repairs are deployed; preserve source and release holds.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
@@ -205,6 +225,8 @@ do_not_redo:
   Their synthetic permissions never become current rights.
 - Do not repeat final32 History table geometry states or12 settled rendered cases without a changed source/input/acceptance
   requirement; initial unsettled captures are not final evidence.
+- Do not rerun the32 full workflow cases or8 final absence renders without a relevant change. Initial13 harness
+  failures are rejected; all synthetic permissions remain test-only.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.

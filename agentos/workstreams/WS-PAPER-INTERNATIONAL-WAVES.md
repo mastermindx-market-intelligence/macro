@@ -140,10 +140,10 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: 'Continue from cumulative CHECKPOINT on the same Macro PR8754 carrier: qualify admitted latest-head
-  CI or advance Macro/Policy -> Risk -> History clock/absence/return proof. Compass and dated-table repairs have
-  local source evidence; independent review remains pending under original Fabric policy refusal. Preserve release,
-  Saved, frozen-effect and IW2 holds.'
+next_action: Continue from cumulative CHECKPOINT on the same Macro PR8754 carrier. Macro/Policy-Risk-History fixture
+  workflow passes; advance served workflow evidence in the authorized Chrome profile or another bounded incomplete
+  journey. Risk absence-copy, compass and table source repairs await independent review. Preserve release, Saved,
+  frozen-effect and IW2 holds.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -153,6 +153,7 @@ artifacts:
 - research/paper_international_wave1_wave2/COMPASS_ACCESSIBLE_NAME_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/J06_HISTORY_JOURNEY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/J06_HISTORY_TABLE_REFLOW_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/MACRO_RISK_HISTORY_JOURNEY_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.
