@@ -1386,7 +1386,8 @@
    "sha256": "939b48fcf83ade4473b0411a0c50cfb8c446cf5215d4c2ab4e1566f46f4f8418",
    "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
    "text": "(5) Securities registered on an automatic shelf registration statement and securities described in paragraphs (a)(1)(vii), (ix), and (x) of this section may be offered and sold only if not more than three years have elapsed since the initial effective date of the registration statement under which they are being offered and sold, provided, however, that if a new registration statement has been filed pursuant to paragraph (a)(6) of this section: (i) If the new registration statement is an automatic shelf registration statement, it shall be immediately effective pursuant to Rule 462(e)(§230.462(e)); or (ii) If the new registration statement is not an automatic shelf registration statement: (A) Securities covered by the prior registration statement may continue to be offered and sold until the earlier of the effective date of the new registration statement or 180 days after the third anniversary of the initial effective date of the prior registration statement; and (B) A continuous offering of securities covered by the prior registration statement that commenced within three years of the initial effective date may continue until the effective date of the new registration statement if such offering is permitted under the new registration statement.",
-   "same_as": null
+   "same_as": null,
+   "page_furniture_removed": "the derived text breaks this paragraph across a PDF page: after \"statement:\" it prints the page folio \"370\" and a form feed before \"(A) Securities covered\"; the folio and the page break are omitted from this span; apart from that, the only change is the whitespace collapse applied to every PDF-derived span (its normalized_sha256 equals ecfr_230_415/2016-11-21:a_5)"
   },
   {
    "span_id": "release_33_8591:rule_415_a_6",

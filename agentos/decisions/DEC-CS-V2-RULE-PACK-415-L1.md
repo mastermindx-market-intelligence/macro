@@ -93,9 +93,10 @@ alternatives:
       before_first_window of withheld or not_in_force; only the version constant
       changed.
 evidence:
-  - config/capital_structure_rule_applicability_pack.v1.json (sha256 fb11b70602178236c93eee31681017562230963696e3906e2f1dd5bc26d27670; 38 sources, 78 spans, 24 rules, 18 findings, request_policy.l1_requests)
+  - config/capital_structure_rule_applicability_pack.v1.json (sha256 2be52749456bddcd54bdfe973268b933313e11763f23d227688875efba2417e3; 38 sources, 78 spans, 24 rules, 18 findings, request_policy.l1_requests)
   - engine/capital_structure/rule_applicability.py (RULE_APPLICABILITY_PACK_VERSION is the only line changed)
-  - tests/test_capital_structure_rule_applicability.py (87 tests; the 34 appended ones cover per-rule as-of ladders, span digest recomputation, window ordering and pins, the release revision-versus-addition split, the request log and both gaps)
+  - tests/test_capital_structure_rule_applicability.py (88 tests; the 35 appended ones cover per-rule as-of ladders, span digest recomputation, window ordering and pins, the release revision-versus-addition split, the request log, both gaps, and the disclosed page folio inside the release's (a)(5) span)
+  - Review repair (O2): the release PDF breaks the (a)(5) paragraph across a page, and the derived text prints the folio "370" and a form feed there. The span omits that page furniture, and the span now records the omission in a page_furniture_removed note; its normalized digest equals the 2016-11-21 eCFR (a)(5) span
   - Release 33-8591 retrieved from https://www.sec.gov/rules/final/33-8591.pdf (sha256 449cb5a5b533d72b4cf56e9b3647efe2f86c306983378b435424726c42281a6b, 2287419 bytes), derived with pdftotext -layout 24.02.0 to sha256 88ea8e973d3c5383648279c5d1b08f7735bda3641cdcf9dce4a5069568311ac8
   - 15 U.S.C. 77j retrieved from https://www.govinfo.gov/content/pkg/USCODE-2024-title15/html/USCODE-2024-title15-chap2A-subchapI-sec77j.htm (sha256 dd1637e9def25ad6736ce2c810dd05f5d19cbeab51b3447adec60695d9222fc9, 8732 bytes)
   - 23 paced requests in request_policy.l1_requests, including the three refusals (two HTTP 404 on full/2026-10-14, one HTTP 301 on sec.gov/about/forms)

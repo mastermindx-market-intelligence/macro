@@ -24,7 +24,7 @@ changed:
     what: >
       Reissued as capital-structure-rule-applicability/1.1.0 (schema id, file
       name and "task": "L0" unchanged; sha256
-      fb11b70602178236c93eee31681017562230963696e3906e2f1dd5bc26d27670). Now 38
+      2be52749456bddcd54bdfe973268b933313e11763f23d227688875efba2417e3). Now 38
       sources, 78 spans, 24 rules, 18 findings. Six new binding rules:
       cfr.17.230.415.a.1.x, cfr.17.230.415.a.4, cfr.17.230.415.a.5,
       cfr.17.230.415.a.6, cfr.17.230.462.e and usc.15.77j.a.3, all
@@ -55,7 +55,7 @@ changed:
       already expressed every fact L1b needed, so no parser change was made.
   - path: tests/test_capital_structure_rule_applicability.py
     what: >
-      87 tests (53 L0 plus 34 appended). New: pack version 1.1.0 parses and the
+      88 tests (53 L0 plus 35 appended). New: pack version 1.1.0 parses and the
       33-11418 exclusion survives; a rule-shape test per new rule id; one
       rule_status_as_of ladder per new rule id (verified at the 2026-10-09
       edition, bracketed inside the release-to-eCFR interval, not_in_force on
@@ -96,9 +96,9 @@ verified:
       are pre-existing and out of L1b scope.
   - claim: The rule-applicability suite itself is fully green.
     command: >
-      PYTHONPATH=. /home/longr/lanes/venvs/w12-flaky-31213/bin/python3 -m pytest -q
+      PYTHONPATH=. /opt/homebrew/bin/python3.12 -m pytest -q
       tests/test_capital_structure_rule_applicability.py
-    result: 87 passed in 1.31s.
+    result: 88 passed, 14 warnings in 2.52s (O2 re-run after the page-folio review repair).
   - claim: agentos records validate with no errors.
     command: /home/longr/lanes/venvs/w12-flaky-31213/bin/python3 scripts/agentos.py validate
     result: >

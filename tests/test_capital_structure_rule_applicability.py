@@ -745,3 +745,14 @@ def test_l1_rules_enter_the_rule_pack_without_guessing(pack):
     affects = {unknown.affects[0] for unknown in early_unknowns}
     assert set(REVISED_RULE_IDS) | {"usc.15.77j.a.3"} <= affects
     assert not set(ADDED_RULE_IDS) & affects
+
+
+def test_l1_release_page_break_inside_415_a_5_is_disclosed(raw, pack):
+    # Review finding (O2, lane cs-v2-l1b-20261014T1444Z): the release PDF breaks (a)(5) across a page,
+    # and pdftotext prints the folio "370" there. The span omits the folio; the omission must be on record.
+    noted = [span["span_id"] for span in raw["spans"] if "page_furniture_removed" in span]
+    assert noted == ["release_33_8591:rule_415_a_5"]
+    text = pack.span_text("release_33_8591:rule_415_a_5")
+    assert "370" not in text
+    assert "registration statement: (A) Securities covered by the prior registration statement" in text
+    assert ra.normalized_digest(text) == pack.span("ecfr_230_415/2016-11-21:a_5").normalized_sha256
