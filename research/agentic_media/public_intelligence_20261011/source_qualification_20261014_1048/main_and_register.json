@@ -1,0 +1,47 @@
+{
+  "register_owner": {
+    "number": 9266,
+    "state": "closed",
+    "labels": [
+      "merge-on-green"
+    ]
+  },
+  "baseline_workflow": ".github/workflows/integration-baseline.yml",
+  "runs": [
+    {
+      "id": 38551481270,
+      "head_sha": "3e4d75607f6bc5bd454a7ad1c428ab6e0c458315",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-14T10:42:47Z"
+    },
+    {
+      "id": 38550608114,
+      "head_sha": "255ccbec8f3f84c1485f17b6ea1150c78da11091",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-10-14T10:35:14Z"
+    },
+    {
+      "id": 38550250793,
+      "head_sha": "9ab95cb622c6f4027dc680eda265fe4284fb8884",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-14T10:32:09Z"
+    },
+    {
+      "id": 38550076947,
+      "head_sha": "a828d89c6f5aab01443ab4f65541b9df2f02653a",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-10-14T10:30:42Z"
+    },
+    {
+      "id": 38549462280,
+      "head_sha": "7cac374c3fd4884de180a550f091d41d1cc193ae",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-10-14T10:25:26Z"
+    }
+  ]
+}

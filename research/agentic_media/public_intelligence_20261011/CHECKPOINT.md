@@ -1,3 +1,55 @@
+## 2026-10-14 10:57 UTC — #9209 corrective head pushed and armed
+
+At10:55:05 the status-index census showed6active PR proofs/cap8. No open
+refresh lease existed; the retained generation register pointed to closed9266,
+whose direct issue had no lease label. Current main integration baseline38550250793
+was SUCCESS; newer38551481270 was running. Original9209 remained8f705cb3,
+merge-blocked with native auto-merge null. The ordinary non-force push succeeded
+at the same original PR branch, then exact remote/PR readback confirmed
+**a18ec9825dd9756fcdc1421c466bb5c769a69883**. Root removed merge-blocked and
+armed merge-on-green. **Fresh CI38553111016** began10:56:50Z on exacta18ec982.
+This supersedes the earlier capacity-wait next action. No duplicate PR/CI/observer.
+No additional receipt-only commits may be pushed to9209 while this proof is binding.
+
+Fresh-main preflight against f5f19f61b909dbf9c61cf1f1acc8cf30914f18fb was conflict-free
+using git merge-tree; no worktree or branch was refreshed. All24Press source hashes
+match the prospective merge. Three pages differ only in theme.js cache version
+f283b778->09627b2d. Generated theme.js differs only in MM_BRAIN_VER
+ e3bc0580->3c737978, from protected9281/a828d89c's retained-source citation work.
+Templates theme.js/theme.css/onboard.js are unchanged. Root reviewed the91line
+Brain parser/link diff and ran its exact protected Node test:41passed/0failed.
+Prospective page hashes are retained separately in shared_dependency_review.json;
+they are NOT a fresh installation/browser claim and have not silently replaced
+the candidate page manifest. Review actual landed/installed bytes before rebinding.
+
+The portable original acceptance bundle is complete at
+/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding-9209/a18ec9825dd9756fcdc1421c466bb5c769a69883/.
+It contains13canonical files: standalone checks/manifests/ancestry plus allfour
+installed consumer probes.24sources/3pages were compared to exact candidate Git
+bytes and Python parsed without execution. Prepared only. After protected landing,
+supply actual verified squash SHA, observe normal-updater installed HEAD, prepare
+raw-object ancestry locally, require source/site/site.served exactness, then run
+consumer/staging/HTTP checks. Do not install pytest or mutate production Git.
+
+The original current-event checkout remains8f705 with its three dirty accounting
+histories preserved; it is not the pushed recovery checkout. The recovery branch
+and original PR branch now both referencea18ec982. Same validator follow-on
+application8eb467112b83 stays unchanged, with accepted429tests+1real-data and
+31portable groups. No follow-on PR/install. Only integrate landed main into that
+same follow-on after9209 installed acceptance.
+
+Additional source screening found no admitted story. War.gov Contracts returned403
+and was not retried or bypassed. Actual FTC dates disqualified the older Gildan and
+FleetCor leads; Oct13 entries supplied no qualified listed issuer candidate. Prior
+CVS/WhiteHouse holds remain. No provider, writer or producer effect. Publication/
+cutoverfalse,D140/10; preserve all prior source,rights,editorial,held/refused/unknown
+controls. Daily engine cancellation does not resolve its retained push effects.
+
+verified: source_qualification_20261014_1048 contains exact push fence, direct lease
+owner/main baseline, ordinary push/readback and current CI identity, merge preflight,
+41-check output, source screens and portable bundle manifest. Reuse prior803-test
+and0/0contract proof for unchanged candidate source; current hostedCI is pending.
+
 ## 2026-10-14 10:12 wake — #9209 requires corrective integration, not automatic refresh
 
 Main baseline38542393269/eb7cae75 is SUCCESS at09:47:38Z. Full controller38547774186

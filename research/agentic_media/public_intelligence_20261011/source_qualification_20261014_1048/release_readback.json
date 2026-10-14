@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-14T10:57:14.532163+00:00",
+  "remote": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+  "pr": {
+    "autoMergeRequest": null,
+    "headRefName": "claude/ssd-mmx-press-current-event-20261013-3acef99375769a7f",
+    "headRefOid": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "ci_runs": [
+    {
+      "id": 38553111016,
+      "head_sha": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-14T10:56:50Z"
+    }
+  ]
+}
