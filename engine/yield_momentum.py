@@ -301,6 +301,131 @@ def _series_read(frame: pd.DataFrame, column: str,
     return out
 
 
+# --- Y0 (RIC-INCLUDED-CORE): curve convention + endpoint qualification ---------
+# Display-tier provenance APPENDED to each v4 series read: this block describes
+# the existing endpoints, it never recomputes, renames or re-values them.
+QUALIFICATION_VERSION = 'curve_endpoint_qualification.v1'
+# FRED DGS* are Treasury constant-maturity yields read off the par curve; a
+# column absent from this map has convention None (unknown) -- never defaulted
+# to par or zero.
+CURVE_CONVENTION = {'us2y': 'par', 'us5y': 'par', 'us10y': 'par',
+                    'us20y': 'par', 'us30y': 'par'}
+LEVEL_UNIT = 'pct_ann_rate'
+CHANGE_UNIT = 'bp'
+
+
+def _endpoint(numeric, i, dates, observed, expected, item, convention):
+    """One dated endpoint with its origin precedence.
+
+    A non-observed endpoint NEVER carries a numeric level: missing is never 0
+    and a carry is never a print.
+    """
+    out = {'date': _date(numeric.index[i]), 'level': None, 'unit': LEVEL_UNIT,
+           'curve_convention': convention, 'origin': 'missing',
+           'value_state': 'missing', 'quality': [], 'limitations': [],
+           'carried_from': None}
+    if dates is None:
+        # No matched origin evidence: the frame value may be shown, but its
+        # observation origin stays unverified and never certifies anything.
+        value = numeric.iloc[i]
+        out['origin'] = 'unverified'
+        if pd.notna(value):
+            out['level'] = round(float(value), 3)
+            out['value_state'] = 'present'
+        else:
+            out['value_state'] = 'missing'
+        out['limitations'] = ['observation_origin_unverified']
+        return out
+    if observed[i]:
+        out['origin'] = ('caller_supplied_row'
+                         if item['source_basis'] == 'caller_override'
+                         else 'captured_source_row')
+        out['value_state'] = 'present'
+        out['level'] = round(float(numeric.iloc[i]), 3)
+        return out
+    if expected[i]:
+        # US federal holiday / Good Friday: an expected absence beats a carry.
+        out['origin'] = 'expected_absent'
+        out['limitations'] = ['expected_absence_holiday_basis']
+        if dates[i]:
+            out['value_state'] = 'stale'
+            out['quality'] = ['carried']
+            out['carried_from'] = dates[i]
+        else:
+            out['value_state'] = 'missing'
+        return out
+    if dates[i]:
+        # An unexpected carried fill: stale by definition, never a fresh print.
+        out['origin'] = 'carried'
+        out['value_state'] = 'stale'
+        out['quality'] = ['carried']
+        out['carried_from'] = dates[i]
+        return out
+    return out
+
+
+def _endpoint_provenance(frame, column, evidence, read):
+    """The five qualification keys appended to a v4 series read.
+
+    The origin is re-derived with the unchanged ``_origin`` helper; endpoint
+    dates come from the unmodified ``read`` (after a trailing-lag trim its end
+    date is the last captured row, and positions counted from the start of the
+    retained tail are unchanged), so the v4 semantics are described, never
+    recomputed. A missing column, an empty frame or an early-returning read
+    leaves every endpoint None.
+    """
+    out = {'curve_convention': CURVE_CONVENTION.get(column),
+           'level_unit': LEVEL_UNIT, 'change_unit': CHANGE_UNIT,
+           'endpoints': {f'{h}d': None for h in HORIZONS},
+           'turn_certified': bool(read['turn_watch'] is not None
+                                  and read['path_qualified'] is True
+                                  and read.get('source_basis')
+                                  == 'captured_source_rows')}
+    if (column not in frame or frame.empty
+            or not any(isinstance(pair, list)
+                       for pair in read['endpoint_dates'].values())):
+        # The v4 read returned early (missing column, empty frame, invalid grid,
+        # stale or missing latest print) and dated no endpoint: there is nothing
+        # to describe, and an undated grid must never be indexed by date.
+        return out
+    numeric = _finite(frame[column]).iloc[-TURN_LOOKBACK:]
+    dates, origin_status, item = _origin(numeric, column, evidence)
+    observed = expected = None
+    if dates is not None:
+        observed = [o == _date(t) for o, t in zip(dates, numeric.index)]
+        expected = expected_absent_grid(numeric.index)
+    position = {str(stamp.date()): i for i, stamp in enumerate(numeric.index)}
+    convention = CURVE_CONVENTION.get(column)
+    for h in HORIZONS:
+        pair = read['endpoint_dates'][f'{h}d']
+        if not (isinstance(pair, list) and len(pair) == 2
+                and pair[0] in position and pair[1] in position):
+            continue
+        start = _endpoint(numeric, position[pair[0]], dates, observed,
+                          expected, item, convention)
+        end = _endpoint(numeric, position[pair[1]], dates, observed, expected,
+                        item, convention)
+        if dates is None:
+            certified, reason = False, f'origin_{origin_status}'
+        elif item['source_basis'] == 'caller_override':
+            certified, reason = False, 'caller_override_basis'
+        elif (start['origin'] != 'captured_source_row'
+              or start['value_state'] != 'present'):
+            certified, reason = False, f"start_endpoint_{start['origin']}"
+        elif (end['origin'] != 'captured_source_row'
+              or end['value_state'] != 'present'):
+            certified, reason = False, f"end_endpoint_{end['origin']}"
+        elif read['velocity_bp'][f'{h}d'] is None:
+            certified, reason = False, 'velocity_unavailable'
+        else:
+            certified, reason = True, None
+        out['endpoints'][f'{h}d'] = {'start': start, 'end': end,
+                                     'change_unit': CHANGE_UNIT,
+                                     'certified': certified,
+                                     'not_certified_reason': reason}
+    return out
+
+
 def build_yield_momentum(frame: pd.DataFrame, *,
                          available_at: Mapping[str, Any] | None = None,
                          observation_evidence: Mapping[str, Any] | None = None) -> dict:
@@ -312,6 +437,11 @@ def build_yield_momentum(frame: pd.DataFrame, *,
     """
     evidence = (frame.attrs.get(ORIGIN_ATTR) if observation_evidence is None
                 else observation_evidence)
+    series = {}
+    for label, column in SERIES.items():
+        read = _series_read(frame, column, available_at, evidence)
+        read.update(_endpoint_provenance(frame, column, evidence, read))
+        series[label] = read
     return {'schema': 'yield_momentum.v1', 'calculation_version': 'fixed_grid_origin.v4',
             'asof': _date(frame.index[-1]) if len(frame.index) else None,
             'display_only': True, 'authority': False, 'can_score': False,
@@ -321,5 +451,5 @@ def build_yield_momentum(frame: pd.DataFrame, *,
                         'Endpoint changes do not prove continuous deceleration or a market turn.',
                         'Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.',
                         f'A trailing publication lag of at most {TRAILING_PUBLICATION_LAG_ROWS} weekday rows is an expected absence: momentum is then measured and dated at the last captured source row (as_of), never at the frame date.'],
-            'series': {label: _series_read(frame, column, available_at, evidence)
-                       for label, column in SERIES.items()}}
+            'series': series,
+            'qualification_version': QUALIFICATION_VERSION}

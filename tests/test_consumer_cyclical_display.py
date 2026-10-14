@@ -125,7 +125,7 @@ def test_unavailable_document_and_withheld_row_stay_visible(
     target = [row for row in rows if row["key"] == "advertising_net_change"]
     assert len(target) == 1
     target[0]["value_text"] = None
-    target[0]["withheld_reason"] = "definition_contradicted"
+    target[0]["withheld_reason"] = "result_envelope_contradicts_stated_definition"
     _patch_projection(
         monkeypatch, {**document, "results": rows, "availability": "unavailable"}
     )
@@ -133,7 +133,9 @@ def test_unavailable_document_and_withheld_row_stay_visible(
     assert packet["availability"] == "unavailable"
     assert packet["advertising_net_change"] is None
     assert packet["advertising_net_change_status"] == "withheld"
-    assert packet["advertising_net_change_withheld_reason"] == "definition_contradicted"
+    assert packet["advertising_net_change_withheld_reason"] == (
+        "result_envelope_contradicts_stated_definition"
+    )
 
 
 def test_absent_row_and_unknown_verdict_read_unavailable(
