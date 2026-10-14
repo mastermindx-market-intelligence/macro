@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-10-13",
-  "generated_utc": "2026-10-13T08:48:31Z",
+  "as_of": "2026-10-14",
+  "generated_utc": "2026-10-14T19:36:03Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 325,
     "by_state": {
-      "overdue": 126,
-      "due": 36,
+      "overdue": 139,
+      "due": 23,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -134,7 +134,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 3855
+        "n_past_check_by": 3873
       },
       "allowed_actions": [
         "inspect",
@@ -182,7 +182,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 3855
+        "n_past_check_by": 3873
       },
       "allowed_actions": [
         "inspect",
@@ -230,7 +230,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 37258
+        "n_past_check_by": 37613
       },
       "allowed_actions": [
         "inspect",
@@ -278,7 +278,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 37258
+        "n_past_check_by": 37613
       },
       "allowed_actions": [
         "inspect",
@@ -417,8 +417,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 292,
-        "n_past_check_by": 271
+        "n_open": 299,
+        "n_past_check_by": 288
       },
       "allowed_actions": [
         "inspect",
@@ -465,8 +465,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 6672,
-        "n_past_check_by": 5273
+        "n_open": 6852,
+        "n_past_check_by": 5411
       },
       "allowed_actions": [
         "inspect",
@@ -513,7 +513,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 95,
+        "n_open": 96,
         "n_past_check_by": 84
       },
       "allowed_actions": [
@@ -578,7 +578,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 1585,
-        "n_past_check_by": 934
+        "n_past_check_by": 943
       },
       "allowed_actions": [
         "inspect",
@@ -1060,7 +1060,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 22,
-        "n_past_check_by": 13
+        "n_past_check_by": 14
       },
       "allowed_actions": [
         "inspect",
@@ -2383,7 +2383,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 14879,
-        "n_past_check_by": 4907
+        "n_past_check_by": 5153
       },
       "allowed_actions": [
         "inspect",
@@ -2799,8 +2799,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 63,
-        "n_past_check_by": 16
+        "n_open": 65,
+        "n_past_check_by": 17
       },
       "allowed_actions": [
         "inspect",
@@ -2929,8 +2929,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 181,
-        "n_past_check_by": 35
+        "n_open": 188,
+        "n_past_check_by": 39
       },
       "allowed_actions": [
         "inspect",
@@ -4249,8 +4249,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.402599+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "annual",
@@ -4285,8 +4285,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.405284+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "annual",
@@ -4320,8 +4320,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.407046+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "annual",
@@ -4355,8 +4355,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.411331+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "candidate",
         "cadence": "quarterly",
@@ -4390,8 +4390,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.415297+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "quarterly",
@@ -4425,8 +4425,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.417961+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "quarterly",
@@ -4460,8 +4460,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.419308+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "monthly",
@@ -4496,8 +4496,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-08-21T12:00:00.420043+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "quarterly",
@@ -4532,8 +4532,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-07-07T00:03:51.963718+00:00",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "next lattice batch",
@@ -4568,8 +4568,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "next lattice batch",
@@ -4604,8 +4604,8 @@
       "clock_type": "next_review_due",
       "due_at": "2026-10-06",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "status": "display",
         "cadence": "next TR wave (or annual review)",
@@ -4640,8 +4640,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-06",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 then FDR gate",
         "cadence": "daily",
@@ -4672,8 +4672,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-06",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_resolved>=3 per pair per outcome metric; grading: (fwd>0 when sign=positive) else (fwd<0). No edge claimed — Phase-0 accumulation only.",
         "cadence": "daily (asia-close lane only)",
@@ -5311,7 +5311,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-13",
+      "due_at": "2026-10-14",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5343,7 +5343,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-13",
+      "due_at": "2026-10-14",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5375,7 +5375,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-13",
+      "due_at": "2026-10-14",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5407,7 +5407,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-13",
+      "due_at": "2026-10-14",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5482,9 +5482,6 @@
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "options_entry",
-          "macro_weather",
-          "claim_reliability",
           "inflation_intelligence",
           "government_revenue"
         ]
@@ -5569,8 +5566,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 118085,
-        "n_with_falsifier": 1211,
+        "n_claims": 118282,
+        "n_with_falsifier": 1238,
         "falsifier_coverage": "1.0%",
         "blocking_reason": "falsifier coverage 1.0%; not a promotion-grade substrate"
       },
@@ -10303,17 +10300,17 @@
     {
       "clock_id": "trial_ledger:other",
       "source_system": "trial_ledger",
-      "subject_id": "other_136_families",
+      "subject_id": "other_139_families",
       "subject_type": "family",
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-10-12",
+      "as_of": "2026-10-14",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 487,
-        "n_families": 136
+        "n_trials": 490,
+        "n_families": 139
       },
       "allowed_actions": [
         "inspect",

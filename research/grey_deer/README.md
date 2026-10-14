@@ -3,7 +3,7 @@
 **Program key:** `WS:GREY-DEER-RISK-INTELLIGENCE` · registry key `grey-deer-risk-intelligence`
 (`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; GD-3 production acceptance
 passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
-2026-10-11, continued by the Opus seat on 2026-10-13 (resumption file:
+2026-10-11, continued by the Opus seat on 2026-10-13 and 2026-10-14 (resumption file:
 `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). Both frozen retrospective pullback runs are
 null (stage-1 SPY, stage-1b 14-ETF panel: 0 of 12 claims); the frozen SPY lane now runs
 prospectively in the nightly at research tier. This README is an index only — it duplicates
@@ -27,6 +27,9 @@ no architecture.
 | `PULLBACK_PROSPECTIVE_LANE_DESIGN_2026-10-12.md`, `PULLBACK_G3_CN_RIGHTS_EVIDENCE_2026-10-12.md` | W4 (PR #9082): design of the prospective nightly lane (built by W5) and the CN rights evidence for open determination G3. |
 | `PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md`, `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md` | Prereg v1.1 and manifest v1.1.0 for the stage-1b pooled 14-ETF panel (runner PR #9091, frozen with blob pins by PR #9114). One execution per revision. |
 | `pullback_stage1b/PULLBACK_STAGE1B_RESULTS.{md,json}` + `PULLBACK_STAGE1B_RESULTS_ADDENDUM.md` | Stage-1b frozen run (PR #9122): 0 of 12 claims pass. The addendum answers red-team findings F1–F7 from the stored JSON only — the headline `delta_v` row carries V(M3); the true ΔV is printed beside it and no verdict changes. |
+| `PBOC_LIQUIDITY_COMPOSITION_2026-10-13.md`, `EPISODE_SAMPLE_SPEC_2026-10-13.md`, `PORTFOLIO_SHADOW_ADAPTER_CENSUS_2026-10-13.md` | W7 (PR #9208): the display-tier PBOC liquidity read (GD-4C; no consuming surface yet), the T12 episode and negative-control sample builder spec with the T19 B2 protection masks, and the GD-9A census (census only; no adapter built). |
+| `PREREG_DRAFT_T13_MECHANISMS_2026-10-13.md`, `PREREG_DRAFT_T14_LEADER_DAMAGE_2026-10-13.md`, `PREREG_DRAFT_T19_COSTED_PROTECTION_2026-10-13.md`, `PULLBACK_PROSPECTIVE_LANE_PANEL_ADDENDUM_DRAFT_2026-10-13.md` | W7 (PR #9208): DRAFTS. Not frozen and no trial budget spent; freezing any of them is a separate seat act with blob pins and a READ_ONLY audit. |
+| `PULLBACK_POWER_FLOOR_PROJECTION_2026-10-13.md` + `pullback_floor_projection/`, `PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md` + `pullback_episode_rule_options/` | W8 (PR #9215): exploratory projection of the years until each readiness floor holds, and the draft v1.2 episode-rule options memo explaining why the panel h21 floor is unreachable under v1.1. Neither is a result or changes a gate. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /
@@ -46,15 +49,15 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-10-13, Opus seat W5)
+## Current next action (updated 2026-10-14, Opus seat W7/W8)
 
 - Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
-  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md`. W0–W4 are merged
-  (PRs #8785, #8833, #8835, #8852, #8854, #8938, #9070, #9082, #9091, #9114); stage-1b results
-  (PR #9122) and the nightly forward lane (PR #9128) ship from that handoff.
-- Next: read the first nightly after #9128 merges (`data/grey_deer_pullback/forward_log.jsonl`
-  with SPY rows; no `grey-deer-pullback-*-error` annotation), then close T03 and G-HB from
-  `data/ci/ledger_heartbeat_state.json`. Grading starts only as each horizon elapses;
+  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md`. W0–W5, W7 and W8 are merged
+  (PRs #8785, #8833, #8835, #8852, #8854, #8938, #9070, #9082, #9091, #9114, #9122, #9128, #9208,
+  #9215); T03 and G-HB closed at PRODUCTION_PROOF on 2026-10-13.
+- Next: read the first nightly whose head descends from `af468522ab6e` (#9128):
+  `data/grey_deer_pullback/forward_log.jsonl` with SPY rows and no `grey-deer-pullback-*-error`
+  annotation, then record W5 at PRODUCTION_PROOF. Grading starts only as each horizon elapses;
   `scripts/research/grey_deer_pullback_readiness.py` reports when the power floor can be met.
 - Neither retrospective run is ever repeated on real data; a new configuration is a new prereg
   revision with its own trial budget.
