@@ -1,3 +1,79 @@
+---
+workstream: WS:MARKET-MEMORY-W2C
+session: claude/ssd-market-memory-brain-citations-01a1333c-3b71e3f22034a4eb
+model: codex
+ended_because: ci_handoff
+mission: Deliver all 28 Market Memory tasks and 49 acceptance cases through existing
+  source and Fabric owners. This record saves the current frontier; execution continues.
+state_before: N2 installed consumption proved the contextual-only lifecycle boundary;
+  real Brain answer lacked clickable source citations. UI9228 release pending.
+changed:
+- path: engine/neuralweb/market_memory_brain_citations.py
+  what: Validate exact retained tool results and emit bounded same-origin source locators
+    through shared gateway extraction.
+- path: templates/mm_brain.js
+  what: Validate and display up to nine exact retained citations through the existing
+    widget with EN/ZH labels.
+- path: .github/ci/legacy-jobs.yml
+  what: Register affected tests and include the new gateway import in four incumbent
+    job scopes.
+verified:
+- claim: The installed contextual-only Factory runner consumes the authentic evidence
+    binding without unrelated study reads or transitions.
+  command: Guarded installed invocation documented in N2_CONTEXTUAL_ONLY_LIVE_RECEIPT.json;
+    exact source audit and merge receipt.
+  result: PR9259 merged ec6e763d; four installed hashes matched; eight citations,
+    one attachment, zero unrelated candidates/transitions, effective_count false.
+- claim: Exact source citations and existing routing work in local gateway/widget
+    checks.
+  command: Affected pytest and Node suites recorded in N3_FINAL_EMITTED_WIDGET_TESTS.txt;
+    node research/market_memory/n3_citation_checks/browser-test.cjs.
+  result: 131 final affected tests and eight actual full-widget synthetic browser
+    cells passed; no page errors or horizontal overflow.
+- claim: Canonical emitted assets preserve incumbent owner-layout proofs.
+  command: Actual scripts/verify_stock_dashboard_mobile_layout.cjs runs for HK and
+    Canada; P0B closure and design/style gates.
+  result: Both browser verifier receipts passed and are bound in the existing manifest;
+    historical baseline retained.
+unverified:
+- claim: N3 citation bridge is merged, installed and accepted in the real consumer.
+  what_would_verify: PR9281 exact-head CI and protected merge after UI9228, installed
+    source audit, real authenticated Brain citations and source-panel click-through.
+- claim: E0 operational admission and independent research usefulness are established.
+  what_would_verify: Complete authentic domain metadata, independent prelabel closure,
+    genuine installed owner and current durable access reservations before untouched
+    evaluation.
+unresolved:
+- UI9228b3f9739 has eleven passing CI packs and one failed pack pending diagnosis.
+- Original E0 exporter remains unsettled on its original carrier; the publisher collector
+  refusal is preserved.
+- Root has product-condition and legacy aggregate outcome exposure and is not a blinded
+  study reviewer.
+next_actions:
+- Repair UI9228 hosted failure on its original carrier and finish protected delivery
+  with live browser proof.
+- Finish PR9281 protected CI, merge and installed real citation click-through after
+  UI dependency lands.
+- Consume the bounded annotation-protocol review without treating it as study admission;
+  preserve original E0 recovery carrier.
+do_not_redo:
+- Do not repeat frozen E0 membership enumeration, original producer dispatches, accepted
+  August ABSTAINED/STOPPED studies, or resolved five-field source rights.
+- Do not change immutable method protocol pins for performance or treat fixture evidence
+  as production proof.
+danger_areas:
+- No label, annotation or owner-admission authority follows from metadata hashes or
+  a pure validator.
+- A33 accepts only the stated Factory lifecycle boundary; all other program obligations
+  remain open.
+prs:
+- 6528
+- 9228
+- 9243
+- 9259
+- 9281
+---
+
 # Market Memory: real Factory consumption and source citation closure
 
 The original root `01a1333c-a475-7052-95a8-72c623fb12e1` retains program integration ownership for all 28 tasks and 49 cases. Chairman source rights remain resolved.
