@@ -1815,3 +1815,9 @@ missing earnings credentials are not the sole waiting condition.
 verified: writer_contract_phase/combined_green.txt, independent_review.md and
 validation.json; validator_integrity_phase/local_portable_probe.json,
 install_bundle_coverage_repair.json and research_source_qualification/review.json.
+
+The next distinct BofA flow candidate was also checked in the actual browser.
+Its summary labels money-market (MM) weekly inflows of2.7% as investment-grade
+credit; the source table separately shows IG outflows of0.1% and MM inflows of2.7%.
+It is held before provider spend. This is a producer-summary fidelity problem,
+not an earnings-credential failure, and no source file or draft was rewritten.

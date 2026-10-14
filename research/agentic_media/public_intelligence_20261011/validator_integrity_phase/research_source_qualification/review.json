@@ -35,6 +35,18 @@
     {
       "source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
       "result": "Newly published minutes cover August17/September9/September16 discount-rate meetings; not a new October13 rate decision."
+    },
+    {
+      "source": "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+      "url": "https://www.mastermind-x.com/research/bofa-follow-the-flow-seeking-shelter-2026-10-09-baf3cc.html",
+      "browser": "Chrome 2 tab1925920488; actual public source excerpt",
+      "summary_claim": "Investment Grade (MM) recorded 2.7% weekly inflows",
+      "displayed_source_table": {
+        "IG_week_pct": -0.1,
+        "MM_week_pct": 2.7,
+        "HY_week_pct": -0.3
+      },
+      "result": "HOLD_SOURCE_CATEGORY_MISMATCH: money-market inflows were relabelled as investment-grade credit in the generated summary. Source narrative separately distinguishes money market from credit. No corrected source or new draft fabricated."
     }
   ],
   "preserved_private_history": true,
@@ -42,5 +54,6 @@
   "staging_writes": 0,
   "publication": false,
   "acceptance_credit": 0,
-  "next_action": "Use the current producer catalog with original private-history exclusions. Qualify literal facts and source dates through the existing Research surface before any distinct private draft; do not overwrite canonical producer data or bypass its rights/entitlement controls."
+  "next_action": "Use the current producer catalog with original private-history exclusions. Qualify literal facts and source dates through the existing Research surface before any distinct private draft; do not overwrite canonical producer data or bypass its rights/entitlement controls.",
+  "last_reviewed_at": "2026-10-14T03:39:10.647586+00:00"
 }
