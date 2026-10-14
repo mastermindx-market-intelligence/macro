@@ -2,7 +2,7 @@
 workstream: WS:DEFENSE-PROCUREMENT-V3
 session: 01a13300-c75b-79c3-83f9-79b3b4c01dc7
 model: codex
-ended_because: ci_handoff
+ended_because: active_execution_checkpoint
 mission: Complete the included Defense Procurement V3 investor product under the current Chairman commission.
 state_before: Original publication failure and proof-integrity gaps; stale entitled product; incomplete issuer economics and acceptance.
 changed:
@@ -659,3 +659,54 @@ Next:push this originalPR9066 candidate, consume exact-head hosted gates, then
 protected merge and the existing natural-publisher/financial-CAS order. Original
 7175, P2/Q3 uncertain carriers, Terminal778 custody and independent installed
 acceptance remain preserved. This is a saved phase, not mission completion.
+
+
+### October 14 V13 current-main proof and ongoing execution
+
+Candidate fc04588278e12b5e693cbea72fea3193986f78d1 integrates protected
+main04028b3030205b6f7508d7f0d16e2a2ecaa6f4c6 on original delivery PR9066.
+Its new sealed proof passes104/105 with one skip,7600 source dependencies,
+109 outputs and unchanged642-row ledger. Committed witness verification passes.
+All316 affected checks and four absolute curated CI scope checks pass.
+
+The actual-source local ASGI browser matrix captures24/24 states, both themes
+and languages at1440/820/390, all six themes ready and no error/overflow.
+Timing retains a real3.217s miss in the first ten-run batch and a complete
+instrumented10/10 pass(max2.816s): total19/20 under3s,p952.828s. An interrupted
+diagnostic batch is invalid and retained. No production or entitlement claim.
+See combined_generation_v13_proof/ADJUDICATION.json and immutable indexed evidence.
+Hosted CI38544633791 remains in progress at this checkpoint; no observer was
+launched after the explicit background-mode guard refusal. No merge,CAS,
+publication,installed acceptance or product completion is claimed.
+
+Parallel ordinary Fabric leaves preserve root01a13300-c75b-79c3-83f9-79b3b4c01dc7:
+capacity-source-review-01a13300-a (full run id prefixed defense-) remains on mb,
+GAO VCS extraction defense-gao-vcs-extraction-01a13300-a on ubuntu3/Qwen Flash,
+and defense-oversight-core-01a13300-a on ubuntu1/GLM Flash. These are observed
+launches, not accepted results. Same-ID source-review observation was refused
+original_run_observation_unconfirmed; no retry or replacement. Original capacity
+code review,P2,Q3 and FMS unsettled delivery/ledger obligations retain custody.
+
+GAO-26-108457 official July2,2026 report is staged at the external evidence root
+with exact PDF hash f9afddd66fcaefe7c6f91dcf644a836a6b971fb792217c601cbc3d37adaac610.
+PDF179/printed167 was visually checked. Its Block V observations are not current
+whole-class/issuer economics; later admitted July29 Block VI evidence must be
+reconciled. New actual factual program/capacity/oversight admission has not occurred.
+Capacity preparation remains clean at8800d3d7141528abc980e716e31b01494c0af08b
+on its protected SSD tree; the oversight worker has proposal-only custody.
+This saves an active phase. Continue the next safe ready work; it is not an exit.
+
+
+V13 subsequent acceptance evidence: ten concurrent readers completed100 requests
+each for company dossier, defense economics and static program dossier. Same
+bytes throughout; p95 was187.91ms,509.07ms,33.60ms respectively, below1000ms.
+Actual local source/static routes with explicit test principal; installed proof
+still owed. GAO C0 extraction returned and was accepted after parent repairs:9
+staged facts, full-context column spans, corrected date/classification; no factual
+admission. The original GAO403/no-retry hold was recovered after the principal
+had fetched the same official PDF. That copy remains quarantined, no further
+fetch is authorized, and Chris has been asked whether it may enter source review.
+The extraction ledger verdict proves only bounded repaired-byte consistency.
+Source/access, exact program-link curation and final acceptance are separate.
+The original SBIR403 is likewise preserved; current official documentation still
+states maintenance, and no new API request or alternate corpus ingestion occurred.
