@@ -74,7 +74,7 @@ def test_valid_direction_does_not_bypass_identity_or_grounding():
 
 
 def test_new_prompt_identity_rejects_retained_v1_receipt():
-    assert extractor.PROMPT_VERSION == "mastermind.research_intelligence.extractor.v2"
+    assert extractor.PROMPT_VERSION == "mastermind.research_intelligence.extractor.v3"
     current_hash = hashlib.sha256(
         (extractor.PROMPT_VERSION + "\n" + extractor.SYSTEM_PROMPT).encode()
     ).hexdigest()
@@ -91,6 +91,8 @@ def test_new_prompt_identity_rejects_retained_v1_receipt():
     kwargs = {"extracted_text_sha256": text_sha, "requested_model": "synthetic-model"}
     assert vault_head._latest_is_current(latest, item, **kwargs)
     receipt["prompt_version"] = "mastermind.research_intelligence.extractor.v1"
+    assert not vault_head._latest_is_current(latest, item, **kwargs)
+    receipt["prompt_version"] = "mastermind.research_intelligence.extractor.v2"
     assert not vault_head._latest_is_current(latest, item, **kwargs)
     receipt["prompt_version"] = extractor.PROMPT_VERSION
     receipt["prompt_contract_sha256"] = "b64a32853c56ce5d6a67309e751397b732b25ee5006982e2d54f159180327656"

@@ -76,7 +76,7 @@ def test_literal_complete_context_and_polarity_law_still_refuses(unsupported):
         _ground_rio(rio(claims=(unsupported,)), BODY)
 
 
-def test_public_analyzer_marks_partial_support_loss_invalid_without_recall():
+def test_public_analyzer_refuses_missing_selected_support_without_recall():
     value = rio(thesis_support=(0, 1))
     calls = []
     document = {'id': 'synthetic-support', 'source_type': 'other'}
@@ -84,7 +84,12 @@ def test_public_analyzer_marks_partial_support_loss_invalid_without_recall():
         calls.append(model_id)
         identity = json.loads(user.split('DOCUMENT IDENTITY:\n', 1)[1].split('\n\nOUTPUT SHAPE:', 1)[0])
         value['document'] = identity
-        return json.dumps(value), 'synthetic', 'synthetic-model'
+        catalog = json.loads(user.split('EVIDENCE CATALOG:\n', 1)[1].split('\n\n', 1)[0])
+        selected = {'selector': catalog['catalog_version'], 'document': value['document'],
+                    'catalog_sha256': catalog['catalog_sha256'],
+                    'selections': [{'evidence_id': catalog['units'][0]['evidence_id']}],
+                    'analysis': value['analysis']}
+        return json.dumps(selected), 'synthetic', 'synthetic-model'
     result = analyze_document(document, BODY, model_id='synthetic-model', call=call)
     assert result['state'] == 'invalid_model_output'
     assert result['rio'] is None
@@ -167,7 +172,12 @@ def test_malformed_optional_support_public_analyzer_drops_whole_assertion_withou
     def call(system, user, *, model_id, max_tokens):
         calls.append(model_id)
         value['document'] = json.loads(user.split('DOCUMENT IDENTITY:\n', 1)[1].split('\n\nOUTPUT SHAPE:', 1)[0])
-        return json.dumps(value), 'synthetic', 'synthetic-model'
+        catalog = json.loads(user.split('EVIDENCE CATALOG:\n', 1)[1].split('\n\n', 1)[0])
+        selected = {'selector': catalog['catalog_version'], 'document': value['document'],
+                    'catalog_sha256': catalog['catalog_sha256'],
+                    'selections': [{'evidence_id': catalog['units'][0]['evidence_id']}],
+                    'analysis': value['analysis']}
+        return json.dumps(selected), 'synthetic', 'synthetic-model'
     result = analyze_document({'id': 'synthetic-support', 'source_type': 'other'}, BODY, model_id='synthetic-model', call=call)
     assert result['state'] == 'ok'
     assert result['rio']['analysis']['implications'] == []
