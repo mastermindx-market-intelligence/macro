@@ -13322,6 +13322,10 @@ jobs:
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
+      - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_page_signal.py
+      - engine/sector_intelligence/finance_case_signal.py
+      - engine/sector_intelligence/finance_projection.py
       - scripts/build_fundamental_forensics.py
       - scripts/build_index_leadership.py
       - scripts/build_ipo.py
@@ -21364,6 +21368,10 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_international_macro.py"
@@ -22614,6 +22622,10 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_index_leadership.py"
@@ -28904,6 +28916,10 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
