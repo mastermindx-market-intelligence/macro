@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: lib/intl_library_mount.py; templates/intl.html.j2; tests/test_intl_library_mount.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
+  what: Bind Library Trade & supply links only to its already-rendered unique CGL heading; retain absence and numerical qualification, with seven new Python cases and four browser regressions.
+- path: research/paper_international_wave1_wave2/LIBRARY_TRADE_LINKS_ACCEPTANCE.json; mockups/evidence/paper-international-library/trade-links/
+  what: Bind causal fail-before proof, passing affected checks, eight canonical captures and two narrow search diagnostics; independent review and live acceptance remain pending.
 - path: .github/ci/legacy-jobs.yml
   what: Resolve two conflict hunks by retaining both existing owner/publication/shell checks and upstream EOD checks.
 - path: app/deploy/Caddyfile
@@ -119,6 +123,10 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Library reaches the already-rendered CGL panel without granting numerical availability.
+  command: library-trade-links-20261014-r1 python red/green and scoped Node browser commands; LIBRARY_TRADE_LINKS_ACCEPTANCE.json.
+  result: Valid Python red2FAIL2PASS and browser red1FAIL; final36Python and4browser tests pass, with8width states.
+    Eight canonical captures retain existing dark/light materials; independent review and live acceptance pending.
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
   result: Main7f1e4ede, original head943ee54 and mergebase7fb8cd8d. Only legacy-jobs.yml and Caddyfile conflicted;
@@ -429,3 +437,5 @@ History and accessible-name evidence: `/Volumes/Mastermind/evidence/paper-waves-
 Final accessible-name source retains an explicit CSS semicolon after its existing templated color: design guard and diff check pass. Three focused browser tests pass on these final bytes; the20-case browser/Python closures precede only this CSS-equivalent terminator. Original scanner and missing-NODE_PATH setup failures are retained in evidence.
 
 Final History table source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1`.
+
+Library trade-link source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1`. The two-line source repair binds only a unique existing guarded CGL panel. Its model-context notice and numerical unavailability remain unchanged. Rejected fixture assumptions are retained; no frozen review or original live-browser effect was retried.

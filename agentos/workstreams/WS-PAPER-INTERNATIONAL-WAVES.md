@@ -141,10 +141,11 @@ waves:
   - IM08
   - IM09
 next_action: Resume the original live Library Stock Back after Chris completes/dismisses the Chrome extension UI.
-  Forced-colors selection repair and short-height Inspector proof are locally verified; independent review, served
+  Trade-link binding, forced-colors selection repair and short-height Inspector proof are locally verified; independent review, served
   publication and real owner qualification/Saved admission remain held. Preserve original review refusal, IW2 custody
   and all release/frozen-effect boundaries; no repeated accepted checks or speculative contracts.
 artifacts:
+- research/paper_international_wave1_wave2/LIBRARY_TRADE_LINKS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/INSPECTOR_SHORT_VIEWPORT_OBSERVATION.json
 - research/paper_international_wave1_wave2/FORCED_COLORS_SELECTION_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/TEXT_SPACING_OBSERVATION.json

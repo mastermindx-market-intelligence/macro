@@ -1839,7 +1839,7 @@
 {%- set _cgl_sorted = _cgl_rows.v | sort(attribute='pct', reverse=true) -%}
 <div class="panel">
   <div class="sec-h">
-    <h2>{{ t('Where crash pressure is flowing now', '冲击压力的实时流向') }}
+    <h2 id="intl-trade-supply-links">{{ t('Where crash pressure is flowing now', '冲击压力的实时流向') }}
       {{ help('How much inbound pressure each market is absorbing from markets that are actually falling — measured from economic linkages and current crash depth. Low / Building / High reflects the severity relative to the past two years. Top sources show which markets are driving the pressure. Source: trade, financial and supply-chain linkages blended with recent price action. Display only — not a signal to trade.', '每个市场正在吸收多少来自真实下跌市场的输入压力——由经济联系与当前跌幅共同衡量。低/升温/高反映过去两年的相对严重程度。压力来源显示哪些市场是主要驱动力。数据来源：贸易、金融与供应链联系，结合近期价格走势。仅作展示，非交易信号。') }}</h2>
     <span class="sub">{{ t('Measured from market connections and who is actually falling', '由市场关联与实际下跌方共同衡量') }}</span>
   </div>

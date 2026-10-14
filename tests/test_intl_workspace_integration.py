@@ -55,7 +55,7 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown", perf=None):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
@@ -64,6 +64,8 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None):
           "global_regime_html": '<section id="fixture-owner-fragment">Existing research</section>'}
     if perf is not None:
         vm["perf"] = perf
+    if cgl is not None:
+        vm["CGL"] = cgl
     if workspace:
         vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
@@ -71,6 +73,40 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None):
     catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
     pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue)
     return pages[1] if mode == "stocks" else pages[0]
+
+
+def library_trade_fixture():
+    """Existing CGL render shape with explicit synthetic, non-qualified values."""
+    from tests.test_contagion_card_render import _minimal_pressure_block
+    return {"schema": "contagion_links.v1", "as_of": "synthetic:fixture",
+            "pressure": {"jp": _minimal_pressure_block()},
+            "severity": {}, "gaps": ["synthetic:missing-link"]}
+
+
+@pytest.mark.parametrize("cgl,available", [
+    (None, False), ({}, False),
+    ({"schema": "contagion_links.v1", "pressure": {}, "gaps": []}, True),
+    (library_trade_fixture(), True),
+])
+def test_library_trade_link_follows_rendered_panel_without_qualifying_data(cgl, available):
+    original = deepcopy(cgl)
+    soup = BeautifulSoup(render_fixture(cgl=cgl), "html.parser")
+    target = soup.select("#intl-trade-supply-links")
+    tool = soup.select_one('[data-im-library-tool="trade_supply_links"]')
+    assert len(target) == int(available)
+    assert bool(tool.select('a[href="#intl-trade-supply-links"]')) == available
+    assert "model context" in tool.get_text().lower()
+    assert "公司敞口" in tool.get_text()
+    from lib.intl_library_mount import attach_public_library
+    catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
+    bound = attach_public_library(_workspace_overviews(None), catalogue=catalogue,
+                                  macro_html=str(soup), stocks_rendered=True)
+    entry = next(t for t in bound["library"]["tools"] if t["presentation_key"] == "trade_supply_links")
+    assert entry["route_state"] == ("available" if available else "unavailable")
+    assert entry["data_state"] == "unknown" and entry["metrics"] == []
+    assert entry["interpretation_notice"] == "model_context_not_company_exposure"
+    assert cgl == original
+    assert not BeautifulSoup(render_fixture(mode="stocks", cgl=cgl), "html.parser").select("#intl-trade-supply-links")
 
 
 def render_history_fixture():

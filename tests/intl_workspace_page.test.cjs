@@ -10,7 +10,7 @@ const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   [path.join(__dirname, 'test_intl_workspace_integration.py')],
   {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
-async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null, published=false, bootLanguage=null, browserLocale='en-US'}={}) {
+async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null, published=false, bootLanguage=null, browserLocale='en-US', initialSearch=''}={}) {
   const browser = await chromium.launch({headless:true,
     ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
   let fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
@@ -46,13 +46,56 @@ async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440
       contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':undefined});
     return route.fulfill({status:404,body:''});
   });
-  try { await page.goto('http://intl.test/intl.html', {waitUntil:'load'}); await fn(page); }
+  try { await page.goto('http://intl.test/intl.html'+initialSearch, {waitUntil:'load'}); await fn(page); }
   finally { await browser.close(); }
 }
 
 const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Library opens rendered trade links and returns to research ${theme} ${lang}`,async()=>{
+    const tradeHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
+      'from tests.test_intl_workspace_integration import render_fixture, library_trade_fixture; print(render_fixture(cgl=library_trade_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      const input=page.locator('[data-im-library-search]:visible');
+      const query=lang==='zh'?'贸易与供应链联系':'Trade & supply links';
+      await input.fill(query);
+      const item=page.locator('[data-im-library-results] [data-im-library-tool="trade_supply_links"]');
+      assert.match(await item.locator('[data-im-library-scope="model-context"]').innerText(),
+        lang==='zh'?/模型背景，并非公司敞口/:/Model context, not company exposure/);
+      const link=item.locator('a[href="#intl-trade-supply-links"]');
+      assert.equal(await link.count(),1);
+      const origin=page.url();
+      for (const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await link.focus();
+        await page.keyboard.press('Enter');
+        const target=page.locator('#intl-trade-supply-links');
+        assert.equal(await target.isVisible(),true);
+        assert.equal(await target.evaluate(n=>n.closest('details').open),true);
+        const url=new URL(page.url());
+        assert.equal(url.hash,'#intl-trade-supply-links');
+        for(const [key,value] of [['view','library'],['market','JP'],['horizon','3m'],['basis','local']])
+          assert.equal(url.searchParams.get(key),value);
+        const panel=target.locator('..').locator('..');
+        const text=await panel.innerText();
+        assert.match(text,lang==='zh'?/升温/:/Building/);
+        assert.match(text,lang==='zh'?/结构权重/:/structural weights/);
+        assert.match(text,/38%/);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.goBack();
+        assert.equal(page.url(),origin);
+        assert.equal(await input.inputValue(),query);
+        assert.equal(await link.count(),1);
+      }
+    },{htmlOverride:tradeHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`History selection survives forced colors without hover or focus ${theme} ${lang}`,async t=>{
