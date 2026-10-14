@@ -45,6 +45,21 @@
       "sha256": "9df5071a624afd39d8624e4670a6b687fb7ce011196782e25ecec75a9bf6f5d9",
       "decoded_sha256": "d1082c0551471ec8d84662ca4ba9b27af4e086ac31b6a636b881cfa41b3924a9",
       "bytes": 657
+    },
+    {
+      "file": "qualified-vs-current-main-1619.json",
+      "sha256": "d24165e449ccb0edf90703653568aeb1855bf14148a03fc83d8e7572a19006c8",
+      "bytes": 297
+    },
+    {
+      "file": "qualified-current-main-impact-1620.json",
+      "sha256": "9e62a95af4990ede31320a4c0775dccf645064ae0d7b569c03832da7833f8028",
+      "bytes": 4622
+    },
+    {
+      "file": "current-main-differential-review-1622.json",
+      "sha256": "7f3e4e3c527432b481c7b987641859962286266d60ce39453a8bfb619851e473",
+      "bytes": 762
     }
   ],
   "note": "Original evidence bytes; patch compressed without decoded changes."

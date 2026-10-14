@@ -357,3 +357,14 @@ reservation for that owner. No A1 publication or new CI producer was admitted.
 The old helper's cached PR base is not current main; its label is corrected and
 future observations read the actual main ref. Original Fabric effects/refusals
 remain frozen. Release, production and real consumer adoption are still owed.
+
+
+Current-main compatibility review16:21: qualified A1b1 previews cleanly against
+main1302e876d406, with every one of its17production files unchanged. All318prior
+job definitions are identical; the one incoming leadership countercase job is
+exclusive and selects none of the three packing-probe paths. This differential
+review reuses accepted A1 proof and does not claim complete current-main closure
+or hosted acceptance. Three original receipts are retained in the same evidence
+manifest. Follow-on source-order correction b0ca was published and read back clean
+with no open PR. A reviewable follow-on PR body is prepared on the programme
+evidence carrier; actual creation remains behind A1 landing and fresh admission.
