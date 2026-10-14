@@ -6,7 +6,7 @@ ended_because: ci_handoff
 mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected
   source, CI and actual consumer adoption. This is a continuity checkpoint; the active
   root continues.
-state_before: A1 release approved on sole PR6651; follow-on published at 488c1f8d4647,
+state_before: A1 release approved on sole PR6651; follow-on published at 820c9d1101f9,
   separate carrier with no PR.
 changed:
 - path: engine/intelligence_registry.py
@@ -23,6 +23,17 @@ changed:
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
 verified:
+- claim: Follow-on integration preserved the owned source and passed its affected checks.
+  command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
+  result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency
+    closure 1189 of 1189 with no omissions. Source and acceptance receipts are retained
+    under the programme evidence integration directory.
+- claim: Supported browser capture can bind real authenticated responses to rendered data.
+  command: Ordinary Chrome page navigation with supported CDP Network response capture
+    and DOM comparison.
+  result: Actual overview 200 and engine detail 200/no-store matched rendered counts,
+    null state and reason. This is the old T4 contract, not installed A1 acceptance.
+    See research/evidence/eval-os-tier-query-20261014/browser-capture-path-20261014.json.
 - claim: T5 bounded source/data behavior passed its final affected suite before integration.
   command: python -m pytest tests/test_output_health.py -q
   result: 125 PASS; receipt research/evidence/eval-os-tier-query-20261014/t5-regression.xml.
@@ -53,8 +64,8 @@ unresolved:
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing
   admission payload.
 next_actions:
-- Publish the six-case source tranche after local qualification; preserve the separate
-  A1 release carrier.
+- Preserve the published six-case source tranche and the separate A1 release carrier.
+  Reconcile current main after A1 landing before the follow-on PR and fresh hosted checks.
 - Let existing PR6651 controller finish binding checks and merge; verify the normal
   updater and authenticated production surface.
 - Complete the separate follow-on carrier with fresh main and actual owner CI, then
@@ -82,7 +93,7 @@ The active Chairman assignment is end-to-end programme ownership by Fable with b
 
 - A1 retains PR #6651, branch `claude/eval-os-a1-evidence-view-20260828`. Chris explicitly released HOLD-FOR-SOL and authorized the ordinary repository controller, fresh checks, deployment and production verification. Release decision: https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
 - Published A1 `05a75a4131f5e695a1d31616ac9e2ecca6059c67` merges main c3ade with four exact CI path unions and one RED-proved required config input. All 17 qualified runtime hashes are unchanged. Actual committed A1 closure is 1175/1175; the repaired coverage/selection checks both pass. Fresh CI38519419675 and fences38519419558 started; authority38519415967 passed. Prior 2a423 CI38512444577 passed all twelve packs and its final gate, but does not qualify this new head. The Ready PR remains armed and controller-owned; no merge or live claim is made. Retained local evidence: `research/evidence/eval-os-tier-query-20261014/a1-05a75a-local-acceptance.json`.
-- New source interfaces are isolated on `claude/eval-os-required-tier-20261014`, published through `488c1f8d4647962b7e5903a697f1b8259b909521` before this clean integration, with no separate PR yet. Root is the sole writer. Do not import that work into the armed A1 carrier.
+- New source interfaces are isolated on `claude/eval-os-required-tier-20261014`, published through `820c9d1101f96145c8f32ec1f77723f387c6bdf5` before this continuity update, with no separate PR yet. Root is the sole writer. Do not import that work into the armed A1 carrier.
 
 ## Accepted source deltas
 
@@ -110,4 +121,6 @@ New C0 extraction `eval-t6-sourcecensus-01a1333d-b1` ended before launch with rc
 
 On clean source488c, the existing required-tier CLI consumed the canonical registry rather than a synthetic fixture: the chosen display producer required T1, the gate/size producer required T3, and an engine-input producer remained unresolved/null because its authority policy is undefined. All retained evaluation_status=not_assessed. The two-artifact-limited source-health CLI retained unclassified observations and reconciled snapshot output/reason groups. This is local consumer proof, not fleet health, production adoption or earned scientific quality. See `research/evidence/eval-os-tier-query-20261014/real-consumer-observation-488c.json`.
 
-The clean incoming05a merge also preserves main's Agent OS workstream-dependency repair beside our typed Discovery field. Containing-head regression and actual tracked closure are required before this follow-on publication. Existing accepted source bytes and cases are retained, not rebuilt. The latest two text cases still lack independent review. Fabric review eval-t6-third-review-01a1333d-c1 was refused before launch with SUPPORT_POLICY_STALE_ACTIVE_REFUSED; no retry or host-policy change was attempted. The original experience operation remains ACTIVE_OR_WAITING with no terminal evidence and no result, as observed through its same adapter at05:46UTC.
+The clean incoming05a merge preserves main's Agent OS workstream-dependency repair beside our typed Discovery field. Its containing-head regression passed 213 checks with zero failures/errors/skips, and actual tracked closure had 1189 of 1189 required A1 inputs. Ten owned source/test files remained byte-identical to488c; all three T12 Agent OS functions remained AST-identical. Existing accepted source bytes and cases are retained, not rebuilt. The latest two text cases still lack independent review. Fabric review eval-t6-third-review-01a1333d-c1 was refused before launch with SUPPORT_POLICY_STALE_ACTIVE_REFUSED; no retry or host-policy change was attempted. The original experience operation remains ACTIVE_OR_WAITING with no terminal evidence and no result, as observed through its same adapter at05:46UTC.
+
+At06:25UTC, the actual authenticated Chrome overview and a fresh registered-engine detail were observed through supported CDP response bodies and DOM. Counts, null state and reason codes matched; the detail response was no-store. The old T4 response has no A1 ceo_view, so this is a qualified verification path, not production acceptance. Tab1925920612 in browser2 is retained for the actual release. The first same-root scheduled continuation arrived at06:14UTC. CI38519419675 last observed06:28UTC had contract-delta, plan and nine of twelve packs successful, with packs4/6/8 still running. No additional controller, CI run, production mutation or source-clock reset was introduced.
