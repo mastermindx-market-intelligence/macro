@@ -1,0 +1,1318 @@
+{
+  "id": 115696591645,
+  "run_id": 38495183073,
+  "head_sha": "3cf087f62e36f0da6d868a351c4a3922cebf9ef5",
+  "name": "engine",
+  "status": "in_progress",
+  "conclusion": null,
+  "started_at": "2026-10-14T05:40:34Z",
+  "completed_at": null,
+  "runner_name": "mac-builder-light",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-14T05:40:36Z",
+      "completed_at": "2026-10-14T05:40:41Z"
+    },
+    {
+      "name": "timings \u2014 job start mark (W2)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-14T05:40:41Z",
+      "completed_at": "2026-10-14T05:40:41Z"
+    },
+    {
+      "name": "Run actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-14T05:40:41Z",
+      "completed_at": "2026-10-14T05:40:52Z"
+    },
+    {
+      "name": "Run git pull origin main",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-14T05:40:52Z",
+      "completed_at": "2026-10-14T05:40:53Z"
+    },
+    {
+      "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-14T05:40:53Z",
+      "completed_at": "2026-10-14T05:40:54Z"
+    },
+    {
+      "name": "Run pip install -r requirements.txt",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-14T05:40:54Z",
+      "completed_at": "2026-10-14T05:40:55Z"
+    },
+    {
+      "name": "timings band \u2014 restores-preamble (W2)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-10-14T05:40:55Z",
+      "completed_at": "2026-10-14T05:40:55Z"
+    },
+    {
+      "name": "restore Filing Forensics disclosure projections (hard gate)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-14T05:40:55Z",
+      "completed_at": "2026-10-14T05:41:01Z"
+    },
+    {
+      "name": "restore attention store from R2 (wiki chip reads it at render)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-10-14T05:41:01Z",
+      "completed_at": "2026-10-14T05:41:18Z"
+    },
+    {
+      "name": "restore odds desk OHLCV store from R2 (engine hops runners; store is runner-local)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-10-14T05:41:18Z",
+      "completed_at": "2026-10-14T05:41:24Z"
+    },
+    {
+      "name": "restore subsector OHLC sidecars from R2 (index_leadership reads them)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-10-14T05:41:24Z",
+      "completed_at": "2026-10-14T05:41:32Z"
+    },
+    {
+      "name": "restore Russell 2000 breadth close cache (stock library needs constituent closes)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-10-14T05:41:32Z",
+      "completed_at": "2026-10-14T05:41:32Z"
+    },
+    {
+      "name": "restore hk breadth close cache (hk stock search library needs constituent closes)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-10-14T05:41:32Z",
+      "completed_at": "2026-10-14T05:41:33Z"
+    },
+    {
+      "name": "restore china per-name OHLC store (build_china_library overlays it for US parity)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-10-14T05:41:33Z",
+      "completed_at": "2026-10-14T05:41:33Z"
+    },
+    {
+      "name": "restore hk per-name OHLC store (build_hk_library overlays it for US parity)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-10-14T05:41:33Z",
+      "completed_at": "2026-10-14T05:41:38Z"
+    },
+    {
+      "name": "restore intraday (4H) cache (build_chart_data emits site/intraday from it)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-10-14T05:41:38Z",
+      "completed_at": "2026-10-14T05:41:40Z"
+    },
+    {
+      "name": "price-store freshness gate (last SPY bar vs expected NYSE session; keyless self-heal)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-10-14T05:41:40Z",
+      "completed_at": "2026-10-14T05:51:17Z"
+    },
+    {
+      "name": "MTF buy-filter signals + \u00a77 contract gate (build_signal_quality \u2192 validate_signals)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18,
+      "started_at": "2026-10-14T05:51:17Z",
+      "completed_at": "2026-10-14T05:53:17Z"
+    },
+    {
+      "name": "build signal track-record ledger (w0-stageB)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 19,
+      "started_at": "2026-10-14T05:53:17Z",
+      "completed_at": "2026-10-14T05:56:11Z"
+    },
+    {
+      "name": "export cross-repo signal contracts (golden_signals + artifact_manifest)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20,
+      "started_at": "2026-10-14T05:56:11Z",
+      "completed_at": "2026-10-14T05:56:15Z"
+    },
+    {
+      "name": "S&P 500 heatmap real-cap reference (weekly Polygon refresh; committed)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-10-14T05:56:15Z",
+      "completed_at": "2026-10-14T05:56:17Z"
+    },
+    {
+      "name": "Leader-pullback coverage (\u00a76.9 R4 publisher \u2014 MUST precede build_prophet)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-10-14T05:56:17Z",
+      "completed_at": "2026-10-14T05:57:12Z"
+    },
+    {
+      "name": "checkpoint leader-pullback source to main (durable before engine tail)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-10-14T05:57:12Z",
+      "completed_at": "2026-10-14T06:01:10Z"
+    },
+    {
+      "name": "restore accepted leader source for downstream consumers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 24,
+      "started_at": "2026-10-14T06:01:10Z",
+      "completed_at": "2026-10-14T06:01:17Z"
+    },
+    {
+      "name": "timings band \u2014 engine-core (W2)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25,
+      "started_at": "2026-10-14T06:01:17Z",
+      "completed_at": "2026-10-14T06:01:20Z"
+    },
+    {
+      "name": "run regime engine + build dashboard + daily brief (resilient)",
+      "status": "in_progress",
+      "conclusion": null,
+      "number": 26,
+      "started_at": "2026-10-14T06:01:20Z",
+      "completed_at": null
+    },
+    {
+      "name": "publish the provisional \u2192 nightly confirmation delta (R2 artifact)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 27,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "publish Filing Forensics private state",
+      "status": "pending",
+      "conclusion": null,
+      "number": 28,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "backfill regime stamps (nw-macro-rail R5)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 29,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Sector-flip confirmation lens (Policy-Shock W1-C)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 30,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 31,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "timings band \u2014 prophet (W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 32,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 33,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "prophet-board-acceptance (post-publish alarm, never a gate)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 34,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "checkpoint Prophet outputs to main (durable before engine tail)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 35,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "publish Prophet public health receipt to R2",
+      "status": "pending",
+      "conclusion": null,
+      "number": 36,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "enforce Prophet R2 index tombstone (unconditional)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 37,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "restore accepted Prophet source for downstream derivations",
+      "status": "pending",
+      "conclusion": null,
+      "number": 38,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Prophet \u00d7 Stage forward-shadow (tag actual entries + nightly grade advance)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 39,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "checkpoint Prophet Stage-shadow accrual to main",
+      "status": "pending",
+      "conclusion": null,
+      "number": 40,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Prophet Live arming pass (provisional-close trigger pack -> R2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 41,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Prophet Live reconciler (intraday event spool -> forward ledger)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 42,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "TURN WATCH desk (early-surfacing deck \u2014 display tier)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 43,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "timings band \u2014 builders-parallel (W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 44,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "regional + desk builders (parallelised \u2014 independent clusters, barrier before the hub)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 45,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "retain this run's Theme Graph generation witness (advisory)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 46,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "checkpoint core engine outputs to main (durable before tail desks)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 47,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "membership snapshot freshness tripwire (advisory)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 48,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "builder fail-streak escalation (consecutive-night freeze detector)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 49,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "timings band \u2014 tail-desks (W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 50,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AD-1 \u2014 Daily EOD Options Intelligence Brief (build_options_intel_brief)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 51,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OEU M-CMD \u2014 the Options workspace (build_options_command)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 52,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP E1 \u2014 session digest, the Terminal\u2192EOD bridge (build_session_digest)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 53,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP PIT \u2014 durable episodes + H+60 and declared-session-close proxy accrual",
+      "status": "pending",
+      "conclusion": null,
+      "number": 54,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP campaign v2 \u2014 exact-contract revision and anchored-outcome accrual",
+      "status": "pending",
+      "conclusion": null,
+      "number": 55,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP PIT \u2014 checkpoint the five durable episode ledgers",
+      "status": "pending",
+      "conclusion": null,
+      "number": 56,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP catalyst links \u2014 bind the session's events to earnings/FOMC catalysts (context-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 57,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP campaign v2 \u2014 checkpoint the exact three canonical ledgers",
+      "status": "pending",
+      "conclusion": null,
+      "number": 58,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Options Alpha \u2014 compose and publish the verified candidate pair",
+      "status": "pending",
+      "conclusion": null,
+      "number": 59,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "XSR W1 \u2014 US fast-sector rotation lens (build_us_sector_rotation)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 60,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "US sector central intelligence (build_sector_central)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 61,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Portfolio-Aware context artifact (build_portfolio_ctx)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 62,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "MLC W2b stance matrix (build_stance_matrix)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 63,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "FTR W9 grading pack (basket_turn.v1 cohort claims + tape_disagreement.v1)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 64,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Polygon reference-universe cache (GICS sector + market cap for heatmap manifest)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 65,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "flow_idx R2 mirror (heatmap flow layer freshness)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 66,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "flow-signal ledger harvest + outcome grader (FS-0)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 67,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build canada dashboard (S&P/TSX)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 68,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build bitcoin vector + landing hub",
+      "status": "pending",
+      "conclusion": null,
+      "number": 69,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build crypto intelligence cockpit",
+      "status": "pending",
+      "conclusion": null,
+      "number": 70,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "master brain scorer (durability loop; deterministic, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 71,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "master brain (multi-lens LLM synthesis; default-off, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 72,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AI desk scorer (durability loop; deterministic, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 73,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Demand-chain ledger (Demand Desk Phase 2; deterministic, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 74,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Demand-chain Phase-0 validation (forward placebo test; resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 75,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Demand Desk page (build_demand)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 76,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AI desk (accountable analyst layer; context-only, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 77,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Narrative Brain (Claude radar-reasoning desk; context-only, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 78,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Risk Brain (Claude/Opus daily drawdown-risk officer; context-only, resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 79,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Risk Radar self-correction (Opus reviews graded mistakes -> bounded recalibration)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 80,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Radar + Brain ledger scorer (grade the falsifiable theses vs SPY; context-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 81,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "US Buy Board ledger (snapshot today + retro-grade matured boards vs SPY/sector)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 82,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "ETF consensus board ledger (snapshot tonight's board + grade matured windows vs SPY)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 83,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Opportunity timeline (durable Prophet candidate receipts for Terminal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 84,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Bottom Ledger (accrue bottom-class flags + mature at H=60; policy-free instrument)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 85,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Options-state stamp on board ledger (Options Alpha W1.3; context-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 86,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Options entry-quality gate (Options Alpha W1.3; pre-registered, scored=false)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 87,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Calibration Hub (unified self-improvement observability; display-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 88,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build macro snapshot (nw-macro-rail R5)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 89,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build macro context page (nw-macro-rail R5)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 90,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build spine index (neural-web W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 91,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build reliability kernel estimates (neural-web W3)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 92,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build covariance spine (R-ORTH PR-3)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 93,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build kernel diagnostics (neural-web W3)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 94,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build kernel half-lives (Signal Commons W2 \u2014 display-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 95,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Confluence Graph (Neural Web W4 \u2014 display-only typed graph)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 96,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Confluence Strength + Sequence + Discovery (Neural Web W4 \"the eye\" \u2014 R-V4-6/7/8)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 97,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Alt-Data Brain (Claude-Opus convergence analyst; actionable + falsifiable)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 98,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "radar upgrade (build_radar_plus + IC)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 99,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "unified intelligence bundle (build_intelligence)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 100,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "brain briefing tunnel (build_briefing)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 101,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Intelligence Hub (build_intel_hub)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 102,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AI Daily Brief page (build_aibrief)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 103,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AM Edition producer (build_am_edition)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 104,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Mastermind snapshot page (build_mastermind)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 105,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "AI Desk page (build_ai_desk_page)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 106,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "rebuild stock-search libraries (resilient \u2014 guarantees the analyzers ship)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 107,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "watchlist buy-zone sentinel (B6 \u2014 fail-soft; skips when creds absent)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 108,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "thesis condition monitor (F11 \u2014 enqueues plain-language alerts; never sends)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 109,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "recurring briefs producer (F11 \u2014 each subscription its brief or an honest miss)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 110,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "notify (telegram/discord; skips when secrets absent)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 111,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "push priority alerts (W6b \u2014 ops-tier push spine ENABLED; operator Article-2 event 2026-07-04)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 112,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "archive signal layer (append-only point-in-time model outputs; resilient)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 113,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "archive context snapshots (context PIT history \u2014 non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 114,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "CPI net-liquidity artifact (data infrastructure \u2014 non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 115,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Neural Web liquidity-plumbing lobe (shadow-tier, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 116,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Price Pressure lobe (DRL W1, display-tier, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 117,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Entry Radar nightly reconcile (W5 forward evidence)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 118,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Release Radar coherent-target vintage stores (truth substrate, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 119,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Release Radar official CPI Table 1 receipts (truth substrate, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 120,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Release Radar coherent CPI target parity (truth substrate, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 121,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Release Radar official-actual reconciliation (truth substrate, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 122,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "MRI release forecast producer (display-only, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 123,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Inflation intelligence lobe (context-only, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 124,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "forward path board (RIC W7 P5, display-only, non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 125,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "signal sanity (correctness tripwire \u2014 warn mode)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 126,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "White House Watch \u2014 re-render page + inject site-wide alert banner",
+      "status": "pending",
+      "conclusion": null,
+      "number": 127,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "fetch oracle panels from R2 (PR-C1 sponsorship shim)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 128,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "oracle nightly (state + alerts + directive + ledger + banner)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 129,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build world state (neural-web W1)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 130,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build bottom-sensor envelope (NW Rails B0)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 131,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "mature bottom sensors shadow (Amendment-3 forward audit \u2014 display-only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 132,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "mature shadow book (stock-score forward audit; see config/dag.yml)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 133,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "LT-4 thesis funnel history append (PR-A2 \u2014 nightly longitudinal store)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 134,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Winner Autopsy nightly watch + panel (long-hold top-down department)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 135,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "entity/thesis/mechanism registry (neural-web \u2014 display-only crosswalk)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 136,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build mechanism pathways (NW core-cognition W1 \u2014 MPC v1)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 137,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build thematic state (TIL W0 \u2014 display/context only)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 138,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "grade thematic (TIL W6 \u2014 grading pack)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 139,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Chronicle \u2014 market context timeline spine",
+      "status": "pending",
+      "conclusion": null,
+      "number": 140,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "timings band \u2014 commit-publish (W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 141,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "commit chronicle artifacts",
+      "status": "pending",
+      "conclusion": null,
+      "number": 142,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build mastermind context (NW bridge)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 143,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build mastermind feedback summary (reverse bridge)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 144,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build neuralweb health (PR-C \u2014 NW lobe-status surface)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 145,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "check nw health escalation (M3 \u2014 persistent degradation detector)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 146,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build neuralweb daily brief (PR-D \u2014 NW daily brief surface, engine phase)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 147,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build attention_deterministic (PR-4 M2 \u2014 deterministic operator-attention items)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 148,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "***_factory_monitor (W6 \u2014 paper monitor + nightly ledger)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 149,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "build_evidence_clock (Global Evidence Clock v1)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 150,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "options_flow_attention reflex trigger (W-D \u2014 nightly EOD fold)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 151,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "commit engine outputs",
+      "status": "pending",
+      "conclusion": null,
+      "number": 152,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "assemble machine-consumable feeds (site/feeds -> R2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 153,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "publish heavy per-ticker stores to R2 (additive; no-op without creds)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 154,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "verify R2 data plane freshness (loud tripwire \u2014 the publish above is non-fatal)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 155,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "OIP PIT \u2014 fail closed after unrelated rendering completes",
+      "status": "pending",
+      "conclusion": null,
+      "number": 156,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "fif saved *** notifications (X2-n \u2014 enqueues only; never sends)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 157,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "timings ledger + 85% budget tripwire (W2)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 158,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Post restore intraday (4H) cache (build_chart_data emits site/intraday from it)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 312,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Post restore hk per-name OHLC store (build_hk_library overlays it for US parity)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 313,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Post restore china per-name OHLC store (build_china_library overlays it for US parity)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 314,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Post restore hk breadth close cache (hk stock search library needs constituent closes)",
+      "status": "pending",
+      "conclusion": null,
+      "number": 315,
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "name": "Post Run actions/checkout@v4",
+      "status": "pending",
+      "conclusion": null,
+      "number": 316,
+      "started_at": null,
+      "completed_at": null
+    }
+  ],
+  "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38495183073/job/115696591645"
+}

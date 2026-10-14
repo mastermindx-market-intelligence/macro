@@ -1,0 +1,72 @@
+{
+  "observed_at": "2026-10-14T07:10:23.686599+00:00",
+  "head": "2af42e8d23cf42d0c32444b6e637d02e6799b564",
+  "stable_head": true,
+  "catalog_sha256": "5dfee05d66c2b2977c6c3a19916a777b306213bde670d8a7722c6593dfc4fe51",
+  "input_unchanged": true,
+  "window_start": "2026-09-23",
+  "current_count": 178,
+  "institutions": {
+    "Goldman Sachs": 63,
+    "J.P. Morgan": 25,
+    "Bank of America": 14,
+    "S&T": 12,
+    "Other": 11,
+    "Morgan Stanley": 6,
+    "Societe Generale": 6,
+    "UBS": 6,
+    "Safra": 3,
+    "Deutsche Bank": 3,
+    "HSBC AM": 3,
+    "TS Lombard": 3,
+    "BlackRock": 2,
+    "Bank Earnings Previews": 2,
+    "Ashmore": 2,
+    "Citi": 2,
+    "Trump Xi Preview": 2,
+    "Mizuho": 1,
+    "JPM Eye on the Market": 1,
+    "Eastspring": 1,
+    "Metlife": 1,
+    "Nordea": 1,
+    "Greed and Fear": 1,
+    "NEPC": 1,
+    "Standard Chartered": 1,
+    "MUFG": 1,
+    "Jefferies": 1,
+    "Prime": 1,
+    "The PunchLine": 1,
+    "RBC": 1
+  },
+  "public_named_candidates": [
+    {
+      "id": "marketdesk-sqrt8axv7hx-6c9390",
+      "title": "Week Ahead in Economics US inflation on the rise as central bankers head to IMF World Bank meetings",
+      "institution": "Societe Generale",
+      "published_at": "2026-10-10T00:23:14Z",
+      "pages": 16,
+      "url": null,
+      "source_url": null
+    },
+    {
+      "id": "marketdesk-knlhga8u3os-507462",
+      "title": "BofA CMBS Weekly 6 is the new 5 higher Treasury yields weigh on issuance and refinance success 2026 10 09",
+      "institution": "Bank of America",
+      "published_at": "2026-10-10T00:05:26Z",
+      "pages": 19,
+      "url": null,
+      "source_url": null
+    },
+    {
+      "id": "marketdesk-rj6un4scbam-e45f74",
+      "title": "IS A 5% 10Y TREASURY COMPENSATORY",
+      "institution": "TS Lombard",
+      "published_at": "2026-09-24T09:12:26Z",
+      "pages": 5,
+      "url": null,
+      "source_url": null
+    }
+  ],
+  "provider_calls": 0,
+  "runtime_writes": 0
+}

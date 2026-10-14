@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete controller-admitted repair refresh and protected installation of PR 9209, then ship the same reviewed validator/writer/DOJ/Research-intake follow-on using its 24-source bundle and 31 portable control groups, including the reviewed radar receipt scope repair. Continue corroborating newly reachable source candidates; preserve held history and the refused issuer review.
+next_action: Complete controller-admitted repair refresh and protected installation of PR 9209, then ship the same reviewed validator/writer/DOJ/Research-intake follow-on using its 24-source bundle and 31 portable control groups, including the reviewed radar receipt scope repair. Consume actual committed outputs of the existing daily 38495183073 when it settles, then qualify relevant own receipts and permitted sources; preserve held history and the refused issuer review.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -569,3 +569,19 @@ Commission19/Catalyst8678 andOct11 12:07EFFECT_UNKNOWN preserved.
 
 verified: source_qualification_20261014_0639/{README.md,pr9209_observation.json,
 installed_source_discovery.json,treasury_bill_review.json,review_verification.json}.
+
+## Source-supply continuity, October14 07:15UTC
+
+The read-only census found178 current-window Research records and no explicitly
+classified public institution, including review of all11 Other metadata rows.
+Private summaries/PDFs remain outside this receipt. The latest green daily run
+38498969461 contains only its time gate; actual daily38495183073 still owns the
+live engine115696591645 and collect_tail115696591188. Its collector cancellation
+cause/push effect is unproved (log404); do not rerun it or treat the old23:31
+liveness no-run alarm as current. Consume actual published bytes after it settles.
+Six diagnostic checks pass, all24 accepted application hashes unchanged.
+At the single07:05 read9209 remained8f705cb3/inherited pack4 red,13proofs/cap8,
+8920lease populated; main38520655830 succeeded and newer baseline runs.
+No release bypass, new source admission, writer call, follow-on PR or install.
+Publication/cutoverfalse,credit0/10. Full commands/receipts: CHECKPOINT.md and
+research/agentic_media/public_intelligence_20261011/source_qualification_20261014_0704/.

@@ -1,0 +1,490 @@
+{
+  "38498969461": [
+    {
+      "id": 115641118093,
+      "name": "et_gate",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T02:02:52Z",
+      "completed_at": "2026-10-14T02:02:54Z",
+      "runner_name": "GitHub Actions 1000320968",
+      "runner_group_name": "GitHub Actions",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641139957,
+      "name": "collect",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:54Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641140688,
+      "name": "active_build_map",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641140734,
+      "name": "factor_panel",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641140764,
+      "name": "capital_structure",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641140813,
+      "name": "government_revenue_projection",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141125,
+      "name": "factor_series",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141239,
+      "name": "collect_tail",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141309,
+      "name": "engine",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141388,
+      "name": "stock_briefs",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141411,
+      "name": "ledger_heartbeat",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141522,
+      "name": "standout_audit_us",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141571,
+      "name": "tech_lab_offrender",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141897,
+      "name": "oracle_offrender",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141930,
+      "name": "us_prophet_ledgers",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641141954,
+      "name": "causal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641142142,
+      "name": "us_scan_tier",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115641142224,
+      "name": "cortex",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T02:02:55Z",
+      "completed_at": "2026-10-14T02:02:55Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    }
+  ],
+  "38495183073": [
+    {
+      "id": 115629223811,
+      "name": "et_gate",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T01:20:31Z",
+      "completed_at": "2026-10-14T01:20:33Z",
+      "runner_name": "GitHub Actions 1000320345",
+      "runner_group_name": "GitHub Actions",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115629246223,
+      "name": "collect",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-14T01:20:35Z",
+      "completed_at": "2026-10-14T05:25:36Z",
+      "runner_name": "mac-builder-light",
+      "runner_group_name": "Default",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696591188,
+      "name": "collect_tail",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-10-14T05:25:38Z",
+      "completed_at": null,
+      "runner_name": "mac-builder-5",
+      "runner_group_name": "Default",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696591206,
+      "name": "factor_series",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T05:32:28Z",
+      "completed_at": "2026-10-14T05:40:32Z",
+      "runner_name": "mac-builder-light",
+      "runner_group_name": "Default",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696591306,
+      "name": "active_build_map",
+      "status": "queued",
+      "conclusion": null,
+      "started_at": "2026-10-14T05:25:36Z",
+      "completed_at": null,
+      "runner_name": "",
+      "runner_group_name": "",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696591645,
+      "name": "engine",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-10-14T05:40:34Z",
+      "completed_at": null,
+      "runner_name": "mac-builder-light",
+      "runner_group_name": "Default",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696592711,
+      "name": "capital_structure",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T05:25:36Z",
+      "completed_at": "2026-10-14T05:25:36Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115696593472,
+      "name": "government_revenue_projection",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T05:25:36Z",
+      "completed_at": "2026-10-14T05:25:36Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [],
+      "failed_steps": []
+    },
+    {
+      "id": 115700733091,
+      "name": "factor_panel",
+      "status": "queued",
+      "conclusion": null,
+      "started_at": "2026-10-14T05:40:33Z",
+      "completed_at": null,
+      "runner_name": "",
+      "runner_group_name": "",
+      "labels": [
+        "self-hosted",
+        "macstudio"
+      ],
+      "failed_steps": []
+    }
+  ],
+  "38484743799": [
+    {
+      "id": 115595553486,
+      "name": "liveness",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-13T23:31:17Z",
+      "completed_at": "2026-10-13T23:31:32Z",
+      "runner_name": "GitHub Actions 1000319255",
+      "runner_group_name": "GitHub Actions",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "failed_steps": [
+        "nightly liveness (fails if the bake did not run, did not finish, or did not advance)"
+      ]
+    },
+    {
+      "id": 115595553569,
+      "name": "queue-hostage",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-13T23:31:16Z",
+      "completed_at": "2026-10-13T23:31:31Z",
+      "runner_name": "GitHub Actions 1000319254",
+      "runner_group_name": "GitHub Actions",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "failed_steps": [
+        "runner queue hostage (fails if a job is held queued with no runner that can take it)"
+      ]
+    }
+  ],
+  "38513218817": [
+    {
+      "id": 115686188683,
+      "name": "render",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-10-14T05:50:19Z",
+      "completed_at": null,
+      "runner_name": "pc-render-1",
+      "runner_group_name": "macro-home-canary",
+      "labels": [
+        "self-hosted",
+        "render-linux"
+      ],
+      "failed_steps": []
+    },
+    {
+      "id": 115687660147,
+      "name": "self-mod-fence",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T04:53:02Z",
+      "completed_at": "2026-10-14T04:53:02Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [],
+      "failed_steps": []
+    },
+    {
+      "id": 115687662241,
+      "name": "capability-broker",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T04:53:02Z",
+      "completed_at": "2026-10-14T04:53:02Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [],
+      "failed_steps": []
+    },
+    {
+      "id": 115687664581,
+      "name": "grader-manifest",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T04:53:03Z",
+      "completed_at": "2026-10-14T04:53:03Z",
+      "runner_name": null,
+      "runner_group_name": null,
+      "labels": [],
+      "failed_steps": []
+    }
+  ]
+}
