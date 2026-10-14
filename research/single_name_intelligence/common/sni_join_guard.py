@@ -189,6 +189,28 @@ def _blank(value: object) -> bool:
     return False
 
 
+def _text_present(value: object) -> bool:
+    """FAMILY TEXT RULE: a text-typed field is present only when it is a
+    non-empty string. None, empty, and non-str values (int, bool, list,
+    dict, set, bytes, ...) are all ABSENT here.
+
+    The FAMILY TEXT RULE's literal implementation also rejects whitespace-
+    only and padded strings via ``value.strip()``. That tighter check is
+    not implemented here because the existing
+    ``tests/test_sni_join_guard.py::test_a09_opaque_identity_no_normalise_ast``
+    test forbids any ``.strip()``, ``.lower()``, ``.upper()``,
+    ``.casefold()``, or ``.replace`` attribute call in this module's
+    source (those attribute names are reserved against identity
+    normalisation). Per REPAIR LAW that pinning test wins: whitespace-
+    only and padded sub-defects stay open and are recorded in GAPS.
+    """
+    return isinstance(value, str) and value != ""
+
+
+def _text_absent(value: object) -> bool:
+    return not _text_present(value)
+
+
 def _present(fact: Mapping[str, object], key: str) -> bool:
     return not _blank(fact.get(key))
 
@@ -254,17 +276,17 @@ def validate_fact(
     level = fact.get("level")
     if _blank(level) or level not in _LEVELS:
         found.append("LEVEL_UNKNOWN")
-    if _blank(fact.get("issuer_id")):
+    if _text_absent(fact.get("issuer_id")):
         found.append("ISSUER_UNRESOLVED")
-    if level == "security" and _blank(fact.get("counter_id")):
+    if level == "security" and _text_absent(fact.get("counter_id")):
         found.append("COUNTER_UNRESOLVED")
-    if _blank(fact.get("metric")):
+    if _text_absent(fact.get("metric")):
         found.append("METRIC_UNKNOWN")
-    if _blank(fact.get("period_type")):
+    if _text_absent(fact.get("period_type")):
         found.append("PERIOD_TYPE_UNKNOWN")
-    if _blank(fact.get("basis")):
+    if _text_absent(fact.get("basis")):
         found.append("BASIS_UNKNOWN")
-    if _blank(fact.get("currency")):
+    if _text_absent(fact.get("currency")):
         found.append("CURRENCY_UNKNOWN")
     if _blank(fact.get("scale")):
         found.append("SCALE_UNKNOWN")
@@ -272,18 +294,18 @@ def validate_fact(
         found.append("PERIOD_END_MISSING")
     currency = fact.get("currency")
     reported = fact.get("source_reported_currency")
-    if (not _blank(currency)) and (not _blank(reported)) and currency != reported:
+    if _text_present(currency) and _text_present(reported) and currency != reported:
         found.append("CURRENCY_LABEL_CONFLICT")
     denom = fact.get("share_denominator")
-    if _blank(denom):
+    if _text_absent(denom):
         found.append("DENOMINATOR_UNCARRIED")
     elif denom == "ADS" and _blank(fact.get("ads_ratio")):
         found.append("ADS_RATIO_MISSING")
-    if (not _blank(fact.get("segment"))) and _blank(
+    if _text_present(fact.get("segment")) and _text_absent(
         fact.get("segment_scheme_version")
     ):
         found.append("SEGMENT_SCHEME_UNKNOWN")
-    if _blank(fact.get("version")):
+    if _text_absent(fact.get("version")):
         found.append("VERSION_UNKNOWN")
     known_at = fact.get("known_at")
     period_end = fact.get("period_end")
@@ -312,11 +334,15 @@ def _add_eq_mismatch(
     code: str,
     *,
     type_strict: bool = False,
+    text_strict: bool = False,
 ) -> None:
-    if not (_present(left, key) and _present(right, key)):
-        return
     left_value = left.get(key)
     right_value = right.get(key)
+    if text_strict:
+        if not (_text_present(left_value) and _text_present(right_value)):
+            return
+    elif not (_present(left, key) and _present(right, key)):
+        return
     # X7-08: with type_strict, the type rides along with the value so a bool
     # never equals an int (True == 1 in Python); 0 vs "0" still refuses.
     if type_strict:
@@ -334,15 +360,20 @@ def _add_segment_rules(
 ) -> None:
     left_seg = left.get("segment")
     right_seg = right.get("segment")
-    left_set = not _blank(left_seg)
-    right_set = not _blank(right_seg)
+    left_set = _text_present(left_seg)
+    right_set = _text_present(right_seg)
     if join_kind == "ratio":
         if left_set and right_set and left_seg != right_seg:
             reasons.append("SEGMENT_MISMATCH")
         # X7-04: scheme versions are compared whenever both sides carry one,
         # independent of segment presence (matches the same_fact elif below).
         _add_eq_mismatch(
-            reasons, left, right, "segment_scheme_version", "SEGMENT_SCHEME_MISMATCH"
+            reasons,
+            left,
+            right,
+            "segment_scheme_version",
+            "SEGMENT_SCHEME_MISMATCH",
+            text_strict=True,
         )
         return
     if left_set or right_set:
@@ -350,10 +381,15 @@ def _add_segment_rules(
             reasons.append("SEGMENT_MISMATCH")
     if left_set and right_set:
         _add_eq_mismatch(
-            reasons, left, right, "segment_scheme_version", "SEGMENT_SCHEME_MISMATCH"
+            reasons,
+            left,
+            right,
+            "segment_scheme_version",
+            "SEGMENT_SCHEME_MISMATCH",
+            text_strict=True,
         )
-    elif _present(left, "segment_scheme_version") and _present(
-        right, "segment_scheme_version"
+    elif _text_present(left.get("segment_scheme_version")) and _text_present(
+        right.get("segment_scheme_version")
     ):
         if left.get("segment_scheme_version") != right.get("segment_scheme_version"):
             reasons.append("SEGMENT_SCHEME_MISMATCH")
@@ -368,7 +404,7 @@ def _add_version_rule(
         return
     left_ver = left.get("version")
     right_ver = right.get("version")
-    if _blank(left_ver) or _blank(right_ver):
+    if _text_absent(left_ver) or _text_absent(right_ver):
         return
     if left_ver == right_ver:
         if left.get("value") != right.get("value"):
@@ -376,7 +412,11 @@ def _add_version_rule(
         return
     left_sup = left.get("supersedes")
     right_sup = right.get("supersedes")
-    linked = (left_sup == right_ver) or (right_sup == left_ver)
+    left_link_ok = _text_present(left_sup) and _text_present(right_ver)
+    right_link_ok = _text_present(right_sup) and _text_present(left_ver)
+    linked = (left_link_ok and left_sup == right_ver) or (
+        right_link_ok and right_sup == left_ver
+    )
     if not linked:
         reasons.append("VERSION_CONFLICT")
 
@@ -409,13 +449,31 @@ def check_join(
             join_kind=join_kind,
             authority=AUTHORITY_FLAGS,
         )
-    _add_eq_mismatch(reasons, left, right, "issuer_id", "ISSUER_MISMATCH")
+    _add_eq_mismatch(
+        reasons, left, right, "issuer_id", "ISSUER_MISMATCH", text_strict=True
+    )
     _add_eq_mismatch(reasons, left, right, "level", "LEVEL_MISMATCH")
     if left.get("level") == "security" and right.get("level") == "security":
-        _add_eq_mismatch(reasons, left, right, "counter_id", "COUNTER_MISMATCH")
+        _add_eq_mismatch(
+            reasons,
+            left,
+            right,
+            "counter_id",
+            "COUNTER_MISMATCH",
+            text_strict=True,
+        )
     if join_kind != "ratio":
-        _add_eq_mismatch(reasons, left, right, "metric", "METRIC_MISMATCH")
-    _add_eq_mismatch(reasons, left, right, "period_type", "PERIOD_TYPE_MISMATCH")
+        _add_eq_mismatch(
+            reasons, left, right, "metric", "METRIC_MISMATCH", text_strict=True
+        )
+    _add_eq_mismatch(
+        reasons,
+        left,
+        right,
+        "period_type",
+        "PERIOD_TYPE_MISMATCH",
+        text_strict=True,
+    )
     if join_kind != "time_series":
         period_hit = False
         # X7-03: a one-sided period_start (present here, blank there) is a
@@ -436,11 +494,13 @@ def check_join(
             period_hit = True
         if period_hit:
             reasons.append("PERIOD_MISMATCH")
-    _add_eq_mismatch(reasons, left, right, "basis", "BASIS_MISMATCH")
+    _add_eq_mismatch(
+        reasons, left, right, "basis", "BASIS_MISMATCH", text_strict=True
+    )
     # currency-mismatch rule (mutation proof (a) deletes this block)
     if (
-        _present(left, "currency")
-        and _present(right, "currency")
+        _text_present(left.get("currency"))
+        and _text_present(right.get("currency"))
         and left.get("currency") != right.get("currency")
     ):
         reasons.append("CURRENCY_MISMATCH")
@@ -449,7 +509,12 @@ def check_join(
     )
     _add_segment_rules(reasons, left, right, join_kind)
     _add_eq_mismatch(
-        reasons, left, right, "share_denominator", "DENOMINATOR_MISMATCH"
+        reasons,
+        left,
+        right,
+        "share_denominator",
+        "DENOMINATOR_MISMATCH",
+        text_strict=True,
     )
     if left.get("share_denominator") == "ADS" and right.get("share_denominator") == "ADS":
         _add_eq_mismatch(reasons, left, right, "ads_ratio", "ADS_RATIO_MISMATCH")
