@@ -4763,6 +4763,12 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
+    # the frozen stage-1 runner, whose lazy risk_radar closure made inference
+    # select the job on the plan_book (130 > 129) and build_free_content
+    # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
+    # measured 63-path closure; closure findings (); ceilings stay fixed.
+    "grey-deer-pullback-forward",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the

@@ -3237,6 +3237,9 @@ jobs:
           COLLECT_LANE: nightly  # lane sentinel: basket_turn_watch.stamp_ledger + other engine
                                  # nightly-only ledger writers check COLLECT_LANE==nightly before
                                  # writing; render/earlyclose/asia-close lanes leave it unset → no-op.
+          # Grey Deer pullback lane: writer + grader refuse unless these pin this job.
+          GREY_DEER_PULLBACK_WRITER_IDENTITY: daily.yml:engine
+          GREY_DEER_PULLBACK_GRADER_IDENTITY: daily.yml:engine
           # FTR W10: build_baskets.py calls notify_turn_events at the end of main().
           # Without these env vars the hook hits dark mode (no webhook → exit 0).
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
