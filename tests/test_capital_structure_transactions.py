@@ -1212,6 +1212,542 @@ def test_no_float_call_in_the_engine_source():
     assert calls == []
 
 
+# ---------------------------------------------------------------------------
+# §4 fixtures F1-F9 — every one asserts the exact stated usage state and value
+# ---------------------------------------------------------------------------
+
+
+SHELF_KEY = f"shelf_usage:{SHELF_PATH}"
+ATM_PATH = "path:atm:2026"
+PROGRAMME_KEY = f"programme_usage:{ATM_PATH}"
+
+
+def test_f1_cumulative_window_covers_the_individual_it_explains():
+    """F1: ITD 5,000,000 through 06-30 plus a 1,000,000 sale on 05-01."""
+    ledger, _expected = run_fixture("f1_cumulative_covers_individual.json", "as_of_2026_06_30")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "known"
+    exact(record, "usage", "5000000")
+    exact(record, "evidenced_floor", "5000000")
+    exact(record, "usage_through_complete", "5000000")
+    exact(record, "post_window_additions", "0")
+    assert record["complete_through"] == "2026-06-30"
+    # Never 6,000,000: the individual is inside the window, so it is covered.
+    assert record["usage"]["value"] != "6000000"
+    assert record["evidenced_floor"]["value"] != "6000000"
+    assert Decimal(record["usage"]["value"]) == Decimal("5000000")
+    roles = {row["transaction_id"]: row["role"] for row in record["contributors"]}
+    assert roles == {"tx:f1-inception-to-date": "window", "tx:f1-2026-05-01": "covered"}
+    assert ledger.support == "supported"
+    assert unknown_ids(ledger) == []
+
+
+def test_f2_a_post_window_individual_leaves_usage_unknown_with_a_floor():
+    """F2: the 08-15 sale is evidenced, but the history is not complete."""
+    ledger, _expected = run_fixture("f2_post_window_individual_is_not_complete.json")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "unknown"
+    exact(record, "evidenced_floor", "7000000")
+    exact(record, "usage_through_complete", "5000000")
+    exact(record, "post_window_additions", "2000000")
+    exact(record, "usage", None)
+    assert record["usage"]["value"] is None
+    assert record["complete_through"] == "2026-06-30"
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f2-inception-to-date": "window",
+        "tx:f2-2026-05-01": "covered",
+        "tx:f2-2026-08-15": "added",
+    }
+    unknown_id = f"usage_history_incomplete:{SHELF_KEY}"
+    assert unknown_id in unknown_ids(ledger)
+    named = next(item for item in ledger.unknowns if item.unknown_id == unknown_id)
+    assert "424B final pricing supplements" in named.resolving_fact
+    assert named.affects == (SHELF_KEY,)
+    # The floor is a real lower bound: 5,000,000 + 2,000,000, never 0.
+    assert Decimal(record["evidenced_floor"]["value"]) == Decimal("5000000") + Decimal("2000000")
+
+
+def test_f3_a_later_window_dominates_the_earlier_one():
+    """F3: the ITD 8,000,000 window contains the 5,000,000 one."""
+    ledger, _expected = run_fixture("f3_later_window_dominates.json")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "known"
+    exact(record, "usage", "8000000")
+    exact(record, "evidenced_floor", "8000000")
+    assert record["complete_through"] == "2026-09-30"
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f3-inception-to-0630": "dominated",
+        "tx:f3-inception-to-0930": "window",
+        "tx:f3-2026-05-01": "covered",
+        "tx:f3-2026-08-15": "covered",
+    }
+    # Neither the sum of both windows nor the dominated window alone.
+    for forbidden in ("13000000", "5000000", "15000000"):
+        assert record["usage"]["value"] != forbidden
+        assert record["evidenced_floor"]["value"] != forbidden
+
+
+def test_f4_a_contained_window_exceeding_its_container_is_contradicted():
+    """F4: ITD 4,000,000 through 09-30 cannot be below ITD 5,000,000 through 06-30."""
+    ledger, _expected = run_fixture("f4_contained_window_exceeds_container.json")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "contradicted"
+    exact(record, "usage", None)
+    assert record["usage"]["value"] is None
+    assert "contained_window_exceeds_container:tx:f4-inception-to-0630" in record["usage"]["note"]
+    exact(record, "evidenced_floor", "4000000")
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f4-inception-to-0630": "dominated",
+        "tx:f4-inception-to-0930": "window",
+    }
+    assert ledger.support == "partial"
+    assert f"contradicted:{SHELF_KEY}" in ledger.support_limits()
+
+
+def test_f5_partially_overlapping_windows_are_not_apportionable():
+    """F5: [01-01,06-30] 3,000,000 against [04-01,09-30] 2,000,000."""
+    ledger, _expected = run_fixture("f5_overlapping_windows_not_apportionable.json")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "unknown"
+    exact(record, "usage", None)
+    assert "overlapping_cumulative_windows_not_apportionable:path:shelf:2025" in record["usage"]["note"]
+    # The floor is the larger window, never their sum: the overlap is not apportioned.
+    exact(record, "evidenced_floor", "3000000")
+    assert record["evidenced_floor"]["value"] != "5000000"
+    assert record["complete_through"] is None
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f5-2026-h1": "window",
+        "tx:f5-2026-0401-0930": "window",
+    }
+
+
+def test_f6_covered_individuals_exceeding_their_window_are_contradicted():
+    """F6: 700,000 + 600,000 of individuals cannot sit inside a 1,000,000 window."""
+    ledger, _expected = run_fixture("f6_individual_exceeds_cumulative.json")
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "contradicted"
+    exact(record, "usage", None)
+    assert "individual_exceeds_cumulative:tx:f6-inception-to-date" in record["usage"]["note"]
+    exact(record, "evidenced_floor", "1000000")
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f6-inception-to-date": "window",
+        "tx:f6-2026-05-01": "covered",
+        "tx:f6-2026-06-15": "covered",
+    }
+    assert ledger.support == "partial"
+    # 1,300,000 is never chosen: a contradiction is reported, never resolved.
+    assert record["usage"]["value"] != "13000000" and record["usage"]["value"] != "1300000"
+
+
+def test_f7_one_takedown_in_two_filings_counts_once():
+    """F7: a 424B5 and an 8-K stating the same takedown share one transaction_id."""
+    ledger, _expected = run_fixture("f7_one_event_two_filings_counts_once.json")
+    assert len(ledger.transactions) == 1
+    transaction = ledger.transactions[0]
+    assert transaction["transaction_id"] == "tx:f7-2026-03-01"
+    assert len(transaction["observation_ids"]) == 2
+    assert transaction["status"] == "observed"
+    exact_value = transaction["gross_proceeds_usd"]
+    assert exact_value == "3000000"
+    record = usage_of(ledger, SHELF_KEY)
+    assert record["status"] == "known"
+    exact(record, "usage", "3000000")
+    exact(record, "evidenced_floor", "3000000")
+    assert record["usage"]["value"] != "6000000"
+    assert [row["transaction_id"] for row in record["contributors"]] == ["tx:f7-2026-03-01"]
+
+
+def test_f8_a_filing_coverage_record_completes_the_floor():
+    """F8: individuals alone never establish completeness; a 424B attestation does."""
+    with_coverage, _expected = run_fixture("f8_coverage_record_completes_the_floor.json",
+                                          "with_coverage")
+    record = usage_of(with_coverage, SHELF_KEY)
+    assert record["status"] == "known"
+    exact(record, "usage", "7000000")
+    exact(record, "evidenced_floor", "7000000")
+    assert record["complete_through"] == "2026-09-30"
+    assert {row["role"] for row in record["contributors"]} == {"added"}
+
+    without, _expected = run_fixture("f8_coverage_record_completes_the_floor.json",
+                                     "without_coverage")
+    bare = usage_of(without, SHELF_KEY)
+    assert bare["status"] == "unknown"
+    exact(bare, "usage", None)
+    exact(bare, "evidenced_floor", "7000000")
+    assert bare["complete_through"] is None
+    assert bare["usage_through_complete"] is None
+    assert bare["post_window_additions"] is None
+    assert bare["evidenced_floor"]["value"] != "0"
+    assert f"usage_history_incomplete:{SHELF_KEY}" in unknown_ids(without)
+    # The two ledgers differ only by the coverage record, so their floors agree.
+    assert record["evidenced_floor"]["value"] == bare["evidenced_floor"]["value"]
+
+
+def test_f9_a_contiguous_programme_window_chain_is_known():
+    """F9: Q1 + Q2 chain from the programme inception; a gap stops the chain."""
+    chain, _expected = run_fixture("f9_programme_window_chain.json", "contiguous_chain")
+    record = usage_of(chain, PROGRAMME_KEY)
+    assert record["usage_key"] == PROGRAMME_KEY
+    assert record["status"] == "known"
+    exact(record, "usage", "2500000")
+    exact(record, "evidenced_floor", "2500000")
+    assert record["complete_through"] == "2026-06-30"
+    assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
+        "tx:f9-2026-q1": "window", "tx:f9-2026-q2": "window",
+    }
+
+    gap, _expected = run_fixture("f9_programme_window_chain.json", "gap_after_q1")
+    broken = usage_of(gap, PROGRAMME_KEY)
+    assert broken["status"] == "unknown"
+    exact(broken, "usage", None)
+    exact(broken, "evidenced_floor", "3000000")
+    exact(broken, "usage_through_complete", "1000000")
+    assert broken["complete_through"] == "2026-03-31"
+    unknown_id = f"usage_history_incomplete:{PROGRAMME_KEY}"
+    assert unknown_id in unknown_ids(gap)
+    named = next(item for item in gap.unknowns if item.unknown_id == unknown_id)
+    assert "10-Q/10-K ATM sales disclosures" in named.resolving_fact
+
+
+# ---------------------------------------------------------------------------
+# §5 instrument versions — anchor, flows, contradictions and the version chain
+# ---------------------------------------------------------------------------
+
+
+def transaction_id_for(item: TransactionObservation) -> str:
+    """One economic event per observation here; the id is derived, never invented."""
+    return f"tx:{item.observation_id}"
+
+
+def balance(day: str, amount: str | None, *, unit: str = "instruments", form: str = "10-Q",
+            accession: str = "0001-26-000040",
+            security_class_id: str = WARRANT_CLASS) -> TransactionObservation:
+    return observation(kind="outstanding_balance", basis="point_in_time", event_date=day,
+                       instruments=amount if unit == "instruments" else None,
+                       principal=amount if unit == "principal_usd" else None,
+                       security_class_id=security_class_id, form=form, accepted=day,
+                       accession=accession)
+
+
+def flow(kind: str, day: str, amount: str | None, *, unit: str = "instruments",
+         settlement: str | None = None, shares: str | None = None, price: str | None = None,
+         accession: str = "0001-26-000041", form: str = "8-K",
+         security_class_id: str = WARRANT_CLASS) -> TransactionObservation:
+    if shares is None and unit == "instruments":
+        shares = amount
+    return observation(kind=kind, event_date=day,
+                       instruments=amount if unit == "instruments" else None,
+                       principal=amount if unit == "principal_usd" else None,
+                       shares=shares, price=price,
+                       settlement=settlement or ("cash" if kind == "warrant_exercise" else None),
+                       security_class_id=security_class_id, form=form, accepted=day,
+                       accession=accession)
+
+
+def note_set(series: str = "series_x0_convertible_notes", status: str = "outstanding",
+             principal: str = "2000000", conversion_price: str = "0.50"):
+    instrument_id, instrument = SS.make_instrument(
+        series, kind="convertible_note", status=status,
+        principal_outstanding=principal, conversion_price=conversion_price)
+    return instrument_id, SS.instrument_set((instrument_id, instrument))
+
+
+def version_ledger(events, *, series: str = "series_u_cash_warrants", status: str = "outstanding",
+                   note: bool = False, as_of: str = AS_OF, share_observations=(),
+                   instruments=None):
+    """One instrument, every event bound to it under its own transaction_id."""
+    if instruments is None:
+        instrument_id, instruments = (note_set(series, status) if note
+                                      else warrant_set(series, status))
+    else:
+        instrument_id = instruments.instruments[0].instrument_id
+    bindings = tuple(instrument_binding(item, transaction_id_for(item), instrument_id)
+                     for item in events)
+    ledger = reconcile(as_of=ts(as_of), observations=tuple(events), bindings=bindings,
+                       instruments=instruments, share_observations=share_observations)
+    return ledger, instrument_id, instruments
+
+
+def test_versions_anchor_is_the_latest_balance_on_or_before_as_of():
+    first = balance("2026-03-31", "1000000", accession="0001-26-000040")
+    second = balance("2026-06-30", "1000000", accession="0001-26-000041")
+    later = balance("2026-08-31", "500000", accession="0001-26-000042")
+    ledger, instrument_id, instruments = version_ledger([first, second, later], as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert [item["effective_date"] for item in versions] == ["2026-03-31", "2026-06-30"]
+    assert [item["outstanding"] for item in versions] == ["1000000", "1000000"]
+    assert all(item["status"] == "known" for item in versions)
+    assert all(item["unit"] == "instruments" for item in versions)
+    # The post-as_of balance is invisible: it is not the anchor and mints no version.
+    assert transaction_id_for(later) not in versions[-1]["basis_transaction_ids"]
+    applied = apply_outstanding(instruments, ledger)
+    IE.check_instrument_set(applied)
+    term = next(item for instrument in applied.instruments
+                if instrument.instrument_id == instrument_id
+                for item in instrument.economic_terms if item.name == "instruments_outstanding")
+    assert term.value.value == "1000000" and term.value.status == "known"
+
+
+def test_versions_anchor_missing_is_unknown_never_zero():
+    only_flow = flow("warrant_exercise", "2026-05-01", "100000", price="1.00")
+    ledger, instrument_id, instruments = version_ledger([only_flow], as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert len(versions) == 1
+    assert versions[0]["status"] == "unknown"
+    assert versions[0]["outstanding"] is None
+    assert versions[0]["outstanding"] != "0"
+    assert f"instrument_balance_missing:{instrument_id}" in unknown_ids(ledger)
+    applied = apply_outstanding(instruments, ledger)
+    term = next(item for instrument in applied.instruments
+                if instrument.instrument_id == instrument_id
+                for item in instrument.economic_terms if item.name == "instruments_outstanding")
+    assert term.value.status == "unknown" and term.value.value is None
+
+
+def test_versions_post_anchor_flows_are_applied_in_date_order():
+    events = [
+        balance("2026-03-31", "1000000"),
+        flow("warrant_exercise", "2026-05-01", "100000", price="1.00"),
+        flow("cancellation", "2026-06-01", "50000", accession="0001-26-000042"),
+        flow("instrument_issuance", "2026-07-01", "20000", accession="0001-26-000043"),
+    ]
+    ledger, instrument_id, instruments = version_ledger(events)
+    versions = versions_of(ledger, instrument_id)
+    assert [item["effective_date"] for item in versions] == [
+        "2026-03-31", "2026-05-01", "2026-06-01", "2026-07-01"]
+    assert [item["outstanding"] for item in versions] == ["1000000", "900000", "850000", "870000"]
+    assert all(item["status"] == "known" for item in versions)
+    # Every version is emitted in date order and supersedes exactly its predecessor.
+    assert versions[0]["supersedes_version_id"] is None
+    for previous, current in zip(versions, versions[1:]):
+        assert current["supersedes_version_id"] == previous["version_id"]
+    assert versions[-1]["basis_transaction_ids"] == sorted(
+        transaction_id_for(item) for item in events)
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.outstanding.value == "870000"
+    assert replaced.outstanding.share_basis == "assumed_as_converted"
+
+
+def test_versions_pre_anchor_flows_are_never_applied_again():
+    """A flow already reflected in the anchor balance must not decrement twice."""
+    events = [
+        flow("warrant_exercise", "2026-02-01", "100000", price="1.00"),
+        balance("2026-03-31", "1000000"),
+    ]
+    ledger, instrument_id, instruments = version_ledger(events, as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert len(versions) == 1
+    assert versions[0]["effective_date"] == "2026-03-31"
+    assert versions[0]["outstanding"] == "1000000"
+    assert versions[0]["outstanding"] != "900000"
+    assert versions[0]["basis_transaction_ids"] == [transaction_id_for(events[1])]
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.outstanding.value == "1000000"
+
+
+def test_versions_negative_balance_is_contradicted_never_clamped():
+    events = [balance("2026-03-31", "100000"),
+              flow("warrant_exercise", "2026-05-01", "250000", price="1.00")]
+    ledger, instrument_id, instruments = version_ledger(events, as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert [item["outstanding"] for item in versions] == ["100000", "-150000"]
+    assert versions[-1]["status"] == "contradicted"
+    assert f"flows_exceed_balance:{instrument_id}" in versions[-1]["flags"]
+    assert versions[-1]["outstanding"] != "0"
+    assert Decimal(versions[-1]["outstanding"]) == Decimal("-150000")
+    assert ledger.support == "partial"
+    assert f"contradicted:{instrument_id}" in ledger.support_limits()
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    term = next(item for item in replaced.economic_terms if item.name == "instruments_outstanding")
+    assert term.status == "contradicted"
+    assert term.value.status == "contradicted" and term.value.value is None
+    assert replaced.outstanding.status == "contradicted" and replaced.outstanding.value is None
+
+
+def test_versions_two_balances_explained_by_the_flows_between_them():
+    events = [balance("2026-03-31", "1000000", accession="0001-26-000040"),
+              flow("warrant_exercise", "2026-05-01", "100000", price="1.00"),
+              balance("2026-06-30", "900000", accession="0001-26-000041")]
+    ledger, instrument_id, _instruments = version_ledger(events)
+    versions = versions_of(ledger, instrument_id)
+    # SPEC_X0 §5: a flow between two reported balances is explained by the later
+    # balance; it does not mint its own version. Post-anchor flows (after the
+    # latest balance) are the only flows that carry the running balance forward.
+    assert [item["effective_date"] for item in versions] == ["2026-03-31", "2026-06-30"]
+    second_balance = versions[-1]
+    assert second_balance["supersedes_version_id"] == versions[0]["version_id"]
+    assert second_balance["outstanding"] == "900000"
+    assert second_balance["explained_decrease"] == "100000"
+    assert second_balance["explained_increase"] == "0"
+    assert second_balance["unexplained_delta"] == "0"
+    assert Decimal(second_balance["unexplained_delta"]) == Decimal("0")
+    assert second_balance["status"] == "known"
+    assert unknown_ids(ledger) == []
+
+
+def test_versions_two_balances_leave_an_unexplained_delta_that_is_never_plugged():
+    events = [balance("2026-03-31", "1000000", accession="0001-26-000040"),
+              flow("warrant_exercise", "2026-05-01", "100000", price="1.00"),
+              balance("2026-06-30", "950000", accession="0001-26-000041")]
+    ledger, instrument_id, _instruments = version_ledger(events)
+    versions = versions_of(ledger, instrument_id)
+    second_balance = versions[-1]
+    # 950,000 - (1,000,000 - 100,000 + 0) = +50,000, reported exactly, never plugged.
+    assert second_balance["outstanding"] == "950000"
+    assert second_balance["explained_decrease"] == "100000"
+    assert second_balance["explained_increase"] == "0"
+    assert second_balance["unexplained_delta"] == "50000"
+    assert Decimal(second_balance["unexplained_delta"]) == Decimal("950000") - (
+        Decimal("1000000") - Decimal("100000"))
+    assert second_balance["status"] == "known"
+    assert second_balance["flags"] == []
+    assert ledger.support == "supported"
+
+
+def test_versions_retired_instrument_is_not_decremented_again():
+    events = [balance("2026-03-31", "0"),
+              flow("warrant_exercise", "2026-05-01", "100000", price="1.00")]
+    ledger, instrument_id, instruments = version_ledger(events, series="series_x0_retired_warrants",
+                                                        status="retired", as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert [item["outstanding"] for item in versions] == ["0", "0"]
+    assert versions[-1]["flags"] == [f"already_retired"]
+    assert versions[-1]["status"] == "known"
+    assert versions[-1]["outstanding"] != "-100000"
+    assert ledger.support == "supported"
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.status == "retired"
+    assert replaced.outstanding.value == "0"
+
+
+def test_versions_zero_balance_flags_a_pending_retirement_decision():
+    events = [balance("2026-03-31", "1000000"),
+              flow("warrant_exercise", "2026-05-01", "1000000", price="1.00")]
+    ledger, instrument_id, instruments = version_ledger(events, as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert versions[-1]["outstanding"] == "0"
+    assert versions[-1]["status"] == "known"
+    assert versions[-1]["flags"] == [f"retirement_decision_pending:{instrument_id}"]
+    # X0 flags the decision; it never changes the I0 status.
+    assert next(item for item in instruments.instruments
+                if item.instrument_id == instrument_id).status == "outstanding"
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.status == "outstanding"
+    assert replaced.outstanding.value == "0"
+
+
+def test_versions_positive_balance_after_an_i0_retirement_is_contradicted():
+    events = [balance("2026-03-31", "500000")]
+    ledger, instrument_id, instruments = version_ledger(events, series="series_x0_retired_conflict",
+                                                        status="retired", as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert versions[-1]["outstanding"] == "500000"
+    assert versions[-1]["status"] == "contradicted"
+    assert f"retired_instrument_with_positive_balance:{instrument_id}" in versions[-1]["flags"]
+    assert ledger.support == "partial"
+    assert f"contradicted:{instrument_id}" in ledger.support_limits()
+    applied = apply_outstanding(instruments, ledger)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    assert replaced.outstanding.status == "contradicted"
+
+
+def test_versions_a_flow_with_no_amount_is_unknown_never_zero():
+    events = [balance("2026-03-31", "1000000"),
+              flow("warrant_exercise", "2026-05-01", None, shares=None, price="1.00")]
+    ledger, instrument_id, _instruments = version_ledger(events, as_of="2026-06-30")
+    versions = versions_of(ledger, instrument_id)
+    assert [item["outstanding"] for item in versions] == ["1000000", None]
+    assert versions[-1]["status"] == "unknown"
+    assert f"instrument_flow_amount_unknown:{transaction_id_for(events[1])}" in unknown_ids(ledger)
+
+
+def test_versions_a_convertible_note_is_tracked_in_principal_usd():
+    events = [balance("2026-03-31", "2000000", unit="principal_usd", security_class_id=CLASS),
+              flow("conversion", "2026-05-01", "500000", unit="principal_usd",
+                   shares="1000000", security_class_id=CLASS)]
+    ledger, instrument_id, instruments = version_ledger(events, note=True)
+    versions = versions_of(ledger, instrument_id)
+    assert [item["unit"] for item in versions] == ["principal_usd", "principal_usd"]
+    assert [item["outstanding"] for item in versions] == ["2000000", "1500000"]
+    applied = apply_outstanding(instruments, ledger)
+    IE.check_instrument_set(applied)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    terms = {item.name: item for item in replaced.economic_terms}
+    assert terms["principal_outstanding"].value.value == "1500000"
+    assert replaced.outstanding.unit == "usd"
+    assert replaced.outstanding.value == "1500000"
+    assert replaced.provenance.input_family == "transaction_observations"
+    # A conversion pays the issuer nothing (§7).
+    assert cash_of(ledger, transaction_id_for(events[1]))["realized_cash_kind"] == "no_cash"
+
+
+def test_versions_apply_outstanding_leaves_an_unbound_instrument_byte_identical():
+    bound_id, warrant = warrant_set("series_u_cash_warrants")
+    other_id, other = warrant_set("series_untouched_warrants")
+    mixed = SS.instrument_set((bound_id, warrant.instruments[0]), (other_id, other.instruments[0]))
+    events = [balance("2026-03-31", "1000000"),
+              flow("warrant_exercise", "2026-05-01", "100000", price="1.00")]
+    bindings = tuple(instrument_binding(item, transaction_id_for(item), bound_id) for item in events)
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=tuple(events), bindings=bindings,
+                       instruments=mixed)
+    applied = apply_outstanding(mixed, ledger)
+    IE.check_instrument_set(applied)
+    untouched = next(item for item in applied.instruments if item.instrument_id == other_id)
+    original = next(item for item in mixed.instruments if item.instrument_id == other_id)
+    assert untouched.as_record() == original.as_record()
+    replaced = next(item for item in applied.instruments if item.instrument_id == bound_id)
+    assert replaced.outstanding.value == "900000"
+    assert replaced.provenance.input_family == "transaction_observations"
+    assert original.provenance.input_family != "transaction_observations"
+
+
+# ---------------------------------------------------------------------------
+# Review focus (2) end to end — I1 reads the post-X0 claim
+# ---------------------------------------------------------------------------
+
+
+def test_apply_outstanding_evaluate_supply_end_to_end():
+    """900,000 in ``as_converted_claims``; the 100,000 shares appear once, in §6."""
+    ledger, instrument_id, instruments = a27_ledger()
+    applied = apply_outstanding(instruments, ledger)
+    IE.check_instrument_set(applied)
+    selected_scenario = SS.scenario([SS.selection(instrument_id, "warrant_exercise", "cash")])
+    share_basis = SS.basis()
+    before_envelope, before_trace = SS.evaluate(instruments, share_basis, selected_scenario)
+    after_envelope, after_trace = SS.evaluate(applied, share_basis, selected_scenario)
+
+    claims_before = SS.component(before_envelope, "as_converted_claims")
+    claims_after = SS.component(after_envelope, "as_converted_claims")
+    assert claims_before.status == "known" and claims_before.value == "1000000"
+    assert claims_after.status == "known" and claims_after.value == "900000"
+    assert Decimal(claims_after.value) == Decimal("900000")
+    assert SS.unknown_ids(after_envelope) == []
+
+    row = SS.rows_by_route(after_trace)[instrument_id]
+    assert row["underlying_shares"] == "900000"
+    assert row["incremental_shares"] == "900000"
+    # The already-exercised 100,000 is never counted again as future issuance.
+    assert "100000" not in (row["underlying_shares"], row["incremental_shares"])
+    assert SS.rows_by_route(before_trace)[instrument_id]["underlying_shares"] == "1000000"
+
+    assert len(ledger.share_reconciliations) == 1
+    reconciliation = ledger.share_reconciliations[0]
+    assert reconciliation["evidenced_net_issuance"] == "100000"
+    assert reconciliation["observed_delta"] == "100000"
+    assert reconciliation["unexplained_delta"] == "0"
+    assert reconciliation["transaction_ids"] == ["tx:exercise-2026-05-01"]
+
+    # The two components stay separate facts: the historical exercise is not supply.
+    assert SS.component(after_envelope, "existing_outstanding").value == "10000000"
+    assert SS.cash_by_route(after_envelope)[instrument_id].gross.value == "900000"
+    assert cash_of(ledger, "tx:exercise-2026-05-01")["realized_cash_kind"] == "proceeds"
+
+
 def test_no_float_literal_in_this_test_file_outside_the_refusal_tests():
     """The suite states exact values; only the float-refusal tests hold a float."""
     tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
