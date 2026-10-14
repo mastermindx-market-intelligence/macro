@@ -24,7 +24,7 @@ wall-clock and zone values live with the caller; the module source
 carries none.
 
 Every owner-supplied calendar-day field is checked: ``calendar_id``
-(text-present under the FAMILY TEXT RULE, ABSENT -> ``CALENDAR_MISSING``),
+(text-present under the FAMILY TEXT RULE v2, ABSENT -> ``CALENDAR_MISSING``),
 ``owner_ref`` (the existing blank check), ``timezone`` (IANA exact-case),
 ``trading_date`` (strict YYYY-MM-DD), ``day_kind`` (closed set),
 ``sessions`` (half-open, no overlap), and ``halts`` (half-open, offset-
@@ -140,35 +140,47 @@ class SessionStateVerdict:
         return AUTHORITY_FLAGS
 
 
-def _is_whitespace_char(ch: str) -> bool:
-    """Return True for ASCII whitespace characters. Avoids .strip /
-    .lower / .upper / .casefold / .replace (the static-source scan
-    test_a12_static_module_source_scan forbids them on any attribute
-    name); only an explicit ``in ' \\t\\n\\r\\f\\v'`` membership test."""
-    return ch in " \t\n\r\f\v"
-
-
 def _text_present(value: object) -> bool:
     """True only for a non-empty, unpadded, non-whitespace ``str`` (per
-    the X8BREP FAMILY TEXT RULE). The implementation walks the string
-    directly instead of calling ``.strip()`` so the no-normalisation
-    static scan test_a12_static_module_source_scan stays green: the
-    module never folds, strips, or normalises caller-supplied ids.
-    Used for ``calendar_id``: any value other than a clean caller-
-    supplied opaque ``str`` (None, empty, whitespace-only, padded, int,
-    float, bool, bytes, list, dict, set, any other object) is ABSENT and
-    maps to ``CALENDAR_MISSING`` (the existing reason; no new code per
-    X8B-06)."""
+    the X8BREP FAMILY TEXT RULE v2). A text-present value must satisfy:
+
+      * ``isinstance(value, str)`` -- any non-str is absent
+      * ``value != ""`` -- the empty string is absent
+      * ``not value[0].isspace()`` -- no leading whitespace, including
+        Unicode whitespace (e.g. ``"　"`` ideographic space,
+        ``" "`` no-break space, ``" "`` em space, ``"\x1c"``
+        file separator, ``"\u0085"`` NEL, ``" "`` line separator).
+        ``str.isspace()`` covers every Unicode whitespace character,
+        so this check is wider than the round-1 ASCII subset
+        ``" \\t\\n\\r\\f\\v"`` it replaces.
+      * ``not value[-1].isspace()`` -- no trailing whitespace.
+
+    Anything else -- None, empty, whitespace-only, leading or trailing
+    whitespace, int, float, bool, bytes, list, dict, set, any other
+    object -- is ABSENT and maps to the same refusal reason the module
+    already emits for a blank value of that field (no new reason
+    codes).
+
+    Behavioural note: the v2 helper is equivalent to a leading-plus-
+    trailing-whitespace removal on every str -- exactly the characters
+    for which str.isspace() is True, including every Unicode
+    whitespace character. The implementation walks the string
+    directly so the no-normalisation AST scan
+    test_a12_static_module_source_scan stays green: the module never
+    calls the str-normalisation attribute set the test forbids
+    (lowercasing, uppercasing, casefolding, whitespace stripping, or
+    substring replacement on any attribute); calling str.isspace() on
+    a single character is allowed.
+    """
     if not isinstance(value, str):
         return False
     if value == "":
         return False
-    if _is_whitespace_char(value[0]) or _is_whitespace_char(value[-1]):
+    if value[0].isspace():
         return False
-    for symbol in value:
-        if not _is_whitespace_char(symbol):
-            return True
-    return False
+    if value[-1].isspace():
+        return False
+    return True
 
 
 def _blank(value: object) -> bool:
@@ -241,7 +253,22 @@ def _aware_instant(text: object) -> datetime | None:
         return None
     if parsed.tzinfo is None:
         if trailing_z:
-            return parsed.replace(tzinfo=_ZERO_OFFSET)
+            # Z suffix implies the zero offset; construct an aware
+            # datetime with the zero offset and the parsed wall-clock
+            # fields. Avoids the datetime-replace idiom so the
+            # no-normalisation grep stays clean (the AST scan forbids
+            # any attribute in lower/upper/casefold/strip/replace,
+            # even on datetime).
+            return datetime(
+                parsed.year,
+                parsed.month,
+                parsed.day,
+                parsed.hour,
+                parsed.minute,
+                parsed.second,
+                parsed.microsecond,
+                tzinfo=_ZERO_OFFSET,
+            )
         return None
     if trailing_z:
         return None
@@ -329,7 +356,7 @@ def session_state(calendar: Mapping[str, object] | None, *, at: object) -> Sessi
     REASONS order. Session bounds are half-open; a halt overrides only
     the open state; the day_kind decides closed days (no weekday or
     holiday logic lives here). ``calendar_id`` is required under the
-    FAMILY TEXT RULE: not text-present -> ``CALENDAR_MISSING``.
+    FAMILY TEXT RULE v2: not text-present -> ``CALENDAR_MISSING``.
     """
     refuse_nonfalse_authority()
     if calendar is not None and not isinstance(calendar, Mapping):
@@ -340,9 +367,10 @@ def session_state(calendar: Mapping[str, object] | None, *, at: object) -> Sessi
         )
 
     reasons: list[str] = []
-    # X8BREP FAMILY TEXT RULE: calendar_id must be a non-empty,
-    # unpadded, non-whitespace str. ABSENT -> CALENDAR_MISSING (existing
-    # reason; no new code per X8B-06).
+    # X8BREP FAMILY TEXT RULE v2: calendar_id must be a non-empty,
+    # unpadded, non-whitespace str (str.isspace covers Unicode
+    # whitespace). ABSENT -> CALENDAR_MISSING (existing reason; no
+    # new code per X8B-06).
     if not _text_present(calendar.get("calendar_id")):
         reasons.append("CALENDAR_MISSING")
     if _blank(calendar.get("owner_ref")):
