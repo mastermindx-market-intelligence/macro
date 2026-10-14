@@ -22387,6 +22387,7 @@ jobs:
       - "tests/test_fda_supply_probes_mixed.py"
       - "tests/test_fda_sweep_duplicate_key_completeness.py"
       - "tests/test_healthcare_dispersion_w0b.py"
+      - "tests/test_healthcare_molecule_gap.py"
       - "collectors/base.py"
       - "collectors/sector_holdings.py"
       - "config/delisted_symbols.yml"
@@ -22401,6 +22402,7 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
+      - "engine/healthcare_molecule_gap.py"
       - "engine/foresight_cascade.py"
       - "scripts/build_foresight.py"
       - "collectors/__init__.py"
@@ -22442,6 +22444,8 @@ jobs:
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
       - name: Healthcare dispersion history archiver
         run: python -m pytest tests/test_healthcare_dispersion_w0b.py -q
+      - name: Healthcare configured molecules with no rows
+        run: python -m pytest tests/test_healthcare_molecule_gap.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
