@@ -16,7 +16,7 @@ and false rejection of non-date month/number prose. See `review_reproductions.js
 The unaccepted parser was withdrawn. Validator and validator-test bytes are
 restored exactly to accepted `e7112006a5d69b9fb125ff5e36f2f61a6174dadd`. The rejected
 implementation and its tests remain recoverable in that candidate commit and
-`rejected_parser.patch`. Earlier 457-test and 37-group results describe that
+`rejected_parser.patch.json` (exact patch bytes encoded as JSON). Earlier 457-test and 37-group results describe that
 rejected candidate; they are not release approval. The independent reviewer did
 not inspect the final three-line writer wording; the parent reviewed that change.
 
