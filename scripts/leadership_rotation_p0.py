@@ -399,6 +399,17 @@ def _extract_sim_metrics(
     fam: dict, ends: Dict[str, int]
 ) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
+
+    def _fin(v: Any) -> Optional[float]:
+        """Finite float or None (prereg V2 §3.4 / §6: unmeasured ≠ zero)."""
+        if v is None:
+            return None
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return f if math.isfinite(f) else None
+
     holm_order = fam["holm"]["order"]
     raw = fam["holm"]["raw"]
     adj = fam["holm"]["adjusted"]
@@ -413,6 +424,9 @@ def _extract_sim_metrics(
                 "verdict": verdicts.get(h),
                 "honest_n": gr.get("honest_n", {}).get(h),
                 "window_years": (ends[h] - st.WARMUP + 1) / 252.0,
+                # prereg V2 §6: C2 strata carried VERBATIM; None when the producer
+                # predates the §6 c2_strata key (unmeasured ≠ zero).
+                "c2_strata": (gr.get("c2_strata") or {}).get(h),
             }
             if h == "H1":
                 h1 = gr.get("H1", {})
@@ -425,6 +439,16 @@ def _extract_sim_metrics(
                     "p_h1": h1.get("decision", {}).get("p_h1"),
                     "delay_reduction": h1.get("delay_reduction"),
                     "burden_cut_b": h1.get("burden_cut_b"),
+                }
+                # prereg V2 §3.4: per-arm metrics; "A0_raw" is A0 before the
+                # 5-quiet-session suppression, measured only (arms stay frozen).
+                row["per_arm"] = {
+                    "A0_raw_burden": _fin((h1.get("A0_raw") or {}).get("burden")),
+                    "A0_burden": _fin((h1.get("A0") or {}).get("burden")),
+                    "A1_burden": _fin((h1.get("A1") or {}).get("burden")),
+                    "A1_median_delay": _fin((h1.get("A1") or {}).get("median_delay")),
+                    "A1_detection": _fin((h1.get("A1") or {}).get("detection")),
+                    "A2_median_delay": _fin((h1.get("A2") or {}).get("median_delay")),
                 }
             elif h == "H2":
                 h2 = gr.get("H2", {})
@@ -520,6 +544,57 @@ def _summarize_cell(sims: List[dict]) -> dict:
     n_ok = sum(1 for s in sims if s.get("status") == "OK")
     alpha_cal = 0.025
     family_passes = 0
+    # prereg V2 §3.4 per-arm keys and §6 C2 strata order (both fixed by spec).
+    per_arm_keys = (
+        "A0_raw_burden",
+        "A0_burden",
+        "A1_burden",
+        "A1_median_delay",
+        "A1_detection",
+        "A2_median_delay",
+    )
+    c2_strata_order = ("both_up", "both_down", "mixed", "unmeasured")
+
+    def _finite(v: Any) -> Optional[float]:
+        if v is None:
+            return None
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return f if math.isfinite(f) else None
+
+    def _c2_summary(strata_rows: List[dict], hyp: str) -> Optional[dict]:
+        """Median C2 stratum summary over OK sims; None when no sim carries strata."""
+        if not strata_rows:
+            return None
+        point_keys = ("delay_reduction", "burden_cut_b") if hyp == "H1" else ("point",)
+        out: Dict[str, Any] = {}
+        for stratum in c2_strata_order:
+            entries = [
+                sr[stratum] for sr in strata_rows if isinstance(sr.get(stratum), dict)
+            ]
+            if not entries:
+                continue
+            status_counts: Dict[str, int] = {}
+            for e in entries:
+                status = e.get("status")
+                key_s = status if isinstance(status, str) else str(status)
+                status_counts[key_s] = status_counts.get(key_s, 0) + 1
+            block: Dict[str, Any] = {
+                "status_counts": status_counts,
+                "median_n": _finite_median(
+                    [v for v in (_finite(e.get("n")) for e in entries) if v is not None]
+                ),
+            }
+            for pk in point_keys:
+                block[f"median_{pk}"] = _finite_median(
+                    [v for v in (_finite(e.get(pk)) for e in entries) if v is not None]
+                )
+            block["n_sims"] = len(entries)
+            out[stratum] = block
+        return out or None
+
     for g in _GROUPS:
         for h in _HYPOTHESES:
             key = f"{g}/{h}"
@@ -534,6 +609,9 @@ def _summarize_cell(sims: List[dict]) -> dict:
             cond_b_true = 0
             delay_reds: List[float] = []
             burden_cuts: List[float] = []
+            per_arm_vals: Dict[str, List[float]] = {k: [] for k in per_arm_keys}
+            per_arm_n = 0
+            c2_rows: List[dict] = []
             for sim in sims:
                 if sim.get("status") != "OK":
                     v = sim.get("status", "UNREACHED")
@@ -569,6 +647,16 @@ def _summarize_cell(sims: List[dict]) -> dict:
                     bc = iut.get("burden_cut_b")
                     if bc is not None and math.isfinite(float(bc)):
                         burden_cuts.append(float(bc))
+                    per_arm = row.get("per_arm")
+                    if isinstance(per_arm, dict):
+                        per_arm_n += 1
+                        for pk in per_arm_keys:
+                            pv = _finite(per_arm.get(pk))
+                            if pv is not None:
+                                per_arm_vals[pk].append(pv)
+                c2s = row.get("c2_strata")
+                if isinstance(c2s, dict):
+                    c2_rows.append(c2s)
             n = len(sims)
             lo, hi = wilson_interval(passes, n)
             # Size check uses pass_rate_ok / wilson_95_ok (OK sims only): UNREACHED
@@ -598,6 +686,11 @@ def _summarize_cell(sims: List[dict]) -> dict:
                 row_out["cond_b_true"] = cond_b_true
                 row_out["median_delay_reduction"] = _finite_median(delay_reds)
                 row_out["median_burden_cut_b"] = _finite_median(burden_cuts)
+                row_out["per_arm_median"] = {
+                    k: _finite_median(per_arm_vals.get(k, [])) for k in per_arm_keys
+                }
+                row_out["per_arm_n"] = per_arm_n
+            row_out["c2_summary"] = _c2_summary(c2_rows, h)
             summary["by_group_hypothesis"][key] = row_out
 
     for sim in sims:
@@ -1312,6 +1405,110 @@ def _write_summary_md(
                     )
                     + " |"
                 )
+    lines.append("")
+    lines.append("## Table 5 Per-arm metrics (prereg V2 §3.4)")
+    if not cells:
+        lines.append("_No cells in input._")
+    else:
+        lines.append(
+            "| cell | σ | δ | ρ | N | group | A0 raw burden | A0 burden | "
+            "A1 burden | A1 median delay | A1 detection | A2 median delay | sims |"
+        )
+        lines.append("|" + "|".join(["---"] * 13) + "|")
+        for c in cells:
+            summ = c["summary"]["by_group_hypothesis"]
+            for g in _GROUPS:
+                row = summ.get(f"{g}/H1", {})
+                per_arm = row.get("per_arm_median") or {}
+                lines.append(
+                    "| "
+                    + " | ".join(
+                        [
+                            str(c["cell_id"]),
+                            _md_rate(c["sigma"]),
+                            _md_rate(c["delta"]),
+                            _md_rate(c["rho"]),
+                            str(c["n_target"]),
+                            g,
+                            _md_rate(per_arm.get("A0_raw_burden")),
+                            _md_rate(per_arm.get("A0_burden")),
+                            _md_rate(per_arm.get("A1_burden")),
+                            _md_rate(per_arm.get("A1_median_delay")),
+                            _md_rate(per_arm.get("A1_detection")),
+                            _md_rate(per_arm.get("A2_median_delay")),
+                            str(row.get("per_arm_n", 0)),
+                        ]
+                    )
+                    + " |"
+                )
+        lines.append(
+            'Medians over OK sims. "A0 raw" = A0 fires before the 5-quiet-session '
+            'suppression, through the same window filter, merge and classifier as A0 '
+            '("suppressed"); burden = REPEATED + LATE + FALSE_START per measured '
+            "pair-year."
+        )
+
+    lines.append("")
+    lines.append("## Table 6 C2 direction strata (prereg V2 §6)")
+    lines.append(
+        "Prereg V2 §6 direction stratification (CHAL GATES #2); NOT the sealed "
+        "Trend-Persistence-era study also called 'C2', which stays closed. Points "
+        "only, no p-values; SOURCE_LIMITED where the stratum's clustered n < 5."
+    )
+    c2_row_keys = [f"{g}/{h}" for g in _GROUPS for h in _HYPOTHESES]
+    c2_strata_order = ("both_up", "both_down", "mixed", "unmeasured")
+    c2_present = any(
+        (c["summary"]["by_group_hypothesis"].get(rk) or {}).get("c2_summary")
+        for c in cells
+        for rk in c2_row_keys
+    )
+    if not c2_present:
+        lines.append(
+            "_C2 strata absent from the input records (producer predates prereg V2 §6)._"
+        )
+    else:
+        lines.append(
+            "| cell | row | stratum | sims | status counts | median n | "
+            "median point(s) |"
+        )
+        lines.append("|" + "|".join(["---"] * 7) + "|")
+        for c in cells:
+            summ = c["summary"]["by_group_hypothesis"]
+            for rk in c2_row_keys:
+                row = summ.get(rk) or {}
+                c2_sum = row.get("c2_summary") or {}
+                hyp = rk.split("/")[1]
+                for stratum in c2_strata_order:
+                    blk = c2_sum.get(stratum)
+                    if not isinstance(blk, dict):
+                        continue
+                    counts = blk.get("status_counts") or {}
+                    counts_s = (
+                        ", ".join(f"{k}: {counts[k]}" for k in sorted(counts)) or "—"
+                    )
+                    if hyp == "H1":
+                        points_s = (
+                            f"{_md_rate(blk.get('median_delay_reduction'))} / "
+                            f"{_md_rate(blk.get('median_burden_cut_b'))}"
+                        )
+                    else:
+                        points_s = _md_rate(blk.get("median_point"))
+                    lines.append(
+                        "| "
+                        + " | ".join(
+                            [
+                                str(c["cell_id"]),
+                                rk,
+                                stratum,
+                                str(blk.get("n_sims", 0)),
+                                counts_s,
+                                _md_rate(blk.get("median_n")),
+                                points_s,
+                            ]
+                        )
+                        + " |"
+                    )
+
     path.write_text("\n".join(lines) + "\n")
 
 

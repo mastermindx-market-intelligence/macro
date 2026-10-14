@@ -419,3 +419,108 @@ def test_h1_h3_uncertainty_interval_keys_finite_on_synthetic_group():
     h3_iv = gr["H3"]["interval_90"]
     assert h3_iv[0] is not None and h3_iv[1] is not None
     assert gr["H3"]["lower_bound"] is not None
+
+
+def _seeded_walk_pair(seed: int = 20261014, n: int = 900) -> PairSeries:
+    """Seeded random-walk pair long enough to clear WARMUP (252) first_eligible."""
+    rng = np.random.default_rng(seed)
+    R = np.cumsum(rng.normal(0.0, 0.01, n))
+    return PairSeries("rw", "g", "N", "D", np.exp(R), np.ones(n), np.ones(n))
+
+
+# MUTATION: scripts/leadership_rotation_run.py:_evaluate_pair_core drop the
+# "a0_raw_class" / "a0_raw_merged_away" keys from either return dict (prereg V2 §3.4).
+def test_a0_raw_class_present_in_both_core_branches():
+    from scripts.leadership_rotation_run import _evaluate_pair_core
+
+    ps = _seeded_walk_pair()
+    n = len(ps.num)
+
+    core = _evaluate_pair_core(ps, start=300, end=700)
+    assert core["formation"]["eligible"] is True
+    assert isinstance(core["a0_raw_class"], list) and core["a0_raw_class"]
+    for rec in core["a0_raw_class"]:
+        assert set(rec) == {"index", "cls", "subtype", "phase_T", "delay"}
+        assert rec["cls"] in ("MATCHED", "LATE", "REPEATED", "FALSE_START")
+        if rec["cls"] == "FALSE_START":
+            # off_index=None, as for the A0 arm: no EXPIRES/PERSISTENT split input
+            assert rec["subtype"] in ("EXPIRES", "PERSISTENT", "NONE")
+        else:
+            assert rec["subtype"] is None
+    assert isinstance(core["a0_raw_merged_away"], int)
+    assert core["a0_raw_merged_away"] > 0
+    json.dumps(core["a0_raw_class"])
+
+    # ineligible pair: `start` beyond the series forces the empty early-return branch
+    bad = _evaluate_pair_core(ps, start=n, end=n - 1)
+    assert bad["formation"]["eligible"] is False
+    assert bad["a0_raw_class"] == []
+    assert bad["a0_raw_merged_away"] == 0
+
+
+# MUTATION: scripts/leadership_rotation_run.py:_evaluate_pair_core feed the suppressed
+# onsets (a0_onsets) into a0r_w instead of the pre-suppression fires (a0_raw).
+def test_a0_raw_kept_count_at_least_suppressed():
+    from scripts.leadership_rotation_run import _evaluate_pair_core, _filter_window
+
+    ps = _seeded_walk_pair()
+    core = _evaluate_pair_core(ps, start=300, end=700)
+
+    # greedy anchor merge of a superset keeps at least as many ...
+    assert len(core["a0_raw_class"]) >= len(core["a0_class"])
+    # ... and on this path the 5-quiet-session suppression genuinely removes fires,
+    # so equality would mean the raw pipeline was fed the suppressed onsets.
+    assert len(core["a0_raw_class"]) > len(core["a0_class"])
+
+    # the A0 arm itself is unchanged: byte-identical classifications
+    R = core["R"]
+    s0 = core["formation"]["start"]
+    end = core["formation"]["end"]
+    _raw, a0_onsets = st.arm_a0(R)
+    a0_kept, _a0_merged = ep.merge_within_pair(_filter_window(a0_onsets, s0, end))
+    expected = ep.classify_alarms(a0_kept, core["phases"], off_index=None)
+    assert core["a0_class"] == expected
+    assert core["arms"]["A0"]["classifications"] == expected
+
+
+# MUTATION: scripts/leadership_rotation_run.py:evaluate_group build m_a0_raw from
+# records["a0"] (the suppressed arm) instead of each core's "a0_raw_class".
+def test_evaluate_group_h1_carries_a0_raw_metrics(monkeypatch):
+    from scripts import leadership_rotation_run as lrr
+
+    ps = _seeded_walk_pair()
+    n = len(ps.num)
+    W = np.ones((3, n), dtype=np.int32)
+
+    full = evaluate_group([ps], start=300, end=700, partition="P0", W=W)
+    a0_raw = full["H1"]["A0_raw"]
+    assert set(a0_raw) == set(full["H1"]["A0"])
+    for field in ("burden", "median_delay", "detection", "n_qualifying", "n_matched",
+                  "n_miss", "n_late", "n_repeated", "n_false_start", "merged_away",
+                  "quiet_rate"):
+        assert field in a0_raw
+    assert a0_raw["n_matched"] > 0
+    assert a0_raw["burden"] is not None and a0_raw["burden"] > full["H1"]["A0"]["burden"]
+
+    real_core = lrr._evaluate_pair_core
+
+    def _blank_a0_raw(pair, *, start, end):
+        core = real_core(pair, start=start, end=end)
+        core["a0_raw_class"] = []
+        return core
+
+    monkeypatch.setattr(lrr, "_evaluate_pair_core", _blank_a0_raw)
+    blank = evaluate_group([ps], start=300, end=700, partition="P0", W=W)
+    monkeypatch.setattr(lrr, "_evaluate_pair_core", real_core)
+
+    assert blank["H1"]["A0_raw"]["n_matched"] == 0
+    assert blank["H1"]["A0_raw"] != a0_raw
+
+    # measurement only: every decision, p-value and other arm is untouched
+    for field in ("A0", "A1", "A2", "delay_reduction", "burden_cut_b", "p", "decision"):
+        assert full["H1"][field] == blank["H1"][field]
+    left = json.loads(json.dumps(full))
+    right = json.loads(json.dumps(blank))
+    left["H1"].pop("A0_raw")
+    right["H1"].pop("A0_raw")
+    assert left == right

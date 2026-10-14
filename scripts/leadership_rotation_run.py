@@ -230,6 +230,8 @@ def _evaluate_pair_core(ps: PairSeries, *, start: int, end: int) -> dict:
             "a1_class": [],
             "a2_class": [],
             "a0_class": [],
+            "a0_raw_class": [],
+            "a0_raw_merged_away": 0,
             "a1_kept": [],
             "a2_kept": [],
             "a0_kept": [],
@@ -247,7 +249,8 @@ def _evaluate_pair_core(ps: PairSeries, *, start: int, end: int) -> dict:
         }
 
     a1_state, a1_entries, a1_exits = st.arm_a1(R)
-    _a0_raw, a0_onsets = st.arm_a0(R)
+    # prereg V2 §3.4: A0 raw (pre-suppression) fires, measured only — the A0 arm itself is unchanged
+    a0_raw, a0_onsets = st.arm_a0(R)
     a2_alarms, a2_pending = st.arm_a2(a1_state, a1_entries)
     b1_days = st.arm_b1(R, s0, end)
     b2_entries = st.arm_b2(R)
@@ -256,12 +259,14 @@ def _evaluate_pair_core(ps: PairSeries, *, start: int, end: int) -> dict:
     a1_w = _filter_window(a1_entries, s0, end)
     a2_w = _filter_window(a2_alarms, s0, end)
     a0_w = _filter_window(a0_onsets, s0, end)
+    a0r_w = _filter_window(a0_raw, s0, end)
     b2_w = _filter_window(b2_entries, s0, end)
     b3_w = _filter_window(b3_entries, s0, end)
 
     a1_kept, a1_merged = ep.merge_within_pair(a1_w)
     a2_kept, a2_merged = ep.merge_within_pair(a2_w)
     a0_kept, a0_merged = ep.merge_within_pair(a0_w)
+    a0r_kept, a0r_merged = ep.merge_within_pair(a0r_w)
     b2_kept, b2_merged = ep.merge_within_pair(b2_w)
     b3_kept, b3_merged = ep.merge_within_pair(b3_w)
 
@@ -284,6 +289,7 @@ def _evaluate_pair_core(ps: PairSeries, *, start: int, end: int) -> dict:
     )
     a2_class = ep.classify_alarms(a2_kept, phases, off_index=None)
     a0_class = ep.classify_alarms(a0_kept, phases, off_index=None)
+    a0_raw_class = ep.classify_alarms(a0r_kept, phases, off_index=None)
 
     num_s = pd.Series(ps.num)
     den_s = pd.Series(ps.den)
@@ -349,6 +355,8 @@ def _evaluate_pair_core(ps: PairSeries, *, start: int, end: int) -> dict:
         "a1_class": a1_class,
         "a2_class": a2_class,
         "a0_class": a0_class,
+        "a0_raw_class": a0_raw_class,
+        "a0_raw_merged_away": len(a0r_merged),
         "a1_kept": a1_kept,
         "a2_kept": a2_kept,
         "a0_kept": a0_kept,
@@ -681,6 +689,7 @@ def evaluate_group(
     m_a1 = _episode_metrics_unit(records["a1"], all_phases, session_w_point)
     m_a2 = _episode_metrics_unit(records["a2"], all_phases, session_w_point)
     m_a0 = _episode_metrics_unit(records["a0"], all_phases, session_w_point)
+    m_a0_raw = _episode_metrics_unit([rec for c in cores for rec in c["a0_raw_class"]], all_phases, session_w_point)
 
     det1, bur1, del1 = _h1_arm_replicates(
         records["a1"], all_phases, W, onset_coord, alarm_coords["a1"], measured_per_day
@@ -897,6 +906,7 @@ def evaluate_group(
                 "A1": m_a1,
                 "A2": m_a2,
                 "A0": m_a0,
+                "A0_raw": m_a0_raw,
                 "delay_reduction": delay_reduction,
                 "burden_diff_a": burden_diff_a,
                 "detection_diff_a": detection_diff_a,

@@ -968,3 +968,268 @@ def test_size_rows_carry_both_parts_and_m():
         "defensive_sector/H1": "SIZE_VIOLATION",
         "family_any": "SIZED",
     }
+
+
+_PER_ARM_KEYS = (
+    "A0_raw_burden",
+    "A0_burden",
+    "A1_burden",
+    "A1_median_delay",
+    "A1_detection",
+    "A2_median_delay",
+)
+_C2_STRATA = ("both_up", "both_down", "mixed", "unmeasured")
+
+
+def _c2_block(hyp: str, *, n: int, status: str, point: float | None,
+              reason: str | None = None) -> dict:
+    """One frozen-shape c2_strata[stratum] entry (structure owned by the C2 lane)."""
+    entry: dict = {"n_items": n + 1, "n": n, "status": status, "reason": reason}
+    if hyp == "H1":
+        entry["delay_reduction"] = point
+        entry["burden_cut_b"] = point
+    else:
+        entry["point"] = point
+        entry["comparator_basis"] = "B2"
+    return entry
+
+
+def _c2_strata(hyp: str, *, n: int, status: str, point: float | None) -> dict:
+    return {
+        s: _c2_block(hyp, n=n, status=status, point=point) for s in _C2_STRATA
+    }
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_extract_sim_metrics read A0_raw_burden
+# from h1["A0"] (or pass a non-finite per-arm value through, or drop c2_strata).
+def test_extract_sim_metrics_per_arm_and_c2_carried():
+    from scripts.leadership_rotation_p0 import (
+        _GROUPS,
+        _HYPOTHESES,
+        _extract_sim_metrics,
+    )
+
+    ends = {"H1": 2000, "H2": 2000, "H3": 2000}
+    order = [(g, h) for g in _GROUPS for h in _HYPOTHESES]
+    fam: dict = {
+        "holm": {"order": order, "raw": [0.5] * len(order), "adjusted": [0.9] * len(order)},
+        "groups": {},
+        "verdicts": {},
+    }
+
+    g0, g1 = _GROUPS[0], _GROUPS[1]
+    c2_g0 = {h: _c2_strata(h, n=9, status="COMPUTED", point=0.1) for h in _HYPOTHESES}
+    fam["groups"][g0] = {
+        "honest_n": {h: 20 for h in _HYPOTHESES},
+        "c2_strata": c2_g0,
+        "H1": {
+            "delay_reduction": 0.01,
+            "p": 0.4,
+            "burden_cut_b": 0.2,
+            "decision": {"cond_a": False, "cond_b": True, "p_h1": 0.4},
+            "A0_raw": {"burden": 11.25},
+            "A0": {"burden": 5.0},
+            "A1": {"burden": float("nan"), "median_delay": 3.0, "detection": 0.75},
+            "A2": {"median_delay": 8.0},
+        },
+        "H2": {"point": 0.02, "p": 0.3},
+        "H3": {"point": 0.03, "p": 0.2},
+    }
+    fam["groups"][g1] = {
+        "honest_n": {h: 10 for h in _HYPOTHESES},
+        "H1": {
+            "delay_reduction": 0.0,
+            "p": 0.5,
+            "burden_cut_b": 0.0,
+            "decision": {"cond_a": False, "cond_b": False, "p_h1": 0.5},
+        },
+        "H2": {"point": 0.0, "p": 0.5},
+        "H3": {"point": 0.0, "p": 0.5},
+    }
+    for g in _GROUPS:
+        fam["verdicts"][g] = {h: "DEVELOPMENT_FAIL" for h in _HYPOTHESES}
+
+    out = _extract_sim_metrics(fam, ends)
+
+    per_arm = out[g0]["H1"]["per_arm"]
+    assert tuple(per_arm) == _PER_ARM_KEYS
+    assert per_arm["A0_raw_burden"] == 11.25
+    assert per_arm["A0_burden"] == 5.0
+    assert per_arm["A1_burden"] is None  # NaN -> None, never a filled fake value
+    assert per_arm["A1_median_delay"] == 3.0
+    assert per_arm["A1_detection"] == 0.75
+    assert per_arm["A2_median_delay"] == 8.0
+
+    assert "per_arm" not in out[g0]["H2"] and "per_arm" not in out[g0]["H3"]
+
+    # missing arm metric dicts -> keys present, every value None (unmeasured != zero)
+    bare = out[g1]["H1"]["per_arm"]
+    assert tuple(bare) == _PER_ARM_KEYS
+    assert all(v is None for v in bare.values())
+
+    # C2 carried VERBATIM (identical object) for every (g, h); None when absent
+    for h in _HYPOTHESES:
+        assert out[g0][h]["c2_strata"] is c2_g0[h]
+        assert out[g1][h]["c2_strata"] is None
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_summarize_cell average per_arm /
+# c2_strata over all sims instead of OK sims only, or flatten the strata dict.
+def test_summarize_cell_per_arm_medians_and_c2_summary():
+    from scripts.leadership_rotation_p0 import _GROUPS, _HYPOTHESES, _summarize_cell
+
+    def _ok_rec(k: int) -> dict:
+        groups: dict = {}
+        for g in _GROUPS:
+            groups[g] = {}
+            for h in _HYPOTHESES:
+                row: dict = {
+                    "verdict": "DEVELOPMENT_FAIL",
+                    "honest_n": 20,
+                    "window_years": 4.0,
+                    "point": 0.01,
+                    "raw_p": 0.5,
+                    "holm_p": 0.9,
+                }
+                if h == "H1":
+                    row["iut"] = {
+                        "cond_a": False,
+                        "cond_b": False,
+                        "p_h1": 0.5,
+                        "delay_reduction": 0.01,
+                        "burden_cut_b": 0.02,
+                    }
+                    row["per_arm"] = {
+                        "A0_raw_burden": 1.0 + 2.0 * k,  # 1, 3, 5 -> 3
+                        "A0_burden": 2.0,
+                        "A1_burden": None if k == 1 else 4.0,  # 4, 4 -> 4
+                        "A1_median_delay": float(k),  # 0, 1, 2 -> 1
+                        "A1_detection": 0.5,
+                        "A2_median_delay": float("nan"),  # non-finite -> None
+                    }
+                    strata = _c2_strata("H1", n=9, status="COMPUTED", point=0.1)
+                    strata["both_up"]["n"] = 4 + 2 * k  # 4, 6, 8 -> 6
+                    strata["both_up"]["delay_reduction"] = 0.1 * (k + 1)  # -> 0.2
+                    strata["both_up"]["burden_cut_b"] = 0.25
+                    strata["both_down"]["status"] = "SOURCE_LIMITED" if k == 2 else "COMPUTED"
+                    strata["unmeasured"] = _c2_block(
+                        "H1", n=0, status="UNMEASURED", point=None, reason="no items"
+                    )
+                else:
+                    strata = _c2_strata(h, n=7, status="COMPUTED", point=0.5)
+                row["c2_strata"] = strata
+                groups[g][h] = row
+        return {"cell_id": 0, "k": k, "status": "OK", "groups": groups}
+
+    sims = [_ok_rec(0), _ok_rec(1), _ok_rec(2), {"cell_id": 0, "k": 3, "status": "UNREACHED"}]
+    summary = _summarize_cell(sims)
+    row_h1 = summary["by_group_hypothesis"]["defensive_sector/H1"]
+
+    assert row_h1["per_arm_n"] == 3  # the UNREACHED sim carries no per_arm
+    med = row_h1["per_arm_median"]
+    assert tuple(med) == _PER_ARM_KEYS
+    assert med["A0_raw_burden"] == 3.0
+    assert med["A0_burden"] == 2.0
+    assert med["A1_burden"] == 4.0
+    assert med["A1_median_delay"] == 1.0
+    assert med["A1_detection"] == 0.5
+    assert med["A2_median_delay"] is None
+
+    c2 = row_h1["c2_summary"]
+    assert tuple(c2) == _C2_STRATA
+    both_up = c2["both_up"]
+    assert both_up["status_counts"] == {"COMPUTED": 3}
+    assert both_up["median_n"] == 6.0
+    assert both_up["median_delay_reduction"] == pytest.approx(0.2)
+    assert both_up["median_burden_cut_b"] == 0.25
+    assert both_up["n_sims"] == 3
+    assert c2["both_down"]["status_counts"] == {"COMPUTED": 2, "SOURCE_LIMITED": 1}
+    assert c2["unmeasured"]["status_counts"] == {"UNMEASURED": 3}
+    assert c2["unmeasured"]["median_n"] == 0.0
+    assert c2["unmeasured"]["median_delay_reduction"] is None
+
+    row_h2 = summary["by_group_hypothesis"]["defensive_sector/H2"]
+    assert "per_arm_median" not in row_h2 and "per_arm_n" not in row_h2
+    assert row_h2["c2_summary"]["both_up"]["median_point"] == 0.5
+
+    # no OK sim carries c2 -> c2_summary is None on every row (never a zero-filled dict)
+    bare = [{
+        "cell_id": 0,
+        "k": 0,
+        "status": "OK",
+        "groups": {
+            g: {h: {"verdict": "DEVELOPMENT_FAIL", "honest_n": 5, "window_years": 4.0,
+                    "point": 0.0, "raw_p": 0.5, "holm_p": 0.9} for h in _HYPOTHESES}
+            for g in _GROUPS
+        },
+    }]
+    bare_summary = _summarize_cell(bare)
+    for rk, row in bare_summary["by_group_hypothesis"].items():
+        assert row["c2_summary"] is None, rk
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_write_summary_md omit Table 5/Table 6,
+# or print the Table 6 grid when every c2_summary is None.
+def test_summary_md_tables_5_and_6(tmp_path: Path):
+    from scripts.leadership_rotation_p0 import _GROUPS, _HYPOTHESES
+
+    t5_head = "## Table 5 Per-arm metrics (prereg V2 §3.4)"
+    t6_head = "## Table 6 C2 direction strata (prereg V2 §6)"
+    t5_note = (
+        'Medians over OK sims. "A0 raw" = A0 fires before the 5-quiet-session '
+        "suppression, through the same window filter, merge and classifier as A0 "
+        '("suppressed"); burden = REPEATED + LATE + FALSE_START per measured pair-year.'
+    )
+    t6_note = (
+        "Prereg V2 §6 direction stratification (CHAL GATES #2); NOT the sealed "
+        "Trend-Persistence-era study also called 'C2', which stays closed."
+    )
+    absent = "_C2 strata absent from the input records (producer predates prereg V2 §6)._"
+
+    # ---- records WITH c2_strata + per_arm -------------------------------
+    recs = _null_cell_records(0, 3, 0) + _null_cell_records(6, 2, 0)
+    for rec in recs:
+        if rec.get("status") != "OK":
+            continue
+        for g in _GROUPS:
+            for h in _HYPOTHESES:
+                rec["groups"][g][h]["c2_strata"] = _c2_strata(
+                    h, n=9, status="COMPUTED", point=0.1
+                )
+            rec["groups"][g]["H1"]["per_arm"] = {
+                "A0_raw_burden": 11.25,
+                "A0_burden": 5.0,
+                "A1_burden": 4.0,
+                "A1_median_delay": 3.0,
+                "A1_detection": 0.75,
+                "A2_median_delay": 8.0,
+            }
+    _, mout = _run_p0_summary(tmp_path / "with_c2", recs)
+    md = mout.read_text()
+
+    assert t5_head in md and t5_note in md
+    t5 = md.split(t5_head)[1].split(t6_head)[0]
+    data_rows = [ln for ln in t5.splitlines() if re.match(r"^\| \d+ \|", ln)]
+    assert len(data_rows) == 2 * len(_GROUPS)  # one row per (cell, group), δ = 0 and δ > 0
+    assert "| 6 | 0.007 | 0.003 | 0.500 | 20 | defensive_sector | 11.250 | 5.000 | 4.000 | 3.000 | 0.750 | 8.000 | 2 |" in t5
+
+    assert t6_head in md and t6_note in md
+    t6 = md.split(t6_head)[1]
+    assert absent not in t6
+    assert "| cell | row | stratum | sims | status counts | median n | median point(s) |" in t6
+    t6_rows = [ln for ln in t6.splitlines() if re.match(r"^\| \d+ \|", ln)]
+    assert len(t6_rows) == 2 * len(_GROUPS) * len(_HYPOTHESES) * len(_C2_STRATA)
+    assert "| defensive_sector/H1 | both_up | 3 | COMPUTED: 3 | 9.000 | 0.100 / 0.100 |" in t6
+    assert "| defensive_sector/H2 | both_up | 3 | COMPUTED: 3 | 9.000 | 0.100 |" in t6
+
+    # ---- records WITHOUT c2 (producer predates §6) ----------------------
+    plain = _null_cell_records(0, 2, 0)
+    _, mout2 = _run_p0_summary(tmp_path / "no_c2", plain)
+    md2 = mout2.read_text()
+    assert t5_head in md2  # Table 5 is printed for every input, em-dashes when unmeasured
+    t5_2 = md2.split(t5_head)[1].split(t6_head)[0]
+    assert len([ln for ln in t5_2.splitlines() if re.match(r"^\| \d+ \|", ln)]) == len(_GROUPS)
+    assert "| 0 | 0.007 | 0.000 | 0.500 | 20 | broadening_proxy | — | — | — | — | — | — | 0 |" in t5_2
+    assert t6_head in md2 and absent in md2
+    t6_2 = md2.split(t6_head)[1]
+    assert "| cell | row | stratum |" not in t6_2
