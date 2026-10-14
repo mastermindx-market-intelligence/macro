@@ -52,6 +52,28 @@ FAMILY_ORDER: List[Tuple[str, str]] = [
 
 _FAMILY_GROUPS = ("defensive_sector", "broadening_proxy")
 
+# ---------------------------------------------------------------------------
+# P1 harness gate (prereg V2 §3 two-part size rule; T19 F9) and look ledger.
+# Shared by the P0 size-gate writer (leadership_rotation_p0 ``size --out``) and
+# the P1 reader (``run_p1``): the reader refuses unless the committed artifact
+# at the reading commit shows the two-part gate PASSED for every required
+# delta = 0 cell under the exact harness bytes that will run the read.
+# ---------------------------------------------------------------------------
+SIZE_GATE_PATH = "research/LEADERSHIP_ROTATION_STUDY_T12R_2026-10-14.size_gate.json"
+SIZE_GATE_RULE = "V2_SEC3_TWO_PART"
+SIZE_GATE_REQUIRED_CELLS: Tuple[int, ...] = (0, 1, 2, 3, 4, 48)
+SIZE_GATE_MIN_M = 400
+SIZE_GATE_H1_NULL_METHOD = "V2_OPTION_A"
+HARNESS_MODULES: Tuple[str, ...] = (
+    "engine/leadership_rotation_context.py",
+    "scripts/leadership_rotation_episodes.py",
+    "scripts/leadership_rotation_inference.py",
+    "scripts/leadership_rotation_p0.py",
+    "scripts/leadership_rotation_run.py",
+    "scripts/leadership_rotation_study.py",
+)
+LOOK_LEDGER_PATH = "research/LEADERSHIP_ROTATION_LOOK_LEDGER.jsonl"
+
 _CONTROL_NAMES = (
     "both_down",
     "breadth_missingness",
