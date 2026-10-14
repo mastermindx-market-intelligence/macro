@@ -8957,6 +8957,7 @@ jobs:
           tests/test_research_codegen_input_contract.py
           tests/test_research_codegen_bridge.py
           tests/test_research_codegen_prefix_driver.py
+          tests/test_research_codegen_connected_p01.py
           tests/test_research_codegen_containment_workloads.py
           tests/test_research_codegen_review_projection.py
           tests/test_research_codegen_admin_projection.py
