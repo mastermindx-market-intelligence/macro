@@ -33,6 +33,7 @@ import re
 import shlex
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -67,6 +68,18 @@ _SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
 # This checkout can be a partial clone. A missing object must not promisor-fetch,
 # and a miss can walk a multi-gigabyte pack index, so the lookup is bounded.
 _GIT_TIMEOUT_SECONDS = 5
+# One argv hardening list for BOTH the git the drafter runs and the git it
+# RECORDS. A recorded command is a reproduction artifact a human pastes into a
+# shell; if the two prefixes drift, the copy-paste loses the ``-c`` overrides
+# and the target repository's ``core.fsmonitor`` / ``core.hooksPath`` run.
+_GIT_HARDENING = ("-c", "core.fsmonitor=", "-c", "core.hooksPath=")
+# Unicode general categories that are invisible to ``"\n" in entry`` yet break a
+# rendered line: control (Cc: U+0085 NEL, VT, FF, NUL, tab, \n, \r), format
+# (Cf: zero-width and bidi controls), line separator (Zl) and paragraph
+# separator (Zp). ``pr.files`` entries are interpolated RAW into the handoff
+# body and the WS append, so the field guard is the only place they can be
+# refused: ``_q`` protects the quoted fields, not those two f-strings.
+_UNSAFE_LINE_CATEGORIES = frozenset({"Cc", "Cf", "Zl", "Zp"})
 _GIT_ENV = dict(os.environ)
 _GIT_ENV["GIT_TERMINAL_PROMPT"] = "0"
 _GIT_ENV["GIT_NO_LAZY_FETCH"] = "1"
@@ -116,10 +129,7 @@ def _git(
         return subprocess.run(
             [
                 "git",
-                "-c",
-                "core.fsmonitor=",
-                "-c",
-                "core.hooksPath=",
+                *_GIT_HARDENING,
                 "-C",
                 str(root),
                 subcommand,
@@ -136,10 +146,18 @@ def _git(
 
 
 def _git_tool(repo: Path | None) -> str:
-    """Command prefix recorded in the draft. Omitted --repo stays plain ``git``."""
-    if repo is None:
-        return "git"
-    return "git -C " + shlex.quote(str(repo))
+    """Command prefix recorded in the draft, hardened like the drafter's own argv.
+
+    ``_git`` runs ``git`` with ``-c core.fsmonitor= -c core.hooksPath=`` before
+    ``-C``. The recorded prefix is quoted out of the handoff by a human, so it
+    carries the same ``-c`` overrides in the same order; a plain ``git -C``
+    prefix would run the target repository's ``core.fsmonitor`` for the copier.
+    An omitted ``--repo`` keeps the flags and drops ``-C``.
+    """
+    argv = ["git", *_GIT_HARDENING]
+    if repo is not None:
+        argv += ["-C", str(repo)]
+    return " ".join(shlex.quote(part) for part in argv)
 
 
 def _load_document(path: Path) -> dict:
@@ -197,7 +215,13 @@ def _pr_fields(document: dict) -> dict:
     for entry in files:
         if not isinstance(entry, str) or not entry.strip():
             raise DraftError("pr.files entries must be non-empty strings")
-        if "\n" in entry or "\r" in entry or entry.startswith(("/", "\\")):
+        if (
+            len(entry.splitlines()) != 1
+            or any(
+                unicodedata.category(ch) in _UNSAFE_LINE_CATEGORIES for ch in entry
+            )
+            or entry.startswith(("/", "\\"))
+        ):
             raise DraftError("pr.files entries must be single-line repo-relative paths")
         if any(part == ".." for part in entry.split("/")):
             raise DraftError("pr.files entries must not contain ..")
@@ -214,8 +238,12 @@ def _pr_fields(document: dict) -> dict:
         ) from None
     # The regex permits any digit pairs in the time component; reject impossible
     # wall-clock times like 2026-10-13T99:99:99Z when the ``T...Z`` part is
-    # present.
-    if len(merged_at) > 10 and merged_at[10] == "T":
+    # present. ``fullmatch`` on _MERGED_RE admits exactly two shapes: the fixed
+    # 10-character date group, or that group plus the fixed 10-character
+    # ``(?:T\d{2}:\d{2}:\d{2}Z)`` group. So an accepted string is 10 or 20
+    # characters long and ``len(merged_at) > 10`` already means index 10 is the
+    # literal ``T``; the second test was implied.
+    if len(merged_at) > 10:
         try:
             _dt.datetime.strptime(merged_at, "%Y-%m-%dT%H:%M:%SZ")
         except ValueError:
