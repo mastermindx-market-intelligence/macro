@@ -1,0 +1,13 @@
+# Cgroup observer source candidate
+
+Status: source implementation with50 fixture tests passed; independent review pending on `rf-cgroup-observer-review-01a1333c-v1`. This is not host qualification or an execution grant. The earlier source worker request ended at host admission before implementation; root wrote this bounded helper directly. No reroute, lease replacement or provider retry occurred.
+
+`cgroup_observer.observe` consumes a caller-held directory descriptor, exact expected root device/inode, a bounded relative component tuple and finite deadline. The caller must establish the actual Linux cgroupfs root, host namespace and selected container association, plus outer supervision capable of bounding kernel I/O. The observer does not discover these facts or authenticate a caller.
+
+Descriptor-relative no-follow opens read only the four named limit files along at most16 components, plus the leaf's type, events and process membership. It does not enumerate directories or read ancestor membership. File, aggregate byte and member counts are capped; helper descriptors close on success and refusal while the caller descriptor stays open. Two complete observations must match. They do not establish atomicity or protection against changes that revert between reads.
+
+The returned limits are the minimum **observed configured values** in the visible hierarchy. Missing root controls remain explicitly unknown. A limited mount or namespace may hide ancestors; CPU affinity, fair-scheduler applicability, actual resource enforcement, runtime-helper completeness and cleanup remain unproved. All corresponding proof/admission flags remain false. Kernel documentation specifies non-root controller files and allows unordered/repeated PIDs during cgroup membership reads; the bounded membership projection therefore uses a set. [Linux cgroup-v2 documentation](https://docs.kernel.org/admin-guide/cgroup-v2.html).
+
+Tests use temporary ordinary files and narrow syscall seams only. They cover tighter ancestors, unlimited/unknown states, root identity, unsafe paths, symlinks, FIFO/permission refusal, changing membership/control/directory identity, malformed input, byte/PID/deadline limits and descriptor closure. They do not read real cgroupfs/proc, start containers, signal processes or run stress workloads.
+
+This helper and its tests are excluded from the v4 fixed canary payload. Capsule SHA256 remains `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`. Source/fixture review must settle before integration into any later independently admitted host observation. The existing transport, lifecycle and acceptance owners remain unchanged.
