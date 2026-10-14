@@ -60,8 +60,8 @@ changed:
     what: Records the four input rules, the C2a/C2b/C2x/C2c split and the rejected alternatives.
 verified:
   - claim: The C2a suite and the neighbouring capital-structure suites pass on the C1 merge plus the lane patch.
-    command: PYTHONPATH=. /opt/homebrew/bin/python3.12 -m pytest -q -p no:cacheprovider tests/test_capital_structure_capacity_c2.py tests/test_capital_structure_capacity.py tests/test_capital_structure_capacity_joint.py tests/test_capital_structure_registration_integration.py tests/test_capital_structure_rule_applicability.py tests/test_capital_structure_share_basis.py tests/test_capital_structure_funding.py tests/test_capital_structure_issuer_state_contracts.py
-    result: 431 passed (2026-10-14, seat tree 8472d9cd on base 8f00ee9a).
+    command: PYTHONPATH=. /opt/homebrew/bin/python3.12 -m pytest -q -p no:cacheprovider tests/test_capital_structure_capacity_c2.py tests/test_capital_structure_capacity.py tests/test_capital_structure_capacity_joint.py tests/test_capital_structure_registration_integration.py tests/test_capital_structure_rule_applicability.py tests/test_capital_structure_share_basis.py tests/test_capital_structure_funding.py tests/test_capital_structure_issuer_state_contracts.py tests/test_capital_structure_instrument_economics.py tests/test_capital_structure_supply_scenarios.py
+    result: 598 passed (2026-10-14, head 0693a0df rebased onto the I1a merge e32d4109; 431 passed earlier on 8472d9cd over the first eight files on base 8f00ee9a).
   - claim: The kernel and the contracts are untouched.
     command: git diff --stat 8f00ee9a..HEAD -- engine/capital_structure/capacity_joint.py engine/capital_structure/issuer_state_contracts.py
     result: empty (2026-10-14).
@@ -98,7 +98,7 @@ danger_areas:
   - The bracket is a true floor and ceiling only because every bound is non-decreasing in price; a pool whose coefficient falls as price rises would break that and must be re-derived before it is added.
   - A fixed action is subtracted before the kernel runs, so the kernel's witness covers only the residual; anything reading kernel output directly must add the fixed uses back.
   - The NASDAQ 20 percent pool is held in shares on both branches; only the dollar-to-share coefficient branches. Converting the pool to dollars at one price reintroduces the single-price error.
-prs: []
+prs: [9393]
 decisions:
   - DEC:CS-V2-JOINT-CAPACITY-C2
 ---
