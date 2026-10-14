@@ -145,7 +145,8 @@
         "capital_structure.covenant_term_observation.v1",
         "capital_structure.instrument_candidate_term.v1",
         "capital_structure.share_count_observation.v1",
-        "capital_structure.share_count_observation.v2"
+        "capital_structure.share_count_observation.v2",
+        "capital_structure.financial_item_observation.v1"
       ]
     },
     "nullable_input_schema": {"anyOf": [{"$ref": "#/$defs/input_schema"}, {"type": "null"}]},
