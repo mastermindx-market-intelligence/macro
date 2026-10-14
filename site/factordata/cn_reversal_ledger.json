@@ -35,8 +35,8 @@
   "mae_p10_pct": -12.54,
   "n_logged": 268,
   "n_locked_excluded": 1,
-  "n_skipped_awaiting_t1": 0,
-  "n_skipped_total": 0,
+  "n_skipped_awaiting_t1": 2,
+  "n_skipped_total": 2,
   "board_definition": "cn_reversal_watch_v1"
  },
  "rows": [
@@ -5946,8 +5946,8 @@
   "survivorship": {
    "n_locked_excluded": 1,
    "n_skipped_no_price": 0,
-   "n_skipped_awaiting_t1": 0,
-   "n_skipped_total": 0,
+   "n_skipped_awaiting_t1": 2,
+   "n_skipped_total": 2,
    "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
   },
   "board_definition": "cn_reversal_watch_v1",
@@ -9334,7 +9334,7 @@
     "ed": "2026-07-22",
     "eb": "t1_open",
     "er": 57.24,
-    "erw": "re-derivation on today's bars gives 57.2400 (t1_open) against the published entry 83.0000 (t1_open); the published entry is point-in-time and is not restated"
+    "erw": "re-derivation on today's bars gives 57.2414 (t1_open) against the published entry 83.0000 (t1_open); the published entry is point-in-time and is not restated"
    },
    {
     "t": "301078.SZ",
@@ -20118,8 +20118,8 @@
     "mae_p10_pct": -11.28,
     "n_logged": 478,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 18,
+    "n_skipped_total": 18,
     "board_definition": "cn_prophet_v2_shadow"
    },
    "rows": [
@@ -27765,7 +27765,7 @@
      "d": "2026-08-26",
      "e": 7.76,
      "l": 7.76,
-     "p": -0.0,
+     "p": 0.0,
      "x": 1.15,
      "dy": 10,
      "st": "beat",
@@ -30648,8 +30648,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 18,
+     "n_skipped_total": 18,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -32860,8 +32860,8 @@
     "mae_p10_pct": -12.38,
     "n_logged": 449,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 18,
+    "n_skipped_total": 18,
     "board_definition": "cn_prophet_v3_shadow"
    },
    "rows": [
@@ -40705,7 +40705,7 @@
      "d": "2026-08-26",
      "e": 7.76,
      "l": 7.76,
-     "p": -0.0,
+     "p": 0.0,
      "x": 1.15,
      "dy": 10,
      "st": "beat",
@@ -42752,8 +42752,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 18,
+     "n_skipped_total": 18,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -42795,8 +42795,8 @@
     "mae_p10_pct": -12.38,
     "n_logged": 449,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 18,
+    "n_skipped_total": 18,
     "board_definition": "cn_prophet_v4"
    },
    "rows": [
@@ -50640,7 +50640,7 @@
      "d": "2026-08-26",
      "e": 7.76,
      "l": 7.76,
-     "p": -0.0,
+     "p": 0.0,
      "x": 1.15,
      "dy": 10,
      "st": "beat",
@@ -52687,8 +52687,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 18,
+     "n_skipped_total": 18,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -52730,8 +52730,8 @@
     "mae_p10_pct": -14.38,
     "n_logged": 448,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 29,
+    "n_skipped_total": 29,
     "board_definition": "cn_prophet_v4_more_actionable"
    },
    "rows": [
@@ -62600,8 +62600,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 29,
+     "n_skipped_total": 29,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",

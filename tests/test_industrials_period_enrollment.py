@@ -7,6 +7,7 @@ let a three-day tolerance rewrite the cell end to 30 June.
 from __future__ import annotations
 
 import re
+import sys
 from collections.abc import Callable
 from copy import deepcopy
 from datetime import date
@@ -216,22 +217,44 @@ def test_string_and_none_labels_are_a_disagreement() -> None:
 
 
 def test_cell_without_period_is_refused() -> None:
-    """A cell carrying no ``period`` raises with the field named in the message."""
+    """A cell carrying no ``period`` raises with the field named in the message.
+
+    The non-mapping-``period`` branch is a bare ``raise``, so it chains nothing:
+    ``__cause__`` is ``None``, and ``__context__`` is ``None`` as well (measured
+    ``True`` on 3.12.3, where no other exception is in flight when it raises).
+    This is the other half of the split documented on ``_with_stated_end``: only
+    the shape gate and the parser chain. A regression that routes this refusal
+    through either of them chains something and fails here.
+    """
     cell = deepcopy(case("same_number_two_headers")["cells"][0])
     cell.pop("period")
-    with pytest.raises(ValueError, match=re.escape("cell period is required")):
+    with pytest.raises(
+        ValueError, match=re.escape("cell period is required")
+    ) as caught:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
+    assert caught.value.__cause__ is None
+    assert caught.value.__context__ is None
 
 
 def test_non_iso_period_end_is_refused() -> None:
-    """A non-string ``period.end`` raises with the field named in the message."""
+    """A non-string ``period.end`` raises with the field named in the message.
+
+    The non-``str``-``end`` branch is a bare ``raise``, so it chains nothing:
+    ``__cause__`` is ``None``, and ``__context__`` is ``None`` as well (measured
+    ``True`` on 3.12.3). An ``int`` end such as this one must be refused for its
+    TYPE here, before the shape gate ever sees it -- if the type check were
+    dropped, the same value would fall to the shape gate, which chains its
+    synthetic shape error, and the assertion below would fail.
+    """
     cell = deepcopy(case("same_number_two_headers")["cells"][0])
     cell["period"] = dict(cell["period"])
     cell["period"]["end"] = 20260703
     with pytest.raises(
         ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
-    ):
+    ) as caught:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
+    assert caught.value.__cause__ is None
+    assert caught.value.__context__ is None
 
 
 # Refusal shape is documented on ``_with_stated_end``. The two lists below
@@ -258,6 +281,43 @@ _PARSE_REFUSED_ENDS = [
     pytest.param("2026-13-45", id="impossible-month-day"),
     pytest.param("2026-02-30", id="impossible-day"),
     pytest.param("0000-01-01", id="year-zero"),
+]
+
+
+# Two read-only probes of THIS interpreter, used below to derive the
+# parser-admitted subset of ``_SHAPE_REFUSED_ENDS`` instead of restating it.
+def _raw_end_of(param: object) -> str:
+    """The end string carried by a ``_SHAPE_REFUSED_ENDS`` entry.
+
+    Entries are ``pytest.param`` objects today. A bare string is read too, so an
+    append of either shape joins the derived guard instead of dropping out when
+    the attribute probe misses.
+    """
+    values = getattr(param, "values", None)
+    return param if values is None else values[0]
+
+
+def _parser_admits(raw_end: str) -> bool:
+    """True when THIS interpreter's ``date.fromisoformat`` accepts ``raw_end``.
+
+    A non-str entry is treated as not parser-admitted: ``_raw_end_of`` reads
+    bare entries too, and the ``TypeError`` ``date.fromisoformat`` raises on a
+    non-str must not crash import/collection of this module.
+    """
+    try:
+        date.fromisoformat(raw_end)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+# DERIVED, not restated: every entry of ``_SHAPE_REFUSED_ENDS`` this running
+# interpreter's ``date.fromisoformat`` accepts. A new parser-admitted shape
+# appended to that list joins the guard below on its own; only entries this
+# parser refuses drop out, and those are exactly the entries whose
+# gate-vs-parser attribution this interpreter cannot prove.
+_SHAPE_REFUSED_ENDS_PARSER_ADMITTED = [
+    param for param in _SHAPE_REFUSED_ENDS if _parser_admits(_raw_end_of(param))
 ]
 
 
@@ -289,3 +349,84 @@ def test_parse_refused_period_end_chains_the_parser_error(raw_end: str) -> None:
         enroll_stated_period(_case_with_end(raw_end), tolerance_days=3)
     assert isinstance(caught.value.__cause__, ValueError)
     assert "expected exactly" not in str(caught.value.__cause__)
+
+
+_SKIP_PRE_311_PARSER_ADMITTED = pytest.mark.skipif(
+    sys.version_info < (3, 11),
+    reason="all three parser-admitted forms these guards derive only parse "
+    "on 3.11+ -- the basic form without hyphens (20260703), the ISO week "
+    "without a weekday (2026-W27) and the trailing-colon form (02071203:6); "
+    "under 3.11 the version premise these tests guard does not exist",
+)
+
+
+@_SKIP_PRE_311_PARSER_ADMITTED
+@pytest.mark.parametrize("raw_end", _SHAPE_REFUSED_ENDS_PARSER_ADMITTED)
+def test_parser_admitted_subset_of_shape_refused_forms_is_gate_refused(
+    raw_end: str,
+) -> None:
+    """Pin the parser-ADMITTED subset of ``_SHAPE_REFUSED_ENDS``, per shape.
+
+    The shape list and the parse list say different things only because the
+    3.11+ ``date.fromisoformat`` ADMITS the parser-admitted forms -- the basic
+    form without hyphens, the ISO week without a weekday, and the trailing-colon
+    form -- while the ASCII-only shape gate refuses them. If a future Python
+    tightened the parser so that it refused them too, both parametrized tests
+    would keep passing while the shape list silently lost its point: every
+    "shape-refused" form could then be refused by the parser branch alone, and
+    ``test_shape_refused_period_end_names_the_field`` would no longer prove that
+    the gate, rather than the parser, did the refusing.
+
+    The parameters are DERIVED from ``_SHAPE_REFUSED_ENDS``, so a parser-admitted
+    shape added there joins this guard automatically instead of silently not
+    joining it, and this guard asserts BOTH halves of the attribution for each
+    of them: the interpreter admits the form, yet the engine still refuses it
+    with the gate's own chained shape error. Measured on this 3.12.3 the parser
+    admits ``20260703`` as ``date(2026, 7, 3)``, ``2026-W27`` as
+    ``date(2026, 6, 29)`` and ``02071203:6`` as ``date(207, 12, 3)``.
+    """
+    assert isinstance(date.fromisoformat(raw_end), date)
+    with pytest.raises(
+        ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
+    ) as caught:
+        enroll_stated_period(_case_with_end(raw_end), tolerance_days=3)
+    assert isinstance(caught.value.__cause__, ValueError)
+    assert "expected exactly YYYY-MM-DD" in str(caught.value.__cause__)
+
+
+@_SKIP_PRE_311_PARSER_ADMITTED
+def test_parser_admitted_subset_of_shape_refused_forms_meets_the_floor() -> None:
+    """Floor the derived guard so it can never pass by collecting nothing.
+
+    ``_SHAPE_REFUSED_ENDS_PARSER_ADMITTED`` is filtered on the running
+    interpreter, so a Python that refused every shape-listed form would empty
+    it -- and a parametrized test over an empty set asserts nothing (measured on
+    this pytest 9.1.1: one SKIPPED item, "got empty parameter set", suite still
+    green). The floor below is load-bearing: the three forms #9338 measured must
+    still be IN the derived set, so the premise failing is a failure, not a
+    silent skip.
+    """
+    derived = {_raw_end_of(param) for param in _SHAPE_REFUSED_ENDS_PARSER_ADMITTED}
+    floor = {"20260703", "2026-W27", "02071203:6"}
+    assert floor <= derived, (
+        f"date.fromisoformat no longer admits {sorted(floor - derived)} on "
+        f"Python {sys.version_info[:2]}; the "
+        "shape list has lost its discriminating power and the parametrized "
+        f"guard collected {len(derived)} of {len(_SHAPE_REFUSED_ENDS)} shapes"
+    )
+
+
+def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
+    """``_parser_admits`` must not crash collection on a non-str entry.
+
+    ``_raw_end_of`` deliberately reads bare (non-``pytest.param``) entries, so a
+    future non-str entry -- ``None`` or the int ``20260703`` -- reaches
+    ``date.fromisoformat``, which raises ``TypeError`` (measured on this 3.12.3:
+    "fromisoformat: argument must be str"). ``except ValueError`` alone let that
+    TypeError escape and failed the whole module at import/collection time, so
+    both non-str forms are asserted ``False`` here. The compact form as a STR is
+    version-bound: 3.11+ admits ``20260703``, earlier interpreters refuse it.
+    """
+    assert _parser_admits(None) is False
+    assert _parser_admits(20260703) is False
+    assert _parser_admits("20260703") == (sys.version_info >= (3, 11))

@@ -63,6 +63,7 @@ __all__ = [
     "attach_body_accounting",
     "candidate_to_dict",
     "load_body_frame",
+    "load_gate_frame",
     "main",
 ]
 
@@ -204,6 +205,19 @@ class BodyFrame:
 
     status_map: Mapping[str, str]
     status_map_sha256: str
+
+
+@dataclass(frozen=True)
+class GateFrame:
+    """A routing-gate draw frame (DEC-NEWS-IMPACT-CONTINUATION-ROUTING-GATES).
+
+    ``gate_map`` is an ``engine.news_impact.routing_gates`` gate map (item_id ->
+    "gated_in" | "gated_out:<code>"); applied after a body frame, the draw keeps the
+    gated-in candidates. Like the body frame it never reads a label or proxy_cell.
+    """
+
+    gate_map: Mapping[str, str]
+    gate_map_sha256: str
 
 
 # --- issuer resolution helpers (S7) -------------------------------------------
@@ -792,6 +806,25 @@ def load_body_frame(status_map_path: str) -> BodyFrame:
     return BodyFrame(status_map=status_map, status_map_sha256=sha256(raw).hexdigest())
 
 
+GATE_STATUS_RE = re.compile(r"^(?:gated_in|gated_out:([a-z0-9_]+))$")
+
+
+def load_gate_frame(gate_map_path: str) -> GateFrame:
+    """Read a routing_gates gate map into a GateFrame (fail-closed on shape)."""
+    with open(gate_map_path, "rb") as fh:
+        raw = fh.read()
+    try:
+        gate_map = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise TapeDrawError(f"gate frame map is not JSON: {exc}") from exc
+    if not isinstance(gate_map, dict) or not gate_map:
+        raise TapeDrawError("gate frame map must be a non-empty JSON object")
+    for item_id, status in gate_map.items():
+        if not isinstance(status, str) or not GATE_STATUS_RE.match(status):
+            raise TapeDrawError(f"malformed gate status for item_id {item_id!r}: {status!r}")
+    return GateFrame(gate_map=gate_map, gate_map_sha256=sha256(raw).hexdigest())
+
+
 def _cell_counts(candidates: Iterable[Candidate]) -> dict[str, dict[str, int]]:
     counts = {t: {c: 0 for c in CELLS} for t in TEMPLATES}
     for cand in candidates:
@@ -830,6 +863,40 @@ def _apply_body_frame(
     return kept, record
 
 
+def _apply_gate_frame(
+    candidates: tuple[Candidate, ...], frame: GateFrame
+) -> tuple[tuple[Candidate, ...], dict[str, Any]]:
+    """Keep the gated-in candidates of a body-framed pool; every one must carry a status."""
+    missing = sorted(c.item_id for c in candidates if c.item_id not in frame.gate_map)
+    if missing:
+        raise TapeDrawError(
+            f"gate frame map lacks {len(missing)} in-frame candidate item_id(s), "
+            f"first {missing[:3]!r}: the map must cover the body-available pool"
+        )
+    stale = sorted(c.item_id for c in candidates if frame.gate_map[c.item_id] == "gated_out:no_body")
+    if stale:
+        raise TapeDrawError(
+            f"gate frame map marks {len(stale)} body-available candidate(s) no_body, "
+            f"first {stale[:3]!r}: the map was built from different bodies"
+        )
+    kept = tuple(c for c in candidates if frame.gate_map[c.item_id] == "gated_in")
+    codes: dict[str, int] = {}
+    for c in candidates:
+        code = GATE_STATUS_RE.match(frame.gate_map[c.item_id]).group(1)
+        if code:
+            codes[code] = codes.get(code, 0) + 1
+    record = {
+        "kind": "routing_gates",
+        "gate_map_sha256": frame.gate_map_sha256,
+        "n_gate_entries": len(frame.gate_map),
+        "n_candidates_pre_gate": len(candidates),
+        "n_candidates_gated_in": len(kept),
+        "excluded_codes": dict(sorted(codes.items())),
+        "gated_cells": _cell_counts(kept),
+    }
+    return kept, record
+
+
 def run_draw(
     tape_path: str,
     event_log_path: str,
@@ -842,15 +909,21 @@ def run_draw(
     prospective_from: date | None = None,
     low_value: Callable[..., bool] | None = None,
     body_frame: BodyFrame | None = None,
+    gate_frame: GateFrame | None = None,
 ) -> TapeDrawResult:
     """Run the full tape -> draw pipeline (S12).
 
     With ``body_frame`` the draw runs over the body-available candidates only, with
     the same seed, sampler and caps; the report records the frame (status-map sha,
     pre-frame and in-frame cell counts, exclusion reasons). Short cells stay short.
+    With ``gate_frame`` (which requires ``body_frame``) the draw further keeps the
+    gated-in candidates and the report gains a ``gate_frame`` record; without it the
+    report is unchanged.
     """
     if not isinstance(seed, int) or isinstance(seed, bool):
         raise TapeDrawError(f"seed must be an int: {seed!r}")
+    if gate_frame is not None and body_frame is None:
+        raise TapeDrawError("gate_frame requires body_frame: the gates read attached filing bodies")
 
     if low_value is None:
         low_value = _make_default_low_value()
@@ -898,8 +971,11 @@ def run_draw(
 
     frame_record: dict[str, Any] | None = None
     draw_pool = build.candidates
+    gate_record: dict[str, Any] | None = None
     if body_frame is not None:
         draw_pool, frame_record = _apply_body_frame(build.candidates, body_frame)
+    if gate_frame is not None:
+        draw_pool, gate_record = _apply_gate_frame(draw_pool, gate_frame)
 
     draw = draw_sample(
         draw_pool,
@@ -939,6 +1015,8 @@ def run_draw(
     report["drawn_cells"] = rebuilt["cells"]
     report["manifest_sha256"] = rebuilt["manifest_sha256"]
     report["frame"] = frame_record if frame_record is not None else {"kind": "full_pool"}
+    if gate_record is not None:
+        report["gate_frame"] = gate_record
 
     return TapeDrawResult(
         draw=draw,
@@ -1052,6 +1130,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
             "over body-available candidates (report records the frame)"
         ),
     )
+    parser.add_argument(
+        "--gate-frame",
+        default=None,
+        help=(
+            "routing_gates gate map covering the body-available pool; requires "
+            "--body-frame and draws only over gated-in candidates"
+        ),
+    )
     return parser
 
 
@@ -1063,6 +1149,7 @@ def main(argv: list[str] | None = None, *, low_value: Callable[..., bool] | None
         window_end = _parse_optional_date(args.window_end)
         prospective_from = _parse_optional_date(args.prospective_from)
         body_frame = load_body_frame(args.body_frame) if args.body_frame else None
+        gate_frame = load_gate_frame(args.gate_frame) if args.gate_frame else None
         result = run_draw(
             args.tape,
             args.event_log,
@@ -1074,6 +1161,7 @@ def main(argv: list[str] | None = None, *, low_value: Callable[..., bool] | None
             prospective_from=prospective_from,
             low_value=low_value,
             body_frame=body_frame,
+            gate_frame=gate_frame,
         )
 
         out_dir = args.out
