@@ -11629,6 +11629,10 @@ jobs:
     # DEVELOPMENT HARNESS: synthetic arrays and tmp git fixtures only; no data/ read in CI.
     # scope: exclusive — paths = the union of scripts.ci_scope_dependencies.suite_dependency_closure
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
+    # engine/rates_command_basis.py widened 2026-10-14: engine/yield_momentum.py (already in this
+    # closure) imports it function-locally since #9317 (RIC Y1a), so tests/test_ci_pack.py
+    # test_curated_exclusive_scopes_cover_their_own_import_closure failed on main for every
+    # diff that scopes ci-control-plane-contracts in.
     scope: exclusive
     paths:
       - "collectors/base.py"
@@ -11647,6 +11651,7 @@ jobs:
       - "engine/oracle/ratio_lens.py"
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
       - "engine/rotation_corr.py"
       - "engine/rotation_events.py"
       - "engine/rotation_flows.py"
