@@ -522,3 +522,19 @@ producer write, new Press stage, publication, cutover or D14 credit occurred.
 Accepted application 2c23601ff0f5 and its test/probe evidence remain unchanged.
 
 Own-receipt repair, October14 06:15UTC: application8eb467112b83 preserves the radar probability target/calibration/advisory limits and omits unqualified probabilities. Fabric mmx-press-radar-receipt-review-20261014-001 ACCEPTED;429 affected tests pass/1 sparse skip plus1 unchanged real-data hygiene pass. Same24-source bundle and3pages,31 local portable groups pass. Not installed. BlackRock corporate terms leave its public lead unqualified; Treasury BAC release is the existing held event, not a replay opportunity. See radar_receipt_phase/review_binding.json, source_qualification.json and CHECKPOINT.md.
+
+## October14 06:35 source qualification continuation
+
+Reviewed untouched GS homebuilders 09647d privately and independently corroborated the
+mortgage observation with public Freddie Mac PMMS. Report rights remain unqualified;
+PMMSOct 8 is stale for Brief and cannot be re-dated. Preserved a completed single
+download despite its event timeout; no retry or writer effect. Installed catalog
+identity review adds the held Europe Autos alternate ref b49a47 to existing exclusions.
+Seven retention/identity checks pass and all 24runtime hashes remain unchanged. See
+research/agentic_media/public_intelligence_20261011/source_qualification_20261014_0619/
+for exact commands, private hash, source limits and cumulative exclusion inputs.
+Single PR #9209 read 06:23:49Z:OPEN 8f705cb3, inherited pack 4 red, 13 proofs/cap 8,8920 lease
+register populated and mainbaseline 38520655830running. No manual refresh or duplicate
+CI. Acceptedapplication 8eb467112b83 remains uninstalled; reuse 429 tests / 1 sparse skip
+plus 1 real-data check and 31 portable groups. No follow-on PR, publication/cutover false,
+D14 credit 0/10. Next remains admitted #9209 release/install, then same follow-on release.

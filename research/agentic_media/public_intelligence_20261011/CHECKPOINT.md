@@ -1,3 +1,58 @@
+## 2026-10-14 06:35 UTC — alternate source review and cumulative exclusions
+
+The single PR/controller read at06:23:49Z still finds #9209 OPEN at8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI 38508325200 inherited pack 4 red with11 other packs passing. There are 13 active
+PR proofs against cap 8, the 8920 lease register remains populated, and the main
+baseline 38520655830 is running. No release mutation, duplicate CI, observer or
+manual proof refresh occurred. Existing #9227 is still the repair to consume.
+
+This wake reviewed untouched Research candidate 09647d using its actual 40-page
+member PDF, retained privately with SHA e578ad9be2a183a43793931a11fb18e369b69d0ad5b938221acded07c70d9499.
+One download completed despite the browser event timeout: matching file and
+quota 48 to 47 prove completion; no retry. Its mortgage-rate, builder-incentive
+and margin numbers are partly corroborated, with critical scope preserved:
+146 bp to 20.2% is a year-over-year average margin FORECAST, not reported results.
+The report's source restrictions do not establish public Press reuse authority;
+no report text was passed to a writer or Fabric worker, and no raw report is in Git.
+Freddie Mac's independent public PMMS confirms 7.40% onOct 8 and explicitly permits
+information use with attribution. Its weekly observation is stale for Brief today;
+it cannot be freshened to the analyst report or retrieval date. This is a separate
+permitted source lead for the next actual release, not an admitted current story.
+
+A read-only installed catalog census at06:26:24Z binds stable HEAD c121def549c260e10bf991449e18d2c2813890ae
+and catalog SHA 05b2b5d39d132f7b9855fbebc5852fdf7a81615ea970756e38e2004c5e550805.
+It confirms three paired catalog identities: Europe Autos 0cbff4/b49a47 has the
+same title/institution/day but different summaries; TWIG e44c86/566dd6 and
+Asia Pacific b85f48/f5c455 have identical summaries. Carry b49a47 with the existing
+held Europe Autos ref; another catalog ID is not a new attempt. No automatic
+fuzzy aliasing or PDF-byte identity is claimed. The cumulative source exclusions
+also add 09647d while preserving every earlier hold, including JPM b50195.
+
+Other public-source reads establish no new qualified event. NY Fed's current
+index has no new economic speech afterOct 7; H.15 publication date does not turn
+holiday blanks into new market quotes. DOJ'sOct 13 disruption release names listed
+partners but recounts a week beginningOct 6, with no relevant own issuer receipts
+qualified. FiscalData returned 403 and was not retried. Existing White House Alaska
+exclusion remains binding. These observations did not invoke any writer/provider,
+change producers, edit held drafts or consume a staging attempt.
+
+Seven source-retention/identity/exclusion checks pass, including unchanged hashes
+for all 24 accepted runtime sources. They are review controls, not new application
+tests or D14 credit. Reuse the 429 tests / 1 sparse skip plus 1 real-data check and 31 portable
+groups for unchanged application 8eb467112b83. No follow-on PR or installation.
+
+Next: controller-admitted #9209 refresh, exact-head CI, protected landing and normal
+installed acceptance; then integrate landed main into this SAME follow-on and
+complete one protected PR plus 31 installed groups. Continue permitted source
+qualification with the cumulative exclusions; do not repeatedly download restricted
+institutional reports as if membership supplied public rights. Publication/cutover
+remain false, credit 0/10. Preserve Oct11 12:07 EFFECT_UNKNOWN and refused issuer review.
+
+verified: source_qualification_20261014_0619/{pr9209_observation.json,
+homebuilder_review.json,catalog_alias_review.json,source_exclusions.json,
+public_source_screen.json,review_verification.json}; rerun source checks with
+`python3 -B research/agentic_media/public_intelligence_20261011/source_qualification_20261014_0619/verify_source_review.py .`.
+
 ## 2026-10-14 06:15 UTC — own-receipt consumer repaired and independently accepted
 
 Application commit `8eb467112b832101385f7256b83036f45ae5d759` repairs the Press

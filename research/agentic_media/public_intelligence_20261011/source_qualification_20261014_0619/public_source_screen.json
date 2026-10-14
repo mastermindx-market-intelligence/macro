@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-10-14T06:33:50.041815+00:00",
+  "method": "Primary-source web reads; discovery only, no source admitted or provider invoked.",
+  "checks": [
+    {
+      "url": "https://www.newyorkfed.org/press",
+      "finding": "Latest listed economic speech/release is October 7. October 13 statement is about Nobel Prize winners, not a confirmed new monetary-policy event. An earlier guessed speeches directory returned the site maintenance page; no policy statement inferred."
+    },
+    {
+      "url": "https://www.federalreserve.gov/releases/h15/",
+      "finding": "October 13 publication lists observations through October 12 holiday, with blank market-rate cells. Publication date is not the date of a new Treasury market quote."
+    },
+    {
+      "url": "https://www.ustr.gov/about-us/policy-offices/press-office/press-releases",
+      "finding": "October 13 Carolina Performance Fabrics labor-review lead exists; no qualified listed-issuer association or relevant first-party receipt set established."
+    },
+    {
+      "url": "https://www.treasurydirect.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/",
+      "finding": "Official results landing page retrieved, but rendered response did not include an October 13 results table. No auction yield adopted from secondary sources."
+    },
+    {
+      "url": "https://fiscaldata.treasury.gov/datasets/treasury-securities-auctions-data/",
+      "finding": "HTTP 403 on the dataset page; no retry, proxy or alternate identity."
+    },
+    {
+      "url": "https://www.justice.gov/opa/pr/department-justice-announces-results-law-enforcement-and-private-industry-joint-disruption",
+      "finding": "October 13 release names listed technology partners, but enforcement week began October 6. No exact current event date or relevant own issuer receipts qualified; the date of this announcement does not establish when every action occurred."
+    },
+    {
+      "url": "https://www.justice.gov/opa/pr/justice-department-announces-coordinated-actions-combat-north-korean-remote-it-worker",
+      "finding": "October 13 release retrieved only in truncated tool output; no complete-source qualification or unverified issuer association claimed."
+    }
+  ],
+  "other_limits": [
+    "DOJ Violent Crime category was accidentally selected during navigation, returned403 and was not retried. It contributes no story evidence.",
+    "White House Alaska lead was already reviewed at current_event_phase/READINESS.md; preserve that exclusion rather than treating the index listing as a newly qualified event.",
+    "No primary article body, private report, new rights grant, first-party receipt or fresh market quote was fabricated."
+  ]
+}
