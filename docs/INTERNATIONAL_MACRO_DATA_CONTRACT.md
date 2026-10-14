@@ -144,7 +144,19 @@ quietly treating the delayed data as live. Each index and FX
 series must independently contain that exact date. A recent aggregate collector
 status cannot qualify an older series. Weekend dates move to the preceding
 Friday; missing weekday observations remain unavailable, with no invented
-foreign-holiday exemption. Adding a faster clock later requires actual
+foreign-holiday exemption.
+
+The aggregate collector `sources.intl_prices.last_date` is the latest
+**exchange-local observation label**, not a UTC completed-session certificate.
+At a UTC clock when Asia is already on tomorrow's calendar date, this source
+field may be exactly one date ahead. The EOD publisher accepts a bound of
+UTC `evaluated_at.date()+1` for that aggregate label, **but still excludes all
+observations after its independent T+2 completed-day cutoff**; each usable
+index and FX series must have a saved parquet witness at the exact cutoff date.
+An aggregate label two or more dates ahead, a future `checked_at`, missing
+or stale stored observations, or mismatched adjustment bases remain withheld.
+This cannot promote a live/future bar or invent a market holiday.
+ Adding a faster clock later requires actual
 per-market verified session/calendar evidence, independent data-quality
 review and preserved before/after coverage cases.
 
