@@ -1,6 +1,6 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-10-14T10:46:53Z",
+  "updated_utc": "2026-10-14T19:57:37Z",
   "last_check_date": "2026-10-14",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
@@ -50,7 +50,7 @@
       "stalled_since": "2026-10-09"
     },
     "data/china_basket_turn/ledger.jsonl": {
-      "asof": "2026-10-13",
+      "asof": "2026-10-14",
       "last_check_date": "2026-10-14",
       "stalled_since": null
     },

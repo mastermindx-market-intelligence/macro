@@ -976,10 +976,11 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         # non-``_pct`` row whose ``current_period_fact`` is not a Mapping
         # is withheld, exactly as on ``main``, where the trigger read the
         # missing side's ``display_quantum`` as ``None`` and compared that
-        # against the stated quantum. An absent PRIOR side stays
-        # non-contradicting: ``main`` never read the prior side, so
-        # withholding for its absence would be a new tightening beyond
-        # the restored baseline.
+        # against the stated quantum. An absent or malformed (present but
+        # not a Mapping) PRIOR side stays non-contradicting:
+        # ``_envelope_side_contradicts`` returns False for any non-Mapping
+        # side, and ``main`` never read the prior side, so withholding for
+        # either would be a new tightening beyond the restored baseline.
         if (
             filled.get("unit") != _STATED_DEFINITION_UNIT
             or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
@@ -1904,9 +1905,17 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # (independent PR #9285 review, defects D1/D2: the check used to live
     # only inside ``_emit_result``, which runs after both).
     # Snapshot the rows withheld BEFORE the screen runs: a row already
-    # withheld at build time keeps its existing bookkeeping exactly (its
-    # entries come from ``_compose_changes`` and the omission loops, not
-    # from this block).
+    # withheld at build time keeps its existing bookkeeping exactly, and
+    # this block records only the rows the screen newly withholds. The
+    # build-time rows follow the two legs of Ruling A
+    # (research/consumer_cyclical/v1/V1_PLNT_BOUNDARY_AND_FROZEN_SPEC.md
+    # §8a): an OMISSION (``inputs_present`` False) is recorded by
+    # ``_compose_changes`` and the omission loops below, while a refusal
+    # in ``_make_ratio_result`` (nonpositive denominator, or a rounding
+    # envelope that includes zero) keeps ``inputs_present`` True, is
+    # emitted with its ``withheld_reason``, and is deliberately not a
+    # ``degraded_dependencies`` entry: "A withheld result is an answer
+    # about inputs that exist".
     _keys_withheld_before_screen = {
         _r.get("key") for _r in all_results if _r.get("withheld_reason")
     }
