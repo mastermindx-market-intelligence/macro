@@ -4654,6 +4654,8 @@ CURATED_EXCLUSIVE = {
     # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "entry-radar-rs-pullback-calendar",
+    # PR #9199: actual-file identity reader; keep equality and closure gates intact.
+    "entry-radar-identity-snapshot",
     # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
