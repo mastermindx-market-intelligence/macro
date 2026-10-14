@@ -4775,6 +4775,10 @@ CURATED_EXCLUSIVE = {
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 Grey Deer GD-4C: the stdlib-only PBOC liquidity classifier.
+    # As a step in china-native-collectors it moved templates/index.html to
+    # 5,816 > 5,800; its own exclusive job keeps the import closure only.
+    "grey-deer-pboc-liquidity",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those

@@ -28942,6 +28942,7 @@ jobs:
     # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
     # determinism checks, the panel split/calendar adjustment and the stage-1b
     # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
+    # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
@@ -28956,6 +28957,8 @@ jobs:
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1b_addendum.py"
+      - "scripts/research/grey_deer_episode_samples.py"
+      - "tests/test_grey_deer_episode_samples.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -29021,6 +29024,7 @@ jobs:
           tests/test_grey_deer_panel_adjust.py
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
+          tests/test_grey_deer_episode_samples.py
 
   sni-s1-residual:
     if: ${{ false }}
@@ -29379,6 +29383,35 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+
+  grey-deer-pboc-liquidity:
+    # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.
+    # Pure and stdlib-only. Its own job rather than a step in
+    # china-native-collectors: that job is selected on templates/index.html and
+    # scripts/build_free_content.py through fallback claims, so a step there
+    # moved both packing probes (5,799 -> 5,816 against 5,800). scope: exclusive
+    # with the import closure below; no ceiling moves.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/china_pboc_liquidity.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_pboc_liquidity.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: china PBOC liquidity state classifier tests (Grey Deer GD-4C)
+        run: python -m pytest tests/test_china_pboc_liquidity.py -q -p no:cacheprovider
+
   c19-short-pressure-availability:
     if: ${{ false }}
     gate: code
