@@ -188,24 +188,104 @@ whether `agentos/` lists it as unresolved (`agentos/handoffs/DATA-OS-COMPLETION-
   match; the landed-blob trace shows every later change to every touched path is one of the 21
   reviewed commits; `git diff --name-only <base> HEAD` on this lane lists only the three owned
   paths with zero modifications.
-  ORCHESTRATOR-FILLED: merged-head == checked-head on the remote, and the required checks
+  ORCHESTRATOR-FILLED (closed in §Orchestrator-filled remote evidence): merged-head == checked-head on the remote, and the required checks
   concluded on exactly that head.
 - **R01.02 — old green CI, an unrelated workflow or a sibling waiver cannot qualify a changed
   candidate.** Source half: PASS — nothing in the 21 diffs qualifies a candidate by reference to
   an old run; the CI-only commits (#9165, #9183) widen an existing job's timeout/curated scope
   and are themselves flagged CI-ONLY (not product proof) in the table above.
-  ORCHESTRATOR-FILLED: no green run predates a changed head; per-head check attribution.
+  ORCHESTRATOR-FILLED (closed in §Orchestrator-filled remote evidence): no green run predates a changed head; per-head check attribution.
 - **R01.03 — no auto-merge/label change on another owner's held PR, no hidden broad conflict
   resolution.** Source half: PASS — #9136's cherry-pick copies content only and restores
   non-identity paths to origin/main content (recorded in its commit body); #9121/#955 appear
   only as prose provenance; #7299/#8076 are unreferenced; no diff touches a path owned by a
-  held PR. ORCHESTRATOR-FILLED: held-PR (#8637, #7299, #9121, #8076, Terminal #955) label,
+  held PR. ORCHESTRATOR-FILLED (closed in §Orchestrator-filled remote evidence): held-PR (#8637, #7299, #9121, #8076, Terminal #955) label,
   auto-merge and review-state history.
 - **R01.04 — document-package checks are not counted as product test or independent code
   review.** PASS — evidence classes are stamped per row: the DOCS-ONLY (#9133, #9135, #9154,
   #9172, #9186) and CI-ONLY (#9165, #9183) commits are never product proof; #9144/#9148 are
   TESTS-ONLY (test proof, not independent review); product evidence rests on the CODE+TESTS
   rows and this lane's independent executable reproducers.
+
+## Orchestrator-filled remote evidence
+
+ORCH-4 filled this section on 2026-10-14 from GitHub state. The reviewer lane had no `gh` or CI
+view. The evidence class is remote PR/check state plus local blob comparison. No act was taken
+on any PR listed here.
+
+Commands used:
+
+- one GraphQL read of `statusCheckRollup` on each PR's merged head
+  (`scratchpad/orch/o4/tools/r01_pr_state.py`);
+- `git rev-parse <squash>:<path>` against `<merged-head>:<path>` for every path the squash
+  touched (`r01_land_proof.sh`);
+- for each path whose blob differs, the PR hunk compared with the squash hunk
+  (`r01_hunk_proof.sh`).
+
+The table covers all 21 reviewed commits plus the heal #9234.
+
+| PR | squash | merged head | merged (UTC) | checks at merged head | non-passing at head | landing proof | class |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| #9133 | `52af4108676b` | `11386de562f0` | 2026-10-13 11:12 | 17 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/2 paths blob-identical | DOCS-ONLY |
+| #9135 | `f30746d115ff` | `f3f3dcee70e8` | 2026-10-13 11:37 | 17 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 3/3 paths blob-identical | DOCS-ONLY |
+| #9136 | `65135e2cbbe5` | `f0f25202c438` | 2026-10-13 15:17 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 3/3 paths blob-identical | PRODUCT |
+| #9142 | `6a79d3d88907` | `fab7309e2bbb` | 2026-10-13 16:07 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/3 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9143 | `4c2830929e36` | `d394c839971c` | 2026-10-13 17:15 | 27 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 5/6 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9144 | `b5ddaff7f645` | `5b1ac21d41d6` | 2026-10-13 15:45 | 18 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/2 paths blob-identical | TEST-ONLY |
+| #9148 | `4ce86075b7ac` | `dfcbdbd59960` | 2026-10-13 16:15 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/3 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | TEST-ONLY |
+| #9150 | `9ec07085eb0e` | `ccef37925b5a` | 2026-10-13 16:53 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 5/6 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9154 | `a135d3cd7c70` | `d15bfa5d8d3e` | 2026-10-13 13:46 | 17 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 1/1 paths blob-identical | DOCS-ONLY |
+| #9165 | `76b5be9ece65` | `1465b8ce7843` | 2026-10-13 18:57 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 1/1 paths blob-identical | CI-ONLY |
+| #9156 | `383a3bc772e6` | `c1c79e49a01c` | 2026-10-13 20:11 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/3 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9152 | `0f8ecf0bd6be` | `2f36c688802f` | 2026-10-13 20:32 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 3/4 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9172 | `fb637c85a6eb` | `2c10c71ed7c5` | 2026-10-13 21:35 | 18 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 8/8 paths blob-identical | DOCS-ONLY |
+| #9179 | `5b5f4d6a280a` | `6355aff8781b` | 2026-10-13 22:15 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/2 paths blob-identical | PRODUCT |
+| #9183 | `9a68900218f1` | `f0ad11d1035e` | 2026-10-13 22:42 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 1/1 paths blob-identical | CI-ONLY |
+| #9168 | `0d6e05ec49f2` | `1cf799b355dc` | 2026-10-13 23:17 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/3 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9184 | `2df04150e530` | `1470668dcc71` | 2026-10-13 23:38 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 5/5 paths blob-identical | PRODUCT |
+| #9186 | `bc16f8944583` | `10b03f3f52df` | 2026-10-14 00:02 | 17 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 3/3 paths blob-identical | DOCS-ONLY |
+| #9185 | `d65c9abbeeeb` | `69443b58c1ec` | 2026-10-14 00:16 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 1/1 paths blob-identical | PRODUCT |
+| #9188 | `6b154e093573` | `b2fadd37d807` | 2026-10-14 01:03 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/3 paths blob-identical; legacy-jobs.yml: PR hunk == squash hunk (SAME) | PRODUCT |
+| #9210 | `5a7d43b9ba04` | `22f638d84814` | 2026-10-14 02:42 | 26 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 2/2 paths blob-identical | PRODUCT |
+| #9234 | `80df7978789e` | `6526e5e253e0` | 2026-10-14 04:40 | 16 concluded, rollup FAILURE | ci-authority/codex/merge-queue-pilot (FAILURE) | 1/1 paths blob-identical | TEST-ONLY |
+
+Held PRs observed (state only, no act taken): #8637 OPEN DRAFT auto-merge=null labels=none; #7299 OPEN DRAFT auto-merge=null labels=none; #9121 OPEN DRAFT auto-merge=null labels=none; #8076 OPEN DRAFT auto-merge=null labels=none; #9147 CLOSED DRAFT auto-merge=null labels=none
+
+Terminal #955 (`mastermind-terminal`) was observed separately. It belongs to another programme
+("Admit qualified BOATS trades through the existing Quote Hub"). It merged at
+2026-10-13T22:25:18Z as merge `140894302f9e`. Its label and auto-merge events were made by the
+shared fleet GitHub account, so the session that made them cannot be identified. None of the 21
+Data OS diffs touches the Terminal repo; it appears only as do_not_redo prose in #9135.
+
+### Gate closure
+
+- **R01.01 (remote half): PASS.**
+  - Every row's checks concluded on the merged head itself.
+  - The only non-passing check on any row is `ci-authority/codex/merge-queue-pilot`, the
+    standing spurious X recorded in fleet law.
+  - The landing proof finds the squash blob byte-identical to the merged-head blob for 14 of
+    22 PRs.
+  - The other 8 PRs (#9142, #9143, #9148, #9150, #9152, #9156, #9168, #9188) differ only in
+    `.github/ci/legacy-jobs.yml`. There the PR's own hunk equals the squash hunk (8/8
+    SAME_HUNK), so each difference is a sibling job landing in the same file, not drift in
+    this PR's change.
+- **R01.02 (remote half): PASS.** For every row, check attribution is to the merged head. No
+  row is qualified by a run on an earlier head, an unrelated workflow or a sibling's waiver.
+- **R01.03 (remote half): PASS, with one note.**
+  - Current state: #8637, #7299, #9121 and #8076 are OPEN, DRAFT, `autoMergeRequest=null`,
+    with no labels.
+  - History: one GraphQL `timelineItems` read (`r01_held_history.py`, since
+    2026-10-12T00:00Z) covering label, unlabel, auto-merge enable/disable, ready-for-review,
+    convert-to-draft, review, force-push, close, reopen and merge events. It finds **zero**
+    such events on #8637, #7299, #9121 and #8076 across the whole Data OS window.
+  - #9147 has exactly one event in that window, a close at 2026-10-13T20:33:21Z. #9147 is
+    this programme's own P02 lane PR (`claude/dataos-p02-2026-10-13`), not another owner's
+    held PR. It was closed as INCLUDED: its head `cb9f0798` is strictly contained in #9152
+    (P04), which squash-merged as `0f8ecf0b` 28 s earlier. No label or arming change was
+    made to it.
+  - Note: Terminal #955 is MERGED by its own programme's arming, as described above. Because
+    the fleet token is shared, the actor cannot be attributed. No Data OS commit refers to it
+    or touches it.
 
 ## New findings
 
