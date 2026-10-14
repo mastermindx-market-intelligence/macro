@@ -1,6 +1,8 @@
 """RIC-INCLUDED-CORE F0 gap (A10): canonical calendar owns schedule; no second calendar.
 
 Lane packet F0-GAPS — event_window must read engine/event_calendar at call time.
+Lane packet F0-HK — the HK desk (engine/hk_event_calendar) reads the SAME canonical
+calendar at call time for its three US event types (FOMC / US_NFP / US_CPI).
 """
 from __future__ import annotations
 
@@ -13,11 +15,12 @@ from engine import event_calendar as ec
 from engine import event_window as ew
 from engine import hk_event_calendar as hk
 
-# Known live drift in engine/hk_event_calendar.py (not ORCH-B-owned). The fix makes hk read the canonical
-# calendar and EMPTIES this ledger in the same PR.
-_HK_US_CPI_KNOWN_DRIFT = {10: (13, 14), 11: (12, 10)}
+# The HK desk now READS the canonical calendar (engine/event_calendar) at call time
+# for FOMC / US_NFP / US_CPI, so the known-drift ledgers are EMPTY by construction:
+# a drift can only appear if a second calendar reappears in hk_event_calendar.
+_HK_US_CPI_KNOWN_DRIFT = {}
 
-_HK_US_NFP_KNOWN_DRIFT = {1: (2, 9), 5: (1, 8), 7: (3, 2)}
+_HK_US_NFP_KNOWN_DRIFT = {}
 
 
 def _oct_tag() -> pd.DataFrame:
@@ -104,8 +107,9 @@ def test_event_window_tag_matches_canonical_for_current_inputs():
 
 
 def test_hk_fomc_matches_canonical():
-    assert set(hk._FOMC_2026) == {
-        d for d in _canonical_fomc() if d.year == 2026
+    full = hk.hk_macro_events(asof=date(2026, 1, 1), horizon_days=364)
+    assert {e["date"] for e in full if e["type"] == "FOMC"} == {
+        d.isoformat() for d in _canonical_fomc() if d.year == 2026
     }
 
 
@@ -141,14 +145,28 @@ def test_catalyst_tone_and_marketing_fomc_copies_match_canonical():
         assert mkt_year == canonical_by_year.get(2026, set())
 
 
+def _hk_year_dates(etype: str) -> dict[int, int]:
+    """month -> day of the HK desk's 2026 rows for ``etype``, from the full-year
+    call (so the drift ledgers measure what the desk EMITS, not what it stores)."""
+    full = hk.hk_macro_events(asof=date(2026, 1, 1), horizon_days=364)
+    out: dict[int, int] = {}
+    for e in full:
+        if e["type"] != etype:
+            continue
+        d = date.fromisoformat(e["date"])
+        if d.year != 2026:
+            continue
+        assert d.month not in out, f"two {etype} rows in month {d.month}"
+        out[d.month] = d.day
+    return out
+
+
 def test_hk_us_cpi_drift_is_exactly_the_recorded_ledger():
+    hk_day = _hk_year_dates("US_CPI")
     drift = {
-        m: (
-            hk._HK_SCHED_2026["US_CPI"].get(m),
-            ec._SCHED_2026["CPI"].get(m),
-        )
+        m: (hk_day.get(m), ec._SCHED_2026["CPI"].get(m))
         for m in range(1, 13)
-        if hk._HK_SCHED_2026["US_CPI"].get(m) != ec._SCHED_2026["CPI"].get(m)
+        if hk_day.get(m) != ec._SCHED_2026["CPI"].get(m)
     }
     assert drift == _HK_US_CPI_KNOWN_DRIFT, (
         "HK US CPI drift changed — fix hk_event_calendar to read canonical calendar"
@@ -156,12 +174,55 @@ def test_hk_us_cpi_drift_is_exactly_the_recorded_ledger():
 
 
 def test_hk_us_nfp_first_friday_drift_is_exactly_the_recorded_ledger():
+    hk_day = _hk_year_dates("US_NFP")
     drift = {
-        m: (
-            hk._first_friday(2026, m).day,
-            ec._SCHED_2026["NFP"].get(m),
-        )
+        m: (hk_day.get(m), ec._SCHED_2026["NFP"].get(m))
         for m in range(1, 13)
-        if hk._first_friday(2026, m).day != ec._SCHED_2026["NFP"].get(m)
+        if hk_day.get(m) != ec._SCHED_2026["NFP"].get(m)
     }
     assert drift == _HK_US_NFP_KNOWN_DRIFT
+
+
+def test_canonical_cpi_move_moves_hk_us_cpi(monkeypatch):
+    monkeypatch.setitem(ec._SCHED_2026["CPI"], 10, 20)
+    evs = hk.hk_macro_events(asof=date(2026, 10, 1), horizon_days=30)
+    cpi = [e["date"] for e in evs if e["type"] == "US_CPI"]
+    assert cpi == ["2026-10-20"]
+    assert "2026-10-13" not in cpi and "2026-10-14" not in cpi
+
+
+def test_canonical_nfp_move_moves_hk_us_nfp(monkeypatch):
+    monkeypatch.setitem(ec._SCHED_2026["NFP"], 10, 9)
+    evs = hk.hk_macro_events(asof=date(2026, 10, 1), horizon_days=30)
+    nfp = [e["date"] for e in evs if e["type"] == "US_NFP"]
+    assert nfp == ["2026-10-09"]
+    assert "2026-10-02" not in nfp
+
+
+def test_canonical_fomc_move_moves_hk_fomc_and_hkma(monkeypatch):
+    moved = [
+        ("2026-10-21", sep) if d == "2026-10-28" else (d, sep)
+        for d, sep in ec._FOMC
+    ]
+    monkeypatch.setattr(ec, "_FOMC", moved)
+    evs = hk.hk_macro_events(asof=date(2026, 10, 1), horizon_days=30)
+    assert [e["date"] for e in evs if e["type"] == "FOMC"] == ["2026-10-21"]
+    assert [e["date"] for e in evs if e["type"] == "HKMA_RATE"] == ["2026-10-22"]
+
+
+def test_hk_desk_shows_canonical_us_cpi_dates():
+    strip = hk.high_impact_strip(asof=date(2026, 10, 13), horizon_days=14)
+    assert any(
+        e["type"] == "US_CPI" and e["date"] == "2026-10-14" for e in strip
+    )
+    evs = hk.hk_macro_events(asof=date(2026, 11, 1), horizon_days=20)
+    cpi = [e["date"] for e in evs if e["type"] == "US_CPI"]
+    assert "2026-11-10" in cpi
+    assert "2026-11-12" not in cpi
+
+
+def test_hk_desk_has_no_literal_us_mirrors():
+    assert "US_CPI" not in hk._HK_SCHED_2026
+    assert not hasattr(hk, "_FOMC_2026")
+    assert not hasattr(hk, "_first_friday")
+    assert hk._canonical_calendar is ec
