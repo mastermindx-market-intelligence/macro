@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T19:56:37.140677+00:00",
-  "count": 2919,
+  "generated_at": "2026-10-14T20:26:40.285023+00:00",
+  "count": 2920,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -131,6 +131,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-er1wpjsvrpt-90450c",
+      "title": "GS MidDay Color US Equities Mid Day Color 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:02:48Z",
+      "summary_points": [
+        "CPI Shock & Fed Policy Shift: Hot CPI (33bps vs 20bps) triggered SPX -1.1%, with rate-sensitive sectors (Non-Profit Tech -4.8%, HY Debt -4.5%) underperforming; Fed 2nd hike expected in Dec, PPI/Wash speech key for policy clarity.",
+        "Quality Rotation Catalyst: Growth deceleration in AI/non-AI pockets drives quality outperformance (Healthcare XLV leading); cyclical vs defensive underperformance, shorting long-duration low-quality equities.",
+        "Institutional Flow Shift: ETF volumes at 33% of tape (+4% vs 20dma), exchange volumes +13% vs 20dma; LOs (19.5% skew) and HFs (12.6% skew) favoring supply in communication services, IT, consumer discretionary."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
