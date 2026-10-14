@@ -25,11 +25,11 @@ changed:
 verified:
 - claim: Current local full Screener suite passes.
   command: python3 -m pytest tests/test_research_screener.py -q
-  result: 50 passed; includes 18 Exposure test functions.
+  result: 51 passed; includes 19 Exposure test functions.
 - claim: The Exposure tests discriminate the original defect.
   command: PYTHONPATH=<evidence-root>:$PWD python3 -m pytest tests/test_research_screener.py -q -k
     exposure -p f06_red_baseline
-  result: 13 failed / 5 passed against the original HEAD template; same tests are green on the repair.
+  result: 14 failed / 5 passed against the original HEAD template; same tests are green on the repair.
     The real no-host seeded local-book test is among the red cases.
 - claim: Parent found and repaired five candidate gaps before publication.
   command: python3 -m pytest tests/test_research_screener.py -q -k "closed_only or resolved_loading
@@ -48,6 +48,10 @@ verified:
     python3 scripts/check_runtime_style_injection.py; git diff --check
   result: 0 blocking design findings; runtime injection allowances unchanged; diff clean. No visual
     acceptance is implied.
+- claim: Mixed malformed books never establish a complete or empty holding set.
+  command: python3 -m pytest tests/test_research_screener.py -q -k partial_malformed
+  result: 'Failed before the parent repair; passes afterward for mixed open/junk and closed/junk books.
+    Full current suite: 51 passed.'
 unverified:
 - claim: Independent review and final source acceptance.
   what_would_verify: Consume retained text from b-f06-exposure-review-01a128b7-v1, reproduce and adjudicate
@@ -66,6 +70,9 @@ unresolved:
   carrier.
 - Three task tabs retain temporary viewport/preferences and are marked for handoff. Cleanup follows
   browser clearance; do not sign out the existing authenticated session.
+- Initial-head CI-authority/main and self-mod-fence passed. The separate codex/merge-queue-pilot check
+  failed with context_active=false, inactive_base_context and allowed=true. No override or policy
+  change was made; final-head applicable CI remains required.
 next_actions:
 - Consume original review b-f06-exposure-review-01a128b7-v1 on installed fabric_task.py normal status/result
   path; independently adjudicate before final source acceptance.
@@ -89,6 +96,8 @@ danger_areas:
   on every existing auth/readiness refresh.
 - Local controlled fixtures are not authenticated populated-cloud or production race proof; no portfolio/account
   writes are authorized here.
+prs:
+- 9191
 ---
 
 # F06 Exposure repair continuation

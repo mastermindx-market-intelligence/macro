@@ -585,16 +585,14 @@
     if (!rs || rs.authority !== "cloud" || rs.state !== "ready" || !Array.isArray(items)) {
       fail(meta, "degraded"); return;
     }
-    var heldMap = Object.create(null), parsed = 0;
+    var heldMap = Object.create(null);
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
       if (!item || typeof item !== "object" || typeof item.ticker !== "string" ||
-          !item.ticker.trim()) continue;
-      parsed++;
+          !item.ticker.trim()) { fail(meta, "degraded"); return; }
       if (item.status === "closed") continue;           // closed lots are not holdings
       heldMap[item.ticker.trim().toUpperCase()] = true;
     }
-    if (items.length > 0 && parsed === 0) { fail(meta, "degraded"); return; }
     current = null;
     inFlight = false;
     lastReadState = "";

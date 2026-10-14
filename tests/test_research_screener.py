@@ -1276,6 +1276,17 @@ const SCENARIOS = {
     return snapshot(ctx, page, store);
   },
 
+  async malformed_rows_closed(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const store = makeStore({ items: [{ ticker: 'AAPL', status: 'closed' }, null] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
   async local_ready(ctx) {
     const page = buildPage(ctx.doc);
     ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
@@ -1319,7 +1330,7 @@ const SCENARIOS = {
     const page = buildPage(ctx.doc);
     ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
     const store = makeStore({
-      items: [{ ticker: 'AAPL' }, { ticker: 'MSFT', status: 'closed' }, { ticker: 'TSLA' }],
+      items: [{ ticker: 'aapl' }, { ticker: 'MSFT', status: 'closed' }, { ticker: 'TSLA' }],
     });
     ctx.sandbox.WatchStore = store;
     runInline(ctx);
@@ -1704,18 +1715,8 @@ def test_exposure_unverified_reads_never_become_no_names_match(tmp_path: Path):
 
 
 def test_exposure_ready_read_marks_open_rows_only(tmp_path: Path):
-    """A verified cloud-ready read: closed lots and malformed rows are skipped;
-    lowercase tickers still match; the lens filters to held names only."""
-    out = _run_exposure_scenarios(
-        tmp_path, ["malformed_rows_mixed", "ready_open_closed"]
-    )
-    mixed = out["malformed_rows_mixed"]
-    assert _held(mixed) == ["AAPL"]
-    assert _visible(mixed) == ["AAPL"]
-    by_ticker = {r["ticker"]: r for r in mixed["rows"]}
-    assert by_ticker["MSFT"]["hasExposure"] == "0"  # closed
-    assert by_ticker["AAPL"]["holdHidden"] is False
-    ready = out["ready_open_closed"]
+    """A verified cloud-ready read excludes closed lots and filters held names."""
+    ready = _run_exposure_scenarios(tmp_path, ["ready_open_closed"])["ready_open_closed"]
     assert _held(ready) == ["AAPL", "TSLA"]
     assert _visible(ready) == ["AAPL", "TSLA"]
     by_ticker = {r["ticker"]: r for r in ready["rows"]}
@@ -1723,6 +1724,16 @@ def test_exposure_ready_read_marks_open_rows_only(tmp_path: Path):
     assert by_ticker["MSFT"]["holdHidden"] is True
     assert ready["notice"]["hidden"] is True
     assert ready["emptyHidden"] is True
+
+
+def test_exposure_partial_malformed_book_does_not_claim_completeness(tmp_path: Path):
+    """Discarding bad rows would falsely claim the partial book is complete,
+    including a known zero when its only valid positions are closed."""
+    out = _run_exposure_scenarios(tmp_path, ["malformed_rows_mixed", "malformed_rows_closed"])
+    for rec in out.values():
+        assert rec["notice"]["state"] == "degraded"
+        assert _held(rec) == []
+        assert rec["emptyHidden"] is True
 
 
 def test_exposure_local_and_degraded_answers_are_never_published(tmp_path: Path):
