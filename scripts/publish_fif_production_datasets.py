@@ -197,6 +197,12 @@ def _fail(message: str, *, code: str) -> None:
     raise PublisherError(message, code=code)
 
 
+def _annotation_message(text: str) -> str:
+    """Escape free text for a GitHub workflow-command message: ``%``, CR and
+    LF would otherwise end or corrupt the annotation."""
+    return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
 def _error_annotation(title: str, message: str) -> None:
     # D8: stderr, never stdout — the workflow captures this script's stdout via
     # ``$(...)`` for the ``targets`` subcommand, so a stdout annotation is
@@ -1610,12 +1616,14 @@ def _run_publish(args: argparse.Namespace) -> int:
                 ticker = str(staged_row.issuer["ticker"])
                 cik = str(staged_row.binding.cik)
                 reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{slug}"
-                excluded.append({"ticker": ticker, "cik": cik, "reason": reason})
+                excluded.append(
+                    {"ticker": ticker, "cik": cik, "reason": reason, "detail": str(exc)}
+                )
                 refused[cik] = reason
                 print(
                     "::warning title=fif_production_datasets-"
-                    f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::{ticker} "
-                    f"({slug}): {exc}",
+                    f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::"
+                    + _annotation_message(f"{ticker} ({slug}): {exc}"),
                     flush=True,
                 )
     finally:

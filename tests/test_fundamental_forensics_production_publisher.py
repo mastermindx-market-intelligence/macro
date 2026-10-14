@@ -4376,7 +4376,12 @@ def test_a0_one_refused_issuer_is_excluded_and_the_rest_publish(
     reason = "statement_reconstruction_refused:displayed_layout_unsupported"
     refused_rows = [row for row in report["excluded"] if row["cik"] == ciks[1]]
     assert refused_rows == [
-        {"ticker": identity["ticker"] + "2", "cik": ciks[1], "reason": reason}
+        {
+            "ticker": identity["ticker"] + "2",
+            "cik": ciks[1],
+            "reason": reason,
+            "detail": _REFUSED_LAYOUT,
+        }
     ]
     assert sorted(row["entity_id"] for row in report["published"]) == [
         identity["entity_id"],
@@ -4449,6 +4454,53 @@ def test_a0_every_issuer_refused_writes_the_report_then_fails_typed(
     for suffix in ("", "2", "3"):
         assert not _latest_json_path(store, identity["entity_id"] + suffix).exists()
     assert all(row["served"] == 0 for row in report["coverage"])
+
+
+def test_a0_kernel_refusal_reaches_the_publisher_through_the_real_plan(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """The refusal raised by the KERNEL reconstructor (not a stubbed plan)
+    travels the real _plan_issuer -> publish_production_dataset ->
+    _statement_trees_role_payload path into a typed exclusion; the report row
+    carries the kernel's own message, and the annotation stays one line."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract, ciks = _three_issuer_contract(tmp_path, identity)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers_coherently(monkeypatch)
+    message = "displayed statement table is absent: 50% OWNED\nSUBSIDIARIES"
+
+    def _refuse(*, package, registry):
+        raise StatementGraphError(message)
+
+    monkeypatch.setattr(statement_graph, "reconstruct_primary_statements", _refuse)
+    rc = _publish_cli(lane, contract, store, report_path)
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert any(
+        line.startswith("::error title=fif_production_datasets-statement_reconstruction_refused::")
+        for line in captured.err.splitlines()
+    )
+    warnings = [
+        line
+        for line in captured.out.splitlines()
+        if line.startswith("::warning title=fif_production_datasets-statement_reconstruction_refused::")
+    ]
+    assert len(warnings) == 3
+    assert all("50%25 OWNED%0ASUBSIDIARIES" in line for line in warnings)
+    assert not any(line.startswith("SUBSIDIARIES") for line in captured.out.splitlines())
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["published"] == []
+    assert sorted(row["cik"] for row in report["excluded"]) == sorted(ciks)
+    assert all(
+        row["reason"] == "statement_reconstruction_refused:displayed_table_absent"
+        and row["detail"] == message
+        for row in report["excluded"]
+    )
+    for suffix in ("", "2", "3"):
+        assert not _latest_json_path(store, identity["entity_id"] + suffix).exists()
 
 
 def _minimal_refusal_report(reason: str, served: bool = False) -> dict:
