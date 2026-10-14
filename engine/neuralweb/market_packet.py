@@ -694,7 +694,44 @@ def _breadth_block(raw: object, gaps: list[str]) -> dict | None:
             "delay_min": _f(raw.get("delay_min")), "asof": raw.get("asof")}
 
 
-def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
+def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> dict | None:
+    """Read the existing pulse producer's measured interval; invent no detector."""
+    if (not isinstance(raw, dict) or raw.get("schema") != "basket_intraday_comparison.v1"
+            or raw.get("status") != "observed" or raw.get("benchmark") != "SPY"
+            or raw.get("method") != "matched_member_equal_weight"):
+        return None
+    count, total = raw.get("matched_members"), raw.get("total_members")
+    if type(count) is not int or type(total) is not int or not 0 < count <= total:
+        return None
+    fields = ("relative_change_pct", "absolute_change_pct", "benchmark_change_pct",
+              "coverage_pct", "elapsed_minutes")
+    try:
+        values = {key: _f(raw.get(key)) for key in fields}
+    except (OverflowError, ValueError):
+        return None
+    if any(value is None for value in values.values()):
+        return None
+    if any(abs(values[key]) > LEADERS_MAX_ABS_PCT for key in fields[:3]):
+        return None
+    if abs(values["coverage_pct"] - 100 * count / total) > 0.001:
+        return None
+    try:
+        start = datetime.fromisoformat(raw["reference_asof"])
+        end = datetime.fromisoformat(raw["source_asof"])
+        if start.tzinfo is None or end.tzinfo is None or end <= start:
+            return None
+        if end > (now or datetime.now(timezone.utc)):
+            return None
+        if abs(values["elapsed_minutes"] - (end - start).total_seconds() / 60) > 1e-6:
+            return None
+    except (KeyError, TypeError, ValueError):
+        return None
+    # Explicit allowlist: scores, trade directions, confidence and targets never ride.
+    return {**values, "matched_members": count, "total_members": total,
+            "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
+
+
+def _leaders_block(raw: object, gaps: list[str], *, now: datetime | None = None) -> dict | None:
     """Today's strongest / weakest groups off the intraday basket pulse.
 
     SOURCE CHOICE — the intraday basket pulse (basket_pulse.v1, ~14 KB), the
@@ -738,10 +775,15 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
         gaps.append("leaders: no baskets")
         return None
     rows: list[dict] = []
+    intraday: list[dict] = []
     for b in rows_raw:
         if not isinstance(b, dict):
             continue
         bid = str(b.get("id") or "").strip()
+        comparison = _intraday_comparison_block(b.get("intraday_comparison"), now=now)
+        if bid and comparison is not None:
+            intraday.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
+                             **comparison})
         chg = _f(b.get("live_ew_chg_pct"))
         if not bid or chg is None:
             continue
@@ -750,7 +792,7 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
             continue
         rows.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
                      "change_pct": chg})
-    if not rows:
+    if not rows and not intraday:
         gaps.append("leaders: no group with a usable move")
         return None
 
@@ -758,12 +800,14 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
                 key=lambda r: -r["change_pct"])[:LEADERS_PER_SIDE]
     down = sorted((r for r in rows if r["change_pct"] < 0),
                   key=lambda r: r["change_pct"])[:LEADERS_PER_SIDE]
-    if not up and not down:
+    if not up and not down and not intraday:
         gaps.append("leaders: every group flat")
         return None
 
+    intraday = sorted(intraday, key=lambda r: -abs(r["relative_change_pct"]))[:2 * LEADERS_PER_SIDE]
     mode = str(raw.get("mode") or "").strip()
     return {"up": up, "down": down, "mode": mode,
+            **({"intraday": intraday} if intraday else {}),
             "mode_note": _LEADERS_MODE_NOTE.get(mode, ""),
             # as_of_quotes is the tape the moves were measured on; as_of_utc is
             # the build. The quote stamp is the one that says when the numbers
@@ -1236,7 +1280,7 @@ def build_packet(root: Path, *, now: datetime | None = None) -> dict:
 
         for key, path, builder in (
             ("breadth", live / "breadth.json", lambda r: _breadth_block(r, gaps)),
-            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps)),
+            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps, now=now)),
             ("drivers", live / "market_drivers.json", _drivers_block),
             ("shock", live / "shock_state.json", _shock_block),
             ("rates", root / "data" / "rates_command" / "latest.json", _rates_block),
@@ -1845,6 +1889,15 @@ def _render_leaders(p: dict) -> str:
     halves = [f"{word} — {body}" for word, body in
               (("up", half(ld.get("up") or [])), ("down", half(ld.get("down") or [])))
               if body]
+    comparisons = []
+    for row in ld.get("intraday") or []:
+        value = _signed(row.get("relative_change_pct"), 2, "%")
+        window = f"{_stamp(row.get('reference_asof'))} to {_stamp(row.get('source_asof'))}"
+        absolute = _signed(row.get("absolute_change_pct"), 2, "%")
+        comparisons.append(f"{row['label']} {absolute} price, {value} vs SPY ({window}; "
+                           f"{row['matched_members']}/{row['total_members']} matched)")
+    if comparisons:
+        halves.append("since prior observation vs SPY (not fund flows) - " + _SEP.join(comparisons))
     if not halves:
         return ""
     bits = ", ".join(x for x in (_stamp(ld.get("asof")), ld.get("mode_note") or "") if x)

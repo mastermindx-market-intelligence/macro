@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 import statistics
 import sys
@@ -285,25 +286,76 @@ def _active_members(basket: dict[str, Any]) -> list[str]:
 
 # ── staleness check ────────────────────────────────────────────────────────────
 
-def _quote_delay_min(quote: dict[str, Any], now_ms: int) -> float | None:
-    """Return quote delay in minutes.
-
-    Prefer the explicit `delayMin` field (written by the quotes worker and
-    reflecting the data-provider's own delay, e.g. 193 for Polygon free tier).
-    Fall back to (now_ms - ts_ms) / 60_000 if delayMin is absent.
-    Using delayMin directly avoids the false-stale problem where the clock drift
-    between the quotes worker run and this script run inflates the apparent age.
-    """
-    delay = quote.get("delayMin")
-    if delay is not None:
-        try:
-            return float(delay)
-        except (TypeError, ValueError):
-            pass
-    ts_ms = quote.get("ts")
-    if ts_ms is None:
+def _quote_source_ms(quote: dict[str, Any], now_ms: int) -> int | None:
+    """Observed epoch milliseconds only; build/future/synthetic clocks are not evidence."""
+    if not isinstance(quote, dict) or quote.get("tsSynthetic"):
         return None
-    return (now_ms - int(ts_ms)) / 60_000
+    stamp = quote.get("ts")
+    if (isinstance(stamp, bool) or not isinstance(stamp, (int, float))
+            or stamp <= 0 or stamp > now_ms or not math.isfinite(stamp)):
+        return None
+    return int(stamp)
+
+
+def _quote_delay_min(quote: dict[str, Any], now_ms: int) -> float | None:
+    """Age advances from the observed source clock; declared delay remains a floor.
+
+    The snapshot's delayMin is measured when its producer ran. Reusing that
+    scalar alone freezes age forever. A missing/synthetic/future timestamp is
+    unknown, not a fresh observation rescued by delayMin or this build's clock.
+    """
+    stamp = _quote_source_ms(quote, now_ms)
+    if stamp is None:
+        return None
+    age = (now_ms - stamp) / 60_000
+    delay = quote.get("delayMin")
+    if not isinstance(delay, bool):
+        try:
+            floor = float(delay)
+            if math.isfinite(floor) and floor >= 0:
+                age = max(age, floor)
+        except (TypeError, ValueError, OverflowError):
+            pass
+    return age
+
+
+def _observed_change(quote: dict[str, Any], now_ms: int, stale_min: int,
+                     include_delayed: bool) -> tuple[float, int] | None:
+    """One shared qualification rule for arithmetic and its source-clock receipt."""
+    delay = _quote_delay_min(quote, now_ms)
+    if delay is None or (not include_delayed and delay > stale_min):
+        return None
+    value = quote.get("changePct")
+    if isinstance(value, bool):
+        return None
+    try:
+        change = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(change):
+        return None
+    stamp = _quote_source_ms(quote, now_ms)
+    if stamp is None:
+        return None
+    return change, stamp
+
+
+def _source_clock_evidence(tickers: list[str], quotes: dict[str, Any], now_ms: int,
+                           stale_min: int, include_delayed: bool) -> dict[str, Any]:
+    """Clock range of actual priced contributors, not an assertion of synchronization."""
+    clocks = []
+    for ticker in dict.fromkeys(tickers):
+        observation = _observed_change(quotes.get(ticker), now_ms, stale_min, include_delayed)
+        if observation is not None:
+            clocks.append(observation[1])
+    def iso(stamp: int) -> str:
+        return datetime.fromtimestamp(stamp / 1000, timezone.utc).isoformat()
+    return {
+        "n_priced": len(clocks),
+        "source_asof": iso(max(clocks)) if clocks else None,
+        "source_oldest_at": iso(min(clocks)) if clocks else None,
+        "source_time_span_seconds": (max(clocks) - min(clocks)) / 1000 if clocks else None,
+    }
 
 
 # Keep backward-compat alias used by existing callers
@@ -343,8 +395,8 @@ def _ew_chg(tickers: list[str], quotes: dict[str, Any], now_ms: int,
     stale_min) contribute to the EW average. Stale quotes are counted in n_quoted
     but excluded from changes.
 
-    When include_delayed=True (delayed mode): ALL present quotes contribute to the
-    EW average regardless of delay. This implements the honest-delay law: a delayed
+    When include_delayed=True (delayed mode): All finite, source-clocked quotes contribute to the
+    EW average regardless of age. Unknown clocks are never made observable. This implements the honest-delay law: a delayed
     value with its true age beats a null.
 
     Returns (ew_chg_pct, n_quoted, n_members, any_stale).
@@ -363,9 +415,9 @@ def _ew_chg(tickers: list[str], quotes: dict[str, Any], now_ms: int,
             any_stale = True
             if not include_delayed:
                 continue  # live mode: skip stale
-        chg = q.get("changePct")
-        if chg is not None:
-            changes.append(float(chg))
+        observation = _observed_change(q, now_ms, stale_min, include_delayed)
+        if observation is not None:
+            changes.append(observation[0])
 
     n_members = len(tickers)
     coverage = len(changes) / n_members if n_members > 0 else 0.0
@@ -586,6 +638,176 @@ def _eod_basket_chg_levels(basket_id: str, market: str) -> tuple[float | None, s
 
 # ── lastgood sidecar ──────────────────────────────────────────────────────────
 
+# One transient comparison baseline in the EXISTING last-good sidecar. This is
+# not a historical ledger, prediction, ranking input, or independent data store.
+_COMPARISON_SCHEMA = "basket_intraday_comparison.v1"
+_BASELINE_SCHEMA = "basket_observation_baseline.v1"
+_COMPARISON_MAX_SKEW_MS = 60_000  # explicit sampling tolerance, not a fitted signal
+
+
+def _comparison_point(quote: Any, observed_at: datetime,
+                      opened: datetime, closed: datetime) -> dict[str, Any] | None:
+    stamp = _quote_source_ms(quote, int(observed_at.timestamp() * 1000))
+    if stamp is None:
+        return None
+    source_time = datetime.fromtimestamp(stamp / 1000, timezone.utc)
+    if not opened <= source_time <= closed:
+        return None
+    if quote.get("currency") != "USD":
+        return None
+    for key in ("source", "basis"):
+        if not isinstance(quote.get(key), str) or not quote[key].strip():
+            return None
+    values = {}
+    for key in ("price", "prevClose"):
+        value = quote.get(key)
+        if isinstance(value, bool):
+            return None
+        try:
+            number = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if not math.isfinite(number) or number <= 0:
+            return None
+        values[key] = number
+    return {**values, "ts": stamp, "source": quote["source"],
+            "basis": quote["basis"], "currency": "USD"}
+
+
+def _comparison_signature(point: dict[str, Any]) -> tuple:
+    return tuple(point[key] for key in ("source", "basis", "currency", "prevClose"))
+
+
+def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
+                         previous: dict | None, *, now: datetime, market: str,
+                         session: str) -> tuple[dict[str, dict], dict | None]:
+    """Matched-member returns between two observed regular-session snapshots.
+
+    The interval is named by benchmark source clocks, never by polling cadence.
+    Members must advance and stay within 60 seconds AND one tenth of the
+    interval of BOTH benchmark endpoints. This is a disclosed sampling tolerance.
+    Membership, quote source/basis and the same-session reference close must agree.
+    Missing observations remain missing; no overnight/open-price reconstruction.
+    A subset mean is explicitly identified and never presented as the full basket.
+    """
+    memberships = {key: _active_members(value) for key, value in baskets.items()}
+    common = {"schema": _COMPARISON_SCHEMA, "benchmark": "SPY",
+              "method": "matched_member_equal_weight", "max_clock_skew_seconds": 60}
+
+    def unavailable(reason: str) -> dict[str, dict]:
+        return {key: {**common, "status": reason} for key in memberships}
+
+    if market != "us" or session != "rth":
+        return unavailable("unsupported_session"), None
+    if now.tzinfo is None:
+        return unavailable("invalid_evaluation_clock"), None
+    # Reuse the calendar owner, including early closes; do not copy holiday math.
+    from engine.session_digest import session_window_et
+    from zoneinfo import ZoneInfo
+    session_date = now.astimezone(ZoneInfo("America/New_York")).date()
+    opened, closed = session_window_et(session_date)
+    if not opened <= now <= closed:
+        return unavailable("outside_regular_session"), None
+    tickers = sorted({"SPY"}.union(*(set(v) for v in memberships.values())))
+    points = {}
+    for ticker in tickers:
+        point = _comparison_point(quotes.get(ticker), now, opened, closed)
+        if point is not None:
+            points[ticker] = point
+    baseline = {"schema": _BASELINE_SCHEMA, "market": market, "session": session,
+                "session_date": session_date.isoformat(), "observed_at": now.isoformat(),
+                "memberships": memberships, "quotes": points}
+    prior = previous.get("observation_baseline") if isinstance(previous, dict) else None
+    if not isinstance(prior, dict):
+        return unavailable("baseline_missing"), baseline
+    if prior.get("schema") != _BASELINE_SCHEMA:
+        return unavailable("baseline_invalid"), baseline
+    if any(prior.get(k) != baseline[k] for k in ("market", "session", "session_date")):
+        return unavailable("session_boundary"), baseline
+    try:
+        prior_observed = datetime.fromisoformat(prior["observed_at"])
+        if prior_observed.tzinfo is None:
+            raise ValueError("naive baseline")
+    except (KeyError, TypeError, ValueError):
+        return unavailable("baseline_invalid"), baseline
+    if prior_observed >= now:
+        return unavailable("baseline_nonadvancing"), baseline
+    prior_quotes, prior_members = prior.get("quotes"), prior.get("memberships")
+    if not isinstance(prior_quotes, dict) or not isinstance(prior_members, dict):
+        return unavailable("baseline_invalid"), baseline
+    bench = points.get("SPY")
+    prior_bench = _comparison_point(prior_quotes.get("SPY"), prior_observed, opened, closed)
+    if bench is None or prior_bench is None:
+        return unavailable("benchmark_unavailable"), baseline
+    if bench["ts"] <= prior_bench["ts"]:
+        return unavailable("benchmark_nonadvancing"), baseline
+    if _comparison_signature(bench) != _comparison_signature(prior_bench):
+        return unavailable("benchmark_basis_changed"), baseline
+    bench_return = bench["price"] / prior_bench["price"] - 1
+    if not math.isfinite(bench_return) or bench_return <= -1:
+        return unavailable("benchmark_invalid_return"), baseline
+    allowed_skew_ms = min(_COMPARISON_MAX_SKEW_MS, (bench["ts"] - prior_bench["ts"]) / 10)
+    clock = {
+        "max_clock_skew_seconds": allowed_skew_ms / 1000,
+        "reference_asof": datetime.fromtimestamp(prior_bench["ts"] / 1000, timezone.utc).isoformat(),
+        "source_asof": datetime.fromtimestamp(bench["ts"] / 1000, timezone.utc).isoformat(),
+        "elapsed_minutes": (bench["ts"] - prior_bench["ts"]) / 60_000,
+        "session_date": session_date.isoformat(),
+    }
+    result = {}
+    for key, members in memberships.items():
+        old_members = prior_members.get(key)
+        if (len(members) != len(set(members)) or not isinstance(old_members, list)
+                or not all(isinstance(member, str) for member in old_members)
+                or len(old_members) != len(set(old_members))
+                or set(old_members) != set(members)):
+            result[key] = {**common, "status": "membership_changed"}
+            continue
+        returns = []
+        excluded: dict[str, int] = {}
+        for ticker in members:
+            point = points.get(ticker)
+            old = _comparison_point(prior_quotes.get(ticker), prior_observed, opened, closed)
+            reason = None
+            if point is None or old is None:
+                reason = "missing_observation"
+            elif point["ts"] <= old["ts"]:
+                reason = "nonadvancing_source"
+            elif _comparison_signature(point) != _comparison_signature(old):
+                reason = "basis_or_anchor_changed"
+            elif (abs(point["ts"] - bench["ts"]) > allowed_skew_ms
+                  or abs(old["ts"] - prior_bench["ts"]) > allowed_skew_ms):
+                reason = "source_clock_skew"
+            else:
+                value = point["price"] / old["price"] - 1
+                if math.isfinite(value) and value > -1:
+                    returns.append(value)
+                else:
+                    reason = "invalid_return"
+            if reason is not None:
+                excluded[reason] = excluded.get(reason, 0) + 1
+        count, total = len(returns), len(members)
+        coverage = count / total if total else 0
+        row = {**common, **clock, "matched_members": count, "total_members": total,
+               "coverage_pct": round(100 * coverage, 3), "excluded": excluded}
+        if not returns or coverage < MIN_COVERAGE:
+            result[key] = {**row, "status": "insufficient_matched_coverage"}
+            continue
+        absolute = math.fsum(value / count for value in returns)
+        relative = (1 + absolute) / (1 + bench_return) - 1
+        if not math.isfinite(relative):
+            result[key] = {**row, "status": "invalid_return"}
+            continue
+        result[key] = {
+            **row, "status": "observed",
+            "absolute_change_pct": round(100 * absolute, 6),
+            "benchmark_change_pct": round(100 * bench_return, 6),
+            "relative_change_pct": round(100 * relative, 6),
+            "positive_relative_breadth_pct": round(100 * sum(r > bench_return for r in returns) / count, 3),
+        }
+    return result, baseline
+
+
 def _load_lastgood(out_dir: Path, name: str = LASTGOOD_FILENAME) -> dict[str, Any] | None:
     """Load the lastgood sidecar from out_dir. Returns None if absent."""
     p = out_dir / name
@@ -599,11 +821,15 @@ def _load_lastgood(out_dir: Path, name: str = LASTGOOD_FILENAME) -> dict[str, An
 
 
 def _save_lastgood(result: dict[str, Any], out_dir: Path,
-                   name: str = LASTGOOD_FILENAME) -> None:
+                   name: str = LASTGOOD_FILENAME, *,
+                   observation_baseline: dict | None = None) -> None:
     """Persist a live/delayed pulse result as the lastgood sidecar."""
     p = out_dir / name
     try:
-        p.write_text(json.dumps(result, separators=(",", ":"), allow_nan=False) + "\n")
+        retained = dict(result)
+        if observation_baseline is not None:
+            retained["observation_baseline"] = observation_baseline
+        p.write_text(json.dumps(retained, separators=(",", ":"), allow_nan=False) + "\n")
         log.info("saved lastgood sidecar → %s", p)
     except Exception as e:
         print(f"::warning::could not save lastgood sidecar: {e}", flush=True)
@@ -1070,6 +1296,7 @@ def build(
             if sidecar_ok:
                 # Serve the last good read with updated mode stamp
                 lastgood = dict(lastgood)
+                lastgood.pop("observation_baseline", None)
                 lastgood["mode"] = MODE_LAST_RTH
                 lastgood["built"] = now.strftime("%Y-%m-%d %H:%M:%S UTC")
                 # Preserve original as_of_quotes from lastgood; add a served_utc stamp
@@ -1158,7 +1385,9 @@ def build(
         # Per-basket delay median
         basket_delay = _median_member_delay(members, quotes, now_ms)
 
-        coverage_frac = n_quoted / n_members if n_members > 0 else 0.0
+        source_clock = _source_clock_evidence(
+            members, quotes, now_ms, stale_min, include_delayed)
+        coverage_frac = source_clock["n_priced"] / n_members if n_members > 0 else 0.0
         coverage_sum += coverage_frac
         coverage_count += 1
 
@@ -1173,6 +1402,7 @@ def build(
             "tape_rank": None,  # filled below
             "stale": bool(any_stale),
             "delay_min": round(basket_delay, 1) if basket_delay is not None else None,
+            **source_clock,
         })
 
     # ── cross-sectional ranks ──────────────────────────────────────────────────
@@ -1195,12 +1425,16 @@ def build(
     complexes = (_compute_complexes(baskets_data_live, quotes, now_ms, stale_min)
                  if us_features else [])
 
+    source_clock = _source_clock_evidence(
+        all_members, quotes, now_ms, stale_min, include_delayed)
+
     # ── assemble output ────────────────────────────────────────────────────────
     result: dict[str, Any] = {
         "schema": "basket_pulse.v1",
         "market": market,
         "as_of_utc": now.isoformat(),
-        "as_of_quotes": now.isoformat(),
+        "as_of_quotes": source_clock["source_asof"],
+        **source_clock,
         "built": now.strftime("%Y-%m-%d %H:%M:%S UTC"),
         "session": session,
         "mode": mode,
@@ -1215,9 +1449,15 @@ def build(
         "complexes": complexes,
     }
 
-    # Persist lastgood sidecar whenever we have a live or delayed compute
+    previous = _load_lastgood(out_dir, lastgood_name) if out_dir is not None else None
+    comparisons, baseline = _intraday_comparisons(
+        baskets_meta, quotes, previous, now=now, market=market, session=session)
+    for row in result["baskets"]:
+        row["intraday_comparison"] = comparisons.get(row["id"])
+
+    # Reuse the existing single-writer last-good file; no history store or ledger.
     if out_dir is not None:
-        _save_lastgood(result, out_dir, lastgood_name)
+        _save_lastgood(result, out_dir, lastgood_name, observation_baseline=baseline)
 
     return result
 

@@ -1761,3 +1761,74 @@ def test_china_undated_content_never_binds_to_exchange_session_alone(tmp_path):
     assert "latest completed session 2026-09-11" in line
     assert "content vintage unknown" in line
     assert "CN (latest completed session 2026-09-11):" not in line
+
+
+# Producer-owned observation changes must survive daily netting in grounding.
+def _observation_comparison(relative=1.010101, **overrides):
+    return {
+        'schema':'basket_intraday_comparison.v1', 'status':'observed',
+        'benchmark':'SPY', 'method':'matched_member_equal_weight',
+        'reference_asof':'2026-10-13T14:59:00+00:00',
+        'source_asof':'2026-10-13T15:29:00+00:00', 'elapsed_minutes':30,
+        'matched_members':1, 'total_members':1, 'coverage_pct':100,
+        'relative_change_pct':relative, 'absolute_change_pct':relative,
+        'benchmark_change_pct':0, 'max_clock_skew_seconds':60,
+        **overrides,
+    }
+
+
+def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
+    pulse = {'mode':'live', 'as_of_quotes':'2026-10-13T15:29:00+00:00', 'baskets':[
+        {'id':'ai_semiconductors', 'live_ew_chg_pct':0,
+         'intraday_comparison':_observation_comparison(-1.960784)},
+        {'id':'us_sector_health', 'live_ew_chg_pct':0,
+         'intraday_comparison':_observation_comparison(1.010101)},
+    ]}
+    root = make_root(tmp_path, basket_pulse=pulse)
+    packet = mp.build_packet(root)
+    assert packet['leaders']['up'] == [] and packet['leaders']['down'] == []
+    assert len(packet['leaders']['intraday']) == 2
+    text = mp.render_digest(packet)
+    assert 'since prior observation' in text
+    assert 'not fund flows' in text
+    assert '+1.01%' in text and '\u22121.96%' in text
+    assert '1/1 matched' in text
+    assert '14:59Z' in text and '15:29Z' in text
+    assert len(text) <= mp.DEFAULT_CHAR_BUDGET
+    assert 'intraday_comparison' not in text
+
+
+@pytest.mark.parametrize('change', [
+    {'status':'insufficient_matched_coverage'}, {'benchmark':'OTHER'},
+    {'schema':'unrecognized'}, {'relative_change_pct':float('nan')},
+    {'matched_members':0}, {'matched_members':True}, {'total_members':0},
+    {'coverage_pct':25}, {'elapsed_minutes':5},
+    {'source_asof':'2026-10-13T14:58:00+00:00'},
+    {'reference_asof':'2026-10-13T14:59:00'},
+])
+def test_unqualified_intraday_comparison_does_not_enter_grounding(tmp_path, change):
+    pulse = {'mode':'live', 'baskets':[{'id':'ai_semiconductors', 'live_ew_chg_pct':0,
+             'intraday_comparison':_observation_comparison(**change)}]}
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+    assert 'leaders' not in packet
+
+
+def test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority(tmp_path):
+    comparison = _observation_comparison(confidence=0.99, buy=True, target=999)
+    pulse = {'mode':'delayed','baskets':[
+        {'id':f'group_{i}', 'live_ew_chg_pct':0,'intraday_comparison':comparison}
+        for i in range(20)]}
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+    assert len(packet['leaders']['intraday']) <= 2 * mp.LEADERS_PER_SIDE
+    line = mp._render_leaders(packet)
+    assert 'delayed' in line
+    assert '0.99' not in line and '999' not in line
+    assert 'confidence' not in json.dumps(packet['leaders'])
+
+
+def test_future_intraday_evidence_is_not_grounding(tmp_path):
+    comparison = _observation_comparison(
+        reference_asof="2100-10-13T14:59:00+00:00", source_asof="2100-10-13T15:29:00+00:00")
+    pulse = {"mode":"live", "baskets":[{"id":"ai_semiconductors", "live_ew_chg_pct":0,
+             "intraday_comparison":comparison}]}
+    assert "leaders" not in mp.build_packet(make_root(tmp_path, basket_pulse=pulse))

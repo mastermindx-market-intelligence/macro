@@ -5,6 +5,8 @@ Existing program: `sector-rotation-intelligence` in `config/mastermind_programs.
 
 ## 1. Outcome and present boundary
 
+**Continuation:** [CONTINUATION_SOURCE_DELTA.md](CONTINUATION_SOURCE_DELTA.md) records the subsequently implemented source-clock repair, matched intraday comparisons and real grounding consumer, with 491 passing focused tests. The sections below preserve the initial research/publication evidence; the continuation is the current source frontier.
+
 The user wants Sector Intelligence and Sector Cycles to recognize sector and theme leadership changes concealed by full-day returns. The useful outcome is an earlier, correctly timed, explainable observation of relative leadership, with separate overnight and regular-session contributions, not a promise that every rotation continues or should be traded.
 
 This slice has implemented exact elapsed-time returns in the existing heatmap computation path and established reproducible controls for the next session-aware extension. It has not installed an intraday sector detector, acquired a new feed, altered Sector Cycles, enabled alerts, changed scoring, or deployed production code. Code/test completion is not parent-product completion.
