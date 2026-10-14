@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-10-14T14:11:31.932528+00:00",
+  "browser": "Chrome profile Chris",
+  "url": "https://www.mastermind-x.com/research_vault.html?doc=usda-2026-10-09-wasde-676",
+  "authentication": "Existing exact-origin login form contained saved credentials; submitted without exposing values. Redirected to start; returned to original report route.",
+  "signed_in_consumer": "PASS",
+  "visible_report_title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+  "visible_institution": "U.S. Department of Agriculture",
+  "visible_desk": "Agriculture / Independent",
+  "page_count": 40,
+  "visible_page": "1 / 40",
+  "original_pdf_visual": "October 9, 2026 and WASDE - 676 visible on page 1; USDA original report rendered.",
+  "remaining_downloads_display": "47 of 50",
+  "download_button_clicked": false,
+  "signup": false,
+  "follow_write": false,
+  "read_or_auth_metering": "Existing normal sign-in/viewer may record session/read usage; no claim of zero UI effects.",
+  "screenshot": "Captured in the current cua_repl tool result; no local screenshot artifact exported.",
+  "anonymous_report_landing": {
+    "state": "NOT_ACCEPTED",
+    "browser_result": "net::ERR_BLOCKED_BY_CLIENT",
+    "retried": false,
+    "alternate_transport": false,
+    "site_and_site_served_present": false
+  },
+  "press_article": false,
+  "publication": false,
+  "cutover": false
+}

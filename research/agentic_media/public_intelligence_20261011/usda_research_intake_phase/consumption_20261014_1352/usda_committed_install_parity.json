@@ -1,0 +1,30 @@
+{
+  "installed_head": "17cb53570b3d0a23c4b811a30c29ec5c8d3942f4",
+  "commit": [
+    "17cb53570b3d0a23c4b811a30c29ec5c8d3942f4",
+    "a9ee2ece43c1dabd919e0753e8b294c0de1262c4",
+    "fix(ci): cover rates basis in leadership science scope (#9334)",
+    "2026-10-14T07:01:42-07:00"
+  ],
+  "files": [
+    {
+      "path": "data/research_vault/catalog.json",
+      "git_sha256": "46b493ce83e1bfb5961bcbe38156d6de91ce078ab3ae90cf6c7738d9d0c6df02",
+      "installed_sha256": "46b493ce83e1bfb5961bcbe38156d6de91ce078ab3ae90cf6c7738d9d0c6df02",
+      "matches": true
+    },
+    {
+      "path": "data/research_vault/excerpts.json",
+      "git_sha256": "9370db179981f6c935e6ba9b627c71259158f19f9d48c7882e1a9bf6633cff3e",
+      "installed_sha256": "9370db179981f6c935e6ba9b627c71259158f19f9d48c7882e1a9bf6633cff3e",
+      "matches": true
+    },
+    {
+      "path": "site/research_vault.html",
+      "git_sha256": "d0b84f2d0abd14becdd716643dbc3f7227d0f522f327aae837207a10f44918ab",
+      "installed_sha256": "d0b84f2d0abd14becdd716643dbc3f7227d0f522f327aae837207a10f44918ab",
+      "matches": true
+    }
+  ],
+  "all_equal": true
+}

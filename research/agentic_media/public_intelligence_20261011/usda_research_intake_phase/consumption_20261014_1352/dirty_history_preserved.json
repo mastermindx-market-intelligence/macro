@@ -1,0 +1,21 @@
+{
+  "original_runtime": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f",
+  "files": [
+    {
+      "path": "data/ai_costs/provider_health.jsonl",
+      "sha256": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9",
+      "expected": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9"
+    },
+    {
+      "path": "data/ai_costs/usage.jsonl",
+      "sha256": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86",
+      "expected": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86"
+    },
+    {
+      "path": "data/metabolism/key_ledger.jsonl",
+      "sha256": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53",
+      "expected": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53"
+    }
+  ],
+  "all_unchanged": true
+}

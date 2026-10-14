@@ -1,3 +1,70 @@
+## 2026-10-14 13:52 wake — USDA source consumed and authenticated viewer accepted
+
+The incumbent Research ingest38575926447 completed14:01:52Z. Read-only installed
+inspection at14:02:25Z, stable508c1d3f417dbe780a0ede5189fb280590062b0a, verified
+one canonical source row, processed receipt066825e7, exact original PDF6cc97c08,
+unchanged sidecar1a215b20 and stored fulltext derivative7b953ccd/250678characters.
+State CANONICAL_SOURCE_AND_FULLTEXT_VERIFIED. The two13:37inbox writes remain
+KNOWN_COMPLETE; no reupload, alias, producer dispatch, provider or staging write.
+
+At14:04:46 normal updater had installed stable17cb53570b3d0a23c4b811a30c29ec5c8d3942f4.
+Its catalog46b493ce contains the exact source once; excerpts9370db17 contains seven
+paragraphs/4192characters. Actual dedicated /research/world-agricultural-supply-and-
+demand-estimates-october-2026-wasde-676-sde676.html is absent from site and site.served.
+The existing Research shell hashes match across site/served. Existing render owners
+38553964455/38551481257 are running; engine-render38575454593 was pending. No new
+renderer or broad producer dispatch. The planner's allowed link is that dedicated
+page, so the signed-in vault route does not yet satisfy its public-link precondition.
+
+Real Chrome profileChris: normal saved-account sign-in succeeded without exposing
+credentials. Returning to research_vault.html?doc=usda-2026-10-09-wasde-676 opened the
+actual40-page report. First-page visual confirmed original USDA/WASDE676/October9.
+No signup, follow or Download PDF click. Normal authentication/viewer metering may
+occur; only the installed probes claim zero writes. This is a genuine authenticated
+Research consumer capability, not an anonymous report page or Press publication.
+Direct per-report browser navigation returned ERR_BLOCKED_BY_CLIENT and was not
+retried or switched to another access path. Site absence is independently observed.
+
+Added reproducible isolated renderer probe:20 checks pass, plus2refusal controls
+(occupied output unchanged; wrong PDF rejected before output). All12actual render
+source/template dependencies equal protected17cb5357. True date, exact attributed
+projection/2026-27 qualifier, bounded excerpt, paywall, acquisition route, crawl hub,
+sitemap and input immutability pass. No application/source/page bytes changed.
+Initial probe errors were corrected to actual accepted projects wording, current
+inline shim and raw boolean-attribute marker; failed outputs preserved.
+
+Release once-read13:52: #9209 OPEN/merge-on-green a18ec9825dd9756fcdc1421c466bb5c769a69883;
+CI38553111016 green but stale. Controller38575368074 now holds behind main-red
+baseline38570585152/c7037383 and8proofs/cap8,0slots. The failed import-closure check
+omits engine/rates_command_basis.py from leadership-rotation-science. Existing
+repair#9334/462a591fcba265d143b260597c74389d171d5241 adds exactly that path and is
+armed main-red-repair; last observation11packs+contract passed/pack0running. Consume
+it, do not duplicate. Later log read of38575926447 was refused by REDUNDANT POLL;
+no retry or alternate CI carrier. Source verification continued independently.
+
+verified: usda_research_intake_phase/consumption_20261014_1352 contains exact release
+and repair snapshots, incumbent ingest state, installed consumer/read-only probe,
+source parity,20+2render checks, visible browser acceptance and limits. Private
+original/failed render artifacts remain under recovery-20261014-1352 and1252.
+Application8eb467 and429tests+1real-data/31groups are unchanged; no follow-onPR.
+Next: consume repaired-main controller admission for9209, exact-headCI/protected
+merge/normal installation with actual mergeSHA and24source/3page/4probe proof; then
+SAME reviewed follow-on PR/install31groups. In parallel consume ordinary report
+render installation, requalify rights/editorial/current runtime history and only
+then one new single-attempt Research generation. Keep the October9 date, no ticker,
+Research21-day scope, earlier holds/refusals/unknown effects,3dirty histories,
+Commission19 andCatalyst8678. Publication/cutoverfalse; D140/10.
+
+
+Subsequent canonical installed-object verification exposed the actual repaired-main
+commit: #9334 MERGED at14:01:43Z as17cb53570b3d0a23c4b811a30c29ec5c8d3942f4,
+from462a591fcba265d143b260597c74389d171d5241. Fresh repair-PR read confirms all12packs,
+contract-delta andci-gate SUCCESS. This is a completed repair, already on the stable
+installedHEAD; do not await/retry it. The three canonical git blobs for catalog,
+excerpts andResearch shell match installed SHA256s exactly. #9209 was not reread or
+mutated: its next gate is repaired-main baseline/controller admission and fresh
+exact-head proof, not permission to bypass stale proof.
+
 ## 2026-10-14 12:52 continuation — USDA source submitted to canonical Research inbox
 
 Actual source delivery at13:37:01Z: the original October9 USDA WASDE676 PDF and

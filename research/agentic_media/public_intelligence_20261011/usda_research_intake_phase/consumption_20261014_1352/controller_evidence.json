@@ -1,0 +1,19 @@
+[
+  {
+    "run": 38575472410,
+    "sha256": "bd6f97aaf471a5482633aaf62ccf413cac6fd9b8f1fb4d5fb6094e38b6a01a2d",
+    "lines": [
+      "sweep\tsweep merge-on-green pull requests\t2026-10-14T13:52:21.1951867Z API budget: 15000 of 15000 core API requests available; failure-marker pass."
+    ]
+  },
+  {
+    "run": 38575368074,
+    "sha256": "789e917dab773ad3b869007140f7d642afb319f75ce200e3da09441a0f2870d2",
+    "lines": [
+      "sweep\tsweep merge-on-green pull requests\t2026-10-14T13:51:51.1516124Z PR proof load: 8 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 0 CI workload slot(s) available this sweep.",
+      "sweep\tsweep merge-on-green pull requests\t2026-10-14T13:52:00.9047898Z ##[warning]integration-baseline is red (failure at c7037383bb27 https://github.com/mastermindx-market-intelligence/macro/actions/runs/38570585152). Ordinary merges with overlapping or unknown proof remain paused; one `main-red-repair` PR may be considered. No semantic exception is available (semantic main evidence unavailable: semantic main artifact predates or diverges from the red integration baseline (c7037383bb27 -> 407b89a6cfee, behind)). Semantic-main producer: skipped (a semantic-main proof is already in_progress).",
+      "sweep\tsweep merge-on-green pull requests\t2026-10-14T13:52:08.5841352Z PR #9209: source main baseline is red; leaving it armed behind the circuit breaker.",
+      "sweep\tsweep merge-on-green pull requests\t2026-10-14T13:52:12.1772403Z merge-on-green sweep complete: 74 baseline-blocked, 1 pending (0 main commit(s) classified, 0/0 effective refresh slot(s) used across 0/8 bounded update attempt(s) (8 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 0 CI workload slot(s) available this sweep), ~15000 API requests left; main proof: 15 clean name(s) at 407b89a6cfee, 0.7h old (ci.yml@407b89a6cfee (14 passed) + fences.yml@603ff8c3847d (1 passed)); baseline: covered by semantic-main producer (skipped (a semantic-main proof is already in_progress)); semantic-main: skipped (a semantic-main proof is already in_progress); source-baseline: not needed (breaker is red); self-wake: not needed)"
+    ]
+  }
+]
