@@ -1153,7 +1153,25 @@
 {# ---- derive hero-chip states from payload ---- #}
 {%- set ems_state = EMS.get('state', 'unknown') if EMS else 'unknown' %}
 {%- set ems_legs_hot = EMS.get('legs_hot', []) if EMS else [] %}
-{%- set tier2_hot = (TTR.get('tier2') or {}).get('hot_count', 0) %}
+{# Four owner threshold tests; the dollar five-day flag is informational. #}
+{%- set t2legs = (TTR.get('tier2') or {}).get('legs') or {} %}
+{%- set t2 = namespace(assessed=0, triggered=0, rows=[]) %}
+{%- for key, field, en, zh in [
+  ('us_hy_oas_vel', 'vel_20d_z', 'US credit spreads', '美国信用利差'),
+  ('kre_spy_rs', 'value', 'Bank shares', '银行股'),
+  ('move_pctile', 'pctile', 'Bond-market volatility', '债市波动'),
+  ('sofr_iorb_corridor', 'value', 'Money-market plumbing', '货币市场管道')] %}
+  {%- set leg = t2legs.get(key) or {} %}
+  {%- set measured = leg.get(field) is number and leg.get(field) is not boolean and leg.get('hot') is boolean %}
+  {%- if key == 'sofr_iorb_corridor' %}{%- set measured = measured and leg.get('last5_all_positive') is boolean %}{%- endif %}
+  {%- if measured %}
+    {%- set t2.assessed = t2.assessed + 1 %}
+    {%- if leg.get('hot') %}{%- set t2.triggered = t2.triggered + 1 %}{%- endif %}
+  {%- endif %}
+  {%- set _ = t2.rows.append({'key':key, 'en':en, 'zh':zh, 'measured':measured, 'hot':leg.get('hot')}) %}
+{%- endfor %}
+{%- set ch_saf = t2legs.get('safety_bid_flag') or {} %}
+{%- set saf_measured = ch_saf.get('safety_bid') is boolean and ch_saf.get('dxy_5d_chg') is number and ch_saf.get('dgs2_5d_chg') is number %}
 {%- set safety_bid = TTR.get('safety_bid', false) %}
 {%- set safety_bid_leg = ((TTR.get('tier2') or {}).get('legs') or {}).get('safety_bid_flag') or {} %}
 {%- set dxy5d = safety_bid_leg.get('dxy_5d_chg') %}
@@ -1186,27 +1204,6 @@
   {%- set ems_stance_en = 'Watch — check again tomorrow' %}
   {%- set ems_stance_zh = '观望，明日再查' %}
   {%- set ems_chip = 'mute' %}
-{%- endif %}
-
-{# contagion → plain words from tier2 hot count #}
-{%- if tier2_hot >= 2 %}
-  {%- set cntg_word_en = 'Reaching US markets' %}
-  {%- set cntg_word_zh = '正向美国传导' %}
-  {%- set cntg_chip = 'warn' %}
-  {%- set cntg_stance_en = 'Tighten stops on US positions' %}
-  {%- set cntg_stance_zh = '收紧美股止损' %}
-{%- elif tier2_hot == 1 %}
-  {%- set cntg_word_en = 'Early signs of contagion' %}
-  {%- set cntg_word_zh = '传导初现迹象' %}
-  {%- set cntg_chip = 'caut' %}
-  {%- set cntg_stance_en = 'Watch — check again if EM worsens' %}
-  {%- set cntg_stance_zh = '观望——如EM恶化则重新审视' %}
-{%- else %}
-  {%- set cntg_word_en = 'Not reaching US markets' %}
-  {%- set cntg_word_zh = '尚未传导至美国' %}
-  {%- set cntg_chip = 'ok' %}
-  {%- set cntg_stance_en = 'Ignore for US book' %}
-  {%- set cntg_stance_zh = '美股仓位可忽略' %}
 {%- endif %}
 
 {# connectedness plain read #}
@@ -1396,21 +1393,14 @@
       <div class="hc-stance"><b>{{ t(ems_stance_en, ems_stance_zh) }}</b> {{ t('EM positions', '新兴市场仓位') }}</div>
     </div>
 
-    {# CHIP 2: Contagion to US #}
-    <div class="ird-hchip state-{{ 'warn' if tier2_hot >= 2 else 'caut' if tier2_hot == 1 else 'ok' }}">
+    {# CHIP 2: coverage of supplied US threshold tests #}
+    <div class="ird-hchip state-{{ 'caut' if t2.triggered else 'unknown' }}">
       <div class="hc-lbl">{{ t('Contagion to US', '对美传导') }}</div>
-      <div class="hc-state {{ 'red' if tier2_hot >= 2 else '' if tier2_hot == 1 else 'green' }}">
-        {{ t(cntg_word_en, cntg_word_zh) }}
+      <div class="hc-state {{ 'info' if t2.triggered else '' }}">
+        {% if t2.assessed == 0 %}{{ t('Unavailable', '不可用') }}{% elif t2.assessed < 4 %}{{ t('Partial coverage', '覆盖不完整') }}{% else %}{{ t('Four tests assessed', '已评估四项指标') }}{% endif %}
       </div>
-      <div class="hc-detail">
-        {{ tier2_hot }} {{ t('of 5 US transmission channels are hot', '个美国传导渠道触发') }}
-      </div>
-      <div class="hc-stance">
-        <b>{{ t(cntg_stance_en, cntg_stance_zh) }}</b>
-        {%- if tier2_hot < 2 %}
-          {{ t(' — check again if EM worsens', '——如EM恶化则重新审视') }}
-        {%- endif %}
-      </div>
+      <div class="hc-detail">{{ t(t2.triggered|string ~ ' triggered · ' ~ t2.assessed|string ~ '/4 assessed', t2.triggered|string ~ '项触发 · ' ~ t2.assessed|string ~ '/4已评估') }}</div>
+      <div class="hc-stance">{{ t('Coverage of supplied readings; dollar flag is separate.', '按所供读数统计覆盖；美元标志单列。') }}</div>
     </div>
 
     {# CHIP 3: Dollar — honest null when smile absent #}
@@ -1536,26 +1526,18 @@
       </div>
       {%- endif %}
 
-      {# 5 transmission channels from tier2 legs #}
-      {%- set t2legs = (TTR.get('tier2') or {}).get('legs') or {} %}
       <div class="small muted" style="margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">
-        {{ t('5 US transmission channels', '5个美国传导渠道') }}
+        {{ t('Four US indicator threshold tests', '四项美国指标阈值检查') }}
       </div>
       <div class="ird-channels">
-        {%- set ch_us_hy = t2legs.get('us_hy_oas_vel') or {} %}
-        <span class="chip {{ 'warn' if ch_us_hy.get('hot') else 'ok' }}">{{ t('US credit spreads', '美国信用利差') }}</span>
-        {%- set ch_kre = t2legs.get('kre_spy_rs') or {} %}
-        <span class="chip {{ 'warn' if ch_kre.get('hot') else 'ok' }}">{{ t('Bank shares', '银行股') }}</span>
-        {%- set ch_move = t2legs.get('move_pctile') or {} %}
-        <span class="chip {{ 'warn' if ch_move.get('hot') else 'ok' }}">{{ t('Bond-market volatility', '债市波动') }}</span>
-        {%- set ch_sofr = t2legs.get('sofr_iorb_corridor') or {} %}
-        <span class="chip {{ 'warn' if ch_sofr.get('hot') else 'ok' }}">{{ t('Money-market plumbing', '货币市场管道') }}</span>
-        {%- set ch_saf = t2legs.get('safety_bid_flag') or {} %}
-        <span class="chip {{ 'warn' if ch_saf.get('hot') else 'caut' if safety_bid else 'ok' }}">{{ t('Dollar safety bid', '美元避险需求') }}</span>
+        {%- for row in t2.rows %}
+        <span class="chip {{ 'caut' if row.measured and row.hot else '' }}" data-transmission-leg="{{ row.key }}">{{ t(row.en, row.zh) }}: {% if not row.measured %}{{ t('Unavailable', '不可用') }}{% elif row.hot %}{{ t('Triggered', '已触发') }}{% else %}{{ t('Not triggered', '未触发') }}{% endif %}</span>
+        {%- endfor %}
+        <span class="chip {{ 'caut' if saf_measured and ch_saf.get('safety_bid') else '' }}" data-transmission-safety>{{ t('Dollar five-day flag · Informational', '美元五日标志 · 信息项') }}: {% if not saf_measured %}{{ t('Unavailable', '不可用') }}{% elif ch_saf.get('safety_bid') %}{{ t('Flagged', '已标记') }}{% else %}{{ t('Not flagged', '未标记') }}{% endif %}</span>
       </div>
       <p class="caveat ird-asof">
         {%- if SPL.get('as_of') %}{{ t('Data as of ' + SPL.get('as_of', ''), '数据截至 ' + SPL.get('as_of', '')) }}.{%- endif %}
-        {%- if safety_bid %} {{ t('"Dollar safety bid" flagged but not yet a hot channel — watch if it persists.', '"美元避险需求"已标记，但尚未构成热传导渠道——如持续则需关注。') }}{%- endif %}
+        {{ t('The five-day flag is informational and excluded from the four threshold tests.', '五日标志为信息项，不计入四项阈值检查。') }}
       </p>
     </div><!-- /contagion -->
 

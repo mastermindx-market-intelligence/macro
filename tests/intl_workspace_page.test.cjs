@@ -54,6 +54,39 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const kind of ['absent','complete_hot']) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Transmission coverage stays honest ${kind} ${theme} ${lang}`,async()=>{
+    const transmissionHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      `from tests.test_intl_transmission_coverage_render import transmission_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=transmission_fixture('${kind}')))`],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const chip=page.locator('.ird-hchip').nth(1);
+      const panel=page.locator('#intl-contagion').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+      assert.ok(await chip.isVisible() && await panel.isVisible());
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const n=kind==='absent'?0:4,text=await chip.innerText();
+        assert.ok(text.includes(lang==='zh'?`${n}/4已评估`:`${n}/4 assessed`),text);
+        assert.ok(text.includes(lang==='zh'?`${n}项触发`:`${n} triggered`),text);
+        if(kind==='absent') assert.ok(text.includes(lang==='zh'?'不可用':'Unavailable'));
+        assert.ok(!/Ignore|Tighten stops|Not reaching|可忽略|收紧.*止损|5 US|5个/.test(text));
+        const legs=panel.locator('[data-transmission-leg]');assert.equal(await legs.count(),4);
+        for(const leg of await legs.all()) {
+          const reading=await leg.innerText();assert.ok(reading.includes(kind==='absent'?(lang==='zh'?'不可用':'Unavailable'):(lang==='zh'?'已触发':'Triggered')),reading);
+          assert.ok(!(await leg.getAttribute('class')).split(' ').includes('ok'));
+        }
+        const safety=await panel.locator('[data-transmission-safety]').innerText();
+        assert.ok(safety.includes(lang==='zh'?'信息项':'Informational'));
+        assert.ok(safety.includes(kind==='absent'?(lang==='zh'?'不可用':'Unavailable'):(lang==='zh'?'已标记':'Flagged')));
+        for(const el of [chip,panel]) assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'summary and channel readings fit');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:transmissionHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-contagion'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`ECB balance read separates policy and weekly-bin clock ${theme} ${lang}`,async()=>{
     const kind=theme==='dark'?'flat':'down';

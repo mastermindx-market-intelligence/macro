@@ -140,9 +140,7 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Discriminate the inherited US-indicator coverage summary against actual two-tier owner outputs.
-  Preserve absent and insufficient evidence; distinguish four threshold tests from the informational dollar flag.
-  No new risk classification, position instruction or qualification contract; all review, CI, release and IW2 holds persist.
+next_action: Repair reproduced EM headline coverage against actual owner aggregation; retain US indicator proof, independent review pending and all release holds.
 artifacts:
 - research/paper_international_wave1_wave2/ECB_BALANCE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json
