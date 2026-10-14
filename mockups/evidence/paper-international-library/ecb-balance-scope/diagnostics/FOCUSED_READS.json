@@ -1,0 +1,98 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "ecb-1440-dark-en.png",
+    "sha256": "7ef4d51ace5ef0b591f60898081280d8542521951944b07abe2967257ee0d29c",
+    "text": "\ud83c\udfe6\nECB balance-sheet impulse ?\nNon-decreasing at supplied precision\nTotal assets\n\u20ac6.00T\n13-week\n+0.0%\n52-week\n+0.0%\nWeekly bin ending\n2026-04-05\n\nECB only \u00b7 Observation date unavailable",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 65,
+        "y": 510.90625,
+        "width": 648,
+        "height": 191.578125,
+        "top": 510.90625,
+        "right": 713,
+        "bottom": 702.484375,
+        "left": 65
+      },
+      "scrollWidth": 646,
+      "clientWidth": 646
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "ecb-1440-light-en.png",
+    "sha256": "8ce27177c6996297d0324946ab5ddac2f08356c47f69926a87e77157472e5ad4",
+    "text": "\ud83c\udfe6\nECB balance-sheet impulse ?\nNon-decreasing at supplied precision\nTotal assets\n\u20ac6.00T\n13-week\n+0.0%\n52-week\n+0.0%\nWeekly bin ending\n2026-04-05\n\nECB only \u00b7 Observation date unavailable",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 65,
+        "y": 510.90625,
+        "width": 648,
+        "height": 191.578125,
+        "top": 510.90625,
+        "right": 713,
+        "bottom": 702.484375,
+        "left": 65
+      },
+      "scrollWidth": 646,
+      "clientWidth": 646
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "ecb-390-dark-zh.png",
+    "sha256": "7c071fc2f0db4905fa7bb9e0bb917c4efc9fcdeb1185f86ccab331da84b506d8",
+    "text": "\ud83c\udfe6\n\u6b27\u592e\u884c\u8d44\u4ea7\u8d1f\u503a\u8868\u8109\u51b2 ?\n\u6240\u4f9b\u7cbe\u5ea6\u4e0b\u672a\u4e0b\u964d\n\u603b\u8d44\u4ea7\n\u20ac6.00T\n13\u5468\n+0.0%\n52\u5468\n+0.0%\n\u5468\u5206\u7bb1\u7ed3\u675f\u65e5\n2026-04-05\n\n\u4ec5\u6b27\u592e\u884c \u00b7 \u89c2\u6d4b\u65e5\u671f\u4e0d\u53ef\u7528",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 45,
+        "y": 419.53125,
+        "width": 300,
+        "height": 207.0625,
+        "top": 419.53125,
+        "right": 345,
+        "bottom": 626.59375,
+        "left": 45
+      },
+      "scrollWidth": 298,
+      "clientWidth": 298
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "ecb-390-light-zh.png",
+    "sha256": "1228371d28bb83de152f30e329cd6efa09c59ee4a23ca83f1770ca941f138b0b",
+    "text": "\ud83c\udfe6\n\u6b27\u592e\u884c\u8d44\u4ea7\u8d1f\u503a\u8868\u8109\u51b2 ?\n\u6240\u4f9b\u7cbe\u5ea6\u4e0b\u672a\u4e0b\u964d\n\u603b\u8d44\u4ea7\n\u20ac6.00T\n13\u5468\n+0.0%\n52\u5468\n+0.0%\n\u5468\u5206\u7bb1\u7ed3\u675f\u65e5\n2026-04-05\n\n\u4ec5\u6b27\u592e\u884c \u00b7 \u89c2\u6d4b\u65e5\u671f\u4e0d\u53ef\u7528",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 45,
+        "y": 419.53125,
+        "width": 300,
+        "height": 207.0625,
+        "top": 419.53125,
+        "right": 345,
+        "bottom": 626.59375,
+        "left": 45
+      },
+      "scrollWidth": 298,
+      "clientWidth": 298
+    }
+  }
+]

@@ -55,6 +55,33 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`ECB balance read separates policy and weekly-bin clock ${theme} ${lang}`,async()=>{
+    const kind=theme==='dark'?'flat':'down';
+    const ecbHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      `from tests.test_intl_ecb_scope_render import ecb_scope_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=ecb_scope_fixture('${kind}')))`],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const card=page.locator('.rcard').filter({hasText:'ECB balance-sheet impulse'});
+      assert.equal(await card.count(),1);assert.ok(await card.isVisible());
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const text=await card.innerText();
+        assert.ok(text.includes(kind==='flat'?(lang==='zh'?'所供精度下未下降':'Non-decreasing at supplied precision'):
+          (lang==='zh'?'低于52周前':'Lower than 52 weeks ago')),text);
+        assert.ok(!/\beasing\b|\bQT\b|宽松|缩表/.test(text));
+        assert.ok(text.includes(lang==='zh'?'周分箱结束日':'Weekly bin ending') && text.includes('2026-04-05'));
+        assert.ok(text.includes(lang==='zh'?'观测日期不可用':'Observation date unavailable'));
+        assert.ok(!text.includes('2026-03-30'),'source observation date is not supplied by owner output');
+        assert.ok(await card.evaluate(n=>n.scrollWidth<=n.clientWidth+1 && n.scrollHeight<=n.clientHeight+1),'ECB card content fits');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:ecbHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-rates-curves'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Periphery keeps supplied precision and Bund clock scope ${theme} ${lang}`,async()=>{
     const peripheryHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_periphery_scope_render import periphery_scope_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=periphery_scope_fixture()))"],

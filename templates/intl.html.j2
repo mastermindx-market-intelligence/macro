@@ -1111,17 +1111,18 @@
     <!-- ECB liquidity impulse -->
     {% if rates.liquidity %}
     {% set LQ = rates.liquidity %}
-    <div class="rcard {{ '' }}" style="align-self:start">
-      <div class="rh"><span class="flg">🏦</span><b>{{ t('ECB balance-sheet impulse', '欧央行资产负债表脉冲') }}</b>
-        <span class="shape {{ 'inverted' if LQ.draining else 'normal' }}" style="--c:{{ 'var(--down)' if LQ.draining else 'var(--up)' }}">{{ t('QT', '缩表') if LQ.draining else t('easing', '宽松') }}</span></div>
+    {% set lq_measured = LQ.chg_52w is number and LQ.chg_52w is not boolean %}
+    <div class="rcard" style="align-self:start">
+      <div class="rh"><span class="flg">🏦</span><b>{{ t('ECB balance-sheet impulse', '欧央行资产负债表脉冲') }} {{ help('Uses the last observation in each weekly bin, forward-filled where a bin is empty. Changes compare 13 and 52 weekly intervals; this is not a policy-action classification. Changes are rounded to one decimal place. Zero with no draining flag does not distinguish exact zero from a small positive change; the supplied draining flag retains negative direction even when rounded to zero.', '取每个周分箱的最后观测，空分箱向前填充。变化比较13及52个周间隔，不是政策行动分类。变化保留一位小数；零值且未标记下降，无法区分精确为零和微小正变化。所供下降标志在取整为零时仍保留负向变化。') }}</b>
+        <span class="shape">{% if lq_measured and LQ.draining is sameas true %}{{ t('Lower than 52 weeks ago', '低于52周前') }}{% elif lq_measured and LQ.draining is sameas false and LQ.chg_52w > 0 %}{{ t('Higher than 52 weeks ago', '高于52周前') }}{% elif lq_measured and LQ.draining is sameas false and LQ.chg_52w == 0 %}{{ t('Non-decreasing at supplied precision', '所供精度下未下降') }}{% else %}{{ t('Unavailable', '不可用') }}{% endif %}</span></div>
       <div class="rgrid">
         <span class="rk">{{ t('Total assets', '总资产') }}</span><span class="rv">€{{ '%.2f'|format(LQ.level_eur_tn) }}T</span>
-        <span class="rk">{{ t('13-week', '13周') }}</span><span class="rv {{ 'neg' if (LQ.chg_13w or 0) < 0 else 'pos' }}">{% if LQ.chg_13w is not none %}{{ '%+.1f'|format(LQ.chg_13w) }}%{% else %}—{% endif %}</span>
-        <span class="rk">{{ t('52-week', '52周') }}</span><span class="rv {{ 'neg' if (LQ.chg_52w or 0) < 0 else 'pos' }}">{% if LQ.chg_52w is not none %}{{ '%+.1f'|format(LQ.chg_52w) }}%{% else %}—{% endif %}</span>
-        <span class="rk">{{ t('As of', '截至') }}</span><span class="rv" style="font-weight:600;color:var(--muted)">{{ LQ.asof }}</span>
+        <span class="rk">{{ t('13-week', '13周') }}</span><span class="rv">{% if LQ.chg_13w is not none %}{{ '%+.1f'|format(LQ.chg_13w) }}%{% else %}—{% endif %}</span>
+        <span class="rk">{{ t('52-week', '52周') }}</span><span class="rv">{% if LQ.chg_52w is not none %}{{ '%+.1f'|format(LQ.chg_52w) }}%{% else %}—{% endif %}</span>
+        <span class="rk">{{ t('Weekly bin ending', '周分箱结束日') }}</span><span class="rv">{{ LQ.asof|e if LQ.asof else t('Unavailable', '不可用') }}</span>
       </div>
       {% if LQ.spark_svg %}<div style="margin-top:8px;opacity:.85">{{ LQ.spark_svg|safe }}</div>{% endif %}
-      <p class="caveat" style="margin-top:6px">{{ t(LQ.read_en, LQ.read_zh) }} · {{ t('ECB-only clean weekly series.', '仅欧央行周度序列。') }}</p>
+      <p class="caveat" style="margin-top:6px">{{ t('ECB only · Observation date unavailable', '仅欧央行 · 观测日期不可用') }}</p>
     </div>
     {% endif %}
   </div>

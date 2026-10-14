@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_ecb_scope_render.py; tests/intl_workspace_page.test.cjs
+  what: Scope ECB balance changes and weekly-bin clock without policy-action or precision overclaim.
 - path: templates/intl.html.j2; tests/test_intl_periphery_scope_render.py; tests/intl_workspace_page.test.cjs
   what: Preserve periphery absence and rounded precision, scope Bund date and remove unsupported causal stress wording.
 - path: templates/theme.js; templates/theme.css; site/theme.js; site/theme.css; tests/intl_workspace_page.test.cjs
@@ -177,6 +179,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: ECB balance read preserves rounded uncertainty and labels its weekly-bin date.
+  command: pytest tests/test_intl_ecb_scope_render.py plus targeted word-match correction; selected ECB Node cases; ecb-balance-scope-20261014-r1/capture.py and inspect_cards.py
+  result: 12uniquePythonPASS14warnings;4uniquebrowserPASS8widthstates;8canonicalcaptures4focusedparentviews. Original substring harness errors retained.
 - claim: Periphery direction and date match actual owner field scope.
   command: pytest tests/test_intl_periphery_scope_render.py; selected Periphery Node cases; rates-supplemental-scope-20261014-r1/capture.py and inspect_cards.py
   result: 13PythonPASS14warnings;4browserPASS8widthstates;8canonicalcaptures4focusedparentviews. Original10causalreds and3capitalization errors retained separately.
@@ -584,3 +589,8 @@ LENS_BOOT_OCCLUSION_ACCEPTANCE.json binds the actual resting launcher omission a
 ## Periphery scope — 2026-10-14
 
 PERIPHERY_SCOPE_ACCEPTANCE.json binds actual-owner absent and rounded-zero counterexamples. Values and calculations are unchanged. The next distinct repair is ECB balance-sheet interpretation and weekly-bin clock, with12original-source render failures already retained. Independent review, CI, deployment and all original holds remain open.
+
+
+## ECB balance-sheet scope — 2026-10-14
+
+ECB_BALANCE_SCOPE_ACCEPTANCE.json binds actual-owner flat, roundedpositive and roundednegative cases. The original weekly-bin date is not promoted to an observation timestamp. Independent review and served acceptance remain pending. Next inspect actual two-tier missing/partial evidence: current summary converts absent inputs into zero of5 and ignore-US-book language, while owner counts4thresholds with a separate informational dollar flag. All original controls remain.

@@ -140,10 +140,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Repair the separately reproduced ECB balance-sheet interpretation and weekly-bin clock.
-  Preserve owner calculations and rounded precision; no inferred policy action or observation date.
-  Source is not deployed; independent review, CI and all original release and IW2 holds persist.
+next_action: Discriminate the inherited US-indicator coverage summary against actual two-tier owner outputs.
+  Preserve absent and insufficient evidence; distinguish four threshold tests from the informational dollar flag.
+  No new risk classification, position instruction or qualification contract; all review, CI, release and IW2 holds persist.
 artifacts:
+- research/paper_international_wave1_wave2/ECB_BALANCE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json
