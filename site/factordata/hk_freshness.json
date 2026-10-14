@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-14T09:32:41+00:00",
+  "checked_at": "2026-10-14T12:51:53+00:00",
   "expected_session": "2026-10-14",
   "stores": {
     "cache": {
@@ -11,11 +11,11 @@
       "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-10-13",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-14",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "standouts": {
@@ -27,17 +27,17 @@
       "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-10-13",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-14",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-10-12",
-      "lag_days": 2,
-      "lag_sessions": 2,
+      "asof": "2026-10-13",
+      "lag_days": 1,
+      "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true,
@@ -47,11 +47,11 @@
   "coherence": {
     "ok": true,
     "standouts_asof": "2026-10-13",
-    "regime_date": "2026-10-13",
-    "gap_sessions": 0,
+    "regime_date": "2026-10-14",
+    "gap_sessions": 1,
     "calendar_verified": true,
     "data_state": "current",
-    "note": null
+    "note": "regime read is one session behind the stock scan \u2014 catches up after the next Asia close"
   },
   "regression": {
     "ok": true,

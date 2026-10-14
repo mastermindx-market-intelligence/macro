@@ -2221,10 +2221,11 @@ def _glp1_only_kwargs():
 
 
 def test_fda_molecule_gap_clause_exception_does_not_kill_the_cascade(monkeypatch, caplog):
-    """W15-F item 1: a raising molecule-gap clause degrades like the chip guard
-    (compute_foresight_cascade logs "fda_scarcity chip format failed
-    for %s: %s" at debug and carries on): the cascade is still produced, the FDA
-    chip is still present, and molecule_gap stays None.
+    """W15-F item 1: a raising molecule-gap clause degrades in control flow
+    like the chip guard (the cascade is still produced, the FDA chip is still
+    present, molecule_gap stays None), but it logs at WARNING, not the chip
+    guard's debug: production builds run at INFO, so a clause that starts
+    raising on real data must not vanish from the page silently.
     """
     import logging
 
@@ -2248,7 +2249,9 @@ def test_fda_molecule_gap_clause_exception_does_not_kill_the_cascade(monkeypatch
     assert chip is not None, "the FDA chip must survive a failing molecule-gap clause"
     assert chip["source"] == "fda_shortages"
     assert row["molecule_gap"] is None
-    assert any(rec.levelno == logging.DEBUG and "molecule" in rec.getMessage().lower()
+    assert any(rec.levelno == logging.WARNING
+               and rec.name == "engine.foresight_cascade"
+               and "molecule" in rec.getMessage().lower()
                for rec in caplog.records), caplog.text
 
 
@@ -2281,3 +2284,32 @@ def test_top_level_molecule_keys_without_coverage_yield_no_gap_clause():
         fda_scarcity={"glp1_obesity": row}, **_glp1_only_kwargs(),
     )
     assert out["themes"][0]["molecule_gap"] is None
+
+
+def test_real_producer_row_pins_the_coverage_only_with_rows_shape(monkeypatch):
+    """W15-F item 3 (producer pin): the no-row-level-fallback rule in
+    _fda_molecule_lists' docstring is only safe while the real producer's
+    shape holds. Pin the SHAPE of a row built by the real
+    engine.fda_scarcity.compute_fda_scarcity: molecules_with_rows must stay
+    absent at the row top level (a top-level mirror would make the dead
+    fallback look restorable) while summary.coverage keeps both lists.
+    Key shape only — the producer reads the wall clock, so ages/dates here
+    would drift. Reuses this file's _summary_row/_capture fixtures and the
+    monkeypatched-MOLECULE_THEME_MAP pattern of the status-correction test.
+    """
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    frame = pd.DataFrame([_summary_row()])
+    frame.attrs["fda_observation"] = {
+        "capture": _capture(now),
+        "last_refresh": {"qualified": True, "failure_code": None,
+                         "attempted_at": now.isoformat()},
+        "legacy": False, "inconsistent": False, "failed_refresh": False,
+    }
+    row = compute_fda_scarcity(frame)["glp1_obesity"]
+    assert "molecules_with_rows" not in row
+    assert "molecules_checked" in row
+    assert {"molecules_checked", "molecules_with_rows"} <= set(row["summary"]["coverage"])

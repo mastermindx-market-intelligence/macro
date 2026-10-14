@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T10:40:20.287953+00:00",
-  "count": 2889,
+  "generated_at": "2026-10-14T14:26:01.431586+00:00",
+  "count": 2901,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -31,6 +31,7 @@
     "Citi",
     "CommBank",
     "Curvature",
+    "DBS",
     "Danske",
     "Deutsche Bank",
     "DoubleLine",
@@ -95,6 +96,7 @@
     "The PunchLine",
     "The Punchline",
     "Trump Xi Preview",
+    "U.S. Department of Agriculture",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -109,6 +111,46 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pk35lyapk08-713b6b",
+      "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:30Z",
+      "summary_points": [
+        "Semiconductor Flow Divergence: Foreigners extended net selling streaks (-$550mn Hynix, -$133mn SEC) amid TSMC/US CPI volatility risk, while local institutions net bought SEC (+$54mn) but sold Hynix (-$88mn), signaling sector-specific earnings-driven volatility.",
+        "EV Policy Tailwind: EU-China agreement curbing Chinese hybrid exports boosted EV supply chain (+4.4%, GSXAKREV), with POSCO FM/SAMSUNG SDI leading on AI-driven ESS growth structural tailwinds and policy-driven demand.",
+        "ESS Demand Catalyst: Local broker confirms AI power demand fueling ESS growth, positioning Korean battery makers for earnings improvement via structural (ESS/EV demand) and policy (EU-China) factors.",
+        "Earnings Volatility Risk: Sector volatility heightened ahead of TSMC earnings and US CPI prints, with Semis (SEC, SK Hynix) selling off (-1.7% each) despite local institutional buying in SEC."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zidfbw2dhyr-90424e",
+      "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:15Z",
+      "summary_points": [
+        "Geopolitical Energy Impact: Houthi strikes on Saudi Aramco HQ and Iran tanker attacks drive WTI crude up 1.25% to $95.30, highlighting acute supply risk and energy market volatility.",
+        "ASML Fundamentals & Supply Risk: Upgraded 2026 revenue guidance (€44bn-€45bn) and 56% gross margin, but targeted 30% EUV capacity increase deemed insufficient amid surging demand, signaling critical supply chain constraints.",
+        "TMT Sector Divergence: TMT hardware outperforms S&P 500 by +66.96% YTD (+80.98% vs S&P +14.02%), contrasting with China Internet’s -28.15% decline, revealing high-risk allocation opportunities and geopolitical exposure.",
+        "Fed Policy & Earnings Flow Catalyst: Dovish Fed remarks (William’s) precede key speakers, with pre-market earnings (PGR, BLK, BAC) and ASML’s mixed reaction (beat/raise but capacity concerns) driving sector-specific capital flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-k5gzbnlti7v-bb4677",
       "title": "Market Update US, Europe & Asia",
@@ -148,6 +190,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q4wcptf4o7j-c2da47",
+      "title": "insights taiwan",
+      "institution": "DBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:37:51Z",
+      "summary_points": [
+        "Taiwan Semiconductor Moat & NVIDIA Dependency: Taiwan's semiconductor leadership (NVIDIA 55% AI chip market share in China) sustains export growth but creates strategic vulnerability; AI-driven expansion moderates 4Q26-2027 due to hyperscaler cash-flow pressures and higher rates.",
+        "Hyperscaler Debt Reliance & FCF Risk: Hyperscalers (Microsoft, Amazon) face negative FCF from 4Q, escalating debt reliance and investment risk amid AI capex moderation (95% YoY → 39% by 2027).",
+        "US-China AI Competition & Supply Chain Risk: China's integrated AI ecosystem challenges US dominance, yet semiconductor reliance on foreign suppliers (NVIDIA) persists; Taiwan's moat critical for supply chain resilience amid US-China tech decoupling.",
+        "CBC Rate Hike & Inflation Trigger: Central bank hikes rates to 2.125% in Dec driven by sustained CPI >2% (2.0%/2.1% 4Q26) and tightening liquidity (M2 7% YoY, bank loans >10% YoY).",
+        "US-Iran Conflict & Energy Volatility: Geopolitical standoff (midterms Nov) fuels crude oil at ~$100/bbl and LNG/refined product price surges due to supply disruptions (refining logistics, shipping bottlenecks)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -211,6 +274,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-m63trk0wyl9-eca602",
+      "title": "JGB Strategy",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:14:20Z",
+      "summary_points": [
+        "Red Trifecta Election Risk: Republican control of both houses (red trifecta) triggers largest market impact; historical data shows Trump wins (2016/2024) → USD strength, while Dems winning House (2018) or losing (2020) → USD weakness, directly affecting yen rates.",
+        "BOJ Short-Term Distortion: Elevated BOJ ownership in 2y (12.9%) and 5y (10.1%) JGBs distorts short-term yield dynamics, with absorption rates declining to 21.2% (down from 22.9%).",
+        "Tariff Divergence: April 2025 tariffs caused Dollar Index decline post-2024 election, breaking historical pattern of Republican control strengthening USD, making tariffs a critical risk factor for dollar-yen flows.",
+        "Geopolitical Inflation Spillover: Iran war intensifying US inflation prolongs Fed hikes, pressuring yen via 10y UST yield linkage and dollar-yen dynamics, accelerating BOJ rate hikes through 2026.",
+        "Red Trifecta Curve Impact: Fiscal concerns (e.g., Trump’s $5k proposal) weaken dollar vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-uejhgzrho58-2d4f8c",
       "title": "JPM US Market Intelligence | Afternoon Briefing",
       "institution": "J.P. Morgan",
@@ -249,6 +333,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 54,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mpkigavygok-1da158",
+      "title": "Last Man Standing",
+      "institution": "BTIG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T15:29:53Z",
+      "summary_points": [
+        "Mag7 as SPX Weakness Catalyst: Mag7 (last SPX cohort without weakness) widely owned; trend reversal likely triggers sustained SPX weakness, per SOX 2000 analog (semis low within 24h, sell-off accelerates late October).",
+        "SOX 2000 Analog & Timing: SOX 2000 pattern holds; expect 24h low, final rally before October sell-off (CPI catalyst).",
+        "IGV/SMH Ratio Inflection: IGV/SMH ratio above 200 DMA (first in 16 months, crossing summer highs) confirms software outperformance over semis, signaling potential major inflation with software semis outperforming."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -450,6 +553,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yaadjp5qoz0-bcf414",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T07:39:54Z",
+      "summary_points": [
+        "Earnings Season Growth Expectation Gap: S&P 500 growth expected at 34% YoY (vs consensus 27%) amid Q3 earnings season start, but tech sell-off driven by Chinese AI competition fears.",
+        "Chinese AI Competition Catalyst: South China Morning Post report on China’s CXMT memory chip progress triggered 4th consecutive drop in Philly semiconductor index (-2.67%), with Micron (-3.88%), Samsung (-7.98%), SK Hynix (-8.72%) declining.",
+        "Geopolitical Energy Shock: Houthi attack on Riyadh + Russia-Ukraine ceasefire uncertainty amplified Brent crude to $106/bbl, spiking European inflation fears (Euro 1yr swaps +4.7bps, Franco-German 10yr spread at 142bps post-2022 high)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -678,6 +800,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-6plvxvosq1w-f9c7ee",
+      "title": "ING Think g10 fx talking october 2026",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:09:34Z",
+      "summary_points": [
+        "French debt crisis dominates EUR exposure: OAT-Bund spread volatility (250bp threshold) and election-driven fiscal risks threaten 1.10-1.15 EUR/USD range, with ECB emergency measures possible if crisis escalates - BoE rate hike catalyst: November 5 meeting likely for policy rate hike; February 2027 hike to 4.25% anticipated as inflation nears 4% (second-round effects intensify), positioning GBP as G10 high-yielder - EUR/GBP scenario risk: French crisis escalation (OAT spreads >250bp) could push pair to 0.82; contained crisis + hawkish BoE maintains 0.84-0.85 range with downside bias - USD/JPY policy divergence pause: Fed hawkishness vs BoJ dovishness keeps pair near 158; 160+ requires Fed hawkishness + BoJ rate hike (post-2027), with 30 Oct 2026 risk if BoJ no hike + no GPIF reallocation - EUR/CHF technical bounce: French crisis drives EUR/CHF to 0.92-0.94; SNB neutral on hawkish shift (CPI 0.8% 2027-2028), with small buys at 0.90-0.91 during extreme risk - Critical risk factor: Fragile bond markets and French fiscal inaction (debt crisis) override US growth momentum, making dollar strength vulnerable to White House policy shifts post-midterms - UK budget event risk: Burnham’s October 28 budget may avoid Gilt sell-off via cost-of-living funding, but EU-UK summit (Nov 20) could boost GBP through closer ties push"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ucvm8ntl5sa-77d786",
       "title": "Utilities Outlook US 9.30.26",
       "institution": "Other",
@@ -695,6 +834,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xjuuyadj9qu-e30850",
+      "title": "October 12 House View full set 2026",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:27Z",
+      "summary_points": [
+        "Central Bank Hawkishness & Yield Pressures: ECB/Fed rate hikes (25bps) amid inflation/fiscal concerns and hyperscaler debt pressure global bonds; policymakers signal aggressive tightening.",
+        "EM Yield Opportunities & Risk: EM sovereign/corporate yields (7.2%/7%) offer carry cushion but may underperform high-single-digit returns over 12 months amid fiscal risks.",
+        "AI Capex & Semiconductor Risk: AI capex to reach $1.2T by 2027, but semiconductor volatility (Philadelphia Index -4.3%) and frontier-model revenue concerns signal exposure risk.",
+        "Geopolitical Energy Disruption: Middle East tensions (Houthi attacks, tanker strikes) sustain Brent crude volatility ($105/bbl) and European gas near cycle highs (EUR 83/MWh), threatening energy flows.",
+        "Portfolio Strategy & Fiscal Risks: Prioritize short-to-medium-term European fixed income (agency, covered, corporate bonds); France/Italy fiscal risks (debt-service costs to 6% by 2030) demand selective positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g9izgbzute3-9281fa",
+      "title": "JPM JPM PI Weekly Wrap",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:53:11Z",
+      "summary_points": [
+        "HF Positioning Shifts: HFs bought US Banks (Large Caps > Regionals) for 2nd straight week, sold Semis (most net sold), EU Banks sold despite high positioning (+3z vs LT).",
+        "EU vs US Positioning Gap: EU positioning down to ~13th %-tile vs US steady at 46th %-tile, bearishness building in Europe.",
+        "EU Banks as Key Risk Factor: EU Banks identified as critical risk factor amid high positioning and selling pressure.",
+        "Sector Sentiment Divergence: Biotech stabilizing but weak; EU Banks bearishness contrasts with US bank buying flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
@@ -782,6 +962,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-bzgskvj5yjx-69e301",
+      "title": "Global daily my word is my bond",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:14:48Z",
+      "summary_points": [
+        "US/EU equity & bond yields: S&P500 +46 (7811) on 10-yr yield dip (7bps), CAC40 +0.95% driven by French yield decline and Renault gains from EU’s 350k Chinese hybrid quota avoiding tariffs.",
+        "Geopolitical trade tensions: EU safeguard measure cutting Chinese imports >50% (no retaliation risk), Germany pushing UK tariffs on Chinese EVs for EU access amid Canada’s 68,300 job losses (unemployment 6.5%).",
+        "Geopolitical escalation: Houthi strikes on Saudi Khalid airport, Strait of Hormuz incidents, and broken Ukraine-Russia energy ceasefire threaten oil markets, energy supply chains, and regional stability.",
+        "US core CPI data: 2.4%→2.5% core CPI (pivotal for Fed policy) dominates inflation narrative ahead of Fed Beige Book and key US retail sales/jobless claims data.",
+        "EU protectionism: Risk of blanket tariffs on Chinese EVs/chemicals disrupts trade flows and sectoral exposure, compounding US-China tech race straining fiscal space."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-s8rnoottqe9-6727c8",
       "title": "Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
       "institution": "Goldman Sachs",
@@ -798,6 +999,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9f7b08hhppb-f1ab7a",
+      "title": "Americas Business & Information Services 3Q debt issuance moderates, but key growth drivers remain intact",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:13:09Z",
+      "summary_points": [
+        "Global Debt Issuance Moderation: Q3 global debt issuance fell 8% y/y, driven by 54% y/y decline in leveraged loans and 37% in high yield, offset only by investment grade (25% y/y) and AI data center growth.",
+        "EMEA Outperformance: EMEA was sole region with Q3 debt growth (+3% y/y), led by corporate investment grade (+29%) and structured finance (+13%), contrasting NA (-13%) and APAC (-3%) declines.",
+        "SPGI/MCO Revenue Correlation: Ratings revenue growth for SPGI (3.3% y/y) and MCO (3.6% y/y) shows 86-89% correlation with global debt issuance volume, making debt market activity a core revenue driver.",
+        "US Yield Curve Tightening: 30-year US Treasury yield at 5.62% and rising 10-year yields signal tightening financial conditions, increasing borrowing costs and impacting debt valuations.",
+        "Credit Spread Divergence: Investment-grade spreads narrowed while high-yield spreads widened, coinciding with 37% y/y surge in M&A activity, reflecting shifting risk perceptions and liquidity shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
@@ -2230,6 +2452,34 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "institution": "U.S. Department of Agriculture",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-09T16:00:00Z",
+      "summary_points": [
+        "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year.",
+        "USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre.",
+        "USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook.",
+        "USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre.",
+        "USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel.",
+        "These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts."
+      ],
+      "tags": [
+        "agriculture",
+        "wheat",
+        "corn",
+        "soybeans",
+        "forecast"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
       "language": "en",
       "needs_metadata": false
     },

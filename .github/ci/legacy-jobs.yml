@@ -2344,6 +2344,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -3621,6 +3623,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -4709,6 +4713,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
       - "tests/test_intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -5010,6 +5016,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "tests/test_intl_history_mount.py"
@@ -5834,6 +5842,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -6851,6 +6861,7 @@ jobs:
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
+          tests/test_capital_structure_rule_applicability.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
@@ -7243,6 +7254,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -8744,6 +8757,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "engine/risk_envelope.py"
@@ -11503,6 +11518,7 @@ jobs:
       - "tests/test_rotation_events.py"
       - "tests/test_rotation_events_v2.py"
       - "tests/test_rotation_flow_pit.py"
+      - "tests/test_rotation_role_retention.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11512,7 +11528,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
 
   leadership-rotation-contract:
     if: ${{ false }}
@@ -11521,6 +11537,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -11603,6 +11621,82 @@ jobs:
       - name: leadership rotation measured-product contract
         run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
 
+  leadership-rotation-science:
+    if: ${{ false }}
+    gate: code
+    # LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the pre-registered study harness for
+    # research/LEADERSHIP_ROTATION_PREREG_V1.md (+ the V2 amendment pinned since #9327) — loader/arms/outcomes, zig-zag episodes,
+    # clustered paired bootstrap + Holm, group/family composer, P0 synthetic grid + size audit.
+    # DEVELOPMENT HARNESS: synthetic arrays and tmp git fixtures only; no data/ read in CI.
+    # scope: exclusive — paths = the union of scripts.ci_scope_dependencies.suite_dependency_closure
+    # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
+    scope: exclusive
+    paths:
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/sector_legs.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/hazard_score.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
+      - "scripts/__init__.py"
+      - "scripts/leadership_rotation_episodes.py"
+      - "scripts/leadership_rotation_inference.py"
+      - "scripts/leadership_rotation_p0.py"
+      - "scripts/leadership_rotation_run.py"
+      - "scripts/leadership_rotation_study.py"
+      - "tests/test_leadership_rotation_episodes.py"
+      - "tests/test_leadership_rotation_inference.py"
+      - "tests/test_leadership_rotation_p0.py"
+      - "tests/test_leadership_rotation_run.py"
+      - "tests/test_leadership_rotation_study.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
+      - name: leadership rotation pre-registered study harness
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+
   leadership-measured-read:
     if: ${{ false }}
     gate: code
@@ -11619,6 +11713,8 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - ".github/ci/legacy-jobs.yml"
       - "collectors/__init__.py"
       - "collectors/base.py"
@@ -12094,6 +12190,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -12401,6 +12499,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -13461,6 +13561,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -14555,6 +14657,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      # 2026-10-14 RIC D1 (EFFR meeting-path identification, A16-A19): engine/fed_path.py now lazily
+      # imports engine.rates_command_basis (B0 basis qualification) and engine.event_calendar (FOMC
+      # meeting dates), so the closure reaches both. Declared exactly, widening only; ceilings unchanged.
+      - "engine/event_calendar.py"
+      - "engine/rates_command_basis.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
@@ -14808,6 +14915,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -15527,6 +15636,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -17503,6 +17614,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -18265,6 +18378,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
       - engine/crypto_market_state.py
       - engine/crypto_universe.py
@@ -19437,6 +19552,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -23406,6 +23523,25 @@ jobs:
       - name: ric-y0-yield-momentum
         run: python -m pytest tests/test_yield_momentum.py -q -p no:cacheprovider
 
+  ric-y1-curve-accounting:
+    if: ${{ false }}
+    gate: code
+    # RIC Y1 (A22/A23/A24, 2026-10-14): engine/yield_momentum.build_curve_accounting qualifies the 10y nominal/real/KW-term-premium inputs as B0 basis records and runs the canonical rates_command_basis comparison rules; ACM stays explicitly missing. Listed on engine/rates_command_basis.py too because the suite pins B0 rule outcomes. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    timeout-minutes: 10
+    paths:
+      - "engine/yield_momentum.py"
+      - "engine/rates_command_basis.py"
+      - "tests/test_ric_y1_curve_accounting.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: ric-y1-curve-accounting
+        run: python -m pytest tests/test_ric_y1_curve_accounting.py -q -p no:cacheprovider
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
@@ -24461,6 +24597,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -24937,6 +25075,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - scripts/initialize_market_memory_w1a.py
       - engine/neuralweb/market_memory_retained_catalog.py
@@ -24945,6 +25085,7 @@ jobs:
       - tests/test_market_memory_retained_catalog.py
       - tests/test_market_memory_retained_saved.py
       - tests/test_market_memory_retained_saved_api.py
+      - tests/test_market_memory_read_observation.py
       - tests/test_market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
@@ -25853,7 +25994,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -25987,6 +26128,7 @@ jobs:
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
+          tests/test_market_memory_identity_candidate.py
           tests/test_market_memory_identity_observation.py
           tests/test_market_memory_identity_store.py
           tests/test_market_memory_identity_observation_deploy.py
@@ -27025,6 +27167,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -28600,6 +28744,8 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -29573,6 +29719,8 @@ jobs:
     # below therefore replace inference and list the whole import closure.
     timeout-minutes: 10
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "engine/grey_deer_pullback_forward.py"
       - "engine/grey_deer_pullback_forward_grade.py"
       - "scripts/__init__.py"
@@ -29656,6 +29804,8 @@ jobs:
     # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "scripts/research/grey_deer_pullback_stage1.py"
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
@@ -30279,6 +30429,10 @@ jobs:
       - "tests/test_sni_mut8_d.py"
       - "tests/test_sni_join_guard_properties.py"
       - "tests/test_sni_x9_redteam.py"
+      - "tests/test_sni_comparison_guard_properties.py"
+      - "tests/test_sni_denominator_guard_properties.py"
+      - "tests/test_sni_correction_lineage_guard_properties.py"
+      - "tests/test_sni_entitlement_guard_properties.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30288,7 +30442,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: sni acceptance evidence (PARTIAL rows)
-        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py tests/test_sni_correction_lineage_guard.py tests/test_sni_copy_guard_literals.py tests/test_sni_entitlement_guard.py tests/test_sni_counter_relation_guard.py tests/test_sni_then_known_guard.py tests/test_sni_session_state_guard.py tests/test_sni_mut6_run_s2_cli.py tests/test_sni_mut6_collapse_p04.py tests/test_sni_mut6_common_seal.py tests/test_sni_mut6_seal_full_check_cli.py tests/test_sni_mut6_run_s2_core.py tests/test_sni_mut6_eval_ledger.py tests/test_sni_mut6_stress_set.py tests/test_sni_mut6_run_s1_cli.py tests/test_sni_mut6_run_s1_frames.py tests/test_sni_mut6_scanners.py tests/test_sni_a04_identity_property.py tests/test_sni_a12_session_state_property.py tests/test_sni_a29_proper_score_repro.py tests/test_sni_class_duplicate_guard.py tests/test_sni_guard_chain_composition.py tests/test_sni_guard_family_invariants.py tests/test_sni_mut7_a.py tests/test_sni_mut7_b.py tests/test_sni_mut7_c.py tests/test_sni_mut7_d.py tests/test_sni_mut7_e.py tests/test_sni_mut7_f.py tests/test_sni_mut7_g.py tests/test_sni_three_clock_guard.py tests/test_sni_cglrep_repair.py tests/test_sni_x8crepb_repair.py tests/test_sni_x8brep_repair.py tests/test_sni_famj_repair.py tests/test_sni_a07_then_known_property.py tests/test_sni_a20c_structural_authority_scan.py tests/test_sni_x8brep2_repair.py tests/test_sni_x8arep_repair.py tests/test_sni_x8arep2_repair.py tests/test_sni_famj2_repair.py tests/test_sni_x8crepc_repair.py tests/test_sni_famdc_repair.py tests/test_sni_famvcc_repair.py tests/test_sni_a39_receipts_ledger_c2.py tests/test_sni_mut8_a.py tests/test_sni_mut8_b.py tests/test_sni_mut8_c.py tests/test_sni_family_text_rule_v2_conformance.py tests/test_sni_famkt_repair.py tests/test_sni_mut8_d.py tests/test_sni_join_guard_properties.py tests/test_sni_x9_redteam.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py tests/test_sni_mutation_join_guard.py tests/test_sni_mutation_run_s2_a.py tests/test_sni_mutation_stress_post_idrfix.py tests/test_sni_mutation_run_s1_a.py tests/test_sni_mutation_run_s1_b.py tests/test_sni_mutation_run_s2_b.py tests/test_sni_mutation_clocklaw_outcomes.py tests/test_sni_denominator_guard.py tests/test_sni_comparison_guard.py tests/test_sni_injection_safety.py tests/test_sni_release_evidence_guard.py tests/test_sni_kpi_missingness_guard.py tests/test_sni_view_state_guard.py tests/test_sni_ads_ratio_guard.py tests/test_sni_s2_seal_adjacent.py tests/test_sni_identity_binding_guard.py tests/test_sni_correction_lineage_guard.py tests/test_sni_copy_guard_literals.py tests/test_sni_entitlement_guard.py tests/test_sni_counter_relation_guard.py tests/test_sni_then_known_guard.py tests/test_sni_session_state_guard.py tests/test_sni_mut6_run_s2_cli.py tests/test_sni_mut6_collapse_p04.py tests/test_sni_mut6_common_seal.py tests/test_sni_mut6_seal_full_check_cli.py tests/test_sni_mut6_run_s2_core.py tests/test_sni_mut6_eval_ledger.py tests/test_sni_mut6_stress_set.py tests/test_sni_mut6_run_s1_cli.py tests/test_sni_mut6_run_s1_frames.py tests/test_sni_mut6_scanners.py tests/test_sni_a04_identity_property.py tests/test_sni_a12_session_state_property.py tests/test_sni_a29_proper_score_repro.py tests/test_sni_class_duplicate_guard.py tests/test_sni_guard_chain_composition.py tests/test_sni_guard_family_invariants.py tests/test_sni_mut7_a.py tests/test_sni_mut7_b.py tests/test_sni_mut7_c.py tests/test_sni_mut7_d.py tests/test_sni_mut7_e.py tests/test_sni_mut7_f.py tests/test_sni_mut7_g.py tests/test_sni_three_clock_guard.py tests/test_sni_cglrep_repair.py tests/test_sni_x8crepb_repair.py tests/test_sni_x8brep_repair.py tests/test_sni_famj_repair.py tests/test_sni_a07_then_known_property.py tests/test_sni_a20c_structural_authority_scan.py tests/test_sni_x8brep2_repair.py tests/test_sni_x8arep_repair.py tests/test_sni_x8arep2_repair.py tests/test_sni_famj2_repair.py tests/test_sni_x8crepc_repair.py tests/test_sni_famdc_repair.py tests/test_sni_famvcc_repair.py tests/test_sni_a39_receipts_ledger_c2.py tests/test_sni_mut8_a.py tests/test_sni_mut8_b.py tests/test_sni_mut8_c.py tests/test_sni_family_text_rule_v2_conformance.py tests/test_sni_famkt_repair.py tests/test_sni_mut8_d.py tests/test_sni_join_guard_properties.py tests/test_sni_x9_redteam.py tests/test_sni_comparison_guard_properties.py tests/test_sni_denominator_guard_properties.py tests/test_sni_correction_lineage_guard_properties.py tests/test_sni_entitlement_guard_properties.py -q -p no:cacheprovider
 
   c19-wp11-reader-pins:
     if: ${{ false }}
