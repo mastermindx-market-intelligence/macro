@@ -182,9 +182,13 @@ for(const status of [401,402,403,404,503])test('legacy '+status+' notices redraw
 test('legacy invalid and unpreservable intent notices retain their cause through language changes',async()=>{
  const x=setup('?ticker=AAPL');await tick();
  x.submit('x'.repeat(2049));const before=x.pending.length;x.setLang('zh');
+ assert.equal(x.location.searchParams.has('ret'),false,'do not restore an older valid auth target');
  assert.match(x.elements['mm-symbol-summary'].innerHTML,/无法保留此链接/);
+ x.auth(null);x.setLang('en');assert.match(x.elements['mm-macro-query'].innerHTML,/href="#mm-symbol-form"/);
+ assert.equal(x.location.searchParams.has('ret'),false);
  x.submit('!');x.setLang('en');assert.match(x.elements['mm-symbol-summary'].innerHTML,/Check the ticker/);
- x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,before);
+ x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,before+1,'only blocked macro read retries');
+ assert.equal(x.pending.filter(p=>p.url.includes('/symbol/')).length,1,'no retry of the previous issuer');
 });
 test('missing OAuth selection keeps its specific notice after locale changes with no private reads',async()=>{
  const x=setup('?onboard=resume');await tick();x.setLang('zh');

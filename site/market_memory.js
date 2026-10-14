@@ -89,7 +89,9 @@
   function signinHref() {
     if (!window.MarketMemoryIntent) return '#mm-symbol-form';
     // Rendering a notice must not mutate the shared OAuth capsule.
-    var result = window.MarketMemoryIntent.target({language: isZh() ? 'zh' : 'en'});
+    var patch = {language: isZh() ? 'zh' : 'en'};
+    if (state.symbolRequest) patch.issuerInput = state.latestRaw;
+    var result = window.MarketMemoryIntent.target(patch);
     if (!result.ok) return '#mm-symbol-form';
     var params = new URLSearchParams();
     params.set('signin', '1');
@@ -446,7 +448,9 @@
       });
     }
     document.addEventListener('langchange', function () {
-      syncIntent({language: isZh() ? 'zh' : 'en'});
+      var patch = {language: isZh() ? 'zh' : 'en'};
+      if (state.symbolRequest) patch.issuerInput = state.latestRaw;
+      syncIntent(patch);
       if (state.macro) renderMacro();
       else renderMacroNotice();
       if (state.symbol) renderSymbol();
