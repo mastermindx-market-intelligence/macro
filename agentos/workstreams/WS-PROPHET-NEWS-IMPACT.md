@@ -41,6 +41,7 @@ do_not_redo:
   - "The seven W3 design defects are settled by DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS (2026-10-13). Do not re-adjudicate them, and do not edit the frozen A-design packets; amendments live in phase1_designs/AMENDMENTS_W1C.md and the superseded case values in AMENDMENTS_W1C.cases.json."
   - "The X4 session-counted matched window (lane W1C_X4_r3 on GLM glm-5.3) is ACCEPTED by artifact. Do not relaunch it."
   - "Benchmark bodies are settled by DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE: issuer 8-Ks through the existing SEC owners, internal_only. Do not reopen vendor article bodies or write a second EDGAR client."
+  - "The w2 two-family labeling of 157 cases and the 40-slot audit (seed 20261014) are ACCEPTED under DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING. Add a third family on top; never relabel or redraw them."
 waves:
   - id: p0
     title: Phase 0 — recovery census, three-candidate commission A, seat freeze of event templates + closed schemas
@@ -65,12 +66,12 @@ waves:
     title: Wave 2 — commission D 600-case graded benchmark (200 capital allocation / 200 demand-guidance / 200 strategic-partnership)
     status: in_progress
     depends_on: [w1]
-    next_action: Under DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE, build engine/news_impact/tape_draw.py (tape rows to sampler candidates, with the manifest printing short cells and body_unavailable counts) and engine/news_impact/edgar_body.py (issuer 8-K bodies through the existing SEC owners, spans from documents.text_span); then draw the 600 cases, label them with the A6 labeler packet across two families, and score them with eval_receipt/eval_grade.
+    next_action: The draw (PR #9290, 157 of 600 cases) and the two-family results (DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING) are done. Next - a third family labels the disputed slots once GLM resets after 2026-10-19 05:16Z; an owner rules on the T1 per-share dividend gap (DSC:NEWS-IMPACT-T1-PER-SHARE-DIVIDEND-CONTRACT-GAP); MiniMax lanes get a usage capture; then the 600-case continuation.
   - id: w3
     title: Wave 3 — Phase 1 measured packet producer wired to the existing event ledger, context_only, behind the benchmark gate
     status: todo
     depends_on: [w2]
-next_action: Wave w2 - build the tape-draw adapter and the EDGAR body leaf under DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE, draw the 600-case benchmark, label it with the A6 labeler packet and score it with eval_receipt/eval_grade; keep the v1 contract byte-frozen.
+next_action: Wave w2 - third-family labeling of the disputed slots after GLM resets (2026-10-19 05:16Z), an owner ruling on the T1 per-share dividend contract gap, a MiniMax usage capture, then the 600-case continuation; keep the v1 contract byte-frozen. Wave w3 follows.
 ---
 
 # Prophet news-to-business-impact
