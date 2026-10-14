@@ -383,9 +383,10 @@ def qualify_operands(
         formula dispatch.
       - ``mislabeled_denominator`` (IND-R206) when any parsed
         ``revenue_share_pct`` operand carries a ``(segment, denominator)``
-        pair outside the two agreed pairs; evaluated for every operand and
-        never conditioned on a ``comparison_receipt`` field — a receipt
-        cannot vouch a mislabeled denominator into a legal operand.
+        pair outside the two agreed pairs, or omits either key; evaluated
+        for every operand and never conditioned on a
+        ``comparison_receipt`` field — a receipt cannot vouch a mislabeled
+        denominator into a legal operand.
     """
     if not isinstance(cells, list):
         # Allow tuple for backward compatibility but require sequence-like.
@@ -668,7 +669,7 @@ def derive_result_cash(
             operand_refs=[],
         )
 
-    # Qualification gate — only when needed by the formula.
+    # Qualification gate — unconditional for every formula.
     qualifier = qualify_operands(
         _purpose_for(formula),
         [_as_mapping(op) for op in parsed],
