@@ -873,3 +873,27 @@ Existing owner normalization independently reproduces both original input hashes
 The integrated kernel passes9 synthetic checks and exactly matches575 numeric comparisons plus230 censored nulls against an independently prepared23-row oracle. Its deterministic acceptance records the before-knowledge prior cutoff repair, numeric elapsed description, reversible owner schema bridge, original-event retention and rejection of any independent-sample claim. Method review came through author-independent Bailian and its supported boundary repairs are applied. Q1/Q2/Q4 predictive obligations remain NOT_EVALUABLE; no proper-score, variance/power, performance null, unseen holdout, forecast efficacy or natural-time completion is claimed. Opened outcomes remain exposed evidence and cannot select predictive features/horizons/filters/tuning or become unseen holdouts. Original30/45 contract is preserved with mappings forA12/A23/A24–A30 and no full-case completion claim.
 
 No acquisition, research family/store, trial/vault write, canonical/public source mutation, issuance or grade was created by this diagnostic. Original `defense-q3-caller-01a13300-a` stays UNKNOWN with the original21:04 observation refusal; no retry/replacement. GRV-FA1 4.1.0 terms and2029-08-06 expiry are unchanged. Local research acceptance is separate from the root's canonical publication/install/entitled product proof.
+
+
+### October14 03:09 UTC current financial owner preserved
+
+The original-root local marker now selects reconciled generation
+8a27d8b450ab547be676fadc, manifest
+d3fd29d01e55e9ef8484b0722ec56aef2eec96b256bd4ba6db8ca4429b3d62d4.
+The incumbent assembler preserves current canonical predecessor
+6ab0665a0783750f665b1b25 (manifest0c776ad3a061ff58e6c9695834eed229f769dfd74d9f005fc1d51ccc674bb4dc)
+and adds the five previously reviewed defense events. Root independently checked
+the exact current five payloads, exact five additions and aliases; only derived
+generation metadata differs. All66 literal facts, ten typed missing units and
+native sources/spans/lifecycle clocks remain unchanged. Every old/new workspace
+length and hash passes. The consumer matches all43 accepted theme fingerprints
+with identical nonfinancial inputs. Independent Fabric review was consumed and
+accepted. Proof is under financial_owner_reconciliation_20261014.
+
+Local adoption made no network call or upstream write. The private owner payloads
+remain outside Git. Publication still requires an immediately fresh conditional
+read of the complete incumbent owner, native ETag CAS and complete ten-event
+readback after the source/release gates. The adapted helper preserves the old
+comparison and control logic with independently verified new pins; the original
+helper and its valid refusal remain retained. Next: normal v4 generation, full
+frozen proof, cold-browser timing and independent visual/product acceptance.
