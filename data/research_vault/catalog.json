@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T16:56:00.188519+00:00",
-  "count": 2909,
+  "generated_at": "2026-10-14T17:56:08.595810+00:00",
+  "count": 2913,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -98,6 +98,7 @@
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
     "U.S. Department of Agriculture, National Agricultural Statistics Service",
+    "U.S. International Trade Commission",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -247,6 +248,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ftuozl3okjq-c3d98f",
+      "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T03:47:56Z",
+      "summary_points": [
+        "Fundamental Mismatch: Term premium leg (10y10y SOFR forward) has surged ahead of fundamentals, evidenced by long-end sell-off and forward curve divergence vs 1y1y/5y5y, driven by energy inflation (Brent >$105), fiscal deficits (AI debt), and global contagion (Japan 10y JGB >3%, Europe Bund 3.65%).",
+        "Term Premium Surge: 10y10y at 5.38% (highest since 2024), with 47bp term premium spike in 10 days (vs flat 2y swap), not Fed policy; fueled by energy-driven inflation and global yield rises.",
+        "Near-Term Reversal Catalysts: September CPI soft print, 28-Oct FOMC pricing no October hike, Treasury refunding supply response, and midterm election pricing (Democrats likely to lower yields via slower growth/AI slowdown).",
+        "Critical Risk: CPI surprise (upside risk to term premium) and Fed hiking beyond December (72% odds priced), with global long-end yields rising (e.g., OATs widening on French budget stalls)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -551,6 +572,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-vwvc6q8j2nr-66921c",
+      "title": "JPM Semiconductors Semi",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:56:40Z",
+      "summary_points": [
+        "GPU Supply Constraint: Supply constraints (not demand) gate near-term growth, favoring AVGO, MRVL, and NVDA amid sustained AI infrastructure investment and acute supply tightness.",
+        "AI Cloud Capex Surge: Consensus cloud capex at $950B/$1.42T/$1.55T (CY26/CY27/CY28; +97%/+47%/+99% Y/Y), with key risk being CY27+ supply-chain sustainability (foundry, HBM, packaging).",
+        "Memory SCA/LTA Framework: 26 SCAs with $150B RPO and >75% FY27 output committed re-anchor through-cycle GM floor, driving upside despite valuation disconnect.",
+        "Critical EPS Deviations: AMAT Q3 EPS 13.8% below consensus (material negative), QNT Q3 estimate 29.7% below consensus (severe downside risk), AMKR Q4 estimate 15.4% above consensus (strong positive).",
+        "DC SSD Catalyst: MU’s F4Q26 DC SSD revenue ~$10B (10x Y/Y, two-thirds of NAND) marks step-change in NAND profitability, accelerating data center SSD growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4jeodyhnzx9-2cc2b7",
       "title": "JPM Equity Strategy Q3 P",
       "institution": "J.P. Morgan",
@@ -715,6 +757,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2rk8r0eb4ch-4ee2fe",
+      "title": "Americas Insurance 3Q26 Preview Expect Mixed Results as The Cycle Softens Further",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:25Z",
+      "summary_points": [
+        "Middle East conflict risk: ACGL, AIG, CB, HIG, RNR, PLGO face commercial loss ratio misses and pricing pressures; TRV Sell rating linked to Street expectations and reporting deceleration.",
+        "Pricing deterioration: IVANS data shows sequential pricing decline (-50bps QTD avg), led by Commercial Auto (-110bps) and General Liability (-85bps), signaling significant rate compression risk.",
+        "AIG underwriting strength: AIG's underlying combined ratio at 88.1% (Q22E) with marginal YoY improvement (-0.1%) indicates strong core underwriting performance amid sector headwinds.",
+        "EPS consensus divergence: GS vs. consensus EPS estimates reveal material misalignment (e.g., AIG P&C: 5.4% diff, ALL: 12.4% upward revision), signaling potential re-rating opportunities for key names."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 65,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-lzmltel3teb-9a2d70",
       "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
       "institution": "Bank Earnings Previews",
@@ -802,6 +864,36 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usitc-2026-10-13-337-ta-1473",
+      "title": "Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "institution": "U.S. International Trade Commission",
+      "side": "independent",
+      "desk": "Industrials",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USITC voted on 2026-10-13 not to review Orders 25 and 26, partially ending specified patent claims in the existing Bobcat complaint against Caterpillar. This notice does not terminate the entire investigation.",
+        "Investigation 337-TA-1473 began on 2026-01-07 following a complaint by Doosan Bobcat North America. Caterpillar is the named respondent. The complaint alleges infringement involving imported construction equipment; the notice is not a finding that infringement occurred.",
+        "Bobcat filed withdrawal motions on 2026-08-31 and 2026-09-04 and said both were unopposed by Caterpillar. The administrative law judge granted them on 2026-09-10. No party petitioned for review of either initial determination.",
+        "The October determination removes claims 3-6 and 11 of patent 8,364,356; claims 3-5 of patent 8,047,760; claims 3 and 15 of patent 10,934,684; and claims 1, 4 and 17-19 of patent 7,831,364.",
+        "The notice separately describes earlier claim withdrawals on 2026-08-26. Those earlier withdrawals must not be counted as a new October determination or confused with the specified claims in Orders 25 and 26.",
+        "The initial determinations found no other written or oral agreements between the parties concerning the investigation and no extraordinary circumstances warranting denial of the withdrawal motions. This does not establish a commercial settlement or licence.",
+        "The Commission vote and notice issue date are both 2026-10-13. The notice supplies no publication time, company revenue impact, share-price response or valuation estimate; none is inferred here."
+      ],
+      "tags": [
+        "industrials",
+        "construction-equipment",
+        "patents",
+        "trade"
+      ],
+      "tickers": [
+        "CAT"
+      ],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },

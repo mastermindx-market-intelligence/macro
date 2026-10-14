@@ -298,10 +298,15 @@ def _raw_end_of(param: object) -> str:
 
 
 def _parser_admits(raw_end: str) -> bool:
-    """True when THIS interpreter's ``date.fromisoformat`` accepts ``raw_end``."""
+    """True when THIS interpreter's ``date.fromisoformat`` accepts ``raw_end``.
+
+    A non-str entry is treated as not parser-admitted: ``_raw_end_of`` reads
+    bare entries too, and the ``TypeError`` ``date.fromisoformat`` raises on a
+    non-str must not crash import/collection of this module.
+    """
     try:
         date.fromisoformat(raw_end)
-    except ValueError:
+    except (TypeError, ValueError):
         return False
     return True
 
@@ -404,7 +409,24 @@ def test_parser_admitted_subset_of_shape_refused_forms_meets_the_floor() -> None
     derived = {_raw_end_of(param) for param in _SHAPE_REFUSED_ENDS_PARSER_ADMITTED}
     floor = {"20260703", "2026-W27", "02071203:6"}
     assert floor <= derived, (
-        f"date.fromisoformat no longer admits {sorted(floor - derived)}; the "
+        f"date.fromisoformat no longer admits {sorted(floor - derived)} on "
+        f"Python {sys.version_info[:2]}; the "
         "shape list has lost its discriminating power and the parametrized "
         f"guard collected {len(derived)} of {len(_SHAPE_REFUSED_ENDS)} shapes"
     )
+
+
+def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
+    """``_parser_admits`` must not crash collection on a non-str entry.
+
+    ``_raw_end_of`` deliberately reads bare (non-``pytest.param``) entries, so a
+    future non-str entry -- ``None`` or the int ``20260703`` -- reaches
+    ``date.fromisoformat``, which raises ``TypeError`` (measured on this 3.12.3:
+    "fromisoformat: argument must be str"). ``except ValueError`` alone let that
+    TypeError escape and failed the whole module at import/collection time, so
+    both non-str forms are asserted ``False`` here. The compact form as a STR is
+    version-bound: 3.11+ admits ``20260703``, earlier interpreters refuse it.
+    """
+    assert _parser_admits(None) is False
+    assert _parser_admits(20260703) is False
+    assert _parser_admits("20260703") == (sys.version_info >= (3, 11))

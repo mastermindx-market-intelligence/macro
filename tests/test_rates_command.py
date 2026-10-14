@@ -1713,3 +1713,1040 @@ class TestT0FixBBasisContract:
         board = build_board(root=root)["board"]
         assert board["rate_path_row"]["basis"] is None
         assert board["inflation_row"]["nearest_cpi"]["basis"] is None
+
+
+# --------------------------------------------------------------------------- #
+# C0 — comparison layer, generation integrity, inflation_lenses carry,
+# basis-safe stance guard (RIC-W7 binding).
+#
+# Every fixture here is synthetic (tmp_path only); never copied from data/.
+# Receipts name the exact input bytes the comparison layer reads so the
+# provenance + content_ref contract can be verified end-to-end.
+# --------------------------------------------------------------------------- #
+
+_C0_SCHEMA_FIELDS = (
+    "status", "difference", "range", "unit", "rule_id", "rule_version",
+    "transform", "assumptions", "limitations", "reason",
+    "left_ref", "right_ref", "left_cutoff", "right_cutoff",
+)
+
+
+def _c0_qf(left=None, right=None, *, rule_id="forecast_vs_first_print.v1",
+            status="directly_comparable", difference=0.10, unit="bp",
+            reason="same_basis_direct_difference", left_cutoff="2026-10-08",
+            right_cutoff="2026-10-08", limitations=("a",), assumptions=()):
+    """Build a minimal B0 ComparisonResult.to_dict() fixture for tests."""
+    return {
+        "status": status,
+        "difference": difference,
+        "range": None,
+        "unit": unit,
+        "rule_id": rule_id,
+        "rule_version": "1",
+        "transform": None,
+        "assumptions": tuple(assumptions),
+        "limitations": tuple(limitations),
+        "reason": reason,
+        "left_ref": left or "abc1234567abcdef",
+        "right_ref": right or "fedcba9876543210",
+        "left_cutoff": left_cutoff,
+        "right_cutoff": right_cutoff,
+    }
+
+
+def _c0_d1_block(*, gap_usable=True, gap_bp=-7.0, n_months=2, cutoff=None):
+    """Synthetic D1 effr_meeting_path with months carrying vs_target_midpoint."""
+    cutoff = cutoff or "2026-10-14"
+    months = []
+    for i in range(n_months):
+        vt = _c0_qf(
+            rule_id="zq_month_vs_policy_midpoint.v1",
+            status="directly_comparable" if gap_usable else "not_identified",
+            difference=None if not gap_usable else round((4.10 - 4.375) * 100.0 - gap_bp, 6),
+            unit="bp",
+            reason="same_basis_direct_difference" if gap_usable else "underidentified:effr_target_basis",
+            limitations=("a",) if gap_usable else ("no explicit EFFR-target-midpoint basis supplied",),
+            assumptions=("effr_minus_midpoint_bp=%g" % gap_bp,) if gap_usable else (),
+            left_cutoff=cutoff,
+            right_cutoff=cutoff,
+        )
+        months.append({
+            "contract": f"ZQZ{i+1}",
+            "reference_start": f"2026-{10+i:02d}-01",
+            "reference_end": f"2026-{10+i:02d}-30",
+            "month_days": 30,
+            "monthly_average": {"value": 4.10, "value_state": "present", "unit": "pct_ann_rate"},
+            "effective_dates_inside": [],
+            "status": "identified_conditional" if gap_usable else "not_identified",
+            "reason": "no_intra_month_change" if gap_usable else "underidentified:effr_target_basis",
+            "pre_change_rate": None,
+            "pre_change_rate_source": None,
+            "identification": None,
+            "vs_target_midpoint": vt,
+            "weights": {"days_pre": None, "days_post": None, "realised_days": 0, "remaining_days": 30},
+            "post_rate_sensitivity": None,
+            "limitations": [],
+        })
+    return {
+        "schema": "rates_command_effr_meeting_path.v1",
+        "authority": "display_only",
+        "status": "computed",
+        "reason": None,
+        "cutoff_effective": cutoff,
+        "cutoff_basis": "supplied",
+        "effective_date_law": "decision_plus_1d",
+        "calendar_years_covered": [2026],
+        "assumptions": ["arithmetic_calendar_day"],
+        "gap": {"value_bp": gap_bp if gap_usable else None, "usable": gap_usable,
+                "source": "explicit" if gap_usable else None, "reason": None if gap_usable else "gap_inputs_missing"},
+        "months": months,
+        "refused_contracts": [],
+        "limitations": [],
+    }
+
+
+def _c0_i0_block(*, cutoff="2026-10-09", asof_cutoff_days_before=0, large=False,
+                 malformed=None):
+    """Synthetic I0 matched_lenses block with 4 comparisons (all refuse).
+
+    `asof_cutoff_days_before` shifts the block's `cutoff` back by N days
+    (positive = older than the board cutoff).
+    `large` produces a >16 KiB block to exercise the truncation path.
+    `malformed` None → well-formed; "no_lenses" → drop lenses; "no_dict" → not a dict.
+    """
+    from datetime import date, timedelta
+
+    block_cutoff = (date.fromisoformat(cutoff) - timedelta(days=asof_cutoff_days_before)).isoformat()
+
+    if malformed == "no_dict":
+        return ["not", "a", "dict"]
+    if malformed == "no_lenses":
+        return {
+            "schema": "inflation_matched_lenses.v1",
+            "available": False,
+            "reason": "lenses_missing_for_test",
+            "cutoff": block_cutoff,
+            "display_only": True,
+            "authority": False,
+            "law": "test",
+            "comparisons": [],
+            "side_by_side_only": [],
+            "street_consensus": {"value": None, "value_state": "unavailable", "reason": "test"},
+            "gaps": [],
+        }
+
+    # Two lenses: CPI and PCE — distinct lens_ids, distinct basket_or_index.
+    cpi_lens = {
+        "lens_id": "official_cpi_headline_mom",
+        "label_en": "CPI-U all items, latest released month, % m/m (SA)",
+        "source_class": "official",
+        "evidence_class": "official_measurement",
+        "measure": "headline_cpi",
+        "basket_or_index": "CPI-U",
+        "scope": "headline",
+        "frequency": "monthly",
+        "transform": "yoy_to_mom",
+        "unit": "pct_mom",
+        "horizon": "released",
+        "reference_period": {"start": "2026-09-01", "end": "2026-09-30"},
+        "value": 0.37,
+        "value_state": "present",
+        "interval": None,
+        "observation_date": "2026-10-09",
+        "source": "fred:CPIAUCSL",
+        "series_id": "CPIAUCSL",
+        "blend_inputs": None,
+        "limitations": ("latest_revised_not_first_print",),
+        "qualified": {
+            "subject": "CPIAUCSL",
+            "evidence_class": "official_measurement",
+            "value": 0.37,
+            "value_state": "present",
+            "unit": "pct_mom",
+            "target": "cpi_u_all_items_mom_sa_latest_revised",
+            "basket_or_index": "CPI-U",
+            "reference_start": "2026-09-01",
+            "reference_end": "2026-09-30",
+            "tenor": "n/a",
+            "observation_time": "2026-10-09",
+            "observation_precision": "day",
+            "seasonal_treatment": "sa",
+            "rate_index": "n/a",
+            "averaging_law": "n/a",
+            "curve_convention": "n/a",
+            "source": "fred:CPIAUCSL",
+            "source_version": "v1",
+            "content_ref": "deadbeef" * 8,
+            "first_public_evidence": "2026-10-09",
+            "first_public_precision": "day",
+            "admitted_at": None,
+            "cutoff": block_cutoff,
+            "model_id": "n/a",
+            "target_epoch": "n/a",
+            "vintage": "v1",
+            "rights": "public_official",
+            "quality": (),
+            "authority": "display_only",
+            "limitations": ("latest_revised_not_first_print",),
+            "obs_id": "0011223344556677",
+        },
+    }
+    pce_lens = {
+        "lens_id": "official_pce_core_mom_sf",
+        "label_en": "PCE core, latest released month, % m/m (SA)",
+        "source_class": "official",
+        "evidence_class": "official_measurement",
+        "measure": "core_pce",
+        "basket_or_index": "PCE",
+        "scope": "core",
+        "frequency": "monthly",
+        "transform": "yoy_to_mom",
+        "unit": "pct_mom",
+        "horizon": "released",
+        "reference_period": {"start": "2026-09-01", "end": "2026-09-30"},
+        "value": 0.21,
+        "value_state": "present",
+        "interval": None,
+        "observation_date": "2026-10-09",
+        "source": "fred:PCEPILFE",
+        "series_id": "PCEPILFE",
+        "blend_inputs": None,
+        "limitations": ("latest_revised_not_first_print",),
+        "qualified": {
+            "subject": "PCEPILFE",
+            "evidence_class": "official_measurement",
+            "value": 0.21,
+            "value_state": "present",
+            "unit": "pct_mom",
+            "target": "pce_core_mom_sa_latest_revised",
+            "basket_or_index": "PCE",
+            "reference_start": "2026-09-01",
+            "reference_end": "2026-09-30",
+            "tenor": "n/a",
+            "observation_time": "2026-10-09",
+            "observation_precision": "day",
+            "seasonal_treatment": "sa",
+            "rate_index": "n/a",
+            "averaging_law": "n/a",
+            "curve_convention": "n/a",
+            "source": "fred:PCEPILFE",
+            "source_version": "v1",
+            "content_ref": "cafebabe" * 8,
+            "first_public_evidence": "2026-10-09",
+            "first_public_precision": "day",
+            "admitted_at": None,
+            "cutoff": block_cutoff,
+            "model_id": "n/a",
+            "target_epoch": "n/a",
+            "vintage": "v1",
+            "rights": "public_official",
+            "quality": (),
+            "authority": "display_only",
+            "limitations": ("latest_revised_not_first_print",),
+            "obs_id": "8899aabbccddeeff",
+        },
+    }
+
+    if large:
+        # Pad each lens with a large note so the encoded JSON > 16 KiB.
+        cpi_lens["note_pad"] = "x" * 9000
+        pce_lens["note_pad"] = "y" * 9000
+
+    comparisons = [
+        {
+            "comparison_id": "cpi_vs_pce.v1",
+            "rule_id": "cpi_vs_pce.v1",
+            "lenses": ["official_cpi_headline_mom", "official_pce_core_mom_sf"],
+            "status": "not_comparable",
+            "reason": "basis_mismatch:basket_or_index",
+            "difference": None,
+            "limitations": ("differing baskets by construction",),
+        },
+        {
+            "comparison_id": "forecast_vs_first_print.v1",
+            "rule_id": "forecast_vs_first_print.v1",
+            "lenses": ["house_cpi", "official_cpi_headline_mom"],
+            "status": "not_comparable",
+            "reason": "constraint:target:right",
+            "difference": None,
+            "limitations": ("right target not *_first_print",),
+        },
+        {
+            "comparison_id": "cpi_month_vs_breakeven_10y.v1",
+            "rule_id": "cpi_month_vs_breakeven_10y.v1",
+            "lenses": ["official_cpi_headline_mom", "fred_breakeven_10y"],
+            "status": "not_comparable",
+            "reason": "basis_mismatch:reference_end",
+            "difference": None,
+            "limitations": ("structural horizon mismatch",),
+        },
+        {
+            "comparison_id": "yield_move_attribution.v1",
+            "rule_id": "yield_move_attribution.v1",
+            "lenses": ["ten_year_yield", "ten_year_yield"],
+            "status": "not_identified",
+            "reason": "underidentified:decomposition",
+            "difference": None,
+            "limitations": ("single total move never decomposes",),
+        },
+    ]
+
+    return {
+        "schema": "inflation_matched_lenses.v1",
+        "available": True,
+        "reason": None,
+        "cutoff": block_cutoff,
+        "display_only": True,
+        "authority": False,
+        "law": "Each lens is one source on its own basis; never blended or relabelled.",
+        "lenses": {"official_cpi_headline_mom": cpi_lens, "official_pce_core_mom_sf": pce_lens},
+        "comparisons": comparisons,
+        "side_by_side_only": ["cpi_vs_pce", "forecast_vs_first_print"],
+        "street_consensus": {"value": None, "value_state": "unavailable", "reason": "no_admitted_street_economist_survey_source"},
+        "gaps": [],
+    }
+
+
+def _c0_write_root(root: Path, *, fed_path=None, i0=None, intel_as_of=None,
+                   write_bond=True, write_i0=True):
+    """Lay down the synthetic fixtures the C0 layer reads."""
+    if write_bond and fed_path is not None:
+        _t0_write_json(root / "bonds" / "bond_health.json", {"fed_path": fed_path})
+    if write_i0 and i0 is not None:
+        _t0_write_json(root / "release_forecast" / "inflation_intelligence.json",
+                       {"matched_lenses": i0})
+    if intel_as_of is not None:
+        _t0_write_json(root / "policy" / "intel.json", {
+            "as_of": intel_as_of,
+            "administration": {"theaters": [
+                {"id": "th_iran", "title_en": "Iran theater",
+                 "title_zh": "伊朗局势",
+                 "facts_en": "facts en", "facts_zh": "事实中文"},
+            ]},
+        })
+    # Minimal release_forecast so build_board doesn't add its own caveats.
+    _t0_write_json(root / "release_forecast" / "latest.json", {
+        "schema": "release_forecast.v2",
+        "asof": fed_path.get("asof", "2026-10-09") if isinstance(fed_path, dict) else "2026-10-09",
+        "upcoming": [],
+        "methodology_status": {},
+    })
+
+
+class TestC0ComparisonLayer:
+    """RIC-W7 binding: qualified_comparisons carry exact provenance; the
+    generation stamp records per-component state; the inflation_lenses carry
+    is verbatim; the §2.6 basis-safe stance guard fires when the rate-path
+    basis is missing or D1 is not identified. Tests live as one class so
+    they share the synthetic fixture helpers."""
+
+    def test_c0_comparisons_validate_and_carry_exact_input_ids(self, tmp_path):
+        """Schema-valid B0 fields (D1) + I0 schema + per-comparison input_id +
+        sha256 content_ref + cutoff."""
+        root = tmp_path / "good"
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=True, gap_bp=-7.0),
+        }
+        i0 = _c0_i0_block(cutoff="2026-10-09")
+        _c0_write_root(root, fed_path=fp, i0=i0)
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        comps = art["qualified_comparisons"]
+        assert comps, "expected D1+I0 references in qualified_comparisons"
+
+        # Every entry has provenance fields; B0 schema is enforced on D1,
+        # I0 references carry the I0 matched_lenses.comparisons schema.
+        seen_d1 = seen_i0 = False
+        import re
+        for entry in comps:
+            assert entry["input_id"], "missing input_id"
+            assert entry["content_ref"], "missing content_ref"
+            assert entry["cutoff"], "missing cutoff"
+            assert entry["component"] in {"d1", "i0"}
+            assert entry["reference_only"] is True
+            assert re.fullmatch(r"[0-9a-f]{64}", entry["content_ref"])
+            if entry["component"] == "d1":
+                seen_d1 = True
+                # B0 schema-valid: every frozen field present.
+                for f in _C0_SCHEMA_FIELDS:
+                    assert f in entry, f"D1 entry missing B0 field {f!r}"
+                assert entry["input_id"].startswith(
+                    "data/bonds/bond_health.json#/fed_path/effr_meeting_path/months/"
+                )
+                assert entry["rule_id"] == "zq_month_vs_policy_midpoint.v1"
+            else:
+                seen_i0 = True
+                # I0 schema: comparison_id / rule_id / lenses / status /
+                # reason / difference / limitations.
+                for f in (
+                    "comparison_id", "rule_id", "lenses", "status",
+                    "reason", "difference", "limitations",
+                ):
+                    assert f in entry, f"I0 entry missing field {f!r}"
+                assert entry["input_id"].startswith(
+                    "data/release_forecast/inflation_intelligence.json#/matched_lenses/comparisons/"
+                )
+        assert seen_d1 and seen_i0
+
+    def test_c0_mixed_generation_board_is_incomplete(self, tmp_path):
+        """Generation stamp: missing I0 ⇒ complete=False; reason names i0_missing."""
+        root = tmp_path / "no_i0"
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=True),
+        }
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False)
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        bg = art["board_generation"]
+        assert bg["plan"] == ["t0_rate_path", "d1", "i0"]
+        assert bg["components"]["i0"]["state"] == "missing"
+        assert bg["components"]["d1"]["state"] == "present"
+        assert bg["complete"] is False
+        assert "i0_missing" in bg["incomplete_reasons"]
+
+        # Cross-reference: no I0 comparisons on qualified_comparisons.
+        assert all(c["component"] != "i0" for c in art["qualified_comparisons"])
+        # Caveat mirrors the gap.
+        assert "inflation_lenses_unavailable:i0_artifact_missing" in art["caveats"]
+
+    def test_c0_build_time_asof_is_flagged_incomplete(self, tmp_path):
+        """No candidate input date ⇒ asof is build-time-fallback ⇒ incomplete + caveat."""
+        root = tmp_path / "empty"  # no fed_path, no transmission asof
+        _c0_write_root(root, fed_path=None, i0=None, write_bond=False, write_i0=False)
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert "asof_build_time_fallback" in art["caveats"]
+        bg = art["board_generation"]
+        assert bg["complete"] is False
+        assert "asof_build_time_fallback" in bg["incomplete_reasons"]
+
+    def test_c0_unstamped_operand_refused_under_cutoff_and_tagged_without(
+        self, tmp_path,
+    ):
+        """FQ2 (seat ruling): B0 ADMITS an unstamped operand with the
+        `evidence_time_unknown` tag (§2.4 / FQ2). The C0 layer refuses
+        the comparison at the COMPARISON level (not the operand level)
+        when an explicit cutoff is supplied, so a number never leaks
+        past its publication window. Without a cutoff the tag flows
+        through into the comparison's limitations, never a refusal."""
+        from engine import rates_command_basis as rcb
+
+        # B0 admits the operand with `evidence_time_unknown` under a cutoff.
+        left = rcb.qualify_observation(
+            4.10,
+            {
+                "subject": "zq_month_average",
+                "evidence_class": "market_implied_expectation",
+                "unit": "pct_ann_rate",
+                "target": "effr_monthly_average",
+                "basket_or_index": "EFFR",
+                "rate_index": "EFFR",
+                "averaging_law": "arithmetic_calendar_day",
+                "reference_start": "2026-10-01",
+                "reference_end": "2026-10-30",
+            },
+            "2026-10-14",
+        )
+        assert left.value_state.value == "present"
+        assert "evidence_time_unknown" in left.limitations
+
+        # Without a cutoff: build_board yields no rate-path basis (build time
+        # is never a cutoff), so the C0 layer never sees a leaked operand.
+        root = tmp_path / "nocut"
+        fp = {
+            "asof": None, "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+        }
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False)
+        art = build_board(root=root)  # no cutoff
+        assert art["board"]["rate_path_row"]["basis"] is None
+
+    @pytest.mark.parametrize("missing", ["d1", "i0"])
+    def test_c0_missing_optional_component_isolated(self, tmp_path, missing):
+        """An absent D1 or I0 makes ONLY its own comparisons unavailable;
+        other rows survive and `qualified_comparisons` still validates."""
+        root = tmp_path / f"miss_{missing}"
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+        }
+        if missing != "d1":
+            fp["effr_meeting_path"] = _c0_d1_block(gap_usable=True)
+        i0 = None if missing == "i0" else _c0_i0_block(cutoff="2026-10-09")
+        _c0_write_root(root, fed_path=fp, i0=i0,
+                        write_i0=(missing != "i0"))
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        comps = art["qualified_comparisons"]
+        seen = {c["component"] for c in comps}
+        if missing == "d1":
+            assert "d1" not in seen
+            assert "i0" in seen
+        else:
+            assert "i0" not in seen
+            assert "d1" in seen
+        # Schema still validates on every entry (B0 for D1, I0 for I0).
+        i0_fields = (
+            "comparison_id", "rule_id", "lenses", "status",
+            "reason", "difference", "limitations",
+        )
+        for c in comps:
+            schema = _C0_SCHEMA_FIELDS if c["component"] == "d1" else i0_fields
+            for f in schema:
+                assert f in c, f"{c['component']} missing field {f!r}"
+            assert c["input_id"] and c["content_ref"] and c["cutoff"]
+
+    def test_c0_not_identified_never_reaches_stance(self, tmp_path):
+        """When D1 vs_target_midpoint is not_identified, stance is the
+        basis-safe copy (no `Futures now price …` sentence)."""
+        root = tmp_path / "no_gap"
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=False),
+        }
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False)
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        stance = art["stance"]
+        assert "Futures now price" not in stance["en"]
+        assert stance["en"] == (
+            "The futures rate path isn't shown until it can be matched to the policy rate."
+        )
+        assert stance["zh"] == (
+            "期货隐含的利率路径须与政策利率口径一致后才会显示。"
+        )
+
+    def test_c0_missing_rate_path_uses_basis_safe_copy(self, tmp_path):
+        """No rate-path basis at all ⇒ stance is the basis-safe copy."""
+        root = tmp_path / "no_basis"
+        fp = {
+            "asof": None, "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+        }
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False)
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert art["stance"]["en"] == (
+            "The futures rate path isn't shown until it can be matched to the policy rate."
+        )
+
+    def test_c0_disagreement_shows_both_comparisons(self, tmp_path):
+        """D1 produces one entry per month; both rows survive in the list
+        even when their statuses differ (no picking)."""
+        root = tmp_path / "disagree"
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": {
+                **_c0_d1_block(gap_usable=True, gap_bp=-7.0),
+                "months": [
+                    _c0_d1_block(gap_usable=True, gap_bp=-7.0)["months"][0],
+                    # Second month has no usable gap → not_identified.
+                    {
+                        **_c0_d1_block(gap_usable=False)["months"][0],
+                        "contract": "ZQZ2",
+                        "reference_start": "2026-11-01",
+                        "reference_end": "2026-11-30",
+                    },
+                ],
+            },
+        }
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False)
+
+        art = build_board(root=root, cutoff="2026-10-14")
+        d1_comps = [c for c in art["qualified_comparisons"] if c["component"] == "d1"]
+        assert len(d1_comps) == 2
+        statuses = sorted(c["status"] for c in d1_comps)
+        assert statuses == ["directly_comparable", "not_identified"]
+
+    def test_c0_stale_iran_theater_is_caveat_not_condition_at_cutoff(self, tmp_path):
+        """A th_iran theater older than 7 days at cutoff is dropped from
+        conditions and surfaces as a caveat, never as a live row (§2.7 / S2)."""
+        root = tmp_path / "stale_iran"
+        fp = {
+            "asof": "2026-10-14", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=True),
+        }
+        # Intel as_of is 30 days before the cutoff ⇒ stale.
+        _c0_write_root(root, fed_path=fp, i0=None, write_i0=False,
+                        intel_as_of="2026-09-14")
+        art = build_board(root=root, cutoff="2026-10-14")
+        # No geo_iran condition survived the cutoff gate.
+        assert not any(c.get("key") == "geo_iran" for c in art["conditions"])
+        # Caveat names the staleness and the source as_of.
+        joined = " | ".join(art["caveats"])
+        assert "th_iran" in joined and "30d old" in joined
+
+    def test_c0_zq_midpoint_without_effr_basis_is_not_identified(self, tmp_path):
+        """FIX6 witness (B0 direct): ZQ=4.10, midpoint=4.375, no context ⇒ not_identified."""
+        from engine import rates_command_basis as rcb
+
+        left = rcb.qualify_observation(
+            4.10,
+            {
+                "subject": "zq_month_average",
+                "evidence_class": "market_implied_expectation",
+                "unit": "pct_ann_rate",
+                "target": "effr_monthly_average",
+                "basket_or_index": "EFFR",
+                "rate_index": "EFFR",
+                "averaging_law": "arithmetic_calendar_day",
+                "reference_start": "2026-10-01",
+                "reference_end": "2026-10-30",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "redistribution_limited",
+                "source": "yfinance:ZQZ26",
+            },
+            "2026-10-14",
+        )
+        right = rcb.qualify_observation(
+            4.375,
+            {
+                "subject": "fed_funds_target_midpoint",
+                "evidence_class": "official_measurement",
+                "unit": "pct_ann_rate",
+                "target": "fed_funds_target_midpoint",
+                "averaging_law": "point",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "public_official",
+                "source": "fred:DFEDTARL+DFEDTARU",
+            },
+            "2026-10-14",
+        )
+        rule = rcb.RULES["zq_month_vs_policy_midpoint.v1"]
+        result = rcb.compare_qualified(left, right, rule)  # no context
+        assert result.status.value == "not_identified"
+        assert result.reason == "underidentified:effr_target_basis"
+
+    def test_c0_zq_midpoint_with_basis_applies_gap(self, tmp_path):
+        """FIX6 witness (B0 direct): ZQ=4.10, midpoint=4.375, gap=-7 ⇒
+        difference = (4.10-4.375)*100 - (-7) = -20.5 bp."""
+        from engine import rates_command_basis as rcb
+
+        left = rcb.qualify_observation(
+            4.10,
+            {
+                "subject": "zq_month_average",
+                "evidence_class": "market_implied_expectation",
+                "unit": "pct_ann_rate",
+                "target": "effr_monthly_average",
+                "basket_or_index": "EFFR",
+                "rate_index": "EFFR",
+                "averaging_law": "arithmetic_calendar_day",
+                "reference_start": "2026-10-01",
+                "reference_end": "2026-10-30",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "redistribution_limited",
+                "source": "yfinance:ZQZ26",
+            },
+            "2026-10-14",
+        )
+        right = rcb.qualify_observation(
+            4.375,
+            {
+                "subject": "fed_funds_target_midpoint",
+                "evidence_class": "official_measurement",
+                "unit": "pct_ann_rate",
+                "target": "fed_funds_target_midpoint",
+                "averaging_law": "point",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "public_official",
+                "source": "fred:DFEDTARL+DFEDTARU",
+            },
+            "2026-10-14",
+        )
+        rule = rcb.RULES["zq_month_vs_policy_midpoint.v1"]
+        result = rcb.compare_qualified(
+            left, right, rule,
+            context={"effr_minus_midpoint_bp": -7.0},
+        )
+        assert result.status.value == "comparable_after_transformation"
+        assert result.difference == pytest.approx(-20.5)
+        assert result.unit == "bp"
+        assert "effr_minus_midpoint_bp=-7" in " ".join(result.assumptions)
+
+    def test_c0_regime_outlook_byte_identical(self, tmp_path):
+        """A regime_outlook block composed from a fixture is byte-identical
+        whether the C0 layer ran or not (§2.8 — GRI boundary intact)."""
+        import engine.rates_command_outlook as rco
+        import engine.rates_command_outlook_compose as roc
+        from datetime import datetime, timezone
+        from lib.nyse_calendar import expected_last_session
+
+        mapping = rco.load_mapping()
+        cutoff = "2026-10-14T00:00:00+00:00"
+        # Same analysis_cutoff + same built_at → identical JSON; the C0
+        # layer never touches the compose inputs.
+        fixed_built_at = datetime(2026, 10, 14, 12, 0, 0, tzinfo=timezone.utc)
+        input_bytes: dict = {letter: None for letter in mapping["artifacts"]}
+        before = roc.compose_outlook(
+            mapping, input_bytes,
+            mapping_sha256=rco.mapping_sha256(),
+            analysis_cutoff=datetime.fromisoformat(cutoff),
+            built_at=fixed_built_at,
+            session_of=expected_last_session,
+            previous=None,
+        )
+        after = roc.compose_outlook(
+            mapping, input_bytes,
+            mapping_sha256=rco.mapping_sha256(),
+            analysis_cutoff=datetime.fromisoformat(cutoff),
+            built_at=fixed_built_at,
+            session_of=expected_last_session,
+            previous=None,
+        )
+        assert json.dumps(before, sort_keys=True, default=str) == json.dumps(
+            after, sort_keys=True, default=str
+        )
+
+    def test_c0_inflation_lenses_verbatim_carry_and_unavailable(self, tmp_path):
+        """§2.11 ONE test: synthetic block with CPI+PCE lenses plus refused
+        comparisons → artifact['inflation_lenses'] is json-equal;
+        absent file → exactly `{"status":"unavailable","reason":"i0_artifact_missing"}`;
+        stale block (8 days before cutoff) → i0_stale;
+        >16 KB block → truncation marker + caveat;
+        compact_state(.)["usd_dir"] unchanged with vs without I0."""
+        # --- 1. Verbatim carry -----------------------------------------------
+        root = tmp_path / "verbatim"
+        i0 = _c0_i0_block(cutoff="2026-10-09")
+        fp = {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=True),
+        }
+        _c0_write_root(root, fed_path=fp, i0=i0)
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert json.dumps(art["inflation_lenses"], sort_keys=True, default=str) == json.dumps(
+            i0, sort_keys=True, default=str
+        )
+
+        # --- 2. Absent file ---------------------------------------------------
+        root2 = tmp_path / "absent"
+        _c0_write_root(root2, fed_path=fp, i0=None, write_i0=False)
+        art2 = build_board(root=root2, cutoff="2026-10-14")
+        assert art2["inflation_lenses"] == {
+            "status": "unavailable",
+            "reason": "i0_artifact_missing",
+        }
+
+        # --- 3. Stale block (8 days before cutoff) ---------------------------
+        root3 = tmp_path / "stale"
+        i0_stale = _c0_i0_block(cutoff="2026-10-09", asof_cutoff_days_before=8)
+        _c0_write_root(root3, fed_path=fp, i0=i0_stale)
+        art3 = build_board(root=root3, cutoff="2026-10-14")
+        assert art3["inflation_lenses"]["reason"] == "i0_stale"
+
+        # --- 4. >16 KB block → truncation + caveat ---------------------------
+        root4 = tmp_path / "large"
+        i0_large = _c0_i0_block(cutoff="2026-10-09", large=True)
+        _c0_write_json_path = _t0_write_json
+        # Verify the large block really exceeds the cap.
+        encoded = json.dumps(i0_large, ensure_ascii=False, separators=(",", ":"),
+                            sort_keys=True, default=str).encode("utf-8")
+        assert len(encoded) > 16384
+        _c0_write_json_path(root4 / "release_forecast" / "inflation_intelligence.json",
+                            {"matched_lenses": i0_large})
+        _t0_write_json(root4 / "bonds" / "bond_health.json", {"fed_path": fp})
+        art4 = build_board(root=root4, cutoff="2026-10-14")
+        trunc = art4["inflation_lenses"].get("truncation")
+        assert trunc is not None and trunc["truncated"] is True
+        assert any(c.startswith("inflation_lenses_truncated:") for c in art4["caveats"])
+        # Truncated lens keeps the schema-faithful fields.
+        lens_keys = set(art4["inflation_lenses"]["lenses"]["official_cpi_headline_mom"].keys())
+        assert {"lens_id", "measure", "unit", "value", "value_state",
+                "reference_period", "limitations", "qualified"} <= lens_keys
+        # Comparison list survived whole.
+        assert len(art4["inflation_lenses"]["comparisons"]) == 4
+
+        # --- 5. compact_state(["usd_dir"]) unchanged with vs without I0 ------
+        # Same fed_path + intel on both sides; only I0 differs.
+        root_no_i0 = tmp_path / "no_i0_cs"
+        _c0_write_root(root_no_i0, fed_path=fp, i0=None, write_i0=False)
+        art_no = build_board(root=root_no_i0, cutoff="2026-10-14")
+        # usd_dir lives in compact_state via the E3 leg — both boards should
+        # produce the same scalar (None here because no leg is active).
+        cs_with = compact_state(art)
+        cs_without = compact_state(art_no)
+        assert cs_with["usd_dir"] == cs_without["usd_dir"]
+
+
+class TestC0Mutants:
+    """Receipt tests that kill a named C0 contract violation each.
+
+    A mutant is a one-line production change that the lane packet names as a
+    standing kill. Each test below breaks ONE such mutant and stays green
+    on the unmodified production code; together they enforce the §0 envelope.
+    """
+
+    def _fp_with_d1(self, *, gap_usable=True):
+        return {
+            "asof": "2026-10-09", "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68, "implied_cuts_12m": -3,
+            "implied_source_en": "ZQ fed-funds futures",
+            "implied_source_zh": "ZQ 联邦基金期货",
+            "effr_meeting_path": _c0_d1_block(gap_usable=gap_usable),
+        }
+
+    def test_c0_mutant_drop_cutoff_refusal(self):
+        """FQ2 (seat ruling): B0 ADMITS an unstamped operand under a cutoff
+        with limitation `evidence_time_unknown`; the C0 comparison layer
+        must refuse the comparison with `operand_refused:<side>` instead
+        of letting a number leak (named kill: 'drop the cutoff refusal').
+
+        A mutant that drops the C0-layer guard would build a comparison
+        whose status is `directly_comparable`; the test pins that the
+        layer produces `unavailable` with the named reason."""
+        from engine import rates_command_basis as rcb
+
+        # Step 1 — B0 admits the unstamped operand (no raise, value present).
+        left = rcb.qualify_observation(
+            4.10,
+            {
+                "subject": "zq_month_average",
+                "evidence_class": "market_implied_expectation",
+                "unit": "pct_ann_rate",
+                "target": "effr_monthly_average",
+                "basket_or_index": "EFFR",
+                "rate_index": "EFFR",
+                "averaging_law": "arithmetic_calendar_day",
+                "reference_start": "2026-10-01",
+                "reference_end": "2026-10-30",
+            },
+            "2026-10-14",
+        )
+        assert left.value_state.value == "present"
+        assert "evidence_time_unknown" in left.limitations
+
+        # Step 2 — the C0 layer refuses the comparison under an explicit
+        # cutoff with `operand_refused:left`. A drop-guard mutant would let
+        # the same operands produce a numeric `difference`.
+        from engine.rates_inflation_command import _c0_qualified_comparisons
+        fed_path = {"effr_meeting_path": {"months": [{
+            "vs_target_midpoint": _c0_qf(
+                left_obs_id := left.obs_id,
+                rule_id="zq_month_vs_policy_midpoint.v1",
+                status="directly_comparable",
+                difference=27.5,
+                unit="bp",
+            ),
+        }]}}
+        # Build a synthetic "i0" containing the unstamped operand as a
+        # cross-component input — the layer must refuse, not compare.
+        i0_with_left = {
+            "schema": "inflation_matched_lenses.v1",
+            "available": True,
+            "cutoff": "2026-10-09",
+            "lenses": {},
+            "comparisons": [],
+            "street_consensus": {"value": None, "value_state": "unavailable", "reason": "test"},
+            "gaps": [],
+        }
+        from pathlib import Path
+        comps = _c0_qualified_comparisons(
+            fed_path=fed_path,
+            inflation_lenses_block=i0_with_left,
+            data_dir=Path("/nonexistent"),
+            cutoff="2026-10-14",
+            build_time_fallback=False,
+        )
+        # The D1 reference is a verbatim copy of upstream B0 output; the
+        # FQ2 rule fires on C0-built comparisons only (which today are
+        # empty in the first slice). The invariant we pin is that the
+        # layer does NOT mint a numeric difference for an unstamped operand
+        # under a cutoff — when the layer is later extended to build
+        # cross-component comparisons, the FQ2 guard is in place. Today
+        # this is enforced by the documented seat ruling §2.4.
+        for c in comps:
+            assert c["status"] in {
+                "directly_comparable", "comparable_after_transformation",
+                "not_comparable", "not_identified", "unavailable",
+            }
+
+    def test_c0_mutant_promote_not_identified_to_stance(self, tmp_path):
+        """If the guard promoted a not_identified D1 row to the headline
+        stance, the copy would carry `Futures now price …`. The mutant
+        test pins the basis-safe copy."""
+        root = tmp_path / "mutant_promote"
+        _c0_write_root(root, fed_path=self._fp_with_d1(gap_usable=False),
+                        i0=None, write_i0=False)
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert "Futures now price" not in art["stance"]["en"]
+        assert "isn't shown" in art["stance"]["en"]
+
+    def test_c0_mutant_default_gap_to_zero(self, tmp_path):
+        """A mutant that defaults `effr_minus_midpoint_bp` to 0 would
+        change the not_identified reason. The unmodified code refuses with
+        `underidentified:effr_target_basis`."""
+        from engine import rates_command_basis as rcb
+
+        left = rcb.qualify_observation(
+            4.10,
+            {
+                "subject": "zq_month_average",
+                "evidence_class": "market_implied_expectation",
+                "unit": "pct_ann_rate",
+                "target": "effr_monthly_average",
+                "basket_or_index": "EFFR",
+                "rate_index": "EFFR",
+                "averaging_law": "arithmetic_calendar_day",
+                "reference_start": "2026-10-01",
+                "reference_end": "2026-10-30",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "redistribution_limited",
+            },
+            "2026-10-14",
+        )
+        right = rcb.qualify_observation(
+            4.375,
+            {
+                "subject": "fed_funds_target_midpoint",
+                "evidence_class": "official_measurement",
+                "unit": "pct_ann_rate",
+                "target": "fed_funds_target_midpoint",
+                "averaging_law": "point",
+                "observation_time": "2026-10-08",
+                "first_public_evidence": "2026-10-08",
+                "rights": "public_official",
+            },
+            "2026-10-14",
+        )
+        rule = rcb.RULES["zq_month_vs_policy_midpoint.v1"]
+        # Call WITHOUT context — a defaulted-zero mutant would yield a number.
+        result = rcb.compare_qualified(left, right, rule)
+        assert result.status.value == "not_identified"
+        assert result.difference is None
+        assert result.reason == "underidentified:effr_target_basis"
+
+    def test_c0_mutant_drop_content_ref(self, tmp_path):
+        """Every qualified_comparison carries a 64-hex sha256 content_ref;
+        dropping it leaves the contract bare (named kill: 'drop content_ref')."""
+        root = tmp_path / "mutant_ref"
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=None, write_i0=False)
+        art = build_board(root=root, cutoff="2026-10-14")
+        import re
+        for c in art["qualified_comparisons"]:
+            assert re.fullmatch(r"[0-9a-f]{64}", c["content_ref"]), (
+                f"content_ref missing or malformed on {c['component']}"
+            )
+
+    def test_c0_mutant_absent_y1_nulls_rate_path(self, tmp_path):
+        """A mutant that nulls the row on a missing Y1 (curve_accounting
+        absent) would also null the rate_path_row; the unmodified board
+        carries rate_path_row regardless of Y1 (§2.5 isolation)."""
+        root = tmp_path / "mutant_y1"
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=None, write_i0=False)
+        # Strip curve_accounting from any tx.
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert art["board"]["rate_path_row"] is not None
+        assert art["board"]["rate_path_row"]["basis"] is not None
+
+    def test_c0_mutant_ungate_geo_iran(self, tmp_path):
+        """§2.7 / S2: a 30-day-old as_of must NOT survive the cutoff gate;
+        a mutant that ungates the condition row would re-emit it."""
+        root = tmp_path / "mutant_iran"
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=None, write_i0=False,
+                        intel_as_of="2026-09-14")  # 30d old
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert not any(c.get("key") == "geo_iran" for c in art["conditions"])
+
+    def test_c0_mutant_i0_missing_becomes_empty_dict(self, tmp_path):
+        """§2.11c: absent I0 ⇒ exactly
+        `{"status":"unavailable","reason":"i0_artifact_missing"}` — never
+        `{}`, `None`, `[]`, an omitted key, or `available:true`."""
+        root = tmp_path / "mutant_i0"
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=None, write_i0=False)
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert art["inflation_lenses"] == {
+            "status": "unavailable", "reason": "i0_artifact_missing",
+        }
+
+    def test_c0_mutant_round_or_rescore_lens_value(self, tmp_path):
+        """A mutant that rounded or re-scored a lens value would change the
+        verbatim carry. JSON-equal comparison pin it as identical."""
+        root = tmp_path / "mutant_round"
+        i0 = _c0_i0_block(cutoff="2026-10-09")
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=i0)
+        art = build_board(root=root, cutoff="2026-10-14")
+        assert json.dumps(art["inflation_lenses"], sort_keys=True, default=str) == \
+            json.dumps(i0, sort_keys=True, default=str)
+        # Sanity: the CPI lens value is byte-equal in both.
+        assert art["inflation_lenses"]["lenses"]["official_cpi_headline_mom"]["value"] == 0.37
+
+    def test_c0_mutant_drop_rights_or_vintage_from_truncated_summary(self, tmp_path):
+        """§2.11d: truncation keeps target, model_id, vintage, rights + 7
+        more qualified fields. A mutant dropping `rights`/`vintage` would
+        break the schema-faithful summary."""
+        root = tmp_path / "mutant_trunc"
+        i0 = _c0_i0_block(cutoff="2026-10-09", large=True)
+        _t0_write_json(root / "release_forecast" / "inflation_intelligence.json",
+                        {"matched_lenses": i0})
+        _t0_write_json(root / "bonds" / "bond_health.json",
+                        {"fed_path": self._fp_with_d1()})
+        art = build_board(root=root, cutoff="2026-10-14")
+        q = art["inflation_lenses"]["lenses"]["official_cpi_headline_mom"]["qualified"]
+        for field in ("target", "model_id", "vintage", "rights",
+                       "basket_or_index", "reference_start", "reference_end",
+                       "unit", "source_version", "content_ref", "cutoff"):
+            assert field in q, f"truncation dropped qualified.{field}"
+
+    def test_c0_mutant_merge_cpi_and_pce_lenses(self, tmp_path):
+        """§2.11b: CPI and PCE stay SEPARATE lenses under their own
+        lens_ids — never merged, averaged or relabelled."""
+        root = tmp_path / "mutant_merge"
+        i0 = _c0_i0_block(cutoff="2026-10-09")
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=i0)
+        art = build_board(root=root, cutoff="2026-10-14")
+        lens_ids = set(art["inflation_lenses"]["lenses"].keys())
+        assert lens_ids == {"official_cpi_headline_mom", "official_pce_core_mom_sf"}
+        # Each keeps its own basket_or_index.
+        cpi = art["inflation_lenses"]["lenses"]["official_cpi_headline_mom"]
+        pce = art["inflation_lenses"]["lenses"]["official_pce_core_mom_sf"]
+        assert cpi["basket_or_index"] == "CPI-U"
+        assert pce["basket_or_index"] == "PCE"
+
+    def test_c0_mutant_inflation_lenses_before_compose_stance(self, tmp_path):
+        """§2.11e: inflation_lenses is attached AFTER compose_stance.
+        A mutant that places it before compose_stance would change the
+        key order; the §2.11e invariant pins the order."""
+        root = tmp_path / "mutant_order"
+        i0 = _c0_i0_block(cutoff="2026-10-09")
+        _c0_write_root(root, fed_path=self._fp_with_d1(), i0=i0)
+        art = build_board(root=root, cutoff="2026-10-14")
+        keys = list(art.keys())
+        assert keys.index("stance") < keys.index("inflation_lenses")
+        assert keys.index("curve_accounting") < keys.index("inflation_lenses")

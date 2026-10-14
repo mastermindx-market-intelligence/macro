@@ -893,9 +893,11 @@ def _envelope_side_contradicts(side: Any) -> bool:
     The per-side logic of ``_stated_definition_contradicted``'s side loop,
     factored out (W15-F-FUY item 1) so the ``_emit_result`` backstop checks
     BOTH envelope sides with the SAME comparisons instead of duplicating
-    them. A non-Mapping side cannot contradict: the envelope is simply
-    absent, and the predicate shares that behaviour -- it treats an absent
-    side as non-contradicting. The ``_emit_result`` BACKSTOP is
+    them. A non-Mapping side cannot contradict: whether the envelope is
+    absent or malformed (present but not a Mapping), there are no stated
+    unit/scale/quantum fields for it to compare against, so the predicate
+    treats such a side -- missing or unusable alike -- as
+    non-contradicting. The ``_emit_result`` BACKSTOP is
     deliberately stricter on the CURRENT side only: it withholds a
     non-``_pct`` row whose ``current_period_fact`` is not a Mapping at
     all, because ``main`` read that missing side's quantum as ``None`` and
@@ -1054,6 +1056,27 @@ def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
     return False
 
 
+#: Derived rows and the rows whose values they are computed from, read
+#: off the build function: ``advertising_net_change`` is
+#: ``ar_change - ae_change`` of the two advertising change rows, and
+#: ``advertising_share_of_revenue_change_pct`` is the ratio of numerator
+#: ``advertising_revenue_change`` over denominator ``total_revenue_change``.
+#: When the screen withholds one of these constituent rows, the derived
+#: row must not publish a value computed from it. No derived key here is
+#: itself a constituent of another, so one pass over this table already
+#: reaches the fixed point; if that ever changes, iterate to a fixed point.
+_DERIVED_ROW_CONSTITUENTS: dict[str, tuple[str, ...]] = {
+    RESULT_KEY_ADVERTISING_NET_CHANGE: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    ),
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    ),
+}
+
+
 def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     """Withhold contradicting internal results IN PLACE, before the verdicts.
 
@@ -1062,8 +1085,11 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     ``None`` and the existing ``_DEFINITION_CONTRADICTED`` reason -- no new
     vocabulary. The ``_pct`` ratio stays exempt exactly as the check in
     ``_emit_result`` exempted it (the ratio describes itself as a
-    percentage and says nothing about a currency); which ratio cases
-    withhold does not change. A row already withheld keeps its own reason.
+    percentage and says nothing about a currency); which ratio
+    cases THIS contradiction screen withholds does not change -- the
+    ``_DERIVED_ROW_CONSTITUENTS`` cascade below is a separate mechanism
+    that can withhold the ratio only for a withheld constituent, never
+    for its own envelopes. A row already withheld keeps its own reason.
 
     The screened rows are INTERNAL envelopes, and the row's own
     ``display_quantum`` is absent on every internal row when this screen
@@ -1078,14 +1104,20 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     withheld exactly like an envelope contradiction -- but no reachable
     input triggers it today.
 
-    ``advertising_net_change`` is arithmetic on the two advertising change
-    ROWS: when one of them is withheld here while the net row's own
-    envelopes are clean, the net value derives from a withheld row and
-    cannot publish. It is then withheld with the build branch's own
-    existing reason, ``dependency_suppressed`` -- the same verdict the net
-    derivation reaches when a constituent is not READY at build time
-    (review defect D1: the emitted expense row was withheld while ``-4``
-    computed from it still published).
+    Every derived row in ``_DERIVED_ROW_CONSTITUENTS`` is arithmetic on
+    other ROWS: ``advertising_net_change`` on the two advertising change
+    rows, and ``advertising_share_of_revenue_change_pct`` on its
+    numerator ``advertising_revenue_change`` and denominator
+    ``total_revenue_change``. When one of a derived row's constituents is
+    withheld here while the derived row's own envelopes are clean, the
+    derived value is computed from a withheld row and cannot publish. It
+    is then withheld with the build branch's own existing reason,
+    ``dependency_suppressed`` -- the same verdict each derivation reaches
+    when a constituent is not READY at build time (review defect D1: the
+    emitted expense row was withheld while ``-4`` computed from it still
+    published; the ratio row reached the same defect from the other side
+    -- the screen runs after the build, so a constituent the build found
+    READY but the screen withholds left the ratio publishing 41.66).
     """
     for result in results:
         key = str(result.get("key") or "")
@@ -1098,18 +1130,18 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
             result["withheld_reason"] = _DEFINITION_CONTRADICTED
 
     by_key = {str(r.get("key")): r for r in results}
-    net = by_key.get(RESULT_KEY_ADVERTISING_NET_CHANGE)
-    if net is not None and not net.get("withheld_reason"):
-        for constituent_key in (
-            RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
-            RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
-        ):
+    for derived_key, constituent_keys in _DERIVED_ROW_CONSTITUENTS.items():
+        derived = by_key.get(derived_key)
+        if derived is None or derived.get("withheld_reason"):
+            # Absent, or already withheld: an existing reason is kept.
+            continue
+        for constituent_key in constituent_keys:
             constituent = by_key.get(constituent_key)
             if constituent is not None and constituent.get("withheld_reason"):
-                net["state"] = "WITHHELD"
-                net["value_text"] = None
-                net["value_decimal"] = None
-                net["withheld_reason"] = "dependency_suppressed"
+                derived["state"] = "WITHHELD"
+                derived["value_text"] = None
+                derived["value_decimal"] = None
+                derived["withheld_reason"] = "dependency_suppressed"
                 break
 
 
@@ -1871,7 +1903,50 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # ``state``, so availability, the lead and the emitted rows agree
     # (independent PR #9285 review, defects D1/D2: the check used to live
     # only inside ``_emit_result``, which runs after both).
+    # Snapshot the rows withheld BEFORE the screen runs: a row already
+    # withheld at build time keeps its existing bookkeeping exactly (its
+    # entries come from ``_compose_changes`` and the omission loops, not
+    # from this block).
+    _keys_withheld_before_screen = {
+        _r.get("key") for _r in all_results if _r.get("withheld_reason")
+    }
     _screen_stated_definition(all_results)
+
+    # The module docstring's dependency-local rule: a suppressed result
+    # "records them in ``degraded_dependencies``". The stated-definition
+    # screen withheld rows without recording them, so a case whose screen
+    # withholds every row reached availability "unavailable" with an
+    # empty ``degraded_dependencies`` and failed the contract's own
+    # if/then self-check (consumer_cyclical_intelligence_read_model.v1
+    # .schema.json ``then`` branch: minItems 1). Record every row THIS
+    # call newly withheld -- including rows the
+    # ``_DERIVED_ROW_CONSTITUENTS`` cascade withheld. Unconditional on
+    # availability: one row's bookkeeping must not depend on unrelated
+    # rows. Entries follow ``all_results`` order and dedupe by
+    # ``dependency`` against the entries already in ``degraded_facts``.
+    # ``state`` keeps ``_degraded``'s default "unavailable": the schema's
+    # ``$defs/degraded_dependency.state`` enum admits only
+    # "available"/"partial"/"unavailable" -- none names withholding.
+    # Each ``reason`` is the row's non-empty ``withheld_reason`` string,
+    # satisfying the schema's reason constraint (string or null,
+    # minLength 1).
+    _deps_already_recorded = {
+        _d.get("dependency")
+        for _d in degraded_facts
+        if isinstance(_d, Mapping)
+    }
+    for _result in all_results:
+        _key = _result.get("key")
+        _reason = _result.get("withheld_reason")
+        if not _key or not _reason:
+            continue
+        if _key in _keys_withheld_before_screen:
+            continue
+        _entry = _degraded(str(_key), str(_reason))
+        if _entry["dependency"] in _deps_already_recorded:
+            continue
+        _deps_already_recorded.add(_entry["dependency"])
+        degraded_facts.append(_entry)
 
     # ---- Availability ----------------------------------------------------
     has_any_ready = any(r.get("state") == "READY" for r in all_results)
