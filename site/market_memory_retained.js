@@ -999,7 +999,7 @@
     if (kind === 'auth_required') {
       ui.status.setAttribute('data-mmr-state', 'error');
       ui.status.textContent = copy('Sign in required', '需要登录');
-      var signInTarget = notice.signinHref;
+      var signInTarget = noticeSigninHref(notice);
       ui.resultBody.innerHTML = banner('auth_required',
         'Sign in to open saved evidence', '登录以查看已保存依据',
         'Use your existing account to continue.' + oauthStorageWarning(false),
@@ -1568,7 +1568,18 @@
       'Sign in to open saved evidence', '登录以查看已保存依据',
       'Authenticated saved evidence, counts and sources are cleared when you sign out.',
       '退出登录后，已保存依据、计数与来源将被清除。',
-      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(notice.signinHref) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
+      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(noticeSigninHref(notice)) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
+  }
+
+  function noticeSigninHref(notice) {
+    /* The owner target builder validates the current reference without writing
+     * the OAuth capsule. Persisting the real sign-in transition remains separate. */
+    if (!window.MarketMemoryIntent || typeof window.MarketMemoryIntent.target !== 'function') return notice.signinHref;
+    var target = window.MarketMemoryIntent.target({ language: isZh() ? 'zh' : 'en' });
+    if (!target.ok) return '#mmr-status';
+    var params = new URLSearchParams();
+    params.set('signin', '1'); params.set('ret', target.target);
+    return '/?' + params.toString();
   }
 
   function retainedSigninHref() {
