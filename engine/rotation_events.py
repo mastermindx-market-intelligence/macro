@@ -1974,6 +1974,20 @@ def early_rotation_context(receipts: dict, *, as_of: str | None) -> dict:
 
 # ------------------------------------------------------------------ extended run_nightly ----
 
+def _coerce_generated_utc(value):
+    """None -> canonical build stamp; otherwise require the canonical 'YYYY-MM-DD HH:MM UTC' form."""
+    if value is None:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if isinstance(value, str):
+        try:
+            parsed = datetime.strptime(value, "%Y-%m-%d %H:%M UTC")
+        except ValueError:
+            parsed = None
+        if parsed is not None and parsed.strftime("%Y-%m-%d %H:%M UTC") == value:
+            return value
+    raise ValueError(f"run_nightly: generated_utc must be 'YYYY-MM-DD HH:MM UTC', got {value!r}")
+
+
 def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                 generated_utc: str | None = None,
                 data_subdir: str = "rotation_events",
@@ -1994,7 +2008,14 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
     dedup so a second cold run produces identical line counts.
 
     ``data_subdir`` controls the directory under ``data_dir`` (default "rotation_events").
+
+    ``generated_utc`` is either omitted (the canonical build clock is stamped) or a
+    string in exactly the canonical ``'YYYY-MM-DD HH:MM UTC'`` form.  Anything else
+    raises before ANY directory, state or ledger write, so a malformed stamp can never
+    reach the append-only ledger as an unparseable record clock.
     """
+    now = _coerce_generated_utc(generated_utc)
+
     d = data_dir / data_subdir
     d.mkdir(parents=True, exist_ok=True)
     state_p, ledger_p = d / "state.json", d / "events.jsonl"
@@ -2011,8 +2032,6 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
     else:
         state, replay_created, replay_closed = coldstart_replay(sectors, p)
     new_state, active, created, closed_list = step_pairs(sectors, state, p)
-
-    now = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     # ---- lane-gated ledger append (v1 rows) ----
     armed = _ledger_lane_armed()
