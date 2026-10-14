@@ -6867,6 +6867,7 @@ jobs:
           tests/test_capital_structure_capacity_c2.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
+          tests/test_capital_structure_authorized_shares.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
           tests/test_capital_structure_instrument_economics.py
