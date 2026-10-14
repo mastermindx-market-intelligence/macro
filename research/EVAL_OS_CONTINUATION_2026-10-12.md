@@ -100,3 +100,19 @@ Fresh integrated-source qualification is pending and no publication is claimed.
 The15:55 census9/cap8 and PR8920 refresh register prevent a new hosted producer;
 local source preparation creates none. Completion, release and production flags
 remain false. See research/evidence/eval-os-20261012/approved-base-repair-20261014/.
+
+
+### Final integrated local qualification — 2026-10-14T16:05Z
+
+Exact source7e3157596cdb completed full tracked-inventory closure with zero omissions
+and strict packing135/135/129jobs,5684/5502/5445weights,10packs each, within existing
+136/135/130job limits. The sole newly authorized limit remains free-content134->135.
+No weight/pack/shared-capacity limit changed. Runtime/updater and three CI registration
+controls271PASS, theme parser12PASS, zero failures/errors/skips. The17-file census has
+15 unchanged: updater gains only three incoming API restart paths, and theme.css adds
+two canonical variables unused by the A1 consumers. Application/science/rendering proof
+is reused on unchanged bytes. Final hosted proof and production verification remain owed.
+Raw original evidence, exact hashes and source-bound inventory are committed under
+research/evidence/eval-os-20261012/approved-base-repair-20261014/. The containing commit
+adds evidence/continuity only; it does not change the qualified runtime/control bytes.
+Publication still requires fresh same-carrier custody and shared-capacity admission.
