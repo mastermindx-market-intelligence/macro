@@ -4806,6 +4806,10 @@ CURATED_EXCLUSIVE = {
     # jobs, check_contract_delta: 1 introduced). scope: exclusive pins it to
     # its declared static import closure; ceilings stay fixed.
     "ric-e0-retrospective-runners",
+    # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
+    #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
+    #  scripts/build_free_content.py (135 > 134). Register the reviewed 198-path owner; closure audits and ceilings stay fixed.
+    "leadership-rotation-countercases",
 }
 
 
