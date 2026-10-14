@@ -7149,9 +7149,9 @@ def _aic_tracked_paths(root: Path = ROOT) -> frozenset[str]:
     fetched whole and these git reads need no network in CI either.
     ``-z`` is used because it gives NUL-terminated, unquoted names
     regardless of ``core.quotePath``: with plain ``--name-only`` a
-    non-ASCII path is emitted octal-escaped inside double quotes, so such
-    an init would silently drop out of the inventory and the ratchet
-    would fail open.
+    non-ASCII or control-character path is emitted octal-escaped inside
+    double quotes, so such an init would silently drop out of the
+    inventory and the ratchet would fail open.
     """
     result = subprocess.run(
         ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"],
@@ -7164,22 +7164,31 @@ def _aic_tracked_paths(root: Path = ROOT) -> frozenset[str]:
 
 
 def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
-    """A non-ASCII tracked path survives ``core.quotePath`` escaping.
+    """A non-ASCII or control-character tracked path survives ``core.quotePath`` escaping.
 
     Git's default ``core.quotePath=true`` makes a plain
     ``ls-tree -r --name-only`` print such paths octal-escaped inside
-    double quotes; the escaped line then never equals the real init row,
-    so the census inventory would silently lose it (fail open). The
-    quoting is pinned repo-locally so this test discriminates on every
-    host regardless of any global git config.
+    double quotes (non-ASCII bytes become ``\\NNN`` octal sequences; a
+    TAB becomes the C-style ``\\t``); the
+    escaped line then never equals the real init row, so the census
+    inventory would silently lose it (fail open). The quoting is pinned
+    repo-locally so this test discriminates on every host regardless of
+    any global git config.
     """
     target = tmp_path / "pkg" / "na\u00efve"
     target.mkdir(parents=True)
     (target / "__init__.py").write_text("", encoding="utf-8")
+    tab_target = tmp_path / "tab\there"
+    tab_target.mkdir(parents=True)
+    (tab_target / "y.py").write_text("", encoding="utf-8")
 
     def git(*args: str) -> None:
         subprocess.run(
-            ["git", *args],
+            # -c core.hooksPath= isolates the scratch repo from any
+            # global hook configuration; a hostile global hook that
+            # exit(1)s on commit would otherwise fail this test
+            # without involving _aic_tracked_paths.
+            ["git", "-c", "core.hooksPath=", *args],
             cwd=tmp_path,
             capture_output=True,
             text=True,
@@ -7187,7 +7196,7 @@ def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
         )
 
     git("init", "-q")
-    git("add", "pkg/na\u00efve/__init__.py")
+    git("add", "pkg/na\u00efve/__init__.py", "tab\there/y.py")
     git("config", "core.quotePath", "true")
     git(
         "-c", "user.name=t",
@@ -7195,7 +7204,25 @@ def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
         "-c", "commit.gpgsign=false",
         "commit", "-qm", "x",
     )
-    assert "pkg/na\u00efve/__init__.py" in _aic_tracked_paths(tmp_path)
+    tracked = _aic_tracked_paths(tmp_path)
+    assert "pkg/na\u00efve/__init__.py" in tracked
+    assert "tab\there/y.py" in tracked
+
+    # Pin the precondition the test discriminates on: a plain (non -z)
+    # ls-tree with the repo-local `core.quotePath true` setting must
+    # emit the escaped, double-quoted form, never the raw path;
+    # otherwise the test would silently stop discriminating.
+    plain = subprocess.run(
+        ["git", "-c", "core.hooksPath=", "ls-tree", "-r", "--name-only", "HEAD"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    plain_lines = plain.stdout.splitlines()
+    assert '"pkg/na\\303\\257ve/__init__.py"' in plain_lines
+    assert '"tab\\there/y.py"' in plain_lines
+    assert "pkg/na\u00efve/__init__.py" not in plain_lines
 
 
 def _aic_rows_from_tracked_inventory(
