@@ -594,3 +594,8 @@ PERIPHERY_SCOPE_ACCEPTANCE.json binds actual-owner absent and rounded-zero count
 ## ECB balance-sheet scope — 2026-10-14
 
 ECB_BALANCE_SCOPE_ACCEPTANCE.json binds actual-owner flat, roundedpositive and roundednegative cases. The original weekly-bin date is not promoted to an observation timestamp. Independent review and served acceptance remain pending. Next inspect actual two-tier missing/partial evidence: current summary converts absent inputs into zero of5 and ignore-US-book language, while owner counts4thresholds with a separate informational dollar flag. All original controls remain.
+
+
+### ECB publication correction
+
+Initial5b7bf3f publication continued after a design-check failure because the outer shell did not stop when the Python guard loop aborted. The check flagged an inherited decorative bank emoji on the changed heading line. Removed that decoration;4affectedbrowsercases and8canonical/4focused captures refreshed. Original failure/images retained in ecb-balance-scope-20261014-r1. ECB_BALANCE_SCOPE_ACCEPTANCE.json records the exact correction; no deployment occurred. Subsequent publication runs only after checked guard exits.
