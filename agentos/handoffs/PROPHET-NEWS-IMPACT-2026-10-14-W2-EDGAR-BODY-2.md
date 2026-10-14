@@ -5,7 +5,7 @@ model: opus
 ended_because: ci_handoff
 decisions: ["DEC:NEWS-IMPACT-EDGAR-BODY-2-BAND"]
 discoveries: ["DSC:NEWS-IMPACT-EDGAR-BODY-2-FRAME"]
-prs: []
+prs: [9367]
 mission: >
   Under DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH item 5, widen the benchmark frame filing
   first inside the existing SEC owners: freeze a wider 8-K body band as a new edgar_body
