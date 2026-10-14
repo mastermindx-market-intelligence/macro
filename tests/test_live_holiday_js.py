@@ -66,12 +66,16 @@ def test_cxp3_w3_n2_live_repaint_flat_behaviour(tmp_path):
     script.write_text(_W3_PAINT_JS, encoding="utf-8")
     cases = [
         ["0.05", -0.03, False], ["0.05", 0.04, True], ["0.05", -0.06, False], ["0.05", 0.07, False],
+        ["0.05", 1.274, False],
         [None, -0.03, False], [None, 0.004, False], [None, 0.04, True],
     ]
     result = subprocess.run([node, str(script), str(root / "templates" / "live.js"), json.dumps(cases)],
                             text=True, capture_output=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(result.stdout) == [
-        ["0.0%", "nb-chg"], ["0.0%", "nb-chg stale"], ["-0.06%", "down nb-chg"], ["+0.07%", "nb-chg up"],
+        # N3 (R33): an opted-in (data-flat) node repaints its non-flat moves at ONE decimal, matching the
+        # baked 1-dp board label; nodes without data-flat keep their 2-dp repaint exactly as before.
+        ["0.0%", "nb-chg"], ["0.0%", "nb-chg stale"], ["-0.1%", "down nb-chg"], ["+0.1%", "nb-chg up"],
+        ["+1.3%", "nb-chg up"],
         ["-0.03%", "down nb-chg"], ["+0.00%", "nb-chg up"], ["+0.04%", "nb-chg stale up"],
     ]
