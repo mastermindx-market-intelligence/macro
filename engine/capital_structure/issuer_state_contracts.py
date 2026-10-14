@@ -93,7 +93,7 @@ COMPATIBLE_INPUT_SCHEMAS: dict[str, tuple[str, ...]] = {
         "capital_structure.share_count_observation.v1",
         "capital_structure.share_count_observation.v2",
     ),
-    "financials": (),
+    "financials": ("capital_structure.financial_item_observation.v1",),
     "corrections": (),
 }
 
@@ -666,7 +666,7 @@ class CapitalInputs:
 
     Every record family present must be bound to a compatible generation, and
     every record's ``schema`` must equal that binding.  Families with no accepted
-    schema (financials, corrections) may carry no records.
+    schema (corrections) may carry no records.
     """
 
     bindings: tuple[GenerationBinding, ...]

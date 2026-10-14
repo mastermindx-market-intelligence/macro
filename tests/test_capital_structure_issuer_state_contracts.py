@@ -839,6 +839,32 @@ def test_inputs_are_bound_to_their_generation_schemas():
         c.GenerationBinding("events", "capital_structure.event.v1", "supported")
 
 
+def test_financials_bind_per_item_observations_and_corrections_stay_not_built():
+    schema = "capital_structure.financial_item_observation.v1"
+    assert c.COMPATIBLE_INPUT_SCHEMAS["financials"] == (schema,)
+    assert c.COMPATIBLE_INPUT_SCHEMAS["corrections"] == ()
+    binding = c.GenerationBinding("financials", schema, "partial", generation_id="gen:fif-cells-2026-10-14")
+    fact = {
+        "schema": schema,
+        "item_id": "fin:unrestricted_cash:0000000001:2026-06-30",
+        "item_kind": "unrestricted_cash",
+        "availability": "available_now",
+        "amount": {"value": "12500000", "unit": "usd", "status": "known"},
+        "measured_at": "2026-06-30",
+        "source": {"owner": "fundamental_forensics", "metric_id": "cash_and_cash_equivalents"},
+    }
+    inputs = c.FinancialInputs(binding=binding, facts=(fact,), cash_basis="unrestricted_cash")
+    assert inputs.facts[0]["item_id"] == fact["item_id"]
+    with pytest.raises(c.ContractViolation, match="differs from binding"):
+        c.FinancialInputs(binding=binding, facts=({**fact, "schema": "capital_structure.financial_item_observation.v2"},), cash_basis="unrestricted_cash")
+    with pytest.raises(c.ContractViolation, match="forbidden property name"):
+        c.FinancialInputs(binding=binding, facts=({**fact, "runway": "12"},), cash_basis="unrestricted_cash")
+    with pytest.raises(c.ContractViolation, match="not compatible"):
+        c.GenerationBinding("financials", "capital_structure.financial_item_observation.v2", "partial", generation_id=GEN)
+    with pytest.raises(c.ContractViolation, match="support must be not_built"):
+        c.GenerationBinding("corrections", None, "unavailable")
+
+
 def test_interface_ownership_matches_masterplan_section_nine():
     expected = {
         "engine/capital_structure/issuer_state.py": ("compile_issuer_state", ("StateRequest", "CapitalInputs"), "CapitalState"),
