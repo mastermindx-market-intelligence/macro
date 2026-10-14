@@ -9968,6 +9968,7 @@ jobs:
       - "templates/research_screener.css"
       - "templates/research_screener.html.j2"
       - "templates/theme.css"
+      - "templates/watchstore.js"
       - "tests/test_research_screener.py"
     # B-F06-4 research-priority screener. Pure compiler + Jinja producer +
     # template. No data/ or nightly artifact required. Paths cover the three
@@ -28358,6 +28359,9 @@ jobs:
       # T03 economic fact rows. The suite reads the synthetic cell fixture.
       - "tests/fixtures/mining_economic_inputs/parenthesized_cell.json"
       - "tests/test_mining_economic_inputs.py"
+      # T07 evidence-drawer review pin and date-only cutoff. Closure of
+      # tests/test_mining_updates.py adds no path this job does not already list.
+      - "tests/test_mining_updates.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28370,7 +28374,7 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
@@ -29067,6 +29071,16 @@ jobs:
       - "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "research/grey_deer/pullback_stage1_r1/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "scripts/validate_regime_fwd.py"
+      # W8: readiness-floor projection and episode-rule options diagnosis
+      # (exploratory, draft memo). Both read the committed stage-1/1b results;
+      # tests are synthetic.
+      - "scripts/research/grey_deer_pullback_floor_projection.py"
+      - "scripts/research/grey_deer_pullback_episode_rule_options.py"
+      - "tests/test_grey_deer_pullback_floor_projection.py"
+      - "tests/test_grey_deer_pullback_episode_rule_options.py"
+      - "research/grey_deer/PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md"
+      - "research/grey_deer/pullback_episode_rule_options/EPISODE_RULE_OPTIONS_2026-10-13.json"
+      - "research/grey_deer/pullback_floor_projection/FLOOR_PROJECTION_2026-10-13.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29082,6 +29096,8 @@ jobs:
           tests/test_grey_deer_pullback_stage1_schema.py
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
+          tests/test_grey_deer_pullback_floor_projection.py
+          tests/test_grey_deer_pullback_episode_rule_options.py
           tests/test_grey_deer_pullback_stage1b.py
           tests/test_grey_deer_pullback_stage1b_addendum.py
           tests/test_grey_deer_episode_samples.py

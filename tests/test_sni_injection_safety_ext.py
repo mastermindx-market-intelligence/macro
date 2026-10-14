@@ -598,7 +598,7 @@ def _scan_sni_artifacts() -> dict[str, list[tuple[str, int, str]]]:
     for path in sorted(SNI_ROOT.rglob("*")):
         if not path.is_file():
             continue
-        if "__pycache__" in path.parts:
+        if "__pycache__" in path.relative_to(SNI_ROOT).parts:
             continue
         suffix = path.suffix.lower()
         if suffix not in _DATA_SUFFIXES:
@@ -792,7 +792,7 @@ def test_a20b_10_g3_nonpython_artifacts() -> None:
         path
         for path in SNI_ROOT.rglob("*")
         if path.is_file()
-        and "__pycache__" not in path.parts
+        and "__pycache__" not in path.relative_to(SNI_ROOT).parts
         and path.suffix.lower() in _DATA_SUFFIXES
     ]
     print(f"A20B G3 scanned file count: {len(files)}", flush=True)
