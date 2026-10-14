@@ -127,6 +127,26 @@ def _blank(value: object) -> bool:
     return False
 
 
+def _text_present(value: object) -> bool:
+    """FAMILY TEXT RULE v2 (seat ruling): an opaque-text id / ref /
+    label is PRESENT iff it is a non-empty ``str`` that does not begin
+    or end with whitespace. None, ``""``, ``"  "``, ``"ID "``,
+    ``" ID"``, ``"\tID"``, ``"ID　"``, ``1``, ``True``, ``1.0``,
+    ``b"id"``, ``["id"]`` and any other object are ABSENT and never
+    match each other.
+
+    The helper calls NO normalisation method (no ``.strip`` /
+    ``.lower`` / ``.upper`` / ``.casefold`` / ``.replace``), which
+    keeps the family's no-normalisation static scans green.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
     found = set(items)
     return tuple(code for code in REASONS if code in found)
@@ -211,10 +231,10 @@ def _has_supersedes_cycle(edges: Mapping[str, str]) -> bool:
 
 
 def _fact_id_absent(value: object) -> bool:
-    """True for ABSENT fact_id per X8BREP FAMILY TEXT RULE v2 (the unpinned
-    cases): None, a non-``str`` (int, float, bool, bytes, list, dict,
-    set, or any other object), an empty ``str``, or a whitespace-only
-    ``str``.
+    """True for ABSENT fact_id per FAMILY TEXT RULE v2 (seat ruling):
+    None, a non-``str`` (int, float, bool, bytes, list, dict, set, or
+    any other object), an empty ``str``, a whitespace-only ``str``, or
+    a ``str`` that begins or ends with whitespace.
 
     Whitespace-only is detected via ``str.isspace()`` so the rejection
     covers every Unicode whitespace character -- including ``"　"``
@@ -223,32 +243,15 @@ def _fact_id_absent(value: object) -> bool:
     line separator -- not just the ASCII subset.
 
     Padded ``str`` values (e.g. ``"SYN-FACT-1 "``, ``" SYN-FACT-1"``)
-    are PRESERVED as PRESENT: ``test_a07g_duplicate_exact_only_no_folding``
-    in ``tests/test_sni_then_known_guard.py`` (lines 528-534) pins the
-    permissive behaviour for padded ids, so X8B-02's padded half stays
-    open. Only the unpinned cases (None, non-str, empty, whitespace-only)
-    are closed here.
+    are CLOSED here under FAMILY TEXT RULE v2: a padded fact_id is
+    ABSENT, never a different valid id. X8B-02's padded half is CLOSED.
 
     The implementation never calls ``.strip`` / ``.lower`` / ``.upper`` /
     ``.casefold`` / ``.replace`` on the value: those attribute names are
     forbidden by ``test_a07g_static_scan_no_normalisation_ast``. Calling
     ``.isspace()`` on a single character is allowed by the same scan.
     """
-    if value is None:
-        return True
-    if not isinstance(value, str):
-        return True
-    if value == "":
-        return True
-    # Whitespace-only (e.g. " ", "　", "\t") is ABSENT regardless of
-    # whether the first/last symbol is also whitespace. Any character
-    # with symbol.isspace() counts (str.isspace covers Unicode).
-    for symbol in value:
-        if not symbol.isspace():
-            # At least one non-whitespace char -> PRESENT (possibly
-            # padded; the PINNED case preserves the value).
-            return False
-    return True  # all-whitespace: ABSENT
+    return not _text_present(value)
 
 
 def _supersedes_unknown(value: object) -> bool:
@@ -342,20 +345,22 @@ def then_known_view(
             if retrieved < published:
                 reasons.append("RETRIEVED_BEFORE_PUBLISHED")
         supersedes = item.get("supersedes")
-        # X8BREP FAMILY TEXT RULE v2: a non-None, non-"" supersedes that
-        # is not a caller-supplied opaque ``str`` (int, bool, list, dict,
-        # set, etc.) is ABSENT and emits SUPERSEDES_UNKNOWN instead of
-        # raising TypeError. None and "" remain the "no supersedes"
-        # short-circuit per test_a07g_blank_supersedes_treated_as_absent.
-        if _supersedes_unknown(supersedes):
+        # FAMILY TEXT RULE v2: None and "" are the "no link" short-circuit
+        # (pinned by test_a07g_blank_supersedes_treated_as_absent). Any
+        # OTHER value that is not text-present (whitespace-only, padded,
+        # non-str, unhashable) is ABSENT and emits SUPERSEDES_UNKNOWN. A
+        # text-present value that is not in known_ids also emits
+        # SUPERSEDES_UNKNOWN. ``superseded.add(...)`` and edge creation
+        # happen only for text-present values, so nothing here ever
+        # raises on junk input.
+        if supersedes is None or supersedes == "":
+            pass
+        elif not _text_present(supersedes):
             reasons.append("SUPERSEDES_UNKNOWN")
-        elif supersedes is not None and supersedes != "":
-            if not isinstance(supersedes, str):  # defensive
-                reasons.append("SUPERSEDES_UNKNOWN")
-            elif supersedes not in known_ids:
-                reasons.append("SUPERSEDES_UNKNOWN")
-            elif not _blank(fact_id):
-                edges[fact_id] = supersedes
+        elif supersedes not in known_ids:
+            reasons.append("SUPERSEDES_UNKNOWN")
+        elif _text_present(fact_id):
+            edges[fact_id] = supersedes
         rows.append(
             (fact_id, published, owner_known, retrieved, supersedes, item.get("vintaged"))
         )
@@ -386,7 +391,12 @@ def then_known_view(
 
     superseded: set[str] = set()
     for fact_id, supersedes in passing:
-        if not _blank(supersedes):
+        # FAMILY TEXT RULE v2: only text-present supersedes reach
+        # superseded; the rest were already emitted as SUPERSEDES_UNKNOWN
+        # in Pass 2 and the view would have failed closed before this
+        # loop ran. This guard keeps that invariant explicit and ensures
+        # no junk input can raise from ``set.add``.
+        if _text_present(supersedes):
             superseded.add(supersedes)
 
     included: list[str] = []
