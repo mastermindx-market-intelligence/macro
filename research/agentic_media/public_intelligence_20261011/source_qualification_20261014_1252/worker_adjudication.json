@@ -1,0 +1,22 @@
+{
+  "worker_run": "mmx-press-eia-extract-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "state": "TERMINAL",
+  "rc": 0,
+  "result_consumed": true,
+  "result_sha256": "2ee9a826a074cdadb39d8df8cff4157d7e2deaf7a068e4507703eb6ae260a452",
+  "verdict": "PARTIAL_NOT_ACCEPTED",
+  "accepted_by_adapter": false,
+  "retry": false,
+  "usage_receipt": "MISSING",
+  "findings": [
+    "Dates and numeric forecast extraction largely corroborate physical PDF pages 4 and 5.",
+    "First-person EIA text is not an attributed Mastermind summary.",
+    "Parent did not retain unsupported estimate labels inserted into two bullets.",
+    "Excerpt strings use ellipses and changed punctuation; they are not exact contiguous quotations."
+  ],
+  "parent_sidecar": "eia_sidecar.json",
+  "parent_sidecar_sha256": "f856d7066f13218e6c156d237e98957d392357029ea9f7f939cdd6bb1b9d828c",
+  "parent_review": "Six new attributed forecast bullets cross-checked against the retained PDF prose on physical page 4. Publication date cross-checked on physical page 5. No Press draft was written or edited."
+}

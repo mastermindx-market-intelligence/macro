@@ -1,0 +1,22 @@
+{
+  "schema": "research_vault.sidecar.v1",
+  "id": "eia-2026-10-06-short-term-energy-outlook",
+  "title": "Short-Term Energy Outlook, October 2026",
+  "institution": "U.S. Energy Information Administration",
+  "published_at": "2026-10-06",
+  "side": "independent",
+  "desk": "Energy",
+  "language": "en",
+  "source_filename": "steo_text.pdf",
+  "tags": ["energy", "oil", "natural gas", "forecast"],
+  "tickers": [],
+  "top_pick": false,
+  "summary_points": [
+    "EIA's October outlook forecasts Brent at $105 per barrel in the fourth quarter of 2026, an upward revision of $14 per barrel from its September outlook.",
+    "EIA forecasts Brent averaging $84 per barrel in 2027; this is a forecast, not an observed future price.",
+    "EIA forecasts Henry Hub natural gas averaging $3.16 per million British thermal units in 2027, down 9% from 2026.",
+    "EIA forecasts U.S. wholesale electricity prices averaging $52 per megawatt hour in 2026, 11% above 2025.",
+    "Within that electricity forecast, EIA projects a 41% increase in PJM wholesale prices and a 23% decline in Northwest Mid-Columbia prices in 2026.",
+    "EIA finalized the model inputs on October 1, 2026. The outlook does not specifically account for subsequent market events."
+  ]
+}

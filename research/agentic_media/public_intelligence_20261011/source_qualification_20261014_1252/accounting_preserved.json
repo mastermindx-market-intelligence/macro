@@ -1,0 +1,9 @@
+{
+  "head": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+  "hashes": {
+    "data/ai_costs/provider_health.jsonl": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9",
+    "data/ai_costs/usage.jsonl": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86",
+    "data/metabolism/key_ledger.jsonl": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53"
+  },
+  "scope": "Original three dirty accounting histories, untouched during this wake."
+}

@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Controller38562307470 marks9209 a18ec982 green proof stale after protected84b28 changed CI definitions; refresh deferred9proofs/cap8. Consume admitted refresh/exact-head CI/protected release/install, then SAME reviewed follow-on31groups. Prospective7f1dbb merge is conflict-free with24sources unchanged and67Node checks; review actual installed drift before rebinding. Preserve publication false and original EFFECT_UNKNOWN.
+  - Controller38566348871 defers9209 a18ec982 stale-proof refresh at8/cap8 after f1d834 changed checks. Consume admitted refresh/exact-head CI/protected landing/install, then SAME reviewed follow-on31groups. New real-PDF Research intake passes19+2 controls; qualify whole-document rights before live inbox. Dedicated Research strict reads work; EIA cover-photo hold and CBO403 remain unretried.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -2703,3 +2703,59 @@ hashes and exclusions. The proof fixture was isolated and removed after use; its
 input bytes and release-carrier HEAD remained unchanged. Publication/cutoverfalse,
 D140/10. All prior source holds, refused/unknown effects, dirty accounting,
 Commission19 andCatalyst8678 are preserved. No human action currently required.
+
+## 2026-10-14 12:52 wake — real public-source intake tested; no live source admission
+
+The existing Research intake was exercised with the original October EIA PDF,
+SHA256 d42c89a9295bbf2c0652b101141d5997544a1688dbb786f59f80e446e2fc4831.
+**19 acceptance checks plus2 refusal controls pass.** Dry-run preserves the local
+store; isolated real ingestion publishes one searchable corpus/catalog row, measures
+14pages and preserves October6 publication/October1 forecast-input dates. A second
+local ingest skips the existing source. The existing Research planner selects the
+source and refuses held, stale, future and summary-empty controls; altered PDF hash
+and an occupied evidence directory refuse before execution. All effects are confined
+to isolated local fixtures. No Press writer/staging or production write occurred.
+This is actual intake/consumer proof, not a canonical source or public story.
+
+Parent reviewed the PDF pages and authored six attributed forecast bullets. The
+original comparison table incorrectly labels Brent in gallons; the accepted summary
+uses the prose's dollars per barrel and does not modify the source. Fabric extraction
+mmx-press-eia-extract-20261014-001 completedrc0 and its retained result was consumed,
+but is PARTIAL_NOT_ACCEPTED: first-person source voice, unsupported estimate labels
+and non-contiguous excerpt strings required parent correction. No accept/retry or
+replacement. Usage receipt is missing; no usage amount is invented. This was a new
+bounded extraction, not a Press generation or a replay of any held attempt.
+
+The EIA textual forecasts have a dated attribution-based reuse basis. Whole-PDF
+canonical intake remains HOLD: its actual cover photograph is outside the policy's
+blanket reuse permission. The official alternative AllTables link is XLSX, not a
+PDF; no source conversion or producer rewrite. The Fed paper examined earlier is
+also held for its author-clearance notice. A separate CBO October8 budget report
+has explicit whole-document permission, but one direct original-PDF request returned
+403. No retry, carrier switch, download, inbox write or stage of that source.
+
+Research credentials are NOT the earnings-credential blocker: the installed service's
+designated /etc/macro-api.env has the four dedicated Research names and a distinct
+bucket. Four strict reads through the existing R2Store succeeded: current catalog
+2896rows (hash4b9ef51d), no matching CBO report and all three exact candidate keys
+absent. No secret value was output and no R2 write was attempted. The ordinary
+research-ingest38567527636 completed successfully at13:01:56; it stays the ingestion
+owner. Earlier /opt/macro/.env absence was a wrong-location probe, not a global
+credential conclusion. Missing optional dotenv was diagnosed without installing it.
+
+Single release read12:53 confirms9209 OPEN/merge-on-green at a18ec982, no mergeSHA.
+CI38553111016 is green but stale. Full controller38566348871 deferred refresh after
+mainf1d834 changed checks:8indexed proofs/cap8,0reservations/0slots; main GREEN.
+38566967219 was only a failure-marker pass. No refresh, CI or controller duplication,
+waiver or admin merge. The next release action remains admitted refresh/new exact-head
+proof/protected landing, then actual-merge-SHA normal-updater installation and all
+four original probes. Then integrate main into the SAME reviewed follow-on for its
+own PR/install31groups. Source application8eb467 and prior429+1 tests remain unchanged.
+
+verified: source_qualification_20261014_1252 contains the reproducible real-PDF
+intake probe, sidecar,19+2results, source/worker adjudications, strict-read receipts,
+release/controller snapshot and original3accounting hashes. Private originals/images
+are retained outside Git under recovery-20261014-1252. Publication/cutoverfalse,
+D140/10; no new ticker association, signup/follow or live article claim. Continue with
+a whole-document-qualified source through this tested intake; preserve CBO403 and
+all earlier holds/refusals/unknown effects. No new human action is requested.

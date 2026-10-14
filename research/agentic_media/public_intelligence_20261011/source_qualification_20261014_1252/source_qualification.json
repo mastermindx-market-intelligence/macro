@@ -1,0 +1,39 @@
+{
+  "as_of": "2026-10-14",
+  "eia": {
+    "source_url": "https://www.eia.gov/outlooks/steo/pdf/steo_text.pdf",
+    "policy_url": "https://www.eia.gov/about/copyrights_reuse.php",
+    "published_at": "2026-10-06",
+    "input_cutoff": "2026-10-01",
+    "report_window": "Research 21-day window; not Brief 3-day window",
+    "textual_fact_reuse": "Qualified with EIA/date attribution and forecast qualifications; no logo, photo or third-party chart reuse",
+    "whole_pdf_ingress": "HOLD: actual cover includes a photograph; photo reuse excluded by policy and no specific photo license is established",
+    "observed_pdf_table_error": "Physical page 5 labels Brent dollars per gallon; sidecar uses supported dollars-per-barrel prose on physical page 4. Source left unedited.",
+    "canonical_admission": false,
+    "public_article_accepted": false,
+    "stock_ticker": null,
+    "alternative_tables_link": "Official All Tables link is STEO_m.xlsx, not a PDF; unsupported web tool content type is not access denial. No conversion/repackaging or ingestion performed."
+  },
+  "federal_reserve": {
+    "url": "https://www.federalreserve.gov/econres/feds/files/2026069pap.pdf",
+    "disposition": "HOLD; specific author-clearance language, external coauthor, October 5 body versus October 13 landing update. No download or worker dispatch."
+  },
+  "cbo": {
+    "landing": "https://www.cbo.gov/publication/61985",
+    "pdf": "https://www.cbo.gov/system/files/2026-10/61985-MBR.pdf",
+    "policy": "https://www.cbo.gov/about/privacy",
+    "published_at": "2026-10-08",
+    "policy_scope": "Whole-document copying/distribution permitted with acknowledgment; separate image/logo use remains restricted.",
+    "direct_pdf_acquisition": "HTTP 403 Forbidden via urllib at one request; no PDF retained, no retry or alternative carrier",
+    "canonical_admission": false,
+    "r2_read_census": "canonical_research_read.json",
+    "r2_writes": 0
+  },
+  "current_release": "9209 a18ec982 OPEN. Old green CI38553111016 stale; controller38566348871 deferred refresh at8/cap8 after f1d834 changed checks.",
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10",
+  "press_writer_calls": 0,
+  "press_staging_writes": 0,
+  "production_writes": 0
+}

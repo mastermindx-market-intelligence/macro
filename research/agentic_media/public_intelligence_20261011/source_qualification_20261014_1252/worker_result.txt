@@ -1,0 +1,47 @@
+```json
+{
+  "title": "Short-Term Energy Outlook, October 2026",
+  "publication_date": "October 6, 2026",
+  "forecast_input_cutoff": "October 1, 2026",
+  "summary_points": [
+    "We forecast the Brent crude oil spot price will average $105 per barrel in 4Q26, $14/b higher than in last month's STEO, and we expect the Brent spot price to fall to an average of $84/b next year (2027).",
+    "U.S. retail gasoline prices averaged $4.35 per gallon and diesel prices averaged $6.29 per gallon in September (estimate); we expect retail diesel to average about $4.50/gal in 2027 and gasoline to average just under $3.60/gal.",
+    "East Coast distillate fuel inventories were 32% below their five-year seasonal average in September (estimate); we expect them to remain around 20% below the 2021-2025 average through the upcoming winter in our forecast.",
+    "We forecast the Henry Hub natural gas spot price to average $3.16 per MMBtu in 2027, a 9% decrease from 2026.",
+    "We forecast U.S. wholesale electricity prices to average $52 per megawatt hour in 2026, 11% more than in 2025.",
+    "We finalized inputs into the model on October 1, 2026; this month's forecast does not specifically account for market events after that day."
+  ],
+  "claims": [
+    {
+      "bullet_index": 1,
+      "pdf_physical_page": 4,
+      "excerpt": "We now forecast the Brent crude oil spot price will average $105 per barrel (b) in 4Q26, $14/b higher than in last month's STEO... We expect the Brent spot price will fall to an average of $84/b next year."
+    },
+    {
+      "bullet_index": 2,
+      "pdf_physical_page": 4,
+      "excerpt": "U.S. retail gasoline and diesel prices rose sharply in September; gasoline prices averaged $4.35 per gallon (gal), and diesel prices averaged $6.29/gal... We expect retail diesel prices to average about $4.50/gal next year and for gasoline prices to average just under $3.60/gal."
+    },
+    {
+      "bullet_index": 3,
+      "pdf_physical_page": 4,
+      "excerpt": "East Coast distillate fuel inventories fell 32% below their five-year seasonal average in September. Although we expect inventories to recover, they remain around 20% below the 2021-2025 average through the upcoming winter in our forecast."
+    },
+    {
+      "bullet_index": 4,
+      "pdf_physical_page": 4,
+      "excerpt": "We forecast the Henry Hub spot price for natural gas to average $3.16 per million British thermal units (MMBtu) in 2027, a 9% decrease from 2026."
+    },
+    {
+      "bullet_index": 5,
+      "pdf_physical_page": 4,
+      "excerpt": "Wholesale electricity prices in the United States average $52 per megawatt hour in 2026 in our forecast, 11% more than in 2025."
+    },
+    {
+      "bullet_index": 6,
+      "pdf_physical_page": 4,
+      "excerpt": "We finalized inputs into the model on October 1, 2026. This month's forecast does not specifically account for market events after that day."
+    }
+  ]
+}
+```

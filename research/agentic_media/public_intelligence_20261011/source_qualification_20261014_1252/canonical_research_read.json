@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-14T13:15:33.806717+00:00",
+  "catalog_sha256": "4b9ef51db9e1e226266bd08fdfab9a649f617e5eaaff523d7cef053b21355878",
+  "catalog_count": 2896,
+  "matching_rows": [],
+  "exact_key_exists": {
+    "research_inbox/mmx-cbo-61985-20261008.pdf": false,
+    "research_inbox/mmx-cbo-61985-20261008.json": false,
+    "research_inbox/_processed/mmx-cbo-61985-20261008.json": false
+  },
+  "r2_writes": 0,
+  "strict_reads": 4
+}
