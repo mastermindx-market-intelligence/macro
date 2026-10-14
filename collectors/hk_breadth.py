@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FutureTimeout
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 import pandas as pd
 
@@ -29,6 +29,45 @@ log = logging.getLogger(__name__)
 
 
 def repair_settled_hk_closes(
+    closes: pd.DataFrame,
+    tickers: list[str],
+    *,
+    now: datetime | None = None,
+    fetcher=None,
+    min_coverage: float = 0.95,
+    max_workers: int = 12,
+    max_wait_s: float = 150.0,
+) -> pd.DataFrame:
+    """Qualify both HKEX completed days used in the daily heatmap return.
+
+    Yahoo can omit Monday entirely and supply Tuesday. Qualifying only Tuesday
+    would silently turn 1D into a Friday-to-Tuesday change. The existing
+    Tencent adjusted-candle fallback repairs each day with historic-overlap
+    evidence and one source owner, never an invented calendar price.
+    """
+    from lib import hk_calendar
+
+    clock = now or datetime.now(hk_calendar.HKT)
+    latest = hk_calendar.expected_last_session(clock)
+    prior = hk_calendar.last_session_on_or_before(latest - timedelta(days=1))
+    prior_clock = datetime.combine(prior, time(18, 0), tzinfo=hk_calendar.HKT)
+    repaired = _repair_one_settled_hk_session(
+        closes, tickers, now=prior_clock,
+        fetcher=fetcher, min_coverage=min_coverage,
+        max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+    # _repair_one filters source rows after its requested session. Recover the
+    # original later-day rows before qualifying the current day; otherwise a
+    # check of Monday would accidentally discard the already observed Tuesday.
+    current_input = repaired.combine_first(closes)
+    return _repair_one_settled_hk_session(
+        current_input, tickers, now=clock,
+        fetcher=fetcher, min_coverage=min_coverage,
+        max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+
+
+def _repair_one_settled_hk_session(
     closes: pd.DataFrame,
     tickers: list[str],
     *,

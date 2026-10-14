@@ -804,3 +804,71 @@ def test_hk_deep_cold_runner_rejects_unverified_stored_prices():
         reconcile_settled_hk_cache(
             old,names,cache=None,reference=wrong,
             now=datetime(2026,10,13,6,45,tzinfo=timezone.utc))
+
+
+def test_hk_breadth_repairs_missing_yesterday_when_today_is_full():
+    from collectors.hk_breadth import repair_settled_hk_closes
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    source = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    candle = pd.DataFrame(
+        {"close": [99.0, 100.0, 101.0, 102.0]},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    calls = []
+    def supplier(ticker, *_args):
+        calls.append(ticker)
+        return candle
+    fixed = repair_settled_hk_closes(
+        source, names, now=datetime(2026, 10, 13, 12,
+                                   tzinfo=timezone.utc), fetcher=supplier,
+    )
+    assert len(calls) == 20
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 20
+    assert int(fixed.loc["2026-10-13"].notna().sum()) == 20
+    assert float(fixed.loc["2026-10-13", names[0]]) == 102.0
+
+
+def test_hk_deep_cold_runner_repairs_yesterday_without_erasing_today():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    source = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    cache = pd.DataFrame(
+        {t: [99.0, 100.0, 101.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    fixed = reconcile_settled_hk_cache(
+        source, names, cache=cache, reference=source,
+        now=datetime(2026, 10, 13, 12, tzinfo=timezone.utc),
+    )
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 20
+    assert int(fixed.loc["2026-10-13"].notna().sum()) == 20
+    assert float(fixed.loc["2026-10-13", names[0]]) == 102.0
+
+
+def test_hk_heatmap_refuses_today_when_previous_close_missing():
+    from scripts.build_market_heatmap import _validate_hk_completed_session
+    names = [f"{i:04d}.HK" for i in range(1, 21)]
+    cons = pd.DataFrame(index=pd.Index(names, name="ticker"))
+    closes = pd.DataFrame(
+        {t: [99.0, 100.0, 102.0] for t in names},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    payload = {
+        "market": "hk", "map_type": "stocks", "source": "daily-close",
+        "asof": "2026-10-13", "n_tiles": 20,
+        "tiles": [{"t": t, "perf": {"1D": 2.0}} for t in names],
+    }
+    import pytest
+    with pytest.raises(RuntimeError, match="previous session absent"):
+        _validate_hk_completed_session(
+            payload, closes, cons,
+            datetime(2026, 10, 13, 12, tzinfo=timezone.utc),
+        )

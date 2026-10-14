@@ -22,7 +22,7 @@ logged and the run proceeds (consistent with hk_breadth min_coverage behavior).
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 import pandas as pd
 import yfinance as yf
@@ -39,6 +39,40 @@ _INCREMENTAL_PERIOD = "2mo"   # enough to cover any short outage (>= stale_after
 
 
 def reconcile_settled_hk_cache(
+    fresh: pd.DataFrame,
+    tickers: list[str],
+    *,
+    cache: pd.DataFrame | None,
+    reference: pd.DataFrame | None = None,
+    now: datetime | None = None,
+    min_coverage: float = 0.95,
+) -> pd.DataFrame:
+    """Preserve two successive qualified HKEX observations in the deep store.
+
+    The breadth cache (when present) is the incumbent reader of the repaired
+    previous/current candles. Each day must pass adjusted-basis verification
+    before the original durable deep history is changed or returned.
+    """
+    from lib import hk_calendar
+
+    clock = now or datetime.now(hk_calendar.HKT)
+    latest = hk_calendar.expected_last_session(clock)
+    prior = hk_calendar.last_session_on_or_before(latest - timedelta(days=1))
+    prior_clock = datetime.combine(prior, time(18, 0), tzinfo=hk_calendar.HKT)
+    repaired = _reconcile_one_settled_hk_session(
+        fresh, tickers, cache=cache, reference=reference,
+        now=prior_clock, min_coverage=min_coverage,
+    )
+    # The prior-day validator truncates its own result at that cutoff. The
+    # later-day frame still belongs to the same owner and must survive.
+    current_input = repaired.combine_first(fresh)
+    return _reconcile_one_settled_hk_session(
+        current_input, tickers, cache=cache, reference=reference,
+        now=clock, min_coverage=min_coverage,
+    )
+
+
+def _reconcile_one_settled_hk_session(
     fresh: pd.DataFrame,
     tickers: list[str],
     *,

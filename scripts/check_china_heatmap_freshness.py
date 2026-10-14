@@ -118,7 +118,7 @@ def latest_session_observed_tickers(closes: pd.DataFrame, session: str) -> set[s
     if rows.empty:
         return set()
     numeric = rows.apply(pd.to_numeric, errors="coerce")
-    observed = numeric.notna().any(axis=0)
+    observed = (numeric > 0).any(axis=0)
     return {str(column) for column in observed.index[observed]}
 
 
@@ -338,6 +338,43 @@ def validate_china_heatmap(
             "source_representation="
             f"{observed_count}/{source_count} ({source_representation:.1%}); "
             f"source={source}; minimum={MIN_LATEST_SESSION_COVERAGE:.0%}",
+        )
+
+    # 1D is the change between TWO consecutive completed exchange sessions,
+    # not "latest non-empty day compared to whichever historical day exists".
+    # The 2026-10-13 source had 1,717 prints, but October 12 was all-null:
+    # without this guard the freshly dated heatmap reported 0/1,720 valid 1D.
+    previous = cn_calendar.last_session_on_or_before(
+        date.fromisoformat(source) - timedelta(days=1)
+    ).isoformat()
+    prior_observed = latest_session_observed_tickers(closes, previous)
+    if expected_tickers is not None:
+        prior_observed &= expected_tickers
+    paired = tile_set & observed & prior_observed
+    paired_fraction = len(paired) / coverage_denominator
+    if paired_fraction < MIN_LATEST_SESSION_COVERAGE:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap prior session incomplete",
+            f"1D endpoints {len(paired)}/{coverage_denominator} "
+            f"({paired_fraction:.1%}) span {previous}->{source}; "
+            "a fresh asof does not certify a daily return",
+        )
+    coverage_block = payload.get("observation_coverage")
+    frame = (coverage_block.get("timeframes") or {}).get("1D") if isinstance(coverage_block, dict) else None
+    if not isinstance(frame, dict):
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap 1D coverage missing",
+            "observation_coverage.timeframes.1D is absent",
+        )
+    n_1d = frame.get("valid_count")
+    denominator_1d = frame.get("denominator")
+    if (type(n_1d) is not int or type(denominator_1d) is not int
+        or denominator_1d != n_tiles or n_1d < 0 or n_1d > len(paired)
+        or n_1d / coverage_denominator < MIN_LATEST_SESSION_COVERAGE):
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap 1D observations incomplete",
+            f"payload 1D={n_1d!r}/{denominator_1d!r}, paired source "
+            f"{len(paired)}/{coverage_denominator}; required >=95% real returns",
         )
 
     generated_utc = _generated_utc(

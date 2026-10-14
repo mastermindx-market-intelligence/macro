@@ -33,7 +33,7 @@ import re
 import shutil
 import sys
 import tempfile
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -352,6 +352,23 @@ def _validate_hk_completed_session(
             f"HK heatmap close stale: only {valid}/{len(current)} positive "
             f"observations on required {completed}"
         )
+    prior = hk_calendar.last_session_on_or_before(
+        date.fromisoformat(completed) - timedelta(days=1)
+    )
+    if pd.Timestamp(prior) not in source.index:
+        raise RuntimeError(f"HK heatmap previous session absent: {prior}")
+    prior_values = pd.to_numeric(
+        source.loc[pd.Timestamp(prior), represented], errors="coerce"
+    )
+    paired = sum(
+        pd.notna(a) and pd.notna(b) and float(a) > 0 and float(b) > 0
+        for a, b in zip(current_values, prior_values)
+    )
+    if paired / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap previous session incomplete: 1D paired "
+            f"{paired}/{len(current)} for {prior}->{completed}"
+        )
     tiles = payload.get("tiles")
     if (payload.get("market") != "hk" or payload.get("map_type") != "stocks"
         or payload.get("source") != "daily-close"
@@ -364,6 +381,17 @@ def _validate_hk_completed_session(
         or not set(shown).issubset(members)
         or len(shown) / len(current) < 0.95):
         raise RuntimeError("HK heatmap payload membership coverage/identity invalid")
+    valid_1d = sum(
+        isinstance((tile.get("perf") or {}).get("1D"), (int, float))
+        and not isinstance((tile.get("perf") or {}).get("1D"), bool)
+        and np.isfinite((tile.get("perf") or {}).get("1D"))
+        for tile in tiles
+    )
+    if valid_1d / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap 1D observations incomplete: {valid_1d}/{len(current)} "
+            f"rendered across {prior}->{completed}"
+        )
     return completed
 
 

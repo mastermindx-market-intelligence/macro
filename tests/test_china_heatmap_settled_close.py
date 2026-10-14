@@ -11,7 +11,7 @@ from __future__ import annotations
 import importlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -28,9 +28,15 @@ def _checker():
 def _write_closes(tmp_path: Path, sessions: list[str]) -> Path:
     path = tmp_path / "data" / "china_search" / "closes.parquet"
     path.parent.mkdir(parents=True)
+    from lib import cn_calendar
+    values = dict(zip(sessions, [10.0 + i for i in range(len(sessions))]))
+    if sessions:
+        last = max(map(pd.Timestamp, sessions)).date()
+        prior = cn_calendar.last_session_on_or_before(last - timedelta(days=1))
+        values.setdefault(prior.isoformat(), 9.0)
     pd.DataFrame(
-        {"600000.SS": [10.0 + i for i in range(len(sessions))]},
-        index=pd.to_datetime(sessions),
+        {"600000.SS": [values[k] for k in sorted(values)]},
+        index=pd.to_datetime(sorted(values)),
     ).to_parquet(path)
     return path
 
@@ -42,8 +48,10 @@ def _write_payload(
     market: str = "china",
     tickers: list[str] | None = None,
     generated_utc: str | None = None,
+    one_day_valid_count: int | None = None,
 ) -> Path:
     tickers = tickers or ["600000.SS"]
+    valid = len(tickers) if one_day_valid_count is None else one_day_valid_count
     path = tmp_path / "site" / "marketdata" / "china_heatmap.json"
     path.parent.mkdir(parents=True)
     path.write_text(
@@ -55,6 +63,13 @@ def _write_payload(
                 "generated_utc": generated_utc or f"{asof} 09:00",
                 "n_tiles": len(tickers),
                 "tiles": [{"t": ticker, "pct": 1.0} for ticker in tickers],
+                "observation_coverage": {
+                    "timeframes": {"1D": {
+                        "valid_count": valid,
+                        "denominator": len(tickers),
+                        "fraction": valid / len(tickers),
+                    }}
+                },
             }
         ),
         encoding="utf-8",
@@ -315,8 +330,9 @@ def test_membership_scope_ignores_current_extra_close_columns(
     closes = tmp_path / "data" / "china_search" / "closes.parquet"
     closes.parent.mkdir(parents=True)
     pd.DataFrame(
-        [[10.0] * (len(members) + len(extras))],
-        index=pd.to_datetime(["2026-09-15"]),
+        [[9.5] * (len(members) + len(extras)),
+         [10.0] * (len(members) + len(extras))],
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
         columns=members + extras,
     ).to_parquet(closes)
     payload = _write_payload(tmp_path, asof="2026-09-15", tickers=members)
@@ -344,7 +360,10 @@ def test_routine_suspensions_fit_the_heatmap_only_coverage_budget(
         index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
         columns=tickers,
     ).to_parquet(closes)
-    payload = _write_payload(tmp_path, asof="2026-09-15", tickers=tickers)
+    payload = _write_payload(
+        tmp_path, asof="2026-09-15", tickers=tickers,
+        one_day_valid_count=96,
+    )
     members_path = _write_members(tmp_path, tickers)
 
     assert m.check_china_heatmap_freshness(
@@ -366,8 +385,8 @@ def test_membership_denominator_allows_a_small_unpriced_tile_gap(
     closes = tmp_path / "data" / "china_search" / "closes.parquet"
     closes.parent.mkdir(parents=True)
     pd.DataFrame(
-        [[11.0] * 96 + [float("nan")] * 4],
-        index=pd.to_datetime(["2026-09-15"]),
+        [[10.0] * 100, [11.0] * 96 + [float("nan")] * 4],
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
         columns=members,
     ).to_parquet(closes)
     payload = _write_payload(tmp_path, asof="2026-09-15", tickers=rendered)
@@ -843,3 +862,40 @@ def test_dag_declares_settled_heatmap_producer_and_checker() -> None:
     # same Asia-close publisher; not two independent publication planes.
     assert lane.count("module: scripts.build_market_heatmap") == 2
     assert lane.count("module: scripts.check_china_heatmap_freshness") == 1
+
+
+def test_new_date_with_zero_one_day_returns_is_refused(tmp_path: Path, capsys) -> None:
+    """Replays 2026-10-13: valid today, empty/missing yesterday, zero real 1D."""
+    m = _checker()
+    closes = tmp_path / "data/china_search/closes.parquet"
+    closes.parent.mkdir(parents=True, exist_ok=True)
+    # Unlike _write_closes, intentionally DO NOT backfill September 15:
+    # the missing prior session IS the regression under test.
+    pd.DataFrame(
+        {"600000.SS": [10.0, 12.0]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-16"]),
+    ).to_parquet(closes)
+    payload = _write_payload(tmp_path, asof="2026-09-16", one_day_valid_count=0)
+    now = datetime(2026, 9, 16, 9, 20, tzinfo=timezone.utc)
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload, closes_path=closes, now=now,
+    ) == 3
+    message = capsys.readouterr().out
+    assert "China heatmap prior session incomplete" in message
+    assert "2026-09-15->2026-09-16" in message
+    assert "0/1" in message
+
+
+def test_current_and_previous_prices_cannot_launder_a_zero_one_day_map(
+    tmp_path: Path, capsys,
+) -> None:
+    m = _checker()
+    closes = _write_closes(tmp_path, ["2026-09-14", "2026-09-15"])
+    payload = _write_payload(tmp_path, asof="2026-09-15", one_day_valid_count=0)
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload, closes_path=closes,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 3
+    message = capsys.readouterr().out
+    assert "China heatmap 1D observations incomplete" in message
+    assert "paired source 1/1" in message

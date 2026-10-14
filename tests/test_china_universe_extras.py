@@ -548,3 +548,34 @@ def test_china_search_never_splices_incompatible_local_adjustment_basis():
             local_reader=local,fetcher=would_bypass_basis,max_workers=4)
     assert calls==[], "a different vendor cannot silently bless a known basis mismatch"
     assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_china_search_repairs_missing_yesterday_even_when_today_is_full():
+    """Prevent a current-day row from hiding a missing previous session."""
+    members = [f"{i:06d}.SS" for i in range(600000, 600100)]
+    source = pd.DataFrame(
+        {t: [9.0, 10.0, 12.0] for t in members},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-13"]),
+    )
+    pername = pd.DataFrame(
+        {"close": [9.0, 10.0, 11.0, 12.0]},
+        index=pd.to_datetime(["2026-10-08", "2026-10-09",
+                              "2026-10-12", "2026-10-13"]),
+    )
+    reads = []
+    def existing_stock(ticker):
+        reads.append(ticker)
+        return pername
+    def no_network(*_args):
+        raise AssertionError("source-qualified local bars already cover both sessions")
+    out = cu.repair_settled_search_closes(
+        source, members, now=dt.datetime(2026, 10, 13, 12,
+                                        tzinfo=dt.timezone.utc),
+        local_reader=existing_stock, fetcher=no_network,
+    )
+    assert len(reads) == 100
+    assert int(out.loc["2026-10-12"].notna().sum()) == 100
+    assert int(out.loc["2026-10-13"].notna().sum()) == 100
+    assert float(out.loc["2026-10-12", members[0]]) == 11.0
+    assert float(out.loc["2026-10-13", members[0]]) == 12.0
+    assert pd.Timestamp("2026-10-12") not in source.index

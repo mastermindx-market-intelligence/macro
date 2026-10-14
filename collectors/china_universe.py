@@ -42,7 +42,7 @@ from __future__ import annotations
 
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FutureTimeout
-from datetime import datetime
+from datetime import datetime, time as clock_time, timedelta
 import time
 from io import BytesIO
 
@@ -103,6 +103,42 @@ def _overwrite_overlap(fresh: pd.DataFrame, prev: pd.DataFrame) -> pd.DataFrame:
 
 
 def repair_settled_search_closes(
+    closes: pd.DataFrame,
+    tickers: list[str],
+    *,
+    now: datetime | None = None,
+    fetcher=None,
+    local_reader=None,
+    min_coverage: float = 0.95,
+    max_workers: int = 16,
+    max_wait_s: float = 600.0,
+) -> pd.DataFrame:
+    """Require TWO consecutive completed China sessions for truthful 1D returns.
+
+    A fully populated current-day matrix can still render ZERO daily returns
+    when Yahoo skipped yesterday's completed session. Repair the prior session
+    first through the same incumbent per-name adjusted source; then repair
+    today's session. Refuse either lane below 95%—no timestamp laundering.
+    """
+    from lib import cn_calendar
+
+    clock = now or datetime.now(cn_calendar.CST)
+    latest = cn_calendar.expected_last_session(clock)
+    prior = cn_calendar.last_session_on_or_before(latest - timedelta(days=1))
+    prior_clock = datetime.combine(prior, clock_time(18, 0), tzinfo=cn_calendar.CST)
+    repaired = _repair_one_settled_search_session(
+        closes, tickers, now=prior_clock,
+        fetcher=fetcher, local_reader=local_reader,
+        min_coverage=min_coverage, max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+    return _repair_one_settled_search_session(
+        repaired, tickers, now=clock,
+        fetcher=fetcher, local_reader=local_reader,
+        min_coverage=min_coverage, max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+
+
+def _repair_one_settled_search_session(
     closes: pd.DataFrame,
     tickers: list[str],
     *,
