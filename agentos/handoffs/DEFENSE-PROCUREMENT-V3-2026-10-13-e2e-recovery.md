@@ -593,3 +593,30 @@ carrier at2779bad8673da8a9efb161456175512d68c0c2b0 before the next push; no labe
 auto-merge are active. Next is the complete sealed candidate proof on these final
 repaired bytes, then the original exact-head CI and ordered release chain. The
 30-task/45-case product mission remains open; this checkpoint is not acceptance.
+
+
+### October 14 complete V11 candidate proof
+
+The final repaired source c40d17ec444dd955244cd3131387cdd54b946c4d completed the
+full105-case proof:104passed, one explicit `no unaccounted rows to exercise` skip,
+15warnings,575.73seconds. Original sealed receipt SHA256
+81b542a9689b4cfd3f363428a131c19a585038722a70dd318b7c97798191c107
+binds7562 source dependencies and109 outputs, the unchanged642-row ledger,
+03:12:45.197758Z generation and queue grcq1-8f1cc489fdf1e14384e038c9.
+The original receipt, collection, JUnit and log bytes are saved in
+`e2e_20261011/combined_generation_v11_proof`; `verify --committed` accepted the
+exact generation with outputs/source/checkout delta identical. This is fresh
+proof, not a restamped V10 receipt. V10/V11 local browser claims remain bounded
+as recorded previously. Next is the same PR9066 push and exact-head CI, then the
+existing protected merge/financial-owner CAS/serialized publication/install chain.
+
+While that proof ran, the root directly advanced the disjoint capacity preparation
+after the original implementation worker's same-carrier rc1 observation. No
+replacement worker or refused artifact retrieval occurred. The preparation has
+an additive ontology1.2/dossier1.1 contract,43 new discriminating tests, and the
+existing theme-owner validator: initial246pass1existing skip, followed by48pass
+consumer/hardening checks. No factual capacity claim has been admitted or shipped.
+Independent review `defense-capacity-contract-review-01a13300-a` actually launched
+on the existing Fabric as Qwen3.8Max/ubuntu1 at08:27Z; it reviews these new local
+source bytes, with no delegation or canonical write. It remains separate from
+this release and must return before capacity source acceptance.
