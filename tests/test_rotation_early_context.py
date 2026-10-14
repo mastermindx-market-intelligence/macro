@@ -312,7 +312,7 @@ def test_us_nightly_context_preserves_confirmed_payload_and_ledger(tmp_path, mon
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch(receipt()))
     with_context = RE.run_nightly(
-        sectors, tmp_path / "with", generated_utc="2026-10-07T01:00:00Z",
+        sectors, tmp_path / "with", generated_utc="2026-10-07 01:00 UTC",
         universe=universe, closes=closes,
     )
     assert with_context["early_context"]["as_of"] == ASOF
@@ -321,7 +321,7 @@ def test_us_nightly_context_preserves_confirmed_payload_and_ledger(tmp_path, mon
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch())
     without = RE.run_nightly(
-        sectors, tmp_path / "without", generated_utc="2026-10-07T01:00:00Z",
+        sectors, tmp_path / "without", generated_utc="2026-10-07 01:00 UTC",
         universe=universe, closes=closes,
     )
     assert {k: v for k, v in with_context.items() if k != "early_context"} == {
@@ -624,13 +624,13 @@ def test_t07_a24_valid_empty_never_revives_prior_positive(tmp_path, monkeypatch)
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch(receipt()))
     first = RE.run_nightly(sectors, tmp_path / "twice",
-                           generated_utc="2026-10-07T01:00:00Z",
+                           generated_utc="2026-10-07 01:00 UTC",
                            universe=universe, closes=closes)
     assert first["early_context"]["state"] == "DEFENSIVE_RELATIVE_STRENGTH"
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch())
     second = RE.run_nightly(sectors, tmp_path / "twice",
-                            generated_utc="2026-10-07T02:00:00Z",
+                            generated_utc="2026-10-07 02:00 UTC",
                             universe=universe, closes=closes)
     assert second["early_context"]["state"] is None
     assert second["early_context"]["pairs"] == []

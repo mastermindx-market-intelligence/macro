@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T18:26:12.743296+00:00",
-  "count": 2914,
+  "generated_at": "2026-10-14T19:26:21.003157+00:00",
+  "count": 2917,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -113,6 +113,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-c0hubv6rxqd-061033",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T18:52:00Z",
+      "summary_points": [
+        "CPI & Fed Policy Shift: Headline CPI MoM 0.55% (3.6% YoY) vs Core MoM 0.18% (2.4% YoY) implies skip on Oct Fed hike, December hike likely; bond market avoids repricing, supporting rate-sensitive baskets.",
+        "Geopolitical Oil Volatility: Houthi escalation + Iran tactics drive WTI +0.7% amid oil volatility; US indices mixed (SPX +0.2%, NDX -0.1%) with bond yields lower into CPI.",
+        "Consumer Spending Resilience: Wage growth (4.7-3.7%) supports broad-based spending; card spending +10-13% YoY, delinquencies falling, credit quality at historic lows (WFC/JPM/C).",
+        "ASML 2027 Capacity Risk: Uncertainty on 2027 capacity delivery overshadows fundamental strength (LSD print revisions vs prior -30%), key risk factor for semiconductors.",
+        "Bank Earnings Fundamentals: JPM card growth +10-13% YoY, WFC stable NIM/NII growth; weakness driven by quant/passive flows (not 2s10s curve), signaling market sentiment shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vkqr7ns1tbk-88ffc3",
       "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
@@ -550,6 +571,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-na3aw28nwyx-8f1249",
+      "title": "GCC Energy Mapping export strength into year end earnings delivery",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:19Z",
+      "summary_points": [
+        "ADNOC Gas EBITDA Recovery: 85% Habshan gas supply restored by June 2026, domestic volumes shielded from Hormuz risks (70% sales), driving sequential earnings improvement; full restoration on track for 2027.",
+        "Market Shift to Earnings Leverage: Focus moves from disruption absorption to near-term earnings upside (e.g., ADNOC L&S/ADG defensive exposure), supported by GCC export normalization and tight freight markets.",
+        "ADNOC L&S Valuation Gap: Buy-rated with 12m price target AED8.80 (up from AED7.70), trading below 3Y average EV/EBITDA (8.8x vs. 4x), despite strong 3Q26 shipping/ILSP recovery and FY26 guidance upgrade.",
+        "LNG Flow Normalization Delay: Hormuz LNG exports to normalize only to 83% of pre-war levels by Feb 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
       "language": "en",
       "needs_metadata": false
     },
@@ -995,6 +1036,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yfmzhgjtnxe-d89894",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:17:54Z",
+      "summary_points": [
+        "AI Stock Concentration: Top 10 S&P 500 (AI-heavy) firms now constitute ~40% of index cap, with passive investors holding >50% exposure to AI stocks, severely undermining diversification.",
+        "Key Macro Data: China CPI (Sep), US Core CPI (Sep), UK GDP (Aug), Eurozone industrial production (Aug), US retail sales (Sep), and US PPI (Sep) drive near-term volatility.",
+        "Flow Divergence: S&P 500’s 2.4% YTD gain vs.",
+        "DAX’s 2.4% YTD reflects divergent capital flows amid concentrated AI exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
