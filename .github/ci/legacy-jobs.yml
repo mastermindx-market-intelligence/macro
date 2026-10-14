@@ -8949,6 +8949,8 @@ jobs:
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
           tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_staging_accounting.py
+          tests/test_trial_ledger.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
           tests/test_research_codegen_contracts.py
