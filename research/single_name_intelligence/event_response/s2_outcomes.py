@@ -115,15 +115,16 @@ class OutcomeEngine:
             if nyse_calendar.is_session(d63):
                 seen += 1
         try:
-            b0 = float(self.baba_close.loc[pd.Timestamp(d)])
-            b1 = float(self.baba_close.loc[pd.Timestamp(d63)])
-            s0 = float(self.spy_close.loc[pd.Timestamp(d)])
-            s1 = float(self.spy_close.loc[pd.Timestamp(d63)])
+            baba_d = float(self.baba_close.loc[pd.Timestamp(d)])
+            baba_d63 = float(self.baba_close.loc[pd.Timestamp(d63)])
+            spy_d = float(self.spy_close.loc[pd.Timestamp(d)])
+            spy_d63 = float(self.spy_close.loc[pd.Timestamp(d63)])
         except KeyError:
             return 0
-        if not all((b0, b1, s0, s1)):
+        if not all((baba_d, baba_d63, spy_d, spy_d63)):
             return 0
-        excess = (b1 / b0 - 1.0) - (s1 / s0 - 1.0)
+        # Frozen prereg baselines.ii: (BABA(D)/BABA(D63)-1) - (SPY(D)/SPY(D63)-1).
+        excess = (baba_d / baba_d63 - 1.0) - (spy_d / spy_d63 - 1.0)
         return 1 if excess > 0 else (-1 if excess < 0 else 0)
 
     # -- E10 A23 INFO-LEAK predicate ----------------------------------------- #
