@@ -54,6 +54,38 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Compare calculation-window links keep a full touch target ${theme} ${lang}`,async t=>{
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>window.setTheme(theme),theme);
+      await page.selectOption('[data-im-controls] select[data-im-action="set_view"]','compare');
+      await page.evaluate(()=>document.fonts.ready);
+      const panel=page.locator('[data-im-compare-panel]:visible');
+      const links=panel.locator('.intl-compare__market a');
+      assert.ok(await links.count()>=2,'fixture must expose multiple qualified calculation windows');
+      for(const width of [320,390,1440]) {
+        await page.setViewportSize({width,height:900});
+        const metrics=await links.evaluateAll(nodes=>nodes.map(node=>{
+          const rect=node.getBoundingClientRect();
+          return {width:rect.width,height:rect.height,label:node.innerText.trim()};
+        }));
+        assert.ok(metrics.every(rect=>rect.width>=44&&rect.height>=44),JSON.stringify({theme,lang,width,metrics}));
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+        t.diagnostic(JSON.stringify({theme,lang,width,links:metrics.length,minHeight:Math.min(...metrics.map(rect=>rect.height))}));
+      }
+      const link=links.first();
+      const destination=await link.getAttribute('href');
+      const context=new URL(page.url()).search;
+      await link.focus();
+      await page.keyboard.press('Enter');
+      await page.locator(destination).waitFor({state:'visible'});
+      assert.equal(new URL(page.url()).hash,destination);
+      assert.equal(new URL(page.url()).search,context);
+      assert.equal(await panel.isVisible(),true);
+    },{published:true,htmlOverride:coldLocaleHtml,bootLanguage:lang,width:320});
+  });
+}
+
 // Read Chromium's computed accessibility tree, including browser-resolved names
 // and descriptions. This is narrower than screen-reader speech acceptance.
 for (const lang of ['en','zh']) for (const width of [1440,320]) {

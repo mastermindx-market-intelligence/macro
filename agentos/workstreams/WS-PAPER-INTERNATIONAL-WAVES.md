@@ -140,10 +140,10 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Resume the original served Library Stock return after Chris clears the Chrome extension UI. Current
-  source has scoped Risk, Compare/Inspector, Library and computed accessibility-tree proof; chart interior points/benchmark
-  still need genuine owner qualification/disclosure. Preserve current carrier, independent review and release holds;
-  execute only a new admitted gap or owner input.
+next_action: Resume the original live Library Stock return after Chris completes/dismisses the Chrome extension
+  UI. Auto clock-boundary/reapplication and narrow form-control geometry now have scoped source-fixture proof. Other
+  advances require a genuinely new acceptance gap or actual owner contract/admission; preserve all IW2, qualification,
+  review, rights, Saved, migration and release holds. No repeated journeys or speculative contracts.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -159,6 +159,9 @@ artifacts:
 - research/paper_international_wave1_wave2/LIBRARY_SERVED_RETURN_BOUNDARY.json
 - research/paper_international_wave1_wave2/LIBRARY_KEYBOARD_IME_JOURNEY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/WORKSPACE_ACCESSIBILITY_TREE_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/AUTO_TIME_BOUNDARY_OBSERVATION.json
+- research/paper_international_wave1_wave2/NARROW_CONTROL_GEOMETRY_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COMPARE_WINDOW_TARGET_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.
@@ -240,3 +243,12 @@ The original bridge worker return was recovered once through the supported guard
 The accepted module and39 author tests are byte-identical in this carrier. Six parent regression methods retain identical ASTs; only imports and fixture paths were adapted. `python3 -m pytest tests/test_intl_investigation_owner.py tests/test_intl_investigation_owner_boundary.py -q` passes45 tests and21 subtests. Both suites, source and fixture are registered in the existing International foundation job. Receipt: `research/paper_international_wave1_wave2/INTL_OWNER_BRIDGE_ACCEPTANCE.json`. The existing publisher still drops its original ECB decision reference; retaining that genuine pre-presentation origin is the next source dependency. Trusted context, rights clocks and other missing source evidence must not be fabricated.
 
 IW2 accepted IM10 at Terminal804 commit99c578b9 (25 panel tests) and IM08/09 at9deff951 (153 accepted cases); strict TypeScript passed. IW2 consumed CI38120784153 SUCCESS on exact9deff951, all9 jobs, and closed its observer. These are unmounted source components. Current Saved admission is still security/issuer and Earnings only; International owner admission, auth epoch and raw validation remain separate. No API, schema, migration, persistence, merge, deployment or Paper/live acceptance follows. The original qualifier, three pre-START reviewers, TerminalT03k fifth refusal and Chrome extension pause remain held; no replacement or retry is authorized by this source milestone.
+
+
+### Auto boundary and narrow control geometry, 2026-10-14
+
+Two new time-boundary source-fixture cases show the current Auto implementation holds its previous theme across07:00/19:00 until the existing Auto function is reapplied. Reapplication preserves Scenario5/-3=1.85%, exact Inspector nodes/focus, URL/context and displayed History. Escape follows field→ledger→read→origin. This is an implementation observation, not approval or implementation of continuous scheduling. Three harness-assumption failures are retained; product bytes unchanged.
+
+Twenty dark320 EN/ZH state observations measure310 rendered form controls/disclosures, including repeated toolbar/inert background controls. Minimum width58.5625px and height44px; zero undersized. This excludes links, physical touch usability, overlap and unvisited states. Receipts are AUTO_TIME_BOUNDARY_OBSERVATION.json and NARROW_CONTROL_GEOMETRY_ACCEPTANCE.json in the existing research package; full logs/manifests remain in the corresponding external evidence packages. Prior accepted evidence is reused. No live browser, worker, PR/CI observation or release action occurred; all original holds persist.
+
+A separate anchor census then exposed14undersized Compare calculation-window links across the two narrow locale states. The existing block rule now adds min-block-size44px; its canonical/plain-copy assets match. Four permanent regressions fail before and pass after, covering12width/theme/locale states and four native Enter destinations with unchanged analytical context. Eight new canonical1440/390 Dark/Light EN/ZH captures bind final CSS. Parent viewed three cells; retained isolated-fixture live_config.js404 and shared-launcher limitation. This later source repair supersedes only the assertion that the whole continuation made no product change; earlier Auto/form-census receipts remain tied to2aae. Independent review and release remain held.

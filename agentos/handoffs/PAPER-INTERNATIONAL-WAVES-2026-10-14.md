@@ -82,6 +82,18 @@ changed:
 - path: tests/intl_workspace_page.test.cjs; research/paper_international_wave1_wave2/WORKSPACE_ACCESSIBILITY_TREE_ACCEPTANCE.json
   what: Add four computed accessibility-tree regressions across six views, modal isolation and Scenario error descriptions;
     bind local evidence without product changes.
+- path: research/paper_international_wave1_wave2/AUTO_TIME_BOUNDARY_OBSERVATION.json
+  what: Record two time-boundary observations and existing Auto reapplication preserving draft, Inspector and context;
+    no scheduler or source change.
+- path: research/paper_international_wave1_wave2/NARROW_CONTROL_GEOMETRY_ACCEPTANCE.json
+  what: Record20 narrow bilingual control-geometry states with all sampled form controls/disclosures at least44
+    by44 CSS px; explicit repeated/inert-target scope.
+- path: templates/intl_workspace.css; site/intl_workspace.css; tests/intl_workspace_page.test.cjs
+  what: Give native Compare calculation-window links the existing44px minimum target height; add four fail-before
+    browser regressions with native keyboard destination/context proof.
+- path: research/paper_international_wave1_wave2/COMPARE_WINDOW_TARGET_ACCEPTANCE.json; mockups/evidence/paper-international-compare/window-targets/
+  what: Bind new source repair, four red/green tests and eight real canonical captures; independent review remains
+    pending under original policy refusal.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -231,6 +243,21 @@ verified:
   result: 4PASS0FAIL0SKIP,24 view observations,4 modal cases and4 error-to-valid cases. Full current publisher fixture,EN/ZH1440/320.
     Initial2narrow failures were harness toolbar scope. No screen-reader speech, live return, independent review
     or deployment claim.
+- claim: Auto time-boundary behavior and reapplication preserve active research state within current source fixture.
+  command: auto-boundary-20261014-r1/journey.py; RESULT.json; ACCEPTANCE.json.
+  result: 2final scoped cases pass:07:00 EN1440 and19:00 ZH320. Clock crossing keeps prior theme; existing setThemeAuto
+    applies newhour theme once. Exact nodes/focus/URL/context/History DOM and5/-3=1.85% survive; Escape field-ledger-read-origin
+    verified. Three initial harness assumptions retained; no product defect or continuous scheduler acceptance.
+- claim: Narrow sampled controls meet project44px dimensions in both locales.
+  command: touch-targets-20261014-r1/probe.py; PROBE.json; ACCEPTANCE.json.
+  result: 20dark320 state observations,310 rendered form-control/disclosure rectangles including repeatedtoolbar/inertbackground;
+    minimum58.5625 by44px,zero undersized. Links, physical touch and unvisited states outside scope.
+- claim: Compare calculation-window links meet the44px minimum without breaking native destination/context.
+  command: node --test --test-name-pattern="Compare calculation-window links" tests/intl_workspace_page.test.cjs;
+    touch-targets-20261014-r1/capture.py; canonical window-targets manifest.
+  result: Original4FAIL on link height; repaired4PASS,12width states/84link observations and4Enter activations.
+    Eight canonical1440/390 dark/light EN/ZH captures. Isolated fixture live_config.js404 retained. Design0blocking
+    and115assetpairs match. Parent visual scope only; independent review pending.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -267,10 +294,10 @@ unresolved:
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- Original live Library Stock return awaits Chris completing/dismissing the Chrome extension UI; preserve tab and
-  do not retry via alternate control. Compare interior-point/benchmark source trace is complete and needs its real
-  owner qualification/disclosure contract. Computed accessibility-tree coverage is now recorded; execute only a
-  new admitted gap or material owner input, without repeating accepted journeys.
+- Original live Library Stock return still awaits Chris completing/dismissing the Chrome extension UI; preserve
+  original tab and no alternate control. Source Auto boundary/reapplication and narrow form-control geometry are
+  now recorded. Advance only a genuinely new owner input or independent acceptance gap; do not repeat completed
+  journeys. Compare interior-point/benchmark needs its real qualification/disclosure contract.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
@@ -297,6 +324,9 @@ do_not_redo:
   Stock destination was confirmed on the original tab after a navigation detachment; Back success is unobserved.
 - Do not repeat the four accessibility-tree tests/24view observations unless relevant source, browser, input or
   acceptance changes. They are not screen-reader speech or nativezoom acceptance.
+- Do not rerun accepted Auto boundary or narrow geometry probes without relevant source/input/browser/acceptance
+  change. One-time Auto behavior is an observation, not a newly approved scheduling requirement; geometry does not
+  cover links or physical touch.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.

@@ -242,7 +242,7 @@ html[data-lang="zh"] .intl-workspace__deeper-title { letter-spacing:0; text-tran
 .intl-compare__table :is(th,td) { padding:var(--fs-body); text-align:start; vertical-align:top; border-block-end:1px solid var(--line); }
 .intl-compare__table th:first-child { inline-size:28%; }
 .intl-compare__table thead th { color:var(--muted); font-size:var(--fs-sm); font-weight:500; }
-.intl-compare__market a { display:block; margin-block-start:calc(var(--fs-body) / 2); font-weight:400; font-size:var(--fs-sm); }
+.intl-compare__market a { display:block; min-block-size:44px; margin-block-start:calc(var(--fs-body) / 2); font-weight:400; font-size:var(--fs-sm); }
 .intl-compare a { color:var(--link); }
 .intl-compare__metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--fs-body); }
 .intl-compare__metrics > div { padding:calc(var(--fs-body) / 2); background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
