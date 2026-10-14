@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parents[1]
 _PACKET_SCHEMA = "fundamental_forensics.financial_packet_request/v1"
 _REVISION_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
 _QUERY_SCHEMA = "fundamental_forensics.financial_query_request/v1"
-_GOLDEN_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
+_GOLDEN_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"  # re-captured by FIF G0-r1p3 P2-E; fixture carried in e94ba62aa89
 
 # FIP1 is a synthetic industrial issuer with no shipped coverage record; the
 # hermetic production-path tests inject its SIC (R1-SIC/R2).
