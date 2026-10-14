@@ -140,11 +140,13 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Resume the original live Library Stock return after Chris completes/dismisses the Chrome extension
-  UI. Auto, geometry and Risk/Library contrast repairs now have scoped source-fixture proof. Independent review and live publication remain held. Other
-  advances require a genuinely new acceptance gap or actual owner contract/admission; preserve all IW2, qualification,
-  review, rights, Saved, migration and release holds. No repeated journeys or speculative contracts.
+next_action: Resume the original live Library Stock Back after Chris completes/dismisses the Chrome extension UI.
+  Forced-colors selection repair and short-height Inspector proof are locally verified; independent review, served
+  publication and real owner qualification/Saved admission remain held. Preserve original review refusal, IW2 custody
+  and all release/frozen-effect boundaries; no repeated accepted checks or speculative contracts.
 artifacts:
+- research/paper_international_wave1_wave2/INSPECTOR_SHORT_VIEWPORT_OBSERVATION.json
+- research/paper_international_wave1_wave2/FORCED_COLORS_SELECTION_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/TEXT_SPACING_OBSERVATION.json
 - research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/README.md
@@ -266,3 +268,13 @@ Eight permanent actual-page browser cases have valid fail-before/pass-after proo
 ### User spacing observation, 2026-10-14
 
 A distinct four-property user-spacing condition was exercised on the unchanged5694source in eight Dark/Light EN/ZH320/1440cases. Across80states, no hidden/clip ancestor clipping or document overflow was detected. Inspector hierarchical Escape/focus, Scenario5/-3=1.85 and Library Clear/focus pass in each combination. Two Scenario images were viewed; existing launcher overlap persists. The receipt explicitly limits120character rendered text signatures and geometric coverage. A separate precondition check verifies all four computed spacing properties, including paragraph margin, over pre-rendered markup and confirms full workspace text equality in8configurations; hidden markup adds no rendered coverage. This is new scoped fixture evidence, not full SC1.4.12, nativezoom, independent review or live acceptance. Product bytes and all retained holds remain unchanged.
+
+
+### Forced-colors selection, 2026-10-14
+
+Browser forced palettes erased the selected History/Scenario border/fill distinction after hover and focus left. A scoped media rule now underlines the existing selected label. Four permanent red/green tests cover both palettes/languages and390/320px; native focus remains separately outlined. Twelve preference changes preserve raw Scenario draft3.20, input focus, text and analytical context. Eight final canonical full-page captures use26actual assets; initial incomplete-font captures were rejected. Source fixtures are not OS high-contrast activation, whole accessibility or served acceptance. Original review refusal and all release/custody holds persist.
+
+
+### Short-height Inspector, 2026-10-14
+
+Eight source-fixture cases at256px height cover320/820px, Dark/Light andEN/ZH.32modal modes retain keyboard-reachable controls and native Home/End content scrolling, with8origin-focus returns.440control-focus observations and72dialog-focus observations stay visible;48BODY observations have document.hasFocus=false and no background control gains focus. Three categories of rejected harness assumptions are retained separately: unsettled scroll, end-threshold reversal and field-to-deeper without returning to ledger. No Inspector product change, OS keyboard/nativezoom or live acceptance claim.

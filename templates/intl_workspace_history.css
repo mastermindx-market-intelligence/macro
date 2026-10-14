@@ -53,6 +53,10 @@
 .intl-history__tabs { display:none; gap:calc(var(--fs-body)/2); padding:var(--fs-body); border-block-end:1px solid var(--line); }
 .intl-history__tabs button { flex:1; }
 .intl-history__tabs [aria-pressed="true"] { border-color:var(--link); }
+/* Keep selection distinct when the user's palette replaces border/fill colors. */
+@media (forced-colors: active) {
+  .intl-history__tabs [aria-pressed="true"] { text-decoration:underline; }
+}
 .intl-history__footer { padding:var(--fs-body) calc(var(--fs-body)*1.5); border-block-start:1px solid var(--line); }
 .intl-history :is(button,input,select,summary,a):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
 [data-theme="light"] .intl-history { background:var(--panel); box-shadow:var(--card-shadow); }

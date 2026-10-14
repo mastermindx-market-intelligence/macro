@@ -55,6 +55,47 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`History selection survives forced colors without hover or focus ${theme} ${lang}`,async t=>{
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>window.setTheme(theme),theme);
+      await page.emulateMedia({forcedColors:'active',colorScheme:theme});
+      assert.equal(await page.evaluate(()=>matchMedia('(forced-colors: active)').matches),true);
+      await page.selectOption('[data-im-controls] select[data-im-action="set_view"]','history');
+      const panel=page.locator('[data-im-history-panel]:visible');
+      const appearance=node=>{
+        const s=getComputedStyle(node);
+        return {decoration:s.textDecorationLine,weight:s.fontWeight,
+          borderStyle:s.borderBottomStyle,borderWidth:s.borderBottomWidth};
+      };
+      for(const width of [390,320]) {
+        await page.setViewportSize({width,height:900});
+        for(const selected of ['scenario','history']) {
+          const target=panel.locator(`[data-im-scenario-tab="${selected}"]`);
+          await target.focus();
+          await page.keyboard.press(selected==='scenario'?'Space':'Enter');
+          assert.equal(await target.getAttribute('aria-pressed'),'true');
+          assert.equal(await panel.getAttribute('data-im-history-tab'),selected);
+          const focus=await target.evaluate(n=>({visible:n.matches(':focus-visible'),
+            style:getComputedStyle(n).outlineStyle,width:parseFloat(getComputedStyle(n).outlineWidth)}));
+          assert.equal(focus.visible,true);assert.notEqual(focus.style,'none');assert.ok(focus.width>=2);
+          // Move both pointer and focus off the pair: a hover/focus highlight is not selection.
+          await page.mouse.move(0,0);
+          await page.locator('[data-im-controls] select[data-im-action="set_view"]').focus();
+          const chosen=await target.evaluate(appearance);
+          const unselected=panel.locator('[data-im-scenario-tab][aria-pressed="false"]');
+          assert.equal(await unselected.count(),1);
+          assert.notDeepEqual(chosen,await unselected.evaluate(appearance),
+            'selected tab needs a non-color cue after focus and hover leave');
+          assert.equal(await target.evaluate(n=>n.matches(':focus-visible')||n.matches(':hover')),false);
+          assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+          t.diagnostic(JSON.stringify({theme,lang,width,selected,appearance:chosen}));
+        }
+      }
+    },{width:390,htmlOverride:coldLocaleHtml,published:true,bootLanguage:lang});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Library placeholder text contrast ${theme} ${lang}`,async t=>{
     await pageFixture(async page=>{
       await page.evaluate(theme=>window.setTheme(theme),theme);

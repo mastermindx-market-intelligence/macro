@@ -95,15 +95,29 @@ changed:
   what: Bind new source repair, four red/green tests and eight real canonical captures; independent review remains
     pending under original policy refusal.
 - path: templates/intl_workspace_risk.css and site/intl_workspace_risk.css
-  what: Use existing directional text inks; Light green return text rises from3.61 to5.60 contrast, with Dark hues retained.
+  what: Use existing directional text inks; Light green return text rises from3.61 to5.60 contrast, with Dark hues
+    retained.
 - path: templates/intl_workspace.css and site/intl_workspace.css
-  what: Give the Library search placeholder its existing muted token and opacity1; Dark contrast rises from3.85 to5.73.
+  what: Give the Library search placeholder its existing muted token and opacity1; Dark contrast rises from3.85
+    to5.73.
 - path: tests/intl_workspace_page.test.cjs
-  what: Add eight actual-page contrast regressions across Dark/Light, EN/ZH and320/1440, with causal fail-before evidence.
+  what: Add eight actual-page contrast regressions across Dark/Light, EN/ZH and320/1440, with causal fail-before
+    evidence.
 - path: research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
-  what: Bind both source repairs, bounded contrast census, tests,16 canonical captures and explicit pending independent/live acceptance.
+  what: Bind both source repairs, bounded contrast census, tests,16 canonical captures and explicit pending independent/live
+    acceptance.
 - path: research/paper_international_wave1_wave2/TEXT_SPACING_OBSERVATION.json
-  what: Record new user-spacing source-fixture observations without product changes; scope excludes whole accessibility certification.
+  what: Record new user-spacing source-fixture observations without product changes; scope excludes whole accessibility
+    certification.
+- path: templates/intl_workspace_history.css; site/intl_workspace_history.css; tests/intl_workspace_page.test.cjs
+  what: Retain a non-color History/Scenario selection cue in forced-colors mode; four fail-before browser regressions
+    cover selection away from focus/hover.
+- path: research/paper_international_wave1_wave2/FORCED_COLORS_SELECTION_ACCEPTANCE.json; mockups/evidence/paper-international-history/forced-colors/
+  what: Bind source repair,4red/4green tests,12preference changes and8final canonical captures with original-font
+    capture rejection retained.
+- path: research/paper_international_wave1_wave2/INSPECTOR_SHORT_VIEWPORT_OBSERVATION.json
+  what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
+    product change.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -268,25 +282,41 @@ verified:
   result: Original4FAIL on link height; repaired4PASS,12width states/84link observations and4Enter activations.
     Eight canonical1440/390 dark/light EN/ZH captures. Isolated fixture live_config.js404 retained. Design0blocking
     and115assetpairs match. Parent visual scope only; independent review pending.
-- claim: Risk and Library contrast repairs have causal parent source-fixture proof; no independent or live acceptance follows.
+- claim: Risk and Library contrast repairs have causal parent source-fixture proof; no independent or live acceptance
+    follows.
   evidence: research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
-  command: >-
-    NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules
-    PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14
-    node --test --test-name-pattern='Risk return text contrast' tests/intl_workspace_page.test.cjs;
-    same environment with --test-name-pattern='Library placeholder text contrast';
-    python3 -m pytest tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py -q
-  result: >-
-    Each four-case browser run passes0fail0skip at320/1440. Each original-source run fails its two affected theme/language cases.
-    Risk113Python pass14 inherited cleanup warnings.40state direct-text census4864 observations found5 Risk failures;
-    four affected final states428 observations have0failures. Separate placeholder probe exposed default-grey defect.
-    Risk and Library each captured8canonical1440/390 Dark/Light EN/ZH states; parent viewed4 per panel.
-    Final added-line design0blocking,115template/site pairs match and visual guardexit0.
-    Isolated live_config404 and launcher overlap retained. Risk evidence predates only the hidden Library placeholder rule;
-    exact input hashes preserved and scope-equivalence documented. Review remains pending under the original refusal.
+  command: NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules
+    PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14 node --test
+    --test-name-pattern='Risk return text contrast' tests/intl_workspace_page.test.cjs; same environment with --test-name-pattern='Library
+    placeholder text contrast'; python3 -m pytest tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py
+    -q
+  result: Each four-case browser run passes0fail0skip at320/1440. Each original-source run fails its two affected
+    theme/language cases. Risk113Python pass14 inherited cleanup warnings.40state direct-text census4864 observations
+    found5 Risk failures; four affected final states428 observations have0failures. Separate placeholder probe exposed
+    default-grey defect. Risk and Library each captured8canonical1440/390 Dark/Light EN/ZH states; parent viewed4
+    per panel. Final added-line design0blocking,115template/site pairs match and visual guardexit0. Isolated live_config404
+    and launcher overlap retained. Risk evidence predates only the hidden Library placeholder rule; exact input
+    hashes preserved and scope-equivalence documented. Review remains pending under the original refusal.
 - claim: Scoped source-fixture text-spacing behavior across both themes/languages and320/1440 is observed.
   command: python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-spacing-20261014-r1/matrix.py
-  result: Eight cases pass with80state observations and6672direct-text observations; no detected hidden/clip ancestor clipping or page overflow. Inspector Escape/focus, Scenario1.85 and Library Clear/focus pass8each. Rendered samples verify three spacing values; separate override_effectiveness.py verifies all four over pre-rendered markup and full workspace text equality in8configurations. Matrix text signatures retain120characters per node. Existing launcher overlap persists; no whole-standard/nativezoom/live acceptance.
+  result: Eight cases pass with80state observations and6672direct-text observations; no detected hidden/clip ancestor
+    clipping or page overflow. Inspector Escape/focus, Scenario1.85 and Library Clear/focus pass8each. Rendered
+    samples verify three spacing values; separate override_effectiveness.py verifies all four over pre-rendered
+    markup and full workspace text equality in8configurations. Matrix text signatures retain120characters per node.
+    Existing launcher overlap persists; no whole-standard/nativezoom/live acceptance.
+- claim: History/Scenario selection remains distinct under forced colors and the separate focus outline remains
+    visible. Preference changes preserve raw draft3.20, focus, panel text and URL.
+  command: NODE_PATH=<bundled-node-modules> PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14
+    node --test --test-name-pattern='History selection survives forced colors' tests/intl_workspace_page.test.cjs;
+    python3 <evidence>/forced-colors-20261014-r1/preference_changes.py
+  result: 4PASS0FAIL,8width states/16selection observations;4preference cases/12changes. Browser emulation only.115assetpairs
+    match; design0blocking25368inherited; visual guard0. Initial incomplete-font captures rejected;8final canonical
+    states retained with live_config.js404.
+- claim: Inspector controls and full content remain keyboard reachable at256px viewport height.
+  command: python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector-short-viewport-20261014-r1/matrix.py
+  result: 8cases/32modes PASS.440focused-control observations,72dialog focus and48unfocused-body transitions; no
+    background control focus.32settled Home/End pairs and8Escape origin returns pass. Native scrolling timing and
+    invalid field-to-deeper harness assumptions are rejected, not product bugs.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -295,7 +325,10 @@ unverified:
   what_would_verify: Complete journey and theme/locale/accessibility evidence, native200percent zoom, original-owner
     trusted Saved context, and current lawful qualified inputs.
 unresolved:
-- Risk and Library contrast source repairs await independent review and lawful deployment/live acceptance; parent tests and captures do not clear them.
+- Forced-colors source repair also requires independent review and lawful served acceptance; original SUPPORT_PUBLICATION_REFUSED
+  remains binding.
+- Risk and Library contrast source repairs await independent review and lawful deployment/live acceptance; parent
+  tests and captures do not clear them.
 - The historical cause of no candidate product CI after943ee54 remains unproved; current merge conflicts are independently
   verified source blockers, not proof of that historical cause.
 - Original qualifier/proc2217592/environ EFFECT_UNKNOWN, three pre-START reviews, T03k fifth refusal, release5989604142,
@@ -322,17 +355,24 @@ unresolved:
 - New live Library return check requires Chris to complete/dismiss the open Chrome extension UI. Back is unconfirmed;
   original tab remains handoff. Source/workflow work is independent of this browser refusal.
 next_actions:
-- Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
-  source.
-- Original live Library Stock return still awaits Chris completing/dismissing the Chrome extension UI; preserve
-  original tab and no alternate control. Source Auto boundary/reapplication and narrow form-control geometry are
-  now recorded, as are the Risk/Library contrast repairs. Advance only a genuinely new owner input or independent acceptance gap; do not repeat completed
-  journeys. Compare interior-point/benchmark needs its real qualification/disclosure contract.
-- Independent review of missing compass, localized accessible name and History table remains pending under the retained
-  Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
+- Original live Library Stock Back requires Chris to complete/dismiss the Chrome extension UI; preserve original
+  tab and do not retry or switch control/browser before that boundary changes.
+- Original review-policy refusal needs resolution by its actual owner; no replacement or alternate reviewer. Compare
+  interior-point/benchmark qualification and genuine Saved require authentic owner contracts/admission; no invented
+  data/context or IW2 lane adoption.
+- Forced-colors repair and short-height source proof are saved; current-head CI remains unobserved. Advance only
+  genuinely new admitted evidence or a distinct material gap; do not replay accepted checks. All release, qualification,
+  rights, migration, frozen-effect and browser holds persist.
 do_not_redo:
-- Do not repeat the eight text-spacing cases/80samples unchanged. The initial seven-state smoke overlaps; computed styles and geometric checks are bounded observations, not complete accessibility.
-- Reuse contrast proof until relevant source/input/browser/acceptance changes. Do not repeat40state direct-text census, eight browser regressions or16captures unchanged. Risk captures precede only hidden Library placeholder CSS; retain original hashes.
+- Do not repeat accepted8short-height cases/32modes/560keyboard observations unchanged. Headless browser viewport
+  height is not OS virtual-keyboard or nativezoom acceptance.
+- Do not replay four accepted forced-colors regressions,12preference changes or8final captures unchanged. Initial
+  eight incomplete-font captures are rejected; no OS high-contrast/live/speech claim.
+- Do not repeat the eight text-spacing cases/80samples unchanged. The initial seven-state smoke overlaps; computed
+  styles and geometric checks are bounded observations, not complete accessibility.
+- Reuse contrast proof until relevant source/input/browser/acceptance changes. Do not repeat40state direct-text
+  census, eight browser regressions or16captures unchanged. Risk captures precede only hidden Library placeholder
+  CSS; retain original hashes.
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
 - Do not regenerate the completed mission-acceptance preparation package or consume any accepted Fabric result again.

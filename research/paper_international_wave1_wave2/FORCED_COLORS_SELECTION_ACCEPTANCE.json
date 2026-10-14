@@ -1,0 +1,120 @@
+{
+  "status": "PASS_SCOPED_SOURCE_REPAIR; independent review and served acceptance pending",
+  "base_head": "0418af51d8be0784b0d9617fb9ab389874778bc8",
+  "defect": "History/Scenario selection differed only by border/fill colors. Forced palette made selected and unselected controls identical when pointer and focus left.",
+  "repair": "Underline the existing aria-pressed=true label only under forced-colors:active; no forced-color-adjust opt-out, palette, markup, controller or data change.",
+  "reference": "https://www.w3.org/TR/css-color-adjust-1/#forced-colors-mode",
+  "design": "# Forced-colors selection repair\n\nCause: History/Scenario selection used only border and background colors, replaced by the browser forced palette. Original four actual-publisher browser cases fail when pointer and keyboard focus leave the selected button.\n\nRepair: underline the already-selected History/Scenario label only inside forced-colors: active. Existing aria-pressed remains the state source; native button role and focus outline remain. No forced-color-adjust opt-out, new palette, markup, controller or data contract.\n\nDark treatment: ordinary graphite instruments unchanged. Under dark forced palette, the selected label keeps a system-colored underline; native focus remains a separate outline.\nLight treatment: ordinary paper/hairline presentation unchanged. Under light forced palette, the same underline carries selection in the user palette. No equivalence claim for ordinary light/dark material from palette substitution.\n\nReference: existing History/Scenario controls, with recorded before-source styles and captures. Unavailability, language and context behavior remain existing-owned. Browser emulation is not OS high-contrast activation or screen-reader speech.\n\nEvidence: four permanent bilingual dark/light forced-color tests, two narrow widths, both selection states using native Space/Enter and focus removal. Eight canonical forced-palette captures at1440/390; tabs are only shown in mobile layout, so desktop captures cover unchanged context. Original full-page source fixture and26asset inputs retained.\n\nIndependent review remains pending under original SUPPORT_PUBLICATION_REFUSED; no new worker or alternate reviewer. All release, rights, Saved and IW2 boundaries remain.\n",
+  "verification": {
+    "red": {
+      "tests": 4,
+      "pass": 0,
+      "fail": 4,
+      "scope": "Each case fails at first Scenario/390 observation on original source; not16 distinct red assertions."
+    },
+    "green": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "widths": [
+        390,
+        320
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "width_states": 8,
+      "selection_observations": 16,
+      "interaction": "Native Space/Enter, aria-pressed state, focus-visible outline at least2px, pointer/focus removed then non-color selection fingerprint differs; document has no horizontal overflow."
+    },
+    "preference_changes": {
+      "cases": 4,
+      "changes": 12,
+      "sequence": [
+        "active",
+        "none",
+        "active"
+      ],
+      "preserved": [
+        "raw Scenario local draft3.20",
+        "input focus",
+        "whole visible History panel textContent",
+        "analytical URL",
+        "selected and unselected aria-pressed"
+      ],
+      "scope": "Browser media emulation, not actual OS high-contrast activation."
+    },
+    "checks": {
+      "design": "0blocking;25368 inherited findings",
+      "template_site": "115pairs match",
+      "visual_receipt": "exit0",
+      "diff": "pass"
+    }
+  },
+  "visual_evidence": {
+    "canonical_manifest": "mockups/evidence/paper-international-history/forced-colors/manifest.json",
+    "manifest_sha256": "cd6e3e0cfde7615dca47e0fc3cb00147ca9394c9581f9dfdf23f6b04867ac66a",
+    "accepted_states": 8,
+    "axes": "Dark/Light EN/ZH1440x900 and390x844, forced_colors=active and matching color_scheme",
+    "scope": "Desktop captures show context; History/Scenario tabs are mobile-only. Four additional320px tab-strip diagnostics cover the Scenario selection.",
+    "parent_viewed": [
+      "darkENmobile full page",
+      "lightZHmobile full page",
+      "darkEN320 tab strip",
+      "lightZH320 tab strip"
+    ],
+    "retained_failures": "Final canonical manifest records live_config.js404. Existing launcher overlap retained. Initial8 captures with missing Inter500/800 fonts are archived under rejected-incomplete-fonts and not accepted; final capture uses actual26-asset input."
+  },
+  "source_sha256": {
+    "templates/intl_workspace_history.css": "49cfc25afb07782589eb9ca5fc51133943f1dafa49bfc8b0078c35494b2857e9",
+    "site/intl_workspace_history.css": "49cfc25afb07782589eb9ca5fc51133943f1dafa49bfc8b0078c35494b2857e9",
+    "tests/intl_workspace_page.test.cjs": "e2cd040489c51147f76548c23b0c1e7f8987cb28ffb8b91352d361069515edbe"
+  },
+  "evidence": {
+    "package": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/forced-colors-20261014-r1",
+    "files": {
+      "final-tabs-dark-zh-320.png": "e375b92c7bc1afe91b5e60d266c11108d2c58e02906bf8b83dd5b07c2608a57a",
+      "CAPTURE.log": "2614c157a20b5a8d02fd78c95878dd2851698dba12d5ad7001769ba9b7aaf661",
+      "ASSET_PARITY.log": "c19954ce729e34c84461941c5a6df4754de47995b49f3230c6fe361409603c8c",
+      "INCOMPLETE_CAPTURE.log": "2614c157a20b5a8d02fd78c95878dd2851698dba12d5ad7001769ba9b7aaf661",
+      "PREFERENCE_CHANGES.json": "bbe04df227998d99d55b7f8dc543d8adde6a23f21ac95c54b344f380968e11bd",
+      "RED.log": "8d56dbdbaf27e0c83db358ec9eb922dfd78c637798edd324e7957bda395e9211",
+      "PROBE.log": "c9d10d8ccda9db5c57972629f242b172525385cea9495b33b899dacfd1cb789a",
+      "GREEN.log": "644fd4f503f63590ab1f6f7a5b3bb763e05b81069584be58b84e34bdc7a9d478",
+      "SMELLS.json": "2c86a02bb46c17fa4f17331f91635ceb5af995a09ce15540d8d45c2006383ab9",
+      "PREFERENCE_CHANGES.log": "0d3d816e440772eb078d59655e69ecab03398d8a9fbd9c1d35362ed97d0edb4b",
+      "active-scenario-320.png": "c8b9c1f397def9ee342b0d81cf656c949aa369995d63352995038390e5f0912b",
+      "UI.diff": "2f6e59e8fef1012664a2f521e097b20ffc343df9ca4cc08a14b6e1ee91f3a064",
+      "none-scenario-320.png": "8a43c0f54a52c98f5aea2bf113966331db247ab4646302f254ff8b8fa0b459b9",
+      "final-tabs-light-zh-320.png": "db0754df2b5903dd7c38ff840f96cf9a4273a194b3675351b454329e3bc5b2c9",
+      "DESIGN_GUARD.log": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40",
+      "capture.py": "6f8d3470fc24f0dba703706e87cacfb7f7ba2b9aa2a947c94eaec3cf32e0721e",
+      "final-tabs-dark-en-320.png": "5069d4e6e59daf3416a0cbafd0daa26fa4e712d567ea3b73273d07cfa6fc91f7",
+      "none-history-1440.png": "6d0211cf706c981c2512631b1f3801943c3db29b120b2c09cac0bb3c05c04baf",
+      "PROBE.json": "bccf7b9af44547455a145e18c63a473b428ea1835878ae7d485ea65421e64973",
+      "probe.py": "a17e4a03ba4c73ac02ad2748e243deb16aa8bfa9ee86d794be0aa817f84d0389",
+      "active-history-1440.png": "70b1c46f2ebb96ad8e63a2581842ca4c01c80dfc447139db198bcb059a8632c8",
+      "CAPTURE_INPUT.json": "bb9be0da309738c1ea64ba5eebbf251b347a3114f3d93cdeadb4626842485978",
+      "preference_changes.py": "808cc0eca4e0536309b872207ad96a0194886dd1a0a44935fe3d0c4365c53990",
+      "DESIGN.md": "2a13d0fdf8a3a9730eb318fa6d22eb89662f6b8406b0547d7c4e0500a632a296",
+      "INCOMPLETE_CAPTURE_INPUT.json": "13824d655fbc9470084836be38d5270faec547556dbbb31ca5abd9a7d371c24e",
+      "VISUAL_GUARD.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final-tabs-light-en-320.png": "b96e7c2dc4573e21bfbe8e6a1620c7538f90b096febc7d5fdc882a1306a4f5d5"
+    }
+  },
+  "execution": "Direct permitted work under existing prelaunch review-policy refusal; no new worker, reviewer, alternate carrier or refusal retry.",
+  "limits": [
+    "Fixture has synthetic qualification, not current rights.",
+    "No complete accessibility, physical input, screen-reader speech, nativezoom or Paper parity claim.",
+    "Original Chrome extension handoff untouched.",
+    "CI at resulting head unobserved; no PR/CI poll or watcher.",
+    "Independent review pending under original SUPPORT_PUBLICATION_REFUSED; no deployment/ready/merge/autoarm.",
+    "All frozen-effect, Saved, rights, migration, release and IW2 custody boundaries persist."
+  ]
+}
