@@ -22,6 +22,13 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /templates/mtf.js
+            /site/mtf.js
+            /tests/mtf_eta_client.test.cjs
+            /tests/fixtures/mtf_eta/512980.SS-mtf.json
+            /tests/fixtures/mtf_eta/XIT.TO-mtf.json
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24"
