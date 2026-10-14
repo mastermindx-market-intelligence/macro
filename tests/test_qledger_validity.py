@@ -1042,3 +1042,120 @@ def test_k3e_eval1_forward_t2b_one_try_per_check():
         "max_challenger_abstention",
         "scored_fraction_floor",
     ]
+
+
+# T12 exposes the existing metric owner to the existing Agent OS boundary.
+def _research_registry(*families):
+    return {"schema": "intelligence_registry.v1", "engines": [
+        {"engine_id": f"engine/{f}.py::owner-{f}", "producer": f"engine/{f}.py",
+         "owner_program": f"owner-{f}", "ledger": f"qledger:{f}",
+         "ledger_evidence": {"rule": 2, "desk": f}}
+        for f in families], "excluded": []}
+
+
+def test_research_findings_project_two_explicit_metric_owner_findings():
+    from engine.qledger_validity import project_research_findings
+    claims = [_claim("mixed", "a", 1), _claim("mixed", "b", -1), _claim("salience", "c", 0)]
+    metrics = {"mixed": {"excess_mean"}, "salience": {"hit_rate"}}
+    registry = _research_registry("mixed", "salience")
+    before = json.dumps([claims, registry], sort_keys=True)
+    result = project_research_findings(claims, [], reported_metrics=metrics, registry=registry, evidence_link="research/evidence/synthetic-audit.json")
+    assert result["evaluation_status"] == "not_assessed"
+    assert not result["unresolved"]
+    assert [(x["segment"], x["metric"], x["suggested_tier"]) for x in result["issues"]] == [("mixed", "excess_mean", "T0"), ("salience", "hit_rate", "T0")]
+    for issue, owner in zip(result["issues"], audit(claims, [], reported_metrics=metrics)):
+        assert set(issue) == {"engine", "metric", "observed_change", "segment", "evidence_link", "suggested_tier"}
+        assert issue["observed_change"] == "Snapshot of intended-report metric validity: " + owner.detail
+        assert issue["engine"] == f"engine/{owner.family}.py::owner-{owner.family}"
+    assert json.dumps([claims, registry], sort_keys=True) == before
+
+
+@pytest.mark.parametrize("metrics", [None, {}, {"m": None}, {"m": ["excess_mean"]}])
+def test_research_findings_require_explicit_per_family_metric_scope(metrics):
+    from engine.qledger_validity import project_research_findings
+    with pytest.raises(ValueError):
+        project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics=metrics, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+
+
+def test_research_findings_empty_descriptive_scope_emits_no_issue():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": set()}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == [] and result["unresolved"] == []
+
+
+@pytest.mark.parametrize("damage", ["missing", "ambiguous", "excluded", "wrong_id", "weak_binding"])
+def test_research_findings_do_not_guess_engine_binding(damage):
+    from copy import deepcopy
+    from engine.qledger_validity import project_research_findings
+    registry = _research_registry("m")
+    row = registry["engines"][0]
+    if damage == "missing": registry["engines"] = []
+    if damage == "ambiguous": registry["engines"].append(deepcopy(row))
+    if damage == "excluded":
+        registry["excluded"] = [{"engine_id": row["engine_id"], "would_be_ledger": "qledger:m"}]
+        registry["engines"] = []
+    if damage == "wrong_id": row["engine_id"] = "invented"
+    if damage == "weak_binding": row["ledger_evidence"]["rule"] = 1
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/x.json")
+    assert result["issues"] == [] and result["unresolved"]
+
+
+def test_research_findings_preserve_off_horizon_as_unsupported_note():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1, horizon=63)], [_grade("a", 5)], reported_metrics={"m": {"hit_rate"}}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == []
+    assert result["unresolved"][0]["code"] == "OFF_HORIZON_VERDICT"
+    assert result["unresolved"][0]["reason"] == "unsupported_owner_finding"
+
+
+@pytest.mark.parametrize("link", [None, "", "x" * 2049, "\ud800"])
+def test_research_findings_require_bounded_evidence_locator(link):
+    from engine.qledger_validity import project_research_findings
+    with pytest.raises(ValueError):
+        project_research_findings([], [], reported_metrics={}, registry=_research_registry(), evidence_link=link)
+
+
+
+def test_research_findings_real_registry_to_existing_discovery_consumer(monkeypatch):
+    import socket
+    from scripts import agentos
+    from engine.intelligence_registry import build_registry, DeskScan
+    from engine.qledger_validity import project_research_findings
+    producer = "engine/synthetic_owner.py"
+    registry = build_registry(synapse={"meta": {"schema_version": 1}, "artifacts": {"example": {
+        "path": "data/synthetic-output.json", "format": "json", "producer": producer,
+        "owner_program": "synthetic-owner", "cadence": "daily-engine", "storage": "git",
+        "asof_field": "asof", "freshness_sla_hours": 24, "schema": "example",
+        "tier": "display", "horizon_role": "context", "consumers": []}}},
+        desk_scans={producer: DeskScan(imports_qledger=True, desks=("mixed",), unresolved=False)})
+    def refuse_io(*args, **kwargs):
+        raise AssertionError("pure finding projection must not do I/O")
+    with monkeypatch.context() as patch:
+        patch.setattr("builtins.open", refuse_io)
+        patch.setattr(socket, "socket", refuse_io)
+        result = project_research_findings([_claim("mixed", "a", 1), _claim("mixed", "b", -1)], [], reported_metrics={"mixed": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/synthetic-owner.json")
+        assert len(result["issues"]) == 1 and not result["unresolved"]
+        finding = result["issues"][0]
+        payload = {"key": "SYNTHETIC-METRIC-FINDING", "claim": "The synthetic mixed-direction family cannot report pooled signed excess.", "falsifier": "pytest tests/test_qledger_validity.py -k research_findings", "so_what": "Use a legal metric for this synthetic report.", "kind": "data", "verified_at": "2026-10-14", "verified_by": "tests/test_qledger_validity.py:1", "scope": ["synthetic-owner"], "confidence": "verified", "evaluation_finding": finding}
+        text = agentos.draft_discovery(payload)
+        record = agentos.yaml.safe_load(text.split("---", 2)[1])
+        assert record["evaluation_finding"] == finding
+        assert not [p for p in agentos.check_discovery(record, Path("DSC-SYNTHETIC-METRIC-FINDING.md")) if p.hard]
+        payload.pop("falsifier")
+        with pytest.raises(SystemExit):
+            agentos.draft_discovery(payload)
+
+
+def test_research_findings_unassessed_scope_cannot_look_clear():
+    from engine.qledger_validity import project_research_findings
+    result = project_research_findings([_claim("m", "a", 1)], [], reported_metrics={"m": {"accuracy"}, "absent": {"hit_rate"}}, registry=_research_registry("m"), evidence_link="research/evidence/x.json")
+    assert result["issues"] == []
+    assert {x["reason"] for x in result["unresolved"]} == {"unsupported_metric", "family_has_no_claims"}
+
+
+def test_research_findings_metric_integrity_does_not_depend_on_engine_authority():
+    from engine.qledger_validity import project_research_findings
+    registry = _research_registry("m")
+    registry["engines"][0]["authority"] = "gate_size"
+    result = project_research_findings([_claim("m", "a", 1), _claim("m", "b", -1)], [], reported_metrics={"m": {"excess_mean"}}, registry=registry, evidence_link="research/evidence/x.json")
+    assert result["issues"][0]["suggested_tier"] == "T0"
