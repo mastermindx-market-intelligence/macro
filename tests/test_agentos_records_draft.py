@@ -14,6 +14,7 @@ import ast
 import importlib.util
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -1121,6 +1122,16 @@ _SEAT_FIELD_PARAMS = [
         id="pr.files",
     ),
     pytest.param(
+        # Entry in the two-space bullet shape the handoff/append render
+        # themselves (accepted by ``_pr_fields`` today); the bare-value
+        # mutant then produces a line equal to the value that still
+        # starts with "  - ", so the third positional clause is what
+        # fails. Chosen as its own param so the id reads standalone.
+        "pr.files", lambda h: _payload(pr={"files": [f"  - lib/x{h}.py"]}),
+        "mixed", "pr.files entries must be single-line repo-relative paths",
+        id="pr.files-bullet-form",
+    ),
+    pytest.param(
         "model", lambda h: _payload(model=f"opus{h}"),
         "refused", "model must be one of",
         id="model",
@@ -1227,19 +1238,27 @@ def test_seat_string_fields_are_refused_or_quoted(
             if record_key in ("handoff", "ws_append") or field_id == "title":
                 if field_id == "pr.files":
                     # (v), positional. ``pr.files`` entries are the only
-                    # seat strings rendered RAW into record bodies (module
-                    # :562 handoff, :611 ws_append), so a substring test is
-                    # vacuous there: the path survives on SOME line whether
-                    # or not its "  - " bullet prefix does. Pin the shape
-                    # instead. Occurrences INSIDE a double-quoted scalar
-                    # (``- path: "..."``, ``result: "...absent: ..."``)
-                    # ride ``_q`` and keep (i)-(iv); positional law binds
-                    # the raw occurrences: every line with a not-inside-
-                    # quotes occurrence starts with the two-space bullet,
-                    # at least one such line exists, and no line equals
-                    # the bare value.
+                    # seat strings rendered RAW into record bodies that
+                    # can carry a hostile character (``pr.merged_at`` is
+                    # also raw -- module :556 handoff, :605 ws_append --
+                    # but ``_MERGED_RE`` :73 pins it to ASCII). The
+                    # :562/:611 files rows are unpinned, so a substring
+                    # test is vacuous there: the path survives on SOME
+                    # line whether or not its "  - " bullet prefix does.
+                    # Pin the shape instead. Occurrences INSIDE a
+                    # double-quoted scalar (``- path: "..."``,
+                    # ``result: "...absent: ..."``) ride ``_q`` and keep
+                    # (i)-(iv); positional law binds the raw occurrences:
+                    # every line with an occurrence outside the quotes
+                    # starts with the two-space bullet, at least one such
+                    # line exists, and no line equals the bare value.
                     def _raw_has_value(line: str) -> bool:
-                        parts = line.split('"')
+                        # Escape-aware: ``_q`` renders a literal double
+                        # quote inside a quoted scalar as ``\"``; a naive
+                        # ``split('"')`` counts that escaped quote as a
+                        # boundary and flips the inside/outside parity for
+                        # every later occurrence on the same line.
+                        parts = re.split(r'(?<!\\)"', line)
                         return any(
                             value in part for part in parts[0::2]
                         )
