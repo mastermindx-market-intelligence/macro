@@ -16,8 +16,10 @@ commitment is not cash) and A48 (no probability, score or sizing).
 
 from __future__ import annotations
 
+import dataclasses
 import inspect
 import json
+import re
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterator
@@ -37,17 +39,23 @@ from engine.capital_structure.funding import (
 )
 from engine.capital_structure.issuer_state_contracts import (
     CASH_BASES,
+    STATE_CONTRACT_VERSION,
     COMPATIBLE_INPUT_SCHEMAS,
     FORBIDDEN_PROPERTY_PATTERN,
     ActionSelection,
+    CalculationReceipt,
+    CapitalState,
     CommitmentInputs,
     ContractViolation,
+    FamilyProvenance,
+    FamilyState,
     FinancialInputs,
     FinancingScenario,
     FundingSchedule,
     GenerationBinding,
     PriceAssumption,
     Quantity,
+    StateRequest,
     UnknownResolution,
     validate_state_record,
 )
@@ -874,6 +882,68 @@ def test_schedule_record_satisfies_the_state_schema_and_names_no_score() -> None
     validate_state_record("funding_schedule", record)
     assert [key for key in keys(record) if FORBIDDEN_PROPERTY_PATTERN.match(key)] == []
     assert not set(keys(record)) & set(FORBIDDEN_FIELDS)
+
+
+def test_schedule_state_id_is_an_input_identity_never_an_issuer_state_id() -> None:
+    """Seat ruling (2026-10-14): joining is C1's; a raw schedule id cannot collide with a state id.
+
+    ``project_funding`` receives no ``CapitalState``, so ``FundingSchedule.state_id``
+    names the funding inputs actually consumed.  The C1 assembler re-stamps it with
+    the issuer state's id.  Here a ``CapitalState`` is built over the very same
+    scenario inputs; the two ids must differ, and the re-stamped schedule must still
+    satisfy the C0 schema.
+    """
+    fin = financials(*base_facts())
+    com = covenants(covenant("cov-min-1", "1000000"))
+    sc = scenario()
+    schedule = project_funding(fin, com, sc)
+    pattern = re.compile(r"^state:cs:[A-Fa-f0-9]{32}$")
+    assert pattern.match(schedule.state_id)
+    same_inputs = {"financials": fin.as_record(), "commitments": com.as_record(), "scenario": sc.as_record()}
+    state = CapitalState(
+        request=StateRequest(
+            issuer_id="cik:0001234567",
+            as_of=sc.as_of,
+            view_mode="current",
+            input_generations=(fin.binding, com.binding),
+            rule_pack_id="rule_pack:cs:funding-test",
+            rule_pack_version="1",
+            rule_pack_digest=RULE_DIGEST,
+        ),
+        generated_at=sc.as_of,
+        families=(
+            FamilyState(
+                "cash_funding",
+                FamilyProvenance(
+                    family="cash_funding",
+                    input_family="financials",
+                    input_schema=FINANCIAL_ITEM_SCHEMA,
+                    support="partial",
+                    compiler_version=STATE_CONTRACT_VERSION,
+                    generation_id=fin.binding.generation_id,
+                    support_limits=("one commitment family per projection",),
+                    as_of=sc.as_of,
+                ),
+                records=(schedule.as_record(),),
+            ),
+        ),
+        receipt=CalculationReceipt.build(
+            inputs=same_inputs,
+            rule_digest=RULE_DIGEST,
+            implementation=IMPLEMENTATION,
+            computed_at=sc.as_of,
+            scenario_id=None,
+        ),
+    )
+    assert pattern.match(state.state_id)
+    assert schedule.state_id != state.state_id
+    # Unchanged across reruns of the same inputs: it is an identity, not a nonce.
+    assert project_funding(fin, com, sc).state_id == schedule.state_id
+    # The C1 join path: re-stamp with the issuer state's id, and it stays valid.
+    joined = dataclasses.replace(schedule, state_id=state.state_id)
+    assert joined.state_id == state.state_id
+    validate_state_record("funding_schedule", joined.as_record())
+    assert joined.receipt == schedule.receipt
 
 
 def test_wrong_argument_types_are_refused() -> None:

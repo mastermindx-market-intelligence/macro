@@ -71,8 +71,14 @@ unresolved:
   - >
     FundingSchedule.state_id must match ^state:cs: but F1's three-argument
     interface receives no IssuerCapitalState; the id identifies the funding
-    inputs, and an assembler holding the issuer state re-stamps it with
-    dataclasses.replace(schedule, state_id=state.state_id).
+    inputs. Seat ruling 2026-10-14: joining belongs to C1, whose assembler
+    holds the issuer state and re-stamps with
+    dataclasses.replace(schedule, state_id=state.state_id); a schedule that
+    was not re-stamped is a standalone computation and never a join key, and
+    no C0 delta is opened. Pinned by
+    test_schedule_state_id_is_an_input_identity_never_an_issuer_state_id
+    (the derived id differs from CapitalState.state_id over the same inputs).
+    Open for C1: perform the re-stamp.
   - >
     A C0 Quantity cannot be negative, so a deficit closing is unknown with
     the computed value in the note rather than a signed balance.
