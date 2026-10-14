@@ -15,8 +15,17 @@ from engine.fundamental_forensics.filing_package import FilingPackage, build_fil
 from engine.fundamental_forensics.ixbrl_extraction import (
     FFXBRL_LIMITS,
     FFXBRL_SCHEMA,
+    HARD_MAX_FFXBRL_BYTES,
+    HARD_MAX_JSON_DECODED_STRING_BYTES,
+    HARD_MAX_JSON_NODES,
+    HARD_MAX_JSON_TOKENS,
+    HARD_MAX_JSON_OBJECT_KEYS,
+    HARD_MAX_JSON_SCALARS,
+    HARD_MAX_JSON_STRING_TOKEN_BYTES,
+    HARD_MAX_PARSER_OUTPUT_BYTES,
     IxbrlExtraction,
     IxbrlExtractionError,
+    MAX_TEXT_BYTES,
     build_ixbrl_extraction,
     ixbrl_extraction_json_bytes,
     ixbrl_extraction_from_json_bytes,
@@ -28,6 +37,24 @@ from engine.fundamental_forensics.sec_document_spine import (
     archive_index_url,
     build_filing_manifests,
 )
+
+# B'2 cap literals (frozen seat values).  Closure: object keys are bounded by
+# (HARD_MAX_JSON_NODES - 1) // 2 = 899,999 <= 900,000 and scalars by
+# HARD_MAX_JSON_NODES - 1 = 1,799,999 <= 1,800,000, because a JSON tree with
+# K object keys and S scalars needs at least 2K + S + 1 nodes (every key pairs
+# with a value node plus its own key node, plus the root).  A real-value KEYS
+# or SCALARS boundary artifact therefore cannot exist under the shipped NODES
+# cap; those two boundaries are proven by the patched-count round trips below
+# plus the preflight seam rather than by a real-value artifact.
+assert HARD_MAX_JSON_NODES == HARD_MAX_JSON_TOKENS == 1_800_000
+assert HARD_MAX_JSON_SCALARS == 1_800_000 and HARD_MAX_JSON_SCALARS >= HARD_MAX_JSON_NODES - 1
+assert HARD_MAX_JSON_OBJECT_KEYS == 900_000 and HARD_MAX_JSON_OBJECT_KEYS >= (HARD_MAX_JSON_NODES - 1) // 2
+assert HARD_MAX_JSON_STRING_TOKEN_BYTES == MAX_TEXT_BYTES == 2 * 1024 * 1024
+assert HARD_MAX_FFXBRL_BYTES == 96 * 1024 * 1024
+assert HARD_MAX_PARSER_OUTPUT_BYTES == 64 * 1024 * 1024
+assert HARD_MAX_JSON_DECODED_STRING_BYTES == 64 * 1024 * 1024
+assert FFXBRL_LIMITS["max_facts"] == 12_000
+assert FFXBRL_LIMITS["max_continuation_chain"] == 32
 
 
 STAMP = "2026-08-02T12:00:00.000000Z"
@@ -809,6 +836,385 @@ def test_largest_practical_canonical_wrapper_artifact_round_trips(install_parser
     assert len(content) <= FFXBRL_LIMITS["max_artifact_bytes"]
     assert len(extraction.to_dict()["facts"]) == FFXBRL_LIMITS["max_facts"]
     assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content
+
+
+def test_fact_count_above_12000_is_refused_at_mint(install_parser):
+    output = _parser_output(CONTENT, "annual.htm")
+    output["facts"] = [
+        {
+            "fact_id": f"bulk_{index:05d}",
+            "status": "available",
+            "normalized_value": "1",
+            "source_span": {"start": 6, "end": 7},
+            "continuation_chain": [],
+        }
+        for index in range(FFXBRL_LIMITS["max_facts"] + 1)
+    ]
+    output["diagnostics"] = []
+    output["coverage"] = {"fact_inventory_complete": True, "canonical_value_complete": True}
+    install_parser(output=output)
+    with pytest.raises(IxbrlExtractionError, match="facts must be a bounded array"):
+        build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+
+
+def _mirror_preflight_counts(value):
+    """Mirror ``_preflight_ixbrl_json``'s accounting over a decoded JSON tree.
+
+    Every container, scalar, and object key is one token and one node (the two
+    counts move in lockstep in the preflight), and every string - key or value
+    - contributes its UTF-8 length to the decoded-string budget.  The boundary
+    round trips below prove the counts exact: a cap set to the helper's count
+    admits the artifact and the same cap minus one refuses it.
+    """
+    nodes = scalars = keys = decoded = 0
+    stack = [value]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, dict):
+            nodes += 1
+            for key, sub in item.items():
+                nodes += 1
+                keys += 1
+                decoded += len(key.encode("utf-8"))
+                stack.append(sub)
+        elif isinstance(item, list):
+            nodes += 1
+            stack.extend(item)
+        elif isinstance(item, str):
+            nodes += 1
+            scalars += 1
+            decoded += len(item.encode("utf-8"))
+        else:
+            nodes += 1
+            scalars += 1
+    return nodes, scalars, keys, decoded
+
+
+def _mint_extraction(install_parser):
+    install_parser()
+    return build_ixbrl_extraction(
+        _package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z"
+    )
+
+
+def test_round_trip_node_boundary_is_exact_at_the_artifact_count(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    nodes, _scalars, _keys, _decoded = _mirror_preflight_counts(extraction.to_dict())
+    assert nodes >= 1
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_NODES", nodes)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_NODES", nodes - 1)
+    with pytest.raises(IxbrlExtractionError, match="node safety limit"):
+        _mint_extraction(install_parser)
+
+
+def test_round_trip_token_boundary_refuses_at_read_only(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    nodes, _scalars, _keys, _decoded = _mirror_preflight_counts(extraction.to_dict())
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_NODES", nodes)
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_TOKENS", nodes)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_TOKENS", nodes - 1)
+    third = _mint_extraction(install_parser)
+    with pytest.raises(IxbrlExtractionError, match="token safety limit"):
+        ixbrl_extraction_from_json_bytes(third.to_json_bytes())
+
+
+def test_round_trip_object_key_boundary_refuses_at_read_only(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    _nodes, _scalars, keys, _decoded = _mirror_preflight_counts(extraction.to_dict())
+    assert keys >= 1
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_OBJECT_KEYS", keys)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_OBJECT_KEYS", keys - 1)
+    third = _mint_extraction(install_parser)
+    with pytest.raises(IxbrlExtractionError, match="object-key safety limit"):
+        ixbrl_extraction_from_json_bytes(third.to_json_bytes())
+
+
+def test_round_trip_scalar_boundary_refuses_at_read_only(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    _nodes, scalars, _keys, _decoded = _mirror_preflight_counts(extraction.to_dict())
+    assert scalars >= 1
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_SCALARS", scalars)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_SCALARS", scalars - 1)
+    third = _mint_extraction(install_parser)
+    with pytest.raises(IxbrlExtractionError, match="scalar safety limit"):
+        ixbrl_extraction_from_json_bytes(third.to_json_bytes())
+
+
+def test_round_trip_decoded_boundary_is_exact_at_the_artifact_total(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    _nodes, _scalars, _keys, decoded = _mirror_preflight_counts(extraction.to_dict())
+    assert decoded >= 1
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_DECODED_STRING_BYTES", decoded)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_DECODED_STRING_BYTES", decoded - 1)
+    with pytest.raises(IxbrlExtractionError, match="decoded-string safety limit"):
+        _mint_extraction(install_parser)
+
+
+def test_round_trip_artifact_byte_boundary_is_exact_at_the_artifact_length(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    extraction = _mint_extraction(install_parser)
+    total = len(extraction.to_json_bytes())
+    assert total >= 1
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_FFXBRL_BYTES", total)
+    again = _mint_extraction(install_parser)
+    again_bytes = again.to_json_bytes()
+    assert len(again_bytes) == total
+    assert ixbrl_extraction_from_json_bytes(again_bytes).to_json_bytes() == again_bytes
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_FFXBRL_BYTES", total - 1)
+    with pytest.raises(IxbrlExtractionError, match="byte safety limit"):
+        _mint_extraction(install_parser)
+
+
+def test_round_trip_parser_output_boundary_is_exact_and_mint_only(install_parser, monkeypatch):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+    from engine.fundamental_forensics.models import canonical_json
+
+    # The :386 mint check measures the canonical bytes of the copied parser
+    # output.  The mint path compares against HARD_MAX_PARSER_OUTPUT_BYTES,
+    # while the admission envelope compares the installed parser's configured
+    # max_output_bytes against _PARSER_ENVELOPE_FIELDS / FFXBRL_LIMITS, so all
+    # of them move together here (NOTE (b)).
+    measured = len(canonical_json(_parser_output(CONTENT, "annual.htm")).encode("utf-8"))
+    assert measured >= 1
+
+    def install(boundary):
+        install_parser(parser_limits={**PARSER_LIMITS, "max_output_bytes": boundary})
+
+    install(measured)
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_PARSER_OUTPUT_BYTES", measured)
+    monkeypatch.setattr(
+        ixbrl_module,
+        "FFXBRL_LIMITS",
+        {**FFXBRL_LIMITS, "max_parser_output_bytes": measured},
+    )
+    monkeypatch.setattr(
+        ixbrl_module,
+        "_PARSER_ENVELOPE_FIELDS",
+        {**ixbrl_module._PARSER_ENVELOPE_FIELDS, "max_output_bytes": measured},
+    )
+    extraction = build_ixbrl_extraction(
+        _package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z"
+    )
+    content = extraction.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content
+
+    install(measured - 1)
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_PARSER_OUTPUT_BYTES", measured - 1)
+    monkeypatch.setattr(
+        ixbrl_module,
+        "FFXBRL_LIMITS",
+        {**FFXBRL_LIMITS, "max_parser_output_bytes": measured - 1},
+    )
+    monkeypatch.setattr(
+        ixbrl_module,
+        "_PARSER_ENVELOPE_FIELDS",
+        {**ixbrl_module._PARSER_ENVELOPE_FIELDS, "max_output_bytes": measured - 1},
+    )
+    with pytest.raises(IxbrlExtractionError, match="parser output exceeds byte safety limit"):
+        build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+
+
+def test_continuation_chain_boundary_round_trips_at_32(install_parser):
+    def chain_output(count: int) -> dict:
+        output = _parser_output(CONTENT, "annual.htm")
+        output["continuations"] = [
+            {
+                "continuation_id": f"cont{index:02d}",
+                "continued_at": None,
+                "source_span": {"start": 4, "end": 5},
+            }
+            for index in range(count)
+        ]
+        output["facts"][0]["continuation_chain"] = [f"cont{index:02d}" for index in range(count)]
+        return output
+
+    install_parser(output=chain_output(FFXBRL_LIMITS["max_continuation_chain"]))
+    extraction = build_ixbrl_extraction(
+        _package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z"
+    )
+    assert len(extraction.to_dict()["facts"][0]["continuation_chain"]) == 32
+    content = extraction.to_json_bytes()
+    assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content
+
+    install_parser(output=chain_output(FFXBRL_LIMITS["max_continuation_chain"] + 1))
+    with pytest.raises(IxbrlExtractionError, match="continuation_chain must be a bounded array"):
+        build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+
+
+def test_max_text_mint_refuses_escaped_overflow_and_exact_cap_round_trips(install_parser):
+    # mint ⊆ read for text.  The read preflight bounds the RAW JSON string token
+    # (both quotes plus every escape byte) at HARD_MAX_JSON_STRING_TOKEN_BYTES;
+    # the mint also bounds the decoded UTF-8 length at MAX_TEXT_BYTES.  A string
+    # whose decoded length fits but whose escaped token does not is refused at
+    # mint; a string whose token is exactly the cap mints AND reads back.
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    cap = HARD_MAX_JSON_STRING_TOKEN_BYTES
+    assert cap == MAX_TEXT_BYTES == 2 * 1024 * 1024
+
+    def token(value):
+        return len(json.dumps(value, ensure_ascii=False).encode("utf-8"))
+
+    def mint(value):
+        output = _parser_output(CONTENT, "annual.htm")
+        output["facts"][0]["normalized_value"] = value
+        install_parser(output=output)
+        return build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+
+    refused = {
+        "letters": "a" * (cap - 1),      # decoded cap - 1, token cap + 1
+        "quotes": '"' * (cap // 2),      # decoded cap / 2, token cap + 2
+    }
+    for label, value in refused.items():
+        assert len(value.encode("utf-8")) <= MAX_TEXT_BYTES, label
+        assert token(value) > cap, label
+        with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
+            mint(value)
+
+    exact = {
+        "letters": "a" * (cap - 2),              # token == cap
+        "quotes": '"' * ((cap - 2) // 2),        # token == cap
+    }
+    for label, value in exact.items():
+        assert token(value) == cap, label
+        content = mint(value).to_json_bytes()
+        assert json.dumps(value, ensure_ascii=False).encode("utf-8") in content, label
+        ixbrl_module._preflight_ixbrl_json(content)
+        assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content, label
+
+    with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
+        mint("a" * (MAX_TEXT_BYTES + 1))
+
+
+def test_copy_json_value_and_key_tokens_are_bounded_by_the_read_cap(monkeypatch):
+    # Patched-cap form of the same rule for BOTH _copy_json branches.  The key
+    # branch is inert at the shipped values (keys <= MAX_METADATA_BYTES, token
+    # <= 6 * 16 KiB + 2 < cap), so it is exercised here.  "\x01" escapes to the
+    # 6-byte "\u0001", the worst-case expansion, which pins the guard boundary.
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_STRING_TOKEN_BYTES", 32)
+
+    def copy(value):
+        return ixbrl_module._copy_json(value, field="probe", budget=[64])
+
+    for ok in ("a" * 30, '"' * 15, "\x01" * 5):          # tokens 32, 32, 32
+        assert copy(ok) == ok
+        assert copy({ok: 0}) == {ok: 0}
+    for bad in ("a" * 31, '"' * 16, "\x01" * 5 + "a"):   # tokens 33, 34, 33
+        with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
+            copy(bad)
+        with pytest.raises(IxbrlExtractionError, match="object key exceeds bounded text length"):
+            copy({bad: 0})
+
+
+def test_max_text_read_boundary_is_one_sided_at_the_real_cap(install_parser):
+    install_parser()
+    cap = MAX_TEXT_BYTES
+    # CAP - 2 letters: the raw string token including both quotes is exactly
+    # CAP bytes, so the lexical string-token check passes; any later failure
+    # must be a different check.
+    try:
+        ixbrl_extraction_from_json_bytes(b'{"x":"' + b"a" * (cap - 2) + b'"}')
+        raise AssertionError("a bare one-key object is never a valid extraction")
+    except IxbrlExtractionError as exc:
+        assert "string token safety limit" not in str(exc)
+
+    with pytest.raises(IxbrlExtractionError, match="string token safety limit"):
+        ixbrl_extraction_from_json_bytes(b'{"x":"' + b"a" * (cap - 1) + b'"}')
+
+
+def test_preflight_key_and_scalar_seams_admit_the_shipped_counts(monkeypatch, install_parser):
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    # Real-value preflight seam: NODES/TOKENS are lifted just above the
+    # shipped counts (2,000,000) while KEYS/SCALARS stay at the shipped
+    # values, so the exact key/scalar caps are reachable without a real
+    # artifact at them (the NODES closure makes such an artifact impossible).
+    install_parser()
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_NODES", 2_000_000)
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_TOKENS", 2_000_000)
+
+    def key_object(count: int) -> bytes:
+        return b"{" + b",".join(f'"k{index:07d}":0'.encode() for index in range(count)) + b"}"
+
+    try:
+        ixbrl_module.ixbrl_extraction_from_json_bytes(key_object(900_000))
+        raise AssertionError("a bare key-object is never a valid extraction")
+    except IxbrlExtractionError as exc:
+        assert "object-key safety limit" not in str(exc)
+    with pytest.raises(IxbrlExtractionError, match="object-key safety limit"):
+        ixbrl_module.ixbrl_extraction_from_json_bytes(key_object(900_001))
+
+    def scalar_array(count: int) -> bytes:
+        return b"[" + b"0," * (count - 1) + b"0]"
+
+    try:
+        ixbrl_module.ixbrl_extraction_from_json_bytes(scalar_array(1_800_000))
+        raise AssertionError("a bare scalar array is never a valid extraction")
+    except IxbrlExtractionError as exc:
+        assert "scalar safety limit" not in str(exc)
+    with pytest.raises(IxbrlExtractionError, match="scalar safety limit"):
+        ixbrl_module.ixbrl_extraction_from_json_bytes(scalar_array(1_800_001))
+
+
+def test_b2_cap_literals_and_closure():
+    assert HARD_MAX_JSON_NODES == HARD_MAX_JSON_TOKENS == 1_800_000
+    assert HARD_MAX_JSON_SCALARS == 1_800_000 and HARD_MAX_JSON_SCALARS >= HARD_MAX_JSON_NODES - 1
+    assert HARD_MAX_JSON_OBJECT_KEYS == 900_000 and HARD_MAX_JSON_OBJECT_KEYS >= (HARD_MAX_JSON_NODES - 1) // 2
+    assert HARD_MAX_JSON_STRING_TOKEN_BYTES == MAX_TEXT_BYTES == 2 * 1024 * 1024
+    assert HARD_MAX_FFXBRL_BYTES == 96 * 1024 * 1024
+    assert HARD_MAX_PARSER_OUTPUT_BYTES == 64 * 1024 * 1024
+    assert HARD_MAX_JSON_DECODED_STRING_BYTES == 64 * 1024 * 1024
+    assert FFXBRL_LIMITS["max_facts"] == 12_000
+    assert FFXBRL_LIMITS["max_continuation_chain"] == 32
+    # Cross-module closure: the wrapper envelope must equal the real parser
+    # hard limits for every coupled field (max_facts, max_continuation_chain,
+    # max_output_bytes).  Import under its real name only here - this test
+    # uses no install_parser fixture, so the real module is what loads.
+    import collectors.sec_filing_parser as real_parser
+
+    assert FFXBRL_LIMITS["max_facts"] == real_parser._HARD_LIMITS["max_facts"]
+    assert FFXBRL_LIMITS["max_continuation_chain"] == real_parser._HARD_LIMITS["max_continuation_chain"]
+    assert HARD_MAX_PARSER_OUTPUT_BYTES == real_parser._HARD_LIMITS["max_output_bytes"]
 
 
 def test_real_parser_build_and_exact_source_replay_for_inline_fixture():

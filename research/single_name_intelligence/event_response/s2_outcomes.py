@@ -16,6 +16,7 @@ quantity uses bars <= D(s); the day-s move is excluded and disclosed.
 from __future__ import annotations
 
 from datetime import date, timedelta
+import math
 
 import numpy as np
 import pandas as pd
@@ -33,6 +34,14 @@ SPY_PATH = "data/yahoo/SPY.parquet"
 PRICE_COLUMNS = ("Date", "close", "close_price")
 INFO_LEAK_STEP_TOLERANCE = 1e-6
 TRAILING63_SESSIONS = 63
+
+
+def _usable_close(x) -> bool:
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(v) and v > 0.0
 
 
 def _close_series(df: pd.DataFrame, column: str) -> pd.Series:
@@ -70,7 +79,7 @@ class OutcomeEngine:
             e1 = series.loc[pd.Timestamp(coverage)]
         except KeyError:
             return None
-        if not e0 or not e1:
+        if not (_usable_close(e0) and _usable_close(e1)):
             return None
         return float(e1) / float(e0) - 1.0
 
@@ -115,15 +124,16 @@ class OutcomeEngine:
             if nyse_calendar.is_session(d63):
                 seen += 1
         try:
-            b0 = float(self.baba_close.loc[pd.Timestamp(d)])
-            b1 = float(self.baba_close.loc[pd.Timestamp(d63)])
-            s0 = float(self.spy_close.loc[pd.Timestamp(d)])
-            s1 = float(self.spy_close.loc[pd.Timestamp(d63)])
+            baba_d = float(self.baba_close.loc[pd.Timestamp(d)])
+            baba_d63 = float(self.baba_close.loc[pd.Timestamp(d63)])
+            spy_d = float(self.spy_close.loc[pd.Timestamp(d)])
+            spy_d63 = float(self.spy_close.loc[pd.Timestamp(d63)])
         except KeyError:
             return 0
-        if not all((b0, b1, s0, s1)):
+        if not all(_usable_close(x) for x in (baba_d, baba_d63, spy_d, spy_d63)):
             return 0
-        excess = (b1 / b0 - 1.0) - (s1 / s0 - 1.0)
+        # Frozen prereg baselines.ii: (BABA(D)/BABA(D63)-1) - (SPY(D)/SPY(D63)-1).
+        excess = (baba_d / baba_d63 - 1.0) - (spy_d / spy_d63 - 1.0)
         return 1 if excess > 0 else (-1 if excess < 0 else 0)
 
     # -- E10 A23 INFO-LEAK predicate ----------------------------------------- #
@@ -137,12 +147,13 @@ class OutcomeEngine:
         if first_tune_anchor is None:
             return out
         lo = pd.Timestamp(first_tune_anchor)
+        hi = pd.Timestamp(self.last_bar_date)
         for name, close, raw in (("BABA", self.baba_close, self.baba_close_price),
                                  ("SPY", self.spy_close, self.spy_close_price)):
             common = close.index.intersection(raw.index)
             q = (close.loc[common] / raw.loc[common])
-            q = q[q.index >= lo]
-            steps = (q / q.shift(1) - 1.0).abs().dropna()
+            steps = (q / q.shift(1) - 1.0).abs()
+            steps = steps[(steps.index >= lo) & (steps.index <= hi)].dropna()
             offenders = steps[steps > INFO_LEAK_STEP_TOLERANCE]
             out["series"][name] = {
                 "first_offending_date": (offenders.index[0].date().isoformat()

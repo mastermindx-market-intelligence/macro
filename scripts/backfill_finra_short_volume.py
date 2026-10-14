@@ -190,15 +190,35 @@ def _parse(text: str) -> pd.DataFrame:
             continue
         if total_v <= 0:
             continue
+        raw = parts[1].strip()
         rows.append({
             "date": pd.Timestamp(parts[0]),
-            "ticker": parts[1].strip().upper(),
+            "ticker": raw.upper(),
             "short_vol": short_v,
             "short_exempt": float(parts[3]) if parts[3].replace(".", "", 1).isdigit() else 0.0,
             "total_vol": total_v,
             "short_ratio": round(short_v / total_v, 4),
+            "_upper": raw == raw.upper(),
         })
-    return pd.DataFrame(rows)
+    return _resolve_case_collisions(pd.DataFrame(rows))
+
+
+def _resolve_case_collisions(df: pd.DataFrame) -> pd.DataFrame:
+    """Same rule as collectors/finra_short_volume.py (C19 WP24 DQ1-4): when raw
+    symbols differ only by case (BCPC common vs BCpC preferred) the one already
+    all-uppercase wins regardless of line order; otherwise last line wins."""
+    if df.empty:
+        return df
+    df = df.reset_index(drop=True)
+    dup = df.duplicated(["date", "ticker"], keep=False)
+    if dup.any():
+        sub = df[dup].assign(_pos=df.index[dup])
+        winners = (sub.sort_values(["_upper", "_pos"], kind="mergesort")
+                      .drop_duplicates(["date", "ticker"], keep="last")["_pos"])
+        log.info("finra_short_volume backfill: %d case-fold collision row(s) dropped "
+                 "(all-uppercase symbol kept)", int(dup.sum()) - len(winners))
+        df = df[~dup | df.index.isin(winners)]
+    return df.drop(columns=["_upper"]).reset_index(drop=True)
 
 
 def run(start: date = START_DEFAULT, end: date | None = None, dry_run: bool = False,
