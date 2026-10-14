@@ -37,3 +37,19 @@ A fixture candidate is not actual planner selection. Consume the real catalog,
 public landing page and original viewer, then inspect real ranking with all held
 peers. Do not force a pool, score, date or cadence. Press source/receipt/editorial
 and protected release gates remain; publication/cutover false and D14 credit0/10.
+
+## Actual effect and installed route, October 14 17:36 UTC
+
+The two conditional inbox creates completed at17:32:12–13 with exact readbacks.
+`cat-submission-receipt.jsonl` is the actual effect receipt; NEVER execute the
+submission payload again, reupload or mint an alias. No provider, producer
+dispatch, catalog write or Press stage occurred. Read-only installed consumer
+at17:36, stablef92edf29, found zero catalog rows/no receipt: normal ingest pending.
+The seven-point summary remains qualified intake, not an accepted article.
+
+Actual Chrome selected CAT in the existing authenticated Terminal overlay from
+the canonical CAT dossier and returned with the displayed Escape shortcut.
+`cat_route_browser.json` records the exact route and limits. No follow/signup
+write; old earnings and mixed quote surfaces are not current event evidence.
+The dossier source and site.served matched; no HTTP byte-equality claim is made
+for this new CAT observation.

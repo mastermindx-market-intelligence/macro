@@ -22,11 +22,17 @@
   },
   "same_event_check": "Canonical2910-row census: exact four source keys absent; no matching investigation/notice/hash. Three older private reports only mention Caterpillar shorting, power generation or credit spreads; no337-TA-1473 match, so none duplicates this October13 determination.",
   "canonical_admission": false,
-  "canonical_writes": 0,
+  "canonical_writes": 2,
   "provider_calls": 0,
   "press_staging_writes": 0,
   "publication": false,
   "cutover": false,
   "d14_credit": "0/10",
-  "canonical_fence_head": "8bca8e25f25b2e6445c81c88ccc8ca978c1d851f"
+  "canonical_fence_head": "8bca8e25f25b2e6445c81c88ccc8ca978c1d851f",
+  "inbox_package_accepted": true,
+  "canonical_catalog_admission": false,
+  "effect_state": "KNOWN_COMPLETE_TWO_CONDITIONAL_CREATES_WITH_EXACT_READBACKS",
+  "consumption_state": "PENDING_INCUMBENT_INGEST",
+  "receipt": "cat-submission-receipt.jsonl",
+  "no_replay": "Never reupload these two objects or mint an alias; consume the normal ingester and renderer."
 }

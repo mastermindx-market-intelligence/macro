@@ -1,0 +1,10 @@
+{
+  "agentos_records": 1734,
+  "agentos_errors": 0,
+  "agentos_warnings": 164,
+  "receipt_pair_and_readback_binding": "PASS",
+  "canonical_consumer": "PENDING_INCUMBENT_INGEST",
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10"
+}

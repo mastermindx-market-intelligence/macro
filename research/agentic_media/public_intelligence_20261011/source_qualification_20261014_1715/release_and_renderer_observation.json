@@ -1,0 +1,56 @@
+{
+  "observed_at": "2026-10-14T17:15:00Z",
+  "observation_scope": "One current PR/controller read this wake; recorded from actual tool outputs, no new poll",
+  "pr": 9209,
+  "state": "OPEN",
+  "head": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+  "labels": [
+    "merge-on-green"
+  ],
+  "native_auto_merge": null,
+  "merge_sha": null,
+  "historical_ci": 38553111016,
+  "historical_ci_conclusion": "SUCCESS",
+  "current_proof_status": "STALE",
+  "controller_run": 38604292442,
+  "controller_terminal_at": "2026-10-14T17:12:37Z",
+  "main_state": "GREEN",
+  "main_sha_prefix": "d4018368bdfa",
+  "stale_cause_check_change": "40568df0a487",
+  "active_pr_proofs": 11,
+  "proof_cap": 8,
+  "reservations": 0,
+  "slots": 0,
+  "refresh": "DEFERRED",
+  "renderer": {
+    "run": 38553964455,
+    "conclusion": "SUCCESS",
+    "terminal_at": "2026-10-14T17:16:55Z",
+    "render_job": 115898827884,
+    "checkout_time": "2026-10-14T15:35:00Z",
+    "render_finished": "2026-10-14T16:57:00Z",
+    "note": "Checkout precedes Crop intake/ingest; success does not prove Crop page"
+  },
+  "next_engine_render": {
+    "run": 38602321014,
+    "state": "PENDING",
+    "head": "045474f2d2cf8a4be66c24337140ca9b5344c7f6",
+    "jobs": 0
+  },
+  "crop_probe": {
+    "observed_at": "2026-10-14T17:17:57Z",
+    "stable_head": "823c1f7494aea0566876c923ad0d484acfbdfccd",
+    "renderer_source_hashes_matched": 12,
+    "exact_summary_excerpt": true,
+    "site_page": false,
+    "site_served_page": false,
+    "state": "PENDING_INCUMBENT_RENDER"
+  },
+  "actions_not_taken": [
+    "CI dispatch",
+    "manual refresh",
+    "admin merge",
+    "producer dispatch",
+    "held draft retry"
+  ]
+}

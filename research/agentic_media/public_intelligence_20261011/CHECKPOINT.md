@@ -1,3 +1,46 @@
+## 2026-10-14 17:36 continuation — distinct CAT government notice admitted to private intake
+
+USITC source usitc-2026-10-13-337-ta-1473 is a distinct October13 procedural
+event explicitly naming Caterpillar. Both original notice pages and government
+reuse basis reviewed. It partially withdraws specified patent claims; no merits,
+whole-case resolution, settlement or financial-effect conclusion is inferred.
+Sole CAT factual census consumed/ACCEPTED; excluded worker commentary retained.
+OriginalPDF5fbe3688 and final7point sidecarfe21f602 were conditionally created
+at17:32:12–13 in the existing private Research inbox. TWO WRITES KNOWN_COMPLETE
+with exact readbacks: NEVER reupload, retry or mint an alias. No producer/provider
+dispatch, catalog write or Press stage. Source/evidence commit392e38d089d4.
+
+Local actual-PDF intake29checks plus bad-hash refusal,10consumer controls,20render
+checks and19portable report controls PASS. Title normalization was corrected in
+the pre-write sidecar metadata; producer code unchanged. Read-only installed
+inspect_cat_consumption.py at17:36 stablef92edf29 reports zero catalog rows/no
+receipt: PENDING_INCUMBENT_INGEST. Next run that exact read-only probe after normal
+hourly ingest; then require committed/installed catalog/excerpts, dedicated page
+via inspect_cat_report_install.py, actual viewer/publicHTTP/browser, and real
+planner ranking with every held peer before any governed Press generation.
+
+Actual Chrome CAT dossier -> Terminal with visible Caterpillar/CAT selection ->
+Escape return PASS. Site/site.served identity matches16f4ab0c; no horizontal
+overflow at1728. This is route proof only, no signup/follow write. The April30Q1
+earnings record's October14 update is not fresh event evidence; quote surfaces
+are not claimed synchronized. Source reports remain separate from Press articles.
+
+Crop dedicatedpage still absent17:17 atstable823c1f74, despite exact12sources/
+summary/excerpts. Render38553964455 completed17:16 from pre-intake checkout; next
+engine38602321014 PENDING. No dispatch. Prior actual rank35/unheld23/pool8 remains
+NOT_SELECTED. WASDE single held draft and all5held peers unchanged. New private
+GSreport1d9feb viewed but public-article rights unqualified. Vicor notice census
+consumed/PARTIAL_NOT_ACCEPTED; no retry. All earlier exclusions retained.
+
+9209 one read17:15 OPEN/armed a18ec982, oldgreen38553111016 stale. Fullcontroller
+38604292442 mainGREEN but11active proofs/cap8,0slots/0reservations; refresh deferred
+after40568df0 check change. No manual refresh, receipt push or duplicate observer.
+Application61b2cd38 unchanged434tests/1skip,33groups. Complete admitted original
+9209 exact-head protected landing/install24sources/3pages/4probes using actual
+mergeSHA/normalupdater; then SAME reviewed follow-on PR/install33groups.
+Publication/cutoverfalse,D140/10. No human-only gate is claimed; normal ingest/
+render and protected CI admission are the next events to consume.
+
 ## 2026-10-14 17:10 continuation — Crop Progress installed and viewer accepted; selection remains gated
 
 Normal ingest38602255888 completedSUCCESS16:59:19. Canonical Git and stable
