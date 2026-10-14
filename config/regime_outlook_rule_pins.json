@@ -630,7 +630,7 @@
     },
     {
       "date": "2026-10-14",
-      "reviewer": "RIC-ORCH-B (native Opus sub-orchestrator; seat fc3dfe4b to ratify)",
+      "reviewer": "RIC-ORCH-B (native Opus sub-orchestrator); ratified by RIC seat fc3dfe4b 2026-10-14",
       "finding": "RIC D0 (A14/A15/A19) adds keyword-only metadata=None and cutoff=None to compute plus one new key, implied_source_meta, built only when a keyword is passed. The legacy decision code is unchanged: an independent base-vs-head control over 1600 input scenarios x 4 metadata variants shows byte-identical legacy output with no keywords and with metadata only (only the wall-clock built stamp differs). cutoff withholds post-cutoff or undated inputs before the legacy logic runs (fail-closed), so a refused input behaves exactly as a missing one. SR3 stays labelled sr3_compounded_sofr, never EFFR. Pin moved by declared deviation; seat to ratify.",
       "changed": [
         {
