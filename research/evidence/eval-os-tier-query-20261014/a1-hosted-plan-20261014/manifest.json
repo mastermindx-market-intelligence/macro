@@ -14,9 +14,17 @@
       "file": "hosted-source-identity.json",
       "sha256": "bd31348375a6932957551b7c7b354a85bd8c8da1fd9a68e349ff1f38b49a70f4",
       "bytes": 4347
+    },
+    {
+      "file": "hosted-observation-1707.json.gz",
+      "sha256": "c7992660ae3ecda2ef1d9a35da19271a6f181587c4d406a58ff52b4d02316996",
+      "bytes": 12407,
+      "encoding": "gzip",
+      "decoded_sha256": "5853c0e276b8932e272f9fb9d7e3459e66e57f63eb8caf703718529c521fb5db",
+      "decoded_bytes": 268638
     }
   ],
-  "scope": "Original hosted semantic plan artifact and source identity; tests still running",
+  "scope": "Original hosted semantic plan artifact, source identity and exact-head contract success; remaining packs and release unproved",
   "zip_member": "ci-plan.json",
   "member_sha256": "77cf47c5621907a0bbe997aae8848afcad56b36ae255b31e871d19a7f8925319",
   "artifact_digest_verified": true

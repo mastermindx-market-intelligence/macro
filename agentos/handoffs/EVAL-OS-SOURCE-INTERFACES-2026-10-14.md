@@ -130,15 +130,20 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
   byte-custody witness. All model, historical availability and adoption obligations remain open.
-- A1 source1b791 CI38568750084 has binding contract-deltaFAIL/job115868075914 at13:20; three packs passed
-  and nine were running. Exact failure diagnosis pending safe structured check metadata after raw-log
-  terminal-escape refusal. No unsafe-output override, no release bypass.
+- Current published A1 b1db2fc7510b has exact-head CI38601317870/attempt1 still running. Its
+  contract-delta and packs1/2/3 passed at17:07:10; nine packs remain running. The old1b failure
+  remains historical evidence, not the current source verdict. Binding completion and incumbent
+  landing remain owed. No raw-log escape, duplicate producer or release bypass.
 next_actions:
-- Reconcile incumbent refresh/merge and fresh checks on publishedA1 source1b791. No manual main merge,
-  force push or duplicate controller. Observe CI no more often than300s and only for a real source/dependency
-  frontier.
-- After controller refresh, fresh checks and A1 merge, bind both original A1 tools to the final qualified
-  source and verify normal installation, served bytes, authenticated UI and genuine owner progression.
+- Consume original CI38601317870/attempt1 for published A1 b1db2fc7510b3121bb9494f7f55a4351e6a48c77.
+  Last observation17:07:10UTC; next observation no earlier than17:12:16UTC. Repair a real failure
+  or let the incumbent perform final merge and any subsequent admitted base refresh. Chris's
+  one-time integration exception is consumed in7e; no second manual integration, force push,
+  rerun, duplicate controller or producer.
+- After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source.
+  Verify normal updater, installed files/admin process, served assets, authenticated API-to-DOM,
+  eight theme/language/viewport states, genuine owner progression and actual operator comprehension.
+  Use original Chrome profile actual browser ID2/tab1925922370; the older alias/tab is stale.
 - Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
   Then use its separately bound two-CLI observation tool and obtain real rights-qualified Discovery adoption;
   no synthetic substitute.
@@ -158,6 +163,24 @@ prs:
 # Intelligence Evaluation OS — source interfaces, 2026-10-14
 
 The active Chairman assignment is end-to-end programme ownership by Fable with bounded Sol coordination and the existing M2 Fabric. The current original root is `01a1333d-b0c0-7f33-9259-dd718391d9e4`. Historical receiver restrictions describe their retired operations; they do not assign another writer. This record is continuity, not a runtime queue or release grant.
+
+## Current source and execution — 2026-10-14T17:07Z
+
+This section and the structured next_actions above supersede historical carrier
+instructions below. A1 is published on the original PR6651 at full SHA
+b1db2fc7510b3121bb9494f7f55a4351e6a48c77. The one-time Chairman-approved base
+integration was consumed in7e; the incumbent exclusively owns final merge and
+subsequent admitted refresh. Fresh hosted run38601317870/attempt1 has passed
+contract-delta and packs1/2/3; nine packs remain running, including A1 pack6.
+No nonpilot binding failure was observed. The current PR is open and mergeable;
+mergeable_state=unstable is not release qualification. Original hosted observation
+bytes are retained in a1-hosted-plan-20261014/hosted-observation-1707.json.gz (lossless original bytes).
+
+Follow-on runtime/order remains b0ca with published evidence-containing head19ab
+at the start of this update. No follow-on PR, model/PIT, installed adoption or
+production acceptance is claimed. Original Fabric effects/refusals stay frozen.
+The prepared two-CLI observer cannot substitute for a rights-qualified real
+QLedger finding, normal Discovery admission or actual operator comprehension.
 
 ## Latest final source qualification
 
