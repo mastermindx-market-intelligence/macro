@@ -1,0 +1,247 @@
+diff --git a/engine/press/validators.py b/engine/press/validators.py
+index 3d7ca8c8c71a..418b7af7a1ed 100644
+--- a/engine/press/validators.py
++++ b/engine/press/validators.py
+@@ -86,6 +86,19 @@ _TAG_RE = re.compile(r"<[^>]+>")
+ # is one token, not the three numbers 2026, 07 and 26.
+ _DATE_MASK_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?\b")
+ 
++_MONTHS = {name.lower(): i for i, name in enumerate((
++    "January", "February", "March", "April", "May", "June", "July",
++    "August", "September", "October", "November", "December",
++), 1)}
++_MONTH_NAMES = "|".join(_MONTHS)
++_NAMED_DATE_RE = re.compile(
++    rf"\b(?:(?P<month>{_MONTH_NAMES})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?"
++    rf"|(?P<day_first>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<month_last>{_MONTH_NAMES}))"
++    r"(?:(?:,\s*|\s+)(?P<year>\d+(?:\.\d+)?%?))?"
++    r"(?![\w%]|\.\d|(?:,\s*|\s+)\d|\s*(?:percent|million|billion|trillion|thousand|bps|bn)\b)",
++    re.IGNORECASE,
++)
++
+ # A number literal, with optional currency prefix, sign, thousands separators,
+ # decimals, a percent sign and/or a magnitude suffix.
+ _NUM_RE = re.compile(
+@@ -439,6 +452,46 @@ def _quantity_anchors(number: Num, sources: list[Num]) -> bool:
+     return any(abs(target - abs(n.value * n.magnitude)) <= tolerance for n in sources)
+ 
+ 
++def _mask_anchored_named_dates(prose: str, slot: dict) -> tuple[str, list[str]]:
++    """Resolve named calendar dates without adding days to the quantity pool.
++
++    Only validated fact vintages and ISO dates in fact text authorize a date;
++    the run date and raw documents do not. A missing year must resolve uniquely.
++    This leaves the existing ISO extraction behavior unchanged. It is a date
++    containment check, not proof that a date belongs to a particular claim.
++    """
++    source_dates: set[date] = set()
++    for fact in slot.get("facts") or []:
++        if not isinstance(fact, dict):
++            continue
++        vintage = re.match(r"^\d{4}-\d{2}-\d{2}(?!\d)", str(fact.get("dated") or ""))
++        candidates = ([vintage.group(0)] if vintage else []) + [
++            m.group(0)[:10] for m in _DATE_MASK_RE.finditer(str(fact.get("text") or ""))
++        ]
++        for candidate in candidates:
++            try:
++                source_dates.add(date.fromisoformat(candidate))
++            except ValueError:
++                continue
++    unanchored: list[str] = []
++
++    def replace(match: re.Match) -> str:
++        month = _MONTHS[(match.group("month") or match.group("month_last")).lower()]
++        day = int(match.group("day") or match.group("day_first"))
++        year = match.group("year")
++        if year is not None and (len(year) != 4 or not year.isdecimal()):
++            unanchored.append(match.group(0))
++            return match.group(0)
++        matches = [d for d in source_dates if d.month == month and d.day == day
++                   and (year is None or d.year == int(year))]
++        if len(matches) != 1:
++            unanchored.append(match.group(0))
++            return match.group(0)
++        return " ␀ "
++
++    return _NAMED_DATE_RE.sub(replace, prose), unanchored
++
++
+ def fact_tier_index(slot: dict) -> list[tuple[float, str]]:
+     """[(value, tier)] over every number the planner supplied, tier-tagged."""
+     idx: list[tuple[float, str]] = []
+@@ -617,10 +670,11 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
+     pool, source_text = source_number_pool(slot)
+     quantities = _fact_quantity_pool(slot)
+     prose = strip_tags(_prose_html(draft, cfg))
++    quantity_prose, unanchored_dates = _mask_anchored_named_dates(prose, slot)
+ 
+     unanchored: list[str] = []
+     checked = 0
+-    for num in extract_quantities(prose):
++    for num in extract_quantities(quantity_prose):
+         # Small bare integers are prose counts ("three drivers", "two
+         # sessions"), not market data.  Anything with a decimal point, a
+         # percent sign, a currency symbol or a magnitude suffix must anchor no
+@@ -644,15 +698,19 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
+         if window_jaccard(words(q), src_tokens, 3) < 0.6:
+             bad_quotes.append(q[:80])
+ 
+-    ok = not unanchored and not bad_quotes
++    ok = not unanchored and not bad_quotes and not unanchored_dates
+     detail = "every number and quote resolves to a source fact"
+     if unanchored:
+         detail = f"originated number(s) not in the source facts: {unanchored[:8]}"
+     if bad_quotes:
+         detail = (detail + "; " if unanchored else "") + \
+             f"quote(s) not found in the source documents: {bad_quotes[:3]}"
++    if unanchored_dates:
++        detail = (detail + "; " if unanchored or bad_quotes else "") + \
++            f"calendar date(s) not in the source facts: {unanchored_dates[:8]}"
+     return _row("fact_anchor", ok, detail,
+                 numbers_checked=checked, unanchored=unanchored,
++                unanchored_dates=unanchored_dates,
+                 source_pool_size=len(pool), unsourced_quotes=bad_quotes)
+ 
+ 
+diff --git a/research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py b/research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py
+index 00dd72f48581..58492e31fcfe 100644
+--- a/research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py
++++ b/research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py
+@@ -186,6 +186,35 @@ for desk in ('research_desk', 'research_note'):
+     assert 'MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]' in user
+     assert slot == original_slot
+     controls.append(desk + '-external-estimate-attribution-and-measurement-gap')
++dated_slot = F.slot(facts=[{'id':'date','text':'The measured composite is 50.',
++                           'values':['50'],'dated':'2026-10-13','tier':'first_party'}])
++def date_check(text, slot=dated_slot):
++    return V.check_fact_anchor(F.draft(text,fold=False,byline=False,footer=False),slot,cfg)
++for text in ('October 13, 2026','October 13 2026','October 13','13 October 2026',
++             '13 October','October 13th, 2026'):
++    assert date_check('The composite was 50 on '+text+'.')['ok']
++controls.append('named-calendar-date-exact-fact-vintage')
++for text in ('October 14, 2026','September 13, 2026','October 13, 2025',
++             'October 9, 2026','February 30, 2026','31 April 2026'):
++    row=date_check('The composite was 50 on '+text+'.')
++    assert not row['ok'] and row['metrics']['unanchored_dates']
++for year in ('20260','2025.5','2025%','26'):
++    slot=copy.deepcopy(dated_slot)
++    slot['facts'].append({'text':'Unrelated numeric metric','values':[year]})
++    row=date_check('Observed on October 13, '+year+'.',slot)
++    assert not row['ok'] and row['metrics']['unanchored_dates']
++controls.append('wrong-impossible-and-malformed-calendar-date-refusals')
++for dates in ([],['2026-02-30'],['2025-10-13','2026-10-13']):
++    slot=F.slot(as_of='2026-10-13',raw_documents=[{'text':'2026-10-13'}],facts=[
++        {'text':'Composite50','values':['50'],'dated':date} for date in dates])
++    row=date_check('As of October 13 the composite was 50.',slot)
++    assert not row['ok'] and row['metrics']['unanchored_dates']
++controls.append('named-date-missing-invalid-or-ambiguous-vintage-refusals')
++for text in ('The reading was 13.','The reading was 13%.','The reading was $13.',
++             'October 13% was the reading.','October 13 million was the reading.',
++             'October 13.5 was the reading.','October $13 was the reading.'):
++    assert not date_check(text)['ok']
++controls.append('calendar-day-does-not-license-unsupported-quantities')
+ assert before == snapshot() and before_head == head()
+ print(json.dumps({'accepted':True,'head':before_head,'runtime_root':str(root),
+                   'execution_location':'installed_vps' if root == Path('/opt/macro') else 'local_source',
+diff --git a/tests/test_press_validators.py b/tests/test_press_validators.py
+index 8e5c6d40eb60..16f82b54f831 100644
+--- a/tests/test_press_validators.py
++++ b/tests/test_press_validators.py
+@@ -23,6 +23,97 @@ from engine.press import validators as V  # noqa: E402
+ from tests import press_fixtures as F  # noqa: E402
+ 
+ 
++def _date_draft(text):
++    return F.draft(text, fold=False, byline=False, footer=False)
++
++
++def _dated_fact_slot(*dates):
++    return F.slot(facts=[{
++        "id": f"dated_{i}", "text": "The measured composite is 50.",
++        "values": ["50"], "dated": vintage, "tier": "first_party",
++    } for i, vintage in enumerate(dates)])
++
++
++@pytest.mark.parametrize("rendered", [
++    "October 13, 2026", "October 13 2026", "October 13",
++    "13 October 2026", "13 October", "October 13th, 2026",
++])
++def test_fact_anchor_resolves_named_calendar_dates_without_creating_quantities(rendered):
++    slot = _dated_fact_slot("2026-10-13")
++    row = V.check_fact_anchor(_date_draft(f"The composite was 50 on {rendered}."), slot, F.config())
++    assert row["ok"], row
++    # Admitting a calendar date must not license its day as a metric.
++    for text in ("The reading was 13.", "The reading was 13%.", "The reading was $13."):
++        assert not V.check_fact_anchor(_date_draft(text), slot, F.config())["ok"]
++
++
++@pytest.mark.parametrize("rendered", [
++    "October 14, 2026", "September 13, 2026", "October 13, 2025",
++    "October 9, 2026", "February 30, 2026", "31 April 2026",
++])
++def test_fact_anchor_refuses_wrong_or_impossible_named_dates_even_small_days(rendered):
++    row = V.check_fact_anchor(_date_draft(f"The composite was 50 on {rendered}."),
++                              _dated_fact_slot("2026-10-13"), F.config())
++    assert not row["ok"], row
++    assert row["metrics"]["unanchored_dates"]
++
++
++@pytest.mark.parametrize("dates", [(), ("2026-02-30",), ("2025-10-13", "2026-10-13")])
++def test_named_date_needs_valid_unambiguous_fact_vintage(dates):
++    row = V.check_fact_anchor(_date_draft("As of October 13, the composite was 50."),
++                              _dated_fact_slot(*dates), F.config())
++    assert not row["ok"], row
++    assert row["metrics"]["unanchored_dates"]
++
++
++def test_named_date_can_resolve_exact_iso_date_in_source_fact_text():
++    slot = F.slot(facts=[{"text": "Observed on 2026-10-13: composite 50.", "values": ["50"]}])
++    assert V.check_fact_anchor(_date_draft("On October 13, 2026 the composite was 50."),
++                               slot, F.config())["ok"]
++
++
++def test_run_date_and_raw_document_date_do_not_authorize_a_named_fact_date():
++    slot = _dated_fact_slot("2026-10-09")
++    slot["as_of"] = "2026-10-13"
++    slot["raw_documents"] = [{"text": "2026-10-13"}]
++    row = V.check_fact_anchor(_date_draft("As of October 13, 2026 the composite was 50."),
++                              slot, F.config())
++    assert not row["ok"]
++    assert row["metrics"]["unanchored_dates"]
++
++
++@pytest.mark.parametrize("quantity", ["13%", "13 million", "13.5", "$13"])
++def test_month_name_does_not_hide_an_unsupported_quantity(quantity):
++    row = V.check_fact_anchor(_date_draft(f"October {quantity} was the reading."),
++                              _dated_fact_slot("2026-10-13"), F.config())
++    assert not row["ok"], row
++
++
++@pytest.mark.parametrize("year", ["20260", "2025.5", "2025%", "26"])
++def test_named_date_cannot_discard_a_malformed_year_matching_another_metric(year):
++    slot = _dated_fact_slot("2026-10-13")
++    slot["facts"].append({"text": "Unrelated numeric metric", "values": [year]})
++    row = V.check_fact_anchor(_date_draft(f"Observed on October 13, {year}."), slot, F.config())
++    assert not row["ok"]
++    assert row["metrics"]["unanchored_dates"]
++
++
++def test_retained_usda_draft_dates_resolve_but_copy_rejection_remains():
++    path = (_REPO / "research/agentic_media/public_intelligence_20261011/"
++            "usda_research_intake_phase/attempt_20261014_1559/stage.json")
++    before = path.read_bytes()
++    stage = json.loads(before)
++    cfg = F.config()
++    assert stage["status"] == "quarantined"
++    assert stage["validator_report"]["failed"] == ["fact_anchor", "close_paraphrase"]
++    assert V.check_fact_anchor(stage["draft"], stage["slot"], cfg)["ok"]
++    overlap = V.check_close_paraphrase(stage["draft"], stage["slot"], cfg)
++    assert not overlap["ok"]
++    assert overlap["metrics"]["max_block_jaccard"] == pytest.approx(0.3333)
++    assert overlap["metrics"]["threshold"] == 0.18
++    assert path.read_bytes() == before
++
++
+ # ─────────────────────────────────────────────────────────────────────────────
+ # close-paraphrase — the headline requirement
+ # ─────────────────────────────────────────────────────────────────────────────

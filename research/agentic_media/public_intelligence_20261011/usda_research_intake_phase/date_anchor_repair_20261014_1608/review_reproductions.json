@@ -1,0 +1,93 @@
+{
+  "subject_commit": "c3325f19091999851274bd1cb39a4ee46c120b3b",
+  "cases": [
+    {
+      "text": "The spread widened October 13 basis points to4.2%.",
+      "expected": false,
+      "actual": {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 1,
+          "unanchored": [],
+          "unanchored_dates": [],
+          "source_pool_size": 4,
+          "unsourced_quotes": []
+        }
+      },
+      "defect_confirmed": true
+    },
+    {
+      "text": "The October 13-week moving average was50.",
+      "expected": false,
+      "actual": {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 1,
+          "unanchored": [],
+          "unanchored_dates": [],
+          "source_pool_size": 4,
+          "unsourced_quotes": []
+        }
+      },
+      "defect_confirmed": true
+    },
+    {
+      "text": "As of October 13 of 2026 the composite was50.",
+      "expected": false,
+      "actual": {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 1,
+          "unanchored": [],
+          "unanchored_dates": [],
+          "source_pool_size": 5,
+          "unsourced_quotes": []
+        }
+      },
+      "defect_confirmed": true
+    },
+    {
+      "text": "As of October 13 in 2026 the composite was50.",
+      "expected": false,
+      "actual": {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 1,
+          "unanchored": [],
+          "unanchored_dates": [],
+          "source_pool_size": 5,
+          "unsourced_quotes": []
+        }
+      },
+      "defect_confirmed": true
+    },
+    {
+      "text": "The September 3-month Treasury bill yield was4.2%.",
+      "expected": true,
+      "actual": {
+        "name": "fact_anchor",
+        "ok": false,
+        "detail": "calendar date(s) not in the source facts: ['September 3']",
+        "metrics": {
+          "numbers_checked": 1,
+          "unanchored": [],
+          "unanchored_dates": [
+            "September 3"
+          ],
+          "source_pool_size": 4,
+          "unsourced_quotes": []
+        }
+      },
+      "defect_confirmed": true
+    }
+  ],
+  "verdict": "REJECT_PARSER_CANDIDATE"
+}

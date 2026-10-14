@@ -182,39 +182,13 @@ for desk in ('research_desk', 'research_note'):
     assert "do not turn the report author's estimates into our own measurements" in trusted
     assert 'If our data cannot test the report, say so' in system
     assert 'Do not infer agreement or disagreement from unrelated market context' in system
+    assert 'render each observation date with its supplied YYYY-MM-DD value' in system
+    assert 'A date is a vintage, not a numeric receipt' in system
+    assert 'replace it with the run date' in system
     assert fact['text'] in user and '(dated 2026-10-09)' in user
     assert 'MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]' in user
     assert slot == original_slot
     controls.append(desk + '-external-estimate-attribution-and-measurement-gap')
-dated_slot = F.slot(facts=[{'id':'date','text':'The measured composite is 50.',
-                           'values':['50'],'dated':'2026-10-13','tier':'first_party'}])
-def date_check(text, slot=dated_slot):
-    return V.check_fact_anchor(F.draft(text,fold=False,byline=False,footer=False),slot,cfg)
-for text in ('October 13, 2026','October 13 2026','October 13','13 October 2026',
-             '13 October','October 13th, 2026'):
-    assert date_check('The composite was 50 on '+text+'.')['ok']
-controls.append('named-calendar-date-exact-fact-vintage')
-for text in ('October 14, 2026','September 13, 2026','October 13, 2025',
-             'October 9, 2026','February 30, 2026','31 April 2026'):
-    row=date_check('The composite was 50 on '+text+'.')
-    assert not row['ok'] and row['metrics']['unanchored_dates']
-for year in ('20260','2025.5','2025%','26'):
-    slot=copy.deepcopy(dated_slot)
-    slot['facts'].append({'text':'Unrelated numeric metric','values':[year]})
-    row=date_check('Observed on October 13, '+year+'.',slot)
-    assert not row['ok'] and row['metrics']['unanchored_dates']
-controls.append('wrong-impossible-and-malformed-calendar-date-refusals')
-for dates in ([],['2026-02-30'],['2025-10-13','2026-10-13']):
-    slot=F.slot(as_of='2026-10-13',raw_documents=[{'text':'2026-10-13'}],facts=[
-        {'text':'Composite50','values':['50'],'dated':date} for date in dates])
-    row=date_check('As of October 13 the composite was 50.',slot)
-    assert not row['ok'] and row['metrics']['unanchored_dates']
-controls.append('named-date-missing-invalid-or-ambiguous-vintage-refusals')
-for text in ('The reading was 13.','The reading was 13%.','The reading was $13.',
-             'October 13% was the reading.','October 13 million was the reading.',
-             'October 13.5 was the reading.','October $13 was the reading.'):
-    assert not date_check(text)['ok']
-controls.append('calendar-day-does-not-license-unsupported-quantities')
 assert before == snapshot() and before_head == head()
 print(json.dumps({'accepted':True,'head':before_head,'runtime_root':str(root),
                   'execution_location':'installed_vps' if root == Path('/opt/macro') else 'local_source',

@@ -1,3 +1,32 @@
+## 2026-10-14 16:37 continuation — parser rejected; conservative writer repair verified
+
+Independent date-anchor review is consumed and accepted as a useful diagnosis,
+not code approval. Parent reproduced five remaining defects against c3325f190919;
+that parser is REJECTED and withdrawn. Validator/test bytes are restored exactly
+to accepted e7112006. The rejected patch and full review remain recoverable.
+Future Research prompts now retain supplied YYYY-MM-DD observation dates; no
+validator exception, quantity receipt, source tier, threshold or slot is changed.
+Final434tests PASS/1existing sparse-site skip; all33portable local groups PASS;
+wrong-writer-hash refusal PASS; Brief/external/earnings fixture prompt byte parity
+PASS. Current24-source manifest changes only writer to335d1d4755e9dcbe983a0ae99b4e1cc075c339d38ba45360cb88e23757b6002c.
+Private bundle is prepared/AST-checked, not installed. No follow-onPR yet.
+
+USDA source page/viewer remains live and browser-accepted; the one private draft
+is still held unchanged, all5held peers preserved, D140/10. Never regenerate,
+alias or edit it for a pass. Original three accounting histories retain complete
+prefixes; no new provider call occurred during this repair. Prior457test/37group
+results belong to the rejected parser, not the release. Scope and exact evidence:
+usda_research_intake_phase/date_anchor_repair_20261014_1608/README.md.
+
+9209/controller remains the once-read15:09 state recorded below. A read-only16:18
+merge-tree with protectedmain1302e876 is conflict-free and preserves all24original
+sources;3pages/7shared dependencies match the accepted12:19 review. That is
+prospective source proof only, not refresh admission, CI, merge or installation.
+Next consume controller-admitted9209 proof/landing and actual install, then one
+SAME follow-onPR/install33groups. Continue distinct permitted source qualification;
+IMF commercial reuse unqualified, WorldBank report403 and Census raw release403
+remain unretried. Publication/cutoverfalse, original effects/holds preserved.
+
 ## 2026-10-14 16:09 continuation — public USDA source live; single Press draft held
 
 The normal renderer/updater delivered the USDA report. At15:54 stable74a26d30,

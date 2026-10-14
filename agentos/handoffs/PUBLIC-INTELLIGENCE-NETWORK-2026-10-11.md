@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - USDA public source page/viewer now accepted; completed single Press draft is quarantined, no regeneration/alias/edit/credit. Preserve5held peers and complete original accounting. Consume pending date-anchor review, finish source evidence, then admitted9209 protected install and SAME follow-on37planned groups. Existing release/controller gates remain binding.
+  - USDA source page/viewer accepted; single draft held unchanged, no retry/edit/credit. Date review consumed, parser rejected and restored to e711 validator. Conservative ISO Research writer passes434tests/33portable groups locally. Consume admitted9209 protected install then SAME follow-on PR/install33groups; pursue distinct permitted sources.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -2983,3 +2983,32 @@ with actual mergeSHA before SAME follow-onPR/install. Pursue a different qualifi
 source with relevant analytical evidence; USDA generation is settled, not pending.
 Publication/cutoverfalse; D140/10. Original unknown/refused effects unchanged.
 Evidence: usda_research_intake_phase/public_acceptance_20261014_1554/ and attempt_20261014_1559/.
+
+## 2026-10-14 16:37 continuation — parser rejected; conservative writer repair verified
+
+Independent date-anchor review is consumed and accepted as a useful diagnosis,
+not code approval. Parent reproduced five remaining defects against c3325f190919;
+that parser is REJECTED and withdrawn. Validator/test bytes are restored exactly
+to accepted e7112006. The rejected patch and full review remain recoverable.
+Future Research prompts now retain supplied YYYY-MM-DD observation dates; no
+validator exception, quantity receipt, source tier, threshold or slot is changed.
+Final434tests PASS/1existing sparse-site skip; all33portable local groups PASS;
+wrong-writer-hash refusal PASS; Brief/external/earnings fixture prompt byte parity
+PASS. Current24-source manifest changes only writer to335d1d4755e9dcbe983a0ae99b4e1cc075c339d38ba45360cb88e23757b6002c.
+Private bundle is prepared/AST-checked, not installed. No follow-onPR yet.
+
+USDA source page/viewer remains live and browser-accepted; the one private draft
+is still held unchanged, all5held peers preserved, D140/10. Never regenerate,
+alias or edit it for a pass. Original three accounting histories retain complete
+prefixes; no new provider call occurred during this repair. Prior457test/37group
+results belong to the rejected parser, not the release. Scope and exact evidence:
+usda_research_intake_phase/date_anchor_repair_20261014_1608/README.md.
+
+9209/controller remains the once-read15:09 state recorded below. A read-only16:18
+merge-tree with protectedmain1302e876 is conflict-free and preserves all24original
+sources;3pages/7shared dependencies match the accepted12:19 review. That is
+prospective source proof only, not refresh admission, CI, merge or installation.
+Next consume controller-admitted9209 proof/landing and actual install, then one
+SAME follow-onPR/install33groups. Continue distinct permitted source qualification;
+IMF commercial reuse unqualified, WorldBank report403 and Census raw release403
+remain unretried. Publication/cutoverfalse, original effects/holds preserved.

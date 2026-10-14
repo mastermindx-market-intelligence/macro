@@ -1,0 +1,14 @@
+{
+  "baseline": "e7112006a5d69b9fb125ff5e36f2f61a6174dadd",
+  "unchanged_prompt_bytes": {
+    "brief": true,
+    "external_brief": true,
+    "earnings_claim_scope_fixture": true
+  },
+  "selected_slot_and_user_prompt_unchanged": true,
+  "system_delta_is_only_iso_instruction": true,
+  "writer_sha256": "335d1d4755e9dcbe983a0ae99b4e1cc075c339d38ba45360cb88e23757b6002c",
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication": false
+}

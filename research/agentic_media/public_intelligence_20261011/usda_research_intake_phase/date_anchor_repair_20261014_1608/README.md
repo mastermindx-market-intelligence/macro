@@ -1,37 +1,44 @@
-# Named calendar dates without invented quantities
+# Date rendering correction and rejected parser
 
-The untouched USDA stage exposed a bounded fact-anchor defect: October13 was
-rejected although the facts' validated ISO vintages were2026-10-13. Merely adding
-13 to the numeric pool would wrongly license13percent,13dollars or13million.
-The candidate instead recognizes full English month/day or day/month forms,
-resolves them only against valid fact.dated values or ISO dates in facts.text,
-and masks only a uniquely matched calendar span. Missing years require one
-matching source date. Wrong months/days/years, impossible dates, malformed years,
-missing metadata and ambiguous vintages reject. Run date/raw documents do not
-supply permission. Existing ISO handling and semantic claim-binding limitations
-remain explicit; this is not universal temporal/causal validation.
+The final change tells future Research drafts to retain supplied ISO observation
+dates. It changes no facts, dates, numeric receipts, thresholds or validator logic.
+The actual USDA draft remains quarantined and byte-identical. No provider was
+called to verify this repair; no same-event regeneration is permitted.
 
-The overlap thresholds, receipt/share floors and source tiers are unchanged.
-Actual USDA saved bytes/report remain quarantined and immutable. A regression
-using the retained full draft verifies supported dates resolve while source
-copying still fails at0.3333 against0.18. Three copied blocks and the parent
-editorial HOLD independently prevent promotion. No real writer was called by
-these tests and the original event will not be regenerated.
+Independent Fabric run `mmx-press-date-anchor-review-20261014-001` completed and
+was consumed on its original root/parent. Its useful diagnosis is accepted; its
+verdict on the proposed parser is **BLOCKERS / NO PASS**. The reviewer used the
+submitted diff and nearest available ancestor semantics, not an exact checkout
+of the final candidate. Parent reproduction against actual `c3325f190919` confirmed
+five remaining failures: month labels hiding quantities, wrong-year resolution,
+and false rejection of non-date month/number prose. See `review_reproductions.json`.
 
-Corrected fixtures fail21/25checks against exacte711 source. The affected four-file
-suite passes457tests/one existing sparse-site skip; the added untouched-real-draft
-regression separately passes. Local portable integrity now has16groups, plus21
-unchanged reviewed groups from other probes =37planned installed groups. A wrong
-validator hash refuses before fixture/mock-writer activity; imports occur first.
-Current manifest remains the accepted pre-repair binding until review is consumed.
+The unaccepted parser was withdrawn. Validator and validator-test bytes are
+restored exactly to accepted `e7112006a5d69b9fb125ff5e36f2f61a6174dadd`. The rejected
+implementation and its tests remain recoverable in that candidate commit and
+`rejected_parser.patch`. Earlier 457-test and 37-group results describe that
+rejected candidate; they are not release approval. The independent reviewer did
+not inspect the final three-line writer wording; the parent reviewed that change.
 
-A single bounded Fabric review is pending on
-mmx-press-date-anchor-review-20261014-001, same original root/parent. Parent's
-additional malformed-year correction followed the submitted subject; do not claim
-that a return covers unreviewed bytes without reconciling this delta. No second
-worker, provider reroute, PR, CI, installation or release was requested.
+Final checks:
 
-Verification: python3 -m pytest -q tests/test_press_writer.py tests/test_press_validators.py tests/test_press_run.py tests/test_press_research_triage.py
-Portable: python3 -B research/agentic_media/public_intelligence_20261011/validator_integrity_phase/installed_integrity_probe.py <source-root> <candidate-manifest>
-Private complete logs and hashes are in validation.json. This is a recoverable
-candidate, not a production acceptance receipt.
+- `python3 -m pytest -q tests/test_press_writer.py tests/test_press_validators.py tests/test_press_run.py tests/test_press_research_triage.py`: **434 passed / 1 existing sparse-site skip**.
+- `python3 -B <this-directory>/verify_iso_prompt.py`: Brief, external Brief and
+  earnings claim-scope fixture prompts byte-identical; actual USDA selected slot
+  and user prompt unchanged; system difference exactly the ISO instruction.
+- Four existing portable probes against the current 24-source manifest:
+  **12 integrity + 5 DOJ + 9 Research pool + 7 radar = 33 groups**, locally passed.
+  Wrong writer hash refused before fixtures; imports precede the hash check.
+- Only writer hash changed in the current manifest, to
+  `335d1d4755e9dcbe983a0ae99b4e1cc075c339d38ba45360cb88e23757b6002c`.
+  Other 23 source hashes and all 3 page hashes are unchanged.
+
+Portable results report local source execution, isolated fixtures and zero real
+provider/publication writes. The private installation bundle is syntax-checked
+and prepared, **not executed on production**. Original #9209 must land and pass
+installed acceptance before the same reviewed follow-on receives its own PR.
+
+The real USDA attempt remains bound to earlier writer `c8027347` and source
+`e7112006`; no evidence is retroactively restamped. Three close-paraphrase blocks
+and the parent's unrelated-context objection independently keep that draft held.
+Publication/cutover remain false; mixed-desk acceptance remains 0/10.

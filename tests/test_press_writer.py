@@ -149,6 +149,29 @@ def test_research_contract_allows_an_explicit_measurement_gap(desk):
     assert "Do not pad unrelated measurements into a story" in user
 
 
+@pytest.mark.parametrize("desk", ["research_desk", "research_note"])
+def test_research_dates_keep_supplied_iso_vintages_and_do_not_supply_receipts(desk):
+    """The USDA writer's supported dates failed when rendered as month/day digits.
+
+    Preserve the existing numeric gate; tell this writer to use its supplied
+    validated ISO dates instead of broadening the validator's date exceptions.
+    """
+    slot = F.slot(desk=desk, as_of="2026-10-14", min_anchored_receipts=4, facts=[
+        {"id": "forecast", "text": "USDA projects 740 million bushels.",
+         "dated": "2026-10-09", "tier": "first_party", "values": []},
+        {"id": "measurement", "text": "The composite measures50.",
+         "dated": "2026-10-13", "tier": "first_party", "values": ["50"]},
+    ])
+    before = json.dumps(slot, sort_keys=True)
+    system, user = W.build_prompt(slot, F.config())
+    assert "render each observation date with its supplied YYYY-MM-DD value" in system
+    assert "not a numeric receipt" in system
+    assert "replace it with the run date" in system
+    assert "(dated 2026-10-09)" in user and "(dated 2026-10-13)" in user
+    assert "MINIMUM RECEIPTS: 4 distinct numbers anchored to [first_party]" in user
+    assert json.dumps(slot, sort_keys=True) == before
+
+
 def test_retry_prompt_names_the_specific_failures():
     _system, user = W.build_prompt(
         F.slot(), F.config(), attempt=1,
