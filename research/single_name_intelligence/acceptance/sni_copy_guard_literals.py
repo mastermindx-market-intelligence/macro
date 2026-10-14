@@ -35,6 +35,7 @@ from __future__ import annotations
 import ast
 import fnmatch
 import json
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -135,19 +136,47 @@ def json_strings(
 ) -> tuple[tuple[str, str], ...]:
     """Every string VALUE in a decoded JSON object, with its location.
 
-    Dicts walk keys in sorted order; lists walk in index order. Keys are
-    never returned as text. Deterministic for equal input.
+    Dicts walk keys in sorted order (str keys first, then non-str keys;
+    within each group by str representation); lists walk in index order.
+    Keys are never returned as text. Non-str dict keys do not raise: their
+    values are still walked with a path that uses the key's repr. Cyclic
+    input is handled by tracking the `id()` of every dict/list/tuple on
+    the current recursion path; a container already on the path is
+    skipped. Deterministic for equal input.
     """
     out: list[tuple[str, str]] = []
+    _walk_json(obj, path, frozenset(), out)
+    return tuple(out)
+
+
+def _walk_json(
+    obj: object, path: str, path_ids: frozenset[int], out: list[tuple[str, str]]
+) -> None:
     if isinstance(obj, str):
         out.append((path, obj))
-    elif isinstance(obj, dict):
-        for key in sorted(obj):
-            out.extend(json_strings(obj[key], path + _json_key_suffix(key)))
-    elif isinstance(obj, (list, tuple)):
-        for index, item in enumerate(obj):
-            out.extend(json_strings(item, f"{path}[{index}]"))
-    return tuple(out)
+        return
+    if not isinstance(obj, (dict, list, tuple)):
+        return
+    if id(obj) in path_ids:
+        return
+    new_ids = path_ids | {id(obj)}
+    if isinstance(obj, dict):
+        keys = sorted(
+            obj,
+            key=lambda k: (
+                not isinstance(k, str),
+                str(k) if not isinstance(k, str) else k,
+            ),
+        )
+        for key in keys:
+            if isinstance(key, str):
+                child_path = path + _json_key_suffix(key)
+            else:
+                child_path = f"{path}[{key!r}]"
+            _walk_json(obj[key], child_path, new_ids, out)
+        return
+    for index, item in enumerate(obj):
+        _walk_json(item, f"{path}[{index}]", new_ids, out)
 
 
 def _docstring_constant(stmts: Sequence[ast.stmt]) -> ast.Constant | None:
@@ -262,22 +291,43 @@ def scan_tree(
     """Scan JSON and Python files under root with the reused A14/A30 rules.
 
     The only function here that reads files. Reads only under root, never
-    writes, and visits matching files in sorted relative-path order. Files
-    under SKIPPED_DIR_PARTS directories are skipped without being read.
-    JSON locations are `path#$.json.path`; Python locations are `path:lineno`.
+    writes, and visits matching files in sorted relative-path order.
+    Symlinks are skipped: symlinked files are not read, symlinked
+    directories are not descended into, and a file reached through a
+    symlinked directory is not reported. Each real file is scanned at
+    most once (dedup on `os.path.realpath`). Files under SKIPPED_DIR_PARTS
+    directories are skipped without being read. JSON locations are
+    `path#$.json.path`; Python locations are `path:lineno`.
     """
     refuse_nonfalse_authority()
     resolved = Path(root).resolve()
     chosen: list[str] = []
-    for candidate in resolved.rglob("*"):
-        if not candidate.is_file():
-            continue
-        rel = candidate.relative_to(resolved)
-        if _skipped(rel.parts):
-            continue
-        if not any(fnmatch.fnmatch(candidate.name, pattern) for pattern in include):
-            continue
-        chosen.append(rel.as_posix())
+    seen_realpaths: set[str] = set()
+    for dirpath, dirnames, filenames in os.walk(resolved, followlinks=False):
+        dirpath_path = Path(dirpath)
+        rel_dir = dirpath_path.relative_to(resolved)
+        kept_dirs = [
+            d for d in dirnames
+            if not (dirpath_path / d).is_symlink()
+            and not _skipped(rel_dir.parts + (d,))
+        ]
+        dirnames[:] = kept_dirs
+        for name in filenames:
+            candidate = dirpath_path / name
+            if candidate.is_symlink():
+                continue
+            if not candidate.is_file():
+                continue
+            rel = candidate.relative_to(resolved)
+            if _skipped(rel.parts):
+                continue
+            if not any(fnmatch.fnmatch(candidate.name, pattern) for pattern in include):
+                continue
+            realpath = str(candidate.resolve())
+            if realpath in seen_realpaths:
+                continue
+            seen_realpaths.add(realpath)
+            chosen.append(rel.as_posix())
     findings: list[Finding] = []
     for rel in sorted(chosen):
         absolute = resolved / rel

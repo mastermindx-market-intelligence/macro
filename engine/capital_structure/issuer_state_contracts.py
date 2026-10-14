@@ -93,7 +93,8 @@ COMPATIBLE_INPUT_SCHEMAS: dict[str, tuple[str, ...]] = {
         "capital_structure.share_count_observation.v1",
         "capital_structure.share_count_observation.v2",
     ),
-    "financials": (),
+    "financials": ("capital_structure.financial_item_observation.v1",),
+    "corporate_actions": ("capital_structure.corporate_action_observation.v1",),
     "corrections": (),
 }
 
@@ -245,11 +246,14 @@ PRICE_KINDS = ("fixed", "path")
 
 #: Property names no state record may carry (acceptance row A48 plus the
 #: projection's own public-safety list).  ``fully_diluted`` is a basis the
-#: contract refuses by construction (masterplan §4).
+#: contract refuses by construction (masterplan §4).  ``prophet_authority`` is
+#: the one ``prophet_*`` name exempted, byte-for-byte as in the state schema's
+#: ``safe_property_name``: bound candidate rows must carry it as the literal
+#: ``false`` denial, and :func:`_assert_safe_keys` rejects any other value.
 FORBIDDEN_PROPERTY_PATTERN = re.compile(
     r"^(?:object_?keys?|raw_?(?:docs?|documents?)|scores?|probabilit(?:y|ies)|"
     r"capacities|capacity|runway|overhang|fully_?diluted(?:_[a-z_]+)?|ranks?|ranking|"
-    r"sizing|position_?size|entry|prophet(?:_[a-z_]+)?|likelihood|expected_dilution)$"
+    r"sizing|position_?size|entry|prophet(?:_(?!authority$)[a-z_]+)?|likelihood|expected_dilution)$"
 )
 
 _DECIMAL = re.compile(r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")
@@ -339,11 +343,13 @@ def _records(value: Any, field_name: str) -> tuple[dict[str, Any], ...]:
 
 
 def _assert_safe_keys(value: Any, path: str = "<root>") -> None:
-    """Reject forbidden property names anywhere in a record."""
+    """Reject forbidden property names, and any granted Prophet authority, anywhere in a record."""
     if isinstance(value, Mapping):
         for key, item in value.items():
             _require(isinstance(key, str), f"{path}: non-string key")
             _require(not FORBIDDEN_PROPERTY_PATTERN.match(key), f"{path}.{key}: forbidden property name")
+            if key == "prophet_authority":
+                _require(item is False, f"{path}.{key}: only the literal false denial is allowed")
             _assert_safe_keys(item, f"{path}.{key}")
     elif isinstance(value, (list, tuple)):
         for index, item in enumerate(value):
@@ -661,7 +667,7 @@ class CapitalInputs:
 
     Every record family present must be bound to a compatible generation, and
     every record's ``schema`` must equal that binding.  Families with no accepted
-    schema (financials, corrections) may carry no records.
+    schema (corrections) may carry no records.
     """
 
     bindings: tuple[GenerationBinding, ...]

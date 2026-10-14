@@ -4,7 +4,8 @@ This module is the production constructor for the closed
 ``derive_result_cash`` / ``qualify_operands`` typed-limitation pair, plus
 the comparison-receipt constructor ``build_comparison_receipt``.  It is
 deliberately new: no imports from ``engine.fundamental_forensics.detectors``
-or any other private forensic helper, no I/O, no persistence, no model
+or any other private forensic helper (the one sibling import is the public
+IND-R206 ``denominator_refusal`` guard), no I/O, no persistence, no model
 call, no store, no ranking/valuation.  All numbers are exact-decimal text
 produced from ``Decimal``; a loss keeps its sign; equal nulls never
 certify comparability.
@@ -26,6 +27,9 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from engine.fundamental_forensics.industrials_denominator_guard import (
+    denominator_refusal,
+)
 
 FORMULA_VERSION = "v1"
 
@@ -377,6 +381,12 @@ def qualify_operands(
         which legitimately compares same-owner / same-metric across distinct
         editions; the ``distinct_edition_required`` limitation lives in the
         formula dispatch.
+      - ``mislabeled_denominator`` (IND-R206) when any parsed
+        ``revenue_share_pct`` operand carries a ``(segment, denominator)``
+        pair outside the two agreed pairs, or omits either key; evaluated
+        for every operand and never conditioned on a
+        ``comparison_receipt`` field — a receipt cannot vouch a mislabeled
+        denominator into a legal operand.
     """
     if not isinstance(cells, list):
         # Allow tuple for backward compatibility but require sequence-like.
@@ -403,6 +413,15 @@ def qualify_operands(
 
     if len(parsed) < len(cells_list):
         limitations.append("operand_not_mapping")
+
+    # IND-R206: every parsed operand meets the denominator guard, and no
+    # comparison_receipt field gates the call, so a receipt cannot vouch a
+    # mislabeled denominator into a legal operand.
+    if any(
+        denominator_refusal(_as_mapping(op)) == "mislabeled_denominator"
+        for op in parsed
+    ):
+        limitations.append("mislabeled_denominator")
 
     # Receipt completeness — every operand must be named in the receipt.
     receipt_refs = list(comparison_receipt.get("operand_refs") or [])
@@ -650,7 +669,7 @@ def derive_result_cash(
             operand_refs=[],
         )
 
-    # Qualification gate — only when needed by the formula.
+    # Qualification gate — unconditional for every formula.
     qualifier = qualify_operands(
         _purpose_for(formula),
         [_as_mapping(op) for op in parsed],

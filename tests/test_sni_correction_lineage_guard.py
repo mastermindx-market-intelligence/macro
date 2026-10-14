@@ -549,14 +549,17 @@ def _alpha_rec(number: int = 1, **overrides):
 def test_a16_adversarial_record_id():
     prior = (_alpha_rec(1),)
     for variant in (
-        "syn-rec-alpha ",  # trailing space
         "SYN-REC-ALPHA",  # case change
         "syn-rec-аlpha",  # Cyrillic look-alike "а" (U+0430)
-        " syn-rec-alpha",
     ):
         proposed = (_alpha_rec(1), _alpha_rec(2, record_id=variant))
         verdict = check_lineage(prior, proposed)
         _assert_refused(verdict, "MIXED_RECORD_IDS")
+    # FAMILY TEXT RULE v2: a padded record_id is ABSENT, never a different id.
+    for variant in ("syn-rec-alpha ", " syn-rec-alpha"):
+        proposed = (_alpha_rec(1), _alpha_rec(2, record_id=variant))
+        verdict = check_lineage(prior, proposed)
+        _assert_refused(verdict, "RECORD_FIELD_INVALID")
 
 
 def test_a16_adversarial_version_id():
@@ -565,15 +568,22 @@ def test_a16_adversarial_version_id():
     case_variant = _alpha_rec(1, version_id="SYN-VID-ALPHA")
     verdict = check_lineage(prior, (case_variant, _alpha_rec(2)))
     _assert_refused(verdict, "HISTORY_TRUNCATED")
-    # look-alike / trailing-space supersedes links do not match the real id
+    # look-alike / case-variant supersedes links do not match the real id
     for variant in (
-        "syn-vid-alpha ",  # trailing space
         "syn-vid-аlpha",  # Cyrillic look-alike "а" (U+0430)
         "SYN-VID-ALPHA",  # case change
     ):
         proposed = (_alpha_rec(1), _alpha_rec(2, supersedes_version_id=variant))
         verdict = check_lineage(prior, proposed)
         _assert_refused(verdict, "SUPERSEDES_MISMATCH")
+    # FAMILY TEXT RULE v2: a padded supersedes link is ABSENT, never a
+    # different id.
+    proposed = (
+        _alpha_rec(1),
+        _alpha_rec(2, supersedes_version_id="syn-vid-alpha "),
+    )
+    verdict = check_lineage(prior, proposed)
+    _assert_refused(verdict, "RECORD_FIELD_INVALID")
 
 
 def test_a16_mixed_record_ids_from_prior_side():
