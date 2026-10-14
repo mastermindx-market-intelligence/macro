@@ -6862,10 +6862,14 @@ jobs:
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
           tests/test_capital_structure_rule_applicability.py
+          tests/test_capital_structure_capacity_joint.py
+          tests/test_capital_structure_capacity.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
+          tests/test_capital_structure_instrument_economics.py
+          tests/test_capital_structure_supply_scenarios.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py

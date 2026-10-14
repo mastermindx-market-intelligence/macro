@@ -1,36 +1,24 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-14T09:54:49Z",
+  "produced_at": "2026-10-14T20:27:21Z",
   "as_of": "2026-10-14",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 11,
-    "passed": 9,
-    "quarantined": 2,
-    "quarantined_policy": 2,
+    "items": 12,
+    "passed": 11,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 2
+    "near_dup": 1
   },
   "quarantined": [
-    {
-      "id": "post-founder-003",
-      "account": "founder",
-      "slot": "D1-S16",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-flagship-005"
-      ]
-    },
     {
       "id": "post-meagan-005",
       "account": "meagan",
@@ -54,12 +42,12 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-020",
+      "id": "post-flagship-010",
       "account": "flagship",
-      "slot": "D1-S50",
+      "slot": "D1-S33",
       "type": "receipt",
-      "cashtag": "$TLN",
-      "headline": ""
+      "cashtag": "$FIBK",
+      "headline": "$FIBK lost the price where the most shares traded over the past six months."
     },
     {
       "id": "post-conf-flagship-002",
@@ -70,35 +58,51 @@
       "headline": "$STX just lined up a pattern we track."
     },
     {
-      "id": "post-housepick-002",
-      "account": "founder",
-      "slot": "D1-S1",
+      "id": "post-housepick-001",
+      "account": "flagship",
+      "slot": "D1-S2",
       "type": "watchlist",
-      "cashtag": "$MO",
+      "cashtag": "$ATO",
       "headline": ""
     },
     {
-      "id": "post-theme-004",
+      "id": "post-founder-019",
+      "account": "founder",
+      "slot": "D1-S43",
+      "type": "receipt",
+      "cashtag": "$TNDM",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-003",
       "account": "meagan",
-      "slot": "D1-S1",
-      "type": "theme_list",
-      "cashtag": "$ARQQ",
-      "headline": "Quantum Computing selling off, -3.3% avg on Tuesday"
-    },
-    {
-      "id": "post-sophia-001",
-      "account": "sophia",
-      "slot": "D1-S1",
-      "type": "receipt",
-      "cashtag": "$GL",
+      "slot": "D1-S9",
+      "type": "watchlist",
+      "cashtag": "$MUB",
       "headline": ""
     },
     {
-      "id": "post-kelly-016",
-      "account": "kelly",
-      "slot": "D1-S36",
+      "id": "post-meagan-012",
+      "account": "meagan",
+      "slot": "D1-S28",
       "type": "receipt",
-      "cashtag": "$SHW",
+      "cashtag": "$TLN",
+      "headline": "$TLN has been up 4 weeks in a row"
+    },
+    {
+      "id": "post-sophia-009",
+      "account": "sophia",
+      "slot": "D1-S26",
+      "type": "receipt",
+      "cashtag": "$TSN",
+      "headline": "$TSN's rebound hasn't repaired the damage"
+    },
+    {
+      "id": "post-housepick-004",
+      "account": "sophia",
+      "slot": "D1-S2",
+      "type": "watchlist",
+      "cashtag": "$BKH",
       "headline": ""
     },
     {
@@ -107,21 +111,21 @@
       "slot": "D1-S1",
       "type": "theme_list",
       "cashtag": "$SIMO",
-      "headline": "Semiconductors selling off, -2.8% avg on Tuesday"
+      "headline": "Semiconductors selling off, -2.8% avg today"
     },
     {
-      "id": "post-theme-006",
+      "id": "post-cici-002",
       "account": "cici",
-      "slot": "D1-S1",
-      "type": "theme_list",
-      "cashtag": "$EOSE",
-      "headline": "Energy Renewable selling off, -1.0% avg on Tuesday"
+      "slot": "D1-S3",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 34,
-      "hits": 2,
+      "pairs_checked": 48,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {
