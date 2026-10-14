@@ -31,8 +31,10 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+# Unconditional repo-root pin (tests/test_check_script_import_pinning.py: a
+# conditional insert is not a strong pin — a root already further down
+# sys.path still loses to a foreign package ahead of it).
+sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts import leadership_rotation_inference as inf
 from scripts import leadership_rotation_study as st

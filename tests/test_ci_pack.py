@@ -4800,6 +4800,10 @@ CURATED_EXCLUSIVE = {
     # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
     "leadership-rotation-contract",
     "lr-rotation-evidence-modes",
+    # 2026-10-14 LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the prereg
+    # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
+    # scope: exclusive pins the job to its measured suite_dependency_closure.
+    "leadership-rotation-science",
 }
 
 
