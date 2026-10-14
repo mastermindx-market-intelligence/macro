@@ -148,6 +148,10 @@ class BrainResearchAdapter:
             "result": result,
         }
 
+    def comparison_view(self, request: Any, *, server_context: Any) -> Mapping[str, Any]:
+        """Private delegated seam, never an additional tool or caller policy."""
+        return self._port.comparison_view(caller_context=server_context, request=request)
+
     def tool_schemas(self) -> dict[str, Any]:
         return copy.deepcopy(ARGUMENT_SCHEMAS)
 

@@ -945,6 +945,7 @@ _CLUSTERS_NOTE = (
 )
 
 _MODE_SEARCH, _MODE_CLUSTERS, _MODE_REPORT = "search", "clusters", "report"
+_MODE_COMPARE = "compare"
 
 
 def _is_mode(mode, wanted: str) -> bool:
@@ -2540,6 +2541,19 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
     return response
 
 
+def _research_compare(request, *, user_ctx) -> dict:
+    """Use the same gateway-admitted principal and process-cached Read owner."""
+    from engine.research_vault.comparison import failure
+    uid = str((user_ctx or {}).get("user_id") or "").strip()
+    if not uid:
+        return failure("REPORT_NOT_ENTITLED", denied=True)
+    try:
+        return dict(_brain_research_adapter().comparison_view(
+            request, server_context=_server_read_context(uid)))
+    except Exception:
+        return failure("COMPARISON_UNAVAILABLE")
+
+
 def search_research(
     root: Path,
     query: str = "",
@@ -2549,6 +2563,7 @@ def search_research(
     report_id: str = "",
     user_ctx: dict | None = None,
     now: datetime | None = None,
+    comparison: dict | None = None,
 ) -> dict:
     """Keyword-search the research vault — THIRD-PARTY views, not the desk's own.
 
@@ -2584,6 +2599,8 @@ def search_research(
 
     Any other mode value, including a typo, searches.
     """
+    if _is_mode(mode, _MODE_COMPARE):
+        return _research_compare(comparison, user_ctx=user_ctx)
     reference = now or datetime.now(timezone.utc)
     if reference.tzinfo is None:
         reference = reference.replace(tzinfo=timezone.utc)
@@ -2803,7 +2820,7 @@ RESEARCH_TOOL_SCHEMA: dict = {
             },
             "mode": {
                 "type": "string",
-                "enum": [_MODE_SEARCH, _MODE_CLUSTERS, _MODE_REPORT],
+                "enum": [_MODE_SEARCH, _MODE_CLUSTERS, _MODE_REPORT, _MODE_COMPARE],
                 "description": (
                     "'search' (default) ranks individual notes against the "
                     "query; 'clusters' ignores the query and returns the themes "
@@ -2811,6 +2828,23 @@ RESEARCH_TOOL_SCHEMA: dict = {
                     "opens the single note named by report_id and uses query for "
                     "query-centered, source-bound evidence."
                 ),
+            },
+            "comparison": {
+                "type": "object",
+                "description": "Private compare action: prepare two visible reports for bounded claim refs; compare only qualified refs with a server-admitted basis_ref. Missing qualification returns unavailable, never infer a basis.",
+                "additionalProperties": False,
+                "properties": {
+                    "action": {"type": "string", "enum": ["prepare", "compare"]},
+                    "left": {"type": "object", "additionalProperties": False, "properties": {
+                        "report_id": {"type": "string"}, "rio_artifact_sha256": {"type": "string"},
+                        "source_pdf_sha256": {"type": "string"}, "extracted_text_sha256": {"type": "string"},
+                        "claim_index": {"type": "integer", "minimum": 0, "maximum": 29}}, "required": ["report_id"]},
+                    "right": {"type": "object", "additionalProperties": False, "properties": {
+                        "report_id": {"type": "string"}, "rio_artifact_sha256": {"type": "string"},
+                        "source_pdf_sha256": {"type": "string"}, "extracted_text_sha256": {"type": "string"},
+                        "claim_index": {"type": "integer", "minimum": 0, "maximum": 29}}, "required": ["report_id"]},
+                    "basis_ref": {"type": "string"}, "revision_ref": {"type": "string"},
+                }, "required": ["action", "left", "right"],
             },
             "report_id": {
                 "type": "string",

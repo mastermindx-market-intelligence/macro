@@ -3612,6 +3612,14 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -5823,6 +5831,21 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -14175,7 +14198,7 @@ jobs:
       # API security, source-bound evidence and F11 use this same environment.
       # Combine the incumbent calls rather than adding packing step overhead.
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_vault_producer_generation.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
+        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_producer_generation.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
@@ -14194,6 +14217,14 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -14912,6 +14943,14 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -16853,6 +16892,21 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - app/__init__.py
       - app/account_actions.py
       - app/account_prefs.py
@@ -18358,6 +18412,13 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -18771,6 +18832,14 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -23726,6 +23795,14 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -24201,6 +24278,21 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - "config/intelligence_workspace/**"
       - "engine/prophet_lab/**"
       - "research/research_panels/**"
@@ -26264,6 +26356,21 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"

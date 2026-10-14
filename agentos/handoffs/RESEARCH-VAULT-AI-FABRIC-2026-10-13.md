@@ -137,3 +137,71 @@ The existing workflow single-writer change is prepared on that carrier; generati
 and public-projection review are ongoing. Source implementation of the bounded I03
 Brain comparison consumer is commissioned separately using synthetic qualified
 owners; real basis/provenance resolution and two-source acceptance remain open.
+
+
+## October 14 04:40 UTC integration continuation
+
+Root integrated the producer-generation validator and the public projection guard
+in 5596ec2678ad, then composed the reviewed intelligence source d96ba445 through
+ordinary merge ede7f3f60f6d84f131ce75686ec0e2bd452bbd36. The validator retains the
+literal default-false writer-adoption gate. Its malformed-layer repair passed 62
+tests and five subtests; the initial validator/projection union passed 75 tests.
+Public catalog responses and the repository mirror omit the internal generation
+field while retaining private bytes. No selected production SQLite binding or
+current 95 percent census is claimed.
+
+The I03 Brain comparison consumer is integrated on this same draft F11 carrier.
+Root review required exact claim-index binding and a final fresh target-catalog
+check after the last semantic-owner I/O. Both causal defects were repaired in
+retained patch 18a4fb363f1fdbed1de7bf25f3fe5148c3468358bdf85cf6df9ab9c2b17cfb2d.
+The actual integrated comparison/service/gateway/RIO suite passed 81 tests, zero
+skips. Source remains inert without the existing trusted basis, historical
+revision, semantic acceptance and quota owners. The two actual CI curation
+contracts passed in 212.53 seconds after exact import-closure paths were added;
+no packing ceiling, trigger waiver or test exclusion was introduced.
+
+Producer observability, non-cancelling publication and the bounded M1 discovery
+heal are published separately in Macro #9223 at
+81587ef0a7377fee150a64e2eb4eb59188fd3a19. The collector package has 53 passing tests,
+58 verified source payloads, and the repaired inherited path-pruning check plus
+SNI tests has 203 passes and one existing skip. Exact-head CI is still running;
+no collector install or new-source activation has occurred. The earlier M1
+restart remains the sole recovery restart. A source-qualified install must use
+the incumbent installer and the preserved DB/profile/storage/effect guards.
+
+Mastermind #1445 at ba0c2e6bee7e4ef8eab49df05cd43daf39dfb27a passed its required
+checks and entered the native merge queue at 04:33:33 UTC. Queue entry
+MQE_lQDOTotz3c8AAAABIT2pMs4ABAiKzgNAx0Y is observed; merge and installation remain
+unproven. Its shared bounded evidence callback is default-inert. A separate
+selected-SQLite prototype passed 12 local and 12 actual Linux synthetic cases,
+including exact raw image parity and write refusal; this is feasibility evidence,
+not an installed qualified reader or private corpus acceptance.
+
+An environment refresh interrupted and unloaded the native coordinators.
+First-party resume messages were refused as unloaded V2 children and were not
+delivered. Root continues qualified integration directly from retained artifacts.
+No new native worker, alternate resume path or duplicate uncertain Fabric work
+was started. Reading-order v2 operation rv-i02-reading-order-v2-01a13301-r1 has
+launch-attempt evidence but unproved worker start and no retained result; its
+same-operation recovery frontier was delivered to the existing Fabric Integration
+owner under the Chairman's authorization. All original uncertain effects remain
+on their original carriers. Writer adoption and actual selected-reader integration
+remain adjacent source work; semantic acceptance and live client gates stay open.
+
+
+The retained 04:11:54 UTC read-only M1 checkpoint was recovered and consumed by
+root at the next integration boundary. Sole supervisor PID89695 is still running;
+DB/profile inodes and source/plist identities are preserved. Since the original
+restart, 359 rows were discovered and 13 reports downloaded and vaulted, with
+zero downloaded-but-unvaulted rows. Typed source state AUTHENTICATED was observed
+at04:11:22; newest vaulted source publication is02:40:43. This advances the source
+collector to fresh real publication; the ordinary feed/ingest catalog and qualified
+fulltext generation still require their own evidence. No second restart occurred.
+
+A new additive selection-interface C1 Fabric request,
+rv-generation-selection-01a13301-r1, failed before worker launch with rc75 and
+ROUTING_CRITICAL_POLICY_MISMATCH / SUPPORT_PUBLICATION_REFUSED. Exact adapter status
+is TERMINAL_FAILURE, signal prelaunch_failure, no result_available. Root may perform
+this distinct interface change directly; no resubmission, carrier switch or
+unknown-worker replacement. Final F11 indexed trigger closure reached all2555
+path-filtered suites with zero gaps.

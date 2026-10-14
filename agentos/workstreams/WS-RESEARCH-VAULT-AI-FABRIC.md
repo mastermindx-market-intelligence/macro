@@ -162,9 +162,10 @@ Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (late
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
 
 
-Current dated frontier: the October 14 03:20 UTC continuation update records the
-fifth intelligence canary's semantic refusal, all three recovered original Fabric
-results with unresolved controller/lease state, and resumed M1 discovery without
-fresh publication proof. Root is integrating producer improvements and commissioning
-the bounded Brain comparison consumer; neither source progress nor the old producer
-counters satisfies the required current-generation 95 percent or live-client gates.
+Current dated frontier: the October 14 04:40 UTC continuation update records
+integrated generation/public-projection and I03 comparison source on draft #9177,
+producer/heal carrier #9223 at81587ef0, and Mastermind #1445 admitted to its native
+merge queue. Native coordinators were unloaded and first-party resumption refused;
+root is integrating retained artifacts directly without duplicating uncertain
+Fabric operations. All-writer qualification, exact selected SQLite binding,
+current-generation95, semantic acceptance and installed C4 client proof remain open.

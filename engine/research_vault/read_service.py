@@ -192,6 +192,7 @@ class ResearchReadService:
         rio_inventory: Callable[[], Iterable[str]] | None = None,
         source_classifier: Callable[..., Mapping[str, Any]] | None = None,
         clock: Callable[[], datetime] | None = None,
+        comparison_owners: Any = None,
     ) -> None:
         self._catalog_store = catalog_store
         self._corpus_connection = corpus_connection
@@ -203,6 +204,17 @@ class ResearchReadService:
         self._rio_inventory = rio_inventory
         self._source_classifier = source_classifier
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._comparison_owners = comparison_owners
+
+    def comparison_view(self, *, caller_context: Any, request: Any) -> Mapping[str, Any]:
+        """Private Brain seam; the four public ReadPort tools are unchanged."""
+        from engine.research_vault.comparison import failure, view
+        gated = self._gate_context(caller_context, "find_evidence")
+        if not isinstance(gated, ServerReadContext) or self._entitle_report(gated) is not None:
+            return failure("REPORT_NOT_ENTITLED", denied=True)
+        if gated.surface != "brain":
+            return failure("COMPARISON_SURFACE_UNAVAILABLE", denied=True)
+        return view(self, gated, request, self._comparison_owners)
 
     def _now(self) -> datetime:
         return self._clock()
