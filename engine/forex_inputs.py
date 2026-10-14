@@ -19,6 +19,8 @@ import logging
 import pandas as pd
 
 from lib import config, store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 
 log = logging.getLogger(__name__)
 
@@ -86,13 +88,12 @@ def load_price(meta: dict) -> pd.DataFrame:
 def load_cot_positioning(cot_name: str | None) -> pd.Series | None:
     if not cot_name:
         return None
-    cot = store.read("cot", cot_name)
+    cot = read_legacy_frame(cot_name)
     if cot is None or cot.empty or "net_spec_pct_oi" not in cot.columns:
         log.warning("forex_inputs: missing/!net_spec_pct_oi %s", cot_name)
         return None
-    s = pd.to_numeric(cot["net_spec_pct_oi"], errors="coerce")
-    s.index = pd.to_datetime(s.index)
-    return s[~s.index.duplicated(keep="last")].sort_index().dropna().rename("net_spec_pct_oi")
+    return legacy_series(cot)
+
 
 
 def load_rate(meta: dict, meta_key: str, group: str, sid_maps: dict) -> pd.Series | None:

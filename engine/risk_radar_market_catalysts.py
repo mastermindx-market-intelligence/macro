@@ -24,6 +24,8 @@ import pandas as pd
 
 from engine.indicators import pct_rank_window
 from lib import config, store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 
 log = logging.getLogger(__name__)
 
@@ -1116,12 +1118,20 @@ def _c11_cot_es_washout() -> dict:
     channel = "mood"
 
     try:
-        df = store.read("cot", "cot_es_spx")
+        df = read_legacy_frame("cot_es_spx")
         if df is None or "net_spec_pct_oi" not in df.columns:
             return _absent_chip(key, label_en, label_zh, "cot_es_spx net_spec_pct_oi unavailable", channel)
 
-        s = df["net_spec_pct_oi"].dropna().sort_index()
-        s.index = pd.to_datetime(s.index)
+        # Date-grain recovery context may only see released observations.
+        # Reconstructed history is not original-vintage certification.
+        s = legacy_series(df)
+        today = pd.Timestamp(date.today())
+        s = s.loc[s.index <= today]
+        if s.empty or pd.isna(s.iloc[-1]):
+            return _absent_chip(key, label_en, label_zh, "no released COT observation available", channel)
+        if (today - s.index[-1]).days > 12:
+            return _absent_chip(key, label_en, label_zh, "COT release is stale; no fresh recovery claim", channel)
+        s = s.dropna()
 
         if len(s) < 30:
             return _absent_chip(key, label_en, label_zh, "fewer than 30 weekly COT obs", channel)

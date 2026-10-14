@@ -17,15 +17,19 @@ import numpy as np
 import pandas as pd
 
 from lib import store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 
 log = logging.getLogger(__name__)
 
 
 def _col(group: str, name: str, col: str | None = None) -> pd.Series | None:
-    df = store.read(group, name)
+    df = read_legacy_frame(name) if group == "cot" else store.read(group, name)
     if df is None or df.empty:
         log.warning("btc_inputs: missing %s/%s", group, name)
         return None
+    if group == "cot":
+        return legacy_series(df, col or "net_spec_pct_oi")
     s = df[col] if col else df.iloc[:, 0]
     s.index = pd.to_datetime(s.index)
     return s[~s.index.duplicated(keep="last")].sort_index()

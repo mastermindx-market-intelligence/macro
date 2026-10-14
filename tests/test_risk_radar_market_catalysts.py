@@ -915,7 +915,7 @@ class TestC11CotEsWashout:
 
     def _make_cot(self, values) -> pd.DataFrame:
         """Build COT weekly series."""
-        idx = pd.bdate_range("2018-01-05", periods=len(values), freq="W-FRI")
+        idx = pd.date_range("2015-01-06", periods=len(values), freq="W-TUE")
         return pd.DataFrame({
             "net_spec": [v * 100000 for v in values],
             "open_interest": [2000000] * len(values),
@@ -935,7 +935,7 @@ class TestC11CotEsWashout:
         recovery_vals = [-6.0, -3.0]   # c2=+6 >= 0, c1=+3 > 0 -> must fire
         vals = base_vals + washout_vals + recovery_vals
         df = self._make_cot(vals)
-        last_date = str(df.index[-1].date())
+        last_date = str((df.index[-1] + pd.Timedelta(days=4)).date())
         _patch_today(monkeypatch, last_date)
         monkeypatch.setattr(rmc.store, "read",
                             lambda g, n: df if (g, n) == ("cot", "cot_es_spx") else None)
@@ -960,7 +960,7 @@ class TestC11CotEsWashout:
         down_then_up = [-14.0, -11.0]   # c2=-2 (<0) must block even though c1=+3 (>0)
         vals = base_vals + washout_vals + down_then_up
         df = self._make_cot(vals)
-        last_date = str(df.index[-1].date())
+        last_date = str((df.index[-1] + pd.Timedelta(days=4)).date())
         _patch_today(monkeypatch, last_date)
         monkeypatch.setattr(rmc.store, "read",
                             lambda g, n: df if (g, n) == ("cot", "cot_es_spx") else None)
@@ -973,7 +973,7 @@ class TestC11CotEsWashout:
         """Positioning always near neutral — no washout."""
         vals = [-2.0] * 160
         df = self._make_cot(vals)
-        last_date = str(df.index[-1].date())
+        last_date = str((df.index[-1] + pd.Timedelta(days=4)).date())
         _patch_today(monkeypatch, last_date)
         monkeypatch.setattr(rmc.store, "read",
                             lambda g, n: df if (g, n) == ("cot", "cot_es_spx") else None)
@@ -985,7 +985,7 @@ class TestC11CotEsWashout:
         # vals end: ..., -12.0, -12.0, -13.0 -> c1 = -13 - (-12) = -1 < 0 -> no fire
         vals = [0.0] * 140 + [-12.0] * 8 + [-13.0]
         df = self._make_cot(vals)
-        last_date = str(df.index[-1].date())
+        last_date = str((df.index[-1] + pd.Timedelta(days=4)).date())
         _patch_today(monkeypatch, last_date)
         monkeypatch.setattr(rmc.store, "read",
                             lambda g, n: df if (g, n) == ("cot", "cot_es_spx") else None)

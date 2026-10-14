@@ -1,0 +1,453 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "focus_market",
+        "spec": "focus_market:focus(.cot-market-button)",
+        "value": ".cot-market-button"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-10T00:29:58.791760+00:00",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2228,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3204,
+            "elements_wider_than_viewport": 42,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2228,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 2,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 611677,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 6,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 345
+      },
+      "page_id": "cot.html",
+      "page_tree_sha": "682e0ad06c343d24b6706129de7b4360ef2c2709",
+      "registry_route": "/cot.html",
+      "route": "/cot.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 345968,
+          "captured": true,
+          "file": "images/4170ed74a1377905.png",
+          "force_state": null,
+          "height": 2228,
+          "locale": "en",
+          "sha256": "4170ed74a13779056258c2e526c41ae69960c51986543e51c8c00b85e7529218",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 345052,
+          "captured": true,
+          "file": "images/ac32e1b6189fc369--focus_market.png",
+          "force_state": "focus_market",
+          "height": 2228,
+          "locale": "en",
+          "sha256": "ac32e1b6189fc369e652560175f65bb15dc17639ce6c776f7f0a717a7adbe417",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 339980,
+          "captured": true,
+          "file": "images/6b6e8043de8100a7.png",
+          "force_state": null,
+          "height": 2229,
+          "locale": "en",
+          "sha256": "6b6e8043de8100a775fac992168bc2f9ba1004be25c37c6d0c9442967b6074fe",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 339164,
+          "captured": true,
+          "file": "images/1368342e6dc5c00a--focus_market.png",
+          "force_state": "focus_market",
+          "height": 2229,
+          "locale": "en",
+          "sha256": "1368342e6dc5c00a901876c85624fcaf5542e6d7ad4209476e33c55402f3b8ec",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 339729,
+          "captured": true,
+          "file": "images/ad19d901391c9223.png",
+          "force_state": null,
+          "height": 2314,
+          "locale": "zh",
+          "sha256": "ad19d901391c92231e6b619d1c6aac974f67408d002ad0f8e4c9416bf86d8dbb",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 338821,
+          "captured": true,
+          "file": "images/2f051aa6ac0e0a5c--focus_market.png",
+          "force_state": "focus_market",
+          "height": 2314,
+          "locale": "zh",
+          "sha256": "2f051aa6ac0e0a5cccce9f824e8b468bc5a4d98d2ccb5d88ae5eefe56bc06966",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 332826,
+          "captured": true,
+          "file": "images/56ee4ab71ee48222.png",
+          "force_state": null,
+          "height": 2315,
+          "locale": "zh",
+          "sha256": "56ee4ab71ee482225d006ff6c6c7731b191ccd4e0977c3a65ef3ae31fc07c079",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 331912,
+          "captured": true,
+          "file": "images/ae5464acd7bf5cc7--focus_market.png",
+          "force_state": "focus_market",
+          "height": 2315,
+          "locale": "zh",
+          "sha256": "ae5464acd7bf5cc7a2f08af4099a2b3eb8a9e2666af291382d957674910bcd69",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 249536,
+          "captured": true,
+          "file": "images/1196077832ebde3d.png",
+          "force_state": null,
+          "height": 3204,
+          "locale": "en",
+          "sha256": "1196077832ebde3dc8212cb7487d639b8f84de9899a0859fa2616ef266ca9917",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 248475,
+          "captured": true,
+          "file": "images/fda387981b246d83--focus_market.png",
+          "force_state": "focus_market",
+          "height": 3204,
+          "locale": "en",
+          "sha256": "fda387981b246d83f256864cafad3eb80f5a1e8874d6b27729531e859ebfa619",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 243147,
+          "captured": true,
+          "file": "images/e3fa9e13dd7258ba.png",
+          "force_state": null,
+          "height": 3208,
+          "locale": "en",
+          "sha256": "e3fa9e13dd7258baba3836ab0aa36aba6407252631f721ffa3e38175fcf69195",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 242143,
+          "captured": true,
+          "file": "images/42ec867859ed349e--focus_market.png",
+          "force_state": "focus_market",
+          "height": 3208,
+          "locale": "en",
+          "sha256": "42ec867859ed349ee7f09d082fb336dab50afb67cf0743db500d91fdd8f68fa2",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 242891,
+          "captured": true,
+          "file": "images/7825a76571fb56d6.png",
+          "force_state": null,
+          "height": 3218,
+          "locale": "zh",
+          "sha256": "7825a76571fb56d602b700aca890d34174d7d045ff3b93fad8186ae1943dc50d",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 241834,
+          "captured": true,
+          "file": "images/49a5315ff2917aba--focus_market.png",
+          "force_state": "focus_market",
+          "height": 3218,
+          "locale": "zh",
+          "sha256": "49a5315ff2917aba07ac54c2eb944dc3002680b5e2afe567f0227cfd46a720ec",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 236015,
+          "captured": true,
+          "file": "images/665f9bbbdbbe975c.png",
+          "force_state": null,
+          "height": 3222,
+          "locale": "zh",
+          "sha256": "665f9bbbdbbe975c74d7ccc7c9ef9ebb3bb4117b1c4bad874d08cc4b8860aea3",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "focus_market",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 235034,
+          "captured": true,
+          "file": "images/0ef4f72d99317a45--focus_market.png",
+          "force_state": "focus_market",
+          "height": 3222,
+          "locale": "zh",
+          "sha256": "0ef4f72d99317a4584cfba3847cc8f4c25e88d85fc1e4b6c364fa5d8a5f4e511",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/cot.html"
+    ],
+    "mode": "explicit_routes",
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/cot-positioning-20261009-sol-001",
+    "resolved_sha_or_none": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/cot-positioning-20261009-sol-001 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/macro/web/cot-positioning-20261009-sol-001/.pytest_cache/cot-preview"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

@@ -41,6 +41,8 @@ import pandas as pd
 
 from engine.indicators import pct_rank_window
 from lib import config, store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series, align_released
 
 log = logging.getLogger("conditions")
 
@@ -485,11 +487,13 @@ def conditions_frame(f: pd.DataFrame) -> pd.DataFrame:
         cap_parts.append((out["vrp_pctile"] > ccfg["vrp_pctile"]).astype(float))
     if vix is not None:
         cap_parts.append((vix > ccfg["vix_panic"]).astype(float))
-    cot = store.read("cot", "cot_es_spx")
+    cot = read_legacy_frame("cot_es_spx")
     if cot is not None and "net_spec_pct_oi" in cot.columns:
-        ns = cot["net_spec_pct_oi"].reindex(out.index).ffill(limit=10)
-        washout = pct_rank_window(ns, ccfg["cot_pctile_lookback_d"]) < ccfg["cot_washout_pctile"]
-        cap_parts.append(washout.astype(float))
+        ns = align_released(legacy_series(cot), out.index, max_age_days=12)
+        pct = pct_rank_window(ns, ccfg["cot_pctile_lookback_d"])
+        washout = (pct < ccfg["cot_washout_pctile"]).astype(float).where(pct.notna())
+        out["capitulation_cot_available"] = pct.notna()
+        cap_parts.append(washout)
     if cap_parts:
         out["capitulation_score"] = pd.concat(cap_parts, axis=1).sum(axis=1)
 

@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/cot_positioning.css
+  - templates/cot_positioning.html.j2
+  - templates/cot_positioning.js
+manifest: mockups/evidence/cot-positioning-v1/manifest.json

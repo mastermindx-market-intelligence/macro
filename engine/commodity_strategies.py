@@ -36,6 +36,8 @@ from engine import equity_alloc as ea
 from engine.cross_asset_trend import tsmom_alloc
 from engine.strategies import StrategySpec, _compose, _onto, _pctile
 from lib import store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 
 _W5Y = 252 * 5
 
@@ -59,9 +61,13 @@ def _fred(series: str, col: str | None = None) -> pd.Series:
 
 
 def _col(group: str, key: str, col: str) -> pd.Series:
-    df = store.read(group, key)
+    df = read_legacy_frame(key) if group == "cot" else store.read(group, key)
     if df is None or df.empty or col not in getattr(df, "columns", []):
         return pd.Series(dtype=float)
+    if group == "cot":
+        # Preserve this strategy's additional lag while removing early access
+        # during exceptional CFTC publication delays. No signal re-promotion.
+        return legacy_series(df, col)
     return df[col].astype(float).dropna()
 
 
