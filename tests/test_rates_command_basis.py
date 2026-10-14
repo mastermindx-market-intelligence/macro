@@ -1,5 +1,6 @@
 """Tests for engine/rates_command_basis.py (B0 seat ruling para-8)."""
 
+import ast
 import json
 from datetime import date
 from pathlib import Path
@@ -845,3 +846,123 @@ class TestB0CutoffLawRepair:
         )
         assert self._q("2026-10-14", "2026-10-14").value_state == "present"
         assert self._q("2026-10", "2026-10").value_state == "present"
+
+
+def test_cpi_vs_breakeven_refuses_even_when_reference_end_matches():
+    cpi = _obs(value=0.2)  # reference_end 2026-09-30 from the CPI meta defaults
+    forged = _obs(
+        value=2.25,
+        subject="T10YIE",
+        unit="pct_yoy",
+        target="inflation_compensation",
+        basket_or_index=NA,
+        tenor="10y",
+        reference_start="2026-10-13",
+        reference_end="2026-09-30",  # forged EQUAL to the CPI operand's
+        source="fred:T10YIE",
+    )
+    result = compare_qualified(cpi, forged, RULES["cpi_month_vs_breakeven_10y.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:reference_end"
+    assert result.difference is None
+    assert result.range is None
+    honest = _obs(
+        value=2.25,
+        subject="T10YIE",
+        unit="pct_yoy",
+        target="inflation_compensation",
+        basket_or_index=NA,
+        tenor="10y",
+        reference_start="2026-10-13",
+        reference_end="2036-10-15",
+        source="fred:T10YIE",
+    )
+    honest_result = compare_qualified(cpi, honest, RULES["cpi_month_vs_breakeven_10y.v1"])
+    assert honest_result.status == "not_comparable"
+    assert honest_result.reason == "basis_mismatch:reference_end"
+
+
+def test_month_end_effective_date_is_inside_the_month():
+    result = solve_reference_average(
+        (_zq_obs(value=134 / 30),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-30",), pre_change_rate=4.50,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert abs(result.identified["end_rate"] - 3.50) < 1e-6
+    assert "effective_date=2026-09-30" in result.assumptions_used
+    assert "no_intra_month_change" not in result.assumptions_used
+    assert result.identified["segments"][-1][0] == "2026-09-30"
+    # control: a date outside the month keeps the non-meeting branch
+    outside = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-10-01",)),
+    )
+    assert outside.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert "no_intra_month_change" in outside.assumptions_used
+
+
+def test_two_dates_last_on_month_end_cover_the_month():
+    result = solve_reference_average(
+        (_zq_obs(value=4.375),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15", "2026-09-30"),
+            pre_change_rate=4.50, rate_step_bp=25,
+        ),
+    )
+    assert result.status is PathStatus.FEASIBLE_ALTERNATIVES
+    returned = list(result.alternatives) + (
+        [result.identified] if result.identified else []
+    )
+    assert returned
+    for path in returned:
+        segments = path["segments"]
+        lengths = [
+            (date.fromisoformat(seg[1]) - date.fromisoformat(seg[0])).days
+            + (1 if i == len(segments) - 1 else 0)
+            for i, seg in enumerate(segments)
+        ]
+        assert sum(lengths) == 30  # 14 + 15 + the month-end day itself
+        assert segments[-1][0] == "2026-09-30"
+    assert abs(returned[0]["end_rate"] - 4.50) < 1e-9
+
+
+def test_grid_step_recorded_in_assumptions():
+    supplied = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",), rate_step_bp=25,
+        ),
+    )
+    assert "rate_step_bp=25" in supplied.assumptions_used
+    assert "rate_step_defaulted" not in supplied.assumptions_used
+    assert supplied.status.value == "inconsistent"  # status observed at lane base
+    defaulted = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-09-15",)),
+    )
+    assert "rate_step_bp=50" in defaulted.assumptions_used
+    assert "rate_step_defaulted" in defaulted.assumptions_used
+    assert defaulted.status.value == "inconsistent"  # status observed at lane base
+
+
+def test_module_is_pure_ast():
+    tree = ast.parse(MODULE_PATH.read_text(), filename=str(MODULE_PATH))
+    allowed_roots = {
+        "__future__", "dataclasses", "datetime", "enum", "hashlib", "json", "typing",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] in allowed_roots, alias.name
+        elif isinstance(node, ast.ImportFrom):
+            assert (node.module or "").split(".")[0] in allowed_roots, node.module
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                assert node.func.id not in ("open", "eval", "exec", "__import__"), node.func.id
+        elif isinstance(node, ast.Attribute):
+            assert node.attr not in ("now", "utcnow", "today", "system", "popen"), node.attr
