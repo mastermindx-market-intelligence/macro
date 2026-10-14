@@ -183,3 +183,35 @@ def test_wrong_configured_store_refuses_before_ancestry_or_payload(original, mon
     with pytest.raises(HTTPException) as exc:
         discover(original)
     assert exc.value.status_code == 503 and exc.value.detail["state"] == "EXACT_CATALOG_UNAVAILABLE"
+
+
+def test_exact_capture_locator_finds_later_page_in_pinned_generation(original):
+    first = discover(original, limit=20)
+    target = first["entries"][-1]
+    pin = {k: first["generation"][k] for k in ("generation_id", "generation_sha256")}
+    selected = discover(original, limit=1, query_id=target["query_id"],
+                        context_id=target["context_id"], **pin)
+    assert selected["selection"]["offset"] == len(first["entries"]) - 1
+    assert selected["entries"] == [target]
+    assert selected["selection"]["total"] == first["selection"]["total"]
+
+
+def test_exact_capture_locator_never_substitutes_missing_reference(original):
+    first = discover(original)
+    pin = {k: first["generation"][k] for k in ("generation_id", "generation_sha256")}
+    with pytest.raises(HTTPException) as exc:
+        discover(original, query_id="mmquery_" + "0" * 64,
+                 context_id=first["entries"][0]["context_id"], **pin)
+    assert exc.value.status_code == 404
+
+
+@pytest.mark.parametrize("selector", [
+    {"query_id": "mmquery_" + "0" * 64},
+    {"query_id": "mmquery_" + "0" * 64, "context_id": "mmctx_" + "0" * 64},
+    {"context_id": "bad"},
+])
+def test_incomplete_exact_capture_locator_refuses_before_owner(original, monkeypatch, selector):
+    monkeypatch.setattr(trusted, "TrustedFileAsKnownAtReader", lambda *a, **k: pytest.fail("opened owner"))
+    with pytest.raises(HTTPException) as exc:
+        discover(original, **selector)
+    assert exc.value.status_code == 400

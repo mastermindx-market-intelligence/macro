@@ -1071,7 +1071,7 @@ def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,
     from engine.neuralweb import market_memory_episode_retrieval as retrieval
     from engine.neuralweb import market_memory_retained_context_cohort as cohort
     use._enforce_current_site_user(user_id)
-    keys = {"mode", "offset", "limit", "generation_id", "generation_sha256"}
+    keys = {"mode", "offset", "limit", "generation_id", "generation_sha256", "query_id", "context_id"}
     if type(request_spec) is not dict or set(request_spec) - keys:
         raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
     spec = dict(request_spec)
@@ -1089,6 +1089,12 @@ def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,
     pinned = {"generation_id", "generation_sha256"} & set(spec)
     if (pinned and len(pinned) != 2) or (parsed["offset"] and len(pinned) != 2):
         raise HTTPException(400, detail={"state": "EXACT_CATALOG_CONTINUATION_REQUIRED"})
+    locator = {"query_id", "context_id"} & set(spec)
+    if locator and (len(locator) != 2 or len(pinned) != 2 or parsed["offset"] != 0):
+        raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+    for key, prefix in (("query_id", "mmquery_"), ("context_id", "mmctx_")):
+        if key in spec and (type(spec[key]) is not str or not re.fullmatch(prefix + r"[a-f0-9]{64}", spec[key])):
+            raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
     for key, prefix in (("generation_id", "mmgeneration_"), ("generation_sha256", "")):
         if key in spec and (type(spec[key]) is not str or not re.fullmatch(prefix + r"[a-f0-9]{64}", spec[key])):
             raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
@@ -1103,7 +1109,8 @@ def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,
         raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
     try:
         return catalog.read_catalog(root, user_id=user_id, mode=mode, **parsed,
-            generation_id=spec.get("generation_id"), generation_sha256=spec.get("generation_sha256"))
+            generation_id=spec.get("generation_id"), generation_sha256=spec.get("generation_sha256"),
+            query_id=spec.get("query_id"), context_id=spec.get("context_id"))
     except use.RetainedUseError as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except market_memory_pit.MarketMemoryContextNotFound as exc:

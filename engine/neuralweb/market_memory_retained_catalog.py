@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import re
 
 from engine.neuralweb import market_memory_pit as pit
 from engine.neuralweb import market_memory_trusted as trusted
@@ -44,12 +45,18 @@ class CatalogDiscoveryAuthority:
 
 def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int,
                  generation_id: str | None = None,
-                 generation_sha256: str | None = None) -> dict:
+                 generation_sha256: str | None = None,
+                 query_id: str | None = None, context_id: str | None = None) -> dict:
     if (type(offset) is not int or not 0 <= offset <= 255
             or type(limit) is not int or not 1 <= limit <= 20
             or bool(generation_id) != bool(generation_sha256)
             or (offset and not generation_id)):
         raise pit.MarketMemoryQueryError("bounded_exact_catalog_request_required")
+    locate = query_id is not None or context_id is not None
+    if locate and (not generation_id or offset != 0
+            or type(query_id) is not str or not re.fullmatch(r"mmquery_[a-f0-9]{64}", query_id)
+            or type(context_id) is not str or not re.fullmatch(r"mmctx_[a-f0-9]{64}", context_id)):
+        raise pit.MarketMemoryQueryError("exact_pinned_catalog_locator_required")
     authority = CatalogDiscoveryAuthority(root, user_id, mode)
     registered = authority.registration
     subject_id = registered["allowed_subject_ids"][0]
@@ -66,6 +73,9 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
         if (pin.store_id != registered["store_id"]
                 or (generation_sha256 is not None and pin.generation_sha256 != generation_sha256)):
             raise pit.MarketMemoryStoreError("exact_catalog_generation_required")
+        if locate and sum(entry.query_id == query_id and entry.context_id == context_id
+                          for entry in pin.captures) != 1:
+            raise pit.MarketMemoryContextNotFound("exact_catalog_capture_not_found")
         policy = use.RetainedHouseUsePolicy(root, user_id=user_id, store_id=pin.store_id,
             generation_id=pin.generation_id, generation_sha256=pin.generation_sha256,
             subject_id=subject_id, query_cutoff=cutoff, mode=mode)
@@ -126,6 +136,12 @@ def read_catalog(root: Path, *, user_id: str, mode: str, offset: int, limit: int
             })
         entries.sort(key=lambda x: (cohort.utc_instant(x["as_known_at"]),
             cohort.utc_instant(x["event_time"]), x["query_id"]), reverse=True)
+        if locate:
+            # Locate only inside the already pinned, fully authorized population.
+            # Return its ordinary page; never choose another capture or cutoff.
+            index = next(i for i, row in enumerate(entries)
+                         if row["query_id"] == query_id and row["context_id"] == context_id)
+            offset = (index // limit) * limit
         methods = [retrieval.RetainedContextMethodSpec(
             registered["method"]["purge_calendar_days"],
             registered["method"]["embargo_calendar_days"], value).disclosure()

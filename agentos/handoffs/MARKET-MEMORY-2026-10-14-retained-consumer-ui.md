@@ -38,7 +38,7 @@ unverified:
   what_would_verify: Normal hosted CI and merge, installed hashes and actual authenticated
     browser verification of all three modes and redaction.
 unresolved:
-- Same-tab OAuth intent capsule is a separate open obligation.
+- Same-tab OAuth intent recovery passes source and browser fixtures; the actual provider round trip remains open.
 - Full28-task/49-case program, operational E0 and actual outcome labels remain open.
 next_actions:
 - Repair hosted findings on PR9228, preserve dependency9181 and take protected release
@@ -79,6 +79,12 @@ Reviewed source includes installed lineage #9140 and consumers #9170, and builds
 
 ## Remaining acceptance
 
-Normal hosted CI, protected merge, installed source hashes, and authenticated production browsing remain owed. Prove the three modes through the actual browser, current revocation/sign-out redaction, stale-response suppression and actual saved-output source inspection. Same-tab OAuth intent recovery beyond the existing strict URL codec remains separately open. Natural source capture and later outcome labels are not inferred from synthetic fixtures.
+Normal hosted CI, protected merge, installed source hashes, and authenticated production browsing remain owed. Prove the three modes through the actual browser, current revocation/sign-out redaction, stale-response suppression and actual saved-output source inspection. Same-tab OAuth intent recovery now passes the strict URL/capsule tests and 20 Chromium callback/refusal fixtures; a real provider round trip remains separately open. Natural source capture and later outcome labels are not inferred from synthetic fixtures.
 
 The four-run recovery packet reached Fabric Integration. Original D0 bytes were recovered and reviewed; defects were repaired in this carrier. Ubuntu0 publisher recovery is refused by its original directory ownership/mode control, with siblings held on that owner path. No carrier switch or duplicate worker occurred. Separate L0 metadata work proceeds after a proven prelaunch Fabric disk-admission failure; no actual labels have been read.
+
+## Exact catalog locator and hosted-CI repair
+
+An exact citation can refer to a capture outside the first catalogue page. The API now accepts a strictly paired query/context locator only with the exact generation ID/hash and offset zero. It locates that pair inside the already authorized pinned population and returns its ordinary page. The client retains the returned offset only after its complete identity checks; an absent pair never substitutes another capture. Five new backend cases and two actual-module state cases cover this path (25 catalogue tests, 12 state cases and 28 adjacent owner tests passed).
+
+Hosted run 38523488771 on 519b137be1fcd1802e67919fb40a921e080bf7bc exposed stale emitted research-screener asset stamps, missing emitted CSS tokens after main integration, and theme-dependent HK/CA proof bindings. The canonical emit/copy/optimizer paths repair those bytes. Both stock-dashboard verifier runs actually passed again on the final source; their receipt and manifest bindings preserve the historical baseline. Template/site sync covers 118 pairs. The final affected asset/receipt suite passed 168 tests and all 20 OAuth browser fixture cases passed again. UI visual-evidence, design-system and P0B closure gates passed. These are local source/fixture results; the next pushed head still owes its own hosted CI, installation and live consumer proof.

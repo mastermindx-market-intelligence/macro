@@ -628,6 +628,10 @@
      * and later pages must reuse it verbatim. */
     if (intent.gen) params.generation_id = intent.gen;
     if (intent.genSha) params.generation_sha256 = intent.genSha;
+    if (intent.query && intent.context && intent.catalogOffset == null && !(offset > 0)) {
+      params.query_id = intent.query;
+      params.context_id = intent.context;
+    }
     if (state.catalog && (offset || 0) > 0 && !intent.gen && !intent.genSha) {
       params.generation_id = state.catalog.generation.generationId;
       params.generation_sha256 = state.catalog.generation.generationSha256;
@@ -658,6 +662,11 @@
        * returned; no nearest-substitute capture or generation. */
       var pin = intent.context || intent.cutoff || intent.subject || intent.query || intent.gen || intent.genSha || intent.method;
       if (pin) {
+        if (intent.query && intent.context && intent.catalogOffset == null) {
+          // The server located the exact pair within this pinned generation.
+          // All identities below still have to match before accepting its page.
+          intent = Object.assign({}, intent, {catalogOffset: String(catalog.selection.offset)});
+        }
         var mismatch = deepLinkMismatch(intent, catalog);
         if (mismatch) return renderTypedUnavailable('deep_link_mismatch', mismatch);
       }
