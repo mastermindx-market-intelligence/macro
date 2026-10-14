@@ -36,12 +36,13 @@ still supplies no selected_options and enables none of this.
 
 ## Source evidence
 
--161provider/census/selection/read-service tests pass in the qualified Python3.12
+-167provider/census/selection/read-service tests pass in the qualified Python3.12
 environment;6HTTP read-runtime tests pass in the existing FastAPI environment.
 The first combined run stopped at collection because the former environment
 lacked FastAPI. It is not counted as a passing run.
--563MCP tests are accounted passing:562passed in the broad run and one actual
-Uvicorn child-process test passed after supplying the repository import path.
+-566MCP tests are accounted passing:562passed in the broad run, one actual
+Uvicorn child-process test passed after supplying the repository import path,
+one provider-capability case and two review-driven ASGI cancellation cases pass.
 The initial missing-import failure is retained. No source change was needed for
 that environment correction.
 -A52-file, hash-checked source overlay through the actual immutable importer,
@@ -54,9 +55,21 @@ refresh and later search. Process peak RSS was639,975,424bytes under the configu
 805,306,368-byte image admission. The catalog had one synthetic member and padding;
 this is not a Linux production memory or full-cohort latency qualification.
 
-Independent Fabric reviews are active on the provider and lifecycle source.
-Their original retained results must be consumed and adjudicated before claiming
-review acceptance. No successful process exit substitutes for that review.
+Both original independent Fabric reviews returned and were consumed. The lifecycle
+review was accepted after a root-verified shutdown-reporting repair. The provider
+review identified lost refusal codes, a rejected image retained by a prepare
+traceback, and inconsistent sampling of a mutable corpus budget. Four causal
+failures reproduced against48ca6a63; the repaired provider now passes167affected
+cases. It preserves the specific admission/drain reason without provider diagnostics,
+clears rejected-image frame references, and captures one corpus budget for the
+reservation and bounded read. The review is adjudicated against its original
+snapshot; the later repair is root-verified, not a peer-reviewed postimage.
+
+The five-second bound applies to reader drainage. Corpus retrieval, SQLite validation
+and final fence reads still hold the exclusive transition and have their existing
+I/O/runtime limits; five seconds is not an end-to-end availability guarantee. The
+catalog reservation remains conservative and can reduce concurrent read admission.
+No freshness, writer, image or source bound was relaxed to improve availability.
 
 ## Remaining release obligations
 

@@ -190,6 +190,9 @@ class QualifiedReadProvider:
                 self._prepared_at = prepared_at
             self._check(selected)
         finally:
+            # A retained exception must not keep a rejected candidate image
+            # alive through this frame after its admission has been released.
+            selected = conn = None
             self._prepare_lock.release()
 
     def refresh(self, *, drain_timeout_seconds=5.0):
@@ -209,7 +212,9 @@ class QualifiedReadProvider:
             raise SelectedReadUnavailable("preparation_in_progress")
         previous = selected = None
         catalog_reserve = 2 * generation.CATALOG_MAX_BYTES
+        corpus_budget = self.corpus_byte_budget
         corpus_started = False
+        corpus_refusal = None
         try:
             with self._lock:
                 previous = self._selected
@@ -221,9 +226,10 @@ class QualifiedReadProvider:
                 self._refresh_reserved = catalog_reserve
 
             def before_corpus_read():
-                nonlocal corpus_started
+                nonlocal corpus_started, corpus_refusal
                 if corpus_started:
-                    raise SelectedReadUnavailable("duplicate_candidate_corpus_read")
+                    corpus_refusal = "duplicate_candidate_corpus_read"
+                    raise SelectedReadUnavailable(corpus_refusal)
                 corpus_started = True
                 deadline = time.monotonic() + drain_timeout_seconds
                 with self._drained:
@@ -232,21 +238,25 @@ class QualifiedReadProvider:
                     while self._active or self._guard_active:
                         remaining = deadline - time.monotonic()
                         if remaining <= 0:
-                            raise SelectedReadUnavailable("refresh_drain_timeout")
+                            corpus_refusal = "refresh_drain_timeout"
+                            raise SelectedReadUnavailable(corpus_refusal)
                         self._drained.wait(remaining)
-                    charge = catalog_reserve + self.corpus_byte_budget
+                    charge = catalog_reserve + corpus_budget
                     if old_retained + charge > self.image_admission_bytes:
-                        raise SelectedReadUnavailable("image_admission_exceeded")
+                        corpus_refusal = "image_admission_exceeded"
+                        raise SelectedReadUnavailable(corpus_refusal)
                     self._refresh_reserved = charge
 
             selected, reason = generation.explained_selection(
-                _LimitedStore(self.store, self.corpus_byte_budget,
+                _LimitedStore(self.store, corpus_budget,
                               before_corpus_read=before_corpus_read),
                 expected_producer_commit=self.expected_producer_commit,
                 now=self.clock(), max_age_seconds=self.max_age_seconds,
                 writer_protocol_qualified=self._writer_qualified())
             if selected is None:
-                raise SelectedReadUnavailable(reason["code"])
+                # The generic corpus reader deliberately hides storage errors;
+                # preserve our own pre-read refusal without leaking diagnostics.
+                raise SelectedReadUnavailable(corpus_refusal or reason["code"])
             if not corpus_started:
                 raise SelectedReadUnavailable("candidate_corpus_not_admitted")
             with self._lock:

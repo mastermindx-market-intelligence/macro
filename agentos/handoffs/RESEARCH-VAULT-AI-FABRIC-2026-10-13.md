@@ -524,3 +524,43 @@ remain applicable. The original independent review packet remains bound to its
 preceding source; root will adjudicate the later repair separately. Linux memory
 preflight at13:25UTC had only282752KiBavailable; no large-memory test or service
 change was attempted there.
+
+## Current frontier — 2026-10-14 14:11 UTC
+
+Both new original refresh reviews returned through the M2 Fabric adapter and
+were consumed and accepted after root adjudication. Provider review127783bytes,
+SHA66f897129e160fa2d16dde48d57f622e0e687accfa81d901b11a825a3077534a,
+identified local refusal-code loss, traceback-held rejected images, and inconsistent
+corpus-budget sampling. Four actual-source tests fail on48ca6a63; all167affected
+reader/census/selection/service tests pass after repair. Lifecycle review77082bytes,
+SHA5ea6e441223e3e9464be9d6c4d58161b5c192f0d241fbe434718c303cd202ad1,
+identified worker-only cancellation falsely reporting ASGI shutdown failure.
+Two causal cases fail before the repair;63affected factory/lifecycle/transport
+cases pass afterward. Mastermind1458 is pushed at3ce894fd625400f7ebc83905d86d31246c002389,
+Draft/HOLD. Later repaired postimages are root-verified, not independently
+re-reviewed. The older unavailable factory review stays on its original carrier.
+
+An actual committed-source integration probe passes for Macro48ca6a63 and
+Mastermind2f5a1fcf: expired HTTP requests perform zero source fetches; one full
+application-owned refresh restores the same store/service; shutdown drains.
+This precedes the two review repairs and uses synthetic data/authority. The
+149016576-byte M2 image probe remains a memory-path observation, not Linux admission.
+
+Journal9311 atcd3adb41f093678c0494227750996b274fdd65d2 remains armed for the
+protected merge controller, with671affected tests and2curation checks passing.
+Hosted pack0 failed because leadership-rotation-science lacks the newly imported
+engine/rates_command_basis.py in its trigger closure. Existing repair9332 at
+8e0c0fbd1ee68163458dc3ef6ab4c4b073712b6a owns that exact defect and has green
+required checks; root created no duplicate fix or release action on its carrier.
+CLI9302 remains on its protected stale-CI/capacity return path.
+
+The programme repository is public. Original private generation journals must
+stay on their original owner-private host path; the public workflow's optional
+census artifact is not an approved journal-retention carrier. No journal workflow
+or producer-generation adoption has been activated.
+
+Read-only browser rediscovery now finds no original Auth0 tab in Chrome Person1.
+The prior browser interruption remains unresolved; disappearance of the tab is
+not evidence it was cleared. The earlier C4 Pro authentication proof remains
+historical, and the current client session has not been reverified. No new sign-in,
+provider mutation or alternative browser path was attempted.

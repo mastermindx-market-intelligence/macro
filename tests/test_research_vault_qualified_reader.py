@@ -93,7 +93,7 @@ def test_refresh_reserves_raw_capacity_before_corpus_read(prepared):
     owner.corpus_byte_budget = len(prior.corpus_bytes)
     owner.image_admission_bytes = retained + 2 * generation.CATALOG_MAX_BYTES + owner.corpus_byte_budget - 1
     store.reads.clear()
-    with pytest.raises(SelectedReadUnavailable):
+    with pytest.raises(SelectedReadUnavailable, match="image_admission_exceeded"):
         owner.refresh()
     assert ("corpus", "*") not in store.reads
     assert owner._selected is prior
@@ -160,7 +160,7 @@ def test_refresh_drain_timeout_preserves_old_cut_and_releases_admission(prepared
         assert entered.wait(1)
         store.reads.clear()
         try:
-            with pytest.raises(SelectedReadUnavailable):
+            with pytest.raises(SelectedReadUnavailable, match="refresh_drain_timeout"):
                 owner.refresh(drain_timeout_seconds=0.02)
             assert ("corpus", "*") not in store.reads
             assert owner._selected is old and owner._prepared_at == stamp
@@ -443,13 +443,41 @@ def test_wrong_or_oversized_sqlite_is_unavailable_without_rebuilding(prepared):
     record = json.loads(store.objects[catalog.CATALOG_KEY])
     record[generation.GENERATION_FIELD]["corpus_sha256"] = hashlib.sha256(store.corpus).hexdigest()
     store.set_object(catalog.CATALOG_KEY, json.dumps(record).encode())
-    with pytest.raises(sqlite3.DatabaseError):
+    with pytest.raises(sqlite3.DatabaseError) as caught:
         owner.prepare()
+    frames = []
+    tb = caught.value.__traceback__
+    while tb is not None:
+        if tb.tb_frame.f_code.co_name == "prepare":
+            frames.append(tb.tb_frame)
+        tb = tb.tb_next
+    assert len(frames) == 1 and frames[0].f_locals["selected"] is None
     assert owner._selected is None
     bounded = QualifiedReadProvider(store, expected_producer_commit=fixture.COMMIT,
         clock=lambda: now[0], writer_policy=lambda: True, corpus_byte_budget=4)
     with pytest.raises(SelectedReadUnavailable):
         bounded.prepare()
+
+
+def test_refresh_uses_one_corpus_budget_for_reservation_and_read(prepared, monkeypatch):
+    owner, store, now, policy = prepared
+    old = owner._selected
+    raw = len(old.corpus_bytes)
+    owner.corpus_byte_budget = raw
+    owner.image_admission_bytes = len(old.catalog_bytes) + raw + 2 * generation.CATALOG_MAX_BYTES + raw - 1
+    original = generation.explained_selection
+    def changed(*args, **kwargs):
+        # The bounded store already captured its read ceiling. A later owner
+        # setting cannot lower only its corresponding memory reservation.
+        owner.corpus_byte_budget = 1
+        return original(*args, **kwargs)
+    monkeypatch.setattr(generation, "explained_selection", changed)
+    store.reads.clear()
+    with pytest.raises(SelectedReadUnavailable):
+        owner.refresh()
+    assert ("corpus", "*") not in store.reads
+    assert owner._selected is old
+    assert owner._refresh_reserved == 0 and not owner._refresh_exclusive
 
 
 def test_image_admission_is_nonwaiting_and_does_not_change_existing_owner(prepared):
