@@ -2,7 +2,9 @@
 
 No I/O, network, clock, store, or read of research/finance. Admits the
 caller-supplied case document, then places each falsifier on the slice
-whose ``slice_id`` equals the row, via :func:`attach_falsifiers`.
+whose ``slice_id`` equals the row. :func:`apply_page_signal` is the only
+public placement path; placement itself goes through the module-private
+:func:`_attach_falsifiers`.
 ``compose_finance_projection`` stays unedited and keeps emitting empty
 falsifier lists. ``WATCHING`` is not emitted. A descriptive state that
 contains ``MEASURED`` does not change the falsifier state.
@@ -13,7 +15,7 @@ from __future__ import annotations
 from typing import Any, Mapping, MutableMapping
 
 from engine.sector_intelligence.finance_case_signal import (
-    attach_falsifiers,
+    _attach_falsifiers,
     project_falsifier,
 )
 
@@ -29,12 +31,14 @@ class SynthesisAdmissionRefusal(ValueError):
         return self.code
 
 
-def admit_synthesis(document: Mapping[str, Any]) -> list[dict[str, str]]:
-    """Admit a synthetic synthesis only when no causal outcome is measured.
+def _admit_pairs(
+    document: Mapping[str, Any],
+) -> list[tuple[Mapping[str, Any], dict[str, str]]]:
+    """Admit the document and pair every row with its projected falsifier.
 
     Calls :func:`project_falsifier` for every row. A descriptive state that
     contains ``MEASURED`` does not admit a cause, and an alias does not
-    become the falsifier id.
+    become the falsifier id. ``"cases"`` is read from the document once.
     """
     if document.get("formal_causal_outcomes_measured") != 0:
         raise SynthesisAdmissionRefusal("formal_causal_outcomes_measured")
@@ -43,12 +47,21 @@ def admit_synthesis(document: Mapping[str, Any]) -> list[dict[str, str]]:
     rows = document.get("cases")
     if not isinstance(rows, list) or not rows:
         raise SynthesisAdmissionRefusal("no_rows")
-    admitted: list[dict[str, str]] = []
+    pairs: list[tuple[Mapping[str, Any], dict[str, str]]] = []
     for row in rows:
         if row.get("formal_causal_outcome") != "UNMEASURED":
             raise SynthesisAdmissionRefusal("row_outcome_not_unmeasured")
-        admitted.append(project_falsifier(row))
-    return admitted
+        pairs.append((row, project_falsifier(row)))
+    return pairs
+
+
+def admit_synthesis(document: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Admit a synthetic synthesis only when no causal outcome is measured.
+
+    Returns the falsifier :func:`_admit_pairs` projected for each row, in
+    row order.
+    """
+    return [falsifier for _, falsifier in _admit_pairs(document)]
 
 
 def apply_page_signal(
@@ -57,13 +70,13 @@ def apply_page_signal(
 ) -> None:
     """Admit ``case_document`` and attach each falsifier to its slice.
 
-    Admission finishes before any slice is written. A slice with no admitted
-    row is left as it was.
+    Admission finishes before any slice is written, and each falsifier is
+    routed by the row admission read, not by a second read of the
+    document. Every slice's falsifier list is checked before the first
+    slice is written, so a refusal leaves the page as it was. A slice with
+    no admitted row is left as it was.
     """
-    falsifiers = admit_synthesis(case_document)
-    rows = case_document.get("cases")
-    if not isinstance(rows, list):
-        raise SynthesisAdmissionRefusal("no_rows")
+    pairs = _admit_pairs(case_document)
     slices = page.get("slices")
     if not isinstance(slices, list):
         raise SynthesisAdmissionRefusal("no_slices")
@@ -75,7 +88,7 @@ def apply_page_signal(
                 by_id[slice_id] = sl
     grouped: dict[str, list[Mapping[str, Any]]] = {}
     order: list[str] = []
-    for row, falsifier in zip(rows, falsifiers):
+    for row, falsifier in pairs:
         slice_id = row.get("slice_id") if isinstance(row, Mapping) else None
         if not isinstance(slice_id, str) or slice_id not in by_id:
             raise SynthesisAdmissionRefusal("slice_absent")
@@ -83,5 +96,9 @@ def apply_page_signal(
             order.append(slice_id)
             grouped[slice_id] = []
         grouped[slice_id].append(falsifier)
+    # _attach_falsifiers refuses only on the list itself, so a dry run on a
+    # bare slice finds every refusal before a real slice changes.
     for slice_id in order:
-        attach_falsifiers(by_id[slice_id], grouped[slice_id])
+        _attach_falsifiers({"slice_id": slice_id}, grouped[slice_id])
+    for slice_id in order:
+        _attach_falsifiers(by_id[slice_id], grouped[slice_id])

@@ -1,6 +1,6 @@
 {
   "schema_version": "sni_acceptance_matrix.v2",
-  "as_of_utc": "2026-10-14T06:09:05Z",
+  "as_of_utc": "2026-10-14T07:59:12Z",
   "sources": {
     "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
     "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
@@ -78,6 +78,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8C: ads-ratio date-parse and blank-text findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepc_repair.py",
+          "note": "INT7 red-team repair X8CREPC: ADS-ratio guard refuses whitespace-edged and non-str ids and malformed ratio intervals under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1/C4 ratio contract untested; no source-proven ADS interval test; August behavioral pilot is not current data."
@@ -143,6 +148,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8A: counter-relation findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep_repair.py",
+          "note": "INT7 red-team repair X8AREP round 1: counter-relation guard closes the closeable X8A findings without minting ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep2_repair.py",
+          "note": "INT7 red-team repair X8AREP round 2: counter-relation guard treats whitespace-only and padded ids as absent under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1 relationship contract not on main."
@@ -288,6 +303,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8C: identity-binding findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepb_repair.py",
+          "note": "INT7 red-team repair X8CREPB: identity-binding guard refuses blank, whitespace-edged and non-str ids under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C1/C4 test that padding, alias, or currency mismatch cannot bind is still missing."
@@ -408,6 +428,21 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8B: then-known findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep_repair.py",
+          "note": "INT7 red-team repair X8BREP: then-known guard refuses whitespace-edged and non-str ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a07_then_known_property.py",
+          "note": "INT7 seeded property tests: post-cutoff facts never enter a then-known view across random records; seeds are deterministic (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep2_repair.py",
+          "note": "INT7 red-team repair X8BREP round 2: then-known guard applies the family text rule v2 to every text field (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No then-known compiler test excluding post-cutoff filings or retrieval."
@@ -458,6 +493,11 @@
           "ref": "main",
           "path": "tests/test_sni_three_clock_guard.py",
           "note": "INT6 three-clock guard tests (synthetic fixtures; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: three-clock guard treats padded and non-text field-map keys and kind labels as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "SNI three-clock view (economic / owner-known / publication) unbuilt; V1/C2 wait on R1."
@@ -498,6 +538,16 @@
           "ref": "main",
           "path": "tests/test_sni_guard_family_invariants.py",
           "note": "INT6 family invariants: join and denominator guards share refusal, authority-false and determinism properties (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famj_repair.py",
+          "note": "INT7 family repair FAMJ: join guard applies the family text rule to metric, period, issuer, currency and version fields (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famj2_repair.py",
+          "note": "INT7 family repair FAMJ round 2: join guard treats whitespace-only and padded text as absent and fails closed on unknown schemes (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "The join guard is a DRAFT module not wired into any owner join."
@@ -553,6 +603,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8C: KPI-missingness period-order findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepc_repair.py",
+          "note": "INT7 red-team repair X8CREPC: KPI-missingness guard refuses whitespace-edged and non-str ids so a missing KPI cannot pass as present (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C3 compiler not on main."
@@ -588,6 +643,11 @@
           "ref": "main",
           "path": "tests/test_sni_guard_family_invariants.py",
           "note": "INT6 family invariants covering the denominator guard (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famdc_repair.py",
+          "note": "INT7b red-team repair FAMDC: denominator guard treats whitespace-only, padded and non-str ids as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No C4 test binding share count to a canonical capital version."
@@ -663,6 +723,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8B: session-state findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep_repair.py",
+          "note": "INT7 red-team repair X8BREP: session-state guard refuses whitespace-edged and non-str ids (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8brep2_repair.py",
+          "note": "INT7 red-team repair X8BREP round 2: session-state guard applies the family text rule v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "M0 owner session-state test unbuilt; halt and live venue state unmodelled."
@@ -708,6 +778,11 @@
           "ref": "main",
           "path": "tests/test_sni_guard_chain_composition.py",
           "note": "INT6 guard-chain composition: identity, then-known, session, denominator and comparison guards compose fail-closed (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famdc_repair.py",
+          "note": "INT7b red-team repair FAMDC: comparison guard treats whitespace-only, padded and non-str ids as absent under FAMILY TEXT RULE v2 (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "C4 comparison guard unbuilt; no stale-FX or proxy-stays-proxy test; TCEHY is not admitted (KWEB proxy)."
@@ -768,6 +843,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8B_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8B: copy-guard literal scanner findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_cglrep_repair.py",
+          "note": "INT7 red-team repair CGLREP: copy-guard literal scanner skips symlinks, survives cycles and non-str keys (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "Product UI and rendered site remain unguarded; JSON and Python string literals remain unguarded."
@@ -868,6 +948,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8A: correction-lineage findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: correction-lineage guard refuses padded, whitespace-only, non-str and unhashable record/version ids as RECORD_FIELD_INVALID (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "SNI generation/manifest not implemented; P04 v2 is an unregistered draft; V1 waits on R1."
@@ -938,6 +1023,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8A_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8A: entitlement findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep_repair.py",
+          "note": "INT7 red-team repair X8AREP round 1: entitlement guard closes the closeable X8A findings; denial still precedes private access (synthetic; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8arep2_repair.py",
+          "note": "INT7 red-team repair X8AREP round 2: entitlement guard treats whitespace-only and padded ids as absent under the family text rule (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "P0 entitlement gate unbuilt; no pre-access denial test."
@@ -1028,6 +1123,11 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_s2_state_loaders.py",
           "note": "test_mut4a_s2_state_compute_state_1 and test_mut4a_s2_loaders__git_1 pin s2_state and s2_loaders mutants on the selection/state path."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a20c_structural_authority_scan.py",
+          "note": "INT7 structural authority scan: parses every SNI JSON/JSONL/YAML file and flags any non-False authority value however it is spelled (row stays PARTIAL)"
         }
       ],
       "gap": "Finding A20B-F1 (the P04 v2 draft loader accepts a smuggled authority value outside its two official blocks) is open on BASE."
@@ -1733,6 +1833,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8C: view-state findings recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: view-state guard refuses padded, whitespace-only and non-str issuer/counter/lens/as-of as FIELD_MISSING; 1 and True never compare equal (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No EN/ZH or viewport persistence test; live single-name surfaces wait on R1; P1/A0 wait on R1."
@@ -1838,6 +1943,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/reviews/X8C_GUARD_REDTEAM_2026-10-14.md",
           "note": "INT6 red-team X8C: release-evidence id-less slot finding recorded; repair lane pending; row stays PARTIAL"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_x8crepb_repair.py",
+          "note": "INT7 red-team repair X8CREPB: release-evidence guard refuses id-less and whitespace-edged slots (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "No A0 test that an all-absence or synthetic-fixture page fails release; Tencent identity_listing is REFUSED and corporate_actions_adjustment is ABSENT."
@@ -1958,6 +2068,11 @@
           "ref": "main",
           "path": "tests/test_sni_class_duplicate_guard.py",
           "note": "INT6 share-class duplicate guard tests (synthetic fixtures; row stays PARTIAL)"
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_famvcc_repair.py",
+          "note": "INT7b red-team repair FAMVCC: class-duplicate guard treats padded, whitespace-only, non-str and unhashable ids and owner refs as absent (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "U1-U4 US/Mag-7 product packs unbuilt; Alphabet class-duplicate evidence untested on a product pack; TCEHY is not admitted (KWEB proxy); they wait on L0/R1."
@@ -2033,6 +2148,11 @@
           "ref": "main",
           "path": "tests/test_sni_a39_receipts_ledger.py",
           "note": "test_a39_01_schema_and_row_count, test_a39_03_no_overclaim, and test_a39_05_integration_gaps_named pin a 61-row receipts ledger with named incomplete rungs and two missing INT1 cherry-pick receipts."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a39_receipts_ledger_c2.py",
+          "note": "INT7b A39 capture 2: lane-receipts ledger keeps every ladder rung a distinct fact and claims no rung its receipts do not reach (synthetic; row stays PARTIAL)"
         }
       ],
       "gap": "Admission, start, and result receipts are incomplete across delegated tasks."

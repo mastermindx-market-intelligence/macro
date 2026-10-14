@@ -203,6 +203,9 @@
   .rr-track-table td{padding:2px 5px;font-variant-numeric:tabular-nums;
     border-bottom:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
   .rr-empty{font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0}
+  .rr-tr-note{font-size:11.5px;color:var(--muted);line-height:1.45;margin:0 0 8px}
+  .rr-tr-line{font-size:11.5px;color:var(--muted);line-height:1.45}
+  .rr-tr-foot{font-size:11px;color:var(--muted);margin-top:6px}
   /* general */
   .rr-placeholder{color:var(--muted);font-size:12px;font-style:italic;padding:8px 0}
   .rr-asof{font-size:10px;color:var(--muted);margin-top:10px}
