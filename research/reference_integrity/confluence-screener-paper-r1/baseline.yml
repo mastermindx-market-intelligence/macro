@@ -1,0 +1,133 @@
+schema: mastermind.rig_baseline.v1
+reference_id: confluence-screener-paper-r1
+captured_at: "2026-09-22"
+
+production:
+  route: confluence_screener.html
+  live_url: "https://www.mastermind-x.com/confluence_screener.html"
+  source_commit: 97b2195a4de9bcbcf5be72fd6e0c29965633b8f9
+  source_paths:
+    - templates/confluence_screener.html.j2
+    - scripts/build_confluence_screener.py
+  shared_surfaces: []
+
+evidence:
+  screenshots:
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/dark-en-desktop.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/light-en-desktop.png, viewport: desktop, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/dark-zh-desktop.png, viewport: desktop, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/light-zh-desktop.png, viewport: desktop, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/dark-en-mobile.png, viewport: mobile390, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/light-en-mobile.png, viewport: mobile390, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/dark-zh-mobile.png, viewport: mobile390, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/production/light-zh-mobile.png, viewport: mobile390, theme: light, locale: zh}
+  gaps: []
+
+user_job: >
+  Which names line up across the signal stack today, with enough validation and
+  access truth to decide what deserves research next without treating the screen
+  as an automatic trade instruction?
+
+core_interactions:
+  - scan the ranked top-three signal combinations firing now
+  - compare recent validation with the older training era
+  - inspect the legs/timeframes that define each combination
+  - open the free rank-1 matching ticker links
+  - understand that rank-2/3 ticker identities are paid and remain absent when locked
+  - authenticate/hydrate entitled rank-2/3 ticker identities from the protected payload
+  - switch Dark/Light and EN/ZH without losing the same product truth
+  - continue into the paid product through the CTA
+
+information_hierarchy:
+  - current count / "lining up today" answer
+  - ranked combination ledger with validation and signal legs
+  - matching-now identities for rank 1 or honest paid lock treatment for rank 2/3
+  - validation/honesty guidance
+  - paid-product CTA and provenance/as-of footer
+
+design_lineage:
+  rulings:
+    - ref: "Design Migration Factory archetype B"
+      evidence: "research/DESIGN_MIGRATION_FACTORY_V1.md §7 P1"
+      implication: "Confluence Screener remains a discovery board; migration may not turn it into a report or command center."
+    - ref: "Public-shell paid-payload boundary"
+      evidence: "scripts/build_confluence_screener.py:81-83,146-148,186-190"
+      implication: "Rank-2/3 ticker identities never enter the public context; design may expose count but not names before entitlement."
+    - ref: "Plain-language glance tier"
+      evidence: "templates/confluence_screener.html.j2:12-15"
+      implication: "The route slug may say confluence; customer-facing glance copy stays plain-language and action-oriented."
+  rejected_variants:
+    - "Fake blurred paid ticker names in the public document."
+    - "A design-tool artifact becoming token/reference/release authority."
+    - "Invented live market values in design fixtures."
+  comments:
+    - path: "templates/confluence_screener.html.j2:7-10"
+      note: "The public shell intentionally omits paid ticker names; this is a product truth boundary, not a cosmetic lock."
+    - path: "scripts/build_confluence_screener.py:278-282"
+      note: "The protected payload is overwritten fail-soft so stale paid identities are not left behind."
+
+capabilities:
+  - id: hero.current_answer
+    user_job: See how many signal setups are lining up now before reading details.
+    evidence: "templates/confluence_screener.html.j2:241-257; live capture title/hero in production/geometry.json"
+    importance: core
+  - id: ledger.rank_order
+    user_job: Scan the top three eligible combinations in deterministic rank order.
+    evidence: "scripts/build_confluence_screener.py:116-122; templates/confluence_screener.html.j2:268-271"
+    importance: core
+  - id: ledger.validation_pair
+    user_job: Compare recent validation with the older training era instead of seeing one flattering rate.
+    evidence: "templates/confluence_screener.html.j2:283-299"
+    importance: core
+  - id: ledger.signal_legs
+    user_job: Understand which daily/weekly signal legs make each combination.
+    evidence: "templates/confluence_screener.html.j2:303-323"
+    importance: core
+  - id: ledger.occurrence_freshness
+    user_job: See how often each combination has appeared, how long its history is, and when it last fired.
+    evidence: "templates/confluence_screener.html.j2:279-284; scripts/build_confluence_screener.py combo_entry n_fires/first_fire/last_fire/fires_per_year"
+    importance: core
+  - id: ledger.validation_sample_basis
+    user_job: Inspect the month/fire sample basis behind both recent and older-era validation instead of reading rates without denominator context.
+    evidence: "templates/confluence_screener.html.j2:287-297; scripts/build_confluence_screener.py combo_entry n_test/months_test/n_train/months_train"
+    importance: core
+  - id: ledger.random_baseline_consistency
+    user_job: Compare each combination with random entry and see whether the edge held up across both eras.
+    evidence: "templates/confluence_screener.html.j2:325-357; scripts/build_confluence_screener.py combo_entry edge_test_pp/consistent"
+    importance: core
+  - id: ledger.wins_per_10
+    user_job: Read hit-rate evidence in a compact wins-per-10 visual form.
+    evidence: "templates/confluence_screener.html.j2:33-36"
+    importance: supporting
+  - id: access.rank1_free_tickers
+    user_job: Open the current matching names for the free top-ranked combination.
+    evidence: "scripts/build_confluence_screener.py:122,137-148; templates/confluence_screener.html.j2:348-377"
+    importance: core
+  - id: access.rank23_no_leak
+    user_job: Know paid matches exist without the public page leaking their identities.
+    evidence: "scripts/build_confluence_screener.py:81-83,146-148; templates/confluence_screener.html.j2:379-397"
+    importance: core
+  - id: access.entitled_hydration
+    user_job: See paid rank-2/3 matching identities after a valid entitled session.
+    evidence: "scripts/build_confluence_screener.py:186-212; templates/confluence_screener.html.j2:586-608"
+    importance: core
+  - id: honesty.guidance
+    user_job: Understand that searched combinations are leads for research, not proof or guarantees.
+    evidence: "templates/confluence_screener.html.j2:402-417"
+    importance: core
+  - id: cta.paid_continuation
+    user_job: Continue from the free screener into the paid product.
+    evidence: "templates/confluence_screener.html.j2:419-433"
+    importance: supporting
+  - id: parity.theme_locale
+    user_job: Read the same product truth in Dark/Light and EN/ZH.
+    evidence: "templates/confluence_screener.html.j2:12,25-32,446; production eight-cell capture"
+    importance: core
+  - id: parity.mobile_no_horizontal_scroll
+    user_job: Use the screener at 390px without page-level horizontal scrolling.
+    evidence: "mockups/refs/reference_integrity/confluence-screener-paper-r1/production/geometry.json — scrollWidth=390 in all four mobile cells"
+    importance: core
+  - id: state.global_zero
+    user_job: Understand when no eligible signal combinations are firing at all, rather than confusing global zero with an empty filtered view.
+    evidence: "templates/confluence_screener.html.j2:427-437"
+    importance: core
