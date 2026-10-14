@@ -26263,6 +26263,13 @@ jobs:
       # the data-gate house-law-registry job, which never runs on a pull request.
       - scripts/build_security_master.py
       - tests/test_build_security_master_universe.py
+      # C04 (DATA-OS-COMPLETION): the view-contract sidecar emitter reads the two committed
+      # reference parquets (pandas+pyarrow) and serialises engine.price_ladder's C01 mapping,
+      # so its hermetic tmp_path suite rides this pandas code-gate job, not the thin
+      # pandas-free dataos-foundation lane (whose tripwire a pandas import would destroy).
+      - engine/price_ladder.py
+      - scripts/emit_view_contract.py
+      - tests/test_emit_view_contract.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -26282,6 +26289,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_build_security_master_universe.py -q -rs
+      - name: view-contract sidecar emitter writes data/stocks/_view_contract.json (C04, hermetic)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_emit_view_contract.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
