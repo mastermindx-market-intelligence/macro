@@ -887,3 +887,76 @@ def test_final_source_guard_refusal_still_reports_completion_clock(tmp_path, mon
     assert result["candidates"] == []
     assert result["reason_codes"] == ["SOURCE_SNAPSHOT_CHANGED"]
     assert result["generated_at"] == "2026-11-27T18:08:30Z"
+
+
+# ---------------------------------------------------------------------------
+# The extracted private native source resolution core. The Today suite above
+# stays the full behavior regression proof; these three pin the core contract
+# that the fixed Plan source read (scripts/build_prophet.py) now shares — one
+# resolver, no second resolution path, and per-row original relation facts
+# that never alter the Today-shaped result.
+# ---------------------------------------------------------------------------
+
+
+def test_extracted_native_source_core_reproduces_the_today_read(tmp_path, monkeypatch):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    raw = source.read_bytes()
+    binding = producer.today_selection_source_binding(raw)
+    doc = json.loads(raw)
+    source_rows, _receipts = context_owner.read_today_candidate_source_rows(tmp_path)
+    snapshot = load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    details = []
+    core_candidates, _core_reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z",
+        relation_details=details)
+    read = _read_today(tmp_path, source)
+    assert len(details) == len(doc["buy"]) == 2
+    assert details[0]["source_event_id"] == _source_key("ALFA")
+    assert details[0]["relation"]["event_type"] == "OBSERVED"
+    assert details[1]["source_event_id"] == _source_key("BETA")
+    # The reader IS this core: identical per-row resolution, no second path.
+    assert [(item["selection_index"], item["status"]) for item in core_candidates] == [
+        (item["selection_index"], item["status"]) for item in read["candidates"]]
+    for core_item, read_item in zip(core_candidates, read["candidates"], strict=True):
+        assert core_item["candidate_input"] == read_item["candidate_input"]
+        assert core_item["row_receipt"] == read_item["row_receipt"]
+        assert core_item["reason_codes"] == read_item["reason_codes"]
+        assert core_item["native_provenance"] == read_item["native_provenance"]
+    assert details[0]["episode"]["security_id"] == (
+        read["candidates"][0]["candidate_input"]["security_id"])
+
+
+def test_native_source_core_refuses_bytes_outside_the_captured_source(tmp_path, monkeypatch):
+    source, _candidate = _native_today(tmp_path, monkeypatch)
+    raw = source.read_bytes()
+    binding = producer.today_selection_source_binding(raw)
+    with pytest.raises(ValueError, match="not the captured source bytes"):
+        producer._today_native_source_candidates(
+            raw + b" ", binding=binding, doc=json.loads(raw), generation=None,
+            snapshot=None, source_rows=[], generated_at="2026-11-27T18:08:00Z")
+
+
+def test_native_source_core_details_report_a_pending_original_relation(tmp_path, monkeypatch):
+    source, _candidate = _native_today(tmp_path, monkeypatch)
+    raw = source.read_bytes()
+    binding = producer.today_selection_source_binding(raw)
+    doc = json.loads(raw)
+    source_rows, _receipts = context_owner.read_today_candidate_source_rows(tmp_path)
+    snapshot = load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    details = []
+    core_candidates, _core_reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z",
+        relation_details=details)
+    assert core_candidates[0]["reason_codes"] == ["CANDIDATE_RECONCILIATION_PENDING"]
+    # The exact original source key is inspectable before any native relation
+    # exists; the relation and episode stay honestly absent, never inferred.
+    assert details[0]["source_event_id"] == _source_key("ALFA")
+    assert details[0]["relation"] is None
+    assert details[0]["episode"] is None
+    # The optional detail channel cannot alter the Today-shaped resolution.
+    plain_candidates, _plain_reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z")
+    assert plain_candidates == core_candidates

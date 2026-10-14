@@ -1055,7 +1055,8 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
          bodies_reextracted, reextract_facts_only, reextract_checked,
          reextract_pdf_missing, reextract_remaining[, reextract_aborted],
          coverage, catalog_bytes, catalog_state[, corpus_published]
-         [, catalog_published][, receipts_unflushed][, error]}
+         [, catalog_published][, receipts_unflushed]
+         [, fulltext_* counters][, fulltext_aborted][, error]}
 
     PLANE-level outcomes the caller MUST act on (they are what separates a green
     hourly lane from a silently broken one — Wave 4, Defect 6):
@@ -1092,6 +1093,7 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     not perform at all is :func:`_reextract_bodies`: it is pure mutation of rows
     that are ALREADY published, so there is no "would do" for it to report.
     """
+    run_started = time.monotonic()
     now = now or datetime.now(timezone.utc)
     summary = {"ingested": 0, "skipped": 0, "failed": 0, "needs_metadata": 0,
                "duplicate_bytes": 0, "no_text_layer": 0, "text_unavailable": 0,
@@ -1434,6 +1436,25 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                   f"{summary['catalog_published']}) — those documents will "
                   f"re-ingest next run", flush=True)
             summary["receipts_unflushed"] = len(pending_receipts)
+
+    # F5-M: materialize the stored full-text derivative (fulltext_writer). Bounded by
+    # an item cap and a wall budget; metadata-only receipts; never changes the
+    # catalog/corpus/receipt success semantics above and never sets summary["error"].
+    if not dry_run and summary.get("catalog_published"):
+        try:
+            from engine.research_vault import fulltext_writer
+            ft = fulltext_writer.materialize_pending(store, cat, corpus_path,
+                                                     run_started=run_started)
+            for k, v in ft.items():
+                if k != "aborted":
+                    summary[f"fulltext_{k}"] = v
+            if ft.get("aborted") is not None:
+                summary["fulltext_aborted"] = ft["aborted"]
+            log.info("research_vault: fulltext %s",
+                     " ".join(f"{k}={v}" for k, v in sorted(ft.items())))
+        except Exception as e:  # noqa: BLE001 — the derivative pass never fails the run
+            log.warning("research_vault: fulltext pass failed: %s", e)
+            summary["fulltext_aborted"] = "internal_error"
 
     return summary
 
