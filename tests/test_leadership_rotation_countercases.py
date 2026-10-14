@@ -987,20 +987,20 @@ def test_cc_research_estimate_consumer_leaves_the_measured_render_untouched():
                                          research_estimate=_estimate(1.0)))
     b, e = _run(fixture=base), _run(fixture=est)
     assert "Forecast: none" in b["early"], b["early"]
-    # GAP (reported, not pinned): the panel gates on status === 'available'
-    # (templates/sector_central.html.j2, mr-panel region) while the owner emits
-    # status 'estimate' (engine/leadership_rotation_context.py:1023), so a real
-    # ResearchEstimate can never change the measured read's render.
-    assert "Forecast: none" in e["early"], e["early"]
-    assert b["early"] == e["early"]
+    # Admitted estimate branch (N-RE1): a real ResearchEstimate now renders the
+    # "display only" line and no longer falls through to "Forecast: none".
+    assert "Forecast: none" not in e["early"], e["early"]
+    assert "100%" in e["early"], e["early"]
+    # the measured read render is byte-identical between the two fixtures
     for key in ("list", "cov", "status", "sub", "rows", "un", "detail"):
         assert b[key] == e[key], key
     assert [g for g, _ in e["rows"]] == RANKED_FULL
-    # the render CAN change, so the equality above is not vacuous: the panel's
-    # own admitted vocabulary suppresses the forecast line
+    # a non-estimate shape ({status: "available"}) is refused by the gate: it
+    # now falls through to the "Forecast: none" line, not the estimate line.
     admitted = _run(cfg={"mr": {"research_estimate": {"status": "available"}}},
                     fixture=base)
-    assert "Forecast: none" not in admitted["early"], admitted["early"]
+    assert "Forecast: none" in admitted["early"], admitted["early"]
+    assert "Research estimate" not in admitted["early"], admitted["early"]
     assert admitted["list"] == b["list"] and admitted["rows"] == b["rows"]
 
 
