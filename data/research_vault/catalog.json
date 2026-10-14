@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T04:24:10.614737+00:00",
-  "count": 2861,
+  "generated_at": "2026-10-14T04:40:01.668660+00:00",
+  "count": 2862,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -367,6 +367,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-toe1m5eqpj6-664576",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T07:15:29Z",
+      "summary_points": [
+        "Russia-Ukraine Ceasefire Fragility: Unconfirmed ceasefire claims, energy infrastructure strikes (Kharkiv), US diesel pivot tightening supply – high risk of failed agreement, energy market volatility - US CPI/PPI Data Cluster: September CPI (Wed, +0.57% MoM expected), PPI (Thu), import prices (Fri) critical for Fed’s October FOMC policy decisions and market positioning - Geopolitical Oil Supply Risks: Middle East escalation (Riyadh airport strikes, Houthi conflict) + Russia-Ukraine diesel waiver create upside tail risks for oil/shipping costs (Brent at $104.72/bbl) - Fed Policy Catalyst: CPI/PPI data cluster dominates Fed’s October 28 decision; Chair Warsh’s IMF comments critical amid Q3 earnings (S&P 500 34% YoY growth vs. 27% consensus)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
