@@ -26351,6 +26351,17 @@ jobs:
       - collectors/china_ths_concepts.py
       - collectors/china_analyst.py
       - collectors/china_tushare_spine.py
+      # U04 (DATA-OS-COMPLETION): the mode-bound basket composition read. The module is
+      # stdlib-only, but its suite pins engine.basket_membership_pit's vocabulary and its
+      # default members_asof reader (pandas), so it rides this pandas code-gate job, not
+      # the thin pandas-free dataos-foundation lane (whose tripwire a pandas import would
+      # destroy). read_contract/temporal/nulls are the C02 owner the read binds to.
+      - lib/dataos/basket_read.py
+      - lib/dataos/read_contract.py
+      - lib/dataos/temporal.py
+      - lib/dataos/nulls.py
+      - engine/basket_membership_pit.py
+      - tests/test_dataos_basket_read.py
       - tests/test_identity_seam_agreement.py
       # ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the hermetic
       # universe-admission suite needs pandas+pyarrow for its tmp parquet fixtures,
@@ -26369,6 +26380,10 @@ jobs:
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
         run: pip install pytest pyyaml pandas pyarrow
+      - name: basket composition read binds membership, identity and price to one request (U04)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_basket_read.py -q -rs
       - name: identity seams — ADOPT surfaces must agree, divergences must stay declared
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
