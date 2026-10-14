@@ -947,6 +947,29 @@ def test_extra_sector_cohort_snapshot():
     assert all(m["metric"] == "relative_wealth_pct" for m in snap["measurements"])
 
 
+def test_module_imports_stdlib_only():
+    import ast
+    from pathlib import Path
+
+    from engine import leadership_rotation_context as lrc
+
+    allowed = {"math", "numbers", "copy", "dataclasses", "datetime", "typing", "__future__"}
+    source = Path(lrc.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    imported = set()
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            imported.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported.add(node.module.split(".")[0])
+    assert imported, "module-level imports must be parseable"
+    assert imported <= allowed, f"non-stdlib top-level imports: {sorted(imported - allowed)}"
+    # owner modules are imported LAZILY inside adapters, never at top level
+    for owner in ("engine", "sector_cycles", "rotation_events", "leadership_receipt",
+                  "subsector_rotation", "numpy", "pandas"):
+        assert owner not in imported
+
+
 def test_inputs_not_mutated():
     sector_payload = {
         "meta": {"asOf": ASOF, "benchmark": "SPY"},
