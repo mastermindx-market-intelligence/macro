@@ -945,9 +945,10 @@ def test_grid_step_recorded_in_assumptions():
         (_zq_obs(value=4.25),),
         PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-09-15",)),
     )
-    assert "rate_step_bp=50" in defaulted.assumptions_used
-    assert "rate_step_defaulted" in defaulted.assumptions_used
-    assert defaulted.status.value == "inconsistent"  # status observed at lane base
+    assert defaulted.status.value == "missing_inputs"
+    assert defaulted.missing == ("pre_change_rate",)
+    assert "rate_step_unsupplied" in defaulted.assumptions_used
+    assert "rate_step_defaulted" not in defaulted.assumptions_used
 
 
 def test_module_is_pure_ast():
@@ -1071,3 +1072,158 @@ def test_full_month_realised_average_stands_in_for_the_monthly_average():
     assert result.identified["end_rate"] == pytest.approx(4.50)
     assert "monthly_average_source=realised_average" in result.assumptions_used
     assert "no_intra_month_change" in result.assumptions_used
+
+
+def test_single_date_unknown_pre_rate_without_step_is_missing_inputs():
+    # F3: with no pre-change rate and no supplied step the solver returns
+    # missing_inputs; it may never mint a path from a default 50 bp grid.
+    result = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-09-15",)),
+    )
+    assert result.status.value == "missing_inputs"
+    assert result.missing == ("pre_change_rate",)
+    assert result.identified is None
+    assert result.alternatives == ()
+    assert result.end_rate_range is None
+    assert "rate_step_unsupplied" in result.assumptions_used
+    assert not any(t.startswith("rate_step_bp=") for t in result.assumptions_used)
+    # a realised average unusable as the pre rate is no better
+    unusable = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",),
+            realised_average=4.50, realised_through="2026-09-20",
+        ),
+    )
+    assert unusable.status.value == "missing_inputs"
+    assert unusable.missing == ("pre_change_rate",)
+    assert "realised_average_unusable_as_pre_rate" in unusable.assumptions_used
+    # control: with the step supplied the grid still enumerates
+    supplied = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",), rate_step_bp=25,
+        ),
+    )
+    assert supplied.status.value != "missing_inputs"
+    assert "rate_step_bp=25" in supplied.assumptions_used
+
+
+def test_grid_without_step_never_mints_paths():
+    # F3: every grid branch without a usable step is missing_inputs and
+    # never enumerates candidate end rates.
+    cases = []
+    no_dates = solve_reference_average(
+        (_zq_obs(4.25),), PathAssumptions("2026-09-01", "2026-09-30"),
+    )
+    assert no_dates.status.value == "missing_inputs"
+    assert no_dates.missing == ("rate_step_bp",)
+    cases.append(no_dates)
+    two_dates = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-11", "2026-09-21"),
+        ),
+    )
+    assert two_dates.status.value == "missing_inputs"
+    assert two_dates.missing == ("rate_step_bp",)
+    cases.append(two_dates)
+    for bad_step in (0, -25, float("nan")):
+        invalid = solve_reference_average(
+            (_zq_obs(4.25),),
+            PathAssumptions(
+                "2026-09-01", "2026-09-30",
+                effective_dates=("2026-09-15",), rate_step_bp=bad_step,
+            ),
+        )
+        assert invalid.status.value == "missing_inputs"
+        assert invalid.missing == ("pre_change_rate",)
+        cases.append(invalid)
+    for case in cases:
+        assert case.alternatives == ()
+        assert "rate_step_defaulted" not in case.assumptions_used
+    # control: the canonical witness input with an explicit step still
+    # enumerates feasible alternatives
+    canonical = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", rate_step_bp=50.0),
+    )
+    assert canonical.status.value == "feasible_alternatives"
+
+
+def test_unknown_evidence_time_is_a_visible_limitation():
+    # FQ2: an unknown evidence time stays admitted but is always carried as
+    # a visible limitation; a refused record gets neither tag.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+    )
+    cutoff = "2026-10-14T00:00+00:00"
+    unstamped = qualify_observation(4.25, meta, cutoff)
+    assert unstamped.value_state == "present"
+    assert unstamped.value == pytest.approx(4.25)
+    assert "evidence_time_unknown" in unstamped.limitations
+    only_observation = qualify_observation(
+        4.25, dict(meta, observation_time="2026-10-01T08:30"), cutoff
+    )
+    assert "first_public_evidence_unknown" in only_observation.limitations
+    assert "evidence_time_unknown" not in only_observation.limitations
+    stamp = "2026-10-01T08:30"
+    stamped = qualify_observation(
+        4.25,
+        dict(meta, observation_time=stamp, first_public_evidence=stamp),
+        cutoff,
+    )
+    assert "evidence_time_unknown" not in stamped.limitations
+    assert "first_public_evidence_unknown" not in stamped.limitations
+    late = "2026-10-20T09:00"
+    refused = qualify_observation(
+        4.25,
+        dict(meta, observation_time=late, first_public_evidence=late),
+        cutoff,
+    )
+    assert refused.value_state == "refused"
+    assert "after_cutoff" in refused.limitations
+    assert "evidence_time_unknown" not in refused.limitations
+    assert "first_public_evidence_unknown" not in refused.limitations
+
+
+def test_realised_pre_rate_with_unknown_window_is_tagged():
+    # V1: a realised average used as the pre-change rate with no known
+    # window is tagged; a dated window is recorded as before.
+    zq = (4.50 * 15 + 4.00 * 15) / 30
+    unknown = solve_reference_average(
+        (_zq_obs(zq),),
+        _realised_assumptions(realised_average=4.50, realised_through=None),
+    )
+    assert unknown.status.value == "identified_conditional"
+    assert "realised_through_unknown" in unknown.assumptions_used
+    known = solve_reference_average(
+        (_zq_obs(zq),),
+        _realised_assumptions(realised_average=4.50, realised_through="2026-09-15"),
+    )
+    assert "realised_through_unknown" not in known.assumptions_used
+
+
+def test_string_limitation_is_one_entry():
+    # N1: a metadata limitations string is one entry, not split characters.
+    obs = qualify_observation(
+        4.25,
+        dict(
+            evidence_class="market_implied_expectation",
+            unit="pct_ann_rate",
+            subject="ZQX26",
+            target="effr_monthly_average",
+            observation_time="2026-10-01T08:30",
+            first_public_evidence="2026-10-01T08:30",
+            limitations="extra note",
+        ),
+        "2026-10-14T00:00",
+    )
+    assert obs.limitations == ("extra note",)
