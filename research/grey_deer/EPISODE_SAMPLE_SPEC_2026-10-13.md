@@ -127,3 +127,33 @@ path. Library functions do not read files and do not use the network.
 
 No hit rate, no forward return after a signal, no skill score and no gate.
 Those belong to a study that freezes this sample first.
+
+## Matched protection masks (T19 baseline B2)
+
+`matched_protection_masks(sessions, on_mask, *, n=200, seed=20261013, block=21)`
+builds T19 baseline B2, random protection timing with the policy's own time
+in protection.
+
+A run is a maximal block of consecutive true sessions. `k`, the number of
+true sessions, is the sum of those run lengths. Each run is kept whole.
+`block` is accepted and has to be 21, the longest run a placer would be
+allowed to cut. B2 leaves that cut unused, so every returned mask carries
+the same multiset of run lengths as `on_mask`.
+
+Runs never touch. The gap between two placed runs holds at least one false
+session, so the runs stay separate and each run keeps its length. The leading
+and trailing gaps may be empty. False sessions left after those required
+separators are spread uniformly over the leading gap, the interior gaps and
+the trailing gap. The order of the runs is a uniform random permutation.
+One seeded generator draws the masks in order. Each draw places every run,
+and a run starts only where the whole run fits.
+
+Every mask has length `len(sessions)` and exactly `k` true sessions. The
+same sessions, mask and seed return the same list. A different seed returns
+a different list whenever more than one placement exists. Zero true sessions
+returns `n` all-false masks. A mask with a single legal placement, including
+a mask that is true on every session, returns `n` copies of that placement.
+A mask whose false sessions cannot separate its runs raises `ValueError`.
+
+The metric stored for B2 is the mean of the study metric across the `n`
+masks. The 2.5 and 97.5 percentiles across those masks are the dispersion.

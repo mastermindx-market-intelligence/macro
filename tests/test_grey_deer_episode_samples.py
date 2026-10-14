@@ -9,8 +9,11 @@ Synthetic seeded series only. No ``data/`` read or write, no network.
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import sys
+from collections import Counter
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -333,3 +336,219 @@ def test_rng_source_is_default_rng():
     assert "random.seed" not in text
     for name in ("event_clusters", "merge_episodes", "cluster_window"):
         assert f"def {name}" not in text
+
+
+def _consecutive_sessions(n: int, start: date = date(2014, 1, 2)) -> list[date]:
+    origin = start.toordinal()
+    return [date.fromordinal(origin + offset) for offset in range(n)]
+
+
+def _mask_from_runs(n: int, runs: tuple[int, ...], gap: int = 1) -> list[bool]:
+    mask: list[bool] = []
+    for index, length in enumerate(runs):
+        if index:
+            mask.extend([False] * gap)
+        mask.extend([True] * length)
+    mask.extend([False] * (n - len(mask)))
+    if len(mask) != n:
+        raise AssertionError(f"mask length {len(mask)} != {n}")
+    return mask
+
+
+def _true_run_lengths(mask: tuple[bool, ...]) -> list[int]:
+    lengths: list[int] = []
+    current = 0
+    for flag in mask:
+        if flag:
+            current += 1
+        elif current:
+            lengths.append(current)
+            current = 0
+    if current:
+        lengths.append(current)
+    return lengths
+
+
+def _assert_runs_do_not_touch(mask: tuple[bool, ...]) -> None:
+    ends: list[int] = []
+    starts: list[int] = []
+    in_run = False
+    for index, flag in enumerate(mask):
+        if flag and not in_run:
+            starts.append(index)
+            in_run = True
+        elif in_run and not flag:
+            ends.append(index - 1)
+            in_run = False
+    if in_run:
+        ends.append(len(mask) - 1)
+    for end, start in zip(ends, starts[1:]):
+        assert start - end >= 2
+
+
+def test_preserves_run_lengths_count_and_separation():
+    n_sessions = 400
+    runs = (3, 5, 1, 21)
+    sessions = list(pd.bdate_range("2014-01-02", periods=n_sessions).date)
+    on_mask = _mask_from_runs(n_sessions, runs)
+    assert _true_run_lengths(tuple(on_mask)) == [3, 5, 1, 21]
+    masks = samples.matched_protection_masks(sessions, on_mask, n=200, seed=20261013)
+    assert len(masks) == 200
+    k = sum(runs)
+    for mask in masks:
+        assert isinstance(mask, tuple)
+        assert len(mask) == n_sessions
+        assert sum(mask) == k
+        assert all(type(flag) is bool for flag in mask)
+        assert sorted(_true_run_lengths(mask)) == sorted(runs)
+        _assert_runs_do_not_touch(mask)
+
+
+def test_masks_match_for_the_same_seed_and_differ_for_the_next():
+    n_sessions = 400
+    runs = (3, 5, 1, 21)
+    sessions = list(pd.bdate_range("2014-01-02", periods=n_sessions).date)
+    on_mask = _mask_from_runs(n_sessions, runs)
+    first = samples.matched_protection_masks(sessions, on_mask, n=30, seed=20261013)
+    second = samples.matched_protection_masks(sessions, on_mask, n=30, seed=20261013)
+    other = samples.matched_protection_masks(sessions, on_mask, n=30, seed=20261014)
+    assert first == second
+    assert first != other
+
+
+def test_no_protection_returns_all_false_masks():
+    sessions = _consecutive_sessions(12)
+    on_mask = [False] * 12
+    masks = samples.matched_protection_masks(sessions, on_mask, n=7, seed=3)
+    assert masks == [tuple(on_mask)] * 7
+
+
+def test_all_true_mask_is_copied():
+    sessions = _consecutive_sessions(9)
+    on_mask = [True] * 9
+    masks = samples.matched_protection_masks(sessions, on_mask, n=6, seed=5)
+    assert masks == [tuple(on_mask)] * 6
+
+
+def test_tight_equal_runs_have_a_single_placement():
+    on_mask = [True] * 4 + [False] + [True] * 4
+    sessions = _consecutive_sessions(len(on_mask))
+    masks = samples.matched_protection_masks(sessions, on_mask, n=10, seed=9)
+    assert masks == [tuple(on_mask)] * 10
+
+
+def test_tight_distinct_runs_only_permute():
+    sessions = _consecutive_sessions(4)
+    on_mask = [True, True, False, True]
+    masks = samples.matched_protection_masks(sessions, on_mask, n=200, seed=11)
+    allowed = {
+        (True, True, False, True),
+        (True, False, True, True),
+    }
+    assert set(masks) == allowed
+
+
+def test_rejects_sessions_and_on_mask_length_mismatch():
+    sessions = _consecutive_sessions(4)
+    with pytest.raises(ValueError, match="on_mask"):
+        samples.matched_protection_masks(sessions, [True, False])
+
+
+def test_rejects_sessions_that_are_not_strictly_increasing():
+    sessions = _consecutive_sessions(4)
+    bad = [sessions[0], sessions[1], sessions[2], sessions[1]]
+    on_mask = [False, True, False, True]
+    with pytest.raises(ValueError, match="sessions"):
+        samples.matched_protection_masks(bad, on_mask)
+
+
+def test_rejects_n_below_one():
+    sessions = _consecutive_sessions(3)
+    on_mask = [True, False, False]
+    with pytest.raises(ValueError, match="n must be"):
+        samples.matched_protection_masks(sessions, on_mask, n=0)
+
+
+def test_rejects_block_other_than_21():
+    sessions = _consecutive_sessions(3)
+    on_mask = [True, False, False]
+    with pytest.raises(ValueError, match="block"):
+        samples.matched_protection_masks(sessions, on_mask, block=20)
+
+
+def test_rejects_non_bool_on_mask_element():
+    sessions = _consecutive_sessions(3)
+    with pytest.raises(ValueError, match="on_mask"):
+        samples.matched_protection_masks(sessions, [True, 1, False])
+
+
+def test_numpy_bool_on_mask_is_accepted():
+    sessions = _consecutive_sessions(8)
+    on_mask = np.array(_mask_from_runs(8, (2, 3)), dtype=bool)
+    assert isinstance(on_mask[0], np.bool_)
+    masks = samples.matched_protection_masks(sessions, on_mask, n=5, seed=2)
+    assert len(masks) == 5
+    for mask in masks:
+        assert sorted(_true_run_lengths(mask)) == [2, 3]
+        assert sum(mask) == 5
+
+
+def test_n_sets_how_many_masks_are_returned():
+    sessions = _consecutive_sessions(40)
+    on_mask = _mask_from_runs(40, (3, 5))
+    assert len(samples.matched_protection_masks(sessions, on_mask, n=1, seed=1)) == 1
+    assert len(samples.matched_protection_masks(sessions, on_mask, n=200, seed=1)) == 200
+
+
+def test_run_longer_than_block_is_kept_whole():
+    sessions = _consecutive_sessions(80)
+    on_mask = _mask_from_runs(80, (30, 8))
+    masks = samples.matched_protection_masks(sessions, on_mask, n=20, seed=4)
+    for mask in masks:
+        assert sorted(_true_run_lengths(mask)) == [8, 30]
+        _assert_runs_do_not_touch(mask)
+
+
+def test_single_run_starts_are_roughly_uniform():
+    n_sessions = 30
+    run = 5
+    n_masks = 2000
+    sessions = _consecutive_sessions(n_sessions)
+    on_mask = [True] * run + [False] * (n_sessions - run)
+    masks = samples.matched_protection_masks(
+        sessions, on_mask, n=n_masks, seed=20261013
+    )
+    assert len(masks) == n_masks
+    starts: list[int] = []
+    for mask in masks:
+        assert sum(mask) == run
+        start = mask.index(True)
+        assert mask[start : start + run] == tuple(True for _ in range(run))
+        assert True not in mask[:start]
+        assert True not in mask[start + run :]
+        starts.append(start)
+    counts = Counter(starts)
+    expected = n_masks / 26
+    assert set(counts) == set(range(26))
+    for start in range(26):
+        freq = counts[start]
+        assert expected * 0.5 <= freq <= expected * 2.0
+
+
+def test_public_signature_uses_the_frozen_defaults():
+    assert samples.DEFAULT_MASK_N == 200
+    assert samples.DEFAULT_MASK_BLOCK == 21
+    sig = inspect.signature(samples.matched_protection_masks)
+    assert list(sig.parameters) == ["sessions", "on_mask", "n", "seed", "block"]
+    assert sig.parameters["n"].kind is inspect.Parameter.KEYWORD_ONLY
+    assert sig.parameters["seed"].kind is inspect.Parameter.KEYWORD_ONLY
+    assert sig.parameters["block"].kind is inspect.Parameter.KEYWORD_ONLY
+    assert sig.parameters["n"].default == 200
+    assert sig.parameters["seed"].default == 20261013
+    assert sig.parameters["block"].default == 21
+    assert sig.parameters["sessions"].annotation == "Sequence[date]"
+    assert sig.parameters["on_mask"].annotation == "Sequence[bool]"
+    assert sig.return_annotation == "list[tuple[bool, ...]]"
+    sessions = _consecutive_sessions(6)
+    on_mask = [False, True, True, False, False, False]
+    assert len(samples.matched_protection_masks(sessions, on_mask)) == 200

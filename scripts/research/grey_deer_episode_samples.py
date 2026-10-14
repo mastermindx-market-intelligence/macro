@@ -18,6 +18,8 @@ import argparse
 import hashlib
 import json
 import sys
+from collections.abc import Sequence
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -34,6 +36,9 @@ DEFAULT_SEED = 20261013
 DEFAULT_PER_EPISODE = 3
 DEFAULT_BUFFER_SESSIONS = 63
 DEFAULT_MAX_TRIES = 10_000
+# T19 baseline B2. ``block`` is accepted and has to stay 21; runs are not cut.
+DEFAULT_MASK_N = 200
+DEFAULT_MASK_BLOCK = 21
 
 # Tripwire: the schema names these frozen constants. A silent change in the
 # pinned stage-1 module would relabel episodes without a schema bump.
@@ -317,6 +322,124 @@ def build_sample(
         "input_sha256": _input_sha256(close),
         "horizons": horizon_out,
     }
+
+
+def _protection_run_lengths(on_mask: Sequence[bool]) -> list[int]:
+    """Lengths of maximal consecutive True runs in ``on_mask``.
+
+    An element that is not a ``bool`` or a numpy bool raises ``ValueError``
+    naming ``on_mask``.
+    """
+    runs: list[int] = []
+    length = 0
+    for value in on_mask:
+        if not isinstance(value, (bool, np.bool_)):
+            raise ValueError(
+                "on_mask element must be bool or numpy bool, "
+                f"got {type(value).__name__}"
+            )
+        if bool(value):
+            length += 1
+            continue
+        if length:
+            runs.append(length)
+            length = 0
+    if length:
+        runs.append(length)
+    return runs
+
+
+def _place_matched_runs(
+    run_lengths: Sequence[int],
+    n_sessions: int,
+    rng: np.random.Generator,
+) -> tuple[bool, ...]:
+    """Place one permutation of ``run_lengths`` so the runs never touch.
+
+    Consumes ``rng`` as one ``permutation`` of the run list, then one
+    ``choice`` of bar positions. ``r - 1`` interior gaps keep a false
+    session. The spare false sessions are the stars in a uniform stars-and-bars
+    draw: ``r`` bars chosen without replacement from ``spare + r`` slots.
+    Layout is leading gap, run, interior gap (1 + spare), run, trailing gap.
+    """
+    r = len(run_lengths)
+    k = sum(int(length) for length in run_lengths)
+    false_count = n_sessions - k
+    spare = false_count - (r - 1)
+    permuted = rng.permutation(np.asarray(run_lengths, dtype=int))
+    n_slots = spare + r
+    bars = np.sort(rng.choice(n_slots, size=r, replace=False))
+    spares: list[int] = []
+    previous = -1
+    for bar in bars:
+        current = int(bar)
+        spares.append(current - previous - 1)
+        previous = current
+    spares.append(n_slots - 1 - previous)
+    if sum(spares) != spare:
+        raise ValueError(
+            f"on_mask spare false sessions summed to {sum(spares)}, not {spare}"
+        )
+    mask: list[bool] = []
+    mask.extend([False] * spares[0])
+    for index, run_len in enumerate(permuted):
+        if index:
+            mask.extend([False] * (1 + spares[index]))
+        mask.extend([True] * int(run_len))
+    mask.extend([False] * spares[r])
+    if len(mask) != n_sessions:
+        raise ValueError(
+            f"sessions placement has length {len(mask)}, not len(sessions)={n_sessions}"
+        )
+    return tuple(mask)
+
+
+def matched_protection_masks(
+    sessions: Sequence[date],
+    on_mask: Sequence[bool],
+    *,
+    n: int = DEFAULT_MASK_N,
+    seed: int = 20261013,
+    block: int = DEFAULT_MASK_BLOCK,
+) -> list[tuple[bool, ...]]:
+    """Random masks that keep ``on_mask``'s protection runs.
+
+    T19 baseline B2. Each mask has the same length as ``sessions``, the same
+    number of true sessions, and the same multiset of run lengths. Runs stay
+    whole. Placed runs never touch. ``block`` is accepted and must equal 21.
+    One ``numpy.random.default_rng(seed)`` draws every mask, in order. No
+    file reads and no global random state.
+
+    No true sessions returns ``n`` all-false masks. One legal placement
+    returns ``n`` copies of it.
+    """
+    n_sessions = len(sessions)
+    if n_sessions != len(on_mask):
+        raise ValueError(
+            "sessions and on_mask lengths differ: "
+            f"len(sessions)={n_sessions} len(on_mask)={len(on_mask)}"
+        )
+    previous = None
+    for index, session in enumerate(sessions):
+        if previous is not None and session <= previous:
+            raise ValueError(f"sessions is not strictly increasing at index {index}")
+        previous = session
+    if n < 1:
+        raise ValueError(f"n must be >= 1, got {n}")
+    if block != DEFAULT_MASK_BLOCK:
+        raise ValueError(f"block must equal {DEFAULT_MASK_BLOCK}, got {block}")
+    runs = _protection_run_lengths(on_mask)
+    if not runs:
+        blank = tuple(False for _ in range(n_sessions))
+        return [blank] * n
+    false_count = n_sessions - sum(runs)
+    if false_count < len(runs) - 1:
+        raise ValueError(
+            "on_mask cannot separate "
+            f"{len(runs)} runs with {false_count} false sessions (F < r - 1)"
+        )
+    rng = np.random.default_rng(seed)
+    return [_place_matched_runs(runs, n_sessions, rng) for _ in range(n)]
 
 
 def _series_from_csv(path: str, date_col: str, close_col: str) -> pd.Series:
