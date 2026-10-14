@@ -112,6 +112,14 @@
     "2026-09-25": {
       "prefix_sha256": "9a1f0829f12c0d8dabce285b3355532c9e6cc3f9c7f8f6397272ceadaba94ed2",
       "records": 5088
+    },
+    "2026-10-12": {
+      "prefix_sha256": "b3c22623d08a7a1403ec0ff16ac49a6177be6068a787ac1cc278fc2a5de9a7d6",
+      "records": 3630
+    },
+    "2026-10-13": {
+      "prefix_sha256": "023df8ef71e33617a543e7c3856c87de24b744867dda9eac72d5bf56ff699f6f",
+      "records": 4294
     }
   }
 }
