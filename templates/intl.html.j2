@@ -1548,7 +1548,7 @@
     {%- if CBD and CBD.get('cbs') %}
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-central-banks" tabindex="-1">{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (public weekly data); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（公开周度数据）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
+        <h2 id="intl-central-banks" tabindex="-1">{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (source cadence varies); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（来源频率不同）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
         <span class="sub">{{ t('What the major central banks are actually doing', '主要央行的实际政策动向') }}</span>
       </div>
       <div class="tbl-scroll ird-cb-scroll" role="region" tabindex="0" aria-labelledby="intl-central-banks">
@@ -1573,7 +1573,12 @@
         {%- set days_to = next_mtg.get('days') %}
         <tr>
           <td>{{ CC_FLAG.get(cb.get('country', ''), '🌐') }} {{ t(cb.get('name_en',''), cb.get('name_zh','')) }}</td>
-          <td class="r"><b>{{ '%.2f' | format(cb.get('policy_rate', 0)) }}%</b></td>
+          <td class="r"><b>{{ '%.2f' | format(cb.get('policy_rate', 0)) }}%</b>
+            <div class="muted small" data-cb-rate-observation>{{ t('Observed:', '观测日：') }} {{ cb.get('asof')|e if cb.get('asof') else t('Unavailable', '不可用') }}<br>
+              {%- set cadence = (cb.get('source') or {}).get('cadence') %}
+              {{ t('Daily', '日度') if cadence == 'daily' else t('Monthly', '月度') if cadence == 'monthly' else t('Cadence unavailable', '频率不可用') }}{% if cb.get('stale') is sameas true %} · {{ t('Stale', '陈旧') }}{% endif %}
+            </div>
+          </td>
           <td><span class="ird-stance {{ stance_css }}">{{ t(stance_en, stance_zh) }}</span></td>
           <td>
             {%- if last_chg %}
@@ -1588,6 +1593,7 @@
                 {{ t('Adding' if imp > 0 else 'Draining' if imp < 0 else 'Flat', '扩表' if imp > 0 else '缩表' if imp < 0 else '持平') }}
               </span>
             {%- else %}<span class="muted">{{ t('Unavailable', '不可用') }}</span>{%- endif %}
+            {% if bs %}<div class="muted small" data-cb-balance-observation>{{ t('Observed:', '观测日：') }} {{ bs.get('asof')|e if bs.get('asof') else t('Unavailable', '不可用') }}</div>{% endif %}
           </td>
           <td>
             {%- if next_mtg.get('date') %}
@@ -1605,7 +1611,7 @@
       </table>
       </div>
       <p class="caveat" style="margin-top:8px;">
-        {{ t('Balance-sheet data available for Fed, ECB, and BoJ only — others are honest nulls. Rate data as of ' + (CBD.get('as_of','') or ''), '资产负债表数据仅限美联储、欧央行和日本央行——其余为实际缺失。利率数据截至' + (CBD.get('as_of','') or '')) }}
+        {{ t('Balance-sheet sources configured for Fed, ECB, and BoJ only; missing readings remain unavailable. Latest rate observation across displayed banks:', '资产负债表来源仅配置于美联储、欧央行和日本央行；缺失读数仍不可用。所示央行中的最新利率观测日：') }} {{ CBD.get('as_of')|e if CBD.get('as_of') else t('Unavailable', '不可用') }}
       </p>
     </div>
     {%- endif %}<!-- /cb desk -->

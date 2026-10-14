@@ -55,6 +55,35 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Central bank clocks keep independent owner dates ${theme} ${lang}`,async()=>{
+    const cbHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_central_bank_clocks_render import central_bank_clocks_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk={'cb_desk':central_bank_clocks_fixture()}))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const dates=page.locator('[data-cb-rate-observation]');assert.equal(await dates.count(),3);
+        assert.match(await dates.nth(0).innerText(),/2026-10-13/);
+        assert.match(await dates.nth(1).innerText(),/2026-09-01/);
+        assert.match(await dates.nth(2).innerText(),/2026-06-01/);
+        assert.match(await dates.nth(0).innerText(),lang==='zh'?/日度/:/Daily/);
+        assert.match(await dates.nth(1).innerText(),lang==='zh'?/月度/:/Monthly/);
+        assert.match(await dates.nth(2).innerText(),lang==='zh'?/陈旧/:/Stale/);
+        assert.ok(!(await dates.nth(0).innerText()).includes(lang==='zh'?'陈旧':'Stale'));
+        const bs=page.locator('[data-cb-balance-observation]');assert.equal(await bs.count(),2);
+        assert.match(await bs.nth(0).innerText(),/2026-10-07/);assert.match(await bs.nth(1).innerText(),/2026-09-30/);
+        const region=page.locator('.ird-cb-scroll');
+        for(const d of [...await dates.all(),...await bs.all()])assert.ok(await d.evaluate(n=>n.scrollWidth<=n.clientWidth+1 && n.scrollHeight<=n.clientHeight+1));
+        assert.ok(await region.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1}));
+        assert.equal(await page.locator('.ird-cb tbody tr').nth(2).locator('[data-cb-balance-observation]').count(),0,'no borrowed clock for missing balance sheet');
+      }
+    },{htmlOverride:cbHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-central-banks'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Central bank unavailable readings survive Library keyboard return ${theme} ${lang}`,async()=>{
     const cbHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_central_bank_render import central_bank_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk={'cb_desk':central_bank_fixture()}))"],
@@ -70,9 +99,9 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         const target=page.locator('#intl-central-banks');assert.equal(await target.evaluate(n=>document.activeElement===n),true);
         assert.equal(new URL(page.url()).hash,'#intl-central-banks');
         const cells=page.locator('.ird-cb tbody tr').first().locator('td');
-        assert.equal(await cells.nth(1).innerText(),'0.00%');
+        assert.equal(await cells.nth(1).locator('b').innerText(),'0.00%');
         assert.equal(await cells.nth(2).innerText(),lang==='zh'?'不可用':'Unavailable');
-        assert.equal(await cells.nth(4).innerText(),lang==='zh'?'不可用':'Unavailable');
+        assert.equal(await cells.nth(4).locator(':scope > span').first().innerText(),lang==='zh'?'不可用':'Unavailable');
         const scroll=page.locator('.ird-cb').locator('..');
         console.log('Central-bank scroll semantics',await scroll.evaluate(n=>({role:n.getAttribute('role'),label:n.getAttribute('aria-labelledby'),tabindex:n.getAttribute('tabindex'),client:n.clientWidth,total:n.scrollWidth})));
         assert.equal(await scroll.getAttribute('role'),'region');
@@ -81,9 +110,13 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         assert.equal(await scroll.evaluate(n=>document.activeElement===n),true,'table scroller is reachable by native Tab');
         if(width===320) {
           assert.ok(await scroll.evaluate(n=>n.scrollWidth>n.clientWidth),'narrow table needs scrolling');
-          for(let i=0;i<24;i++) await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>{const n=document.querySelector('.ird-cb-scroll');return n.scrollLeft>=n.scrollWidth-n.clientWidth-2});
+          // Let native smooth scrolling advance between real key events; never set scrollLeft.
+          for(let i=0;i<40 && !(await scroll.evaluate(n=>n.scrollLeft>=n.scrollWidth-n.clientWidth-2));i++){await page.keyboard.press('ArrowRight');await page.waitForTimeout(50);}
+          await page.waitForFunction(()=>{const n=document.querySelector('.ird-cb-scroll');return n.scrollLeft>=n.scrollWidth-n.clientWidth-2});
           assert.ok(await cells.nth(5).evaluate(n=>{const r=n.getBoundingClientRect(),s=n.closest('.ird-cb-scroll').getBoundingClientRect();return r.right<=s.right+1 && r.left>=s.left-1}),'last column is reachable');
-          for(let i=0;i<24;i++) await page.keyboard.press('ArrowLeft');await page.waitForFunction(()=>document.querySelector('.ird-cb-scroll').scrollLeft<1);
+          for(let i=0;i<40 && !(await scroll.evaluate(n=>n.scrollLeft<1));i++){await page.keyboard.press('ArrowLeft');await page.waitForTimeout(50);}
+          console.log('Central-bank keyboard return',await scroll.evaluate(n=>({left:n.scrollLeft,max:n.scrollWidth-n.clientWidth,focused:n===document.activeElement})));
+          await page.waitForFunction(()=>document.querySelector('.ird-cb-scroll').scrollLeft<1);
         }
         assert.ok(await scroll.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1}));
         await page.goBack();assert.equal(page.url(),origin);assert.equal(await input.inputValue(),query);

@@ -140,12 +140,13 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Expose supplied Central bank per-row clocks and owner stale flags; the current aggregate latest-row
-  date is not a common observation date. Discriminate real cadence and absent balances without inventing qualification.
-  Repair the verified blanket-weekly copy against the existing owner metadata; preserve all supplied values.
+next_action: Trace Credit and bond stress owner absence before repairing newly observed missing-input presentation.
+  With only a Central bank payload the existing Credit cards print Steady and inversion0of6 without supplied readings.
+  Discriminate genuine zero/steady/counts from missing values; do not invent market coverage or qualification.
   Original live Library Stock Back awaits Chris completing/dismissing Chrome extension UI; preserve its tab.
-  Independent review, genuine qualification, Saved and release remain held; IW2 owns all TerminalPR804 surfaces.
+  Independent review, source qualification, Saved and release holds persist; IW2 owns all TerminalPR804 surfaces.
 artifacts:
+- research/paper_international_wave1_wave2/CENTRAL_BANK_CLOCKS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_OBSERVATION_DATES_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_CURVE_GEOMETRY_ACCEPTANCE.json

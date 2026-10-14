@@ -33,7 +33,7 @@ def test_central_bank_unknown_is_not_an_unchanged_assessment(kind, stance):
         assert owner['cbs'][0]['bs_impulse']['impulse_13w'] is None
     soup = BeautifulSoup(render_fixture(risk_desk={'cb_desk':owner}), 'html.parser')
     cells = soup.select_one('.ird-cb tbody tr').select('td')
-    assert cells[1].get_text(strip=True) == ('0.25%' if kind == 'hike' else '0.00%')
+    assert cells[1].select_one('b').get_text(strip=True) == ('0.25%' if kind == 'hike' else '0.00%')
     assert stance in cells[2].get_text()
     assert ('Unavailable' if kind == 'unknown' else 'Flat') in cells[4].get_text()
     if kind == 'unknown':

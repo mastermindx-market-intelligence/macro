@@ -1,0 +1,243 @@
+{
+  "schema": "paper.central_bank_clocks.acceptance.v1",
+  "state": "BUILT_NOT_PROVEN",
+  "base_head": "05395e6619f8cec4e53c5bf7a57eaccb27280862",
+  "source_sha256": "9199ace32826ae321c60264eb3a409f8a5da5ca5dfa0a693346270520011ba60",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/central-bank-clocks-20261014-r1",
+  "owner_scope": {
+    "source": "engine/cb_desk.py",
+    "actual_fields": [
+      "row.asof",
+      "row.stale",
+      "row.source.cadence",
+      "row.bs_impulse.asof"
+    ],
+    "semantics": [
+      "snapshot evaluates stale against owner daily12days/monthly75days thresholds; presentation does not change them",
+      "aggregate as_of is max of row.asof, not every-bank observation date",
+      "BoJ balance-sheet input is monthly; Fed/ECB weekly",
+      "No new rate-kind/proxy contract exists in this change; no blanket qualification from displayed dates"
+    ],
+    "fixture": "actual owner snapshot; synthetic FED/BoJ/BoE frames; fixed2026-10-14 UTC evaluation; BOE balance sheet absent"
+  },
+  "red": "4original-source render cases fail because per-row clocks are omitted",
+  "verification": {
+    "python": "10PASS14inheritedwarnings:4new clocks and6affected absence cases",
+    "browser_first": "7PASS1FAIL:4new clock cases and3affected return cases pass; Light/ZH return-to-left edge timed out after rapid24-key burst",
+    "browser_repair": "Failed Light/ZH case alone PASS after bounded native-key pacing; measured scrollLeft0/max377 and focus retained. No product-source change, direct scroll writes, timeout increase or weakened endpoint assertion. Exact original timing cause remains unproved.",
+    "coverage": "4new clock cases over8width states320/1440 plus4affected absence/return cases; rerun overlaps, not additional coverage",
+    "captures": 8,
+    "focused_images": 8
+  },
+  "visual": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "manifest_sha256": "e0cd73e1db0225df34488fe09109cc5a9ce4e696568150e2021a6af3262ff2ff",
+    "viewed": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "file": "cards-1440-dark-en.png",
+        "sha256": "94d3af21faabf421e14d1241306f217f13f720ac851dbf7d3cd801a276f87d47",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t3.50%\nObserved: 2026-10-13\nDaily\n\tHolding\t\u2014\tFlat\nObserved: 2026-10-07\n\t\u2014",
+          "\ud83c\uddef\ud83c\uddf5 Bank of Japan\t0.10%\nObserved: 2026-09-01\nMonthly\n\tHolding\t\u2014\tAdding\nObserved: 2026-09-30\n\t\u2014",
+          "\ud83c\uddec\ud83c\udde7 Bank of England\t4.00%\nObserved: 2026-06-01\nMonthly \u00b7 Stale\n\tHolding\t\u2014\tUnavailable\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 40,
+            "y": 157.171875,
+            "width": 673,
+            "height": 385.953125,
+            "top": 157.171875,
+            "right": 713,
+            "bottom": 543.125,
+            "left": 40
+          },
+          "table": {
+            "x": 59,
+            "y": 224.265625,
+            "width": 765.890625,
+            "height": 246.734375,
+            "top": 224.265625,
+            "right": 824.890625,
+            "bottom": 471,
+            "left": 59
+          }
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "lang": "en",
+        "file": "cards-1440-light-en.png",
+        "sha256": "542a5d46898820dd1fc126982aff49f60931aacc3b808b9b9b8bc716e3dcfd68",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t3.50%\nObserved: 2026-10-13\nDaily\n\tHolding\t\u2014\tFlat\nObserved: 2026-10-07\n\t\u2014",
+          "\ud83c\uddef\ud83c\uddf5 Bank of Japan\t0.10%\nObserved: 2026-09-01\nMonthly\n\tHolding\t\u2014\tAdding\nObserved: 2026-09-30\n\t\u2014",
+          "\ud83c\uddec\ud83c\udde7 Bank of England\t4.00%\nObserved: 2026-06-01\nMonthly \u00b7 Stale\n\tHolding\t\u2014\tUnavailable\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 40,
+            "y": 157.171875,
+            "width": 673,
+            "height": 385.953125,
+            "top": 157.171875,
+            "right": 713,
+            "bottom": 543.125,
+            "left": 40
+          },
+          "table": {
+            "x": 59,
+            "y": 224.265625,
+            "width": 765.890625,
+            "height": 246.734375,
+            "top": 224.265625,
+            "right": 824.890625,
+            "bottom": 471,
+            "left": 59
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh.png",
+        "sha256": "694206d2eca6209afaaa84895c29e362ba323a51db29773f163af7d364e8a5c1",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t3.50%\n\u89c2\u6d4b\u65e5\uff1a 2026-10-13\n\u65e5\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6301\u5e73\n\u89c2\u6d4b\u65e5\uff1a 2026-10-07\n\t\u2014",
+          "\ud83c\uddef\ud83c\uddf5 \u65e5\u672c\u94f6\u884c\t0.10%\n\u89c2\u6d4b\u65e5\uff1a 2026-09-01\n\u6708\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6269\u8868\n\u89c2\u6d4b\u65e5\uff1a 2026-09-30\n\t\u2014",
+          "\ud83c\uddec\ud83c\udde7 \u82f1\u683c\u5170\u94f6\u884c\t4.00%\n\u89c2\u6d4b\u65e5\uff1a 2026-06-01\n\u6708\u5ea6 \u00b7 \u9648\u65e7\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 403.765625,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 403.828125,
+            "left": 20
+          },
+          "table": {
+            "x": 39,
+            "y": 67.15625,
+            "width": 646.328125,
+            "height": 246.734375,
+            "top": 67.15625,
+            "right": 685.328125,
+            "bottom": 313.890625,
+            "left": 39
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh-last-column.png",
+        "sha256": "1a617ae0044ae697ac223cade2af250025a5dac575611190928266a3a4aa329c",
+        "keyboard_scroll": {
+          "left": 334,
+          "max": 334,
+          "focused": true
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh.png",
+        "sha256": "18449f8c51917a2b086b70c42ae3bf37b012bd9de2891dbfaff23950c050e4ed",
+        "cells": [
+          "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t3.50%\n\u89c2\u6d4b\u65e5\uff1a 2026-10-13\n\u65e5\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6301\u5e73\n\u89c2\u6d4b\u65e5\uff1a 2026-10-07\n\t\u2014",
+          "\ud83c\uddef\ud83c\uddf5 \u65e5\u672c\u94f6\u884c\t0.10%\n\u89c2\u6d4b\u65e5\uff1a 2026-09-01\n\u6708\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6269\u8868\n\u89c2\u6d4b\u65e5\uff1a 2026-09-30\n\t\u2014",
+          "\ud83c\uddec\ud83c\udde7 \u82f1\u683c\u5170\u94f6\u884c\t4.00%\n\u89c2\u6d4b\u65e5\uff1a 2026-06-01\n\u6708\u5ea6 \u00b7 \u9648\u65e7\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 403.765625,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 403.828125,
+            "left": 20
+          },
+          "table": {
+            "x": 39,
+            "y": 67.15625,
+            "width": 646.328125,
+            "height": 246.734375,
+            "top": 67.15625,
+            "right": 685.328125,
+            "bottom": 313.890625,
+            "left": 39
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh-last-column.png",
+        "sha256": "fb860782618e53a04895cd23d0600f00b2afd3f3ec1fcf032826fe631a3ac504",
+        "keyboard_scroll": {
+          "left": 334,
+          "max": 334,
+          "focused": true
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "file": "cards-1440-dark-en-last-column.png",
+        "sha256": "01b3577759503f0485c99d14cbb048e9e2bddff5d569c5ac2e55f3fee6e44700",
+        "keyboard_scroll": {
+          "left": 131,
+          "max": 131,
+          "focused": true
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "lang": "en",
+        "file": "cards-1440-light-en-last-column.png",
+        "sha256": "ce44837060f524a0966af5bd4afb4ce67042f402dc3a9b14410f46cd40646d77",
+        "keyboard_scroll": {
+          "left": 131,
+          "max": 131,
+          "focused": true
+        }
+      }
+    ],
+    "findings": [
+      "Three actual-owner synthetic rows retain separate rate dates and daily/monthly cadence; only the owner-stale BoE row says Stale.",
+      "Balance-sheet dates stay under the corresponding readings; absent BoE balance sheet receives no date. Latest aggregate is explicitly latest across displayed banks.",
+      "Dark instrument table and Light white research material retain existing hierarchy. Horizontal reading remains intentional in constrained two-column and mobile panels; native arrow traversal exposes final columns.",
+      "Eight focused rest/edge images were viewed. No full-page, actual screen-reader, physical touch, nativezoom or live acceptance."
+    ]
+  },
+  "holds": [
+    "Source NOT_DEPLOYED",
+    "Independent review PENDING under original refusal",
+    "Current CI NOT_OBSERVED; no poll/watcher/alternate admission",
+    "No ready/merge/autoarm/deploy; IW2 owns all TerminalPR804 surfaces",
+    "Original qualification/EFFECT_UNKNOWN/frozen reviews/T03k/rights/Saved/migration/release holds persist"
+  ]
+}
