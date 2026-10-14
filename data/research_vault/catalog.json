@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T19:41:24.024321+00:00",
-  "count": 2918,
+  "generated_at": "2026-10-14T19:56:37.140677+00:00",
+  "count": 2919,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -131,6 +131,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mnkcjshpl7j-9bfb7f",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:02:46Z",
+      "summary_points": [
+        "Technical Overextension: GSP1QUAL up 20% in 3 months (RSI 83, 12m high), driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names.",
+        "Quality-Momentum Negative Correlation: GSP1QUAL negatively correlated to AI/momentum/beta trades (-0.6433/-0.5002/-0.6688), signaling risk for quality-focused portfolios during momentum regimes.",
+        "Hyperscaler Spread Divergence: Bond spreads widened 4 points while equities rose, indicating valuation disconnect in tech-heavy assets and risk-off sentiment.",
+        "Short Leg Underperformance: Lower-quality assets (short leg) underperforming vs.",
+        "GSP1QUAL confirms risk-off positioning, with rate hikes as catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
