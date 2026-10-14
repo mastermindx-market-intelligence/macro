@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T09:40:36.238868+00:00",
-  "count": 2886,
+  "generated_at": "2026-10-14T10:40:20.287953+00:00",
+  "count": 2889,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -412,6 +412,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kgp1ynl3erk-e4be8a",
+      "title": "AI boom or doom: what will superintelligence feel like and when will we get there?",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T07:47:15Z",
+      "summary_points": [
+        "AGI Timeline & Market Inflection: Deutsche Bank identifies 2030 as critical for AGI (self-improving AI exceeding human cognition), with industry signals (OpenAI 2026, Google level 5) driving market disruption; portfolio positioning must address both boom (AGI growth) and doom (rogue AI, energy costs).",
+        "Infrastructure Capital Flow: Hyperscalers (Alphabet, Amazon, Meta, Microsoft, Oracle) plan $800B+ in 2023 data center spend, scaling to $1T+/year through 2030—critical for AGI but constrained by grid delays (years-long lead times) and geopolitical hurdles.",
+        "Data Scarcity Bottleneck: Public human text tokens (300T) will deplete by 2026–2032, forcing reliance on synthetic data; trust in \"checker\" inputs becomes a critical risk as LLM training datasets approach saturation (median 2028 full stock use).",
+        "Sectoral Disruption Asymmetry: Post-ChatGPT (Nov 2022), semiconductors/semi-equipment surged 7x vs software +80%, invalidating traditional diversification; \"adopters\" (regulated sectors, proprietary data) outperform \"casualties\" with no overlap.",
+        "Infrastructure Cost Ceiling: AGI training requires 10³⁰ FLOPs (vs current 10²²), needing 6GW power (50% more than US nuclear plants) and $300B–$500B compute cost; frontier chips demand 26GW power ($900B today), creating capital/energy constraints."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-tmrof9t6rjp-c38770",
       "title": "JPM International Market Intelligence | Morning Briefing",
       "institution": "J.P. Morgan",
@@ -490,6 +511,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vfx9yqvup2d-c6c621",
+      "title": "Americas Capital Markets Round tripped",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:06Z",
+      "summary_points": [
+        "Rates-Driven Sector Rotation: Exchanges outperformed (+16.6% QTD) due to volume surges in Energy/Rates (e.g., ICE energy vol +18% y/y), while Alternatives underperformed (-3.2% QTD) amid rates-driven reversal and EPS risks.",
+        "EPS Revisions Dominance: YTD 2027 EPS revisions explain 63% of price performance variance (R²=0.63), confirming EPS as the primary driver for stock returns across sectors.",
+        "Valuation Discrepancy: Alternatives (e.g., APO, ARES) trade at 15%-20% discounts to 5-year P/E averages (17X NTM vs. 24X historical), while Traditional Asset Managers (e.g., AMG, APAM) trade at premiums.",
+        "Key Upside Catalysts: Alternative Asset Managers (e.g., STEP, TPG) show 100% and 21%+ 2025-28E FRE/share CAGR, with STEP at 100% upside; Exchanges (TW, ICE) benefit from AI-driven Energy volumes and Rates demand."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 70,
       "language": "en",
       "needs_metadata": false
     },
@@ -695,6 +736,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kmezekrmkat-af1df9",
+      "title": "JPM Asia Thematic Strategy (must read)",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:34:35Z",
+      "summary_points": [
+        "AI Hardware Supply-Demand Tightness: Hardware layer (Taiwan/Korea/China) faces persistent supply-demand imbalance through 2028, enabling $1T+ net income for AI ecosystem by 2028 and driving 70% of 2027 earnings growth in Asia.",
+        "Hyperscaler FCF Closure Timeline: Hyperscaler AI FCF hole closes by 2028, with 30%+ ROI on datacenters (5-year depreciation) and minimal interest rate sensitivity, critical for cash flow dynamics.",
+        "AI Model Layer Monetization: $300bn+ ARR by end-2026 (3x 2025), driven by token volume (not pricing), enterprise adoption, and fading token subsidies, signaling structural revenue growth.",
+        "Asia Hardware Dominance: Taiwan/Korea exceed 50% of Asia AI hardware exposure (vs.",
+        "US software/hardware mix), with TSMC/Samsung/Hynix dominating top holdings and concentration risks in ecosystem."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },

@@ -38,6 +38,21 @@ answer: >
   the graded population is the body-available subset, the restriction is printed with its
   counts, and the short cell stays short. Template T3 (strategic partnership) is expected
   to come up short because many partnerships are not 8-K events, and is reported short.
+  GRADED DRAW (amended 2026-10-14). Grading only the body-available rows of the routing
+  draw would leave 73 of 484 cases. So the graded population is a SEPARATE draw, made with
+  the same seed (20261014), sampler (ni-sampler-1), caps and inputs, over a frame of the
+  candidates that have a body. The frame is outcome-blind. It is the edgar_body status map
+  for the full pool of 2,837 candidates (status_map sha256 66ce529d…) and reads only
+  whether an issuer-filed body exists. 235 candidates are in the frame. The rest are
+  excluded: 1,271 with no_cik and 1,331 with no_qualifying_8k. The graded draw (manifest
+  bd2f1b0b…) holds 157 cases: T1 68, T2 66, T3 23. Every cell's shortfall against
+  90/50/30/30 is printed in its report. The 484-case full-pool draw (manifest 94e80a34…)
+  stays the routing-recall population. The frame restricts graded metrics to issuers that
+  file 8-Ks, and graded results are reported with that scope. Frozen records live under
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/.
+  LABELER FAMILIES. A6 label returns name the model family by token only: fam_a is
+  MiniMax-M3, fam_b is qwen3.7-plus, fam_c is cursor-grok-4.6-high. The first pass is
+  fam_a plus fam_b. fam_c labels only the cases that the first pass routes to a third family.
   RIGHTS GATE. The sampler's rights_allow decision keys on the source class of the body
   receipt (EDGAR primary_filing, internal_only), never on the headline publisher.
   Headline publishers are internal recall metadata only. A Benzinga row counts as Benzinga
@@ -88,6 +103,9 @@ evidence:
   - "engine/news_impact/sampler.py:97 RightsRefused; draw_sample(..., rights_allow) refuses any case whose rights key is not allowed."
   - "config/theme_sources.yml on origin/main has rows for mastermind_curated, finviz_themes and ths_concepts only; git grep sec_edgar finds no rights row."
   - "Tape census (seat, 2026-10-14): 55,110 rows, no body field; headline-family calibration in PHASE0_FREEZE section 8."
+  - "Body fetch (seat, 2026-10-14, ni-edgar-body-1): 2,837 candidates, 474 submissions, 243 indexes, 489 documents, 79,149,824 bytes; 235 available, no_cik 1,271, no_qualifying_8k 1,331, zero fetch failures (benchmark/body_frame/body_report.json)."
+  - "Routing draw: 484 cases, 73 with a body, 411 body_unavailable (benchmark/routing/draw_report_body.json)."
+  - "Graded draw: python -m engine.news_impact.tape_draw ... --seed 20261014 --body-frame status_map.json reproduces benchmark/graded/manifest.json and cases.jsonl byte for byte (seat re-run, 2026-10-14); 157 cases, short 443 of 600."
 affects:
   - "WS:PROPHET-NEWS-IMPACT"
   - "engine/news_impact/tape_draw.py"
@@ -105,4 +123,6 @@ Wave w2 grades packets against text. The tape has no text, so the issuer's own 8
 body, fetched only through the existing SEC owners, held internal_only, and never
 displayed until the registry owner admits a sec_edgar family. Rows with no matching 8-K
 are counted as `body_unavailable`. Routing recall still uses every drawn row. Numeric and
-transfer grading use only rows that have a body. Short templates are printed short.
+transfer grading run on a separate draw over the body-available frame, with the same seed
+and sampler. That draw has 157 cases against a target of 600. Short templates are printed
+short.

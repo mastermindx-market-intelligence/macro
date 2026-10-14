@@ -1,0 +1,697 @@
+{
+  "lane": "LR-T18-EV1R",
+  "head": "52ccecf541f60dac8320963c354aa90e32fda8a6",
+  "evidence_class": "synthetic (LOCAL render + LOCAL injected data)",
+  "label": "LOCAL",
+  "generated_utc": "2026-10-14T09:30:17Z",
+  "variants": [
+    {
+      "variant": "ok",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read=MR_OK"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "full",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read=MR_OK(status=available)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "1194a2a0372f9aaaea2b3d243dbe95986f5c3067d9881f4a4652674ac0e6495a",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "stale",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.as_of=2026-10-13 (>H)",
+        "sc.measured_read=MR_OK"
+      ],
+      "sha256": {
+        "sector_central_data.js": "aecdc670b5be667bb9bd89919c777f93b2b3c340290a397d756a491f6ca57742",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "absent",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read REMOVED"
+      ],
+      "sha256": {
+        "sector_central_data.js": "c6fe071312e590666742a6901d9a86b401d28e003a18de57150b2f02b21bd080",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "outage",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read={status:unavailable,reason:source_missing}"
+      ],
+      "sha256": {
+        "sector_central_data.js": "316666384f3121e07dbdbeff8bcfeca706248ee98136bad50d0527f32f395aef",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "invalid",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read.schema=v0 (mismatched)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "0b2a5db418a4a57b6ee723a8eabdc79b642599e16a8a4cf07fd1e767984d01ca",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "nodata",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_central_data.js = comment only"
+      ],
+      "sha256": {
+        "sector_central_data.js": "802ec7d20c142f6e3617122c821cdd83072033a5a8319e3595d5171b182a24e0",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    },
+    {
+      "variant": "hloading",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_cycles_data.js = comment only (loading)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+        "sector_cycles_data.js": "f4525bfc410a1302e5cbb75a5823eb6bc7da4a968f1fada7642d6b62c99719fd"
+      }
+    },
+    {
+      "variant": "hfailed",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sector_cycles_data.js = 404"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+        "sector_cycles_data.js": null
+      }
+    },
+    {
+      "variant": "genmis",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "sc.measured_read.generation.session_end=2026-10-09",
+        "sc.measured_read.generation.history_as_of=2026-10-09",
+        "cycles=CYR (synth)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "f4b68e062c1e00ae2cc799319555af747fc943f26070f24f2b9f8decd2fcc21d",
+        "sector_cycles_data.js": "ac9437ea3fedebd9393483dc232d1c6241cd1ba4e211b50c7ea270142e594b19"
+      }
+    },
+    {
+      "variant": "hrecon",
+      "label": "LOCAL",
+      "synthetic": true,
+      "mutations": [
+        "cycles=CYR (synth)"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dcd6c191c02f70e54760fa293e22fad96cf8830846cc7b4e590a8b6c1398200c",
+        "sector_cycles_data.js": "ac9437ea3fedebd9393483dc232d1c6241cd1ba4e211b50c7ea270142e594b19"
+      }
+    },
+    {
+      "variant": "obsincompat",
+      "label": "LOCAL",
+      "synthetic": false,
+      "mutations": [
+        "sc.measured_read.confirmed_events.status=incompatible_generation",
+        "sc.measured_read.confirmed_events.as_of=2026-10-09"
+      ],
+      "sha256": {
+        "sector_central_data.js": "dc6d043d688296494bcab634d05b661451180a76554b5f18d72b5071f99cdb31",
+        "sector_cycles_data.js": "f4cfd3de82642077a6654f601317a3e27c7574240b25a453823845559150292e"
+      }
+    }
+  ],
+  "png_count": 42,
+  "png_total_bytes": 8913326,
+  "pngs": [
+    {
+      "file": "matrix-1440-en-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 235331
+    },
+    {
+      "file": "matrix-1440-en-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 246366
+    },
+    {
+      "file": "matrix-1440-zh-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "zh",
+      "theme": "dark",
+      "bytes": 235227
+    },
+    {
+      "file": "matrix-1440-zh-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "zh",
+      "theme": "light",
+      "bytes": 246274
+    },
+    {
+      "file": "matrix-390-en-dark.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 106343
+    },
+    {
+      "file": "matrix-390-en-light.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 106453
+    },
+    {
+      "file": "matrix-390-zh-dark.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "zh",
+      "theme": "dark",
+      "bytes": 106343
+    },
+    {
+      "file": "matrix-390-zh-light.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "zh",
+      "theme": "light",
+      "bytes": 106453
+    },
+    {
+      "file": "state-ok-hnotpub-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 235309
+    },
+    {
+      "file": "state-ok-hnotpub-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 246278
+    },
+    {
+      "file": "state-hrecon-synth-dark.png",
+      "variant": "hrecon",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 241902
+    },
+    {
+      "file": "state-hrecon-synth-light.png",
+      "variant": "hrecon",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 253448
+    },
+    {
+      "file": "state-full-dark.png",
+      "variant": "full",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 239767
+    },
+    {
+      "file": "state-full-light.png",
+      "variant": "full",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 250133
+    },
+    {
+      "file": "state-partialstale-dark.png",
+      "variant": "stale",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 239481
+    },
+    {
+      "file": "state-partialstale-light.png",
+      "variant": "stale",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 250906
+    },
+    {
+      "file": "state-absent-dark.png",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 34659
+    },
+    {
+      "file": "state-absent-light.png",
+      "variant": "absent",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 35650
+    },
+    {
+      "file": "state-outage-dark.png",
+      "variant": "outage",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 26901
+    },
+    {
+      "file": "state-outage-light.png",
+      "variant": "outage",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 27687
+    },
+    {
+      "file": "state-invalid-dark.png",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 28460
+    },
+    {
+      "file": "state-invalid-light.png",
+      "variant": "invalid",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 29666
+    },
+    {
+      "file": "state-nodata-dark.png",
+      "variant": "nodata",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 25842
+    },
+    {
+      "file": "state-nodata-light.png",
+      "variant": "nodata",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 26471
+    },
+    {
+      "file": "state-hloading-dark.png",
+      "variant": "hloading",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 263646
+    },
+    {
+      "file": "state-hloading-light.png",
+      "variant": "hloading",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 274701
+    },
+    {
+      "file": "state-hfailed-dark.png",
+      "variant": "hfailed",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 237636
+    },
+    {
+      "file": "state-hfailed-light.png",
+      "variant": "hfailed",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 249544
+    },
+    {
+      "file": "state-genmis-synth-dark.png",
+      "variant": "genmis",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 244948
+    },
+    {
+      "file": "state-genmis-synth-light.png",
+      "variant": "genmis",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 256678
+    },
+    {
+      "file": "state-obsnone-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 234482
+    },
+    {
+      "file": "state-obsnone-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 245492
+    },
+    {
+      "file": "state-obsevent-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 245214
+    },
+    {
+      "file": "state-obsevent-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 255840
+    },
+    {
+      "file": "state-obsincompat-dark.png",
+      "variant": "obsincompat",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 241622
+    },
+    {
+      "file": "state-obsincompat-light.png",
+      "variant": "obsincompat",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 252772
+    },
+    {
+      "file": "state-unmeasured-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 243673
+    },
+    {
+      "file": "state-unmeasured-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 255599
+    },
+    {
+      "file": "zh-detail-dark.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "zh",
+      "theme": "dark",
+      "bytes": 236404
+    },
+    {
+      "file": "zh-detail-light.png",
+      "variant": "ok",
+      "viewport": "1440x900",
+      "locale": "zh",
+      "theme": "light",
+      "bytes": 247352
+    },
+    {
+      "file": "m390-selected-dark.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "en",
+      "theme": "dark",
+      "bytes": 666136
+    },
+    {
+      "file": "m390-selected-light.png",
+      "variant": "ok",
+      "viewport": "390x844",
+      "locale": "en",
+      "theme": "light",
+      "bytes": 680237
+    }
+  ],
+  "a44": {
+    "table": [
+      {
+        "state": "absent",
+        "variant": "absent",
+        "container_class": "mx-empty",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "This read is not in today's data yet."
+      },
+      {
+        "state": "outage",
+        "variant": "outage",
+        "container_class": "mx-error",
+        "background_color": "color(srgb 0.130118 0.126118 0.129255)",
+        "border_color": "color(srgb 0.448784 0.381569 0.271059)",
+        "copy_first_line": "This read could not be produced today."
+      },
+      {
+        "state": "invalid",
+        "variant": "invalid",
+        "container_class": "mr-invalid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(58, 65, 80)",
+        "copy_first_line": "This read could not be checked, so it is not shown."
+      },
+      {
+        "state": "nodata",
+        "variant": "nodata",
+        "container_class": "mx-error",
+        "background_color": "color(srgb 0.130118 0.126118 0.129255)",
+        "border_color": "color(srgb 0.448784 0.381569 0.271059)",
+        "copy_first_line": "Data for this page did not load."
+      },
+      {
+        "state": "hloading",
+        "variant": "hloading",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      },
+      {
+        "state": "hfailed",
+        "variant": "hfailed",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      },
+      {
+        "state": "genmis",
+        "variant": "genmis",
+        "container_class": "mr-grid",
+        "background_color": "rgba(0, 0, 0, 0)",
+        "border_color": "rgb(200, 208, 220)",
+        "copy_first_line": "Measured 9 of 11"
+      }
+    ],
+    "collisions": [
+      {
+        "a": "hloading",
+        "b": "hfailed",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      },
+      {
+        "a": "hloading",
+        "b": "genmis",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      },
+      {
+        "a": "hfailed",
+        "b": "genmis",
+        "class": "mr-grid",
+        "copy": "Measured 9 of 11"
+      }
+    ],
+    "verdict": "FINDING: 3 collision(s)"
+  },
+  "section4": [
+    {
+      "kind": "4a",
+      "name": "deep_link_XLK",
+      "status": "PASS",
+      "observed": "aria-pressed=true dhText=\"TechnologyXLK\""
+    },
+    {
+      "kind": "4b",
+      "name": "click_back_fwd",
+      "status": "PASS",
+      "observed": "click→XLE back→XLK(xlk=true) fwd→XLE(xle=true)"
+    },
+    {
+      "kind": "4c",
+      "name": "keyboard_dark",
+      "status": "PASS",
+      "observed": "[dark] init=XLE down→XLY(ring=true) up→XLE"
+    },
+    {
+      "kind": "4c",
+      "name": "keyboard_light",
+      "status": "PASS",
+      "observed": "[light] init=XLE down→XLY(ring=true) up→XLE"
+    },
+    {
+      "kind": "4d",
+      "name": "segbtn_space",
+      "status": "PASS",
+      "observed": "n=2 init recon=true/obs=false → afterSpaceObs obs=true histChanged=true → afterSpaceRecon recon=true histBack=true"
+    },
+    {
+      "kind": "4e-A42",
+      "name": "hfailed_list_and_failure",
+      "status": "PASS",
+      "observed": "rows=11 pressed=true url=?g=XLY histNotBlank=true hist=\"History unavailable right now the current read above is unaffected\""
+    },
+    {
+      "kind": "4f",
+      "name": "touch_44px",
+      "status": "FAIL",
+      "observed": "row=44 seg=40 link=40 detailVisible=true"
+    },
+    {
+      "kind": "4g-A39/A40",
+      "name": "runtime_purity",
+      "status": "PASS",
+      "observed": "init.slen=140569 after.slen=140569 extraKeys=[]"
+    },
+    {
+      "kind": "setThemeLang",
+      "name": "setTheme_setLang_attrs",
+      "status": "PASS",
+      "observed": "init t=dark/l=en after t=light/l=zh hasSetTheme=true hasSetLang=true"
+    }
+  ],
+  "aborted_urls": [],
+  "console_errors_first5_per_variant": {
+    "absent": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "outage": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "invalid": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "nodata": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "hloading": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "hfailed": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "genmis": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ],
+    "ok": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to load resource: the server responded with a status of 404 (File not found)"
+    ]
+  },
+  "notes": [
+    "setTheme/setLang are NOT called in capture paths because the page's panel re-render on `langchange` has a stale listEl reference bug (bodyEl.innerHTML is reset to GRID_HTML, but the IIFE's listEl/unEl still point to the detached originals, so the re-populated list is invisible). The addInitScript pre-populates localStorage, and the page's boot inline script sets data-theme/data-lang from it. setTheme/setLang existence and attribute-setting are verified in a separate assertion (PASS).",
+    "Panel CSS @media (max-width:760px) sets .mr-row to min-height:44px but does NOT update .mr-segbtn or .mr-link. At 390px, .mr-segbtn and .mr-link remain at 40px. Finding: CSS gap, not captured as a panel screenshot regression."
+  ]
+}
