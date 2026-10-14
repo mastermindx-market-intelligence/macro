@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T18:26:12.743296+00:00",
-  "count": 2914,
+  "generated_at": "2026-10-14T18:41:31.516144+00:00",
+  "count": 2915,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -550,6 +550,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-na3aw28nwyx-8f1249",
+      "title": "GCC Energy Mapping export strength into year end earnings delivery",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:19Z",
+      "summary_points": [
+        "ADNOC Gas EBITDA Recovery: 85% Habshan gas supply restored by June 2026, domestic volumes shielded from Hormuz risks (70% sales), driving sequential earnings improvement; full restoration on track for 2027.",
+        "Market Shift to Earnings Leverage: Focus moves from disruption absorption to near-term earnings upside (e.g., ADNOC L&S/ADG defensive exposure), supported by GCC export normalization and tight freight markets.",
+        "ADNOC L&S Valuation Gap: Buy-rated with 12m price target AED8.80 (up from AED7.70), trading below 3Y average EV/EBITDA (8.8x vs. 4x), despite strong 3Q26 shipping/ILSP recovery and FY26 guidance upgrade.",
+        "LNG Flow Normalization Delay: Hormuz LNG exports to normalize only to 83% of pre-war levels by Feb 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
       "language": "en",
       "needs_metadata": false
     },
