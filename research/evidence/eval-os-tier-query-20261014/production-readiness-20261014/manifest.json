@@ -15,6 +15,11 @@
       "file": "normal-updater-source-parity-20261014-1632.json",
       "sha256": "0dc44a41f7d80e15c441a557e55a305992a13a83d8347a62ce54f781cae8ffdd",
       "bytes": 446
+    },
+    {
+      "file": "browser-readiness-recovery-20261014.json",
+      "sha256": "a5980eadec7d90cdba61bfaf576d7fb1975e46d14dbb71321cb39976e2ab7b68",
+      "bytes": 1541
     }
   ],
   "production_proven": false

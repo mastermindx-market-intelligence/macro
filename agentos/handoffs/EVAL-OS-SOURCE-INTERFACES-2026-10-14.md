@@ -391,3 +391,22 @@ was repeated. The next admission observation may use that actual owner progress
 and this distinct production-readiness result, respecting300seconds. An updated
 A1PRdescription is prepared locally for application only after admitted same-
 carrier publication and exact remote readback. All completion flags remainfalse.
+
+
+## 2026-10-14T16:45Z — authenticated browser path restored
+
+The saved browser alias browser2 is stale and tab1925920612 is no longer in
+the verified browser2 numeric-ID inventory. The original06:25receipt names
+actual browser ID2; that same Chrome Person1 profile remains available. A fresh
+verification tab1925922370 now renders authenticated Intelligence OS normally,
+including385engines/649artifacts/353assessed at source observation16:43:17UTC.
+Structured DOM works and supported CDP is advertised; no new response capture
+or A1visual acceptance is claimed. Tab is retained for the unfinished release
+workflow. No account switch, credentials, forced Re-derive or owner execution.
+The first empty main was asynchronous loading and populated normally. Recovery
+is recorded in production-readiness-20261014/browser-readiness-recovery-20261014.json.
+Use actual browser ID2 and tab1925922370 on continuation, not the stale aliases.
+
+The original lease-owner CI has11packs plus contract-deltaPASS at16:42, only
+pack2stillrunning. Event-triggered canonical admission remained9/cap8, so A1
+publication is still held. All final flags remainfalse.
