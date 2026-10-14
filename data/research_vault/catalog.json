@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T04:54:07.304124+00:00",
-  "count": 2863,
+  "generated_at": "2026-10-14T05:24:19.008132+00:00",
+  "count": 2864,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -205,6 +205,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yzhyfari9wt-013b93",
+      "title": "Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:15Z",
+      "summary_points": [
+        "Visa Organic Growth: Visa's organic growth at 12–13% (vs consensus) driven by resilient core payments (7.5–8.5% growth) and accelerating VAS (low-twenties growth), positioning for LDD top-line growth despite lapping major events.",
+        "UAE Partnership Revenue Impact: Mastercard’s UAE \"Jaywan\" partnership (Al Etihad Payments) adds ~0.5% to 2027 VASS revenues and $80M+ incremental annual revenue, leveraging UAE’s 90% cashless target and domestic debit volumes.",
+        "GLBE Shopify Opportunity: GLBE’s Shopify partnership targets $34B volume opportunity (30%+ growth) with managed markets adoption, accelerating GMV growth to $6.6B by 2027E (from $3.8B in 2025), capturing ~5% of Shopify’s cross-border GMV.",
+        "Valuation Discrepancy: Large Cap Payments (V, MA, FIS) trade at compressed EPS multiples (bottom deciles of S&P 500) despite higher 2026 EPS growth expectations, creating a significant valuation disconnect.",
+        "Visa Regulatory Tailwinds: US midterms reduce likelihood of major payment legislation, favoring Visa over Mastercard due to greater US exposure and favorable regulatory sentiment amid reduced disruption risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 34,
       "language": "en",
       "needs_metadata": false
     },
