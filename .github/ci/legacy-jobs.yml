@@ -5847,6 +5847,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -6238,9 +6241,6 @@ jobs:
       - "engine/intelligence_workspace/adapters/earnings.py"
       - "engine/intelligence_workspace/adapters/industry.py"
       # Supplied-text inputs and retained-source closure; ordering is not selection.
-      - engine/neuralweb/market_memory_retained_catalog.py
-      - engine/neuralweb/market_memory_retained_saved.py
-      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
@@ -19460,6 +19460,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -19825,9 +19828,6 @@ jobs:
       - engine/i18n.py
       - engine/ignition_features.py
       # Supplied-text inputs and retained-source closure; ordering is not selection.
-      - engine/neuralweb/market_memory_retained_catalog.py
-      - engine/neuralweb/market_memory_retained_saved.py
-      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
@@ -20199,9 +20199,9 @@ jobs:
       - templates/support.html.j2
       - tests/test_crypto_assistant_context.py
       # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
-      - "engine/seasonality/multiplicity.py"
+      - engine/k3e_eval1_forward.py
+      - engine/pick_forward_dist.py
+      - engine/seasonality/multiplicity.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -26939,6 +26939,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - scripts/initialize_market_memory_w1a.py
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
+      - tests/test_market_memory_retained_catalog.py
+      - tests/test_market_memory_retained_saved.py
+      - tests/test_market_memory_retained_saved_api.py
+      - tests/test_market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
@@ -27374,14 +27382,6 @@ jobs:
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
       # Supplied-text inputs and retained-source closure; ordering is not selection.
-      - scripts/initialize_market_memory_w1a.py
-      - engine/neuralweb/market_memory_retained_catalog.py
-      - engine/neuralweb/market_memory_retained_saved.py
-      - engine/neuralweb/market_memory_retained_legacy_guard.py
-      - tests/test_market_memory_retained_catalog.py
-      - tests/test_market_memory_retained_saved.py
-      - tests/test_market_memory_retained_saved_api.py
-      - tests/test_market_memory_retained_legacy_guard.py
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
@@ -27824,9 +27824,9 @@ jobs:
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
       # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
-      - "engine/seasonality/multiplicity.py"
+      - engine/k3e_eval1_forward.py
+      - engine/pick_forward_dist.py
+      - engine/seasonality/multiplicity.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29040,6 +29040,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_retained_catalog.py
+      - engine/neuralweb/market_memory_retained_saved.py
+      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -29443,9 +29446,6 @@ jobs:
       - "engine/indicators_m2.py"
       - "engine/inputs.py"
       # Supplied-text inputs and retained-source closure; ordering is not selection.
-      - engine/neuralweb/market_memory_retained_catalog.py
-      - engine/neuralweb/market_memory_retained_saved.py
-      - engine/neuralweb/market_memory_retained_legacy_guard.py
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
