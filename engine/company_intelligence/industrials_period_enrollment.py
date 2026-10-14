@@ -14,7 +14,10 @@ from datetime import date
 from typing import Any
 
 from engine.company_intelligence.documents import SourceDocument
-from engine.company_intelligence.industrials_fiscal import stated_period_end
+from engine.company_intelligence.industrials_fiscal import (
+    check_tolerance_days,
+    stated_period_end,
+)
 from engine.company_intelligence.industrials_source_facts import (
     edition_documents,
     extract_case_cells,
@@ -45,10 +48,10 @@ def enroll_stated_period(
     ``fiscal_label_disagreement``. The cell's ``quality.rights_profile`` is
     not copied; ``rights_profile`` stays the class default.
     """
+    check_tolerance_days(tolerance_days)
     cells = extract_case_cells(case)
     if not cells:
-        # No stated end to return. The call still rejects a bad tolerance.
-        stated_period_end(date(2026, 7, 3), tolerance_days=tolerance_days)
+        # No stated end to return; the tolerance was already checked above.
         return StatedPeriodEnrollment(
             cells=(),
             stated_ends=(),
@@ -91,9 +94,11 @@ def _with_stated_end(
     raw_end = period.get("end")
     if not isinstance(raw_end, str):
         raise ValueError("cell period.end must be a YYYY-MM-DD string")
-    stated_end = stated_period_end(
-        date.fromisoformat(raw_end), tolerance_days=tolerance_days
-    )
+    try:
+        parsed_end = date.fromisoformat(raw_end)
+    except ValueError as exc:
+        raise ValueError("cell period.end must be a YYYY-MM-DD string") from exc
+    stated_end = stated_period_end(parsed_end, tolerance_days=tolerance_days)
     copied = deepcopy(dict(cell))
     copied_period = dict(copied["period"])
     copied_period["end"] = stated_end.isoformat()
