@@ -53,6 +53,104 @@ async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440
 const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c',
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+
+// Read Chromium's computed accessibility tree, including browser-resolved names
+// and descriptions. This is narrower than screen-reader speech acceptance.
+for (const lang of ['en','zh']) for (const width of [1440,320]) {
+  test(`Workspace accessibility tree ${lang} ${width}`,async t=>{
+    await pageFixture(async page=>{
+      const client=await page.context().newCDPSession(page);
+      async function snapshot() {
+        const document=(await client.send('DOM.getDocument',{depth:-1})).root;
+        const owned=new Map();
+        function collect(node,inWorkspace=false,inHiddenPanel=false,inControls=false,inDialog=false) {
+          const attrs={};
+          for(let i=0;i<(node.attributes||[]).length;i+=2) attrs[node.attributes[i]]=node.attributes[i+1];
+          inWorkspace ||= Object.hasOwn(attrs,'data-im-workspace');
+          inHiddenPanel ||= Object.hasOwn(attrs,'data-im-panel') && Object.hasOwn(attrs,'hidden');
+          inControls ||= Object.hasOwn(attrs,'data-im-controls');
+          inDialog ||= node.nodeName==='DIALOG' && Object.hasOwn(attrs,'open');
+          if(inWorkspace) owned.set(node.backendNodeId,{attrs,inHiddenPanel,inControls,inDialog});
+          for(const child of node.children||[]) collect(child,inWorkspace,inHiddenPanel,inControls,inDialog);
+        }
+        collect(document);
+        const nodes=(await client.send('Accessibility.getFullAXTree')).nodes;
+        return nodes.filter(node=>owned.has(node.backendDOMNodeId)&&!node.ignored)
+          .map(node=>({...node,dom:owned.get(node.backendDOMNodeId)}));
+      }
+      function prop(node,name) {return node.properties?.find(item=>item.name===name)?.value.value;}
+      for(const view of ['overview','compare','macro','risk','history','library']) {
+        if(width===320) await page.selectOption('[data-im-controls] select[data-im-action="set_view"]',view);
+        else await page.locator(`[data-im-controls] button[data-im-view="${view}"]`).click();
+        const panel=page.locator(`[data-im-panel][data-view="${view}"]:visible`);
+        await panel.waitFor();
+        const nodes=await snapshot();
+        assert.equal(nodes.filter(node=>node.dom.inHiddenPanel).length,0,`${view}: inactive panel exposed`);
+        const controls=nodes.filter(node=>['button','combobox','textbox','searchbox','link','checkbox','radio'].includes(node.role.value));
+        assert.ok(controls.length>=4,`${view}: empty control census`);
+        assert.deepEqual(controls.filter(node=>!node.name?.value.trim()).map(node=>node.role.value),[],`${view}: unnamed control`);
+        const region=nodes.find(node=>Object.hasOwn(node.dom.attrs,'data-im-workspace'));
+        assert.equal(region.role.value,'region');
+        assert.equal(region.name.value,lang==='zh'?'国际市场':'International markets');
+        const selected=nodes.filter(node=>node.dom.inControls && node.dom.attrs['data-im-action']==='set_view');
+        if(width===1440) {
+          assert.equal(selected.filter(node=>prop(node,'pressed')==='true').length,1);
+          assert.equal(selected.find(node=>prop(node,'pressed')==='true').dom.attrs['data-im-view'],view);
+        } else {
+          assert.equal(selected.length,1);
+          assert.equal(selected[0].role.value,'combobox');
+          assert.equal(selected[0].name.value,lang==='zh'?'视图':'Views');
+        }
+        t.diagnostic(JSON.stringify({view,lang,width,namedControls:controls.length,inactivePanelNodesExposed:0}));
+        if(view==='overview') {
+          await panel.locator('[data-im-expansion-trigger]').click();
+          const trigger=page.locator('[data-im-inspector-origin]:visible')
+            .filter({has:page.locator('[data-im-inspector-payload][data-market-id="JP"]')})
+            .locator('[data-im-inspector-trigger]');
+          await trigger.click();
+          const modalNodes=await snapshot();
+          const dialog=modalNodes.find(node=>node.role.value==='dialog');
+          assert.ok(dialog && dialog.name.value.trim());
+          assert.equal(prop(dialog,'modal'),true);
+          const exposedControls=modalNodes.filter(node=>['button','combobox','textbox','searchbox','link'].includes(node.role.value));
+          assert.ok(exposedControls.length>0);
+          assert.ok(exposedControls.every(node=>node.dom.inDialog && node.name?.value.trim()),'modal exposes unnamed or background controls');
+          await page.keyboard.press('Escape');
+          assert.equal(await trigger.evaluate(node=>node===document.activeElement),true);
+          assert.ok((await snapshot()).some(node=>node.dom.inControls),'toolbar absent after modal close');
+          t.diagnostic(JSON.stringify({lang,width,inspectorDialogName:dialog.name.value,modalControls:exposedControls.length,backgroundControlsExposed:0}));
+        }
+        if(view==='history') {
+          if(width===320) await panel.locator('[data-im-scenario-tab="scenario"]').click();
+          await panel.locator('[data-im-scenario-field="local"]').fill('not a number');
+          await panel.locator('[data-im-scenario-field="fx"]').fill('0');
+          await panel.locator('[data-im-scenario-action="calculate"]').click();
+          const error=await panel.locator('[data-im-scenario-error="local"]').innerText();
+          const invalid=(await snapshot()).find(node=>node.dom.attrs['data-im-scenario-field']==='local');
+          assert.equal(invalid.role.value,'textbox');
+          assert.equal(invalid.name.value,lang==='zh'?'本币价格回报 (%)':'Local-price return (%)');
+          assert.equal(prop(invalid,'invalid'),'true');
+          assert.ok(error.length>0 && invalid.description.value.includes(error));
+          const help=await panel.locator('#im-scenario-format').innerText();
+          assert.ok(invalid.description.value.includes(help));
+          assert.equal(prop(invalid,'focused'),true);
+          // Correcting the input must remove the old error from the computed
+          // description and retain the localized instructions.
+          await panel.locator('[data-im-scenario-field="local"]').fill('5');
+          await panel.locator('[data-im-scenario-action="calculate"]').click();
+          const valid=(await snapshot()).find(node=>node.dom.attrs['data-im-scenario-field']==='local');
+          assert.equal(prop(valid,'invalid'),'false');
+          assert.equal(valid.description.value,help);
+          const status=(await snapshot()).find(node=>Object.hasOwn(node.dom.attrs,'data-im-scenario-announcement'));
+          assert.equal(status.role.value,'status');
+          assert.equal(prop(status,'live'),'polite');
+          assert.equal(prop(status,'atomic'),true);
+        }
+      }
+    },{published:true,htmlOverride:coldLocaleHtml,bootLanguage:lang,width});
+  });
+}
+
 for (const published of [false,true]) for (const boot of [
   {name:'saved English',bootLanguage:'en',browserLocale:'zh-CN',expected:'en'},
   {name:'saved Chinese',bootLanguage:'zh',browserLocale:'en-US',expected:'zh'},

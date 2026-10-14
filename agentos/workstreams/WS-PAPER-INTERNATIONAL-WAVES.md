@@ -140,10 +140,10 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Continue on Macro PR8754 from CHECKPOINT. Eight Library keyboard/composition/native-anchor source journeys
-  pass. Live Stock-return Back still requires Chris to dismiss/complete Chrome extension UI. Inspect remaining Compare
-  common-window chart/attribution input obligation in owned source/contracts; no fabricated data, retry, alternate
-  carrier, or release/rights/Saved/frozen/IW2 hold clearance.
+next_action: Resume the original served Library Stock return after Chris clears the Chrome extension UI. Current
+  source has scoped Risk, Compare/Inspector, Library and computed accessibility-tree proof; chart interior points/benchmark
+  still need genuine owner qualification/disclosure. Preserve current carrier, independent review and release holds;
+  execute only a new admitted gap or owner input.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -158,6 +158,7 @@ artifacts:
 - research/paper_international_wave1_wave2/COMPARE_INSPECTOR_JOURNEY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LIBRARY_SERVED_RETURN_BOUNDARY.json
 - research/paper_international_wave1_wave2/LIBRARY_KEYBOARD_IME_JOURNEY_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/WORKSPACE_ACCESSIBILITY_TREE_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.

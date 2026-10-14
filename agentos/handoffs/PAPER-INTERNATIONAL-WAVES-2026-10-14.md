@@ -79,6 +79,9 @@ changed:
 - path: research/paper_international_wave1_wave2/LIBRARY_KEYBOARD_IME_JOURNEY_ACCEPTANCE.json
   what: Bind eight complete Library keyboard/synthetic-IME/native-research/Back source journeys, without product
     changes or persistent query storage.
+- path: tests/intl_workspace_page.test.cjs; research/paper_international_wave1_wave2/WORKSPACE_ACCESSIBILITY_TREE_ACCEPTANCE.json
+  what: Add four computed accessibility-tree regressions across six views, modal isolation and Scenario error descriptions;
+    bind local evidence without product changes.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -220,6 +223,14 @@ verified:
   result: 8 distinct PASS across Dark/Light EN/ZH1440/320;26 assets. Native2-Tab2pxfocus/Enter/Clear; exact nodes
     and draft retained through same-document Back and group history. Synthetic composition events only. Initial
     Python URL-property harness error rejected.
+- claim: Chromium exposes named controls and isolates hidden panels/modal background; Scenario descriptions follow
+    invalid-to-valid state.
+  command: NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules
+    PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14 node --test
+    --test-name-pattern="Workspace accessibility tree" tests/intl_workspace_page.test.cjs
+  result: 4PASS0FAIL0SKIP,24 view observations,4 modal cases and4 error-to-valid cases. Full current publisher fixture,EN/ZH1440/320.
+    Initial2narrow failures were harness toolbar scope. No screen-reader speech, live return, independent review
+    or deployment claim.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -256,10 +267,10 @@ unresolved:
 next_actions:
 - Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
   source.
-- Original live Library Stock return awaits Chris dismissing/completing the open Chrome extension UI; preserve tab,
-  no retry/alternate control. Eight independent keyboard/composition/native-anchor journeys now pass. Next inspect
-  the remaining owned Compare common-window chart/attribution input obligation against accepted source contracts;
-  advance only a genuine independent gap, preserving qualification/rights and no invented data.
+- Original live Library Stock return awaits Chris completing/dismissing the Chrome extension UI; preserve tab and
+  do not retry via alternate control. Compare interior-point/benchmark source trace is complete and needs its real
+  owner qualification/disclosure contract. Computed accessibility-tree coverage is now recorded; execute only a
+  new admitted gap or material owner input, without repeating accepted journeys.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
@@ -284,6 +295,8 @@ do_not_redo:
   retain generation/view guards. Auto is clock-based; no native zoom or full live parity inferred.
 - Do not duplicate the live Library stock-link click or retry Back while the Chrome extension refusal persists.
   Stock destination was confirmed on the original tab after a navigation detachment; Back success is unobserved.
+- Do not repeat the four accessibility-tree tests/24view observations unless relevant source, browser, input or
+  acceptance changes. They are not screen-reader speech or nativezoom acceptance.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
