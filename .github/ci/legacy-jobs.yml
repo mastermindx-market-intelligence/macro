@@ -3621,18 +3621,6 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -4168,6 +4156,18 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
     # Flow-Surface store: scripts/build_flow_surface materializes per-strike net-premium
     # grids + (Lane G) intraday dealer-exposure greek grids (gex/dex/vanna/charm) +
     # walls/coverage (grids[metric][levelIdx][timeIdx]) into the R2 snapshot store the
@@ -5846,19 +5846,6 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
-      - "engine/seasonality/multiplicity.py"
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -6639,6 +6626,19 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
+      - "engine/seasonality/multiplicity.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16737,18 +16737,6 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -17336,6 +17324,18 @@ jobs:
       # measured-block contract and its episode/stage imports.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
     # BioCatalyst's authenticated workbench and deployment-isolation boundary.
     # This is an intentionally bounded command, not part of a single aggregate
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
@@ -17468,18 +17468,6 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -17876,6 +17864,18 @@ jobs:
       # measured-block contract and its episode/stage imports.
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
@@ -19456,18 +19456,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      - engine/k3e_eval1_forward.py
-      - engine/pick_forward_dist.py
-      - engine/seasonality/multiplicity.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -20196,6 +20184,18 @@ jobs:
       - templates/methodology.html.j2
       - templates/support.html.j2
       - tests/test_crypto_assistant_context.py
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - engine/k3e_eval1_forward.py
+      - engine/pick_forward_dist.py
+      - engine/seasonality/multiplicity.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -21410,18 +21410,6 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -21838,6 +21826,18 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -26443,18 +26443,6 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -26867,6 +26855,18 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -26931,18 +26931,6 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      - engine/k3e_eval1_forward.py
-      - engine/pick_forward_dist.py
-      - engine/seasonality/multiplicity.py
       - scripts/initialize_market_memory_w1a.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -27817,6 +27805,18 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - engine/k3e_eval1_forward.py
+      - engine/pick_forward_dist.py
+      - engine/seasonality/multiplicity.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29030,19 +29030,6 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
-      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
-      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
-      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
-      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
-      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
-      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
-      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - "engine/k3e_eval1_forward.py"
-      - "engine/pick_forward_dist.py"
-      - "engine/seasonality/multiplicity.py"
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -29845,6 +29832,19 @@ jobs:
       - engine/company_intelligence/issuer_disclosure_publication.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
+      - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
+      - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
+      - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
+      - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - "engine/k3e_eval1_forward.py"
+      - "engine/pick_forward_dist.py"
+      - "engine/seasonality/multiplicity.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
