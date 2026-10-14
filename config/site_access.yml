@@ -259,6 +259,11 @@ public:
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
     - /market_memory.js
+    # UI-only OAuth intent and retained workbench assets load before code exchange.
+    # Saved packets, comparison results and source quotes remain API-authenticated.
+    - /market_memory_intent.js
+    - /market_memory_retained.js
+    - /market_memory_retained.css
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css
@@ -282,6 +287,9 @@ public:
     - /tablesort.js
     - /charts.js
     - /risk_state_live.js
+    # Public presentation code only. The live/risk_envelope.json payload remains
+    # separately registration/tier-gated; do not open the market-data feed.
+    - /risk_envelope_live.js
     - /china_risk_state_live.js
     - /release_publications_live.js
     - /heatmap.js

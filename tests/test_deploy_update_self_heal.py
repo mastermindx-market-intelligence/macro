@@ -210,7 +210,21 @@ def test_admin_adopts_before_unrelated_w2c_failure(
     failure_start = SCRIPT.index('if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then')
     failure_end = SCRIPT.index("# END W1B5_TIMER_FINALIZATION", failure_start)
     refusal = SCRIPT[failure_start:failure_end]
-    ordered = "\n".join(block for _, block in sorted([(start, admin), (failure_start, refusal)]))
+    freeze_start = SCRIPT.index("# BEGIN W2C_LANE_FREEZE\n")
+    freeze = SCRIPT[freeze_start : SCRIPT.index("# END W2C_LANE_FREEZE", freeze_start)]
+    exit_start = SCRIPT.index("# BEGIN DEPLOY_EXIT_STATUS\n")
+    exit_status = SCRIPT[exit_start : SCRIPT.index("# END DEPLOY_EXIT_STATUS", exit_start)]
+    ordered = "\n".join(
+        block
+        for _, block in sorted(
+            [
+                (start, admin),
+                (freeze_start, freeze),
+                (failure_start, refusal),
+                (exit_start, exit_status),
+            ]
+        )
+    )
     harness = f"""
 set -eu
 APP_DIR={shlex.quote(str(app))}
@@ -326,6 +340,9 @@ MUST_RESTART = [
     # app.billing holds the issuer's plan/features catalog for the process life.
     "config/plans.yml",
     "engine/neuralweb/market_memory_playback.py",
+    "engine/neuralweb/market_memory_retained_catalog.py",
+    "engine/neuralweb/market_memory_retained_saved.py",
+    "engine/neuralweb/market_memory_retained_legacy_guard.py",
     # Private Issue Desk router import-caches both its engine and strict schemas.
     "engine/options_issue_desk.py",
     "contracts/options/options.issue_desk.v1.schema.json",

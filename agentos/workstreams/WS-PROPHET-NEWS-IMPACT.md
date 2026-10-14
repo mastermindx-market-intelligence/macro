@@ -35,24 +35,45 @@ landmines:
 do_not_redo:
   - "Phase 0 recovery census (2026-10-11): nothing of this program is in origin/main; no sibling session owns it; engine/news_impact/ and contracts/news_impact/ are free. Do not re-census."
   - "Orchestration shape: Fable seat → one native Opus orchestrator → read-only fabric lanes on local m2 pools (glm-5.3-flash census, glm-5.3 candidates + attack reviews) → orchestrator synthesis → seat adjudication. The Workflow tool is platform-blocked in the seat session (hook dispatch timeout, verified twice); do not try it a third time."
+  - "Orchestration shape from 2026-10-12 (Chairman directive): no native Claude children of any kind; the seat launches Grok (grok-4.6) and GLM (glm-5.3 / glm-5.3-flash) lanes directly with ext/remote_sub.sh on ubuntu0/ubuntu2/ubuntu3/mb, one launcher task per lane as its only watcher, and judges every return by artifact. The Phase 0 native-Opus orchestrators ORCH-W1/W1c/W1d are history, never a template."
+  - "Wave-2 lanes B1-B5, A1-A7 and C1-C3 are ACCEPTED by artifact and integrated in the Phase 1 integration PR (2026-10-13); the hostile corpus reproduces 33/33 seat-ratified verdicts. Do not re-run them; repair forward."
+  - "The nine W3 build lanes (X4 transfer, X4 observation, C5 cascade, M2 mechanisms, E3 receipt, E3 grade, T1 thesis, P7 adapter, L6 agreement) are ACCEPTED by artifact and integrated in W3 commit 0980ee37 (617 passed, 0 skipped). Do not re-launch them; the seven open design defects are repaired forward in wave w1c."
+  - "The seven W3 design defects are settled by DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS (2026-10-13). Do not re-adjudicate them, and do not edit the frozen A-design packets; amendments live in phase1_designs/AMENDMENTS_W1C.md and the superseded case values in AMENDMENTS_W1C.cases.json."
+  - "The X4 session-counted matched window (lane W1C_X4_r3 on GLM glm-5.3) is ACCEPTED by artifact. Do not relaunch it."
+  - "Benchmark bodies are settled by DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE: issuer 8-Ks through the existing SEC owners, internal_only. Do not reopen vendor article bodies or write a second EDGAR client."
+  - "The w2 two-family labeling of 157 cases and the 40-slot audit (seed 20261014) are ACCEPTED under DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING. Add a third family on top; never relabel or redraw them. The absent-slot addendum audit (seed 20261015, 26 slots) is ACCEPTED under DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION; extend it with new strata, never redraw it."
+  - "The malformed-slot audit (all 11 malformed_value slots, no sampling) is ACCEPTED under DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES; the v1 labels are not relabeled under guide-v1.2 and summary.json is not re-scored."
+  - "The routing check (seed 20261016, 40 sampled cases plus the three cases behind malformed cards M3, M7 and M9) is ACCEPTED under DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES; extend it with new samples, never redraw it. The w2 labels and summary.json are not re-scored; their reading is narrowed to extraction from the attached filing."
 waves:
   - id: p0
     title: Phase 0 — recovery census, three-candidate commission A, seat freeze of event templates + closed schemas
-    status: in_progress
-    next_action: Adjudicate $S/design/SYNTHESIS_RECOMMENDATION.md by artifact, write PHASE0_FREEZE_2026-10-11.md + contracts/news_impact/*.schema.json, open the Phase 0 PR and carry it to merged.
+    status: done
+    next_action: none; frozen by DEC:NEWS-IMPACT-PHASE0-FREEZE on PR #8873.
   - id: w1
     title: Wave 1 — benchmark candidate sampler (L3) + schema validator with hostile fixtures (L4)
-    status: todo
+    status: done
     depends_on: [p0]
+    next_action: none; landed by the Phase 1 integration PR (validate.py with the S1-S13 semantic layer and strict loading, sampler, cluster, issuer, 33 hostile fixtures, A1-A7 designs, C2/C3 census).
+  - id: w1b
+    title: Wave 1b - Phase 1 leaf modules built from the accepted A-designs (thesis fold, mechanism mapper, transfer/observation, eval harness, labeler agreement, cost cascade planner, Prophet evidence adapter leaf)
+    status: done
+    depends_on: [w1]
+    next_action: none; the nine leaf modules (transfer, observation, cascade, mechanisms, eval_receipt, eval_grade, thesis, prophet_adapter, agreement) and the 15 Phase 1 contracts landed by the Phase 1 integration PR (W3 commit 0980ee37) with fail-closed tests; prophet_adapter stays a leaf, not wired into engine/intelligence.py.
+  - id: w1c
+    title: Wave 1c - repair the seven design defects found at W3 integration (C5 cascade, X4 observation, M2 mechanisms, E3 receipt, T1 thesis, P7 adapter, L6 agreement)
+    status: done
+    depends_on: [w1b]
+    next_action: none; C5, L6 and the four design amendments landed by PR #9262 (squash 33366ca7), and the X4 session-counted matched window by the X4 follow-up PR (GLM lane W1C_X4_r3, 72 observation tests).
   - id: w2
     title: Wave 2 — commission D 600-case graded benchmark (200 capital allocation / 200 demand-guidance / 200 strategic-partnership)
-    status: todo
+    status: in_progress
     depends_on: [w1]
+    next_action: The draw (PR #9290, 157 of 600 cases) and the two-family results (DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING) are done. The absent-slot addendum audit (seed 20261015, DSC:NEWS-IMPACT-TWO-FAMILY-AGREED-ABSENCE-HOLDS) and annotation guide-v1.1 (DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION) are done. The malformed-slot audit (all 11 slots, DSC:NEWS-IMPACT-MINIMAX-V10-NULL-PERIOD) and annotation guide-v1.2 with lane packet prompt-v1.2 (DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES, which also rules on the T1 per-share dividend and "increase up to $X" gaps) are done. The routing check (DSC:NEWS-IMPACT-W2-ROUTING-MOSTLY-OFF-EVENT: 15 of 40 sampled cases on-event, the template never the fault) is done. Next - build, freeze and validate the three draw gates registered by DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES (non-event headline filter, issuer-resolution guard, body-to-event match; seed 20261017, MATCH at least 34 of 40, gated-out loss printed); a third family (GLM after 2026-10-19 05:16Z, prompt-v1.2) labels the disputed slots of gated-in cases only; MiniMax lanes get a usage capture; then the 600-case continuation.
   - id: w3
     title: Wave 3 — Phase 1 measured packet producer wired to the existing event ledger, context_only, behind the benchmark gate
     status: todo
     depends_on: [w2]
-next_action: Adjudicate the ORCH-W1 synthesis by artifact and freeze commission A (three templates, acceptance labels, shared $defs), then open the Phase 0 PR.
+next_action: Wave w2 - build, freeze and validate the three routing gates in the draw (DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES), then third-family labeling of the disputed slots of gated-in cases under prompt-v1.2 and annotation guide-v1.2 after GLM resets (2026-10-19 05:16Z), a MiniMax usage capture, then the 600-case continuation; keep the v1 contract byte-frozen. Wave w3 follows.
 ---
 
 # Prophet news-to-business-impact

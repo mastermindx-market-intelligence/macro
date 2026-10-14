@@ -4079,6 +4079,46 @@ def _compute_stage_tilt(ticker: str, entry_date: str, tilt_inputs: dict) -> tupl
     return horizon_days, stage_tilt
 
 
+def _plan_source_origin(
+    binding: Mapping[str, Any],
+    positions: dict[int, int],
+    row: Any,
+) -> dict[str, Any] | None:
+    """Project the frozen original-producer binding onto ONE originated plan.
+
+    ``positions`` maps the deep-copied buy row OBJECT to its original ``buy[]``
+    index — identity, never a ticker lookup, so duplicate tickers and non-Featured
+    rows keep the exact positions the original producer published.  The returned
+    block carries the whole self-hashed ``source_binding`` unchanged; it is source
+    ORIGIN metadata only, not native authentication: no candidate_key, digest,
+    security_id, episode_id or generation is invented here, and the source's native
+    identity stays unavailable until a future actual native read.
+    """
+    selection_index = positions.get(id(row))
+    if selection_index is None:
+        return None
+    ordered_rows = binding.get("ordered_rows")
+    if not isinstance(ordered_rows, list) or selection_index >= len(ordered_rows):
+        return None
+    referenced = ordered_rows[selection_index]
+    if not isinstance(referenced, Mapping):
+        return None
+    return {
+        "schema": "prophet.plan_source_origin/v1",
+        "owner_ref": "scripts/build_stock_library.py::main",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+        "source_binding": {
+            **binding,
+            "ordered_rows": [
+                dict(entry) if isinstance(entry, Mapping) else entry
+                for entry in ordered_rows
+            ],
+        },
+        "selection_index": selection_index,
+        "row_receipt": referenced.get("row_receipt"),
+    }
+
+
 def originate_plans(
     standouts_path: str | Path,
     asof: str,
@@ -4087,6 +4127,8 @@ def originate_plans(
     active_keys: set[str] | None = None,
     intake_stats: dict | None = None,
     standouts_doc: Mapping[str, Any] | None = None,
+    *,
+    source_binding: Mapping[str, Any] | None = None,
 ) -> list[dict]:
     """
     Read us_standouts.json, apply the pick rule, and return new
@@ -4111,6 +4153,18 @@ def originate_plans(
                      status, and per-candidate validation failures so the caller can
                      disclose every disposition in its artifact. Never read, only
                      written.
+    source_binding : optional frozen original-producer binding
+                     (``prophet.today_selection_source_binding/v1``) over the SAME
+                     board bytes ``standouts_doc`` deep-copies.  When supplied, every
+                     new plan is stamped with a ``source_origin`` block naming its
+                     ORIGINAL ``buy[]`` position — resolved by object identity before
+                     selection reorders anything, never by a ticker join, so
+                     duplicate tickers and non-Featured rows keep the positions the
+                     producer published.  A binding that does not cover exactly this
+                     board's buy lane is refused at the boundary.  Origin metadata
+                     only: a whole self-hashed ``source_binding`` is not native
+                     authentication and invents no candidate identity fields.
+
     standouts_doc  : optional already-frozen board object.  When supplied, origination
                      deep-copies this object and never re-reads ``standouts_path``.
                      Production uses this to bind every plan to the exact immutable
@@ -4161,6 +4215,117 @@ def originate_plans(
         source_unknown=staleness.get("unknown"),
         source_basis=staleness.get("basis"),
     )
+
+    # ── Prospective Plan source_origin positions (pre-B1 prerequisite) ──
+    # When the frozen original-producer binding is supplied, pin every buy row's
+    # ORIGINAL ``buy[]`` position by OBJECT IDENTITY before the priority/admission
+    # loop runs.  Selection reorders and the policy skips suppress; neither may
+    # renumber what the original producer published, and no ticker is looked up
+    # here.  A binding that does not cover exactly this board's buy lane is
+    # refused at the boundary; a row whose position cannot be resolved later
+    # carries NO source_origin at all rather than an invented one.
+    source_origin_positions: dict[int, int] | None = None
+    if source_binding is not None:
+        if not isinstance(source_binding, Mapping):
+            raise TypeError("source_binding must be a mapping when supplied")
+        binding_rows = source_binding.get("ordered_rows")
+        if not isinstance(binding_rows, list):
+            raise TypeError("source_binding.ordered_rows must be a list when supplied")
+        board_rows = standouts.get("buy")
+        if not isinstance(board_rows, list) or len(board_rows) != len(binding_rows):
+            board_count = len(board_rows) if isinstance(board_rows, list) else 0
+            raise ValueError(
+                "source_binding.ordered_rows does not cover this board's buy[] lane "
+                f"({len(binding_rows) if isinstance(binding_rows, list) else 0} "
+                f"receipts vs {board_count} buy rows)"
+            )
+        # Receipt identity is established HERE, before any policy, sorting or
+        # mutation runs: every ordered receipt must re-hash — with the original
+        # producer's canonical bytes, using the neutral evidence codec with its
+        # single document newline removed — to the ACTUAL board
+        # row at the SAME original ordinal, and the scalar pins must match this
+        # document wherever this document can represent them.  A same-count board
+        # whose rows were replaced or reordered is therefore REFUSED at the
+        # boundary instead of being renumbered with positions the original
+        # producer never published; so is a binding whose own metadata is
+        # malformed.  The raw-byte ``source_sha256`` is NOT recomputed from this
+        # (possibly reconstructed) document — exact raw-byte identity remains the
+        # UPSTREAM retained-snapshot check's job, which re-verifies the gzip copy
+        # against the frozen board before any binding can exist.
+        import hashlib  # noqa: PLC0415
+        from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
+
+        def source_receipt_bytes(value: object) -> bytes:
+            # The producer hashes compact JSON without a document terminator.
+            try:
+                return canonical_json_bytes(value).removesuffix(b"\n")
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"value is not canonical JSON: {exc}") from exc
+
+        source_sha256 = source_binding.get("source_sha256")
+        if (not isinstance(source_sha256, str)
+                or not source_sha256.startswith("sha256:")
+                or len(source_sha256) != 71
+                or any(c not in "0123456789abcdef" for c in source_sha256[7:])):
+            raise ValueError(
+                "source_binding.source_sha256 must be 'sha256:<64 lowercase hex>'")
+        doc_session = standouts.get("as_of")
+        if (isinstance(doc_session, str)
+                and source_binding.get("market_session") != doc_session):
+            raise ValueError(
+                "source_binding.market_session "
+                f"{source_binding.get('market_session')!r} is not this board's "
+                f"session {doc_session!r}")
+        doc_emit = standouts.get("emit")
+        if isinstance(doc_emit, Mapping):
+            doc_pair = doc_emit.get("pair_id")
+            if isinstance(doc_pair, str) and source_binding.get("pair_id") != doc_pair:
+                raise ValueError(
+                    "source_binding.pair_id "
+                    f"{source_binding.get('pair_id')!r} is not this board's pair "
+                    f"{doc_pair!r}")
+        for ordinal, receipt_row in enumerate(binding_rows):
+            if not isinstance(receipt_row, Mapping):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}] must be a mapping")
+            if receipt_row.get("selection_index") != ordinal:
+                raise ValueError(
+                    "source_binding.ordered_rows must pin each row's original "
+                    "ordinal contiguously from 0; entry "
+                    f"{ordinal} carries selection_index "
+                    f"{receipt_row.get('selection_index')!r}")
+            row_receipt = receipt_row.get("row_receipt")
+            if (not isinstance(row_receipt, str)
+                    or not row_receipt.startswith("sha256:")
+                    or len(row_receipt) != 71
+                    or any(c not in "0123456789abcdef" for c in row_receipt[7:])):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt must be "
+                    "'sha256:<64 lowercase hex>'")
+            actual_receipt = "sha256:" + hashlib.sha256(
+                source_receipt_bytes(board_rows[ordinal])).hexdigest()
+            if row_receipt != actual_receipt:
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt does not "
+                    "hash to the actual board row at that original ordinal — the "
+                    "binding is not over this board's buy lane")
+        expected_selection_receipt = "sha256:" + hashlib.sha256(source_receipt_bytes({
+            "source_sha256": source_sha256,
+            "pair_id": source_binding.get("pair_id"),
+            "market_session": source_binding.get("market_session"),
+            "ordered_rows": [
+                {"selection_index": receipt_row.get("selection_index"),
+                 "row_receipt": receipt_row.get("row_receipt")}
+                for receipt_row in binding_rows
+            ],
+        })).hexdigest()
+        if source_binding.get("selection_receipt") != expected_selection_receipt:
+            raise ValueError(
+                "source_binding.selection_receipt does not match the binding "
+                "material it pins")
+        source_origin_positions = {
+            id(row): index for index, row in enumerate(board_rows)
+        }
 
     # ── Pass 1: full admitted ordering → apply the two policy skips ──
     admission_stats: dict[str, Any] = {}
@@ -4736,6 +4901,15 @@ def originate_plans(
             "entry_zone": entry_zone,
             "early_turn": early_turn_block,
         }
+
+        # Prospective source_origin: stamped ONLY on this NEW plan dict, BEFORE
+        # the existing validator sees it.  Historical plans never gain the key,
+        # and the binding's own ordered receipt is repeated, never recomputed.
+        if source_origin_positions is not None:
+            source_origin = _plan_source_origin(
+                source_binding, source_origin_positions, b)
+            if source_origin is not None:
+                plan["source_origin"] = source_origin
 
         if government_revenue_ctx:
             plan["government_revenue_context"] = government_revenue_ctx

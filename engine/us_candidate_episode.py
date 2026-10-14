@@ -115,6 +115,14 @@ class CandidateEpisodeStoreSnapshot:
     generation: ValidatedCandidateEpisodeGeneration
 
 
+@dataclass(frozen=True)
+class CandidateEpisodeByteToken:
+    """Exact current storage identity; byte integrity alone is not semantic proof."""
+    generation_id: str
+    manifest_sha256: str
+    head_sha256: str
+
+
 def canonical_json(value: object) -> str:
     """Return canonical UTF-8 JSON text, refusing non-finite values."""
     try:
@@ -906,6 +914,24 @@ def reconcile_observations(
             expected_suppression = _suppression(
                 observation, str(committed_suppression["reason"])
             )
+            if (
+                committed_suppression["reason"] == "IDENTITY_UNRESOLVED"
+                and committed_suppression["security_id"] is None
+                and source_system == "turn_watch"
+                and source_schema == "prophet.candidate_episode_input.turn_watch/v1"
+                and re.fullmatch(r"turn_watch:[0-9a-f]{64}", source_event_id)
+                and _SHA256_RECEIPT_RE.fullmatch(receipt)
+            ):
+                # Native TURN WATCH intake binds the row/session in its key and
+                # the full source document in its receipt. Later identity data
+                # may resolve that same consumed row. Keep its original identity
+                # refusal and source-cut session, not the newly derived security
+                # or trigger session. The exact key, receipt and ticker must
+                # still match below; this never promotes a suppression to an event.
+                expected_suppression["security_id"] = None
+                expected_suppression["observation_session"] = committed_suppression[
+                    "observation_session"
+                ]
             if canonical_json(_suppression_source_facts(expected_suppression)) != canonical_json(
                 _suppression_source_facts(committed_suppression)
             ):
@@ -1506,11 +1532,11 @@ def validate_candidate_episode_generation_payload(directory: Path) -> ValidatedC
     )
 
 
-def validate_candidate_episode_generation(
+def _attest_candidate_episode_generation_files(
     directory: Path, *, expected_generation_id: str | None = None,
     expected_manifest_sha256: str | None = None,
-) -> ValidatedCandidateEpisodeGeneration:
-    """Validate one complete manifest-addressed generation through the shared canonical path."""
+) -> tuple[str, str]:
+    """Re-read and hash every actual file through the canonical B1 integrity owner."""
     generation = Path(directory)
     manifest_path = generation / "manifest.json"
     try:
@@ -1563,11 +1589,23 @@ def validate_candidate_episode_generation(
         payload = actual_files[relative].read_bytes()
         if descriptor["sha256"] != _sha_receipt(payload) or descriptor["bytes"] != len(payload):
             raise EpisodeContractError("generation manifest file hash is invalid")
-    return validate_candidate_episode_generation_payload(generation)
+    return generation_id, _sha_receipt(manifest_bytes)
 
 
-def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSnapshot:
-    """Resolve one HEAD byte snapshot and fully validate exactly its named generation."""
+def validate_candidate_episode_generation(
+    directory: Path, *, expected_generation_id: str | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> ValidatedCandidateEpisodeGeneration:
+    """Validate byte integrity and all semantics on every ordinary B1 read."""
+    _attest_candidate_episode_generation_files(
+        directory, expected_generation_id=expected_generation_id,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )
+    return validate_candidate_episode_generation_payload(Path(directory))
+
+
+def _resolve_candidate_episode_head(root: Path) -> tuple[Path, CandidateEpisodeByteToken]:
+    """Resolve and validate the current canonical HEAD without accepting its payload."""
     store = Path(root)
     head_path = store / "HEAD.json"
     head = _canonical_file(head_path)
@@ -1586,12 +1624,35 @@ def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSn
     generation = store / "generations" / generation_id
     if not generation.is_dir():
         raise EpisodeContractError("HEAD references a missing generation")
+    return generation, CandidateEpisodeByteToken(
+        generation_id, manifest_sha256, str(head["content_sha256"]),
+    )
+
+
+def attest_candidate_episode_store_bytes(root: Path) -> CandidateEpisodeByteToken:
+    """Reattest HEAD, manifest and every actual file, without semantic replay.
+
+    This token can only identify bytes. A consumer may reuse a compact derivation
+    only after those exact bytes have separately passed the full snapshot reader.
+    No HEAD/mtime/size-only shortcut, retained file buffer or process cache exists here.
+    """
+    generation, token = _resolve_candidate_episode_head(root)
+    _attest_candidate_episode_generation_files(
+        generation, expected_generation_id=token.generation_id,
+        expected_manifest_sha256=token.manifest_sha256,
+    )
+    return token
+
+
+def load_candidate_episode_store_snapshot(root: Path) -> CandidateEpisodeStoreSnapshot:
+    """Resolve one HEAD byte snapshot and fully validate exactly its named generation."""
+    generation, token = _resolve_candidate_episode_head(root)
     validated = validate_candidate_episode_generation(
         generation,
-        expected_generation_id=generation_id,
-        expected_manifest_sha256=manifest_sha256,
+        expected_generation_id=token.generation_id,
+        expected_manifest_sha256=token.manifest_sha256,
     )
-    return CandidateEpisodeStoreSnapshot(generation_id=generation_id, generation=validated)
+    return CandidateEpisodeStoreSnapshot(generation_id=token.generation_id, generation=validated)
 
 
 def load_candidate_episode_store(root: Path) -> list[dict[str, object]]:
