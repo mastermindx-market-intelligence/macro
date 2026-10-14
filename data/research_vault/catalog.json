@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T09:10:34.054963+00:00",
-  "count": 2884,
+  "generated_at": "2026-10-14T09:24:56.871356+00:00",
+  "count": 2885,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -269,6 +269,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hmzfc6mgzvb-b024da",
+      "title": "J.P. Morgan Chase & Co. (JPM) 3Q26 First Take In line results, much stronger NII guide, lower buybacks",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:58Z",
+      "summary_points": [
+        "NII Guidance Upgrade: JPM raised 2026 total NII outlook to $106.2bn (vs.",
+        "$105.5bn) and 2027 NII ex Markets to $107bn (+10% YoY), driven by stronger loan growth, deposit trends, and 2bps higher NIM (7bps loan yields, 1bp securities yields).",
+        "Capital Allocation Shift: Gross buybacks fell to $1.1bn (85% QoQ decline), with SLR at 5.5% (above 4.5% minimum), signaling prioritization of balance sheet growth over capital returns amid higher interest rates.",
+        "Credit Risk Build: Credit reserves increased to $539mn (vs.",
+        "$404mn Street estimate), indicating macro-driven reserve concerns, with Goldman Sachs highlighting deteriorating credit conditions as a key downside risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
