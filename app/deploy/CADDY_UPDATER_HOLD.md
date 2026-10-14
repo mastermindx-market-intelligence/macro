@@ -31,6 +31,30 @@ old invocation, unlink/recreate the lock, recursively run the updater under its
 inherited descriptor, or substitute another lock. If no supported installation
 procedure retains that custody, hold bootstrap rather than run the old updater.
 
+Lock ownership alone does not settle an old interpreter or scheduler wrapper
+paused before its lock call. Before replacement, the physical owner must bind
+and close the actual cooperating scheduled and manual entry paths, retain the
+exact scheduler-table preimage under its existing writer custody, and reconcile
+already-dispatched wrappers and pre-lock script images through their original
+owners. Preserve unrelated scheduler entries and the original lock. A single
+process-name scan, missing lock holder, or elapsed cron interval is not proof
+that those entrants have drained. Other provisioners using blocking acquisition
+of the same lock retain their separate pending effects and owners.
+
+Only after entry is closed and that admitted set is settled may the owner use
+the existing single-file installation primitive and verify the protected file
+while retaining lock custody. Restore the exact original entry only after those
+checks and a fresh scheduler-table comparison; do not overwrite unrelated edits
+or automatically restore after an uncertain result. Do not run the full setup
+script, stop the global scheduler, kill processes, wrap the unchanged updater in
+another lock, or claim a new entry-control service exists. If current interfaces
+cannot establish entry closure and complete drain, bootstrap remains held.
+
+This boundary also applies before exposing the guard through the automatically
+adopted protected default branch. A reviewed draft and green CI alone do not
+establish safe first adoption. Actual entry-maintenance custody or separately
+qualified old-path equality is still required before release promotion.
+
 The old self-copy route is only eligible if actual candidate-to-saved byte
 equality is maintained throughout its comparison window under qualified writer
 custody. An unchanged Caddyfile in a Git diff is insufficient. Keep Caddyfile
