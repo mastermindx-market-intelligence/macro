@@ -23,6 +23,7 @@ Case map: §0 item 1 -> ``test_c2b_instrument_actions_leave_every_number_unchang
 
 from __future__ import annotations
 
+import hashlib
 from decimal import Decimal
 from fractions import Fraction
 from typing import Any, Mapping, Sequence
@@ -228,6 +229,21 @@ def pool_ids(evaluation: Any) -> tuple[str, ...]:
     return tuple(sorted(pool.constraint_id for pool in evaluation.envelope.shared_pools))
 
 
+def assert_pools_undetermined(evaluation: Any, baseline: Any) -> None:
+    """C2b audit: once §2.3 leaves the optimum undetermined, no pool claims binding or slack.
+
+    Each pool keeps its C2a bound and identity; only its status becomes unknown.
+    """
+    pools = evaluation.envelope.shared_pools
+    before = baseline.envelope.shared_pools
+    assert [pool.constraint_id for pool in pools] == [pool.constraint_id for pool in before]
+    assert [pool.bound for pool in pools] == [pool.bound for pool in before]
+    assert {pool.status for pool in pools} <= {"unknown"}, [
+        (pool.constraint_id, pool.status) for pool in pools
+    ]
+    assert [item["status"] for item in evaluation.inputs["pools"]] == ["unknown"] * len(pools)
+
+
 def refused_message(kind: str, route_id: str, **kwargs: Any) -> str:
     """§0 item 3: the refusal names the route id and the kind capacity owns."""
     with pytest.raises(CapacityInputError) as raised:
@@ -365,6 +381,7 @@ def test_c2b_owner_table(kind: str) -> None:
         assert evaluation.envelope.aggregate_bound.value is None
         assert evaluation.envelope.feasible_witness is None
         assert evaluation.envelope.binding_constraints == ()
+        assert_pools_undetermined(evaluation, evaluate(**kwargs)[0])
     else:
         assert "unmodelled_consumption" not in evaluation.inputs
         assert_unchanged(evaluation, evaluate(**kwargs)[0])
@@ -399,7 +416,15 @@ def test_c2b_fixed_pipe_makes_the_aggregate_unknown() -> None:
     assert envelope.unknown_constraints == baseline.envelope.unknown_constraints == ()
     assert envelope.blockers == baseline.envelope.blockers
     assert envelope.routes == baseline.envelope.routes
-    assert envelope.shared_pools == baseline.envelope.shared_pools
+    # C2b audit: C2a's baby-shelf "binding" and Nasdaq "slack" are claims about a
+    # determined optimum; with the PIPE's consumption unknown both become unknown.
+    assert [(pool.constraint_id, pool.status) for pool in baseline.envelope.shared_pools] == [
+        (BABY_POOL, "binding"),
+        (NASDAQ_POOL, "slack"),
+        (REGISTERED_A, "slack"),
+        (REGISTERED_B, "slack"),
+    ]
+    assert_pools_undetermined(evaluation, baseline)
     named = unmodelled_unknown(evaluation, PIPE_ROUTE)
     assert named.affects == (BABY_POOL, NASDAQ_POOL, REGISTERED_A, REGISTERED_B)
     assert named.affects == pool_ids(evaluation)
@@ -440,6 +465,7 @@ def test_c2b_fixed_registered_direct_on_an_unknown_ceiling_keeps_the_c2a_ceiling
     assert envelope.feasible_witness is None
     assert envelope.binding_constraints == ()
     assert envelope.unknown_constraints == baseline.envelope.unknown_constraints == (NASDAQ_POOL,)
+    assert_pools_undetermined(evaluation, baseline)
     assert unmodelled_unknown(evaluation, DIRECT_ROUTE).affects == pool_ids(evaluation)
     assert evaluation.inputs["unmodelled_consumption"] == [DIRECT_ROUTE]
 
@@ -471,6 +497,7 @@ def test_c2b_fixed_registered_direct_on_an_unknown_ceiling_keeps_the_c2a_ceiling
     assert unbounded.envelope.unknown_constraints == (
         unbounded_baseline.envelope.unknown_constraints
     )
+    assert_pools_undetermined(unbounded, unbounded_baseline)
     assert unmodelled_unknown(unbounded, DIRECT_ROUTE).affects == (REGISTERED_A,)
     assert unbounded.inputs["unmodelled_consumption"] == [DIRECT_ROUTE]
 
@@ -496,6 +523,7 @@ def test_c2b_contradicted_stays_contradicted_with_an_unmodelled_action() -> None
     assert envelope.binding_constraints == () == baseline.envelope.binding_constraints
     # §2.3: no witness at all, not even the empty one C2a returned.
     assert envelope.feasible_witness is None
+    assert_pools_undetermined(evaluation, baseline)
     assert unmodelled_unknown(evaluation, EQUITY_LINE_ROUTE).affects == pool_ids(evaluation)
     assert unknown_ids(evaluation) == unknown_ids(baseline) | {
         f"action_route_not_modelled:{EQUITY_LINE_ROUTE}"
@@ -503,6 +531,26 @@ def test_c2b_contradicted_stays_contradicted_with_an_unmodelled_action() -> None
     assert evaluation.inputs["unmodelled_consumption"] == [EQUITY_LINE_ROUTE]
     assert evaluation.inputs["actions_applied"] == baseline.inputs["actions_applied"]
     assert evaluation.inputs["remaining_capacity"] == baseline.inputs["remaining_capacity"]
+
+
+def test_c2b_long_unmodelled_route_id_gets_a_digest_unknown_id() -> None:
+    """C2b audit: a lawful 195-character route id must not overflow the unknown id."""
+    kwargs = a21_kwargs(outstanding="30000005")
+    long_route = "pipe:" + "x" * 190
+    evaluation, _, _ = evaluate_with_actions(
+        [action(long_route, "pipe", "cash", "5000000")], **kwargs
+    )
+    digest = hashlib.sha256(long_route.encode("utf-8")).hexdigest()[:16]
+    named = {item.unknown_id: item for item in evaluation.envelope.unknowns}
+    assert f"action_route_not_modelled:{digest}" in named, sorted(named)
+    assert long_route in named[f"action_route_not_modelled:{digest}"].description
+    assert evaluation.inputs["unmodelled_consumption"] == [long_route]
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    # A route id that fits keeps the readable form.
+    short = evaluate_with_actions([action(PIPE_ROUTE, "pipe", "cash", "5000000")], **kwargs)[0]
+    assert unmodelled_unknown(short, PIPE_ROUTE).unknown_id == (
+        f"action_route_not_modelled:{PIPE_ROUTE}"
+    )
 
 
 def test_c2b_recorded_only_unmodelled_action_changes_nothing() -> None:

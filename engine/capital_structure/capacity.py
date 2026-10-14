@@ -42,6 +42,7 @@ aggregate note and in ``inputs`` and is never the aggregate.
 from __future__ import annotations
 
 import dataclasses
+import hashlib
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -779,6 +780,9 @@ class _Builder:
             aggregate = self._unmodelled_bound(aggregate, ceiling, pools)
             witness = None
             binding = ()
+            # The residual optimum is undetermined, so no pool may claim binding or
+            # slack: every pool keeps its bound and reports unknown (C2b audit).
+            pools = self._constraints(pessimistic, ())
         unknown_constraints = tuple(sorted(pool.constraint_id for pool in pools if pool.bound.status != "known"))
         inputs = self._inputs(pessimistic, optimistic, ceiling, routes, pools)
         receipt = CalculationReceipt.build(
@@ -2707,9 +2711,15 @@ class _Builder:
         kinds = {item.route_id: item.action for item in self.non_capacity_actions}
         for route_id in self.unmodelled_consumption:
             action = kinds[route_id]
+            unknown_id = f"action_route_not_modelled:{route_id}"
+            if len(unknown_id) > 200:
+                # A lawful route id of 175-200 characters would overflow the
+                # identifier limit; the description still names the full route.
+                digest = hashlib.sha256(route_id.encode("utf-8")).hexdigest()[:16]
+                unknown_id = f"action_route_not_modelled:{digest}"
             self.unknowns.append(
                 _unknown(
-                    f"action_route_not_modelled:{route_id}",
+                    unknown_id,
                     f"{action} on {route_id} may draw on shared registration and "
                     "exchange-approval pools that capacity models only for shelf takedowns "
                     "and at-the-market programmes",
