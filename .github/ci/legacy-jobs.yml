@@ -9351,6 +9351,18 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-1 case falsifier. Pure projector; the composer still emits [].
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "tests/test_finance_case_signal.py"
+      - "tests/fixtures/finance_case_signal/synthesis_v0.json"
+      # W8-FIN-1 page signal. The review gate writes falsifiers onto the named slice.
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "tests/test_finance_page_signal.py"
+      # FIN-2 witness hints. Closed roster; not an issuer_profiles writer.
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "tests/test_finance_witness_hints.py"
+      # FIN-3 review gate. Descriptive MEASURED is not a cause.
+      - "tests/test_finance_r10_signal_gate.py"
       # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
       # Once §8 is adjudicated the same factory pattern (technology @ #7891)
       # will be applied here.
@@ -9429,7 +9441,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py -q
 
 
   consumer-cyclical-economic-change:
