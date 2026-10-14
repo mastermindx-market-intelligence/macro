@@ -495,6 +495,41 @@ report found only in a filing the wider band added is `OTHER_EVENT`, kind
   `audit/v2_routing_verdicts.json` and `audit/v2_routing.json` only. `summary.json` and
   the 157-case labels are unchanged. See `DSC:NEWS-IMPACT-V2-ROUTING-CENSUS`.
 
+### v2 label queue addendum
+
+The 12 queue cases above carry two-family labels under prompt-v1.2 (family A MiniMax-M3,
+family B qwen3.7-plus) on their `ni-edgar-body-2` bodies. `tools/score_v2_queue.py` grades
+them with `score_benchmark.py`'s own functions, imported rather than copied, and
+`score_benchmark.py` and its outputs are unchanged. Its output is value-free: per slot it
+keeps the class, both directional outcomes and the mismatch components, never a value.
+
+- **Span replay is clean.** Family A replays 125 of 125 cited spans (Wilson 95% [0.970,
+  1]) and family B 119 of 119 ([0.969, 1]). No case is flagged for injection.
+- **Critical slots agree on 12 of 24 (0.50, [0.31, 0.69]).** 6 agree present, 6 agree
+  absent, 3 differ in value (2 value, 3 period components) and 9 are present against
+  absent. All 12 cases are `routed_pending_third`.
+
+  | Slot | slots | agree | classes |
+  |---|---|---|---|
+  | T1 `executed_amount` | 6 | 0 | 6 present vs absent |
+  | T1 `incremental_amount` | 6 | 4 | 4 agree present, 1 value differs, 1 present vs absent |
+  | T1 `remaining_authorization` | 6 | 6 | 6 agree absent |
+  | T2 `stated_amount` | 5 | 2 | 2 agree present, 2 value differs, 1 present vs absent |
+  | T3 `stated_quantity` | 1 | 0 | 1 present vs absent |
+
+- **One slot carries most of the disagreement.** On T1 `executed_amount` the families
+  split present against absent on all 6 cases, family A reporting a value and family B
+  none on 5 of them. Both cite only text that replays, so this looks like a definition
+  gap (what counts as an executed amount on a buyback disclosure) rather than a reading
+  error. A third family aimed at that slot decides which.
+- **Scorable view.** Joining the 12 to the 62 graded `MATCH` cases gives 74 cases and 142
+  critical slots at agreement 0.535 ([0.453, 0.615]): T1 0.598 over 102 slots, T2 0.361
+  over 36, T3 0.5 over 4. By source the graded v1 bodies sit at 0.542 over 118 and the
+  queue at 0.50 over 24. These are two-family agreement rates, not accuracy, and no queue
+  case is adjudicated until a third family reads it. The shortfall stays 526.
+- **Not re-scored.** The queue lives in `v2_queue/` only. See
+  `DSC:NEWS-IMPACT-V2-QUEUE-SCORING`.
+
 ### Eval receipts
 
 There is one `eval_receipt.v1` per family (`eval_receipt_fam_a.json`,
@@ -651,6 +686,9 @@ entries and 1 CORRECTION.
 | `tools/compare_gates_paired.py` | Finds the gates-1/gates-2 disagreement cases and scores the filter comparison (needs Python 3.12) |
 | `tools/build_v2_routing.py` | Finds the gated_v2 cases no card has shown, writes their census cards and scores the census verdicts (needs Python 3.12) |
 | `tools/score_benchmark.py` | Produces `summary.json`, `critical_slots.jsonl` and the receipts |
+| `tools/score_v2_queue.py` | Scores the two-family labels on the 12-case label queue and the 74-case scorable view, reusing `score_benchmark.py`'s grading (needs Python 3.12) |
+| `v2_queue/critical_slots.jsonl` | One row per critical slot of the 12 queue cases: class, both directional outcomes and mismatch components, no values |
+| `v2_queue/summary.json` | Queue span replay, critical-slot and field agreement, and the scorable view by template, prompt version and source, with the shortfall |
 
 Registration: sampler `ni-sampler-1`, sampling seed 20261014. Bootstrap 9,999 reps, seed
 20261012, coverage 0.95. Contract prefix `3edc7139`. Endpoints sha256 `061d1c21…`. Tape
@@ -702,6 +740,12 @@ PYTHONPATH=.:research/prophet_v4/news_to_business_impact_20261006/benchmark/resu
   research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_v2_routing.py \
   SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
   research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/v2_routing_verdicts.json
+# v2 label queue: score the canonicalised two-family returns and join the graded MATCH cases (Python 3.12)
+PYTHONPATH=.:research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools python3.12 \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/score_v2_queue.py \
+  --w2q SCRATCH_W2Q --results research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 \
+  --bench research/prophet_v4/news_to_business_impact_20261006/benchmark \
+  --out research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/v2_queue
 ```
 
 `build_audit.py` also writes `batch_*.txt` audit cards, `build_audit_absent.py` writes
@@ -725,26 +769,32 @@ control reports 40 hits and 0 misses. `build_audit_malformed.py` reproduces
 `build_gates2_validation.py` reproduces `audit/sample_gates2.json` and
 `audit/gates2_validation.json` byte for byte, and `compare_gates_paired.py` reproduces
 `audit/gates_paired.json` byte for byte. `build_v2_routing.py` reproduces
-`audit/v2_routing_spec.json` and `audit/v2_routing.json` byte for byte.
+`audit/v2_routing_spec.json` and `audit/v2_routing.json` byte for byte. `score_v2_queue.py`
+reproduces `v2_queue/critical_slots.jsonl` (`4efe674a…`) and `v2_queue/summary.json`
+(`99fd23b2…`) byte for byte. Its scratch inputs (bundles, label returns and agreement
+output) quote filing text and are not committed.
 
 ## Next
 
-1. Done: the filing-first widening (`ni-edgar-body-2`, `../gated_v2/`, 99 cases) and the
-   routing census above. Next, label the 12-case queue in `audit/v2_routing.json` with two
-   families under prompt-v1.2 when a labeling lane opens. Any new gate rule is frozen and
-   validated on cases no card has shown, under the same two bars
-   (`DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH`).
+1. Done: the filing-first widening (`ni-edgar-body-2`, `../gated_v2/`, 99 cases), the
+   routing census above, and two-family labels on the 12-case queue (`v2_queue/`, above).
+   Any new gate rule is frozen and validated on cases no card has shown, under the same two
+   bars (`DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH`).
 2. Run a third family (GLM after 2026-10-19 05:16Z) under prompt-v1.2 and annotation
-   guide-v1.2 on the disputed slots of gated-in cases only: set
+   guide-v1.2 on the disputed slots of gated-in cases only, starting with the 12 queue cases
+   and T1 `executed_amount`, where the two families split on all 6 T1 cases: set
    `LABEL_TEMPLATE=tools/label_batch.template.v1.2.txt` for `tools/build_label_lanes.py`.
-3. Record two candidates for the next contract version without editing the frozen v1
-   contract: a per-share basis for a T1 dividend amount, and a total-authorization slot.
+3. Record three candidates for the next contract version without editing the frozen v1
+   contract: a per-share basis for a T1 dividend amount, a total-authorization slot, and
+   what counts as an executed amount on a buyback disclosure.
 4. Decide per-slot against per-case publication.
 5. Add MiniMax cost capture.
 6. Grow the scorable set toward 600. It holds 74 (T1 34, T2 36, T3 4), a shortfall of
-   526. The next levers are a v2 re-run with `--as-of` on or after 2026-10-20 for the 113
-   open windows, recorded as a new draw, and issuer resolution for the 1,271 no-CIK
-   candidates through the event-ledger owner. Print T3's shortfall rather than fill it
-   with off-event cases.
+   526. The next lever is gated_v3 (`../issuer_fallback/README.md`,
+   `DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER`): one `ni-edgar-body-2` fetch with `--as-of` on
+   or after 2026-10-20 that settles the 113 open windows and reaches the 256 candidates the
+   fill-only issuer fallback resolves, recorded as a new draw. The 914 candidates that name
+   no ticker need a name rung. Print T3's shortfall rather than fill it with off-event
+   cases.
 7. A second auditor classes the 60 gates-2 validation cards, the 11 disagreement cases
    and the 30 v2 census cards when a labeling lane opens (GLM after 2026-10-19 05:16Z).
