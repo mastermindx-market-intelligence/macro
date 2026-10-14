@@ -1233,3 +1233,688 @@ def test_summary_md_tables_5_and_6(tmp_path: Path):
     assert t6_head in md2 and absent in md2
     t6_2 = md2.split(t6_head)[1]
     assert "| cell | row | stratum |" not in t6_2
+
+
+# ---------------------------------------------------------------------------
+# LR-REP-5 — prereg V2 §4 G2 positive-control catalog, §3.2 k-range split, the
+# §3.6 size-gate artifact and the §4.3/§4.4 power disposition. Synthetic records
+# and throw-away tmp_path git repos only; no test here runs a real simulation.
+# ---------------------------------------------------------------------------
+
+_ALL_PASS_PATHS = {
+    (g, h)
+    for g in ("defensive_sector", "broadening_proxy")
+    for h in ("H1", "H2", "H3")
+}
+# prereg V2 §4.3 slot set: G2 cells with δ ≤ 4.0 % AND N ≤ 40
+_G2_ELIGIBLE = (100, 101, 103, 104, 106, 107)
+_H1_POWER_LABEL = (
+    "H1: same arithmetic as V2 §4.3, reported for information; "
+    "the §4.3 rule is written for H2/H3"
+)
+_ARTIFACT_KEYS = {
+    "schema",
+    "rule",
+    "alpha",
+    "sized",
+    "min_m",
+    "required_cells",
+    "cells",
+    "rows",
+    "violations",
+    "not_executable",
+    "missing_cells",
+    "h1_null_method",
+    "prereg",
+    "harness",
+    "inputs",
+    "generated_utc",
+}
+_SIZE_ROW_KEYS = {
+    "cell_id",
+    "sigma",
+    "rho",
+    "n_target",
+    "n_sims",
+    "row",
+    "passes",
+    "m",
+    "pass_rate_ok",
+    "wilson_lower",
+    "envelope",
+    "part_i_ok",
+    "part_ii_ok",
+    "flag",
+}
+_CURVE_KEYS = {
+    "generator",
+    "cell_id",
+    "sigma",
+    "delta",
+    "rho",
+    "n_target",
+    "row",
+    "passes",
+    "m",
+    "pass_rate_ok",
+    "wilson_lower",
+    "wilson_upper",
+    "below_min_m",
+}
+
+
+def _git(repo: Path, *args: str) -> str:
+    proc = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repo),
+            "-c",
+            "user.name=t",
+            "-c",
+            "user.email=t@t",
+            "-c",
+            "commit.gpgsign=false",
+            *args,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
+    return proc.stdout.strip()
+
+
+def _tmp_harness_repo(root: Path) -> Path:
+    """Throw-away git repo holding byte copies of the real HARNESS_MODULES."""
+    from scripts.leadership_rotation_run import HARNESS_MODULES
+
+    real_root = Path(__file__).resolve().parents[1]
+    repo = root / "repo"
+    repo.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        ["git", "init", "-q", str(repo)], check=True, capture_output=True, text=True
+    )
+    for rel in HARNESS_MODULES:
+        dst = repo / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_bytes((real_root / rel).read_bytes())
+    _git(repo, "add", "--", *HARNESS_MODULES)
+    _git(repo, "commit", "-q", "-m", "harness bytes under test")
+    return repo
+
+
+def _stamped(records: list[dict], harness_id: str) -> list[dict]:
+    for rec in records:
+        rec["harness_id"] = harness_id
+    return records
+
+
+def _power_cell(cell_id: int, rows: dict[str, tuple[int, int]]) -> dict:
+    """Hand-built cell in the shape `_summarize_cell` emits (params from catalog)."""
+    from scripts.leadership_rotation_p0 import _catalog_map
+
+    sigma, delta, rho, n_target = _catalog_map()[cell_id]
+    by_gh: dict = {}
+    family: dict | None = None
+    for name, (passes, m) in rows.items():
+        lo, hi = wilson_interval(passes, m) if m else (None, None)
+        row = {
+            "passes": passes,
+            "n_ok": m,
+            "pass_rate_ok": passes / m if m else float("nan"),
+            "wilson_95_ok": {"lower": lo, "upper": hi},
+        }
+        if name == "family_any":
+            family = row
+        else:
+            by_gh[name] = row
+    summary: dict = {"by_group_hypothesis": by_gh}
+    if family is not None:
+        summary["family_any"] = family
+    n_sims = max([m for _, m in rows.values()], default=0)
+    return {
+        "cell_id": cell_id,
+        "sigma": sigma,
+        "delta": delta,
+        "rho": rho,
+        "n_target": n_target,
+        "n_sims": n_sims,
+        "n_ok": n_sims,
+        "summary": summary,
+    }
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_iter_g2_cells use cid = G2_CELL_ID_BASE + n_idx * len(G2_DELTAS) + d_idx (transposed id grid)
+def test_g2_catalog_ids_params_and_validation():
+    from scripts.leadership_rotation_p0 import (
+        G2_CELL_ID_BASE,
+        G2_CELL_IDS,
+        G2_DELTAS,
+        G2_N_TARGETS,
+        G2_RHO,
+        G2_SIGMA,
+        _catalog_map,
+        _iter_g2_cells,
+        _iter_grid_cells,
+        _validate_sim_record,
+    )
+
+    g1 = _iter_grid_cells()
+    g2 = _iter_g2_cells()
+    catalog = _catalog_map()
+
+    assert [c[0] for c in g1] == list(range(72))
+    assert G2_CELL_ID_BASE == 100
+    assert G2_SIGMA == 0.007 and G2_RHO == 0.5
+    assert G2_DELTAS == (0.01, 0.02, 0.04, 0.08)
+    assert G2_N_TARGETS == (20, 40, 80)
+    assert G2_CELL_IDS == tuple(range(100, 112))
+    assert [c[0] for c in g2] == list(G2_CELL_IDS)
+    # ids are disjoint from G1 and the union is the whole catalog
+    assert set(catalog) == set(range(72)) | set(range(100, 112))
+    assert len(catalog) == 84
+    for cid, sigma, delta, rho, n_target in g1:
+        assert catalog[cid] == (sigma, delta, rho, n_target)
+    for cid, sigma, delta, rho, n_target in g2:
+        assert catalog[cid] == (sigma, delta, rho, n_target)
+    assert catalog[100] == (0.007, 0.01, 0.5, 20)
+    assert catalog[104] == (0.007, 0.02, 0.5, 40)
+    assert catalog[111] == (0.007, 0.08, 0.5, 80)
+
+    _validate_sim_record({"cell_id": 105, "k": 0, "status": "OK"}, catalog)
+    _validate_sim_record(
+        {
+            "cell_id": 105,
+            "k": 3,
+            "status": "UNREACHED",
+            "harness_id": "a" * 64,
+            "h1_null_method": "V2_OPTION_A",
+        },
+        catalog,
+    )
+    with pytest.raises(ValueError, match="unknown cell_id 72"):
+        _validate_sim_record({"cell_id": 72, "k": 0, "status": "OK"}, catalog)
+    with pytest.raises(ValueError, match="unknown cell_id 112"):
+        _validate_sim_record({"cell_id": 112, "k": 0, "status": "OK"}, catalog)
+    with pytest.raises(ValueError, match="invalid harness_id"):
+        _validate_sim_record(
+            {"cell_id": 105, "k": 0, "status": "OK", "harness_id": "xyz"}, catalog
+        )
+    with pytest.raises(ValueError, match="invalid harness_id"):
+        _validate_sim_record(
+            {"cell_id": 105, "k": 0, "status": "OK", "harness_id": "A" * 64}, catalog
+        )
+    with pytest.raises(ValueError, match="invalid h1_null_method"):
+        _validate_sim_record(
+            {"cell_id": 105, "k": 0, "status": "OK", "h1_null_method": ""}, catalog
+        )
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:grid keep filtering an explicit id list against _iter_grid_cells() only, so G2 ids silently select nothing
+def test_grid_selects_g2_and_rejects_unknown_ids(monkeypatch):
+    from scripts import leadership_rotation_p0 as p0
+
+    calls: list[tuple] = []
+
+    def _fake_run_cell(sigma, delta, rho, n_target, sims, **kw):
+        calls.append((sigma, delta, rho, n_target, sims, kw))
+        return {"cell_id": kw["cell_id"], "sims": sims}
+
+    monkeypatch.setattr(p0, "run_cell", _fake_run_cell)
+
+    p0.grid(cells="g2", sims_null=7, sims_alt=3, k_start=5)
+    assert [c[5]["cell_id"] for c in calls] == list(range(100, 112))
+    assert all(c[4] == 3 for c in calls)  # every G2 cell has δ > 0 → sims_alt
+    assert all(c[5]["k_start"] == 5 for c in calls)
+    assert calls[0][:4] == (0.007, 0.01, 0.5, 20)
+    assert calls[4][:4] == (0.007, 0.02, 0.5, 40)
+    assert calls[-1][:4] == (0.007, 0.08, 0.5, 80)
+
+    calls.clear()
+    p0.grid(cells="all", sims_null=7, sims_alt=3)
+    assert [c[5]["cell_id"] for c in calls] == list(range(72))
+    assert all(c[5]["k_start"] == 0 for c in calls)
+    # G1 ids 0–5 are the δ = 0 cells at σ 0.70 %; id 6 is the first δ > 0 cell
+    assert calls[0][4] == 7 and calls[5][4] == 7
+    assert calls[6][4] == 3 and calls[71][4] == 3
+
+    calls.clear()
+    p0.grid(cells=[104, 0, 104], sims_null=2, sims_alt=1, k_start=400)
+    assert [c[5]["cell_id"] for c in calls] == [0, 104]  # ascending, de-duplicated
+    assert calls[0][4] == 2 and calls[1][4] == 1
+    assert all(c[5]["k_start"] == 400 for c in calls)
+
+    calls.clear()
+    with pytest.raises(ValueError, match="unknown cell id 999"):
+        p0.grid(cells=[999])
+    with pytest.raises(ValueError, match="unknown cell id 72"):
+        p0.grid(cells=[0, 72])
+    assert calls == []  # selection is validated before any cell is run
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:run_cell keep pending = range(sims) and read back every record of the cell regardless of k_start
+def test_run_cell_k_start_range_and_harness_stamp(tmp_path: Path, monkeypatch):
+    from scripts import leadership_rotation_p0 as p0
+
+    def _stub(sigma, delta, rho, n_target, cell_id, k):
+        return {
+            "cell_id": cell_id,
+            "k": k,
+            "status": "UNREACHED",
+            "n_formation": None,
+        }
+
+    monkeypatch.setattr(p0, "_run_one_sim", _stub)
+    out = tmp_path / "sims.jsonl"
+
+    first = p0.run_cell(0.007, 0.0, 0.5, 20, 3, cell_id=0, workers=1, out=out, k_start=5)
+    assert [r["k"] for r in first["sim_records"]] == [5, 6, 7]
+
+    second = p0.run_cell(0.007, 0.0, 0.5, 20, 2, cell_id=0, workers=1, out=out, k_start=0)
+    assert [r["k"] for r in second["sim_records"]] == [0, 1]
+
+    written = [json.loads(line) for line in out.read_text().splitlines() if line.strip()]
+    assert sorted(r["k"] for r in written) == [0, 1, 5, 6, 7]
+    assert len(written) == 5  # the second call re-ran nothing already on disk
+
+    runtime_id = p0._runtime_harness_id()
+    assert re.fullmatch(r"[0-9a-f]{64}", runtime_id)
+    assert all(r["harness_id"] == runtime_id for r in written)
+    assert p0._runtime_harness_id() == runtime_id  # lru_cached for the process
+
+    # a sibling cell in the same file is neither read back nor returned
+    other = p0.run_cell(0.007, 0.0, 0.5, 20, 1, cell_id=1, workers=1, out=out, k_start=5)
+    assert [r["k"] for r in other["sim_records"]] == [5]
+    assert all(r["cell_id"] == 1 for r in other["sim_records"])
+
+    with pytest.raises(ValueError, match="k_start"):
+        p0.run_cell(0.007, 0.0, 0.5, 20, 1, cell_id=0, k_start=-1)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:write_size_gate_artifact default h1_null_method to SIZE_GATE_H1_NULL_METHOD instead of reading it off the records
+def test_size_out_writes_v1_artifact(tmp_path: Path, capsys):
+    import hashlib
+
+    from scripts.leadership_rotation_p0 import harness_identity, main
+    from scripts.leadership_rotation_run import HARNESS_MODULES
+
+    repo = _tmp_harness_repo(tmp_path)
+    ident = harness_identity(repo)
+    recs = _stamped(
+        [
+            _sim_record(cid, k, pass_paths=_ALL_PASS_PATHS if k < 5 else None)
+            for cid in (0, 1, 2, 3, 4, 48)
+            for k in range(400)
+        ],
+        ident["id"],
+    )
+    src = tmp_path / "sims.jsonl"
+    _write_jsonl(src, recs)
+    out = tmp_path / "art" / "size_gate.json"
+
+    argv = [
+        "size",
+        "--in",
+        str(src),
+        "--min-m",
+        "400",
+        "--require-cells",
+        "0,1,2,3,4,48",
+        "--out",
+        str(out),
+        "--repo-root",
+        str(repo),
+    ]
+    assert main(argv) == 0
+    artifact = json.loads(out.read_text())
+
+    assert set(artifact) == _ARTIFACT_KEYS
+    assert artifact["schema"] == "leadership_rotation.size_gate.v1"
+    assert artifact["rule"] == "V2_SEC3_TWO_PART"
+    assert artifact["alpha"] == 0.025
+    assert artifact["sized"] is True
+    assert artifact["min_m"] == 400
+    assert artifact["required_cells"] == [0, 1, 2, 3, 4, 48]
+    assert artifact["violations"] == []
+    assert artifact["not_executable"] == []
+    assert artifact["missing_cells"] == []
+    assert [c["cell_id"] for c in artifact["cells"]] == [0, 1, 2, 3, 4, 48]
+    for cell in artifact["cells"]:
+        assert set(cell) == {
+            "cell_id",
+            "sigma",
+            "delta",
+            "rho",
+            "n_target",
+            "n_sims",
+            "n_ok",
+        }
+        assert cell["delta"] == 0.0 and cell["n_sims"] == 400 and cell["n_ok"] == 400
+    assert len(artifact["rows"]) == 6 * 7
+    assert all(set(row) == _SIZE_ROW_KEYS for row in artifact["rows"])
+
+    assert artifact["harness"]["head"] == _git(repo, "rev-parse", "HEAD")
+    assert set(artifact["harness"]["blobs"]) == set(HARNESS_MODULES)
+    for rel in HARNESS_MODULES:
+        assert artifact["harness"]["blobs"][rel] == _git(repo, "rev-parse", f"HEAD:{rel}")
+    assert artifact["prereg"] == {
+        "v1_blob": st.PREREG_BLOB_SHA,
+        "v2_blob": st.PREREG_V2_BLOB_SHA,
+        "v2_1_blob": st.PREREG_V2_1_BLOB_SHA,
+    }
+    assert artifact["h1_null_method"] == "V1_BOOTSTRAP_SUPERSEDED"
+
+    data = src.read_bytes()
+    assert artifact["inputs"]["files"] == [
+        {
+            "path": str(src),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data),
+        }
+    ]
+    assert artifact["inputs"]["records"] == 2400
+    assert artifact["inputs"]["duplicates"] == 0
+    assert artifact["inputs"]["skipped_partial"] == 0
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", artifact["generated_utc"])
+
+    # stdout stays the size JSON exactly as before; --out adds a file, not output
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["sized"] is True and "schema" not in printed
+
+    # the same population under the repaired §2 null records that method verbatim
+    for rec in recs:
+        rec["h1_null_method"] = "V2_OPTION_A"
+    src_a = tmp_path / "sims_option_a.jsonl"
+    _write_jsonl(src_a, recs)
+    out_a = tmp_path / "art" / "size_gate_option_a.json"
+    argv_a = [a if a != str(src) else str(src_a) for a in argv]
+    argv_a = [a if a != str(out) else str(out_a) for a in argv_a]
+    assert main(argv_a) == 0
+    assert json.loads(out_a.read_text())["h1_null_method"] == "V2_OPTION_A"
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_cmd_size write the artifact before the harness/method gates so a refused gate still leaves a file behind
+def test_size_out_refuses_dirty_mismatched_or_mixed(tmp_path: Path, capsys):
+    from scripts.leadership_rotation_p0 import harness_identity, main
+
+    def _run(tag: str, recs: list[dict], repo: Path) -> tuple[int, Path]:
+        src = tmp_path / f"{tag}.jsonl"
+        _write_jsonl(src, recs)
+        out = tmp_path / f"{tag}_gate.json"
+        rc = main(
+            [
+                "size",
+                "--in",
+                str(src),
+                "--out",
+                str(out),
+                "--repo-root",
+                str(repo),
+            ]
+        )
+        return rc, out
+
+    def _null_recs(rid: str) -> list[dict]:
+        return _stamped([_sim_record(0, k) for k in range(20)], rid)
+
+    # (a) a harness module modified but not committed: the working bytes are not
+    #     the bytes HEAD records, so nothing may be pinned to them
+    repo_a = _tmp_harness_repo(tmp_path / "a")
+    rid_a = harness_identity(repo_a)["id"]
+    dirty = repo_a / "scripts" / "leadership_rotation_inference.py"
+    dirty.write_bytes(dirty.read_bytes() + b"\n# uncommitted edit\n")
+    rc, out = _run("dirty", _null_recs(rid_a), repo_a)
+    assert rc == 2 and not out.exists()
+    err = capsys.readouterr().err
+    assert "HARNESS_DIRTY" in err
+    assert "scripts/leadership_rotation_inference.py" in err
+
+    # (b) one record stamped by different harness bytes
+    repo_b = _tmp_harness_repo(tmp_path / "b")
+    recs_b = _null_recs(harness_identity(repo_b)["id"])
+    recs_b[7]["harness_id"] = "0" * 64
+    rc, out = _run("mismatch", recs_b, repo_b)
+    assert rc == 2 and not out.exists()
+    err = capsys.readouterr().err
+    assert "HARNESS_MISMATCH" in err and "cell=0" in err and "k=7" in err
+
+    # (c) a δ = 0 population mixing two H1 null methods
+    repo_c = _tmp_harness_repo(tmp_path / "c")
+    recs_c = _null_recs(harness_identity(repo_c)["id"])
+    recs_c[3]["h1_null_method"] = "V2_OPTION_A"
+    rc, out = _run("mixed", recs_c, repo_c)
+    assert rc == 2 and not out.exists()
+    err = capsys.readouterr().err
+    assert "MIXED_H1_NULL_METHOD" in err
+    assert "V1_BOOTSTRAP_SUPERSEDED" in err and "V2_OPTION_A" in err
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_cmd_size return 2 without the artifact when result["sized"] is False (a failing re-size hidden instead of reported)
+def test_size_out_written_when_not_sized(tmp_path: Path):
+    from scripts.leadership_rotation_p0 import harness_identity, main
+
+    repo = _tmp_harness_repo(tmp_path)
+    rid = harness_identity(repo)["id"]
+    recs = _stamped(
+        [
+            _sim_record(
+                0, k, pass_paths={("defensive_sector", "H1")} if k < 30 else None
+            )
+            for k in range(400)
+        ],
+        rid,
+    )
+    src = tmp_path / "not_sized.jsonl"
+    _write_jsonl(src, recs)
+    out = tmp_path / "gate.json"
+    rc = main(
+        [
+            "size",
+            "--in",
+            str(src),
+            "--min-m",
+            "400",
+            "--out",
+            str(out),
+            "--repo-root",
+            str(repo),
+        ]
+    )
+    assert rc == 1
+    artifact = json.loads(out.read_text())
+    assert artifact["sized"] is False
+    row = [
+        v
+        for v in artifact["violations"]
+        if v["cell_id"] == 0 and v["row"] == "defensive_sector/H1"
+    ]
+    assert len(row) == 1
+    assert row[0]["passes"] == 30 and row[0]["m"] == 400
+    assert row[0]["flag"] == "SIZE_VIOLATION"
+    assert row[0]["part_i_ok"] is False and row[0]["part_ii_ok"] is False
+    assert artifact["missing_cells"] == []
+    assert artifact["h1_null_method"] == "V1_BOOTSTRAP_SUPERSEDED"
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:power_summary count an eligible slot with m < min_m as measured, so a 60-path 0.90 slot declares POWERED_IN_PRINCIPLE
+def test_power_summary_curve_shape_and_dispositions():
+    from scripts.leadership_rotation_p0 import power_summary
+
+    # ---- (i) one eligible slot reaches 0.55 -> POWERED_IN_PRINCIPLE ----------
+    res = power_summary([_power_cell(104, {"defensive_sector/H2": (55, 100)})])
+    assert res["rule"] == "V2_SEC4_POWERED_IN_PRINCIPLE"
+    assert res["threshold"] == 0.50
+    assert res["max_delta"] == 0.04 and res["max_n"] == 40 and res["min_m"] == 100
+    h2 = res["dispositions"]["H2"]
+    assert h2["disposition"] == "POWERED_IN_PRINCIPLE"
+    ds = h2["by_group"]["defensive_sector"]
+    assert ds["disposition"] == "POWERED_IN_PRINCIPLE"
+    assert ds["best"]["cell_id"] == 104
+    assert ds["best"]["pass_rate_ok"] == 0.55
+    assert ds["best"]["delta"] == 0.02 and ds["best"]["n_target"] == 40
+    assert ds["best"]["wilson_lower"] <= 0.55 <= ds["best"]["wilson_upper"]
+    assert ds["unmeasured_cells"] == [100, 101, 103, 106, 107]
+    # an unmeasured group is never a failure
+    bp = h2["by_group"]["broadening_proxy"]
+    assert bp["disposition"] == "NOT_EVALUATED"
+    assert bp["best"] is None
+    assert bp["unmeasured_cells"] == list(_G2_ELIGIBLE)
+    assert res["dispositions"]["H1"]["label"] == _H1_POWER_LABEL
+    assert "label" not in res["dispositions"]["H2"]
+    assert "label" not in res["dispositions"]["H3"]
+    assert res["dispositions"]["H3"]["disposition"] == "NOT_EVALUATED"
+
+    # ---- (ii) every eligible slot measured below 0.50; 0.90 only where §4.3
+    #           does not look (δ 8 % and N 80) -> NOT_EXECUTABLE ---------------
+    ds_passes = {100: 10, 101: 12, 103: 14, 104: 20, 106: 16, 107: 20}
+    bp_passes = {100: 30, 101: 30, 103: 14, 104: 16, 106: 18, 107: 12}
+    cells = []
+    for cid in sorted(set(ds_passes) | {102, 109, 110}):
+        rows = {
+            "defensive_sector/H2": (ds_passes.get(cid, 90), 100),
+            "defensive_sector/H3": (ds_passes.get(cid, 90), 100),
+            "broadening_proxy/H2": (bp_passes.get(cid, 90), 100),
+            "broadening_proxy/H3": (bp_passes.get(cid, 90), 100),
+        }
+        cells.append(_power_cell(cid, rows))
+    res = power_summary(cells)
+    for h in ("H2", "H3"):
+        assert res["dispositions"][h]["disposition"] == "NOT_EXECUTABLE"
+        for g in ("defensive_sector", "broadening_proxy"):
+            entry = res["dispositions"][h]["by_group"][g]
+            assert entry["disposition"] == "NOT_EXECUTABLE"
+            assert entry["unmeasured_cells"] == []
+            assert entry["best"]["cell_id"] in _G2_ELIGIBLE
+    # tie at the top point rate: smaller δ wins (104 at δ 2 % beats 107 at δ 4 %)
+    assert (
+        res["dispositions"]["H2"]["by_group"]["defensive_sector"]["best"]["cell_id"]
+        == 104
+    )
+    assert (
+        res["dispositions"]["H2"]["by_group"]["defensive_sector"]["best"][
+            "pass_rate_ok"
+        ]
+        == 0.20
+    )
+    # tie at the top rate AND equal δ: smaller N wins (100 at N 20 beats 101 at N 40)
+    assert (
+        res["dispositions"]["H2"]["by_group"]["broadening_proxy"]["best"]["cell_id"]
+        == 100
+    )
+    # the ineligible cells are still on the curve; they simply cannot qualify
+    off_slot = [e for e in res["curve"] if e["cell_id"] in (102, 109, 110)]
+    assert len(off_slot) == 3 * 4
+    assert all(e["pass_rate_ok"] == 0.90 for e in off_slot)
+
+    # ---- (iii) one eligible slot missing -> NOT_EVALUATED, id named ----------
+    res = power_summary(
+        [
+            _power_cell(cid, {"defensive_sector/H2": (10, 100)})
+            for cid in _G2_ELIGIBLE
+            if cid != 103
+        ]
+    )
+    ds = res["dispositions"]["H2"]["by_group"]["defensive_sector"]
+    assert ds["disposition"] == "NOT_EVALUATED"
+    assert ds["unmeasured_cells"] == [103]
+    assert ds["best"]["cell_id"] == 100
+
+    # ---- (iv) an under-M slot never qualifies --------------------------------
+    res = power_summary(
+        [_power_cell(100, {"defensive_sector/H2": (54, 60)})]
+        + [
+            _power_cell(cid, {"defensive_sector/H2": (10, 100)})
+            for cid in _G2_ELIGIBLE
+            if cid != 100
+        ]
+    )
+    ds = res["dispositions"]["H2"]["by_group"]["defensive_sector"]
+    assert ds["disposition"] == "NOT_EVALUATED"
+    assert ds["unmeasured_cells"] == [100]
+    assert ds["best"]["cell_id"] == 101
+    under = next(
+        e
+        for e in res["curve"]
+        if e["cell_id"] == 100 and e["row"] == "defensive_sector/H2"
+    )
+    assert under["below_min_m"] is True
+    assert under["m"] == 60 and under["pass_rate_ok"] == 0.9
+    assert all(e["below_min_m"] is False for e in res["curve"] if e["m"] >= 100)
+
+    # ---- curve shape: labels, ordering, Wilson bracketing, δ = 0 excluded ----
+    res = power_summary(
+        [
+            _power_cell(18, {"defensive_sector/H2": (5, 100)}),
+            _power_cell(111, {"defensive_sector/H2": (90, 100), "family_any": (90, 100)}),
+            _power_cell(100, {"defensive_sector/H2": (10, 0)}),
+            _power_cell(0, {"defensive_sector/H2": (5, 100)}),
+        ]
+    )
+    gens = {(e["cell_id"], e["generator"]) for e in res["curve"]}
+    assert (18, "G1") in gens
+    assert (100, "G2") in gens and (111, "G2") in gens
+    assert all(e["cell_id"] != 0 for e in res["curve"])  # δ = 0 is size, not power
+    order = [
+        (e["generator"], e["n_target"], e["delta"], e["cell_id"], e["row"])
+        for e in res["curve"]
+    ]
+    assert order == sorted(order)
+    for e in res["curve"]:
+        assert set(e) == _CURVE_KEYS
+        if e["m"] > 0:
+            assert e["pass_rate_ok"] == e["passes"] / e["m"]
+            assert e["wilson_lower"] <= e["pass_rate_ok"] <= e["wilson_upper"]
+        else:
+            assert e["pass_rate_ok"] is None
+            assert e["wilson_lower"] is None and e["wilson_upper"] is None
+            assert e["below_min_m"] is True
+    # family_any is reported on the curve but is never a (group, hypothesis) slot
+    assert any(e["row"] == "family_any" for e in res["curve"])
+    assert all(
+        res["dispositions"][h]["by_group"][g]["best"] is None
+        for h in ("H1", "H2", "H3")
+        for g in ("defensive_sector", "broadening_proxy")
+    )
+    assert res["dispositions"]["H2"]["disposition"] == "NOT_EVALUATED"
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:_write_summary_md emit the Table 2b separator with the Table 1 column count
+def test_summary_md_power_curve_table(tmp_path: Path):
+    recs = [
+        _sim_record(18, 0),
+        _sim_record(18, 1),
+        _sim_record(100, 0),
+        _sim_record(104, 0, pass_paths={("defensive_sector", "H2")}),
+        _sim_record(104, 1),
+    ]
+    jout, mout = _run_p0_summary(tmp_path, recs)
+    md = mout.read_text()
+    head = "## Table 2b Power curve and V2 §4 disposition"
+    assert head in md
+    section = md.split(head)[1].split("## Table 3")[0]
+    lines = section.splitlines()
+    hdr = "| generator | cell | δ (pts) | N | row | passes/M | point | Wilson 95 % |"
+    i = lines.index(hdr)
+    sep = lines[i + 1]
+    assert re.fullmatch(r"\|(?:---\|)+", sep)
+    assert sep.count("---") == hdr.count("|") - 1
+    assert "| G1 | 18 |" in section
+    assert "| G2 | 100 |" in section
+    assert re.search(
+        r"\| G2 \| 104 \| 2\.00 \| 40 \| defensive_sector/H2 \| 1/2 \| 0\.500 \| \[\d\.\d+, \d\.\d+\] \|",
+        section,
+    )
+    assert "| n/a |" not in section  # every row above has m > 0
+    for h in ("H1", "H2", "H3"):
+        assert re.search(rf"^- {h}: \w+ \(defensive_sector \w+; broadening_proxy \w+\)", section, re.M)
+    assert _H1_POWER_LABEL in section
+
+    payload = json.loads(jout.read_text())
+    assert payload["power"]["rule"] == "V2_SEC4_POWERED_IN_PRINCIPLE"
+    assert set(payload["power"]["dispositions"]) == {"H1", "H2", "H3"}
+    assert payload["power"]["dispositions"]["H1"]["label"] == _H1_POWER_LABEL
+    assert {(e["cell_id"], e["generator"]) for e in payload["power"]["curve"]} == {
+        (18, "G1"),
+        (100, "G2"),
+        (104, "G2"),
+    }
