@@ -626,3 +626,715 @@ def test_selected_basis_identity_marks_sr3_as_non_effr():
     assert ms["selected_basis"] == "zq_effr_monthly_average"
     assert ms["selected_is_effr"] is True
     assert "zq" not in ms["missing_source"]
+
+# =========================================================================== #
+# D1 — EFFR monthly-identity reading of the ZQ strip (RIC-INCLUDED-CORE, R-1)
+#
+# All D1 tests preserve every pre-existing test (only ADDED lines after this).
+# =========================================================================== #
+import datetime as _dt   # noqa: E402  — kept local to this block
+import pytest as _pt     # noqa: E402  — kept local to this block
+import engine.rates_command_basis as _rcb   # noqa: E402
+import engine.event_calendar as _ec        # noqa: E402
+
+
+# STEP 0(b) golden: byte-for-byte capture of fp.compute(... metadata=md ...).implied_source_meta
+# at SOURCE BASE 582660ca342... — copied verbatim from /tmp/d1_golden.py output
+_GOLDEN_D0_META = '''{"authority": "display_only", "cutoff": null, "dots": {"evidence_class": "survey_participant_projection", "first_public_evidence": null, "first_public_precision": "unknown", "limitations": ["sep_release_date_unknown", "participant appropriate-policy projection, not a committee promise or probability"], "reference_end": "2026-12-31", "reference_start": "2026-12-01", "rights": "public_official", "source": "fred:FEDTARMD", "source_version": null, "subject": "sep_median_2026", "target": "sep_fed_funds_year_end_median", "target_epoch": "2026-12-31", "value_state": "present", "vintage": null}, "gap": {"left": "dots", "limitations": ["participant appropriate-policy projection, not a committee promise or probability"], "market_horizon_months": 6, "market_reference_end": "2026-12-31", "market_reference_start": "2026-11-01", "reason": null, "right": "zq", "rule_id": "sep_vs_market_year_end.v1", "status": "comparable_after_transformation", "transform": "year_end_interval_match"}, "legacy_value_basis_note": null, "missing_source": ["sofr"], "schema": "fed_path_source_meta.v1", "selected_basis": "zq_effr_monthly_average", "selected_is_effr": true, "selected_strip": "zq", "strips": {"sofr": {"averaging_law": "compounded_business_day", "basket_or_index": "SOFR", "contracts": [{"centre_months": null, "contract_code": "SR3M26", "exchange_suffix": "CME", "listing_exchange": "CME", "reference_end": "2026-09-15", "reference_start": "2026-06-17", "vendor_symbol": "SR3M26.CME"}, {"centre_months": null, "contract_code": "SR3U26", "exchange_suffix": "CME", "listing_exchange": "CME", "reference_end": "2026-12-15", "reference_start": "2026-09-16", "vendor_symbol": "SR3U26.CME"}, {"centre_months": null, "contract_code": "SR3Z26", "exchange_suffix": "CME", "listing_exchange": "CME", "reference_end": "2027-03-16", "reference_start": "2026-12-16", "vendor_symbol": "SR3Z26.CME"}, {"centre_months": null, "contract_code": "SR3H27", "exchange_suffix": "CME", "listing_exchange": "CME", "reference_end": "2027-06-15", "reference_start": "2027-03-17", "vendor_symbol": "SR3H27.CME"}, {"centre_months": null, "contract_code": "SR3M27", "exchange_suffix": "CME", "listing_exchange": "CME", "reference_end": "2027-09-14", "reference_start": "2027-06-16", "vendor_symbol": "SR3M27.CME"}], "evidence_class": "market_implied_expectation", "limitations": ["price_type_unknown"], "observation_precision": "unknown", "observation_time": null, "price_type": null, "quality": [], "rate_index": "SOFR", "rights": "unknown", "source": "rate_futures:SR3", "source_version": null, "target": "sofr_compounded_imm_quarter", "value_state": "missing", "vendor": null, "vintage": null}, "zq": {"averaging_law": "arithmetic_calendar_day", "basket_or_index": "EFFR", "contracts": [{"centre_months": 1.5, "contract_code": "ZQN26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-07-31", "reference_start": "2026-07-01", "vendor_symbol": "ZQN26.CBT"}, {"centre_months": 2.5, "contract_code": "ZQQ26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-08-31", "reference_start": "2026-08-01", "vendor_symbol": "ZQQ26.CBT"}, {"centre_months": 3.5, "contract_code": "ZQU26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-09-30", "reference_start": "2026-09-01", "vendor_symbol": "ZQU26.CBT"}, {"centre_months": 4.5, "contract_code": "ZQV26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-10-31", "reference_start": "2026-10-01", "vendor_symbol": "ZQV26.CBT"}, {"centre_months": 5.5, "contract_code": "ZQX26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-11-30", "reference_start": "2026-11-01", "vendor_symbol": "ZQX26.CBT"}, {"centre_months": 6.5, "contract_code": "ZQZ26", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2026-12-31", "reference_start": "2026-12-01", "vendor_symbol": "ZQZ26.CBT"}, {"centre_months": 7.5, "contract_code": "ZQF27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-01-31", "reference_start": "2027-01-01", "vendor_symbol": "ZQF27.CBT"}, {"centre_months": 8.5, "contract_code": "ZQG27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-02-28", "reference_start": "2027-02-01", "vendor_symbol": "ZQG27.CBT"}, {"centre_months": 9.5, "contract_code": "ZQH27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-03-31", "reference_start": "2027-03-01", "vendor_symbol": "ZQH27.CBT"}, {"centre_months": 10.5, "contract_code": "ZQJ27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-04-30", "reference_start": "2027-04-01", "vendor_symbol": "ZQJ27.CBT"}, {"centre_months": 11.5, "contract_code": "ZQK27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-05-31", "reference_start": "2027-05-01", "vendor_symbol": "ZQK27.CBT"}, {"centre_months": 12.5, "contract_code": "ZQM27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-06-30", "reference_start": "2027-06-01", "vendor_symbol": "ZQM27.CBT"}, {"centre_months": 13.5, "contract_code": "ZQN27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-07-31", "reference_start": "2027-07-01", "vendor_symbol": "ZQN27.CBT"}, {"centre_months": 14.5, "contract_code": "ZQQ27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-08-31", "reference_start": "2027-08-01", "vendor_symbol": "ZQQ27.CBT"}, {"centre_months": 15.5, "contract_code": "ZQU27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-09-30", "reference_start": "2027-09-01", "vendor_symbol": "ZQU27.CBT"}, {"centre_months": 16.5, "contract_code": "ZQV27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-10-31", "reference_start": "2027-10-01", "vendor_symbol": "ZQV27.CBT"}, {"centre_months": 17.5, "contract_code": "ZQX27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-11-30", "reference_start": "2027-11-01", "vendor_symbol": "ZQX27.CBT"}, {"centre_months": 18.5, "contract_code": "ZQZ27", "exchange_suffix": "CBT", "listing_exchange": "CBOT", "reference_end": "2027-12-31", "reference_start": "2027-12-01", "vendor_symbol": "ZQZ27.CBT"}], "evidence_class": "market_implied_expectation", "limitations": ["price_type_unknown"], "observation_precision": "day", "observation_time": "2026-06-11", "price_type": null, "quality": [], "rate_index": "EFFR", "rights": "unknown", "source": "rate_futures:ZQ", "source_version": null, "target": "effr_monthly_average", "value_state": "present", "vendor": null, "vintage": null}, "zq_front": {"averaging_law": "arithmetic_calendar_day", "evidence_class": "market_implied_expectation", "limitations": ["observation_time_unknown", "contract_reference_unknown"], "observation_precision": "unknown", "observation_time": null, "rate_index": "EFFR", "reference_end": null, "reference_start": null, "source": "zq_front_30d", "value_state": "present"}}}'''
+
+
+def _d0_meta_call():
+    """Reconstruct the call that produced _GOLDEN_D0_META on the base."""
+    md = {"zq": {"observation_date": "2026-06-11", "contracts": _zq_monthlies()},
+          "sofr": {"observation_date": "2026-06-11", "contracts": _SR3_QUARTERS}}
+    return fp.compute(
+        asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+        target_low=4.25, target_high=4.50, dot_series=_dots(),
+        zq_path_row=dict(_F1_ZQ), sofr_path_row=None, zq_front_implied=4.31,
+        ntfs=-0.42, curve_tp_adj=-0.15, rate_exp_proxy=-0.55, cfg=_CFG,
+        metadata=md)
+
+
+def _fixture8_md():
+    """Fixture shared by tests 8/10/11: asof=2026-10-14, Q4 2026 ZQ strip, effr 4.10."""
+    return {
+        "zq": {"observation_date": "2026-10-13",
+               "contract_closes": {"ZQV26.CBT": 95.8, "ZQX26.CBT": 95.4,
+                                   "ZQZ26.CBT": 95.0}},
+        "effr": {"value": 4.10, "observation_date": "2026-10-13",
+                 "source": "fred:DFF"},
+    }
+
+
+def _make_md(zq_observation_date, closes, effr=None, target=None,
+             effr_basis=None):
+    md = {"zq": {"observation_date": zq_observation_date,
+                 "contract_closes": closes}}
+    if effr is not None:
+        md["effr"] = effr
+    if target is not None:
+        md["target_range"] = target
+    if effr_basis is not None:
+        md["effr_basis"] = effr_basis
+    return md
+
+
+# --------------------------------------------------------------------------- #
+# 1 — day-weighted identity canonical witness
+# --------------------------------------------------------------------------- #
+def test_d1_day_weighted_identity_canonical_witness(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  effr={"value": 4.50, "observation_date": "2026-06-11",
+                        "source": "fred:DFF"},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "computed"
+    assert block["cutoff_effective"] == "2026-06-13"
+    assert block["cutoff_basis"] == "live_asof_plus_1d"
+    assert block["effective_date_law"] == "decision_plus_1d"
+    assert block["calendar_years_covered"] == [2026]
+    assert block["assumptions"] == [
+        "effective_date_convention=decision_plus_1d", "no_intermeeting_change",
+        "effr_level_constant_between_effective_dates"]
+    assert len(block["months"]) == 1
+    june = block["months"][0]
+    assert june["contract"] == "ZQM26.CBT"
+    assert june["reference_start"] == "2026-06-01"
+    assert june["reference_end"] == "2026-06-30"
+    assert june["month_days"] == 30
+    assert _pt.approx(june["monthly_average"]["value"]) == 4.25
+    assert june["monthly_average"]["rate_index"] == "EFFR"
+    assert june["effective_dates_inside"] == ["2026-06-16"]
+    assert june["status"] == "identified_conditional"
+    segs = june["identification"]["identified"]["segments"]
+    assert segs[0] == ["2026-06-01", "2026-06-16", 4.5]
+    assert _pt.approx(segs[1][2]) == 4.0
+    assert segs[1][0] == "2026-06-16"
+    assert segs[1][1] == "2026-06-30"
+    assert _pt.approx(june["identification"]["identified"]["end_rate"]) == 4.0
+    assert june["pre_change_rate"] == 4.5
+    assert june["pre_change_rate_source"] == "observed_effr:fred:DFF@2026-06-11"
+    assert june["reason"] == "pre_change_rate:observed_effr:fred:DFF@2026-06-11"
+    assert june["weights"] == {"days_pre": 15, "days_post": 15,
+                               "realised_days": 11, "remaining_days": 19}
+    assert june["post_rate_sensitivity"] == 2.0
+    # A16 witness:
+    assert _pt.approx((june["monthly_average"]["value"] - 4.5) * 100) == -25
+    assert _pt.approx((june["identification"]["identified"]["end_rate"]
+                       - 4.5) * 100) == -50
+    # vs_target_midpoint ALWAYS computed:
+    vt = june["vs_target_midpoint"]
+    assert vt["status"] == "comparable_after_transformation"
+    # measured gap: 4.50 - 4.375 = 0.125 -> 12.5 bp (single_day_gap limitation)
+    assert any("single_day_gap" == lim for lim in block["limitations"])
+
+
+# --------------------------------------------------------------------------- #
+# 2 — same average without pre rate is not unique
+# --------------------------------------------------------------------------- #
+def test_d1_same_average_without_pre_rate_is_not_unique(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75})  # avg = 4.25, no effr/target
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    june = block["months"][0]
+    assert june["status"] == "missing_inputs"
+    assert june["identification"] is not None
+    assert june["identification"]["identified"] is None
+    assert june["identification"]["missing"] and "pre_change_rate" in june["identification"]["missing"]
+    assert june["pre_change_rate"] is None
+    assert june["reason"] == "pre_change_rate_unavailable"
+    # prove two paths share 4.25 average under 15/15 split:
+    for (r_pre, r_post) in [(4.50, 4.00), (4.40, 4.10)]:
+        assert _pt.approx(r_pre * 0.5 + r_post * 0.5) == 4.25
+
+
+# --------------------------------------------------------------------------- #
+# 3 — SR3 contract is refused and never solves
+# --------------------------------------------------------------------------- #
+def test_d1_sr3_contract_is_refused_never_solved(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75,
+                                 "SR3U26.CME": 95.9,
+                                 "GARBAGE": 50.0})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    refused = {(r["contract"], r["reason"]) for r in block["refused_contracts"]}
+    assert ("SR3U26.CME", "basis_mismatch:rate_index") in refused
+    assert ("GARBAGE", "unknown_basis:rate_index") in refused
+    # only ZQM26 in months:
+    assert len(block["months"]) == 1
+    assert block["months"][0]["contract"] == "ZQM26.CBT"
+    # adding metadata["sofr"]["contract_closes"] leaves the byte-identical block
+    md_with_sofr = dict(md)
+    md_with_sofr["sofr"] = {"observation_date": "2026-06-11",
+                            "contract_closes": {"SR3Z26.CME": 95.85}}
+    out2 = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                      target_low=None, target_high=None, dot_series=None,
+                      zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                      zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                      rate_exp_proxy=None, cfg=_CFG, metadata=md_with_sofr)
+    blob1 = json.dumps(out["implied_source_meta"]["effr_meeting_path"],
+                        sort_keys=True, default=str)
+    blob2 = json.dumps(out2["implied_source_meta"]["effr_meeting_path"],
+                        sort_keys=True, default=str)
+    assert blob1 == blob2
+    # B0 witness — SR3 SOFR compounded vs ZQ EFFR arithmetic: not_comparable
+    sr3_obs = _rcb.qualify_observation(4.32, {
+        "subject": "sr3_quarter_avg", "evidence_class": "market_implied_expectation",
+        "unit": "pct_ann_rate", "target": "sofr_compounded_imm_quarter",
+        "basket_or_index": "SOFR", "rate_index": "SOFR",
+        "averaging_law": "compounded_business_day",
+        "reference_start": "2026-06-17", "reference_end": "2026-09-15",
+        "observation_time": "2026-06-15", "observation_precision": "day",
+        "first_public_evidence": "2026-06-15", "first_public_precision": "day",
+        "rights": "public_official", "source": "rate_futures:SR3",
+    }, "2026-06-15")
+    zq_obs = _rcb.qualify_observation(4.25, {
+        "subject": "zq_month_avg", "evidence_class": "market_implied_expectation",
+        "unit": "pct_ann_rate", "target": "effr_monthly_average",
+        "basket_or_index": "EFFR", "rate_index": "EFFR",
+        "averaging_law": "arithmetic_calendar_day",
+        "reference_start": "2026-06-01", "reference_end": "2026-06-30",
+        "observation_time": "2026-06-11", "observation_precision": "day",
+        "first_public_evidence": "2026-06-11", "first_public_precision": "day",
+        "rights": "unknown", "source": "yfinance:ZQM26.CBT",
+    }, "2026-06-15")
+    res = _rcb.compare_qualified(sr3_obs, zq_obs, _rcb.RULES["sr3_vs_zq.v1"])
+    assert res.status == "not_comparable"
+    assert res.difference is None
+
+
+# --------------------------------------------------------------------------- #
+# 4 — target route without gap is not_identified; with explicit gap resolves
+# --------------------------------------------------------------------------- #
+def test_d1_target_route_without_gap_is_not_identified_never_zero(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    # no effr, no effr_basis; target present
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    june = out["implied_source_meta"]["effr_meeting_path"]["months"][0]
+    assert june["status"] == "not_identified"
+    assert june["reason"] == "underidentified:effr_target_basis"
+    assert june["identification"] is None
+    assert june["pre_change_rate"] is None
+    assert out["implied_source_meta"]["effr_meeting_path"]["gap"]["usable"] is False
+    assert out["implied_source_meta"]["effr_meeting_path"]["gap"]["value_bp"] is None
+    assert june["vs_target_midpoint"]["status"] == "not_identified"
+    assert june["vs_target_midpoint"]["difference"] is None
+
+    # with effr_basis explicit
+    md2 = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                   target={"low": 4.25, "high": 4.50,
+                           "observation_date": "2026-06-11"},
+                   effr_basis={"effr_minus_midpoint_bp": -8.0,
+                               "observation_date": "2026-06-10",
+                               "source": "fixture"})
+    out2 = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                      target_low=4.25, target_high=4.50, dot_series=None,
+                      zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                      zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                      rate_exp_proxy=None, cfg=_CFG, metadata=md2)
+    june2 = out2["implied_source_meta"]["effr_meeting_path"]["months"][0]
+    assert june2["status"] == "identified_conditional"
+    assert _pt.approx(june2["pre_change_rate"]) == 4.295
+    assert june2["pre_change_rate_source"].startswith("target_midpoint_plus_gap:explicit:")
+    assert out2["implied_source_meta"]["effr_meeting_path"]["gap"]["usable"] is True
+
+
+# --------------------------------------------------------------------------- #
+# 5 — measured gap vs target midpoint
+# --------------------------------------------------------------------------- #
+def test_d1_measured_gap_comparison_subtracts_gap(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.7},
+                  effr={"value": 4.33, "observation_date": "2026-06-11",
+                        "source": "fred:DFF"},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert _pt.approx(block["gap"]["value_bp"]) == -4.5
+    assert block["gap"]["source"].startswith("measured:")
+    june = block["months"][0]
+    assert june["vs_target_midpoint"]["status"] == "comparable_after_transformation"
+    assert _pt.approx(june["vs_target_midpoint"]["difference"], abs=1e-9) == -3.0
+    assert "effr_minus_midpoint_bp=-4.5" in june["vs_target_midpoint"]["assumptions"]
+
+
+# --------------------------------------------------------------------------- #
+# 6 — post-cutoff evidence is refused and never leaks
+# --------------------------------------------------------------------------- #
+def test_d1_post_cutoff_evidence_is_refused_never_leaks(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    cutoff = "2026-06-10"
+    # effr obs_date == cutoff; first_public = obs_date+1 = 06-11 > cutoff -> refused
+    md = _make_md("2026-06-09", {"ZQM26.CBT": 95.75},
+                  effr={"value": 4.4321, "observation_date": "2026-06-10",
+                        "source": "fred:DFF"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md, cutoff=cutoff)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    # no source starts with observed_effr:
+    for m in block["months"]:
+        assert not (m["pre_change_rate_source"] or "").startswith("observed_effr:")
+    blob = json.dumps(block, default=str)
+    assert "4.4321" not in blob
+
+    # part B: ZQ strip dated after cutoff -> strips["zq"]["value_state"]="refused"
+    md_after = _make_md("2026-06-11", {"ZQM26.CBT": 95.75})
+    out2 = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                      target_low=None, target_high=None, dot_series=None,
+                      zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                      zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                      rate_exp_proxy=None, cfg=_CFG, metadata=md_after,
+                      cutoff=cutoff)
+    block2 = out2["implied_source_meta"]["effr_meeting_path"]
+    assert block2["status"] == "unavailable"
+    assert block2["reason"] == "zq_strip_refused"
+    assert block2["months"] == []
+    assert block2["refused_contracts"] == []
+    assert json.dumps(block2, default=str).find("4.25") == -1
+
+
+# --------------------------------------------------------------------------- #
+# 7 — uncovered year is meeting_calendar_unknown
+# --------------------------------------------------------------------------- #
+def test_d1_uncovered_year_is_meeting_calendar_unknown(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-03-18", True)])  # only 2026 dates
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75,
+                                 "ZQF27.CBT": 95.0})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    months = out["implied_source_meta"]["effr_meeting_path"]["months"]
+    jan = next(m for m in months if m["contract"] == "ZQF27.CBT")
+    assert jan["status"] == "missing_inputs"
+    assert jan["reason"] == "meeting_calendar_unknown"
+    assert jan["identification"] is None
+    assert jan["month_days"] == 31
+    assert jan["pre_change_rate"] is None
+    assert jan["pre_change_rate_source"] is None
+
+
+# --------------------------------------------------------------------------- #
+# 8 — chaining only from identified months (real calendar)
+# --------------------------------------------------------------------------- #
+def test_d1_chaining_only_from_identified_months():
+    md = _fixture8_md()
+    out = fp.compute(asof=pd.Timestamp("2026-10-14"), policy_rate=4.20,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.20}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    months = out["implied_source_meta"]["effr_meeting_path"]["months"]
+    by = {m["contract"]: m for m in months}
+    oct26 = by["ZQV26.CBT"]
+    assert oct26["status"] == "identified_conditional"
+    assert oct26["pre_change_rate"] == 4.10
+    assert oct26["pre_change_rate_source"] == "observed_effr:fred:DFF@2026-10-13"
+    assert oct26["reason"] == "pre_change_rate:observed_effr:fred:DFF@2026-10-13"
+    nov = by["ZQX26.CBT"]
+    assert nov["status"] == "identified_conditional"
+    assert nov["reason"] == "no_intra_month_change"
+    dec = by["ZQZ26.CBT"]
+    assert dec["status"] == "identified_conditional"
+    assert dec["pre_change_rate_source"].startswith("chained:2026-11")
+    assert "chained_identification" in dec["limitations"]
+
+    # variant without ZQX26 -> Dec has no preceding identified month
+    md_no_nov = _make_md("2026-10-13", {"ZQV26.CBT": 95.8,
+                                        "ZQZ26.CBT": 95.0},
+                         effr={"value": 4.10, "observation_date": "2026-10-13",
+                               "source": "fred:DFF"})
+    out_no_nov = fp.compute(asof=pd.Timestamp("2026-10-14"), policy_rate=4.20,
+                            target_low=None, target_high=None, dot_series=None,
+                            zq_path_row={"m1": 4.20}, sofr_path_row=None,
+                            zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                            rate_exp_proxy=None, cfg=_CFG, metadata=md_no_nov)
+    months2 = out_no_nov["implied_source_meta"]["effr_meeting_path"]["months"]
+    dec2 = next(m for m in months2 if m["contract"] == "ZQZ26.CBT")
+    assert dec2["status"] == "missing_inputs"
+    assert dec2["reason"] == "pre_change_rate_unavailable"
+
+
+# --------------------------------------------------------------------------- #
+# 9 — stale ZQ strip makes block unavailable
+# --------------------------------------------------------------------------- #
+def test_d1_stale_zq_strip_makes_block_unavailable(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-09-16", True)])
+    asof = pd.Timestamp("2026-10-14")
+    zq_obs = (asof - _dt.timedelta(days=10)).date().isoformat()  # 2026-10-04
+    md = _make_md(zq_obs, {"ZQV26.CBT": 95.8})
+    out = fp.compute(asof=asof, policy_rate=4.20,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "unavailable"
+    assert block["reason"] == "zq_strip_stale"
+    assert block["months"] == []
+
+
+# --------------------------------------------------------------------------- #
+# 10 — weights + post_rate_sensitivity (fixture 8's Oct)
+# --------------------------------------------------------------------------- #
+def test_d1_weights_and_post_rate_sensitivity():
+    md = _fixture8_md()
+    out = fp.compute(asof=pd.Timestamp("2026-10-14"), policy_rate=4.20,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.20}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    oct26 = next(m for m in out["implied_source_meta"]
+                 ["effr_meeting_path"]["months"] if m["contract"] == "ZQV26.CBT")
+    assert oct26["month_days"] == 31
+    assert oct26["weights"]["days_pre"] == 28
+    assert oct26["weights"]["days_post"] == 3
+    assert _pt.approx(oct26["post_rate_sensitivity"], abs=1e-4) == 10.3333
+    assert oct26["weights"]["realised_days"] == 13
+    assert oct26["weights"]["remaining_days"] == 18
+
+
+# --------------------------------------------------------------------------- #
+# 11 — effective date is decision + 1 day
+# --------------------------------------------------------------------------- #
+def test_d1_effective_date_is_decision_plus_one_day():
+    md = _fixture8_md()
+    out = fp.compute(asof=pd.Timestamp("2026-10-14"), policy_rate=4.20,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.20}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    months = out["implied_source_meta"]["effr_meeting_path"]["months"]
+    effs = {m["contract"]: m["effective_dates_inside"] for m in months}
+    assert effs["ZQV26.CBT"] == ["2026-10-29"]   # decision 2026-10-28
+    assert effs["ZQZ26.CBT"] == ["2026-12-10"]   # decision 2026-12-09
+
+
+# --------------------------------------------------------------------------- #
+# 12 — token law: no forecast vocabulary anywhere in the block
+# --------------------------------------------------------------------------- #
+def test_d1_block_names_carry_no_forecast_vocabulary(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC",
+                        [("2026-06-15", False), ("2026-07-29", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75,
+                                 "ZQN26.CBT": 95.50,
+                                 "ZQQ26.CBT": 95.25},
+                  effr={"value": 4.50, "observation_date": "2026-06-11",
+                        "source": "fred:DFF"},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    BANNED = {"prob", "probability", "probabilities", "cut", "cuts",
+              "hike", "hikes", "dot", "dots", "sep", "terminal",
+              "odds", "count", "moves", "priced"}
+
+    def walk_keys(obj, path=""):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                for w in str(k).split("_"):
+                    assert w not in BANNED, f"banned token in key: {k} ({w}) at {path}"
+                walk_keys(v, f"{path}.{k}")
+        elif isinstance(obj, (list, tuple)):
+            for i, v in enumerate(obj):
+                walk_keys(v, f"{path}[{i}]")
+
+    def walk_values(obj, path=""):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                walk_values(v, f"{path}.{k}")
+        elif isinstance(obj, (list, tuple)):
+            for i, v in enumerate(obj):
+                walk_values(v, f"{path}[{i}]")
+        elif obj is not None:
+            for w in str(obj).split("_"):
+                assert w not in BANNED, f"banned token in value: {obj!r} ({w}) at {path}"
+
+    walk_keys(block)
+    walk_values(block)
+
+
+# --------------------------------------------------------------------------- #
+# 13 — D0 meta byte-identical minus the new key, legacy outputs unchanged
+# --------------------------------------------------------------------------- #
+def test_d1_d0_meta_and_legacy_outputs_unchanged():
+    # mode-1 outputs are byte-identical to base (D1 only adds the new key).
+    assert _line(_f1()) == _GOLDEN_F1
+    assert _line(_f1(zq_path_row=None, sofr_path_row=dict(_F2_SOFR))) == _GOLDEN_F2
+    assert _line(_f1(zq_path_row=None, sofr_path_row=None, dot_series=None)) == _GOLDEN_F3
+    # the D0 meta minus the new key equals the captured base meta.
+    out = _d0_meta_call()
+    meta = out["implied_source_meta"]
+    sans_new = {k: v for k, v in meta.items() if k != "effr_meeting_path"}
+    blob = json.dumps(sans_new, sort_keys=True, ensure_ascii=False, default=str)
+    assert blob == _GOLDEN_D0_META
+
+
+# --------------------------------------------------------------------------- #
+# 14 — compute source pin unchanged
+# --------------------------------------------------------------------------- #
+def test_d1_compute_rule_pin_unchanged():
+    import ast as _ast
+    import hashlib as _hl
+    _src = open("engine/fed_path.py").read()
+    _defs = [x for x in _ast.parse(_src).body
+             if getattr(x, "name", None) == "compute"]
+    assert len(_defs) == 1
+    _n = _defs[0]
+    _body = "\n".join(_src.splitlines()[_n.lineno-1:_n.end_lineno])
+    _h = _hl.sha256(_body.encode()).hexdigest()
+    assert _h == "da05ae6617a54c0eb166e9e340cb74034d78c37c61a313d46ebe402239f39a35"
+
+
+# --------------------------------------------------------------------------- #
+# 15 — snapshot wires closes + effr + target
+# --------------------------------------------------------------------------- #
+def test_d1_snapshot_wires_closes_effr_and_target(monkeypatch):
+    idx = pd.DatetimeIndex(["2026-10-13"])
+    zq_path = pd.DataFrame({"m1": [4.30], "m3": [4.30], "m6": [4.30], "m12": [4.30]},
+                            index=idx)
+    zq_cf = pd.DataFrame({"ZQV26.CBT": [95.80], "ZQX26.CBT": [95.40],
+                          "ZQZ26.CBT": [95.00]}, index=idx)
+    dff_df = pd.DataFrame({"DFF": [4.10]}, index=idx)
+    tl_df = pd.DataFrame({"DFEDTARL": [4.25]}, index=idx)
+    tu_df = pd.DataFrame({"DFEDTARU": [4.50]}, index=idx)
+    frames = {
+        ("rate_futures", "zq_path"): zq_path,
+        ("rate_futures", "zq_contracts"): zq_cf,
+        ("fred", "DFF"): dff_df,
+        ("fred", "DFEDTARL"): tl_df,
+        ("fred", "DFEDTARU"): tu_df,
+    }
+    monkeypatch.setattr(fp.store, "read", lambda ns, key: frames.get((ns, key)))
+    import engine.bonds as _eb
+    monkeypatch.setattr(_eb, "near_term_forward_spread",
+                        lambda f: pd.Series([0.0] * len(f), index=f.index))
+    f = pd.DataFrame({"fed_funds": [4.10], "fed_target_lower": [4.25],
+                      "fed_target_upper": [4.50], "zq_implied_rate": [4.10]},
+                     index=idx)
+    out = fp.snapshot(f, cfg=_CFG)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "computed"
+    months = block["months"]
+    assert any((m["pre_change_rate_source"] or "").startswith("observed_effr:fred:DFF@")
+               for m in months)
+
+
+# --------------------------------------------------------------------------- #
+# 16 — multiple inside dates stay missing_inputs
+# --------------------------------------------------------------------------- #
+def test_d1_multiple_inside_dates_stay_missing_inputs(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False),
+                                        ("2026-06-29", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  effr={"value": 4.50, "observation_date": "2026-06-11",
+                        "source": "fred:DFF"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=None, target_high=None, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    june = out["implied_source_meta"]["effr_meeting_path"]["months"][0]
+    assert june["status"] == "missing_inputs"
+    assert "rate_step_bp" in june["identification"]["missing"]
+    assert june["reason"] == "multiple_effective_dates"
+    assert june["effective_dates_inside"] == ["2026-06-16", "2026-06-30"]
+
+
+# --------------------------------------------------------------------------- #
+# 17 — internal error in solver degrades, never raises
+# --------------------------------------------------------------------------- #
+def test_d1_internal_error_degrades_never_raises(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  effr={"value": 4.50, "observation_date": "2026-06-11",
+                        "source": "fred:DFF"})
+    out_base = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                          target_low=4.25, target_high=4.50, dot_series=None,
+                          zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                          zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                          rate_exp_proxy=None, cfg=_CFG, metadata=md)
+
+    def boom(*a, **kw):
+        raise RuntimeError("kaboom")
+    monkeypatch.setattr(_rcb, "solve_reference_average", boom)
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    assert out is not None  # compute returns normally
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "unavailable"
+    assert block["reason"] == "internal_error:RuntimeError"
+    assert block["months"] == []
+    base_no_new = {k: v for k, v in out_base["implied_source_meta"].items()
+                   if k != "effr_meeting_path"}
+    new_no_new = {k: v for k, v in out["implied_source_meta"].items()
+                  if k != "effr_meeting_path"}
+    assert new_no_new == base_no_new
+
+
+# --------------------------------------------------------------------------- #
+# A16 — unidentified predecessor is never chained (route 2 / route 3 rule)
+# --------------------------------------------------------------------------- #
+def test_d1_unidentified_predecessor_is_never_chained(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC",
+                        [("2026-05-19", False), ("2026-06-15", False)])
+    md = _make_md("2026-05-11",
+                  {"ZQK26.CBT": 95.80, "ZQM26.CBT": 95.70},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-05-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-05-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "computed"
+    assert block["gap"]["usable"] is False
+    assert block["gap"]["value_bp"] is None
+
+    m = {r["reference_start"]: r for r in block["months"]}
+    may = m["2026-05-01"]
+    assert may["status"] == "not_identified"
+    assert may["reason"] == "underidentified:effr_target_basis"
+    assert may["pre_change_rate"] is None
+    assert _pt.approx(may["monthly_average"]["value"]) == 4.20
+
+    june = m["2026-06-01"]
+    assert june["status"] == "missing_inputs"
+    assert june["reason"] == "pre_change_rate_unavailable"
+    assert june["pre_change_rate"] is None
+    assert june["pre_change_rate_source"] is None
+    assert "chained_identification" not in june["limitations"]
+
+
+# --------------------------------------------------------------------------- #
+# A17 — DFF route refuses an intervening effective date (route 1 rule)
+# --------------------------------------------------------------------------- #
+def test_d1_dff_route_refuses_an_intervening_effective_date(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC",
+                        [("2026-05-19", False), ("2026-06-15", False)])
+
+    md_neg = _make_md("2026-05-08", {"ZQM26.CBT": 95.75},
+                     effr={"value": 4.50,
+                           "observation_date": "2026-05-08",
+                           "source": "fred:DFF"})
+    out_neg = fp.compute(asof=pd.Timestamp("2026-05-09"), policy_rate=4.33,
+                         target_low=4.25, target_high=4.50, dot_series=None,
+                         zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                         zq_front_implied=None, ntfs=None,
+                         curve_tp_adj=None, rate_exp_proxy=None,
+                         cfg=_CFG, metadata=md_neg)
+    block_neg = out_neg["implied_source_meta"]["effr_meeting_path"]
+    m_neg = {r["reference_start"]: r for r in block_neg["months"]}
+    june_neg = m_neg["2026-06-01"]
+    assert june_neg["status"] == "missing_inputs"
+    assert june_neg["reason"] == "pre_change_rate_unavailable"
+    assert june_neg["pre_change_rate"] is None
+    assert june_neg["pre_change_rate_source"] is None
+
+    md_pos = _make_md("2026-05-21", {"ZQM26.CBT": 95.75},
+                     effr={"value": 4.50,
+                           "observation_date": "2026-05-21",
+                           "source": "fred:DFF"})
+    out_pos = fp.compute(asof=pd.Timestamp("2026-05-22"), policy_rate=4.33,
+                         target_low=4.25, target_high=4.50, dot_series=None,
+                         zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                         zq_front_implied=None, ntfs=None,
+                         curve_tp_adj=None, rate_exp_proxy=None,
+                         cfg=_CFG, metadata=md_pos)
+    block_pos = out_pos["implied_source_meta"]["effr_meeting_path"]
+    m_pos = {r["reference_start"]: r for r in block_pos["months"]}
+    june_pos = m_pos["2026-06-01"]
+    assert june_pos["status"] == "identified_conditional"
+    assert june_pos["pre_change_rate"] == _pt.approx(4.50)
+    assert june_pos["pre_change_rate_source"] == (
+        "observed_effr:fred:DFF@2026-05-21"
+    )
+    assert june_pos["reason"] == (
+        "pre_change_rate:observed_effr:fred:DFF@2026-05-21"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# A19 — effr_basis dated after the cutoff is refused (gap unused)
+# --------------------------------------------------------------------------- #
+def test_d1_effr_basis_after_cutoff_is_refused_never_used(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"},
+                  effr_basis={"effr_minus_midpoint_bp": -8.0,
+                              "observation_date": "2026-06-14",
+                              "source": "fixture"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["gap"]["usable"] is False
+    assert block["gap"]["value_bp"] is None
+    assert block["gap"]["reason"] == "effr_basis_after_cutoff"
+
+    m = {r["reference_start"]: r for r in block["months"]}
+    june = m["2026-06-01"]
+    assert june["status"] == "not_identified"
+    assert june["reason"] == "underidentified:effr_target_basis"
+    assert june["pre_change_rate"] is None
+    assert june["vs_target_midpoint"]["difference"] is None
+
+    md_ctrl = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                       target={"low": 4.25, "high": 4.50,
+                               "observation_date": "2026-06-11"},
+                       effr_basis={"effr_minus_midpoint_bp": -8.0,
+                                   "observation_date": "2026-06-10",
+                                   "source": "fixture"})
+    out_ctrl = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                          target_low=4.25, target_high=4.50, dot_series=None,
+                          zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                          zq_front_implied=None, ntfs=None,
+                          curve_tp_adj=None, rate_exp_proxy=None,
+                          cfg=_CFG, metadata=md_ctrl)
+    june_ctrl = out_ctrl["implied_source_meta"]["effr_meeting_path"]["months"][0]
+    assert june_ctrl["status"] == "identified_conditional"
+    assert june_ctrl["pre_change_rate"] == _pt.approx(4.295)
