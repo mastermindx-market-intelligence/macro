@@ -136,7 +136,7 @@ class ThreeClockVerdict:
 
 def _text_present(value: object) -> bool:
     """An opaque-text id / ref / field-name / kind-label is present iff
-    it is a non-empty string that is not whitespace-only. None, ``""``,
+    it is a non-empty string that does not begin or end with whitespace. None, ``""``,
     ``"  "``, ``1``, ``True``, ``1.0``, ``b"id"``, ``["id"]``, and any
     other object are ABSENT and never match each other. Applied to the
     field-map keys (the field names the caller maps) and the kind label
@@ -149,23 +149,20 @@ def _text_present(value: object) -> bool:
     parsed by ``_coerce_field_value`` and containers keep their existing
     checks.
 
-    Implementation note: existing static-scan tests forbid ``.strip()``
-    in the family (no-normalisation invariant), and existing behaviour
-    tests pin a trailing-space record value (e.g. ``"2026-06-30 "``) as
-    a value that fails parsing and refuses with TIMESTAMP_INVALID rather
-    than as ABSENT. So this helper deliberately uses no forbidden method
-    and is not applied to record values (per the existing test pins);
-    the kind label keeps its closed-set check, layered with the helper
-    for the non-str / whitespace-only value classes.
+    FAMILY TEXT RULE v2 (seat ruling): a field-map key or kind label that
+    begins or ends with whitespace is ABSENT, exactly like a whitespace-only
+    one. The check uses no normalisation method (``.strip()`` etc.), which
+    keeps the family's no-normalisation static scans green. Record values
+    are NOT routed through this helper: the existing pins treat a padded
+    record value (e.g. ``"2026-06-30 "``) as a value that fails parsing and
+    refuses with TIMESTAMP_INVALID, which is also a refusal.
     """
-    if not isinstance(value, str):
-        return False
-    if value == "":
-        return False
-    for char in value:
-        if not char.isspace():
-            return True
-    return False
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _blank(value: object) -> bool:

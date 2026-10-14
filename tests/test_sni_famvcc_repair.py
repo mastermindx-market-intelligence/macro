@@ -134,11 +134,9 @@ def test_r1_11_view_state_text_fields_follow_family_rule():
     """Whitespace and non-string issuer_id / counter_id / lens / as_of
     values are refused with FIELD_MISSING (the reason the module already
     emits for a blank value of those fields). ``1`` and ``True`` never
-    compare equal across views. Padded values are NOT tested here: the
-    existing behaviour tests in this family pin a trailing-space id
-    (e.g. ``"SYN-ISSUER-1 "``) as a DIFFERENT valid id rather than as
-    ABSENT, so the FAMILY TEXT RULE for padded values is left open and
-    recorded in GAPS (defect 11).
+    compare equal across views. Padded values (leading or trailing
+    whitespace) are ABSENT under the FAMILY TEXT RULE v2 seat ruling;
+    see the ``_padded_`` tests below.
     """
     # --- whitespace string on issuer_id ----------------------------------
     before = _view_state_kwargs()
@@ -191,10 +189,9 @@ def test_r1_12_correction_lineage_text_fields_follow_family_rule():
     """Whitespace and non-string record_id / version_id /
     supersedes_version_id values are refused with RECORD_FIELD_INVALID.
     An unhashable record_id / version_id is ABSENT and never raises.
-    Padded values are NOT tested here: the existing behaviour tests in
-    this family pin a trailing-space id (e.g. ``"syn-rec-alpha "``) as
-    a DIFFERENT valid id rather than as ABSENT, so the FAMILY TEXT RULE
-    for padded values is left open and recorded in GAPS (defect 12).
+    Padded values (leading or trailing
+    whitespace) are ABSENT under the FAMILY TEXT RULE v2 seat ruling;
+    see the ``_padded_`` tests below.
     """
     # --- whitespace string on record_id ----------------------------------
     record = _lineage_record(record_id="  ")
@@ -264,10 +261,9 @@ def test_r1_13_class_duplicate_text_fields_follow_family_rule():
     SECURITY_ID_MISSING / ISSUER_ID_MISSING / MEMBER_UNSOURCED /
     PAIR_UNSOURCED. An unhashable security_id or issuer_id is ABSENT
     and never raises (no set/dict insertion of an unchecked value).
-    Padded values are NOT tested here: the existing behaviour tests in
-    this family pin a trailing-space id (e.g. ``"SYN-SEC-B "``) as a
-    DIFFERENT valid id rather than as ABSENT, so the FAMILY TEXT RULE
-    for padded values is left open and recorded in GAPS (defect 13).
+    Padded values (leading or trailing
+    whitespace) are ABSENT under the FAMILY TEXT RULE v2 seat ruling;
+    see the ``_padded_`` tests below.
     """
     # --- whitespace string on security_id --------------------------------
     pack = [_dup_member(security_id="  ")]
@@ -334,13 +330,10 @@ def test_r1_14_three_clock_text_fields_follow_family_rule():
     value classes for kind labels are refused with the reason the module
     already emits for a blank value of that field (ECONOMIC_MISSING /
     PUBLICATION_MISSING / OWNER_KNOWN_MISSING / KIND_UNKNOWN). Padded
-    record values and non-str record values are NOT tested here: the
-    existing behaviour tests in this family pin a trailing-space value
-    (e.g. ``"2026-06-30 "``) and a non-str value (e.g. ``12345``) as
-    failures of ``_coerce_field_value`` that refuse with
-    ``TIMESTAMP_INVALID`` rather than as ABSENT clock values, so the
-    FAMILY TEXT RULE for those two value classes on record values is
-    left open and recorded in GAPS (defect 14).
+    field-map keys and kind labels are ABSENT under the FAMILY TEXT RULE
+    v2 seat ruling. Padded and non-str record values keep the existing
+    pins: they fail ``_coerce_field_value`` and refuse with
+    ``TIMESTAMP_INVALID``, which is also a refusal.
     """
     # --- whitespace string on a clock record value ------------------------
     record = _three_clock_record()
@@ -382,3 +375,82 @@ def test_r1_14_three_clock_text_fields_follow_family_rule():
     )
     assert verdict.allowed is False
     assert "KIND_UNKNOWN" in verdict.reasons
+
+
+# ---------------------------------------------------------------------------
+# FAMILY TEXT RULE v2 (seat ruling): padded text is ABSENT in all four guards.
+# ---------------------------------------------------------------------------
+
+_PADDED = ("SYN-ID ", " SYN-ID", "\tSYN-ID", "SYN-ID\n", "SYN-ID\u3000")
+
+
+def test_r1_11_view_state_padded_text_is_absent():
+    for axis in ("issuer_id", "counter_id", "lens", "as_of"):
+        for value in _PADDED:
+            before = _view_state_kwargs()
+            after = _view_state_kwargs(**{axis: value})
+            verdict = check_view_transition(before, after, change=None)
+            assert verdict.allowed is False, (axis, value)
+            assert verdict.reasons == ("FIELD_MISSING",), (axis, value)
+            assert verdict.changed_axes == (), (axis, value)
+    # The same padded id on both sides is still ABSENT, not "unchanged".
+    before = _view_state_kwargs(issuer_id="SYN-ISSUER-1 ")
+    after = _view_state_kwargs(issuer_id="SYN-ISSUER-1 ")
+    verdict = check_view_transition(before, after, change=None)
+    assert verdict.allowed is False
+    assert verdict.reasons == ("FIELD_MISSING",)
+
+
+def test_r1_12_correction_lineage_padded_text_is_absent():
+    for field in ("record_id", "version_id"):
+        for value in _PADDED:
+            record = _lineage_record(**{field: value})
+            verdict = check_lineage((), (record,))
+            assert verdict.allowed is False, (field, value)
+            assert "RECORD_FIELD_INVALID" in verdict.reasons, (field, value)
+    prior = _lineage_record(version_id="SYN-VID-1", version=1)
+    for value in ("SYN-VID-1 ", " SYN-VID-1"):
+        proposed = _lineage_record(
+            version_id="SYN-VID-2", version=2, supersedes_version_id=value
+        )
+        verdict = check_lineage((prior,), (prior, proposed))
+        assert verdict.allowed is False, value
+        assert "RECORD_FIELD_INVALID" in verdict.reasons, value
+
+
+def test_r1_13_class_duplicate_padded_text_is_absent():
+    for field, reason in (
+        ("security_id", "SECURITY_ID_MISSING"),
+        ("issuer_id", "ISSUER_ID_MISSING"),
+        ("owner_ref", "MEMBER_UNSOURCED"),
+    ):
+        for value in _PADDED:
+            pack = [_dup_member(**{field: value})]
+            verdict = check_class_duplicates(pack, share_class_pairs=[])
+            assert verdict.allowed is False, (field, value)
+            assert reason in verdict.reasons, (field, value)
+    for field in ("pair_id", "owner_ref"):
+        for value in _PADDED:
+            pack = [_dup_member(), _dup_member(security_id="SYN-SEC-B")]
+            pair = _dup_pair(**{field: value})
+            verdict = check_class_duplicates(pack, share_class_pairs=[pair])
+            assert verdict.allowed is False, (field, value)
+            assert "PAIR_UNSOURCED" in verdict.reasons, (field, value)
+
+
+def test_r1_14_three_clock_padded_keys_and_kind_are_absent():
+    for value in (" period_end", "period_end ", "period_end\t"):
+        field_map = _three_clock_field_map()
+        del field_map["period_end"]
+        field_map[value] = "ECONOMIC"
+        record = _three_clock_record()
+        record[value] = record.pop("period_end")
+        verdict = classify_clocks(record, field_map, kind="actual")
+        assert verdict.allowed is False, value
+        assert "ECONOMIC_MISSING" in verdict.reasons, value
+    for kind in ("actual ", " actual", "actual\n"):
+        verdict = classify_clocks(
+            _three_clock_record(), _three_clock_field_map(), kind=kind
+        )
+        assert verdict.allowed is False, kind
+        assert "KIND_UNKNOWN" in verdict.reasons, kind

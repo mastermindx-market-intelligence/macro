@@ -109,7 +109,7 @@ class ClassDuplicateVerdict:
 
 def _text_present(value: object) -> bool:
     """An opaque-text id / ref is present iff it is a non-empty string
-    that is not whitespace-only. None, ``""``, ``"  "``, ``1``, ``True``,
+    that does not begin or end with whitespace. None, ``""``, ``"  "``, ``1``, ``True``,
     ``1.0``, ``b"id"``, ``["id"]``, and any other object are ABSENT and
     never match each other. Applied to member ``security_id`` /
     ``issuer_id`` / ``owner_ref`` and pair ``pair_id`` / ``owner_ref``;
@@ -117,24 +117,19 @@ def _text_present(value: object) -> bool:
     and the pack/dedup container keep their existing checks and are NOT
     routed through this helper.
 
-    Implementation note: existing static-scan tests forbid ``.strip()`` /
-    ``.lower()`` / ``.upper()`` / ``.casefold()`` / ``.replace()`` /
-    ``.title()`` in the module source (no-normalisation invariant), and
-    existing behaviour tests pin a trailing-space id (e.g.
-    ``"SYN-SEC-B "``) as a valid DIFFERENT id rather than as ABSENT. So
-    this helper deliberately uses no forbidden method and tolerates
-    leading/trailing whitespace as "present"; padded values are not
-    routed through the ABSENT branch (per the existing test pins) but
-    whitespace-only / non-str are.
+    FAMILY TEXT RULE v2 (seat ruling): a string that begins or ends with
+    whitespace is ABSENT, exactly like a whitespace-only string, so a
+    padded id can never pass as a different valid id. The check uses no
+    normalisation method (``.strip()`` / ``.lower()`` / ``.upper()`` /
+    ``.casefold()`` / ``.replace()``), which keeps the family's
+    no-normalisation static scans green.
     """
-    if not isinstance(value, str):
-        return False
-    if value == "":
-        return False
-    for char in value:
-        if not char.isspace():
-            return True
-    return False
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _blank(value: object) -> bool:

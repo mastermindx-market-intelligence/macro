@@ -136,23 +136,19 @@ def _text_present(value: object) -> bool:
     closed set (LANGS, VIEWPORTS), and containers keep their existing
     checks and are NOT routed through this helper.
 
-    Implementation note: existing static-scan tests in this module's
-    family forbid ``.strip()`` / ``.lower()`` / ``.upper()`` / etc. in the
-    module source (no-normalisation invariant), and existing behaviour
-    tests pin a trailing-space id (e.g. ``"SYN-ISSUER-1 "``) as a valid
-    DIFFERENT id rather than as ABSENT. So this helper deliberately uses
-    no forbidden method and tolerates leading/trailing whitespace as
-    "present"; padded values are not routed through the ABSENT branch
-    (per the existing test pins) but whitespace-only / non-str are.
+    FAMILY TEXT RULE v2 (seat ruling): a string that begins or ends with
+    whitespace is ABSENT, exactly like a whitespace-only string, so a
+    padded id can never pass as a different valid id. The check uses no
+    normalisation method (``.strip()`` / ``.lower()`` / ``.upper()`` /
+    ``.casefold()`` / ``.replace()``), which keeps the family's
+    no-normalisation static scans green.
     """
-    if not isinstance(value, str):
-        return False
-    if value == "":
-        return False
-    for char in value:
-        if not char.isspace():
-            return True
-    return False
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _blank(value: object) -> bool:
