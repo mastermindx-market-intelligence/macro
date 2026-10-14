@@ -292,9 +292,11 @@ def _raw_end_of(param: object) -> str:
     Entries are ``pytest.param`` objects today (``object.values`` is a tuple);
     bare strings are read too, so an append of either shape joins the derived
     guard instead of dropping out when the attribute probe misses. An entry
-    exposing a non-sequence ``.values`` (e.g. a dict, whose ``.values`` is the
-    bound method ``dict.values``) is read as a bare entry -- the guard below
-    keeps such a non-str entry from being subscripted and crashing collection.
+    exposing a non-sequence ``.values`` (e.g. a dict) is read as a bare entry;
+    the guard below keeps it from being subscripted. Without that guard the two
+    crash sites differ -- IN ``_SHAPE_REFUSED_ENDS`` the entry crashes module
+    collection at the ``_SHAPE_REFUSED_ENDS_PARSER_ADMITTED`` derivation, while
+    the direct call in the non-str test fails only that test.
     """
     values = getattr(param, "values", None)
     if not isinstance(values, (tuple, list)):
@@ -440,22 +442,29 @@ def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
     assert _parser_admits("20260703") == (sys.version_info >= (3, 11))
 
 
+@pytest.mark.parametrize(
+    "probe_exc",
+    [RuntimeError, KeyError, AttributeError],
+    ids=["runtime", "key", "attribute"],
+)
 def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, probe_exc: type[Exception]
 ) -> None:
-    """``_parser_admits`` must not catch exceptions broader than (TypeError, ValueError).
+    """Every exception outside ``(TypeError, ValueError)`` escapes ``_parser_admits``.
 
-    Replaces the local ``date`` binding in THIS module with a stub whose
-    ``fromisoformat`` raises ``RuntimeError``. The handler in ``_parser_admits``
-    is scoped to ``(TypeError, ValueError)``, so the ``RuntimeError`` propagates
-    out of the call. A regression that broadens the handler (e.g.
-    ``except Exception:``) swallows the probe here and fails this test.
+    The stub replaces the local ``date`` binding in THIS module and raises the
+    parameter's type from ``fromisoformat``: the probe is parametrized over
+    ``RuntimeError``, ``KeyError`` and ``AttributeError``, so a handler widened
+    by any ONE of them turns exactly that id red -- and ``except Exception:``
+    turns all three red. A one-type probe (this test's predecessor probed only
+    ``RuntimeError``) survives a widening that it should have caught.
     """
     class _ProbeDate:
         @staticmethod
         def fromisoformat(value: object) -> object:
-            raise RuntimeError("probe")
+            raise probe_exc("probe")
 
     monkeypatch.setattr(sys.modules[__name__], "date", _ProbeDate)
-    with pytest.raises(RuntimeError, match="probe"):
+    with pytest.raises(probe_exc) as excinfo:
         _parser_admits("2026-07-03")
+    assert type(excinfo.value) is probe_exc
