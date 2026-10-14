@@ -2037,3 +2037,60 @@ def test_briefcase_seed_sidecar_shape_and_manifest_reference() -> None:
         state_receipt=None,
     )
     assert "briefcase_seed" not in without["evidence_source"], "no flag, no reference"
+
+
+# ---------------------------------------------------------------------------
+# A0-SE SAFE-ENV production-capture hook (--dataset-store / --state-store)
+# ---------------------------------------------------------------------------
+
+
+def test_production_capture_flags_parse_and_default_off() -> None:
+    parser = tool.build_parser()
+    plain = parser.parse_args(["--mode", tool.MODE_POPULATED, "--out-dir", "x"])
+    assert plain.dataset_store is None
+    assert plain.state_store is None
+    hooked = parser.parse_args(
+        [
+            "--mode", tool.MODE_POPULATED, "--out-dir", "x",
+            "--dataset-store", "/tmp/ds", "--state-store", "/tmp/ss",
+        ]
+    )
+    assert hooked.dataset_store == "/tmp/ds"
+    assert hooked.state_store == "/tmp/ss"
+
+
+def test_install_state_into_local_store_writes_the_loaders_key(
+    tmp_path: Path
+) -> None:
+    from engine.fundamental_forensics import private_state
+    from engine.research_vault.r2_store import LocalStore
+
+    blob = gzip.compress(b'{"schema": "fundamental_forensics.state/v1"}')
+    served = tool.install_state_into_local_store(tmp_path, blob)
+    assert served == tmp_path / private_state.STATE_KEY
+    # The exact store adapter the loader's RESEARCH_LOCAL_STORE path uses
+    # reads the object back at the same key, byte for byte.
+    assert LocalStore(tmp_path).get_bytes(private_state.STATE_KEY) == blob
+
+
+def test_production_capture_flags_do_not_bypass_the_render_guard(
+    monkeypatch, tmp_path: Path
+) -> None:
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(
+        "<html><body>stale, no ff ids</body></html>", encoding="utf-8"
+    )
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode", tool.MODE_POPULATED,
+            "--out-dir", str(tmp_path / "out"),
+            "--generated-at", "2026-10-13T02:05:00Z",
+            "--site-dir", str(site_dir),
+            "--dataset-store", str(tmp_path / "ds"),
+            "--state-store", str(tmp_path / "ss"),
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    assert not (tmp_path / "out").exists()
