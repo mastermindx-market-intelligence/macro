@@ -16,7 +16,7 @@
     "affected": "295 passed, 1 existing sparse-site skip in 33.86s",
     "final_targeted": "167 passed in 7.62s"
   },
-  "review": "Native independent reviewer rejected 317ce on omitted-comma magnitude loss; parent reproduced 2 failed/1 passed, repaired optional comma and case-insensitive phrase. Same reviewer rereview pending.",
+  "review": "Independent native reviewer NOT PASS at 317ce; parent repair 165868 independently rereviewed PASS. Original verdict and bounded rereview retained; no general currency/semantic unit claim.",
   "limits": [
     "Magnitude anchoring now normalizes explicit thousand/million/billion/trillion scales; it does not establish currency identity, percent-vs-coefficient semantics or semantic causality.",
     "Receipt/own-value arithmetic retains its incumbent coefficient contract; equivalent alternative numeric notation can be accepted as a fact without earning new receipt credit.",
