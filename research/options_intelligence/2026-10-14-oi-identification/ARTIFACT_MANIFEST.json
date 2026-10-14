@@ -1,0 +1,92 @@
+{
+  "schema": "options.oi.identification.manifest.v1",
+  "source_base": "a3f3afa1e1268908a54263043f21048c1b5bc1b4",
+  "scope": "research/options_intelligence/2026-10-14-oi-identification/",
+  "artifacts": [
+    {
+      "path": "OI_IDENTIFICATION_STUDY.md",
+      "bytes": 22813,
+      "sha256": "f75b1bd93d37deb927d9e838c8537178145103c30aad960af73a2fe3b87fc2fd",
+      "git_blob_sha": "1df76353bf6ae684a56ccec11abce660299dd6fd"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4319,
+      "sha256": "52f0ea6bedf713145457ee3b0a196debe782f3edcef9b9aba5641e3fd9629621",
+      "git_blob_sha": "72ed4af3834c984ccf605fae2872e24ba09188bf"
+    },
+    {
+      "path": "ambiguity-sensitivity.json",
+      "bytes": 3243,
+      "sha256": "5fd5153a301d0364674987a1e107aeaeaea5752191584c77772a7174f7c840f3",
+      "git_blob_sha": "10ea9a3b4ace140cf9c0f153f687cf5789bc648c"
+    },
+    {
+      "path": "integration-contract.json",
+      "bytes": 5737,
+      "sha256": "a48ad00439a82112793e3f22527be17a8c02d68ea5a1f31991bb99589c756db1",
+      "git_blob_sha": "f623afa8d9a9433af24ce88bdf577575cc4d328d"
+    },
+    {
+      "path": "oi_identification.py",
+      "bytes": 10230,
+      "sha256": "2f4351bc0f5edda444e2ed0f515c54d967bf94ff05c850e9351bc7c0706df91a",
+      "git_blob_sha": "fa02c8a534ff42d3eaed925f6692e05ba8ce16f2"
+    },
+    {
+      "path": "source-vintage-results.json",
+      "bytes": 5611,
+      "sha256": "200da47efcbeaa967466140fb79c35afc742f2cf80ee6314c509467bd38b82f2",
+      "git_blob_sha": "85ef66ce23ecf32b9570e1fd51868ca84ac1ecfd"
+    },
+    {
+      "path": "source_vintage_witness.py",
+      "bytes": 6071,
+      "sha256": "4a2977232160180f3311e4c0ebe87e8c94ee7098b26c5646b6858cb9d0ffd73f",
+      "git_blob_sha": "280302df607d469018009636fe9ce4d4b0bbc7ae"
+    },
+    {
+      "path": "sources.json",
+      "bytes": 5419,
+      "sha256": "c101f72af7994f27e056f2c7528bc1a7b175a0432200f441c424dfebea0b9b20",
+      "git_blob_sha": "15c036ec15f535c9bba5fa3799044c76553a2e7d"
+    },
+    {
+      "path": "synthetic-examples.json",
+      "bytes": 7905,
+      "sha256": "567967c71628fb7107c64e92e3b59cc1ebb10a270461cc3e9363b5d155eac685",
+      "git_blob_sha": "2fff2ae97f05f2ff846b73ebf26a4137f76db245"
+    },
+    {
+      "path": "test_oi_identification.py",
+      "bytes": 10781,
+      "sha256": "26be7aaf39d9f4f17037f3b9db773f0bb795a895fa2c8fe4495e80e2de861ecd",
+      "git_blob_sha": "e02d6a9318a83dd1dbdb482f018484129708cd75"
+    },
+    {
+      "path": "verification-results.json",
+      "bytes": 1771,
+      "sha256": "121a52fef6d703835fd6e32b55be85b9ecbe0d7d8d27e2b4c5caab47cccbc03e",
+      "git_blob_sha": "bd9add6eb5085c51fb052e54f1b7e8f6ead8d707"
+    },
+    {
+      "path": "verify_reference.py",
+      "bytes": 4875,
+      "sha256": "6aca75989cf6a6fd539b296ca95528c08cd29fd9de5d6357c8510254a5254c84",
+      "git_blob_sha": "32694a8525d7ff6b5b9ecb3adda486d07239d448"
+    }
+  ],
+  "manifest_self_excluded": true,
+  "validation": {
+    "parsed_json_files": 6,
+    "checked_relative_links": 6,
+    "kernel_tests": 24,
+    "exhaustive_geometries": 6576,
+    "mutation_kills": 8,
+    "source_witness_cases": 6
+  },
+  "independent_math_return": "PENDING_SAME_ID",
+  "source_certified": false,
+  "empirical_acceptance": false,
+  "production_acceptance": false
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "options.oi.identification.integration_brief.v1",
+  "kind": "passive_research_specification_not_installed",
+  "existing_features": ["OIF18", "OIF09"],
+  "new_feature_or_pilot_created": false,
+  "source_pin": "a3f3afa1e1268908a54263043f21048c1b5bc1b4",
+  "producer": {
+    "path": "engine/positioning_persistence.py",
+    "blob": "917bbd225ab2ed3ad5668b38dcbb4f4c4d0c988f",
+    "functions": ["vintage_fingerprints", "same_vintage_mask", "matched_oi_delta", "clusters_for_underlying"],
+    "current_source_modified": false,
+    "boundary": "Reconcile current writer, actual source/report identity and tests before a separate bounded source repair. This file grants no writer transfer."
+  },
+  "consumer_question": "What changed in outstanding option contracts, and which opening/closing interpretations remain mathematically possible?",
+  "observation_invariants": {
+    "contract_key": "unchanged economic series including expiry, right, strike, deliverable and corporate-action lineage",
+    "volume_counting": "matched unit-contract transactions counted once, not both participant sides",
+    "population": "OI and volume must cover the same market/venue, series and interval for the conservation model",
+    "oi_state": "explicit integer observation with effective session and report/revision/receipt identity; missing is not zero",
+    "provenance": "content equality is not effective-vintage equality",
+    "consumer_availability": "every source, transform and publication/consumer receipt must precede the intended use",
+    "removals": "unknown non-trading removal counts stay unknown or have independently justified bounds; positive adjustments require a different model"
+  },
+  "quantity_semantics": {
+    "per_contract_absolute_oi_change": "sum(abs(latest_contract_oi - prior_contract_oi)) before strike/expiry aggregation",
+    "net_by_strike_change": "abs(sum(latest_contract_oi - prior_contract_oi) grouped by strike/right) is a different view",
+    "net_outstanding_increase": "not an identified opening purchase",
+    "net_outstanding_decrease": "not an identified closing trade",
+    "bounds": "conditional identified set, not a confidence interval or calibrated probability",
+    "opening_sides_fraction": "(volume + trade_induced_oi_change)/(2*volume), not buyer-opening share",
+    "oif09": "requires qualified observed non-market-maker buyer-opening classifications; bounds cannot supply missing labels"
+  },
+  "required_cases": [
+    {"id": "OI-ID-01", "case": "same root/count/spot/total but contract OI redistributes 50/150 to 150/50", "expect": "content differs; +100 and -100 changes are not suppressed by aggregate equality"},
+    {"id": "OI-ID-02", "case": "equal contract OI contents with proven distinct effective sessions", "expect": "measured net zero at those sessions is not labelled a reused report solely because content matches"},
+    {"id": "OI-ID-03", "case": "same effective OI report arrives with changed spot", "expect": "no invented fresh OI vintage"},
+    {"id": "OI-ID-04", "case": "expired contract absent from the next response", "expect": "absence is not an observed zero or a closing-trade count"},
+    {"id": "OI-ID-05", "case": "two expiries on one strike have +100 and -100 OI changes", "expect": "net-by-strike view may be zero; per-contract OIF18 numerator remains 200"},
+    {"id": "OI-ID-06", "case": "whole-market OI is paired with only one exchange's partial volume", "expect": "do not admit the complete-market conservation bounds"},
+    {"id": "OI-ID-07", "case": "participant-side volume is supplied as matched volume", "expect": "refuse or normalize only under exact product/exchange/schema/date convention; never a universal heuristic"},
+    {"id": "OI-ID-08", "case": "next-morning OI was not received at the prior-day prediction time", "expect": "not an available prior-day feature even when the file's date matches"},
+    {"id": "OI-ID-09", "case": "zero trades, 100 initial OI, 0 final OI, 100 independently established removals", "expect": "zero closing trades; removal context displayed separately"},
+    {"id": "OI-ID-10", "case": "100 trades, initial/final OI10, all selected buyer-side prints", "expect": "buyer-opening possibilities remain 0..100; opening_probability stays null"},
+    {"id": "OI-ID-11", "case": "known zero initial OI versus missing initial OI", "expect": "only genuine zero permits the first-trade opening restriction; missing input is refused"},
+    {"id": "OI-ID-12", "case": "unmatched contract identity or revised deliverable between snapshots", "expect": "preserve excluded coverage and action lineage; no phantom open/close attribution"}
+  ],
+  "implementation_sequence": [
+    "Consume the pinned source-vintage witness without rerunning unchanged original research.",
+    "Resolve effective/report/receipt identity from the existing source owner; do not derive it from equal contents or fetch date.",
+    "Implement the minimal identity/comparison correction with the incumbent producer tests on an admitted isolated source branch.",
+    "Keep the legitimate net-by-strike display separate from per-contract OIF18; preserve units and excluded coverage.",
+    "Obtain independent exact-head review and required checks; production source-to-consumer proof remains separately owed."
+  ],
+  "non_goals": ["new source store or publication authority", "live opening probability", "dealer inventory inference", "probabilistic midpoint of bounds", "new seventh pilot", "modifying the frozen six-pilot study", "changing held methods or production policies", "redistributing private classified samples"],
+  "empirical_acceptance": false,
+  "production_acceptance": false,
+  "source_certified": false,
+  "predictive_authority": false
+}
