@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T12:57:52.474659+00:00",
-  "count": 2895,
+  "generated_at": "2026-10-14T13:11:14.018956+00:00",
+  "count": 2896,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -772,6 +772,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xjuuyadj9qu-e30850",
+      "title": "October 12 House View full set 2026",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:27Z",
+      "summary_points": [
+        "Central Bank Hawkishness & Yield Pressures: ECB/Fed rate hikes (25bps) amid inflation/fiscal concerns and hyperscaler debt pressure global bonds; policymakers signal aggressive tightening.",
+        "EM Yield Opportunities & Risk: EM sovereign/corporate yields (7.2%/7%) offer carry cushion but may underperform high-single-digit returns over 12 months amid fiscal risks.",
+        "AI Capex & Semiconductor Risk: AI capex to reach $1.2T by 2027, but semiconductor volatility (Philadelphia Index -4.3%) and frontier-model revenue concerns signal exposure risk.",
+        "Geopolitical Energy Disruption: Middle East tensions (Houthi attacks, tanker strikes) sustain Brent crude volatility ($105/bbl) and European gas near cycle highs (EUR 83/MWh), threatening energy flows.",
+        "Portfolio Strategy & Fiscal Risks: Prioritize short-to-medium-term European fixed income (agency, covered, corporate bonds); France/Italy fiscal risks (debt-service costs to 6% by 2030) demand selective positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
