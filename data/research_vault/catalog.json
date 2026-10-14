@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T08:44:13.071158+00:00",
-  "count": 2883,
+  "generated_at": "2026-10-14T09:24:56.871356+00:00",
+  "count": 2885,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -87,6 +87,7 @@
     "Standard Chartered",
     "State Street",
     "Std Chartered",
+    "Syz",
     "TCW",
     "TS Lombard",
     "Talos",
@@ -268,6 +269,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hmzfc6mgzvb-b024da",
+      "title": "J.P. Morgan Chase & Co. (JPM) 3Q26 First Take In line results, much stronger NII guide, lower buybacks",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:58Z",
+      "summary_points": [
+        "NII Guidance Upgrade: JPM raised 2026 total NII outlook to $106.2bn (vs.",
+        "$105.5bn) and 2027 NII ex Markets to $107bn (+10% YoY), driven by stronger loan growth, deposit trends, and 2bps higher NIM (7bps loan yields, 1bp securities yields).",
+        "Capital Allocation Shift: Gross buybacks fell to $1.1bn (85% QoQ decline), with SLR at 5.5% (above 4.5% minimum), signaling prioritization of balance sheet growth over capital returns amid higher interest rates.",
+        "Credit Risk Build: Credit reserves increased to $539mn (vs.",
+        "$404mn Street estimate), indicating macro-driven reserve concerns, with Goldman Sachs highlighting deteriorating credit conditions as a key downside risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -571,6 +593,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rvwxzqre28i-18e7d9",
+      "title": "1791583993771",
+      "institution": "Syz",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:14:26Z",
+      "summary_points": [
+        "Money Market Fund Inflows Surge: $166.4B weekly inflow (largest since April 2020), reversing $118B quarter-end outflow, lifting assets to $8T (from $5T in 2023), signaling cash preference over stocks post-September Fed hike.",
+        "SP500 Breadth Crisis: 15 consecutive days of new lows exceeding new highs, indicating extreme risk concentration and market fragmentation between growth/earnings optimism and tightening financial conditions.",
+        "AI Proxies Dominate Performance: Mag7 (+7.7%) significantly outperforms S&P 500 (+2.6%) and equal-weight S&P 500 (-3%) since Aug 3, driving sector rotation toward AI-driven stocks.",
+        "Equal-Weight Index Weakness: Equal-weight S&P 500 remains >5% below peak (record for index), signaling uneven performance and sustainability risks in broader market.",
+        "S&P 500 Winner Concentration: 23% of S&P 500 stocks beat the index over 10 years (lowest in two decades), with top 2,000 names at 22%—halved since 2008 crisis, indicating index returns reliant on narrow outperformers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 81,
       "language": "en",
       "needs_metadata": false
     },
