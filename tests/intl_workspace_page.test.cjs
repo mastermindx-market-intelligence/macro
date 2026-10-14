@@ -55,6 +55,49 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Mobile LENS hides resting launcher and restores it ${theme} ${lang}`,async()=>{
+    const lensHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_dollar_method_render import five_day_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=five_day_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      const brainRequests=[];
+      page.on('request',req=>{if(new URL(req.url()).pathname.endsWith('/mm_brain.js'))brainRequests.push(req.url());});
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const boot=page.locator('#mmb-boot');assert.ok(await boot.isVisible(),'real resting launcher exists');
+      for(const width of [320,390]) {
+        await page.setViewportSize({width,height:900});
+        const help=page.locator('#intl-dollar-conditions .help.help-upgraded');
+        await help.focus();await help.press('Enter');
+        const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});
+        assert.ok(await page.evaluate(()=>document.documentElement.classList.contains('lens-lock')));
+        assert.equal(await boot.isVisible(),false,'resting launcher must not cover the sheet');
+        await lens.evaluate(n=>Promise.all(n.getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{}))));
+        const closeGeometry=await lens.evaluate(n=>{
+          const close=n.querySelector('.lens-x').getBoundingClientRect(), overlaps=[];
+          const body=n.querySelector('.lens-body'),walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT);
+          while(walker.nextNode()){
+            const node=walker.currentNode;if(!node.textContent.trim())continue;
+            const range=document.createRange();range.selectNodeContents(node);
+            for(const r of range.getClientRects())if(r.width && r.height && r.left<close.right && r.right>close.left && r.top<close.bottom && r.bottom>close.top) overlaps.push({text:node.textContent,box:r.toJSON()});
+          }
+          return {width:close.width,height:close.height,overlaps};
+        });
+        assert.deepEqual(closeGeometry.overlaps,[],'native close control must not cover body text');
+        assert.ok(closeGeometry.width>=44 && closeGeometry.height>=44,'native close control has44px target');
+
+        assert.ok((await lens.innerText()).includes(lang==='zh'?'分子不减均值':'without subtracting the mean'));
+        await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        assert.ok(await boot.isVisible(),'launcher returns when the sheet closes');
+        assert.ok(!(await page.evaluate(()=>document.documentElement.classList.contains('lens-lock'))));
+      }
+      assert.deepEqual(brainRequests,[],'reading the sheet must not activate the assistant');
+      assert.equal(await page.locator('#mmb-root').count(),0);
+    },{htmlOverride:lensHtml,published:true,bootLanguage:lang,width:390,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-dollar-conditions'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Funding header retains corridor and swap scope ${theme} ${lang}`,async()=>{
     const kind=theme==='dark'?'absent':'triggered';
     const fundingHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',

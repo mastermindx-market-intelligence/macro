@@ -5575,8 +5575,6 @@
       '-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .24s ease}' +
     '.lens-scrim.open{opacity:1;pointer-events:auto}' +
     'html.lens-lock,html.lens-lock body{overflow:hidden}' +
-    /* the Mastermind launcher stacks above the sheet — hide it while one is open */
-    'html.lens-lock #mmb-root{visibility:hidden !important}' +
     '@media (max-width:640px){' +
       '.lens-pop{left:0 !important;right:0;top:auto !important;bottom:0 !important;width:100%;max-width:100%;' +
         'border-radius:20px 20px 0 0;padding-bottom:max(10px,env(safe-area-inset-bottom));' +

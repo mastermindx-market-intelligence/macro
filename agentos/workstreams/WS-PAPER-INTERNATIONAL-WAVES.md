@@ -140,10 +140,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Repair the identified mobile LENS boot-launcher overlap through the existing sheet rule.
-  Reproduce actual stub visibility on open and restoration on close; preserve loaded-widget behavior and shrink runtime styling.
-  Do not activate the assistant or touch the original signed-in browser; all review, CI, release and IW2 holds persist.
+next_action: Adjudicate the distinct supplemental Rates owner counterexamples for periphery absence and roundedzero versus tightening.
+  Preserve actual owner precision and clocks; ECB weekly-bin labeling is a separate bounded gap.
+  Reuse accepted LENS and Dollar proof; all review, CI, release and IW2 holds persist.
 artifacts:
+- research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CREDIT_OBSERVATION_DATES_ACCEPTANCE.json

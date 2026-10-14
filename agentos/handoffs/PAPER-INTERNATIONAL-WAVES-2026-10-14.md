@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/theme.js; templates/theme.css; site/theme.js; site/theme.css; tests/intl_workspace_page.test.cjs
+  what: Keep both launcher states below mobile LENS custody and reserve text clearance for the44px native close target.
+- path: research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json; mockups/evidence/paper-international-library/lens-boot-occlusion/
+  what: Retain original boot and close-control red evidence, interrupted-run partial results, final visual proof and unchanged inherited guard failure.
 - path: templates/intl.html.j2; tests/test_intl_dollar_funding_render.py; tests/intl_workspace_page.test.cjs
   what: Keep missing funding corridor unknown, scope supplied threshold results, correct independent swap units and label the shared desk build clock.
 - path: research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json; mockups/evidence/paper-international-library/dollar-funding-scope/
@@ -171,6 +175,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Mobile LENS reading is clear of the resting launcher and close control in the scoped final fixture.
+  command: Selected Mobile LENS Node cases; test_chat_launcher_stub.py; runtime-style and template-sync guards; lens-boot-occlusion-20261014-r1 capture.py and inspect_lens.py
+  result: 4unique final browsercases8widthstates;2Dark individual passes retained from interrupted run and2Light terminal passes. Launcher15PASS1inheritedFAIL14warnings;115syncpairs pass;8canonical8focused views. Not live or independent acceptance.
 - claim: Funding summary preserves corridor absence, threshold scope, swap units and build-clock meaning.
   command: pytest tests/test_intl_dollar_funding_render.py; selected Funding Node cases; dollar-funding-scope-20261014-r1/capture.py and inspect_cards.py
   result: 13uniquePythonPASS14warnings per run;4unique corrected browsercases8widthstatesPASS after retaining4wrong-anchor failures;8canonicalcaptures8focusedparentviews. Source not deployed or independently reviewed.
@@ -562,3 +569,8 @@ Actual smile_decomp counterexamples refute causal dominance and dual-window conf
 ## Dollar funding scope — 2026-10-14
 
 The existing owner omits an unmeasured corridor and can return the same last spread with different five-observation threshold outcomes. The header now preserves this distinction, independent swap balance and correct display units. Shared build time is labelled as such. DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json retains original failures and corrected route proof. The prior Dollar panels remain byte-identical. The next causal repair is the retained mobile LENS overlap: the existing lens-lock rule hides loaded mmb-root but omits resting mmb-boot. Extend canonical presentation and verify open/close restoration without assistant activation or changing the signed-in browser. All original holds persist.
+
+
+## Mobile LENS reading clearance — 2026-10-14
+
+LENS_BOOT_OCCLUSION_ACCEPTANCE.json binds the actual resting launcher omission and subsequent close-control text overlap. Both repairs use canonical presentation, preserve existing lifecycle, and do not activate the assistant. The inherited stock.html# asset-guard finding remains explicit; no whole-suite green claim. Distinct next source evidence is rates-supplemental-scope-20261014-r1/OWNER_COUNTEREXAMPLES.json: absent or roundedzero periphery changes become tightening, and a flat ECB balance sheet becomes easing with a weekly-bin date. Preserve actual owner precision, independent clocks and all holds when adjudicating.
