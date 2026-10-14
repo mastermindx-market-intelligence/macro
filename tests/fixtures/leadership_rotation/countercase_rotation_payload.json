@@ -1,0 +1,80 @@
+{
+  "schema": "rotation_events.v1",
+  "ok": true,
+  "as_of": "2026-10-09",
+  "generated_utc": "2026-10-09T22:05:00Z",
+  "active": [
+    {
+      "id": "cc-xlk-xle:handoff",
+      "sector": "Technology",
+      "sector_name_en": "Technology",
+      "sector_name_zh": "科技",
+      "from_leg": {"key": "ai_semis", "name_en": "AI Semis", "name_zh": "AI半导体", "tier": "primary"},
+      "to_leg": {"key": "energy", "name_en": "Energy", "name_zh": "能源", "tier": "primary"},
+      "started": "2026-09-21",
+      "day_n": 14,
+      "asof": "2026-10-09",
+      "severity": "major",
+      "receipts": {},
+      "confirmed_tonight": false,
+      "copy_en": "e",
+      "copy_zh": "z"
+    },
+    {
+      "id": "cc-xle-laggard",
+      "sector": "Energy",
+      "sector_name_en": "Energy",
+      "sector_name_zh": "能源",
+      "from_leg": {"key": "energy", "name_en": "Energy", "name_zh": "能源", "tier": "primary"},
+      "to_leg": {"key": "energy", "name_en": "Energy", "name_zh": "能源", "tier": "primary"},
+      "started": "2026-09-25",
+      "day_n": 10,
+      "asof": "2026-10-09",
+      "severity": "notable",
+      "receipts": {},
+      "confirmed_tonight": false,
+      "lapse_count": 0,
+      "neg_run": 0
+    }
+  ],
+  "early_context": {
+    "schema": "rotation_early_context/v1",
+    "definition_id": "rotation_early_context/1",
+    "as_of": "2026-10-09",
+    "display_only": true,
+    "state": "watch",
+    "reason_codes": ["PARTIAL_COVERAGE"],
+    "pairs": [
+      {
+        "pair_id": "cc-xlf-xlu",
+        "num": "XLF",
+        "den": "XLU",
+        "context_group": "defensive_sector",
+        "value_as_of": "2026-10-09"
+      },
+      {
+        "pair_id": "cc-xly-xlp",
+        "num": "XLY",
+        "den": "XLP",
+        "context_group": "retailer_context",
+        "value_as_of": "2026-10-09"
+      }
+    ],
+    "prior_loser_constituent_claim": false,
+    "coverage": {
+      "registered_pairs": 2,
+      "evaluable_2s": 2,
+      "positive_2s": 1,
+      "missing_pair_ids": []
+    },
+    "availability": {"status": "AVAILABLE", "available_at": null},
+    "lineage": {
+      "definition_id": "rotation_early_context/1",
+      "status": "AVAILABLE",
+      "roots": ["engine.rotation_events", "engine.rotation_events"],
+      "revisions": {},
+      "dependency_groups": ["equity_price"],
+      "derived_from": ["oracle.ratio_lens"]
+    }
+  }
+}
