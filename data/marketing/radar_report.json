@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-10-13T12:51:38Z",
+  "produced_at": "2026-10-13T14:03:24Z",
   "tier": "display",
   "as_of": "2026-10-13",
   "feeds": [
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 1957,
+    "n_tickers": 1948,
     "window_plans": 7
   },
   "surplus": [
@@ -364,8 +364,8 @@
     }
   ],
   "queue": {
-    "added": 2,
-    "expired": 23,
+    "added": 0,
+    "expired": 0,
     "total": 491,
     "open": 289,
     "doa_skipped": 19

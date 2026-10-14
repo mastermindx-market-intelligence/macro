@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-13T12:51:19Z",
+  "produced_at": "2026-10-13T14:03:11Z",
   "as_of": "2026-10-13",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 30,
-    "passed": 29,
+    "items": 26,
+    "passed": 25,
     "quarantined": 1,
     "quarantined_policy": 1,
     "quarantined_overflow": 0,
@@ -20,51 +20,19 @@
   },
   "quarantined": [
     {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
+      "id": "post-cici-003",
+      "account": "cici",
+      "slot": "D1-S3",
       "type": "macro",
       "cashtag": "",
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-flagship-020"
+        "near_dup:post-meagan-013"
       ]
     }
   ],
   "passed": [
-    {
-      "id": "post-flagship-015",
-      "account": "flagship",
-      "slot": "D1-S15",
-      "type": "receipt",
-      "cashtag": "$FG",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-020",
-      "account": "flagship",
-      "slot": "D1-S20",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-024",
-      "account": "flagship",
-      "slot": "D1-S24",
-      "type": "chart",
-      "cashtag": "$WS",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-028",
-      "account": "flagship",
-      "slot": "D1-S28",
-      "type": "chart",
-      "cashtag": "$OMC",
-      "headline": ""
-    },
     {
       "id": "post-flagship-050",
       "account": "flagship",
@@ -82,22 +50,6 @@
       "headline": "$LLY just lined up a pattern we track."
     },
     {
-      "id": "post-theme-003",
-      "account": "flagship",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$HUT",
-      "headline": "Crypto & Blockchain selling off, -2.4% avg on Monday"
-    },
-    {
-      "id": "post-housepick-001",
-      "account": "flagship",
-      "slot": "D1-S9",
-      "type": "watchlist",
-      "cashtag": "$BKH",
-      "headline": ""
-    },
-    {
       "id": "post-founder-009",
       "account": "founder",
       "slot": "D1-S9",
@@ -111,7 +63,7 @@
       "slot": "D1-S16",
       "type": "macro",
       "cashtag": "",
-      "headline": "Growth holds up while inflation cools."
+      "headline": "Growth holds while inflation eases."
     },
     {
       "id": "post-founder-023",
@@ -119,7 +71,7 @@
       "slot": "D1-S23",
       "type": "signal",
       "cashtag": "$PPL",
-      "headline": "$PPL reclaimed 34.1"
+      "headline": "$PPL reclaims its recent average"
     },
     {
       "id": "post-founder-028",
@@ -130,28 +82,20 @@
       "headline": ""
     },
     {
+      "id": "post-founder-032",
+      "account": "founder",
+      "slot": "D1-S32",
+      "type": "receipt",
+      "cashtag": "$SFM",
+      "headline": ""
+    },
+    {
       "id": "post-founder-043",
       "account": "founder",
       "slot": "D1-S43",
       "type": "receipt",
       "cashtag": "$INGR",
-      "headline": "$INGR lost the line that mattered."
-    },
-    {
-      "id": "post-founder-045",
-      "account": "founder",
-      "slot": "D1-S45",
-      "type": "chart",
-      "cashtag": "$JBGS",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-004",
-      "account": "meagan",
-      "slot": "D1-S4",
-      "type": "chart",
-      "cashtag": "$COST",
-      "headline": "$COST is 0.1% below 949"
+      "headline": "$INGR long starts above 96.8"
     },
     {
       "id": "post-meagan-013",
@@ -167,14 +111,30 @@
       "slot": "D1-S22",
       "type": "chart",
       "cashtag": "$GAP",
-      "headline": "The $GAP chart has one job"
+      "headline": "$GAP has one line to keep"
     },
     {
-      "id": "post-meagan-042",
+      "id": "post-meagan-028",
       "account": "meagan",
-      "slot": "D1-S42",
-      "type": "signal",
-      "cashtag": "$MZTI",
+      "slot": "D1-S28",
+      "type": "receipt",
+      "cashtag": "$ATR",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-029",
+      "account": "meagan",
+      "slot": "D1-S29",
+      "type": "chart",
+      "cashtag": "$VNO",
+      "headline": "Vornado, $VNO, needs 33.8 back"
+    },
+    {
+      "id": "post-meagan-050",
+      "account": "meagan",
+      "slot": "D1-S50",
+      "type": "chart",
+      "cashtag": "$DEI",
       "headline": ""
     },
     {
@@ -183,6 +143,14 @@
       "slot": "D1-S51",
       "type": "chart",
       "cashtag": "$NVDA",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-053",
+      "account": "meagan",
+      "slot": "D1-S53",
+      "type": "watchlist",
+      "cashtag": "$SBRA",
       "headline": ""
     },
     {
@@ -199,23 +167,15 @@
       "slot": "D1-S10",
       "type": "chart",
       "cashtag": "$LOPE",
-      "headline": "$LOPE's breakout still has a condition."
+      "headline": "A recovery case with one condition"
     },
     {
-      "id": "post-kelly-006",
-      "account": "kelly",
-      "slot": "D1-S6",
+      "id": "post-sophia-015",
+      "account": "sophia",
+      "slot": "D1-S15",
       "type": "chart",
-      "cashtag": "$CCOI",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-017",
-      "account": "kelly",
-      "slot": "D1-S17",
-      "type": "chart",
-      "cashtag": "$NWE",
-      "headline": ""
+      "cashtag": "$RYAN",
+      "headline": "$RYAN has one line to reclaim"
     },
     {
       "id": "post-kelly-031",
@@ -223,7 +183,23 @@
       "slot": "D1-S31",
       "type": "receipt",
       "cashtag": "$ATR",
-      "headline": "$ATR entry stays 124"
+      "headline": "$ATR never reached 124"
+    },
+    {
+      "id": "post-kelly-044",
+      "account": "kelly",
+      "slot": "D1-S44",
+      "type": "receipt",
+      "cashtag": "$INGR",
+      "headline": "$INGR isn't live until it reclaims 96.8"
+    },
+    {
+      "id": "post-kelly-045",
+      "account": "kelly",
+      "slot": "D1-S45",
+      "type": "chart",
+      "cashtag": "$CCOI",
+      "headline": ""
     },
     {
       "id": "post-theme-005",
@@ -234,20 +210,12 @@
       "headline": "Semiconductors selling off, -2.8% avg on Monday"
     },
     {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
       "id": "post-cici-007",
       "account": "cici",
       "slot": "D1-S7",
       "type": "chart",
       "cashtag": "$JLL",
-      "headline": "先看收复 (reclaim first)"
+      "headline": "While New York slept, $JLL returned to familiar ground"
     },
     {
       "id": "post-cici-013",
@@ -263,12 +231,12 @@
       "slot": "D1-S42",
       "type": "chart",
       "cashtag": "$ECG",
-      "headline": "$ECG at 临界点 (decision point)"
+      "headline": "ECG, $ECG, 差一步 (one step short)"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 338,
+      "pairs_checked": 255,
       "hits": 1,
       "shared_media_hits": 0
     },
