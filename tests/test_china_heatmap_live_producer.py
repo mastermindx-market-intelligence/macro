@@ -354,3 +354,79 @@ def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch) -> None:
     accepted = instance.step(NOW)
     after = instance.step(NOW + timedelta(seconds=2))
     assert after["quotes"] == accepted["quotes"]
+
+
+def _tencent_source_quote(symbol: str, when: datetime = NOW) -> dict:
+    from datetime import timedelta
+    return {
+        "price": 100.0, "prev_close": 99.0,
+        "quote_ts": when.isoformat(),
+        "price_basis": "trade",
+        "source": "tencent",
+        "day_open": 99.5, "day_high": 100.5,
+        "day_low": 99.0, "day_volume": 10,
+    }
+
+
+def test_tencent_snapshot_repairs_only_transport_failed_names(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    initial = {"600519.SS": _tencent_source_quote("600519.SS", NOW)}
+    restored = {"000001.SZ": _tencent_source_quote("000001.SZ", NOW)}
+    def tencent(symbols, **opts):
+        calls.append((symbols, opts))
+        if len(calls) == 1:
+            return initial, ["000001.SZ"], "partial"
+        return restored, [], "ok"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", tencent)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert set(result) == {"600519.SS", "000001.SZ"}
+    assert len(calls) == 2
+    assert calls[0][1] == {"batch_size": 30, "max_workers": 6, "timeout": 5, "retries": 0}
+    assert calls[1] == (
+        ["000001.SZ"],
+        {"batch_size": 15, "max_workers": 8, "timeout": 5, "retries": 0},
+    )
+    assert result["000001.SZ"]["ts"] == int(NOW.timestamp() * 1000)
+    assert result["600519.SS"]["price"] == 100.0
+
+
+def test_tencent_snapshot_does_not_retry_true_no_trade_or_retime_quotes(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    observed = datetime(2026, 9, 28, 2, 11, tzinfo=timezone.utc)
+    def tencent(symbols, **opts):
+        calls.append(symbols)
+        return {"600519.SS": _tencent_source_quote("600519.SS", observed)}, [], "ok"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", tencent)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert len(calls) == 1
+    assert set(result) == {"600519.SS"}
+    assert result["600519.SS"]["ts"] == int(observed.timestamp() * 1000)
+
+
+def test_tencent_snapshot_recovery_is_one_wave_with_partial_failure(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    def partial(symbols, **opts):
+        calls.append(symbols)
+        return {}, ["600519.SS", "000001.SZ"], "partial"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", partial)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert result == {}
+    assert len(calls) == 2
+    assert calls[1] == ["600519.SS", "000001.SZ"]
+
+
+def test_tencent_snapshot_refuses_unbounded_recovery_or_unadmitted_keys(monkeypatch):
+    baseline = contract.validate_baseline(baseline_payload())
+    calls = []
+    def broken(symbols, **opts):
+        calls.append(symbols)
+        return {}, ["600519.SS"] * 500 + ["SPY"], "partial"
+    monkeypatch.setattr(producer.live_quotes, "fetch_tencent_cn", broken)
+    result = producer.fetch_tencent_snapshot(baseline)
+    assert result == {}
+    # Duplicate/bogus symbols cannot multiply bounded attempts.
+    assert len(calls) == 2
+    assert calls[1] == ["600519.SS"]

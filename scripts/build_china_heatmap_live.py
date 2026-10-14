@@ -58,10 +58,42 @@ def fetch_tushare_snapshot(
 def fetch_tencent_snapshot(
     baseline: contract.BaselineHeatmap,
 ) -> dict[str, dict[str, Any]]:
-    raw, _, _ = live_quotes.fetch_tencent_cn(
+    raw, failed, status = live_quotes.fetch_tencent_cn(
         list(baseline.tickers), batch_size=30, max_workers=6,
         timeout=5, retries=0,
     )
+    # During an actual session, sporadic connect timeouts can drop whole
+    # 30-name envelopes (~240/1720 missing in the 2026-10-14 morning probe).
+    # Retry only explicitly FAILED TRANSPORT batches. A provider response
+    # with "no trade" is authoritative: never retry it as a fake live quote.
+    #
+    # One bounded repair wave, using smaller requests. The interval loop is
+    # already the canonical retry owner; do not add another queue/scheduler,
+    # recurse, mint wall-clock timestamps or accept <95% qualified coverage.
+    failed = list(dict.fromkeys(
+        ticker for ticker in failed
+        if ticker in baseline.ticker_set and ticker not in raw
+    ))
+    if status == "partial" and failed and len(failed) <= 480:
+        recovered, unresolved, _ = live_quotes.fetch_tencent_cn(
+            failed, batch_size=15, max_workers=8,
+            timeout=5, retries=0,
+        )
+        raw.update({
+            ticker: quote for ticker, quote in recovered.items()
+            if ticker in baseline.ticker_set and ticker in failed
+        })
+        log.info(
+            "China heatmap Tencent transport recovery: initial_failed=%d "
+            "recovered=%d unresolved_batches=%d final_quotes=%d",
+            len(failed), len(recovered), len(unresolved), len(raw),
+        )
+    elif failed:
+        log.warning(
+            "China heatmap Tencent transport recovery not attempted: "
+            "status=%s failed_names=%d (bounded max=480)",
+            status, len(failed),
+        )
     return contract.normalize_tencent_quotes(raw, baseline)
 
 
