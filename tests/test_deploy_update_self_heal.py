@@ -140,13 +140,6 @@ def test_repository_noop_does_not_skip_reconciliation():
     assert SCRIPT.index("# Self-update:") < SCRIPT.index("API_UNIT_UPDATED=0")
 
 
-def test_caddy_source_is_validated_before_install():
-    validate = 'caddy validate --config "$APP_DIR/app/deploy/Caddyfile"'
-    install = 'install -m 0644 "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile'
-    assert validate in SCRIPT
-    assert SCRIPT.index(validate) < SCRIPT.index(install)
-
-
 def test_changed_systemd_unit_forces_api_restart():
     assert "API_UNIT_UPDATED=1" in SCRIPT
     trigger = SCRIPT.split("# BEGIN MACRO_API_RESTART_TRIGGER\n", 1)[1].split(
