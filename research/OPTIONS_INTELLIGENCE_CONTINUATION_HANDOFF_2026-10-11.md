@@ -581,10 +581,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D79 2026-10-14T03:21Z snapshot.) Rows superseding older rows below:
+(D80 2026-10-14T04:05Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | RUNNING on Cursor CLI (operator carrier decision, D80). Lane `f02-q2c`, mastermind-pc, `cursor-agent` 2026.10.12, model `gpt-5.3-codex-high`. Worktree `~/lanes/wt/f02-q2c` on `claude/f02q2-unknown-expiry-not-0dte-20261013` at `42415b1a`. Launched 2026-10-14T04:01:00Z with an 18000 s kill. Return dir `~/lanes/returns/f02-q2c/`; watcher `b8023y7gq`. The ubuntu3 `~/lanes/wt/f02-q2` is dead and left untouched; f02-q2c is the only writer on the branch (D80) |
+| Lane carrier (external) | Cursor CLI replaces Grok for new external lanes when `pool hosts` shows no eligible Fabric host (operator, D80). Logged in: mastermind-pc, ubuntu2 (never its push-disabled macro repo), m2studio (load 65–79, avoid). Not logged in: ubuntu0, ubuntu3. mb: keychain locked. m1: not installed. Grok is still exhausted for the week (D78) |
 | #985 OATRUTH (+N02-U2) / #983 M03T | PRODUCTION_PROOF. #985 merged 2026-10-14T03:03:16Z `5fa856bf`. The git-gated release `--target-sha 5fa856bfad4819f5befc7af66488965abdc01c75` (forward from live `afae6020`) ended DONE/healthy at 03:17:28Z. Identity triple agrees (`.deployment-id`, `.gitsrc` HEAD, wire `data-dpl-id`). Edge chunks carry the new literals and not the removed ones. CI e2e at three viewports ran on byte-identical trees. Proof comments 6160113742 (#985) and 6160113968 (#983). ACCEPTANCE stays open on one operator step: the entitled, signed-in real-data render (D79) |
 | F02-Q2 (live flow unknown expiry) | PARKED, BLOCKED-EXTERNAL. The lane ended rc=1 at 02:53:32Z on a Grok 402 `Grok Build usage balance exhausted`, after 34 calls. Red-test commit `42415b1a` was pushed to `origin/claude/f02q2-unknown-expiry-not-0dte-20261013` as a recovery copy. The partial classifier is saved as `leads/F02Q2/partial.diff`. Not moved to another carrier; resumes on its original carrier after the operator tops up the balance (D78) |
 | Grok carrier (all hosts) | EXHAUSTED: the same 402 on ubuntu3 (lane), ubuntu1 and mb (one-turn probes, 02:57–02:58Z). New lanes go through normal Fabric routing until the balance is restored (D78) |
@@ -1871,3 +1873,47 @@ NEXT:
 4. Operator-only:
    - the entitled render (ruling 1);
    - top up the Grok Build balance, after which F02-Q2 resumes (D78 ruling 1).
+
+### D80 (2026-10-14T04:05Z) — Operator moves F02-Q2 to Cursor CLI; Cursor becomes the external lane carrier while Grok is exhausted; the entitled render stays a sign-in the operator performs
+
+Operator direction (chat, 2026-10-14 ~03:30Z): "transfer it to cursor CLI, Grok is out of usage for the week". This supersedes D78 ruling 1, under which F02-Q2 resumed only on its original Grok carrier after a top-up. The carrier change is the operator's decision, not the seat routing around the 402.
+
+Facts observed this cycle:
+- Cursor CLI probe (read-only: install, `status`, disk, load; outputs at seat scratch `cursor/probe_<host>.txt`):
+  - mastermind-pc: logged in, 2026.10.12, 24 cpus, load ~3–4, 167G free.
+  - ubuntu2: logged in, 32 cpus, 346G free.
+  - m2studio: logged in, load 65–79.
+  - ubuntu0 and ubuntu3: not logged in.
+  - mb: keychain locked.
+  - m1: `cursor-agent` not installed.
+- Custody re-check at main `cec6ddcf44fa`: `git log a0fa900488db..origin/main` over the five owned and consumer files of the commission, plus `engine/flow_signals_grade.py` and `engine/tape_flow.py`, is empty.
+- Lane `f02-q2c` on mastermind-pc:
+  - Worktree: `~/lanes/wt/f02-q2c`, made by `mk_macro.sh` from `origin/claude/f02q2-unknown-expiry-not-0dte-20261013`. HEAD is `42415b1ae3e7`, the upstream is set and the tree is clean. The saved partial diff applies (`git apply --check`).
+  - Launcher: `~/lanes/bin/oi_cursor_lane.sh`, new. It has the same `~/lanes/logs/<lane>.{stdout,meta,rc,pid}` contract as the Grok `oi_lane.sh`. It runs `cursor-agent -p --output-format stream-json --force --trust --sandbox disabled`. Git author is `Cursor lane (<model>)`.
+  - Run: `gpt-5.3-codex-high`, `timeout 18000`, pid 1165692, started 2026-10-14T04:01:00Z.
+  - Prompt: the frozen F02-Q2 commission, path-rewritten (worktree, return dir, venv interpreter, Cursor trailer), plus a continuation wrapper:
+    - item 1 is re-run;
+    - item 2 verifies commit 1 against Q1–Q7/E1 and records the RED table at base, with any repair in a NEW tests-only commit and never an amend of the pushed `42415b1a`;
+    - item 3 may start from `partial.diff`;
+    - items 4–5 remain;
+    - the budget is about 150 tool calls / 5 h.
+  - Watcher: `b8023y7gq` (19000 s, poll 240 s) syncs the stdout, meta and return into the seat scratch `leads/F02Q2C/`.
+- The ubuntu3 worktree `~/lanes/wt/f02-q2` (dead Grok lane) is left in place, untouched.
+- Entitled render: the operator offered an account password in chat for the seat to sign in with. The seat does not type passwords into a production sign-in, and 1Password autofill through Chrome is unavailable (no connected browser). The password is not recorded anywhere in this ledger.
+
+Rulings:
+1. Cursor CLI is the external lane carrier for new lanes while Grok is exhausted, used only when `pool hosts <mode>` shows no eligible Fabric host at launch. Eligible Cursor hosts:
+   - mastermind-pc first;
+   - then ubuntu2, in a fresh worktree outside its push-disabled macro repo;
+   - m2studio only if its load allows.
+
+   R04-B1, D04-A2, R04-B2 and M04 keep their gates. Each still gets an overlap scan, its own worktree and one watcher. A Cursor refusal (auth, quota, policy) is recorded, not routed around.
+2. f02-q2c is the single writer on `claude/f02q2-unknown-expiry-not-0dte-20261013`. The seat judges its return by artifact. At judgment the seat re-runs the RED-at-base and GREEN-after tables and the commission's gates itself. No PR until F02-Q2T is live in production (the commission's PR-body condition).
+3. D79 ruling 1 stands with one clarification: the entitled render needs a sign-in the operator performs, either directly in the seat's built-in browser pane or through 1Password autofill once Chrome is connected. After the sign-in, the seat runs the 1440×900 / 820×1180 / 390×844 EN/ZH light/dark verification itself. The seat recommended the operator rotate the password that was pasted into chat.
+
+NEXT:
+1. Watcher `b8023y7gq` event → judge the f02-q2c return by artifact (ruling 2).
+2. #8923 watcher `b6y5c7v9y` event → on MERGED: `pool hosts`, then Fabric or Cursor per ruling 1, overlap scans, then launch R04-B1 and D04-A2 (commissions frozen).
+3. Wed 2026-10-14 15–19Z: read-only measurement of the `/live/flow_pulse.json` `source_asof` and `/live/intraday_quotes.json` `meta.source_asof` ages (D04-A2 release precondition).
+4. #8920 watcher `bqitfw30c` event → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+5. Operator-only: the sign-in for the entitled render (ruling 3).
