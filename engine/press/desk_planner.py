@@ -1224,8 +1224,13 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
         return []
     stats = engine_stat_facts(root, as_of=as_of)
 
+    # Already-covered or explicitly held reports are not candidates to inspect.
+    # Exclude them before the finite work budget, preserving the ranked order.
+    # Otherwise eight held reports can permanently hide the entire ranked tail.
+    candidates = [it for it in eligible
+                  if f"research_vault:{it.get('id')}" not in blocked_refs]
     slots: list[dict] = []
-    for it in eligible[: int(desk_cfg.get("candidate_pool") or 8)]:
+    for it in candidates[: int(desk_cfg.get("candidate_pool") or 8)]:
         if len(slots) >= cap:
             break
         ref = f"research_vault:{it.get('id')}"
