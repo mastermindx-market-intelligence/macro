@@ -25,3 +25,9 @@ The admin panel preserves legacy experiment counts/actions and shows diagnostics
 The original contracts operation remains EFFECT_UNKNOWN and quarantined under Chris's explicit fresh-source decision. This source does not consume or retry its refused return. Repository protection is still unqualified after the preserved denied read; Chris's administrator identity and continue-with-gap ruling are recorded separately. Executor and publisher credentials remain separate; no settings or credentials changed.
 
 Root retains normal source/CI/merge/publication and authenticated consumer proof. Runtime source qualification and physical acceptance proceed on their independently owned lane.
+
+## Installed admin import closure repair
+
+The existing deployment closure test found that the persistent admin interpreter caches eight codegen modules after its first diagnostic read. Those exact module paths now participate in the incumbent admin restart predicate. The transport, nightly registry publisher, queue JSON and canonical theme CSS remain outside the predicate because they are not part of that cached serving closure. No unit, credential, setting or running service was changed by this source repair.
+
+The pre-repair closure test failed with all eight missing paths. After repair, all 267 tests in `test_deploy_update_self_heal.py` passed in 77.99 seconds, including actual POSIX-regex behavior, derived import closure, per-request exclusions and existing deployment behavior. `bash -n` and diff whitespace checks passed. The publisher coordinator independently reviewed the two-file scope and found no source issue. Existing 706-test source and visual results remain applicable to their unchanged implementation bytes.

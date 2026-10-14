@@ -648,6 +648,10 @@ ADMIN_MUST_NOT_RESTART = [
     "app/research.py",
     "lib/config.py",
     "scripts/build_site.py",
+    "engine/research_codegen/transport.py",
+    "engine/experiments_registry.py",
+    "data/research_factory/review/queue.json",
+    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -1030,6 +1034,11 @@ def test_admin_closure_probe_is_not_vacuous():
     # __init__ -> state -> the substrate
     assert "engine/marketing/__init__.py" in closure, closure
     assert "engine/marketing/state.py" in closure, closure
+    # Read-only diagnostic validation loads the bridge and its direct contracts.
+    assert "engine/research_codegen/bridge.py" in closure
+    assert "engine/research_codegen/input_contract.py" in closure
+    assert "engine/research_codegen/evaluation.py" in closure
+    assert "engine/research_codegen/transport.py" not in closure
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure
