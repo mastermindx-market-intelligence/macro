@@ -290,8 +290,11 @@ def _entry(stage: str, disloc: dict | None) -> tuple[bool, str]:
 def _fda_molecule_lists(scarcity_row):
     """(molecules_checked, molecules_with_rows) when both were measured, else None.
 
-    A fixture that lists molecules_checked and omits molecules_with_rows has
-    not measured the gap. Naming every checked molecule would invent one.
+    Coverage is measured only under summary.coverage: engine.fda_scarcity is
+    the only producer and it writes both lists there, never at the row top
+    level. A row that names molecules at the top level without coverage has not
+    measured the gap — naming every checked molecule would invent one — so
+    there is no row-level fallback.
     """
     if not isinstance(scarcity_row, dict):
         return None
@@ -305,11 +308,6 @@ def _fda_molecule_lists(scarcity_row):
         return (
             coverage.get("molecules_checked"),
             coverage.get("molecules_with_rows"),
-        )
-    if "molecules_checked" in scarcity_row and "molecules_with_rows" in scarcity_row:
-        return (
-            scarcity_row.get("molecules_checked"),
-            scarcity_row.get("molecules_with_rows"),
         )
     return None
 
@@ -467,13 +465,18 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                 # After the chip. The module name is split so the closure walk
                 # does not attach this helper to every exclusive job that
                 # already imports the cascade. healthcare-fda-supply owns the
-                # file because its suite imports it.
-                names = _fda_molecule_lists(scarcity_row)
-                if names is not None:
-                    gap_module = importlib.import_module(
-                        "engine." + "healthcare_molecule_gap"
-                    )
-                    molecule_gap = gap_module.molecule_gap_clause(*names)
+                # file because its suite imports it. The clause is optional
+                # decoration, so it is guarded exactly like the chip guard
+                # above: a failure logs at debug and leaves molecule_gap None.
+                try:
+                    names = _fda_molecule_lists(scarcity_row)
+                    if names is not None:
+                        gap_module = importlib.import_module(
+                            "engine." + "healthcare_molecule_gap"
+                        )
+                        molecule_gap = gap_module.molecule_gap_clause(*names)
+                except Exception as _e:  # noqa: BLE001
+                    log.debug("fda_scarcity molecule_gap clause failed for %s: %s", k, _e)
 
         # W1b: Federal Register policy catalyst chip — fold into rationale only.
         # NEVER changes stage. policy_reg_chip is a display dict; summary folds into rationale.

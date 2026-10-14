@@ -340,6 +340,9 @@ MUST_RESTART = [
     # app.billing holds the issuer's plan/features catalog for the process life.
     "config/plans.yml",
     "engine/neuralweb/market_memory_playback.py",
+    "engine/neuralweb/market_memory_retained_catalog.py",
+    "engine/neuralweb/market_memory_retained_saved.py",
+    "engine/neuralweb/market_memory_retained_legacy_guard.py",
     # Private Issue Desk router import-caches both its engine and strict schemas.
     "engine/options_issue_desk.py",
     "contracts/options/options.issue_desk.v1.schema.json",
