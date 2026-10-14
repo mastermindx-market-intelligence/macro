@@ -38,6 +38,7 @@ do_not_redo:
   - "Orchestration shape from 2026-10-12 (Chairman directive): no native Claude children of any kind; the seat launches Grok (grok-4.6) and GLM (glm-5.3 / glm-5.3-flash) lanes directly with ext/remote_sub.sh on ubuntu0/ubuntu2/ubuntu3/mb, one launcher task per lane as its only watcher, and judges every return by artifact. The Phase 0 native-Opus orchestrators ORCH-W1/W1c/W1d are history, never a template."
   - "Wave-2 lanes B1-B5, A1-A7 and C1-C3 are ACCEPTED by artifact and integrated in the Phase 1 integration PR (2026-10-13); the hostile corpus reproduces 33/33 seat-ratified verdicts. Do not re-run them; repair forward."
   - "The nine W3 build lanes (X4 transfer, X4 observation, C5 cascade, M2 mechanisms, E3 receipt, E3 grade, T1 thesis, P7 adapter, L6 agreement) are ACCEPTED by artifact and integrated in W3 commit 0980ee37 (617 passed, 0 skipped). Do not re-launch them; the seven open design defects are repaired forward in wave w1c."
+  - "The seven W3 design defects are settled by DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS (2026-10-13). Do not re-adjudicate them, and do not edit the frozen A-design packets; amendments live in phase1_designs/AMENDMENTS_W1C.md and the superseded case values in AMENDMENTS_W1C.cases.json."
 waves:
   - id: p0
     title: Phase 0 — recovery census, three-candidate commission A, seat freeze of event templates + closed schemas
@@ -55,9 +56,9 @@ waves:
     next_action: none; the nine leaf modules (transfer, observation, cascade, mechanisms, eval_receipt, eval_grade, thesis, prophet_adapter, agreement) and the 15 Phase 1 contracts landed by the Phase 1 integration PR (W3 commit 0980ee37) with fail-closed tests; prophet_adapter stays a leaf, not wired into engine/intelligence.py.
   - id: w1c
     title: Wave 1c - repair the seven design defects found at W3 integration (C5 cascade, X4 observation, M2 mechanisms, E3 receipt, T1 thesis, P7 adapter, L6 agreement)
-    status: todo
+    status: in_progress
     depends_on: [w1b]
-    next_action: one seat-launched Grok/GLM lane per defect against the frozen spec; each repair either changes the module to match the design or records a seat ruling amending the design, and the defect list lives in the 2026-10-13 handoff unresolved section.
+    next_action: DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS ruled all seven defects (three code repairs, four design amendments in phase1_designs/AMENDMENTS_W1C.md); C5 and L6 code repairs land in the w1c PR, and the X4 session-counted matched window lands in a follow-up PR from lane W1C_X4.
   - id: w2
     title: Wave 2 — commission D 600-case graded benchmark (200 capital allocation / 200 demand-guidance / 200 strategic-partnership)
     status: todo
@@ -66,7 +67,7 @@ waves:
     title: Wave 3 — Phase 1 measured packet producer wired to the existing event ledger, context_only, behind the benchmark gate
     status: todo
     depends_on: [w2]
-next_action: Wave w1c - repair the seven W3 design defects via seat-launched Grok/GLM lanes (no native Claude children), then wave w2 - label the 600-case benchmark with the A6 labeler packet and score it with eval_receipt/eval_grade; keep the v1 contract byte-frozen.
+next_action: Finish wave w1c - land the X4 session-counted matched window from lane W1C_X4 (C5, L6 and the four amendments land in the w1c PR) - then wave w2 - label the 600-case benchmark with the A6 labeler packet and score it with eval_receipt/eval_grade; keep the v1 contract byte-frozen.
 ---
 
 # Prophet news-to-business-impact
