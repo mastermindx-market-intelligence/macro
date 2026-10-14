@@ -404,6 +404,7 @@
      strip is pinned to the floor with margin-top:auto, and the row reads as one block. */
   .tb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(212px,1fr)); align-items:stretch; gap:10px; margin-top:12px; }
   .tb-tile { display:flex; flex-direction:column; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; position:relative; }
+  .tb-tile:focus-visible { outline:2px solid var(--info); outline-offset:3px; }
   .tb-tile.tb-hot { border-color:color-mix(in srgb,var(--down) 50%,var(--line)); background:color-mix(in srgb,var(--down) 5%,var(--panel2)); }
   .tb-tile.tb-warm { border-color:color-mix(in srgb,#d4a017 40%,var(--line)); background:color-mix(in srgb,#d4a017 4%,var(--panel2)); }
   .tb-tile.tb-cool { border-color:var(--line); }
@@ -746,7 +747,7 @@
     {# compact plain fallback (trigger hook + JS-off / older-cache): state + stance, one line #}
     {% set _fb_en = _display_en ~ ': ' ~ _stance_en ~ '.' %}
     {% set _fb_zh = _display_zh ~ '：' ~ _stance_zh ~ '。' %}
-    <div class="tb-tile {{ _tile_cls }}" data-lens-kind="{{ _kind }}" data-tip-en="{{ _fb_en }}" data-tip-zh="{{ _fb_zh }}">
+    <div class="tb-tile {{ _tile_cls }}" tabindex="0" role="group" aria-labelledby="intl-turn-{{ loop.index }}-name" data-lens-kind="{{ _kind }}" data-tip-en="{{ _fb_en }}" data-tip-zh="{{ _fb_zh }}">
       {# ---- rich LENS popover, cloned by theme.js on hover/focus/tap. The plain data-tip
              above is the trigger hook + fallback; the human read lives in .lens-body and the
              machine numbers are demoted to the mono receipt under the perforation. ---- #}
@@ -805,7 +806,7 @@
       </span>{# end .lens-src #}
       <div class="tb-hd">
         <span class="flg">{{ tile.flag }}</span>
-        <div class="tb-name">
+        <div class="tb-name" id="intl-turn-{{ loop.index }}-name">
           <span class="l-en">{{ tile.name }}</span><span class="l-zh">{{ tile.name_zh }}</span>
           <small>{{ tile.cc }}</small>
         </div>

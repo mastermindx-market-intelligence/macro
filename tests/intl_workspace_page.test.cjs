@@ -55,6 +55,51 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Market turns full reads are keyboard reachable ${theme} ${lang}`,async()=>{
+    const turnsHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      'from tests.test_intl_workspace_integration import render_fixture,library_recovery_fixture; print(render_fixture(turn_board=library_recovery_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      const query=lang==='zh'?'市场转折':'Market turns';
+      const input=page.locator('[data-im-library-search]:visible');await input.fill(query);
+      const link=page.locator('[data-im-library-tool="market_turns"] a');const origin=page.url();
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await link.focus();await page.keyboard.press('Enter');
+        assert.equal(new URL(page.url()).hash,'#intl-market-turns');
+        const heading=page.locator('#intl-market-turns');
+        await heading.locator('.help').focus();await page.keyboard.press('Escape');
+        const tiles=page.locator('.tb-tile');assert.equal(await tiles.count(),3);
+        const names=lang==='zh'?['日本','香港','澳大利亚']:['Japan','Hong Kong','Australia'];
+        const phrases=lang==='zh'?['确认仍不完整','修复尝试失败','健康上行']:['confirmation is incomplete','repair attempt as failed','Climbing in good health'];
+        for(let i=0;i<3;i++) {
+          await page.keyboard.press('Tab');
+          const tile=tiles.nth(i);
+          assert.equal(await tile.evaluate(n=>document.activeElement===n),true,`native Tab reaches ${names[i]} at ${width}`);
+          assert.equal(await page.getByRole('group',{name:names[i]+' '+['JP','HK','AU'][i],exact:true}).count(),1);
+          assert.equal(await tile.getAttribute('aria-describedby'),'lensPop');
+          const pop=page.locator('#lensPop.open');assert.equal(await pop.count(),1);
+          const text=await pop.innerText();assert.ok(text.toLocaleLowerCase().includes(names[i].toLocaleLowerCase()));assert.ok(text.includes(phrases[i]));
+          const focus=await tile.evaluate(n=>({visible:n.matches(':focus-visible'),style:getComputedStyle(n).outlineStyle,width:parseFloat(getComputedStyle(n).outlineWidth)}));
+          assert.equal(focus.visible,true);assert.notEqual(focus.style,'none');assert.ok(focus.width>=2);
+          assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('lens-lock')),width<=640);
+          await page.keyboard.press('Escape');
+          assert.equal(await page.locator('#lensPop.open').count(),0);
+          assert.equal(await tile.evaluate(n=>document.activeElement===n),true);
+          assert.equal(await tile.getAttribute('aria-describedby'),null);
+          assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('lens-lock')),false);
+        }
+        await page.keyboard.press('Tab');
+        assert.equal(await page.locator('#intl-recovery-quality').evaluate(n=>document.activeElement===n),true);
+        await page.goBack();assert.equal(page.url(),origin);assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:turnsHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Library opens supplied recovery assessments by keyboard ${theme} ${lang}`,async()=>{
     const recoveryHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       'from tests.test_intl_workspace_integration import render_fixture,library_recovery_fixture; print(render_fixture(turn_board=library_recovery_fixture()))'],

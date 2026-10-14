@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/intl_workspace_page.test.cjs
+  what: Make existing Market turns full-read cards keyboard reachable, named by localized market and visibly focused; retain the incumbent LENS focus/Escape behavior.
+- path: research/paper_international_wave1_wave2/MARKET_TURNS_KEYBOARD_ACCEPTANCE.json; mockups/evidence/paper-international-library/market-turns-keyboard/
+  what: Bind four fail-before and passing browser regressions, affected render tests and native-focus visual evidence; source not deployed and independent review pending.
 - path: templates/intl_recovery_quality.html.j2; templates/intl.html.j2; lib/intl_library_mount.py
   what: Expose complete supplied recovery reads in existing native reference-fold depth and bind the real Library destination; preserve owner wording, market identity and partial coverage.
 - path: tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs; research/paper_international_wave1_wave2/LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json; mockups/evidence/paper-international-library/recovery-quality/
@@ -127,6 +131,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Library Market turns exposes all supplied rich reads through sequential native Tab and Escape without changing context.
+  command: market-turns-keyboard-20261014-r1/probe.py; scoped Node four-case red/green; pytest tests/test_intl_workspace_integration.py.
+  result: Original native Tab skipped all3cards at1440/320;4regressions fail before. Final4cases pass8width states with24card reads/names/focus/Escape observations and8Back returns;29render tests pass14inherited cleanupwarnings.
 - claim: Recovery quality exposes actual supplied owner reads through native keyboard disclosure without qualifying data.
   command: library-recovery-quality-20261014-r1 Python red/green, scoped Node browser and no-JavaScript commands; LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json.
   result: Original2PythonFAIL3PASS and1browserFAIL; final41Python and4EN/ZH-Dark/Light browser cases pass over8width states, plus1native JavaScript-disabled fallback. Eight canonical captures retain partial-coverage caveats.
@@ -448,3 +455,7 @@ Final History table source/evidence: `/Volumes/Mastermind/evidence/paper-waves-2
 Library trade-link source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-trade-links-20261014-r1`. The two-line source repair binds only a unique existing guarded CGL panel. Its model-context notice and numerical unavailability remain unchanged. Rejected fixture assumptions are retained; no frozen review or original live-browser effect was retried.
 
 Recovery-quality source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-recovery-quality-20261014-r1`. Native disclosure reuses complete supplied bilingual owner text and existing material components. No new assessment, qualification or controller. Original review refusal, live Chrome boundary and all custody/release holds persist.
+
+Market-turns keyboard evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/market-turns-keyboard-20261014-r1`. Three owned template-line changes connect existing rich LENS reads to keyboard focus with localized group names and a token outline. Owner content, shared controllers and ranking are unchanged. English-uppercase and Python URL-property harness assumptions were corrected; optional broad test_intl_build collection remains unavailable because yfinance is absent, not a product failure. Original review refusal and all live/release/custody holds persist.
+
+Market-turns visual scope: canonical capture retains8rest and8forced-focus cells unchanged. Full-page screenshot invokes the incumbent resize-close handler, so the8forced cells are not accepted as settled reading proof. Four separate native-Tab viewport images preserve open/opacity1 before and after capture and were all parent-viewed. Existing launcher proximity and live_config.js404 remain; independent review is pending. The next distinct source hypothesis is Rates: an absent3m value may be plotted at0 when10y exists; reproduce None versus real0 before changing it. Source trace is in market-turns-keyboard-20261014-r1/NEXT_LIBRARY_RATES_BOUNDARY.json.
