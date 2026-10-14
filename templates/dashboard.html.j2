@@ -16295,6 +16295,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
     {{ pv.pv_css(setup_detail=true) }}
+    <style>{% include "_prophet_workspace.css.j2" %}</style>
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
