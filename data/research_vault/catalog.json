@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T08:32:16.916156+00:00",
-  "count": 2882,
+  "generated_at": "2026-10-14T08:38:10.602477+00:00",
+  "count": 2883,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -737,6 +737,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-olsjyzwqkvu-24d877",
+      "title": "Americas Retail Specialty Hardlines Updating estimates for Lithia Motors and Boyd Group ahead of earnings",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:11:06Z",
+      "summary_points": [
+        "Lithia Motors downgraded: Price target cut to $362 (from $415) due to revised 3Q26 EPS ($9.90 vs.",
+        "$10.65) from softer new vehicle sales (-1% SAAR), aftersales deferral, and affordability pressures (monthly payments ~$800).",
+        "Boyd Group valuation discount: Trades at 7.0x NTM EV/EBITDA (below 10.5x 3-yr avg), 66%+ upside potential, and 12.3x EV/EBITDA vs. peer avg 7.8x, signaling significant undervaluation in collision repair sector.",
+        "Affordability crisis: Near-term demand threatened by incentive spend below historical averages, monthly payments approaching $800, and used retail volumes falling 3% y/y (Aug), suppressing sales growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },
