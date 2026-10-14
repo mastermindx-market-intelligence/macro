@@ -581,10 +581,14 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D73 01:05Z snapshot.) Rows superseding older rows below:
+(D74 01:55Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| D04A (source clocks) | Tuesday window DONE (8/8 ticks on time; 7 reads + 1 FAILED_READ 14:03Z); unfixed baseline + A02 falsifier captured; live board 116/116 real `ts` → new publish gate passes; hold RELEASED → `merge-on-green` label only, controller-owned (D74); D04-A2 owed after merge: `status()` projection + macro-api restart + strict flip, which must rule the ~158-min one-missed-build source age |
+| #948 | MERGED 01:34:29Z `afae6020`; git-gated deploy `--target-sha afae6020…` RUNNING (VPS pid 1403673, `/opt/terminal/deploy-fable-948.log`, watcher `bpxppq8qn`), also ships #955; baseline chunk `0vo6qjk1tapsi.js` has `l>=570&&l<960` (D74) |
+| #985 / #983 | refreshed after #948 merged: #985 `9c5a244d` run 38496639609, #983 `650d7005` run 38496643758; watcher `bsy8vl4r6`; deploy + live verify owed after both merge (D74) |
+| Macro #8920 / #9079 / #9083 | label; controller refresh-DEFERRED (main `402b57de` changed check definitions; 0/0 slots); never bypassed; watcher `bqitfw30c` (D74) |
 | #723 writer | Codex coordinator `01a137a5` holds the serialized #723 writer (UI-b repair integrated at `906573f9`; PP1-D run 2 on `fa4e8f92`; independent review `d3a3bc33..906573f9` on normal route); root `01a10340` keeps merge/deploy/production parity; this seat stands down from #723 and retracts rep1/PP1-D/PP2REV2 launches (D73) |
 | Macro #9079 / #9083 | hold RELEASED 01:03Z → `merge-on-green` (D57 condition met by Macro #9189); source-only merge, no install (D73) |
 | Matrix natural proof | ACCEPTED by root: Macro #9189 merged 00:37:35Z (2 natural sessions + withholding); runtime `6361f5e0` unchanged (D73) |
@@ -1634,3 +1638,32 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - #985/#983/#948: CI.
   - Macro #8920/#9079/#9083: CI (label).
   - Matrix natural proof: ACCEPTANCE (root).
+
+### D74 (2026-10-14T01:55Z) — D04A Tuesday window judged: Macro #8923 hold RELEASED (label only); #948 MERGED and deploying; #985/#983 refreshed; Macro controller refresh-deferral recorded
+
+- FACT (D04A window, by artifact): `leads/D04A/tuesday/WINDOW_DONE` = `state=WINDOW_DONE end=2026-10-13T21:41:02Z`. All 8 ticks fired on time (`ticks.log`). The recreated dossier `monday/dossier.md` holds 7 complete reads and 1 `FAILED_READ`. The `FAILED_READ` was at 14:03Z: `curl_rc=28` on both `/api/status` and `/live/flow_pulse.json`. It is recorded as a failed read, never as an empty result.
+- FACT (the unfixed revision, measured for one full session, Oct 13):
+  - On every read, the pulse has `source_asof` and `n_universe` absent, and no clock field on any row (`rows_with_any_clock_field=0`).
+  - On every read, `/api/status` `checks.intraday_quotes` is `"absent"`, so after the merge the health check takes its ABSENT-OK path.
+  - The pulse is rebuilt hourly at about :38: 13:41, 16:38, 19:38, 20:38 and 21:38Z. The largest in-session build age observed was 49.0 min, at 21:27Z. 116 of 116 tickers had bars on every read.
+  - The orchestrator `fast` lane read `ok=False` once, at 20:01:31Z, and was ok again at the next read. That is a transient outside this PR's scope.
+- FACT (the natural A02 falsifier, captured):
+  - The pre-open pulse at 13:00Z carried `as_of` = Monday 21:38:05Z with `stale=False`, at an age of 921.9 min. The build clock was presented as the data clock.
+  - The live board at 01:46Z (`leads/D04A/release/q_*.json`) carried top-level `asof` 2026-10-14T01:40:12Z. Its 116 quote clocks span 20:00:00–20:04:40Z (median_low 20:00:01Z). Again, a build clock stands in place of a source clock.
+- FACT (release-time sample of the new publish gate): all 116 live board quotes carry an integer `ts` with no `tsSynthetic`. #8923's `require_source_clock=True` therefore finds 116 qualifying clocks and would publish. The publish validators run on each lane's freshly built staging file from the same deploy, so there is no window in which old bytes are judged by new code.
+- FACT (for D04-A2, not a release condition): the max `bars_today` maps the pulse's future `source_asof` to the start of the build hour (6 bars at 13:41 → 13:00Z; 9 at 16:38 → 16:00Z; 14 at 21:38 → 21:00Z, the after-hours bar). Under the hourly cadence, the source age peaks at about 98 min just before the next build, and one missed hourly build reaches about 158 min. The strict flip in D04-A2 must therefore either tolerate one missed cycle (raise the limit above 158 min) or accept that one missed build turns health red. Rule this at D04-A2; the 150-min ABSENT-OK check in #8923 cannot fire, because `status()` does not project the field.
+- RULING: D46 Q1's purpose was "Monday measures one unfixed revision and captures the natural A02 falsifier; Tuesday proves the fixed gates". Monday's dossier was lost to the reboot (D56). Tuesday Oct 13 is the measured unfixed session, and Wednesday Oct 14 becomes the fixed-gate session. The hold's condition is met. RELEASE #8923 by label swap ONLY (`hold` → `merge-on-green`, never `--auto`), with the body line "arms auto-merge" amended to "label only" in the same act. Merging is owned by the Macro controller. After the merge, the seat owns D04-A2: the `app/main.py::status()` projection, the macro-api restart, and ABSENT-OK → strict, using the 158-min finding above. R04-B1 stays behind #8923's merge.
+- FACT (#948): MERGED 2026-10-14T01:34:29Z as `afae60208ffbf2f285515da47a41eafeb3531bcf`. Earlier the PR had carried `merge-blocked`. That label came from a stale red dispatch run and did not block native auto-merge.
+- ACT (#948 deploy): the git-gated deploy `/opt/terminal/terminal-build.sh --target-sha afae60208ffbf2f285515da47a41eafeb3531bcf` was started after an ancestry check: live `34e39025` is an ancestor of `afae6020`, so this is not a rollback. It runs as VPS pid 1403673, logging to `/opt/terminal/deploy-fable-948.log`, with watcher `bpxppq8qn`. The run also ships #955's merged hub and terminal bytes. #955 names the VPS builder as its release path, and its migration edits are comments only; this seat writes nothing to #955. Gate 0 passed, and the build was at the TypeScript step at 01:47Z.
+  - Pre-swap baseline, live chunk `0vo6qjk1tapsi.js`: it contains `l>=570&&l<960?"regular":"last_session"`, and `T00:00:00Z` occurs 0 times.
+- ACT (#985/#983): after #948 merged, both went BEHIND under strict protection. Each was refreshed with `update-branch` and `expected_head_sha`:
+  - #985 → `9c5a244d`, run 38496639609;
+  - #983 → `650d7005`, run 38496643758.
+  - Watcher `bsy8vl4r6` is waiting on both; it supersedes `b47qdbn4g`.
+- FACT (Macro controller, workflow 322071347): it is refresh-deferring #8920, #9079 and #9083 with "proof is stale — main commit 402b57defb30 changed the check definitions" and 0/0 effective CI-workload refresh slots. That is the controller's governor; this seat does not run update-branch or any bypass on Macro (DNR). Watcher `bqitfw30c` remains armed.
+- Rungs at 01:55Z:
+  - #948: MERGED, deploying; PRODUCTION_PROOF pending.
+  - #985/#983: CI.
+  - Macro #8923: label `merge-on-green`; the controller merges.
+  - Macro #8920/#9079/#9083: CI (label), refresh deferred.
+  - #723: RUNNING (coordinator `01a137a5`, not this seat).
