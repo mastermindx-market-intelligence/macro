@@ -166,7 +166,19 @@ values.
 
 ## Mutation sensitivity
 
-(FM table — see Commands for the runs; killed k/4 recorded in the lane return.)
+Each mutation was applied alone (≤ 6 changed lines) in a detached worktree at HEAD, the suite run
+there, then restored with `git checkout -- lib/ engine/` (all four mutations live under `lib/` or
+`engine/`). Killed **4/4**; no survivor.
+
+| id | mutation (file, ≤6 lines) | failing tests |
+| --- | --- | --- |
+| FM1 | substitution: for a ticker with no stored file, `resolve_close` returns another ticker's `stocks/PLAINCO.parquet` series (`engine/price_ladder.py`, +4) | `test_j6_the_seam_refuses_goneco_without_substitution`, `test_j4_no_member_is_filled_or_substituted`, `test_j8_backend_pins_match_the_frozen_generations` |
+| FM2 | path leak: a missing file's refusal code embeds the resolved absolute path (`lib/dataos/web_workspace.py`, +3) | `test_j6_no_refusal_leaks_paths_or_sentinels`, `test_j6_missing_file_and_unknown_dataset_refuse`, `test_j8_backend_pins_match_the_frozen_generations` |
+| FM3 | inspection side effect: `DataWorkspace.read` writes a marker next to the source it read (`lib/dataos/web_workspace.py`, +2) | `test_j7_inspection_triggers_nothing`, `test_j8_backend_pins_match_the_frozen_generations` |
+| FM4 | coverage drop: `account_coverage` omits MISSING members (`lib/dataos/read_contract.py`, +1; the constructor's never-drop law then refuses the account) | `test_j4_coverage_keeps_goneco_in_the_account`, `test_j4_qualified_members_keep_the_seams_provenance`, `test_j5_partial_coverage_is_exactly_two_thirds`, `test_j7_inspection_triggers_nothing`, `test_j8_backend_pins_match_the_frozen_generations` |
+
+`test_j8_backend_pins_match_the_frozen_generations` failing in every mutated run is bonus
+sensitivity: it hashes the subject files, so any mutation under them is itself detected.
 
 ## Findings
 
@@ -178,5 +190,31 @@ under Distinct views / Not covered as UNFINISHED, not as a defect — the seam's
 
 ## Commands
 
-(Evidence commands and last lines are recorded in the lane return packet EVIDENCE; run from
-`~/lanes/wt/dataos-f01-1` with `PY=~/lanes/venv/bin/python` and `PYTHONDONTWRITEBYTECODE=1`.)
+Run from `~/lanes/wt/dataos-f01-1` with `PY=~/lanes/venv/bin/python`; every pytest invocation
+prefixed `PYTHONDONTWRITEBYTECODE=1` and suffixed `-q -p no:cacheprovider`. Last lines at the final
+HEAD:
+
+- **P1** `PY -m pytest tests/verification/test_journey_f01.py -q -p no:cacheprovider -rs` — run
+  twice, identical both times: `28 passed in 5.8s` (28 items ≥ 24, 0 skipped, 0 xfail — no FINDING).
+- **P2** `git diff --name-only <start> HEAD` → exactly the four owned paths
+  (`research/data_os_completion/2026-10-13/F01_JOURNEY.md`, `tests/verification/__init__.py`,
+  `tests/verification/journey_f01_census.py`, `tests/verification/test_journey_f01.py`);
+  `git diff --diff-filter=M --name-only <start> HEAD` → empty.
+- **P3** `PY -m py_compile tests/verification/test_journey_f01.py tests/verification/journey_f01_census.py`
+  → `compile-ok`.
+- **P4** `grep -n "datetime.now\|time\.time\|requests\|urllib\|socket\|subprocess\|open(" <the two
+  files>` — every hit explained: `subprocess` is the CLI transport leg plus the census launcher;
+  `socket`/`subprocess.Popen`/`requests` appear only as audit-hook counter names and the watched
+  network-module name list; no `open(`, no `datetime.now`, no `time.time`, no `urllib` in either
+  file; all writes go to `tmp_path` only.
+- **P5** `PY scripts/check_contract_delta.py --base ed1497887c99101bd1b8bc5438e281f02466371b` —
+  `::error title=contract-delta::tests/verification/test_journey_f01.py is a new pytest suite named
+  by no run: step in any workflow — wire it into the job that owns its subject in
+  .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml` /
+  `contract-delta: 1 introduced, 0 inherited (base ed1497887c99)`. The introduced finding naming
+  the unwired suite is EXPECTED (the orchestrator applies the CI wiring patch); running it needed a
+  full worktree checkout (`scripts/worktree_sparse.py full`, this worktree only, fully offline —
+  all 118,145 HEAD blobs already local).
+- **P6** mutation sensitivity, above: killed 4/4
+  (`git worktree add --detach ~/lanes/wt/dataos-f01-1-mut HEAD`, one mutation at a time, suite run,
+  `git checkout -- lib/ engine/`, `git worktree remove --force ~/lanes/wt/dataos-f01-1-mut`).
