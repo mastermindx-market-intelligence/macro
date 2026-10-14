@@ -6,11 +6,11 @@ This is a retrospective source dossier for a supplied-text diagnostic. The offic
 
 On 1 May 2024 the FOMC left its target range at 5.25–5.50 percent and announced continued securities runoff.
 The Treasury monthly redemption cap remains $60 billion for May and becomes $25 billion on 1 June. The agency debt/MBS cap stays $35 billion.
-Interest on reserve balances remains 5.4 percent, effective 2 May. Announcing a future implementation date does not make that policy effective on announcement day.
+Interest on reserve balances remains 5.4 percent, effective 2 May.
 
 ## Root adjudication (14 October 2026)
 
-The Treasury runoff ceiling falls $35 billion per month, or 58.33 percent, from June; this is a cap change, not realized runoff or an asset-purchase amount. May still has the $60 billion cap. Slower runoff does not establish QE, a policy-rate cut, a $35 billion reserve injection or a market return.
+Announcing a future implementation date does not make that policy effective on announcement day. The Treasury runoff ceiling falls $35 billion per month, or 58.33 percent, from June; this is a cap change, not realized runoff or an asset-purchase amount. May still has the $60 billion cap. Slower runoff does not establish QE, a policy-rate cut, a $35 billion reserve injection or a market return.
 
 ## Sources and custody
 
