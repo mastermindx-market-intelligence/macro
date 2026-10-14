@@ -444,7 +444,8 @@ def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
 
 
 def _matches_probe(obj: object) -> bool:
-    """``obj`` is a public ``Exception`` subclass constructible with ``"probe"``."""
+    """``obj`` is an ``Exception`` subclass outside ``(TypeError, ValueError)`` whose
+    ``obj("probe")`` constructs and renders ``"probe"`` in its ``str``."""
     if not isinstance(obj, type):
         return False
     if not issubclass(obj, Exception):
@@ -466,7 +467,11 @@ def _matches_probe(obj: object) -> bool:
 # class object are coalesced (multiple builtin names alias to one class).
 _PROBE_EXCEPTIONS = tuple(
     sorted(
-        {obj for name, obj in vars(builtins).items() if _matches_probe(obj)},
+        {
+            obj
+            for name, obj in vars(builtins).items()
+            if not name.startswith("_") and _matches_probe(obj)
+        },
         key=lambda cls: cls.__name__,
     )
 )
@@ -484,11 +489,12 @@ def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
 
     The stub replaces the local ``date`` binding in THIS module and raises the
     parameter's type from ``fromisoformat``. The probe is parametrized over
-    ``_PROBE_EXCEPTIONS`` -- every builtin ``Exception`` subclass this
-    interpreter constructs with ``"probe"``. Widening the handler to any id
-    turns that id red; ``pytest.raises(..., match="probe")`` binds: a handler
-    that catches and re-raises a DIFFERENT message fails to match, so item
-    2 closes that hole.
+    ``_PROBE_EXCEPTIONS`` -- every public builtin ``Exception`` subclass outside
+    ``(TypeError, ValueError)`` that this interpreter constructs with ``"probe"``.
+    Widening the handler to a type turns the ids of that type and of its probed
+    subclasses red, and ``except Exception:`` turns every id red. ``match="probe"``
+    binds the message: a handler that catches the probe and raises the same type
+    with a different message fails to match.
     """
     class _ProbeDate:
         @staticmethod
