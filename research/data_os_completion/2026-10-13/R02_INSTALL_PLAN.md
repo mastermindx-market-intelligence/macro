@@ -131,13 +131,37 @@ No production path calls `account_coverage` today; that is why consumer C is `BL
 
 ### A3. Nightly owner (C3)
 
-`.github/workflows/` does not exist at the pinned commit (`ls .github/workflows` → not found); `daily.yml` does not exist,
-so it has no cron line, no job names, and no Data OS step. `git grep "dataos|data_workspace|price_ladder|selection_cohort|build_baskets" -- app/deploy`
-hits only the update.sh restart-fence regexes (:1304, :1504, :2388). The recurring units that do exist, `app/deploy/*.timer`
-(e.g. `macro-live-bars.timer` OnCalendar Mon..Fri 13..21:37 UTC at app/deploy/macro-live-bars.timer:5), run live-dashboard
-lanes; `scripts/vps_live_orchestrator.py:4-5` states the VPS owns short-lived `site/live` products while the Mac/PC nightly
-runners own canonical history — those runners are host-side and are not committed in this repo. R03 records the owner gap
-as `UNFINISHED: no existing recurring owner`; it does not invent one.
+ORCHESTRATOR-CORRECTED (ORCH-4). The lane's census reported that `.github/workflows/` does not exist. That was a
+false negative: the lane ran in a sparse worktree with no `.github/` on disk. At the pinned commit,
+`git ls-tree --name-only 16e94177f063 .github/workflows/daily.yml` prints the path. The verified owner chain:
+
+- `name: daily` (.github/workflows/daily.yml:1). It runs on `cron: "30 22 * * *"` and `"30 23 * * *"`, which is
+  18:30 ET under EDT and under EST (daily.yml:36-37).
+- Job `collect`, on `runs-on: [self-hosted, macstudio]` (daily.yml:125, :131).
+- Step `run collectors`, `id: collectors` (daily.yml:311, :315). It calls `python -m scripts.collect --exclude-group asia …`
+  (daily.yml:384).
+  - That call reaches `scripts/collect.py:194` `("stock_prices", "collectors.sector_holdings", "StockPriceAdapter")`.
+  - That adapter is the registered producer of `equity.bars.daily.stocks` (config/dataset_registry.yml:44-47).
+- Step `security master — issuer axis nightly refresh (V4-D2B1)`. It runs `python3 scripts/build_security_master.py --nightly`
+  (daily.yml:537-541).
+- Step `commit market data` (daily.yml:567). It is gated `if: always() && steps.collectors.outcome == 'success'`
+  (daily.yml:622) and commits `data: daily collection <UTC date>` (daily.yml:665).
+- Step `push market data` (daily.yml:732) rebases onto and publishes to `origin main`.
+- `.github/workflows/prophet-rescue.yml` with `scripts/prophet_rescue.py` is the existing bounded redispatcher of `daily`.
+
+No step in this chain calls `account_coverage` or emits a `GenerationRef` (appendix A4).
+
+The owner exists; Data OS generation identity does not yet ride on it. The cycle's return path is the concluded `daily` run
+record plus the `data: daily collection <date>` commit on `origin/main`; R03 §1 gives the read commands.
+
+The other recurring units are not the canonical-store owner. `app/deploy/*.timer` (e.g. `macro-live-bars.timer`,
+OnCalendar Mon..Fri 13..21:37 UTC at app/deploy/macro-live-bars.timer:5) run live-dashboard lanes. Per
+`scripts/vps_live_orchestrator.py:4-5`, those lanes own only short-lived `site/live` products.
+
+`git grep "dataos|data_workspace|price_ladder|selection_cohort|build_baskets" -- app/deploy` hits only the update.sh
+restart-fence regexes (:1304, :1504, :2388).
+
+This plan invents no owner, schedule or publisher. It never dispatches, re-runs or cancels `daily`.
 
 ### A4. Generation identity (C4)
 
