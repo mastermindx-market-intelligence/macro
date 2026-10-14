@@ -120,7 +120,7 @@ def _text_present(value: object) -> bool:
     object — is ABSENT and maps to the same refusal reason the module
     emits for a blank value of that field.
     """
-    return isinstance(value, str) and value.strip() != "" and value == value.strip()
+    return isinstance(value, str) and value != "" and not value[0].isspace() and not value[-1].isspace()
 
 
 def _present(fact: Mapping[str, object], key: str) -> bool:
