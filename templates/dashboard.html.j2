@@ -14001,7 +14001,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% elif _dfp.headline_en is defined and _dfp.headline_en %}
           <span class="l-en">{{ _dfp.headline_en }}</span>
           {% else %}
-          <span class="l-en">Market-implied rate path (ZQ fed-funds futures).</span>
+          <span class="l-en">Market-implied rate path{% if _dfp.implied_source_en is defined and _dfp.implied_source_en %} ({{ _dfp.implied_source_en }}){% else %} (source not recorded){% endif %}.</span>
           {% endif %}
           {# ZH mirrors the EN preference order: read_zh → headline_zh → built line #}
           {% if _dfp.read_zh is defined and _dfp.read_zh %}
@@ -14629,8 +14629,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {# ONE plain takeaway sentence #}
         <div class="fbm-chart-take">
-          <span class="l-en">{{ _dlg_rpr.read_en if (_dlg_rpr.read_en is defined and _dlg_rpr.read_en) else (_dlg_rpr.headline_en if _dlg_rpr.headline_en is defined else 'Market-implied fed-funds path.') }}</span>
-          <span class="l-zh">{{ _dlg_rpr.read_zh if (_dlg_rpr.read_zh is defined and _dlg_rpr.read_zh) else (_dlg_rpr.headline_zh if _dlg_rpr.headline_zh is defined else '市场隐含联邦基金利率路径。') }}</span>
+          <span class="l-en">{{ _dlg_rpr.read_en if (_dlg_rpr.read_en is defined and _dlg_rpr.read_en) else (_dlg_rpr.headline_en if (_dlg_rpr.headline_en is defined and _dlg_rpr.headline_en) else 'Market-implied policy-rate path.') }}</span>
+          <span class="l-zh">{{ _dlg_rpr.read_zh if (_dlg_rpr.read_zh is defined and _dlg_rpr.read_zh) else (_dlg_rpr.headline_zh if (_dlg_rpr.headline_zh is defined and _dlg_rpr.headline_zh) else '市场隐含政策利率路径。') }}</span>
+          <span class="fbm-tip" data-tip-en="{% if _dlg_rpr.source_en is defined and _dlg_rpr.source_en %}Path source: {{ _dlg_rpr.source_en }}.{% else %}Path source: not recorded for this read.{% endif %} Futures prices carry a risk premium — a market read, not a forecast." data-tip-zh="{% if _dlg_rpr.source_zh is defined and _dlg_rpr.source_zh %}路径来源：{{ _dlg_rpr.source_zh }}。{% else %}路径来源：本次读数未记录。{% endif %}期货价格含风险溢价——是市场定价，不是预测。">?</span>
         </div>
         {# delta callout chip — market vs Fed at the horizon #}
         {% if _dlg_rpr.gap is defined and _dlg_rpr.gap and _dlg_rpr.gap.gap_bp is not none and _dlg_rpr.gap.market is not none and _dlg_rpr.gap.fed_dot is not none %}
@@ -14692,14 +14693,23 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </div>
       {% if _dlgrc_inf.nearest_cpi is defined and _dlgrc_inf.nearest_cpi %}
       {% set _ncpi = _dlgrc_inf.nearest_cpi %}
-      {% set _ncpi_sig = _ncpi.surprise_skew_sigma %}
+      {% set _ncpi_sig = _ncpi.surprise_skew_sigma if (_ncpi.surprise_skew_sigma is defined and _ncpi.surprise_skew_sigma is number) else none %}
+      {% set _ncpi_cd = _ncpi.countdown if (_ncpi.countdown is defined and _ncpi.countdown is mapping) else none %}
+      {% set _ncpi_state = _ncpi_cd.state if (_ncpi_cd and _ncpi_cd.state) else 'historical' %}
+      {% set _ncpi_days = _ncpi_cd.days_to if (_ncpi_cd and _ncpi_state == 'current' and _ncpi_cd.days_to is number) else none %}
+      {% set _ncpi_disp = _ncpi_cd.display_cutoff if (_ncpi_cd and _ncpi_cd.display_cutoff is string) else none %}
+      {% set _ncpi_src = _ncpi_cd.source_cutoff[:10] if (_ncpi_cd and _ncpi_cd.source_cutoff is string) else none %}
+      {% set _ncpi_rd = _ncpi.release_date if (_ncpi.release_date is defined and _ncpi.release_date) else none %}
+      {% set _ncpi_lean_en = {'hotter':'hotter than forecast','cooler':'cooler than forecast','neutral':'in line','inline':'in line'}.get(_ncpi.surprise_skew_tag) %}
+      {% set _ncpi_lean_zh = {'hotter':'偏热于预期','cooler':'偏冷于预期','neutral':'大致符合','inline':'大致符合'}.get(_ncpi.surprise_skew_tag) %}
+      {% set _ncpi_exp = (_ncpi.accuracy_claim is defined and _ncpi.accuracy_claim is string and 'withheld' in _ncpi.accuracy_claim) or (_ncpi.forecast_epoch is defined and _ncpi.forecast_epoch is string and 'experimental' in _ncpi.forecast_epoch) %}
       {% set _ncpi_col = 'var(--down,#ef4444)' if _ncpi.surprise_skew_tag == 'hotter' else ('var(--up,#22d97a)' if _ncpi.surprise_skew_tag == 'cooler' else 'var(--warn,#f59e0b)') %}
       <div class="fbm-row">
-        <span class="fbm-row-state" style="color:{{ _ncpi_col }}"><span class="fbm-row-dot" style="background:{{ _ncpi_col }}"></span><span class="l-en">Next CPI · {{ _ncpi.days_to }}d</span><span class="l-zh">下次CPI · {{ _ncpi.days_to }}天</span></span>
-        <span class="fbm-row-line"><span class="l-en">Recent data leans {{ {'hotter':'hotter than forecast','cooler':'cooler than forecast','neutral':'in line'}.get(_ncpi.surprise_skew_tag,'in line') }} — a print either way can reset the read.</span><span class="l-zh">近期数据{{ {'hotter':'偏热于预期','cooler':'偏冷于预期','neutral':'大致符合'}.get(_ncpi.surprise_skew_tag,'大致符合') }} — 任一方向的数据都可能重置解读。</span></span>
+        <span class="fbm-row-state" style="color:{{ _ncpi_col }}"><span class="fbm-row-dot" style="background:{{ _ncpi_col }}"></span><span class="l-en">{% if _ncpi_days is not none %}Next CPI · {{ _ncpi_days }}d{% elif _ncpi_state == 'released' %}CPI released {{ _ncpi_rd }}{% else %}Next CPI · {{ _ncpi_rd if _ncpi_rd else 'date not recorded' }}{% endif %}</span><span class="l-zh">{% if _ncpi_days is not none %}下次CPI · {{ _ncpi_days }}天{% elif _ncpi_state == 'released' %}CPI 已于 {{ _ncpi_rd }} 发布{% else %}下次CPI · {{ _ncpi_rd if _ncpi_rd else '日期未记录' }}{% endif %}</span></span>
+        <span class="fbm-row-line"><span class="l-en">{% if _ncpi_lean_en %}Recent data leans {{ _ncpi_lean_en }}{% else %}Recent-data lean not available{% endif %} — a print either way can reset the read.</span><span class="l-zh">{% if _ncpi_lean_zh %}近期数据{{ _ncpi_lean_zh }}{% else %}近期数据倾向暂不可得{% endif %} — 任一方向的数据都可能重置解读。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Release {{ _ncpi.release_date }} ({{ _ncpi.days_to }} days out). Surprise skew: {{ _ncpi.surprise_skew_tag }}{% if _ncpi_sig is not none %}, {{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}."
-          data-tip-zh="发布 {{ _ncpi.release_date }}（{{ _ncpi.days_to }} 天后）。惊喜偏向：{{ {'hotter':'偏热','cooler':'偏冷','neutral':'中性'}.get(_ncpi.surprise_skew_tag,_ncpi.surprise_skew_tag) }}{% if _ncpi_sig is not none %}，{{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}。">?</span>
+          data-tip-en="Release {{ _ncpi_rd if _ncpi_rd else 'date not recorded' }}. {% if _ncpi_days is not none %}{{ _ncpi_days }} days out, counted as of {{ _ncpi_disp }}.{% elif _ncpi_state == 'released' %}Released as of {{ _ncpi_disp }}.{% elif _ncpi_state == 'source_after_display_cutoff' %}This read is newer than the display date ({{ _ncpi_disp }}); day count withheld.{% elif _ncpi_state == 'unknown' %}Day count unavailable for this read.{% else %}Day count not shown: it was computed when the data was built{% if _ncpi_src %} ({{ _ncpi_src }}){% endif %}, not today.{% endif %}{% if _ncpi_lean_en %} Recent-data lean: {{ _ncpi_lean_en }}{% if _ncpi_sig is not none %}, {{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}.{% endif %}{% if _ncpi_exp %} House estimate from an experimental model; accuracy not yet claimed.{% endif %}"
+          data-tip-zh="发布 {{ _ncpi_rd if _ncpi_rd else '日期未记录' }}。{% if _ncpi_days is not none %}{{ _ncpi_days }} 天后，按 {{ _ncpi_disp }} 计算。{% elif _ncpi_state == 'released' %}截至 {{ _ncpi_disp }} 已发布。{% elif _ncpi_state == 'source_after_display_cutoff' %}本次读数晚于显示日期（{{ _ncpi_disp }}），暂不显示天数。{% elif _ncpi_state == 'unknown' %}本次读数无法计算天数。{% else %}未显示天数：天数在数据生成时{% if _ncpi_src %}（{{ _ncpi_src }}）{% endif %}计算，并非今天。{% endif %}{% if _ncpi_lean_zh %}近期数据倾向：{{ _ncpi_lean_zh }}{% if _ncpi_sig is not none %}，{{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}。{% endif %}{% if _ncpi_exp %}本站估算来自实验性模型，尚未声明准确度。{% endif %}">?</span>
       </div>
       {% endif %}
       <div class="mx5-dlg-sep"></div>

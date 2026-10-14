@@ -984,3 +984,317 @@ class TestT0BasisCountdownContract:
         assert isinstance(cd_garbage, dict), cd_garbage
         assert cd_garbage.get("state") == "unknown"
         assert cd_garbage.get("days_to") is None
+
+
+class TestT0FixAContract:
+    """T0-FIX-A extra contract: malformed inputs fail open, unchanged-input
+    controls, immutable old artefacts, per-state rendering (EN+ZH), lean
+    mapping, and template/builder source pins. All fixtures synthetic."""
+
+    @staticmethod
+    def _render_block_d(row: dict) -> str:
+        """Render template block d (Inflation Read) against an inflation row."""
+        import jinja2
+
+        src = (
+            Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2"
+        ).read_text(encoding="utf-8")
+        i = src.index("      {# ── d. Inflation Read")
+        j = src.index("      {# ── e. Risk Indicators")
+        return jinja2.Environment(autoescape=True).from_string(src[i:j]).render(
+            _dlgrc_inf=row
+        )
+
+    @staticmethod
+    def _qualified_row(display_cutoff):
+        """Build a qualified nearest-CPI row end-to-end from the RED fixture."""
+        from engine.rates_inflation_command import _build_inflation_row
+
+        artefact = _t0_release_forecast_artifact()
+        return _build_inflation_row(
+            {"state": {"inflation": {"core_pce_yoy": 2.9}}},
+            artefact["upcoming"],
+            release_meta=artefact,
+            display_cutoff=display_cutoff,
+        )
+
+    # ------------------------------------------------------------------ #
+    # 1. MALFORMED fed_path fields
+    # ------------------------------------------------------------------ #
+    def test_malformed_fed_path_fields_fail_open(self, tmp_path):
+        r = tmp_path / "malformed"
+        _t0_write_json(r / "bonds" / "bond_health.json", {"fed_path": {
+            "asof": "2026-10-08",
+            "implied": [1, 2, 3],
+            "dots": {"a": 1},
+            "gap": "oops",
+        }})
+        rp = build_board(root=r)["board"]["rate_path_row"]
+        for m in ("m1", "m3", "m6", "m12"):
+            assert rp["implied_path"][m] is None, m
+        assert rp["dots"] == []
+        assert rp["gap"] == {}
+        assert rp["source_en"] is None
+        assert rp["source_zh"] is None
+
+    def test_nondict_fed_path_unit_call(self):
+        from engine.rates_inflation_command import _build_rate_path_row
+
+        for bad in ([], None, "x", 7):
+            rp = _build_rate_path_row(bad)
+            assert rp["source_en"] is None
+            assert rp["source_zh"] is None
+            assert rp["implied_path"] == {"m1": None, "m3": None, "m6": None, "m12": None}
+
+    # ------------------------------------------------------------------ #
+    # 2. MALFORMED release artefact
+    # ------------------------------------------------------------------ #
+    def test_release_latest_json_list_fails_open(self, tmp_path):
+        _t0_write_json(tmp_path / "release_forecast" / "latest.json", ["not", "a", "dict"])
+        board = build_board(root=tmp_path)
+        assert board["board"]["inflation_row"]["nearest_cpi"] is None
+
+    def test_release_upcoming_dict_fails_open(self, tmp_path):
+        artefact = _t0_release_forecast_artifact()
+        artefact["upcoming"] = {"release_type": "cpi_headline"}
+        _t0_write_json(tmp_path / "release_forecast" / "latest.json", artefact)
+        assert build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"] is None
+
+    def test_release_dirty_list_finds_valid_item(self, tmp_path):
+        artefact = _t0_release_forecast_artifact()
+        valid = artefact["upcoming"][0]
+        artefact["upcoming"] = ["x", None, valid]
+        _t0_write_json(tmp_path / "release_forecast" / "latest.json", artefact)
+        nc = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc is not None and nc["point"] == 0.37 and nc["days_to"] == 5
+
+    def test_malformed_qualification_fields_are_none(self, tmp_path):
+        artefact = _t0_release_forecast_artifact()
+        artefact["methodology_status"] = "not-a-dict"
+        artefact["upcoming"][0]["coverage_flags"] = ["not", "a", "dict"]
+        artefact["upcoming"][0]["benchmark_set"] = "not-a-dict"
+        _t0_write_json(tmp_path / "release_forecast" / "latest.json", artefact)
+        nc = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc["model_maturity"] is None
+        assert nc["benchmark_ids"] is None
+        assert nc["forecast_epoch"] is None
+        assert nc["accuracy_claim"] is None
+
+    def test_empty_benchmark_set_yields_none(self, tmp_path):
+        artefact = _t0_release_forecast_artifact()
+        artefact["upcoming"][0]["benchmark_set"] = {}
+        _t0_write_json(tmp_path / "release_forecast" / "latest.json", artefact)
+        nc = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc["benchmark_ids"] is None
+
+    # ------------------------------------------------------------------ #
+    # 3. CORRECTED artefact (no stale reuse)
+    # ------------------------------------------------------------------ #
+    def test_corrected_artefact_no_stale_reuse(self, tmp_path):
+        import copy
+
+        path = tmp_path / "release_forecast" / "latest.json"
+        artefact = _t0_release_forecast_artifact()
+        _t0_write_json(path, artefact)
+        nc1 = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc1["point"] == 0.37 and nc1["release_date"] == "2026-10-14"
+        corrected = copy.deepcopy(artefact)
+        corrected["upcoming"][0]["projection"]["point"] = 0.21
+        corrected["upcoming"][0]["release_date"] = "2026-10-15"
+        _t0_write_json(path, corrected)
+        nc2 = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc2["point"] == 0.21 and nc2["release_date"] == "2026-10-15"
+
+    # ------------------------------------------------------------------ #
+    # 4. UNCHANGED-INPUT CONTROLS
+    # ------------------------------------------------------------------ #
+    @staticmethod
+    def _strip_volatile(board: dict, *, strip_countdown: bool) -> dict:
+        import copy
+
+        snap = copy.deepcopy(board)
+        snap.pop("built", None)
+        if strip_countdown:
+            nc = snap.get("board", {}).get("inflation_row", {}).get("nearest_cpi")
+            if isinstance(nc, dict):
+                nc.pop("countdown", None)
+        return snap
+
+    def test_cutoff_touches_only_the_countdown(self, tmp_path):
+        _t0_write_json(
+            tmp_path / "release_forecast" / "latest.json",
+            _t0_release_forecast_artifact(),
+        )
+        a = build_board(root=tmp_path)
+        b = build_board(root=tmp_path, cutoff="2026-10-12")
+        assert self._strip_volatile(a, strip_countdown=True) == self._strip_volatile(
+            b, strip_countdown=True
+        )
+        # and the countdown really did move
+        assert (
+            a["board"]["inflation_row"]["nearest_cpi"]["countdown"]["state"] == "historical"
+        )
+        assert (
+            b["board"]["inflation_row"]["nearest_cpi"]["countdown"]["state"] == "current"
+        )
+
+    def test_same_cutoff_is_deterministic(self, tmp_path):
+        _t0_write_json(
+            tmp_path / "release_forecast" / "latest.json",
+            _t0_release_forecast_artifact(),
+        )
+        a = build_board(root=tmp_path, cutoff="2026-10-12")
+        b = build_board(root=tmp_path, cutoff="2026-10-12")
+        assert self._strip_volatile(a, strip_countdown=False) == self._strip_volatile(
+            b, strip_countdown=False
+        )
+
+    def test_compact_state_equal_across_cutoffs(self, tmp_path):
+        _t0_write_json(
+            tmp_path / "release_forecast" / "latest.json",
+            _t0_release_forecast_artifact(),
+        )
+        a = build_board(root=tmp_path)
+        b = build_board(root=tmp_path, cutoff="2026-10-12")
+        assert compact_state(a) == compact_state(b)
+
+    def test_regime_outlook_never_composed_by_board(self, tmp_path):
+        assert "regime_outlook" not in build_board(root=tmp_path)
+
+    # ------------------------------------------------------------------ #
+    # 5. IMMUTABLE OLD ARTEFACT (pre-T0 row: seven keys, no countdown)
+    # ------------------------------------------------------------------ #
+    def test_old_artefact_renders_without_stale_nd(self, tmp_path):
+        import copy
+
+        from engine.rates_inflation_command import _build_inflation_row
+
+        row = _build_inflation_row(
+            {"state": {"inflation": {"core_pce_yoy": 2.9}}}, []
+        )
+        row["nearest_cpi"] = {
+            "release_type": "cpi_headline",
+            "period": "2026-09",
+            "release_date": "2026-10-14",
+            "days_to": 5,
+            "point": 0.37,
+            "surprise_skew_tag": "inline",
+            "surprise_skew_sigma": None,
+        }
+        frozen = copy.deepcopy(row)
+        out = self._render_block_d(row)
+        assert "Next CPI · 2026-10-14" in out
+        assert "5d" not in out
+        assert "5天" not in out
+        assert "Day count not shown" in out
+        assert row == frozen  # render never mutates the evidence
+
+        # compact_state / build_changes accept a board carrying the old row
+        board = build_board(root=tmp_path)
+        board["board"]["inflation_row"] = row
+        compact_state(board)
+        build_changes(board, copy.deepcopy(board), "2026-10-13")
+
+    # ------------------------------------------------------------------ #
+    # 6. RENDER PER COUNTDOWN STATE (EN + ZH)
+    # ------------------------------------------------------------------ #
+    def test_render_state_current(self):
+        out = self._render_block_d(self._qualified_row("2026-10-12"))
+        assert "Next CPI · 2d" in out
+        assert "下次CPI · 2天" in out
+        assert "counted as of 2026-10-12" in out
+        assert "5d" not in out
+
+    def test_render_state_released(self):
+        out = self._render_block_d(self._qualified_row("2026-10-15"))
+        assert "CPI released 2026-10-14" in out
+        assert "CPI 已于 2026-10-14 发布" in out
+
+    def test_render_state_source_after_display_cutoff(self):
+        out = self._render_block_d(self._qualified_row("2026-10-08"))
+        assert "newer than the display date" in out
+        assert "晚于显示日期" in out
+
+    def test_render_state_unknown(self):
+        out = self._render_block_d(self._qualified_row("garbage"))
+        assert "Day count unavailable" in out
+        assert "无法计算天数" in out
+
+    def test_render_state_historical(self):
+        out = self._render_block_d(self._qualified_row(None))
+        assert "Day count not shown" in out
+        assert "未显示天数" in out
+        assert "5d" not in out
+
+    def test_render_experimental_accuracy_withheld(self):
+        out = self._render_block_d(self._qualified_row("2026-10-12"))
+        assert "accuracy not yet claimed" in out
+        assert "尚未声明准确度" in out
+
+    # ------------------------------------------------------------------ #
+    # 7. LEAN mapping
+    # ------------------------------------------------------------------ #
+    def test_lean_absent_when_tag_none(self):
+        import copy
+
+        from engine.rates_inflation_command import _build_inflation_row
+
+        row = _build_inflation_row(
+            {"state": {"inflation": {"core_pce_yoy": 2.9}}}, []
+        )
+        row["nearest_cpi"] = {
+            "release_type": "cpi_headline",
+            "period": "2026-09",
+            "release_date": "2026-10-14",
+            "days_to": 5,
+            "point": 0.37,
+            "surprise_skew_tag": None,
+            "surprise_skew_sigma": None,
+        }
+        out = self._render_block_d(row)
+        assert "Recent-data lean not available" in out
+        assert "leans in line" not in out
+
+    def test_lean_inline_and_hotter(self):
+        import copy
+
+        from engine.rates_inflation_command import _build_inflation_row
+
+        for tag, expect in (("inline", "leans in line"), ("hotter", "hotter than forecast")):
+            row = _build_inflation_row(
+                {"state": {"inflation": {"core_pce_yoy": 2.9}}}, []
+            )
+            row["nearest_cpi"] = {
+                "release_type": "cpi_headline",
+                "period": "2026-09",
+                "release_date": "2026-10-14",
+                "days_to": 5,
+                "point": 0.37,
+                "surprise_skew_tag": tag,
+                "surprise_skew_sigma": -0.14,
+            }
+            out = self._render_block_d(row)
+            assert expect in out, tag
+
+    # ------------------------------------------------------------------ #
+    # 8. TEMPLATE source pins (A03 display honesty)
+    # ------------------------------------------------------------------ #
+    def test_template_source_pins(self):
+        text = (
+            Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2"
+        ).read_text(encoding="utf-8")
+        assert "(ZQ fed-funds futures)" not in text
+        assert "'Market-implied fed-funds path.'" not in text
+        assert "(source not recorded)" in text
+        assert "Path source: not recorded for this read." in text
+
+    # ------------------------------------------------------------------ #
+    # 9. BUILDER pin (build-time cutoff wired at the call site)
+    # ------------------------------------------------------------------ #
+    def test_builder_pins_display_cutoff(self):
+        text = (
+            Path(__file__).resolve().parents[1] / "scripts" / "build_rates_command.py"
+        ).read_text(encoding="utf-8")
+        assert (
+            "build_board(cutoff=datetime.now(timezone.utc).date().isoformat())" in text
+        )

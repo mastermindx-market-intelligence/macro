@@ -175,7 +175,7 @@ def main() -> int:
     # Build the board artifact
     try:
         from engine.rates_inflation_command import build_board, build_changes
-        artifact = build_board()
+        artifact = build_board(cutoff=datetime.now(timezone.utc).date().isoformat())
     except Exception as exc:
         log.error("rates_inflation_command.build_board failed: %s", exc)
         return 0

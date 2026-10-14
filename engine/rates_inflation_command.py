@@ -346,7 +346,7 @@ def _build_hawkish_legs(
     cpi_detail_en = "No upcoming CPI data with hotter skew."
     cpi_detail_zh = "无近期CPI数据显示偏热倾斜。"
     for item in release_items:
-        rtype = item.get("release_type", "")
+        rtype = item.get("release_type", "") if isinstance(item, dict) else ""
         if rtype in {"cpi_headline", "cpi_core"}:
             tag = _safe_get(item, "surprise_skew", "tag")
             if tag == "hotter":
@@ -499,7 +499,7 @@ def _build_easing_legs(
     e2_detail_zh = "无NFP偏冷倾斜；商品综合增长方向未下行。"
 
     for item in release_items:
-        if item.get("release_type") == "nfp":
+        if isinstance(item, dict) and item.get("release_type") == "nfp":
             tag = _safe_get(item, "surprise_skew", "tag")
             if tag == "cooler":
                 nfp_cooler = True
@@ -708,7 +708,7 @@ def _compute_divergence(
     # hotter CPI while breakevens down, or cooler CPI while breakevens up
     cpi_tag = None
     for item in release_items:
-        if item.get("release_type") in {"cpi_headline", "cpi_core"}:
+        if isinstance(item, dict) and item.get("release_type") in {"cpi_headline", "cpi_core"}:
             cpi_tag = _safe_get(item, "surprise_skew", "tag")
             break
 
@@ -817,11 +817,78 @@ def _render_cuts(implied_cuts_12m: int | float | None) -> dict[str, str]:
         return {"en": f"about {count_word_en} cut{'s' if count != 1 else ''}", "zh": f"约{count_word_zh}降息"}
 
 
+def _t0_text(value: Any) -> str | None:
+    """A non-blank string verbatim, else None (UNKNOWN). Never a default source."""
+    if isinstance(value, str) and value.strip():
+        return value
+    return None
+
+
+def _t0_day(value: Any):
+    """Leading YYYY-MM-DD of an ISO string as a date; None when absent or malformed."""
+    if not isinstance(value, str) or len(value) < 10:
+        return None
+    try:
+        return datetime.strptime(value[:10], "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _t0_countdown(item: dict, release_meta: dict, display_cutoff: Any) -> dict:
+    """Release countdown bound to an explicit display cutoff (A05).
+
+    The source snapshot (artefact asof + the item's build-time days_to) is carried verbatim
+    and never re-stamped. Without a display cutoff the count is HISTORICAL and no current day
+    count is claimed; with one, days are recomputed from the item's release_date.
+    """
+    if display_cutoff is not None and not isinstance(display_cutoff, str):
+        display_cutoff = str(display_cutoff)
+    source_cutoff = release_meta.get("asof")
+    countdown = {
+        "source_cutoff": source_cutoff,
+        "source_days_to": item.get("days_to"),
+        "display_cutoff": display_cutoff,
+        "days_to": None,
+        "state": "historical",
+        "method": "source_snapshot",
+    }
+    if display_cutoff is None:
+        return countdown
+    countdown["method"] = "release_forecast_release_date"
+    display_day = _t0_day(display_cutoff)
+    source_day = _t0_day(source_cutoff)
+    if display_day is None or source_day is None:
+        countdown["state"] = "unknown"
+        return countdown
+    if source_day > display_day:
+        countdown["state"] = "source_after_display_cutoff"
+        return countdown
+    release_day = _t0_day(item.get("release_date"))
+    if release_day is None:
+        countdown["state"] = "unknown"
+        return countdown
+    delta = (release_day - display_day).days
+    if delta >= 0:
+        countdown["state"] = "current"
+        countdown["days_to"] = delta
+    else:
+        countdown["state"] = "released"
+    return countdown
+
+
 def _build_rate_path_row(fed_path: dict) -> dict:
     """Build the rate_path display row."""
+    if not isinstance(fed_path, dict):
+        fed_path = {}
     implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
     dots = fed_path.get("dots") or []
+    if not isinstance(dots, list):
+        dots = []
     gap = fed_path.get("gap") or {}
+    if not isinstance(gap, dict):
+        gap = {}
     implied_cuts_12m = fed_path.get("implied_cuts_12m")
     implied_bp_12m = fed_path.get("implied_bp_12m")
     path_read = _render_cuts(implied_cuts_12m)
@@ -844,20 +911,38 @@ def _build_rate_path_row(fed_path: dict) -> dict:
         "headline_zh": fed_path.get("headline_zh"),
         "read_en": fed_path.get("read_en"),
         "read_zh": fed_path.get("read_zh"),
-        "source_en": fed_path.get("implied_source_en", "ZQ fed-funds futures"),
-        "source_zh": fed_path.get("implied_source_zh", "ZQ联邦基金期货"),
+        "source_en": _t0_text(fed_path.get("implied_source_en")),
+        "source_zh": _t0_text(fed_path.get("implied_source_zh")),
     }
 
 
-def _build_inflation_row(tx: dict, release_items: list[dict]) -> dict:
+def _build_inflation_row(
+    tx: dict,
+    release_items: list[dict],
+    *,
+    release_meta: dict | None = None,
+    display_cutoff: Any = None,
+) -> dict:
     """Build the inflation display row."""
     infl = (_safe_get(tx, "state", "inflation") or {})
     exp = (_safe_get(tx, "state", "expectations") or {})
+    meta = release_meta if isinstance(release_meta, dict) else {}
+    ms = meta.get("methodology_status")
+    if not isinstance(ms, dict):
+        ms = {}
+    if not isinstance(release_items, list):
+        release_items = []
 
     # Nearest CPI projection data
     cpi_proj = None
     for item in release_items:
+        if not isinstance(item, dict):
+            continue
         if item.get("release_type") in {"cpi_headline", "cpi_core"}:
+            cov = item.get("coverage_flags")
+            if not isinstance(cov, dict):
+                cov = {}
+            bs = item.get("benchmark_set")
             cpi_proj = {
                 "release_type": item.get("release_type"),
                 "period": item.get("period"),
@@ -866,6 +951,21 @@ def _build_inflation_row(tx: dict, release_items: list[dict]) -> dict:
                 "point": _safe_get(item, "projection", "point"),
                 "surprise_skew_tag": _safe_get(item, "surprise_skew", "tag"),
                 "surprise_skew_sigma": _safe_get(item, "surprise_skew", "sigma"),
+                "target": item.get("target"),
+                "model_epoch": item.get("model_epoch"),
+                "target_epoch": item.get("target_epoch"),
+                "primary_forecast_basis": item.get("primary_forecast_basis"),
+                "context_metrics_basis": item.get("context_metrics_basis"),
+                "model_maturity": cov.get("model_maturity"),
+                "forecast_epoch": ms.get("forecast_epoch"),
+                "accuracy_claim": ms.get("accuracy_claim"),
+                "benchmark_ids": (
+                    sorted(str(k) for k in bs)
+                    if isinstance(bs, dict) and bs
+                    else None
+                ),
+                "first_print_basis": item.get("first_print_basis"),
+                "countdown": _t0_countdown(item, meta, display_cutoff),
             }
             break
 
@@ -1049,6 +1149,8 @@ def _build_market_check(
 ) -> dict:
     """Build the market_check display block (juxtaposition only, never fused)."""
     implied = fed_path.get("implied") or {}
+    if not isinstance(implied, dict):
+        implied = {}
     implied_bp_12m = fed_path.get("implied_bp_12m")
     headline_en = fed_path.get("headline_en", "")
     headline_zh = fed_path.get("headline_zh", "")
@@ -1207,11 +1309,13 @@ def compose_stance(board: dict) -> dict[str, str]:
 # Main build_board function
 # ---------------------------------------------------------------------------
 
-def build_board(root=None) -> dict:
+def build_board(root=None, *, cutoff=None) -> dict:
     """Build the full rates_command.v1 artifact.
 
     Fails open everywhere: absent/corrupt input -> leg active=None, never raises.
     Returns a complete dict with display_only=True, authority=False.
+
+    cutoff: optional display cutoff (ISO date) for release countdowns; None = historical
     """
     data_dir = _data_root(root)
     caveats: list[str] = [
@@ -1265,7 +1369,11 @@ def build_board(root=None) -> dict:
 
     # release_forecast/latest.json
     release_latest = _read_json(data_dir / "release_forecast" / "latest.json") or {}
+    if not isinstance(release_latest, dict):
+        release_latest = {}
     release_items = release_latest.get("upcoming") or []
+    if not isinstance(release_items, list):
+        release_items = []
 
     # market_state/latest.json
     market_state = _read_json(data_dir / "market_state" / "latest.json") or {}
@@ -1386,7 +1494,9 @@ def build_board(root=None) -> dict:
 
     board = {
         "rate_path_row": _build_rate_path_row(fed_path),
-        "inflation_row": _build_inflation_row(tx, release_items),
+        "inflation_row": _build_inflation_row(
+            tx, release_items, release_meta=release_latest, display_cutoff=cutoff
+        ),
         "risk_row": _build_risk_row(tx),
         "policy_row": _build_policy_row(policy_lever, intel, intel_stale_days),
     }
