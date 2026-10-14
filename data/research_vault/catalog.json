@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T11:40:44.219130+00:00",
-  "count": 2892,
+  "generated_at": "2026-10-14T12:10:28.204764+00:00",
+  "count": 2893,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -271,6 +271,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 54,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mpkigavygok-1da158",
+      "title": "Last Man Standing",
+      "institution": "BTIG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T15:29:53Z",
+      "summary_points": [
+        "Mag7 as SPX Weakness Catalyst: Mag7 (last SPX cohort without weakness) widely owned; trend reversal likely triggers sustained SPX weakness, per SOX 2000 analog (semis low within 24h, sell-off accelerates late October).",
+        "SOX 2000 Analog & Timing: SOX 2000 pattern holds; expect 24h low, final rally before October sell-off (CPI catalyst).",
+        "IGV/SMH Ratio Inflection: IGV/SMH ratio above 200 DMA (first in 16 months, crossing summer highs) confirms software outperformance over semis, signaling potential major inflation with software semis outperforming."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
