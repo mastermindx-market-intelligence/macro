@@ -840,6 +840,7 @@ def test_d1_target_route_without_gap_is_not_identified_never_zero(monkeypatch):
     assert june["identification"] is None
     assert june["pre_change_rate"] is None
     assert out["implied_source_meta"]["effr_meeting_path"]["gap"]["usable"] is False
+    assert out["implied_source_meta"]["effr_meeting_path"]["gap"]["value_bp"] is None
     assert june["vs_target_midpoint"]["status"] == "not_identified"
     assert june["vs_target_midpoint"]["difference"] is None
 
@@ -1209,3 +1210,131 @@ def test_d1_internal_error_degrades_never_raises(monkeypatch):
     new_no_new = {k: v for k, v in out["implied_source_meta"].items()
                   if k != "effr_meeting_path"}
     assert new_no_new == base_no_new
+
+
+# --------------------------------------------------------------------------- #
+# A16 — unidentified predecessor is never chained (route 2 / route 3 rule)
+# --------------------------------------------------------------------------- #
+def test_d1_unidentified_predecessor_is_never_chained(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC",
+                        [("2026-05-19", False), ("2026-06-15", False)])
+    md = _make_md("2026-05-11",
+                  {"ZQK26.CBT": 95.80, "ZQM26.CBT": 95.70},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-05-11"})
+    out = fp.compute(asof=pd.Timestamp("2026-05-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["status"] == "computed"
+    assert block["gap"]["usable"] is False
+    assert block["gap"]["value_bp"] is None
+
+    m = {r["reference_start"]: r for r in block["months"]}
+    may = m["2026-05-01"]
+    assert may["status"] == "not_identified"
+    assert may["reason"] == "underidentified:effr_target_basis"
+    assert may["pre_change_rate"] is None
+    assert _pt.approx(may["monthly_average"]["value"]) == 4.20
+
+    june = m["2026-06-01"]
+    assert june["status"] == "missing_inputs"
+    assert june["reason"] == "pre_change_rate_unavailable"
+    assert june["pre_change_rate"] is None
+    assert june["pre_change_rate_source"] is None
+    assert "chained_identification" not in june["limitations"]
+
+
+# --------------------------------------------------------------------------- #
+# A17 — DFF route refuses an intervening effective date (route 1 rule)
+# --------------------------------------------------------------------------- #
+def test_d1_dff_route_refuses_an_intervening_effective_date(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC",
+                        [("2026-05-19", False), ("2026-06-15", False)])
+
+    md_neg = _make_md("2026-05-08", {"ZQM26.CBT": 95.75},
+                     effr={"value": 4.50,
+                           "observation_date": "2026-05-08",
+                           "source": "fred:DFF"})
+    out_neg = fp.compute(asof=pd.Timestamp("2026-05-09"), policy_rate=4.33,
+                         target_low=4.25, target_high=4.50, dot_series=None,
+                         zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                         zq_front_implied=None, ntfs=None,
+                         curve_tp_adj=None, rate_exp_proxy=None,
+                         cfg=_CFG, metadata=md_neg)
+    block_neg = out_neg["implied_source_meta"]["effr_meeting_path"]
+    m_neg = {r["reference_start"]: r for r in block_neg["months"]}
+    june_neg = m_neg["2026-06-01"]
+    assert june_neg["status"] == "missing_inputs"
+    assert june_neg["reason"] == "pre_change_rate_unavailable"
+    assert june_neg["pre_change_rate"] is None
+    assert june_neg["pre_change_rate_source"] is None
+
+    md_pos = _make_md("2026-05-21", {"ZQM26.CBT": 95.75},
+                     effr={"value": 4.50,
+                           "observation_date": "2026-05-21",
+                           "source": "fred:DFF"})
+    out_pos = fp.compute(asof=pd.Timestamp("2026-05-22"), policy_rate=4.33,
+                         target_low=4.25, target_high=4.50, dot_series=None,
+                         zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                         zq_front_implied=None, ntfs=None,
+                         curve_tp_adj=None, rate_exp_proxy=None,
+                         cfg=_CFG, metadata=md_pos)
+    block_pos = out_pos["implied_source_meta"]["effr_meeting_path"]
+    m_pos = {r["reference_start"]: r for r in block_pos["months"]}
+    june_pos = m_pos["2026-06-01"]
+    assert june_pos["status"] == "identified_conditional"
+    assert june_pos["pre_change_rate"] == _pt.approx(4.50)
+    assert june_pos["pre_change_rate_source"] == (
+        "observed_effr:fred:DFF@2026-05-21"
+    )
+    assert june_pos["reason"] == (
+        "pre_change_rate:observed_effr:fred:DFF@2026-05-21"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# A19 — effr_basis dated after the cutoff is refused (gap unused)
+# --------------------------------------------------------------------------- #
+def test_d1_effr_basis_after_cutoff_is_refused_never_used(monkeypatch):
+    monkeypatch.setattr(_ec, "_FOMC", [("2026-06-15", False)])
+    md = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                  target={"low": 4.25, "high": 4.50,
+                          "observation_date": "2026-06-11"},
+                  effr_basis={"effr_minus_midpoint_bp": -8.0,
+                              "observation_date": "2026-06-14",
+                              "source": "fixture"})
+    out = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                     target_low=4.25, target_high=4.50, dot_series=None,
+                     zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                     zq_front_implied=None, ntfs=None, curve_tp_adj=None,
+                     rate_exp_proxy=None, cfg=_CFG, metadata=md)
+    block = out["implied_source_meta"]["effr_meeting_path"]
+    assert block["gap"]["usable"] is False
+    assert block["gap"]["value_bp"] is None
+    assert block["gap"]["reason"] == "effr_basis_after_cutoff"
+
+    m = {r["reference_start"]: r for r in block["months"]}
+    june = m["2026-06-01"]
+    assert june["status"] == "not_identified"
+    assert june["reason"] == "underidentified:effr_target_basis"
+    assert june["pre_change_rate"] is None
+    assert june["vs_target_midpoint"]["difference"] is None
+
+    md_ctrl = _make_md("2026-06-11", {"ZQM26.CBT": 95.75},
+                       target={"low": 4.25, "high": 4.50,
+                               "observation_date": "2026-06-11"},
+                       effr_basis={"effr_minus_midpoint_bp": -8.0,
+                                   "observation_date": "2026-06-10",
+                                   "source": "fixture"})
+    out_ctrl = fp.compute(asof=pd.Timestamp("2026-06-12"), policy_rate=4.33,
+                          target_low=4.25, target_high=4.50, dot_series=None,
+                          zq_path_row={"m1": 4.30}, sofr_path_row=None,
+                          zq_front_implied=None, ntfs=None,
+                          curve_tp_adj=None, rate_exp_proxy=None,
+                          cfg=_CFG, metadata=md_ctrl)
+    june_ctrl = out_ctrl["implied_source_meta"]["effr_meeting_path"]["months"][0]
+    assert june_ctrl["status"] == "identified_conditional"
+    assert june_ctrl["pre_change_rate"] == _pt.approx(4.295)
