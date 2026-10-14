@@ -4604,10 +4604,16 @@ function orchChatMsgsHtml() {
     </div>`).join("");
 }
 
+let ORCH_RENDER_SEQUENCE = 0;
 RENDER.orchestrator = async () => {
+  const sequence = ++ORCH_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => sequence === ORCH_RENDER_SEQUENCE &&
+    routeEpoch === ADMIN_RENDER_EPOCH && CURRENT === "orchestrator" &&
+    location.hash === "#/page/orchestrator";
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const d = await api("/api/orchestrator");
+  if (!current()) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Master Brain unavailable", (d && d.error) || "panel error"); return; }
   const hero = d.status_hero || {}, s = d.settings || {}, dia = d.dialogue || {}, cx = d.cortex || {};
   const st = hero.overall_status || "unknown";
@@ -4770,6 +4776,8 @@ RENDER.orchestrator = async () => {
     prophetSuggestionsHtml = `<div class="section">Prophet suggestions</div><div class="sub muted">Prophet page unavailable.</div>`;
   }
 
+  // Prophet is a second independent read; it can finish after navigation.
+  if (!current()) return;
   v.innerHTML = heroHtml + settingsHtml + runlogHtml + reviewsHtml + dialogueHtml + prophetSuggestionsHtml + chatHtml;
 
   /* Prophet page link */
@@ -4826,7 +4834,7 @@ RENDER.orchestrator = async () => {
     if (!dailyStrip) return;
     let lr;
     try { lr = await api("/api/live_runs"); } catch (e) { return; }
-    if (!lr || CURRENT !== "orchestrator") return;
+    if (!lr || !current() || !dailyStrip.isConnected) return;
     const line = dailyPipelineStripLine(lr.nightly || null);
     dailyStrip.innerHTML = line;
     if (line) {
@@ -15447,10 +15455,16 @@ RENDER.causal_lab = async () => {
 };
 
 /* ---- METABOLISM --------------------------------------------------------- */
+let MET_RENDER_SEQUENCE = 0;
 RENDER.metabolism = async () => {
+  const sequence = ++MET_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => sequence === MET_RENDER_SEQUENCE &&
+    routeEpoch === ADMIN_RENDER_EPOCH && CURRENT === "metabolism" &&
+    location.hash === "#/page/metabolism";
   const v = $("#view");
   v.innerHTML = `<div class="sub muted">Loading metabolism status…</div>`;
   const d = await api("/api/metabolism");
+  if (!current()) return;
 
   // State chip
   const stateChip = () => {
@@ -15902,11 +15916,13 @@ RENDER.metabolism = async () => {
     try {
       ach = await api("/api/metabolism/achievements");
     } catch (e) {
+      if (!current()) return;
       const c = $("#metAchCard");
       if (c) c.innerHTML = `<div class="sub muted">Could not load loop activity: ${esc(String(e))}</div>`;
       return;
     }
 
+    if (!current()) return;
     const c = $("#metAchCard");
     if (!c) return;
 
@@ -16019,12 +16035,14 @@ RENDER.metabolism = async () => {
     try {
       h = await api("/api/metabolism/history?limit=200");
     } catch (e) {
+      if (!current()) return;
       const card = $("#mhCard");
       if (card) card.innerHTML = `<div class="sub muted">Could not load change history: ${esc(String(e))}</div>`;
       return;
     }
 
-    // Guard: user may have navigated away.
+    // Guard both navigation and a newer refresh of this same page.
+    if (!current()) return;
     const card = $("#mhCard");
     if (!card) return;
 

@@ -484,6 +484,59 @@ assert.equal(current.view.innerHTML, 'Users after forced refresh');
 """)
 
 
+def test_orchestrator_and_metabolism_late_reads_cannot_repaint_new_route():
+    _node_assert("""
+function make(route, sectionEnd) {
+  // Execute each renderer's real initial await and route guard, and replace only
+  // its later synchronous HTML construction with a sentinel paint.
+  const body = block('RENDER.'+route+' = async () => {', sectionEnd);
+  const pending=[], view={innerHTML:''};
+  const api=() => new Promise(resolve=>pending.push(resolve));
+  const factory = new Function('api','view', `
+    let CURRENT='${route}', ADMIN_RENDER_EPOCH=1, ORCH_RENDER_SEQUENCE=0, MET_RENDER_SEQUENCE=0;
+    const location={hash:'#/page/${route}'}, RENDER={};
+    const $=()=>view;
+    const nwEmpty=()=>'<p>Unavailable</p>';
+    ${body}
+      view.innerHTML='<h1>${route} finished</h1>';
+    };
+    return {
+      run:()=>RENDER['${route}'](),
+      navigate:id=>{CURRENT=id;location.hash='#/page/'+id;ADMIN_RENDER_EPOCH++;},
+    };
+  `);
+  return {pending,view,...factory(api,view)};
+}
+for(const [route,end] of [
+  ['orchestrator','  const hero = d.status_hero'],
+  ['metabolism','  // State chip']
+]) {
+  const gone=make(route,end);
+  const old=gone.run();
+  gone.navigate('users');gone.view.innerHTML='<h1>Users</h1>';
+  gone.pending.shift()({ok:true});
+  await old;
+  assert.equal(gone.view.innerHTML,'<h1>Users</h1>',route+' stale after departure');
+
+  const returnTrip=make(route,end);
+  const first=returnTrip.run();
+  returnTrip.navigate('users');returnTrip.navigate(route);
+  returnTrip.view.innerHTML='<h1>Newer '+route+'</h1>';
+  returnTrip.pending.shift()({ok:true});
+  await first;
+  assert.equal(returnTrip.view.innerHTML,'<h1>Newer '+route+'</h1>',route+' stale roundtrip');
+
+  const overlap=make(route,end);
+  const early=overlap.run(), latest=overlap.run();
+  overlap.pending[1]({ok:true});await latest;
+  assert.equal(overlap.view.innerHTML,'<h1>'+route+' finished</h1>');
+  overlap.view.innerHTML='latest '+route;
+  overlap.pending[0]({ok:true});await early;
+  assert.equal(overlap.view.innerHTML,'latest '+route,route+' stale overlap');
+}
+""")
+
+
 def test_status_refresh_keeps_last_good_data_and_discards_obsolete_success():
     _node_assert("""
 const pending = [], state = [];
