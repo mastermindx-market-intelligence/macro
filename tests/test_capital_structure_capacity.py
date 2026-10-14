@@ -609,6 +609,7 @@ def test_c10_02_a15_reservation_splits_the_pool_without_reducing_it() -> None:
             usd(f"shelf_usage:{PATH_A}", "3000000"),
             usd(f"continuing_offering:{PATH_A}", "1000000"),
             usd(f"programme_reservation:{PATH_A}", "2000000"),
+            usd(f"programme_usage:{PATH_A}", "0"),
         ],
     )
     envelope = evaluation.envelope
@@ -1301,7 +1302,7 @@ def test_c10_13_receipt_digests_the_inputs_and_the_interface_takes_three_paramet
     assert envelope.receipt.implementation_digest == sha256_of(
         {"contract": STATE_CONTRACT_VERSION, "implementation": IMPLEMENTATION}
     )
-    assert IMPLEMENTATION == "capital_structure.capacity.c1_adapter.v1+" + capacity_joint.IMPLEMENTATION
+    assert IMPLEMENTATION == "capital_structure.capacity.c2_adapter.v1+" + capacity_joint.IMPLEMENTATION
     assert envelope.state_id == state.state_id
     assert envelope.state_id != state.receipt.input_digest
     validate_state_record("capacity_envelope", record)
@@ -1518,25 +1519,13 @@ def test_c10_every_envelope_shape_validates_against_the_c0_contract() -> None:
             )
 
 
-def test_c10_price_path_branching_is_deferred_to_c2() -> None:
-    reg, shares = standard_registration(registered="20000000", float_value="300000000")
-    evaluation, _, _ = evaluate(
-        registration=reg,
-        share_basis=shares,
-        other=NASDAQ_ASSUMPTIONS,
-        price=PriceAssumption(kind="path", path=(("2026-10-14", "2.00"), ("2026-11-14", "3.00"))),
-        resolutions=[
-            usd(f"shelf_usage:{PATH_A}", "0"),
-            usd(f"continuing_offering:{PATH_A}", "0"),
-        ],
-    )
-    envelope = evaluation.envelope
-    assert "price_path_branching_deferred_to_c2" in envelope.blockers
-    pool = pools_by_id(evaluation)[NASDAQ_POOL]
-    assert pool.bound.status == "unknown" and pool.bound.unit == "shares"
-    assert envelope.aggregate_bound.status == "unknown"
-    assert NASDAQ_POOL in envelope.unknown_constraints
-    assert evaluation.inputs["nasdaq"]["reason"] == "price_path_branching_deferred_to_c2"
+# SPEC_C2 §5.6: test_c10_price_path_branching_is_deferred_to_c2 is gone.  C2 §2.2
+# removed the C1 deferral (the blocker price_path_branching_deferred_to_c2) and
+# computes the 20% share bound at the price in effect, so path pricing is no
+# longer a deferred shape.  Its successors are the four §4.2 fixtures in
+# tests/test_capital_structure_capacity_c2.py: test_path_takedown_only_*,
+# test_path_atm_branching_*, test_path_point_before_horizon_* and
+# test_path_starts_after_horizon_*.
 
 
 def test_c10_mixed_shelf_forms_leave_the_one_third_pool_undecided() -> None:
