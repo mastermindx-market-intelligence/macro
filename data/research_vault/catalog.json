@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T10:10:05.640015+00:00",
-  "count": 2887,
+  "generated_at": "2026-10-14T10:25:40.278670+00:00",
+  "count": 2888,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -511,6 +511,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vfx9yqvup2d-c6c621",
+      "title": "Americas Capital Markets Round tripped",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:06Z",
+      "summary_points": [
+        "Rates-Driven Sector Rotation: Exchanges outperformed (+16.6% QTD) due to volume surges in Energy/Rates (e.g., ICE energy vol +18% y/y), while Alternatives underperformed (-3.2% QTD) amid rates-driven reversal and EPS risks.",
+        "EPS Revisions Dominance: YTD 2027 EPS revisions explain 63% of price performance variance (R²=0.63), confirming EPS as the primary driver for stock returns across sectors.",
+        "Valuation Discrepancy: Alternatives (e.g., APO, ARES) trade at 15%-20% discounts to 5-year P/E averages (17X NTM vs. 24X historical), while Traditional Asset Managers (e.g., AMG, APAM) trade at premiums.",
+        "Key Upside Catalysts: Alternative Asset Managers (e.g., STEP, TPG) show 100% and 21%+ 2025-28E FRE/share CAGR, with STEP at 100% upside; Exchanges (TW, ICE) benefit from AI-driven Energy volumes and Rates demand."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 70,
       "language": "en",
       "needs_metadata": false
     },
