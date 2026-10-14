@@ -1775,3 +1775,5 @@ missing earnings credentials are not the sole waiting condition.
 verified: writer_contract_phase/combined_green.txt, independent_review.md and
 validation.json; validator_integrity_phase/local_portable_probe.json,
 install_bundle_coverage_repair.json and research_source_qualification/review.json.
+
+October14 03:42 wake: original9209 red was diagnosed and repaired on its existing carrier. verified: python3 -m pytest tests/test_check_script_import_pinning.py tests/test_press_official_staging.py tests/test_press_run.py -q =>106passed41.77s. Source hash523005e2 for the entrypoint;23 other acceptance sources/3pages unchanged. Follow-on stays separate until original acceptance; consume this repair at integration. Runtime history and publication limits unchanged.

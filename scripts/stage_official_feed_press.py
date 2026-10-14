@@ -61,8 +61,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parent.parent
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
+# An existing later entry does not protect against an earlier foreign package.
+sys.path.insert(0, str(_REPO))
 
 from engine.press import desk_planner, writer  # noqa: E402
 from engine.press.official_feed_candidate import plan_official_feed_candidate  # noqa: E402

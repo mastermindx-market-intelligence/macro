@@ -1,3 +1,31 @@
+## PR 9209 binding CI repair — October 14 03:42 wake
+
+CI38499512292 at exact head5d06f81f failed ci-pack-6 and ci-gate. The protected
+controller classified the import-pinning ratchet failure as a PR regression;
+the same proof passed on exact basec035cf756. Root removed merge-on-green before
+repairing the existing carrier. No refresh lease was present in the wake read.
+
+The entrypoint conditionally inserted the repository only if absent. A hostile
+package could therefore resolve first when the correct repo was already later
+in PYTHONPATH. A new real --help subprocess regression reproduced the foreign
+import. The repair unconditionally places the file-derived repo first; baseline,
+waivers, staging permission, receipt checks and provider behavior are unchanged.
+Import-pinning + official-staging + Press runner tests:106passed in41.77s.
+Evidence: current_event_phase/import_pin_repair/validation.json and green.txt.
+
+The original 24-source acceptance manifest is rebound only for the reviewed
+entrypoint change, from6409126c to523005e2. All23 other source hashes and the
+three expected pages are unchanged. This is local code/test proof, not a new
+CI success, protected landing, installation or public article. The separate
+validator/writer follow-on remains at application558ca and must consume this
+repair during its later original-carrier/main integration.
+
+Next: push the actual repair to9209, restore the incumbent merge-on-green
+controller and require fresh exact-head binding proof before normal installed
+acceptance. Continue source qualification while the controller works. Preserve
+all private attempt history, the October11 EFFECT_UNKNOWN, held BAC/Research
+bodies and shared dirty accounting. Publication/cutover false; D14 credit0/10.
+
 ## Writer accepted and complete installation binding — October 14 03:33 UTC
 
 The isolated follow-on application frontier is 558ca0a6cdeddf48fbbedc9f0d7f178882ef68e8.

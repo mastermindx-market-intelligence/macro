@@ -95,6 +95,27 @@ CONTEXT_FACT_IDS = (
 )
 
 
+def test_file_path_cli_prioritizes_own_repo_over_ambient_packages(tmp_path):
+    """A later existing repo path must not leave a hostile package first."""
+    import os
+    import subprocess
+
+    decoy = tmp_path / "ambient"
+    for package in ("engine", "scripts"):
+        package_dir = decoy / package
+        package_dir.mkdir(parents=True)
+        (package_dir / "__init__.py").write_text(
+            'raise RuntimeError("foreign repository package imported")\n'
+        )
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join((str(decoy), str(_REPO))))
+    result = subprocess.run(
+        [sys.executable, str(_REPO / "scripts/stage_official_feed_press.py"), "--help"],
+        cwd=tmp_path, env=env, text=True, capture_output=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "--confirm-private-staging" in result.stdout
+
+
 def _dump(path: Path, value) -> str:
     path.write_text(json.dumps(value, sort_keys=True) + "\n")
     return hashlib.sha256(path.read_bytes()).hexdigest()

@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Finish PR 9209 exact-head protected landing and corrected 24-source installed acceptance, then deliver the accepted validator and writer follow-on from source 558ca in its isolated sibling worktree. Preserve actual attempt history; qualify current sources against literal excerpts before any new generation.
+next_action: Deliver the real PR 9209 import-pinning repair through fresh exact-head CI and protected install, then integrate it into the accepted validator/writer follow-on and deliver that release. Continue literal source qualification without replaying held drafts.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -276,3 +276,5 @@ missing earnings credentials are not the sole waiting condition.
 verified: writer_contract_phase/combined_green.txt, independent_review.md and
 validation.json; validator_integrity_phase/local_portable_probe.json,
 install_bundle_coverage_repair.json and research_source_qualification/review.json.
+
+October14 03:42 wake: CI38499512292 failed a real import-pinning regression in9209. A hostile-PYTHONPATH CLI control reproduced it; unconditional file-derived repository priority fixes it.106 affected tests pass. No baseline/waiver change; original installation manifest changes only the reviewed entrypoint hash. See current_event_phase/import_pin_repair/validation.json.
