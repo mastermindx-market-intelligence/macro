@@ -1,21 +1,28 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-14T19:36:01.116775+00:00",
+  "produced_at": "2026-10-14T19:56:22.805286+00:00",
   "as_of": "2026-10-14",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "degraded",
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "cortex_status": "fresh",
+    "tool_call_batches": 3,
+    "individual_tool_calls": 9,
     "context_stale": false,
-    "summary": "cortex degraded — model_unavailable"
+    "summary": "cortex ran (9 tool calls); memo as_of 2026-10-14T19:55:17+00:00"
   },
   "what_changed": [
     {
       "kind": "as_of_advanced",
       "id": "system",
       "summary": "as_of advanced from 2026-10-13 to 2026-10-14",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: degraded → fresh",
       "severity": "info",
       "evidence_path": "data/neuralweb/health.json"
     },
@@ -558,12 +565,6 @@
   },
   "operator_attention": [
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
-      "action_type": "ops_fix"
-    },
-    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 1051.6h vs SLA 36h",
@@ -945,7 +946,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-10-14T09:58:09Z",
+    "asof": "2026-10-14T19:52:08Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,

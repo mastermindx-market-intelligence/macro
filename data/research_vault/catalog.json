@@ -1,12 +1,13 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T19:26:21.003157+00:00",
-  "count": 2917,
+  "generated_at": "2026-10-14T20:42:08.758655+00:00",
+  "count": 2921,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
     "Alger",
     "Allianz",
+    "American Century",
     "Amova",
     "Andromeda",
     "Apollo",
@@ -113,6 +114,67 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-uob7dsnax0l-8bd6eb",
+      "title": "GS Hafif GS Flow of Funds Witching Hour 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:05:25Z",
+      "summary_points": [
+        "Corporate Buyback Flow: November ranks 2nd highest for repurchases (48% by month-end), driven by AI trade concentration; full buyback impact expected late month amid structural sector shifts.",
+        "Sector Disparity in Buyback Flows: Financials down 40% YoY vs.",
+        "Energy (+480%), Utilities (+538%), and Consumer Staples (+140%) surging, signaling structural corporate demand realignment.",
+        "Narrow Market Breadth & HF Positioning: Top 10 S&P stocks outperforming (6mo median return +10.1% vs historical median), with hedge funds at 87th percentile in Info Tech exposure, amplifying rotation risk.",
+        "Options Market Conviction: Historically low daily options moves indicate low directional conviction; recommend gamma tenors (e.g., QQ20Nov26 Put Spread) ahead of EPS/fed catalysts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-er1wpjsvrpt-90450c",
+      "title": "GS MidDay Color US Equities Mid Day Color 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:02:48Z",
+      "summary_points": [
+        "CPI Shock & Fed Policy Shift: Hot CPI (33bps vs 20bps) triggered SPX -1.1%, with rate-sensitive sectors (Non-Profit Tech -4.8%, HY Debt -4.5%) underperforming; Fed 2nd hike expected in Dec, PPI/Wash speech key for policy clarity.",
+        "Quality Rotation Catalyst: Growth deceleration in AI/non-AI pockets drives quality outperformance (Healthcare XLV leading); cyclical vs defensive underperformance, shorting long-duration low-quality equities.",
+        "Institutional Flow Shift: ETF volumes at 33% of tape (+4% vs 20dma), exchange volumes +13% vs 20dma; LOs (19.5% skew) and HFs (12.6% skew) favoring supply in communication services, IT, consumer discretionary."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mnkcjshpl7j-9bfb7f",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T19:02:46Z",
+      "summary_points": [
+        "Technical Overextension: GSP1QUAL up 20% in 3 months (RSI 83, 12m high), driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names.",
+        "Quality-Momentum Negative Correlation: GSP1QUAL negatively correlated to AI/momentum/beta trades (-0.6433/-0.5002/-0.6688), signaling risk for quality-focused portfolios during momentum regimes.",
+        "Hyperscaler Spread Divergence: Bond spreads widened 4 points while equities rose, indicating valuation disconnect in tech-heavy assets and risk-off sentiment.",
+        "Short Leg Underperformance: Lower-quality assets (short leg) underperforming vs.",
+        "GSP1QUAL confirms risk-off positioning, with rate hikes as catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-c0hubv6rxqd-061033",
       "title": "JPM US Market Intelligence | Morning Briefing",
@@ -1110,6 +1172,26 @@
       "published_at": "2026-10-12T23:09:34Z",
       "summary_points": [
         "French debt crisis dominates EUR exposure: OAT-Bund spread volatility (250bp threshold) and election-driven fiscal risks threaten 1.10-1.15 EUR/USD range, with ECB emergency measures possible if crisis escalates - BoE rate hike catalyst: November 5 meeting likely for policy rate hike; February 2027 hike to 4.25% anticipated as inflation nears 4% (second-round effects intensify), positioning GBP as G10 high-yielder - EUR/GBP scenario risk: French crisis escalation (OAT spreads >250bp) could push pair to 0.82; contained crisis + hawkish BoE maintains 0.84-0.85 range with downside bias - USD/JPY policy divergence pause: Fed hawkishness vs BoJ dovishness keeps pair near 158; 160+ requires Fed hawkishness + BoJ rate hike (post-2027), with 30 Oct 2026 risk if BoJ no hike + no GPIF reallocation - EUR/CHF technical bounce: French crisis drives EUR/CHF to 0.92-0.94; SNB neutral on hawkish shift (CPI 0.8% 2027-2028), with small buys at 0.90-0.91 during extreme risk - Critical risk factor: Fragile bond markets and French fiscal inaction (debt crisis) override US growth momentum, making dollar strength vulnerable to White House policy shifts post-midterms - UK budget event risk: Burnham’s October 28 budget may avoid Gilt sell-off via cost-of-living funding, but EU-UK summit (Nov 20) could boost GBP through closer ties push"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mub8by2pkvk-0c5c41",
+      "title": "Institutional investors insights us policy watch",
+      "institution": "American Century",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:01:37Z",
+      "summary_points": [
+        "Tax Policy Fundamentals: Permanent TCJA tax rates, $2,200 child credit (2025+), SALT cap $40k, and 100% first-year depreciation for businesses project $363B federal revenue loss through 2034, boosting corporate cash flow.",
+        "Healthcare Subsidy Cliff: ACA premium tax credits expire Dec 2025; Senate inaction risks 58% premium hikes in 2026 and declining enrollment, directly impacting consumer healthcare spending.",
+        "U.S.-China Tech Restrictions: Tariffs (12.5% July 2026), investment bans on Chinese semiconductors/AI, and chip export controls target military/cyber capabilities, disrupting supply chains despite medical input exclusions.",
+        "EV Market Disruption: Federal EV tax credits terminated (no new/used EV credits), solar/home efficiency incentives expired, and fuel economy standards (50.4→34.5 mpg) shift consumer costs and sector profitability."
       ],
       "tags": [],
       "tickers": [],
