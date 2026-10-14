@@ -155,8 +155,10 @@ function boot() {
     MMXAccessPreview: {isAnon() { return false; }},
   };
   const api = new Function('document', 'window', src + '\nreturn {open: window.mx5OpenDlg, close: window.mx5CloseDlg};')(doc, win);
-  // The shipped close button is <button ... onclick="mx5CloseDlg()">.
-  closeBtn.onclick = () => api.close();
+  // The close button runs the onclick text served on the shipped dlg-risk
+  // close button, with mx5CloseDlg bound to the shipped close function.
+  const shipped = process.env.ES1_CLOSE_ONCLICK;
+  if (shipped) closeBtn.onclick = () => new Function('mx5CloseDlg', shipped)(api.close);
   return {doc, dlg, closeBtn, tail, opener, state, open: api.open, close: api.close};
 }
 function press(doc, key) {
@@ -236,6 +238,15 @@ if (which === 'closes') {
   advance(400);
   assert.equal(h.dlg.classList.contains('open'), false, 'closed after the timer');
   assert.equal(h.doc.activeElement, h.opener, 'focus returned to the opener');
+} else if (which === 'space-close') {
+  const h = opened();
+  const e = press(h.doc, ' ');
+  assert.equal(e.immediateStopped, false, 'the Escape listener leaves Space alone');
+  assert.equal(e.defaultPrevented, false, 'Space keeps its default action');
+  assert.equal(e.activated, true, 'Space activated the focused close button');
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), false, 'closed after the timer');
+  assert.equal(h.doc.activeElement, h.opener, 'focus returned to the opener');
 } else if (which === 'other-key') {
   const h = opened();
   h.doc.activeElement = h.tail;
@@ -276,6 +287,22 @@ if (which === 'closes') {
 """
 
 
+def _close_button() -> str:
+    """The first button inside the shipped dlg-risk panel, as served markup."""
+    page = (ROOT / "templates/dashboard.html.j2").read_text()
+    at = page.index('id="dlg-risk"')
+    head = page[at:page.index("mx5-dlg-body", at)]
+    start = head.index("<button")
+    return head[start:head.index(">", start) + 1]
+
+
+def _onclick(button: str) -> str:
+    import re
+
+    found = re.findall(r'\sonclick="([^"]*)"', button)
+    return found[0] if len(found) == 1 else ""
+
+
 def _run(case: str) -> None:
     import os
     import shutil
@@ -288,6 +315,7 @@ def _run(case: str) -> None:
     src = _slice("templates/dashboard.html.j2", _START, _END)
     env = dict(os.environ)
     env["ES1_CASE"] = case
+    env["ES1_CLOSE_ONCLICK"] = _onclick(_close_button())
     result = subprocess.run(
         [node, "-e", _ESCAPE_JS], input=src, text=True,
         capture_output=True, timeout=20, env=env,
@@ -318,6 +346,20 @@ def test_escape_leaves_the_dialog_while_the_transcript_overlay_is_open():
 def test_enter_on_the_close_button_closes_through_its_click_handler():
     """Enter passes the listener untouched and activates the focused close button."""
     _run("enter-close")
+
+
+def test_space_on_the_close_button_closes_through_its_click_handler():
+    """Space passes the listener untouched and activates the focused close button."""
+    _run("space-close")
+
+
+def test_shipped_close_button_is_an_enabled_button_that_closes_the_dialog():
+    """Enter and Space close dlg-risk only through this markup's own onclick."""
+    button = _close_button()
+    assert 'class="mx5-dlg-close"' in button
+    assert 'type="button"' in button
+    assert "disabled" not in button
+    assert _onclick(button) == "mx5CloseDlg()"
 
 
 def test_enter_elsewhere_and_the_esc_string_do_not_close_the_dialog():
