@@ -27686,6 +27686,9 @@ jobs:
       - "tests/test_ud_b2_w1_vw_fold.py"
       - "tests/test_vsb_surface.py"
       - "tests/test_macro_risk_dialog.py"
+      # Ticker / as-of escaping in the US and CN/HK/CA Risk Radar dialogs
+      # (both render with autoescape off).
+      - "tests/test_risk_radar_dlg_escaping.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
       - "tests/test_unified_dashboard_b2w2.py"
@@ -27696,6 +27699,8 @@ jobs:
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
+      - "templates/_risk_radar_dlg.html.j2"
+      - "templates/_risk_radar_card.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -27835,6 +27840,7 @@ jobs:
           tests/test_dashboard_template_render.py
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
+          tests/test_risk_radar_dlg_escaping.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
