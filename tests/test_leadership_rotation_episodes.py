@@ -304,3 +304,58 @@ def test_quiet_rate_counts_only_kept_alarms_in_quiet_sessions():
     # without the kwarg the key is absent from the report, not zero
     m2 = episode_metrics(records, phases, measured_sessions=400)
     assert m2["quiet_rate"] is None
+
+
+# ---------------------------------------------------------------------------
+# Prereg V2.1 §4 (R3): V1 §5 alarm precedence as a first-match ordering
+# ---------------------------------------------------------------------------
+
+
+# MUTATION: scripts/leadership_rotation_episodes.py:classify_alarms let "outside every [T, T+40]" outrank "inside an up-phase after T+40"
+def test_r3_late_outranks_false_start_inside_the_up_phase():
+    """V1 §5 bullets 3 and 4 both cover an alarm at T+41..P; V2.1 §4 rules the
+    up-phase bullet (LATE) first, and the bracket is closed at both ends."""
+    phases = _match_phases()  # qualifying phase T=100, P=160
+    assert classify_alarms([95], phases)[0]["cls"] == "FALSE_START"   # before T
+    assert classify_alarms([160], phases)[0]["cls"] == "LATE"         # the peak itself
+    assert classify_alarms([161], phases)[0]["cls"] == "FALSE_START"  # past P
+    assert [r["cls"] for r in classify_alarms([95, 160, 161], phases)] == [
+        "FALSE_START", "LATE", "FALSE_START",
+    ]
+
+
+def _r3_oracle(alarms, phases, window=40):
+    """V2.1 §4 written per phase rather than per alarm: inside a qualifying
+    [T, P] the phase's FIRST alarm is MATCHED (delay ≤ window) or LATE, and every
+    later alarm in it is REPEATED; an alarm in no qualifying [T, P] is a
+    FALSE_START."""
+    qual = [ph for ph in phases if ph.qualifies]
+    seen = set()
+    out = []
+    for a in sorted(alarms):
+        host = next((ph for ph in qual if ph.T <= a <= ph.P), None)
+        if host is None:
+            out.append(("FALSE_START", None))
+        elif host.T in seen:
+            out.append(("REPEATED", host.T))
+        else:
+            seen.add(host.T)
+            out.append(("MATCHED" if a - host.T <= window else "LATE", host.T))
+    return out
+
+
+# MUTATION: scripts/leadership_rotation_episodes.py:classify_alarms mark a post-window alarm LATE even after the phase is MATCHED
+def test_r3_first_match_ordering_equals_the_per_phase_oracle():
+    rng = np.random.default_rng(20261014)
+    phases = [
+        UpPhase(T=0, P=30, rise=0.09, censored=False, qualifies=False),
+        UpPhase(T=100, P=160, rise=0.10, censored=False, qualifies=True),
+        UpPhase(T=161, P=260, rise=0.12, censored=False, qualifies=True),
+        UpPhase(T=300, P=330, rise=0.08, censored=True, qualifies=True),
+        UpPhase(T=400, P=420, rise=0.05, censored=False, qualifies=False),
+    ]
+    for _ in range(3000):
+        k = int(rng.integers(1, 9))
+        alarms = sorted(set(int(x) for x in rng.integers(0, 460, k)))
+        got = [(r["cls"], r["phase_T"]) for r in classify_alarms(alarms, phases)]
+        assert got == _r3_oracle(alarms, phases), alarms
