@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete integrated contract verification and one capacity-admitted protected PR for reviewed context, writer-vintage and offline OCC consumer changes; verify installed bytes, then consume and qualify the existing mmx-press-official-staging-20261013-001 private-ingress return with cumulative duplicate/cadence checks. BAC candidate and existing browser continuation are qualified narrowly; no article or new follow write. Preserve held drafts, accounting and original EFFECT_UNKNOWN.
+next_action: Consume the current independent private-ingress review and finish the running local contract gate; push the integrated authored changes and open one protected PR without mistaking the controller refresh cap for an initial-PR ban. After safety acceptance, requalify current source and stage one bounded private BAC attempt, then adjudicate the unedited result while preserving all publication gates and original EFFECT_UNKNOWN.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
@@ -160,3 +160,66 @@ accounting files and every worktree. The original 12:07 EFFECT_UNKNOWN is unchan
 Next: integrated contract verification, one admitted protected PR, installed source
 and consumer checks; then explicit non-promoting current-source staging through the
 existing rail with duplicate/cadence guards and full mixed-desk editorial review.
+
+## Current official-source ingress — October 14 01:54 UTC
+
+The qualified OCC/BAC route has advanced into implemented private staging, with
+no dependency on earnings credentials. Source commit `78806af630d9` adds the
+existing-runner caller, permanent private emit refusal, and namespace-scoped
+revision reconciliation. Parent found and repaired nine failures in the worker
+return (corrupt accounting, changed-GUID/revision replay, timezone accounting and
+path confinement). Canonical release URL now owns the staging slot identity;
+all prior statuses block replay; malformed accounting refuses before a provider
+call. Reviewed context limits now survive the writer boundary, with normalized
+scores distinguished from percentages and no issuer causality inferred.
+
+The affected 14-suite run passed **618 tests in 76.04 seconds**. Protected main
+`1e9364f5ab8c4452820731e87da2c138e53b0571` merged without conflict as
+`55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec`. All 24 prepared source hashes and
+all 3 reviewed page hashes remain exact; every one of main's 304 CI jobs is
+preserved, with only the existing Press job's test list changed. The postmerge
+workflow checks pass 28 tests. All three dirty provider accounting files retain
+their premerge hashes. No source tree or shared worktree was cleaned or reset.
+
+The standalone private-ingress probe passes locally: one mocked fixture writer,
+zero real providers, preserved returned quarantine draft/report, changed-GUID
+replay refusal, and emit refusal after provenance stripping. It is prepared for
+installed verification, not executed on production. Actual current BAC preflight
+has six source facts and five preserved context limits, zero Brief attempts on
+the current UTC day, no coverage/replay, and stable slot
+`press-official-cd2747adeed2`. No actual BAC draft exists yet. The refreshed
+qualification is `bac_occ_current_qualification.json` (SHA256
+`3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240`). The only
+new context-file difference was Fear & Greed `generated_utc`; every measurement,
+observation date and source scope is unchanged. The original qualification is
+retained. PDF corroboration remains outside this RSS-only writer contract.
+
+Independent review `mmx-press-private-ingress-review-20261014-001` is running
+through the existing Fabric adapter on ubuntu3/Qwen; consume that exact return.
+The GLM implementation return `mmx-press-official-staging-20261013-001` has been
+retrieved and repaired, but its ledger acceptance awaits final adjudication.
+No duplicate worker or provider was launched. New contract-delta run is bound to
+55cf against protected main 1e9364; its base materialized successfully and both
+censuses are running. The previous attempt timed out before findings while
+materializing its base; that failed log is retained, not called a pass.
+
+**Capacity interpretation corrected:** the 19-active-proof census is pressure,
+not a new admission ban on authored PR creation. Protected
+`scripts/merge_on_green.py` lines 380–391 and `in_flight_pr_proofs` explicitly
+bound controller `update-branch` refreshes and reserve room for ordinary session
+work. This matches the earlier correction already recorded in the cumulative
+handoff. Do not repeat the mistaken wait-for-eight rule. After review and local
+gate, push this substantive implementation and open one ordinary protected PR;
+no duplicate CI, manual proof-only refresh, admin merge, or controller bypass.
+
+Next executable actions: consume the exact independent review and address real
+findings; finish the existing local contract gate; save/push the source and open
+its one PR. Once private-ingress safety is accepted, recheck source freshness,
+current writer state and accounting, then invoke one bounded private BAC attempt
+with no regeneration. Retain the exact returned draft and full report, apply
+editorial and mixed-cohort review, and preserve publication/cutover false until
+D14's ten consecutive unedited mixed-desk acceptance and real release gates are
+met. Original October 11 12:07 EFFECT_UNKNOWN remains unreplayed. Earlier
+#8786/#9041 installation and scoped browser acceptance remain historical accepted
+capabilities; this new source is not yet installed or publicly available.
+
