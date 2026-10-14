@@ -2115,3 +2115,77 @@ def test_qualified_true_incomplete_failure_without_complete_key_is_unavailable()
         _computed_row_for_summary(retained), "glp1_obesity",
     )
     assert retained_chip["n_active"] == 1
+
+
+def test_qualified_count_gap_without_complete_or_failure_is_unavailable():
+    """qualified=True, complete and failure_code omitted, unequal counts is incomplete.
+
+    Two present integers that differ (raw_count != reported_total) publish
+    UNAVAILABLE and chip n_active 0. _capture() omits raw_count and stays
+    CURRENT_REPORTED. FIRST_PAGE_OUTAGE with no count keys stays
+    CURRENT_REPORTED (T01R-B2). Equal counts stay CURRENT_REPORTED.
+    """
+    from engine.fda_scarcity import format_theme_feed_chip, summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "raw_count": 40,
+            "reported_total": 100,
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert out["source_status"] == "UNAVAILABLE"
+    assert out["freshness"]["capture_incomplete"] is True
+    assert out["freshness"]["capture_qualified"] is False
+    assert out["counts"]["current"] == 1
+    chip = format_theme_feed_chip(_computed_row_for_summary(out), "glp1_obesity")
+    assert chip["n_active"] == 0
+    assert chip["source_status"] == "UNAVAILABLE"
+
+    omitted = summarize_supply(
+        [_d1_row()],
+        capture=_capture(now),
+        now=now,
+        max_capture_age=None,
+    )
+    assert omitted["source_status"] == "CURRENT_REPORTED"
+    assert omitted["freshness"]["capture_incomplete"] is False
+
+    retained = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "failure_code": "FIRST_PAGE_OUTAGE",
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert retained["source_status"] == "CURRENT_REPORTED"
+    assert retained["freshness"]["capture_incomplete"] is False
+    retained_chip = format_theme_feed_chip(
+        _computed_row_for_summary(retained), "glp1_obesity",
+    )
+    assert retained_chip["n_active"] == 1
+
+    equal = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "raw_count": 40,
+            "reported_total": 40,
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert equal["source_status"] == "CURRENT_REPORTED"
+    assert equal["freshness"]["capture_incomplete"] is False

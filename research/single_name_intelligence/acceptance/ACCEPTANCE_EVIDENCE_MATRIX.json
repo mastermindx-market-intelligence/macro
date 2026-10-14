@@ -1,6 +1,6 @@
 {
   "schema_version": "sni_acceptance_matrix.v2",
-  "as_of_utc": "2026-10-13T13:44:19Z",
+  "as_of_utc": "2026-10-14T02:58:16Z",
   "sources": {
     "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
     "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
@@ -58,6 +58,16 @@
           "ref": "main",
           "path": "tests/test_sni_dual_counter_property.py",
           "note": "test_dcp_01_counter_census and test_dcp_05_cross_listing_does_not_merge pin distinct class, venue, and currency for the ADS versus ordinary counters."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_ads_ratio_guard.py",
+          "note": "INT4 DRAFT guard: an ADS:ordinary ratio or ADS interval without an owner-supplied, as-of-available ratio record is refused; never defaulted."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_ads_ratio_guard.py",
+          "note": "Pins ADS-ratio interval refusals on synthetic records; no owner ratio contract on main yet."
         }
       ],
       "gap": "C1/C4 ratio contract untested; no source-proven ADS interval test; August behavioral pilot is not current data."
@@ -163,6 +173,16 @@
           "ref": "main",
           "path": "tests/test_sni_program_invariants.py",
           "note": "test_inv_02_identity_ids_owner_supplied walks SNI JSON/YAML/Python identity keys and refuses minted values."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_identity_binding_guard.py",
+          "note": "INT4 DRAFT guard: bind_identity refuses a null issuer, missing owner records or refs, and ids that look derived from a ticker, name or CIK."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_binding_guard.py",
+          "note": "Pins NULL_ISSUER_REFUSED and ID_LOOKS_DERIVED on synthetic owner-shaped records."
         }
       ],
       "gap": "C1/C4 owner test that ID-dependent operations refuse on null issuer is still missing."
@@ -208,6 +228,16 @@
           "ref": "main",
           "path": "tests/test_sni_identity_refusals_hardening.py",
           "note": "test_idrh_02 and test_idrh_03 refuse leading-zero aliases and a TME ticker with a Tencent display_name on the draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_identity_binding_guard.py",
+          "note": "INT4 DRAFT guard: listing/security/issuer mismatch and currency mismatch refuse binding."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_binding_guard.py",
+          "note": "Pins LISTING_SECURITY_MISMATCH, SECURITY_ISSUER_MISMATCH and CURRENCY_MISMATCH refusals."
         }
       ],
       "gap": "C1/C4 test that padding, alias, or currency mismatch cannot bind is still missing."
@@ -418,6 +448,16 @@
           "ref": "main",
           "path": "tests/test_sni_missing_not_zero.py",
           "note": "test_mnz_01_simple_returns_never_zero_fill, test_mnz_02_no_forward_fill, and test_mnz_03_summary_n_excludes_missing pin missing numerics as non-zero and not forward-filled."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_kpi_missingness_guard.py",
+          "note": "INT4 DRAFT guard: a missing KPI stays missing; zero-fill and silent carry-forward are refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_kpi_missingness_guard.py",
+          "note": "Pins missing-not-zero and no-carry-forward refusals on synthetic KPI frames."
         }
       ],
       "gap": "C3 compiler not on main."
@@ -488,6 +528,11 @@
           "ref": "main",
           "path": "tests/test_sni_clocklaw_half_days.py",
           "note": "test_clkhd_01 and test_clkhd_02 pin owner-published half-day early closes through session_part."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_seal_adjacent.py",
+          "note": "INT4 seal-adjacent pins for the S2 HK half-day session_part and non-finite-close abstain branches the sealed inputs never reach."
         }
       ],
       "gap": "M0 owner session-state test unbuilt; halt and live venue state unmodelled."
@@ -1453,6 +1498,16 @@
           "ref": "main",
           "path": "tests/test_sni_public_exposure.py",
           "note": "test_real_tree_has_no_public_sni_references pins the absence of a public SNI surface; it does not test EN/ZH or viewport persistence."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_view_state_guard.py",
+          "note": "INT4 DRAFT guard: a view-state transition across locale or viewport must preserve issuer, counter, lens and as-of, else it is refused."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_view_state_guard.py",
+          "note": "Pins EN/ZH and viewport view-state preservation on synthetic state; no live surface."
         }
       ],
       "gap": "No EN/ZH or viewport persistence test; live single-name surfaces wait on R1; P1/A0 wait on R1."
@@ -1538,6 +1593,16 @@
           "ref": "main",
           "path": "tests/test_sni_mutation_a33_matrix.py",
           "note": "test_mut4e_a33_reference_evidence_check_real_cells_1 pins checker mutants that would count a synthetic or absent cell as real."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/common/sni_release_evidence_guard.py",
+          "note": "INT4 DRAFT guard: an all-absence or synthetic-fixture evidence set is refused for release."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_release_evidence_guard.py",
+          "note": "Pins the all-absence and synthetic-fixture release refusals."
         }
       ],
       "gap": "No A0 test that an all-absence or synthetic-fixture page fails release; Tencent identity_listing is REFUSED and corporate_actions_adjustment is ABSENT."
