@@ -10960,6 +10960,7 @@ jobs:
       - tests/test_worktree_placement.py
       - tests/test_worktree_branch_name.py
       - tests/test_worktree_sparse.py
+      - tests/test_fabric_lane_sparse_root.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
     # Hard-fails any PR whose branch name or commit trailers carry the loop
     # namespace (metabolism/* or claude/loop-*, or 'Loop-Authored:' trailer)
