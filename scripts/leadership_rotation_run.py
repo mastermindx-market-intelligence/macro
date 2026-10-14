@@ -3,6 +3,8 @@
 Prereg: research/LEADERSHIP_ROTATION_PREREG_V1.md, frozen at commit
 fafdaf094f7271bb09c2bf605f1fd4bcc6ad7ceb (blob
 9d1313e0fc0c5c9720dc1aeb16c9ebf273d70abe).
+Amended by research/LEADERSHIP_ROTATION_PREREG_V2.md (2026-10-14; blob
+1fcd151cfc4cdeb321789feb50d3fbb127cce056) -- both pinned by assert_protocol_landed.
 
 DEVELOPMENT HARNESS — no verdict authority.
 """
@@ -1067,6 +1069,8 @@ def evaluate_family(
                 "path": st.PREREG_PATH,
                 "commit": st.PREREG_COMMIT,
                 "blob": st.PREREG_BLOB_SHA,
+                "v2_path": st.PREREG_V2_PATH,
+                "v2_blob": st.PREREG_V2_BLOB_SHA,
             },
             "partition": partition,
             "look_count": 0,
@@ -1104,7 +1108,7 @@ def build_groups(
 
 
 def run_p1(repo: str, *, commit: str = "HEAD", out: Optional[str] = None) -> dict:
-    st.assert_prereg_landed(repo, head=commit)
+    st.assert_protocol_landed(repo, head=commit)
     symbols = sorted({s for _id, (_g, num, den) in st.PAIRS.items() for s in (num, den)} | {"SPY"})
     closes, identity = st.load_closes_from_git(repo, commit, symbols)
     calendar = st.session_calendar(closes["SPY"])
