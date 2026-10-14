@@ -264,3 +264,26 @@ launch withSUPPORT_POLICY_STALE_ACTIVE_REFUSED on routedUbuntu0; no review ran,
 no retry followed and root's source review is not described as independent review.
 Writer activation still requires all-writer settlement, complete-census runtime
 budget qualification and an independent producer landing before gatedF11.
+
+## October 14 05:35 UTC source and integration delta
+
+Macro #9223 merged at ce99adc45881536da6ba511b287127832ca7a6ea from
+81587ef0a7377fee150a64e2eb4eb59188fd3a19. The root exported and verified the
+exact merged collector and exact baseline as separate immutable source archives.
+No M1 source installation or new activation has occurred. The 05:29 UTC read-only
+M1 checkpoint preserves sole PID89695, DB/profile identities, storage UUID and
+source/plist hashes. Since the earlier recovery it shows16 downloads and16 vault
+publications, zero downloaded-unvaulted rows, and fresh AUTHENTICATED05:28:45.
+Free space122.235GiB remains above the100GiB floor. Productive collector work is
+preserved pending a verified activation boundary.
+
+The selected-reader now returns its immutable selection identity with each
+GuardedRead so the actual assigning adapter can bind every contributing call.
+Mastermind's additive selected-delivery change uses the existing four worker
+slots, refuses mixed generations, checks the source after JWT verification, and
+makes final token/grant decisions after that guard. Its244 affected tests pass,
+zero skips. A separate local actual Macro reader/SQLite-to-MCP HTTP proof passes
+selected search, catalog movement during final JWT verification, and writer
+qualification withdrawal. No hot receipt/corpus resweep occurs. This is synthetic
+local integration, not production custody,95-percent coverage or C4 acceptance.
+Original E04/E05/citation operation obligations and semantic RIO holds remain.

@@ -25,6 +25,7 @@ class SelectedReadUnavailable(RuntimeError):
 class GuardedRead:
     value: Any
     delivery_guard: Callable[[], None]
+    selection_identity: tuple[str, str, str, int]
 
 
 class _LimitedStore:
@@ -254,7 +255,7 @@ class QualifiedReadProvider:
                 raise SelectedReadUnavailable("selected_image_changed")
             self._check(selected)
             key = self._key(selected)
-            return GuardedRead(value, lambda: self._guard(key))
+            return GuardedRead(value, lambda: self._guard(key), key)
         finally:
             try:
                 if state[1] is not None:
