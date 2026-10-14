@@ -581,10 +581,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D82 2026-10-14T04:30Z snapshot.) Rows superseding older rows below:
+(D83 2026-10-14T05:25Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | ACCEPTED (D82). PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) went `merge-blocked` on head `cf557978` because of a red inherited from main (path-prune-lint on `tests/test_sni_injection_safety_ext.py:601`, from #9213 at base `35124402`; main fixed it in #9227/#9234). The seat refreshed the head with a merge of main `6d781a39fa4` (32 commits, no F02-Q2 file touched) → head `ae2ee5552c73`, pushed. Re-run: 380 + 99 + path-prune 3 passed. Label `merge-on-green` only; the controller clears `merge-blocked` after green. Head-bound watcher `bcv1tises` (D83) |
+| Macro #8923 | OPEN `03b168ab9d74`, unchanged since 01:50Z. Watcher `b6y5c7v9y` TIMEOUT (10841 s). Controller: proof stale (main `c699e92784eb` changed check definitions); 30 indexed PR CI runs vs a global cap of 8, 0 slots free. Governor not forced. Re-armed `b2r8913lb` (28800 s) (D83) |
 | F02-Q2 (live flow unknown expiry) | DELIVERED → ACCEPTED by artifact → PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) OPEN, label `merge-on-green` only (no `--auto`), head `cf557978ff17`, CI running. Repair round 1 (`f02-q2c-r1`, rc=0, 04:11:50–04:15:45Z) added `1281456b` (tests) and `cf557978` (fix). Seat re-runs: a 39-value probe raises 7× at `ab5bb1be` and 0× at `cf557978`; 380 + 99 passed (pc); 41 API/unknown-expiry tests passed (ubuntu2, fastapi); custody clean; merge-tree clean vs main. Watcher `bcqwff2a0`. Production proof after merge is a natural cycle: `/api/flow/dte` carries `unclassified` (D82) |
 | F02-Q2 (live flow unknown expiry) | REQUEST_REPAIR round 1, RUNNING on Cursor. Round 0 (`f02-q2c`, rc=0, 04:00:59–04:05:18Z) DELIVERED commits `42415b1a` (tests) and `ab5bb1be` (fix), pushed. The seat verified 9 RED + 2 GREEN at base and 11 GREEN after; pc gate 358 passed + `test_flow_signals` 99 passed; the 12 API tests pass on ubuntu2. Three defects: (1) `_classify_expiry` raises `TypeError` on a tz-aware expiry (ruling 1); (2) the ruling-6 vocabulary search was not reported; (3) the PR-body draft overstates the live reach. Repair lane `f02-q2c-r1` (mastermind-pc, `gpt-5.3-codex-high`, `timeout 5400`, started 04:11:50Z, same worktree and branch); watcher `bg5mdwbbz` (D81) |
 | F02-Q2 live reach | Defense-in-depth. `process_batch` filters `expirations_valid` (#5102, `engine/live_flow.py:808-812`; `_is_canonical_date` requires a canonical `YYYY-MM-DD` str `>= session_day`) before `_accumulate_tide` (only caller, line 1013) and `_enrich_contract_row` (only caller, line 1073). Today's live path therefore never reaches the unknown branch, and `unclassified` stays 0. The repair lane confirms this with citations (D81) |
@@ -1992,4 +1994,29 @@ NEXT:
 2. #8923 watcher `b6y5c7v9y` → on MERGED: `pool hosts`, then Fabric or Cursor per D80 ruling 1, overlap scans, then R04-B1 and D04-A2.
 3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
 4. #8920/#9079/#9083 watcher `bp9y00b9l` → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
+
+### D83 (2026-10-14T05:25Z) — #9231 blocked by an inherited main red; head refreshed onto main
+
+Facts observed this cycle:
+- Watcher `bcqwff2a0` fired `state=BLOCKED` on #9231 (labels `merge-on-green,merge-blocked`, head `cf557978`).
+  - Failing required checks: `ci-pack-1`, `ci-gate`. The non-required `ci-authority/codex/merge-queue-pilot` also failed.
+  - Controller refusal: logical job `path-prune-lint`, test `tests/test_no_absolute_path_part_prunes.py::test_no_walk_prunes_on_absolute_path_parts`, base `3512440213ba`, "head and exact-base failure signatures differ".
+  - The CI log names `tests/test_sni_injection_safety_ext.py:601` (`'__pycache__' in path.parts`). That file came from #9213 (`2e2943ae49c`) at the PR base; the F02-Q2 branch does not touch it. Main fixed it in #9227 (`a806d09ec47`) and #9234 (`80df7978789`) by pruning on `path.relative_to(SNI_ROOT).parts`.
+- Seat repair (L.7: the lane is closed, the seat owns the PR, there is one writer, and no act is in EFFECT_UNKNOWN). In the repair worktree `~/lanes/wt/f02-q2c` on mastermind-pc, a no-ff merge of `origin/main` `6d781a39fa4` (32 commits) → `ae2ee5552c73`, seat attribution, pushed as a fast-forward of `cf557978` (no rebase, no force).
+  - `git diff HEAD^1..HEAD` over `engine/live_flow.py` and the two live-flow test files is empty.
+  - Line 601 now reads `path.relative_to(SNI_ROOT).parts`.
+  - Re-run on pc: `test_live_flow.py` + `test_flow_enrich.py` 380 passed (12 API deselected); `test_flow_signals.py` 99 passed; `test_no_absolute_path_part_prunes.py` 3 passed. Tree clean.
+- Watcher mechanics: the stock `watch_pr.sh` fires immediately on the leftover `merge-blocked` label (it fired at el=0s on `ae2ee555`). It was replaced by `remote/watch_pr_head.sh`, which is bound to head `ae2ee5552c73` and exits on MERGED/CLOSED, HEAD_MOVED or a non-success `ci-gate`. That is watcher `bcv1tises` (28800 s, poll 600).
+- #8923: watcher `b6y5c7v9y` TIMEOUT at 10841 s; the PR is unchanged at `03b168ab9d74`. Controller sweeps report proof stale (main `c699e92784eb` changed the check definitions) and saturation (30 indexed PR CI runs vs a global cap of 8, 0 slots). Governor not forced. Re-armed as `b2r8913lb`.
+
+Rulings:
+1. An inherited base red is repaired by refreshing the head onto main, never by an admin bypass, label removal or a controller force. A merge commit (not a rebase) keeps the accepted commits `1281456b`/`cf557978` byte-identical.
+2. Acceptance (D82) stands: the merge brings in no F02-Q2 file change, so the judged evidence is unchanged (no re-review).
+
+NEXT:
+1. `bcv1tises` → on MERGED: the natural-cycle `/api/flow/dte` `unclassified` proof (D82 ruling 3). On RED: read the failing job. A real F02-Q2 defect goes to a new lane id on Cursor; another inherited red gets another refresh.
+2. `b2r8913lb` (#8923) → on MERGED: `pool hosts`, Fabric or Cursor (D80), overlap scans, R04-B1 and D04-A2.
+3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
+4. `bp9y00b9l` (#8920/#9079/#9083) → R04-B2 and the M04 red specs (M04 also gated on #8684).
 5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
