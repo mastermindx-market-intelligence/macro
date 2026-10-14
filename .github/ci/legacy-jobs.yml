@@ -17749,6 +17749,9 @@ jobs:
       - engine/manager_trades.py
       - engine/market_ontology/__init__.py
       - engine/market_ontology/exposure_map.py
+      - engine/market_ontology/nuclear_owner_bundle.py
+      - engine/market_ontology/nuclear_theme_research.py
+      - engine/market_ontology/uranium_miners_anchor.py
       - engine/market_ontology/semiconductor_owner_bundle.py
       - engine/market_ontology/semiconductor_theme_research.py
       - engine/market_ontology/semiconductor_witness_scope.py
@@ -25291,6 +25294,9 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
@@ -30262,6 +30268,7 @@ jobs:
       - "engine/neuralweb/key_pool.py"
       - "engine/neuralweb/market_memory.py"
       - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_lineage.py"
       - "engine/neuralweb/market_memory_pit.py"
       - "engine/neuralweb/market_memory_playback.py"
       - "engine/neuralweb/market_memory_projection.py"
@@ -30464,7 +30471,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
