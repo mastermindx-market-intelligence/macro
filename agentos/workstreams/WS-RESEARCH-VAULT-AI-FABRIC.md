@@ -15,6 +15,8 @@ owner: fable-ceo
 class: build
 blast_radius: reversible
 ambiguity: scoped
+decisions:
+  - "DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED"
 owns_paths:
   - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md
   - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md
@@ -39,6 +41,8 @@ do_not_redo:
   - "F9 #8579, F15 #8589, F3-TYPING #8593, F10 part 1 #8592 (the carry of #8477) and F10 part 2 #8610 are MERGED; never re-implement or re-open #8477."
   - "F12 rulings M1-M10, Q-L0-2, F12-Q-L4-1 and F12-Q-L4-2 are settled: the MCP schema is a 1:1 projection of F10 and there is no F10 part 3."
   - "Never add pdftotext to the VPS or extract on the request path; production text comes from the F5-M stored derivative written by the incumbent research-ingest producer."
+  - "The September 24 producer/publication outage was accepted closed on October 11, including a second idempotent cycle (#8438 comment 6108699405). Do not reopen the historical storage/auth/SSL incident without a new causal regression."
+  - "H-00 is cleared by the Chairman's explicit current answer, recorded in DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED and #8438 comment 6136837584. Do not ask for that rights decision again."
 waves:
   - id: F1-F2
     title: Private-R2 isolation + read-only body-health census lane
@@ -54,9 +58,9 @@ waves:
     pr: 8472
     depends_on: [RIO-LINEAGE]
     next_action: >
-      MERGED 0ae4fa250956. PRODUCTION_PROOF is an EXACT_HUMAN_GATE: the operator clears the Mac13,1
-      storage wedge, re-authenticates only if the auth meta reads expired, and one natural report
-      proves SOURCE_FRESH through the incumbent path. Sessions never run the re-auth.
+      The October 11 producer/publication restoration and second-cycle proof were accepted
+      on #8438 comment 6108699405. Preserve that closure; a new causal failure is required
+      before reopening producer recovery. Historical counts are not the current cohort.
   - id: F5
     title: Exact full-text/segment contract
     status: done
@@ -87,10 +91,10 @@ waves:
     pr: 8569
     depends_on: [F1-F2, F5, F3-GUARD]
     next_action: >
-      MERGED c6c0ab36cdbf. Backfill drains in production (run 37589824682: 150 rows, derivable
-      excerpts 351 -> 500). PRODUCTION_PROOF closes when a main research-ingest summary shows
-      re-extract checked=0 and the excerpt snapshot writing again (excerpts >= 749). The
-      source-freshness red is the F4 human gate, never ACKed.
+      The historical producer/publication outage is accepted closed in #8438 comment
+      6108699405. Retain original backfill/publication proof; separately qualify current
+      body/FTS agreement and full-document materialization rather than treating row counts
+      or excerpt publication as full-document retrieval proof.
   - id: F3-TYPING
     title: Typed re-extract outcomes with their own CI step
     status: done
@@ -126,22 +130,25 @@ waves:
     status: in_progress
     depends_on: [F10]
     next_action: >
-      L1 Mastermind #1279 MERGED a2254b29 (merge queue). Phase C (v1.1 contracts) + L2/L3 run in one
-      Opus orchestrator lane; L4/L5 launch after them. Rulings M1-M10, Q-L0-2, F12-Q-L4-1/2 bind.
+      Mastermind #1279/#1280/#1281 are merged. Recover the retained unmerged L3 app and
+      migrate its fixtures to the current v1.1 contracts, then finish L4/L5 under the existing
+      namespace, grant, quote-limit and composition rules. Installation and actual client
+      consumption remain unproven. Rulings M1-M10, Q-L0-2, F12-Q-L4-1/2 remain applicable.
   - id: F13-F14
     title: Body exposure to ChatGPT / Deep Research canary and acceptance
     status: todo
     depends_on: [F12, F11]
-    next_action: "EXACT_HUMAN_GATE: Chairman H-00 rights ruling, then H-02..H-15 operator acts."
-    wait:
-      kind: external_action
-      review_after: 2026-10-10
-      condition: "Chairman H-00 rights ruling on copyrighted body exposure to ChatGPT; sessions never override it."
+    next_action: >
+      H-00 is cleared by DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED. Complete the
+      existing source/runtime and client prerequisites, then prove actual authenticated
+      ChatGPT and Deep Research discovery, exact citations, correction and denial behavior.
 next_action: >
-  Read #8438 forward from the last counterpart edge before any act. Carry F12 Phase C + L2/L3
-  through the Mastermind merge queue, then launch L4/L5 from the frozen mission; carry F5-M to
-  merged and track fulltext coverage to >= 95% before F11 merges; record F3 PRODUCTION_PROOF
-  from the next main research-ingest summary. F4 and H-00 stay human gates.
+  Continue the current #8438 completion frontier from comment 6136837584. Finish source-digest,
+  publication-time and visible-cohort retrieval repairs; qualify and finish existing #8622;
+  prove >=95% qualified materialization before F11 merges. Recover L3/L4 and actual Brain/MCP
+  composition, then prove real ChatGPT and Deep Research consumption under the cleared H-00.
+  Current execution uses Sol coordinators and the installed M2 shell Fabric adapter; historical
+  owner labels are not live writer evidence. Preserve exact active carriers and uncertain effects.
 ---
 
 # Research Vault AI Intelligence Fabric
