@@ -2,7 +2,7 @@
 workstream: WS:PAPER-INTERNATIONAL-WAVES
 session: sol/manual-paper-waves-01a1101f-release-r2
 model: codex
-ended_because: ci_handoff
+ended_because: context_budget
 mission: Complete the International programme on its existing carriers while preserving custody, release and frozen-effect
   holds.
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
@@ -47,6 +47,12 @@ changed:
 - path: research/paper_international_wave1_wave2/COMPASS_UNAVAILABLE_ACCEPTANCE.json
   what: Bind5 red cases,20 integration tests,4 browser tests/40 states,18 renders and original prelaunch review
     refusal.
+- path: templates/intl.html.j2 and tests/intl_workspace_page.test.cjs
+  what: Bind compass image accessible name to visible localized caption/value/verdict; three real-browser tests
+    cover EN-ZH-EN round trips.
+- path: research/paper_international_wave1_wave2/J06_HISTORY_JOURNEY_ACCEPTANCE.json
+  what: Bind eight full-page source-reader/History/Back journeys on isolated Parquet with explicit synthetic permission
+    and no-grant modes.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -129,6 +135,17 @@ verified:
     tests/intl_workspace_page.test.cjs; compass-unavailable-20261014-r1/render_acceptance.py.
   result: 5 fail-before absence cases,3 unchanged positive controls.20 integration and4 focused browser tests pass;18
     renders pass with26 bound assets. Counts overlap; no native zoom or deployed proof.
+- claim: Eight History full journeys preserve exact source dates, zero/unknown cells and Back context without mutating
+    history.
+  command: python3 <evidence>/j06-history-journey-20261014-r1/journey.py.
+  result: 8PASS across two source modes and4 theme/locale/width cases; JP real synthetic reader ready, KR missing,
+    normal bridge qualification-unknown. Period/basis changes retain classifier rows. Scenario1.85percent does not
+    mutate DOM or source hash. This is isolated test data, not a live grant.
+- claim: Compass computed accessible name follows locale and reading.
+  command: node --test --test-name-pattern="Compass accessible" tests/intl_workspace_page.test.cjs; python3 -m pytest
+    -q tests/test_intl_workspace_integration.py.
+  result: Three fail-before exact-name assertions;3 new browser tests/9 EN-ZH-EN name assertions and20 integration
+    tests pass.5 unrelated pytest temp-cleanup warnings retained. Final full page closure20PASS0FAIL; counts overlap.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -152,12 +169,17 @@ unresolved:
 - 'Compass unavailable-reading independent review did not execute: original paper-01a1101f-compass-unavailable-review-20261014-r1
   reports TERMINAL_FAILURE/prelaunch_failure75, ROUTING_CRITICAL_POLICY_MISMATCH and SUPPORT_PUBLICATION_REFUSED.
   No retry, replacement, result acceptance or manual release.'
+- Independent review of unavailable-reading and accessible-name changes remains outstanding; no source-level or
+  browser test result substitutes for it.
+- At320px the exact History timestamps wrap densely. No clipped character or source-date mutation was observed;
+  visual usability and native zoom remain open.
 next_actions:
-- Publish both compass repairs on the same held Macro carrier and qualify genuinely new admitted exact-head CI only.
-- Advance the next independent full journey, including retained History/source absence and Back/context; do not
-  treat pending CI or review as a reason to idle.
-- Resume independent unavailable-reading review only through a newly admitted lawful path after the original policy
-  mismatch is resolved; preserve the exact failed run. Native zoom still needs uninterrupted permitted browser control.
+- Resume in this same Paper chat and existing Macro carrier from CHECKPOINT.md; qualify only new admitted CI for
+  the latest published source.
+- Advance the incomplete Macro/Policy-to-Risk-to-History full workflow with independent-clock and unavailable-state
+  checks, or diagnose narrow History timestamp readability before a bounded causal repair.
+- Keep original Fabric review prelaunch policy mismatch frozen; independent review requires a genuine new policy/admission
+  resolution. Preserve native-zoom control, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
@@ -168,6 +190,8 @@ do_not_redo:
   overlap; the initial13-case page closure predates final CSS.
 - Do not reconsume the native compass review. It is gpt-5.6-terra/medium with verified original parent. Fabric compass
   review request75 and NOT_FOUND means no worker launched, not an accepted Fabric return.
+- Do not repeat8 J06 journeys or9 computed accessible-name checks unless their source/input/acceptance changes.
+  Their synthetic permissions never become current rights.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
@@ -192,3 +216,7 @@ Additional J08 evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1
 Compass evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-reflow-20261014-r1`.
 
 Unavailable-reading evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-unavailable-20261014-r1`.
+
+History and accessible-name evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j06-history-journey-20261014-r1` and `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-accessibility-20261014-r1`.
+
+Final accessible-name source retains an explicit CSS semicolon after its existing templated color: design guard and diff check pass. Three focused browser tests pass on these final bytes; the20-case browser/Python closures precede only this CSS-equivalent terminator. Original scanner and missing-NODE_PATH setup failures are retained in evidence.

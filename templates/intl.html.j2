@@ -566,14 +566,14 @@
       <div class="wc-eyebrow"><span class="dot"></span>{{ t('Global Macro Compass', '全球宏观罗盘') }} · <span class="num">{{ latest.date }}</span><span style="flex:1"></span><a href="intl_stocks.html" style="color:var(--ink-link, var(--link));font-weight:700;text-transform:none;letter-spacing:.01em;font-size:11.5px">{{ t('Stock dashboard', '股票看板') }} →</a></div>
       <div class="wc-gauge-wrap">
         <div class="wc-gauge">
-          <svg viewBox="0 0 200 112" role="img" aria-label="World risk appetite {{ (_rk_score ~ ' of 100') if _rk_score is not none else 'unavailable' }}">
+          <svg viewBox="0 0 200 112" role="img" aria-labelledby="intl-compass-caption{% if _rk_score is not none %} intl-compass-score intl-compass-scale{% endif %} intl-compass-verdict">
             <path class="wc-gauge-track" d="M 18 98 A 82 82 0 0 1 182 98" fill="none" stroke-width="12"/>
             {% if _rk_score is not none %}
             <path class="wc-gauge-fill" d="M 18 98 A 82 82 0 0 1 182 98" fill="none" stroke-width="12"
               style="--gc:{{ _gcol }};--circ:{{ _circ }};stroke-dasharray:{{ _circ }};stroke-dashoffset:{{ '%.1f'|format(_goff) }}"/>
             {% endif %}
-            <text class="wc-gnum" x="100" y="84" text-anchor="middle" style="--gc:{{ _gcol }}">{{ _rk_score if _rk_score is not none else '—' }}</text>
-            <text class="wc-gnum-sub" x="100" y="102" text-anchor="middle">/ 100</text>
+            <text id="intl-compass-score" class="wc-gnum" x="100" y="84" text-anchor="middle" style="--gc:{{ _gcol }};">{{ _rk_score if _rk_score is not none else '—' }}</text>
+            <text id="intl-compass-scale" class="wc-gnum-sub" x="100" y="102" text-anchor="middle">/ 100</text>
           </svg>
         </div>
         {# hover receipt: what the dial actually weighs (cap-weighted, US counts most).
@@ -582,8 +582,8 @@
         {% set _rk_receipt_en = ('Weighs ' ~ RK.n_available ~ ' markets by size — the US counts most. Covers ~' ~ _rk_cov ~ '% of world market value. ' ~ (RK.breadth_above_200d ~ ' above their 200-day line' if RK.breadth_above_200d is not none else '') ~ (' · median 3-mo move ' ~ RK.median_mom_3m ~ '%' if RK.median_mom_3m is not none else '')) if (RK and _rk_cov is not none) else '' %}
         {% set _rk_receipt_zh = ('按市值加权覆盖 ' ~ RK.n_available ~ ' 个市场（美国权重最大），约占全球市值 ' ~ _rk_cov ~ '%。' ~ (RK.breadth_above_200d ~ ' 站上200日线' if RK.breadth_above_200d is not none else '') ~ (' · 3个月中位涨跌 ' ~ RK.median_mom_3m ~ '%' if RK.median_mom_3m is not none else '')) if (RK and _rk_cov is not none) else '' %}
         <div class="wc-gside"{% if _rk_receipt_en %} data-tip-en="{{ _rk_receipt_en }}" data-tip-zh="{{ _rk_receipt_zh }}"{% endif %}>
-          <div class="wc-verdict v-{{ _rk_state }}"><span class="l-en">{{ _verdict_en }}</span><span class="l-zh">{{ _verdict_zh }}</span></div>
-          <div class="wc-gauge-cap">{{ t('World risk appetite', '全球风险偏好') }}</div>
+          <div id="intl-compass-verdict" class="wc-verdict v-{{ _rk_state }}"><span class="l-en">{{ _verdict_en }}</span><span class="l-zh">{{ _verdict_zh }}</span></div>
+          <div id="intl-compass-caption" class="wc-gauge-cap">{{ t('World risk appetite', '全球风险偏好') }}</div>
           {% if _rk_score is not none and RK.top_drags %}
           <div class="wc-substance"><span class="l-en">Dragged by {% for d in RK.top_drags %}{{ d.flag }} {{ d.name }}{% if not loop.last %} · {% endif %}{% endfor %}</span><span class="l-zh">拖累：{% for d in RK.top_drags %}{{ d.name_zh }}{% if not loop.last %} · {% endif %}{% endfor %}</span></div>
           {% elif _rk_score is not none %}

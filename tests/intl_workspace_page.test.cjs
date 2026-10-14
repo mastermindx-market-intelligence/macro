@@ -10,12 +10,12 @@ const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   [path.join(__dirname, 'test_intl_workspace_integration.py')],
   {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
-async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown"}={}) {
+async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null}={}) {
   const browser = await chromium.launch({headless:true,
     ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
-  const fixtureHtml = state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
+  const fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname,'test_intl_workspace_integration.py'),'macro',state],
-    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
   const context = await browser.newContext({javaScriptEnabled, viewport:{width,height:900}});
   const page = await context.newPage();
   page.setDefaultTimeout(2500);
@@ -265,5 +265,25 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         if(width===1440&&scale===1)assert.ok(metrics.side.top<metrics.gauge.bottom&&metrics.side.bottom>metrics.gauge.top);
       }
     });
+  });
+}
+
+for (const reading of [null,0,54]) {
+  test(`Compass accessible name follows locale and reading ${reading}`,async()=>{
+    const risk=reading===null?null:{score:reading,label_en:reading===0?'Risk-off':'Neutral',label_zh:reading===0?'风险规避':'中性',tone:reading===0?'down':'flat',coverage_pct:null,top_drags:[]};
+    const htmlOverride=execFileSync(process.env.INTL_TEST_PYTHON||'python3',[
+      '-c','import json,sys; from tests.test_intl_workspace_integration import _render_compass; print(_render_compass(json.loads(sys.argv[1])))',JSON.stringify(risk)],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.locator('[data-im-workspace] a[href="#intl-legacy-research"]').click();
+      for(const lang of ['en','zh','en']) {
+        await page.evaluate(lang=>window.setLang(lang),lang);
+        const caption=lang==='zh'?'全球风险偏好':'World risk appetite';
+        const verdict=reading===null?(lang==='zh'?'暂无数据':'Unavailable'):(lang==='zh'?risk.label_zh:risk.label_en);
+        const name=[caption,...(reading===null?[]:[String(reading),'/ 100']),verdict].join(' ');
+        assert.equal(await page.locator('.wc-gauge').getByRole('img',{name,exact:true}).count(),1,
+          await page.locator('.wc-gauge').ariaSnapshot());
+      }
+    },{width:320,htmlOverride});
   });
 }

@@ -140,15 +140,18 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Publish the locally verified compass wrapping and unavailable-reading repairs on held Macro PR8754.
-  Independent unavailable-reading review is pending after a prelaunch policy mismatch; continue the next History/Back
-  full journey with synthetic scope while retaining all release, rights, Saved, frozen-effect and IW2 custody holds.
+next_action: Continue from the cumulative CHECKPOINT on the same Macro PR8754 carrier. Compass wrap, absent-reading
+  and localized accessible-name repairs have source/local evidence; independent review of the latter two awaits
+  real policy/admission resolution. Eight synthetic source-reader/History/Back journeys pass. Next qualify admitted
+  CI or advance Macro/Policy -> Risk -> History clock/absence proof; all release and IW2 custody holds remain.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 - research/paper_international_wave1_wave2/J07_RESET_ROLLBACK_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/COMPASS_REFLOW_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/COMPASS_UNAVAILABLE_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COMPASS_ACCESSIBLE_NAME_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/J06_HISTORY_JOURNEY_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.

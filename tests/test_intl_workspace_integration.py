@@ -232,7 +232,6 @@ def test_missing_world_risk_reading_is_unavailable_not_neutral(missing):
     assert compass.select_one(".wc-verdict .l-zh").get_text() == "暂无数据"
     assert compass.select_one(".wc-gnum").get_text() == "—"
     assert compass.select_one(".wc-gauge-fill") is None
-    assert compass.select_one(".wc-gauge svg")["aria-label"] == "World risk appetite unavailable"
     assert compass.select_one(".wc-substance") is None
     assert not compass.select_one(".wc-gside").has_attr("data-tip-en")
 
@@ -251,7 +250,6 @@ def test_real_world_risk_readings_preserve_engine_verdict(score, label_en, label
     assert compass.select_one(".wc-verdict .l-zh").get_text() == label_zh
     assert compass.select_one(".wc-gnum").get_text() == str(score)
     assert compass.select_one(".wc-gauge-fill") is not None
-    assert compass.select_one(".wc-gauge svg")["aria-label"] == f"World risk appetite {score} of 100"
     assert "Dragged by" in compass.select_one(".wc-substance").get_text()
     assert "Weighs 10 markets" in compass.select_one(".wc-gside")["data-tip-en"]
 
