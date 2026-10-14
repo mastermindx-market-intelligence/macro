@@ -5721,6 +5721,7 @@ jobs:
       - "tests/test_pullback_c7_cap_mutants.py"
       - "tests/test_pullback_parity_us_mutants.py"
       - "tests/test_pullback_hides_legacy_odds.py"
+      - "tests/test_pullback_hide_odds_mutant_killers.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5794,6 +5795,7 @@ jobs:
           tests/test_pullback_c7_cap_mutants.py
           tests/test_pullback_parity_us_mutants.py
           tests/test_pullback_hides_legacy_odds.py
+          tests/test_pullback_hide_odds_mutant_killers.py
           -q
 
 
