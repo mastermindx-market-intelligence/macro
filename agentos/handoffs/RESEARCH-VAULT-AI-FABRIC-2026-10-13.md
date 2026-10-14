@@ -287,3 +287,55 @@ selected search, catalog movement during final JWT verification, and writer
 qualification withdrawal. No hot receipt/corpus resweep occurs. This is synthetic
 local integration, not production custody,95-percent coverage or C4 acceptance.
 Original E04/E05/citation operation obligations and semantic RIO holds remain.
+
+## October 14 06:45 UTC collector delivery and producer progress
+
+This supersedes the earlier installation-pending observation. M1 received the
+exact 58-payload collector release from Macro #9223 through the incumbent
+installer at05:47:25Z, with existing0600/0700 modes and DB/profile/storage/plist
+identities preserved. One admitted activation at05:49:32Z produced sole PID36722.
+The06:13:28 read-only checkpoint proves fresh AUTHENTICATED06:08:32 and11 downloads /
+10 vault publications after activation. Bounded healing completed in2.935s. This is
+collector production evidence, not common-generation coverage or client acceptance.
+Root receipt:materialization/producer-9223-release/post-activation-0615.json under
+the original research-vault-completion-20261012-01a13301 evidence root.
+
+The existing M1 com.mastermindx.research-feed owns the newer workflow dispatches.
+Its900-second interval, exact script hash and06:09/06:24 dispatch records were
+read back; no competing feed or restart was created. Run38521985502 completed
+SUCCESS06:36:37 on c121def549c260e10bf991449e18d2c2813890ae. Its terminal counters
+still require consumption. Following38523460207 was already running at06:39:13.
+Two earlier publication timeouts remain preserved; no manual ordinary-ingest
+retry was issued. Retained scratch and same-store readback remain separate proof.
+
+Producer prerequisite #9255 merged06:32:14 as
+901ac4fb45c0f8e0295ff34777791e2ea8941f2d from
+b638653750327fcf84b27b83b7a0e344b3f06f0b. The optional generation writer remains
+unadopted. An explicit materialize_only input on the existing serialized workflow
+can now create immutable derivatives without mutable republication or repository
+snapshots. It preserves retained ordinary scratch, refuses adopted generations,
+checks catalog versions and retains existing caps/budgets. No materialize-only
+dispatch has yet occurred.648 affected tests pass;2650 trigger closures have no
+gaps;2 curation checks pass. Broader tests retain2 inherited catalog-title defects
+(on identical base blobs) and1 moved retrieval fixture skip.16 sparse asset failures
+were resolved by restoring exact base assets. The full hosted CI run remained in
+progress at06:45; merge is not a full-CI success claim.
+
+Mastermind #1453 remains in its existing protected merge queue at
+ad926ef41292b2af4978ff9809012b9f8ecaac6b. Its exact-head application CI and all
+CodeQL checks passed. No runtime installation or activation follows from this.
+The original citation Fabric idrv-citations-01a13301-items-r1 still reports stale
+nonterminal controller evidence, unknown worker state, no available result and
+no retry authorization. Fabric Integration remains the recovery owner; no result
+acceptance, replacement run or manual lease change occurred.
+
+The intended Linux host read the actual148557824-byte corpus (2864 documents,
+SHA256105f3ecbad41a8bc3796ab2b8d99589c0ebf0a2b470a66d233d79f091375f6c3)
+through the current bounded store in2.084s. SQLite integrity, schema2 and
+serialize parity passed. Peak RSS was488012KiB under a1GiB address-space ceiling.
+This is one isolated read-only image measurement, not selected service readiness.
+The default32MiB corpus budget remains unchanged and cannot admit this corpus.
+A reviewable, unenabled deployment proposal uses192MiB corpus and768MiB image
+admission budgets (one simultaneous selected image at the measured size), with
+actual complete-generation and final service UID/sandbox qualification still due.
+Do not hand-enable writer policy or restore a moved/withdrawn selection.
