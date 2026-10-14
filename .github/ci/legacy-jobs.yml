@@ -11647,6 +11647,7 @@ jobs:
       - "engine/oracle/ratio_lens.py"
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
       - "engine/rotation_corr.py"
       - "engine/rotation_events.py"
       - "engine/rotation_flows.py"
