@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T04:24:10.614737+00:00",
-  "count": 2861,
+  "generated_at": "2026-10-14T04:54:07.304124+00:00",
+  "count": 2863,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -14,6 +14,7 @@
     "Axioma",
     "BNP Paribas",
     "BTIG",
+    "Bank Earnings Previews",
     "Bank of America",
     "Barclays",
     "Bear Traps",
@@ -267,6 +268,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lzmltel3teb-9a2d70",
+      "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:17Z",
+      "summary_points": [
+        "Q3 2026 Crypto Broker Outperformance: Digital-asset-skewed firms outperformed retail brokers (11% vs S&P 500), driven by structural crypto growth and favorable fall seasonality; crypto earnings estimates near mid-cycle.",
+        "Attractive Crypto Valuation Discrepancy: Digital-asset firms trade at <5th %ile multiples (highly attractive), while retail brokers at ~21.5x P/E (fair vs 5-year context).",
+        "SEC Regulatory Catalysts: Proposed Regulation Crypto Assets (targeted relief for smaller issuances), tokenized equities exemption, and CFTC’s no-action position for self-custodial protocols boost liquidity and long-tail crypto growth.",
+        "Critical Risk Factors: ETOR’s 19% adj.",
+        "EBITDA miss vs consensus and BTGO’s -317% negative bias highlight severe execution risks for crypto-heavy brokers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vwu0m6jvedw-616840",
       "title": "weekly 12oct26",
       "institution": "Ashmore",
@@ -367,6 +389,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-toe1m5eqpj6-664576",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T07:15:29Z",
+      "summary_points": [
+        "Russia-Ukraine Ceasefire Fragility: Unconfirmed ceasefire claims, energy infrastructure strikes (Kharkiv), US diesel pivot tightening supply – high risk of failed agreement, energy market volatility - US CPI/PPI Data Cluster: September CPI (Wed, +0.57% MoM expected), PPI (Thu), import prices (Fri) critical for Fed’s October FOMC policy decisions and market positioning - Geopolitical Oil Supply Risks: Middle East escalation (Riyadh airport strikes, Houthi conflict) + Russia-Ukraine diesel waiver create upside tail risks for oil/shipping costs (Brent at $104.72/bbl) - Fed Policy Catalyst: CPI/PPI data cluster dominates Fed’s October 28 decision; Chair Warsh’s IMF comments critical amid Q3 earnings (S&P 500 34% YoY growth vs. 27% consensus)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
