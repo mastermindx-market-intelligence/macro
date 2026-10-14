@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_periphery_scope_render.py; tests/intl_workspace_page.test.cjs
+  what: Preserve periphery absence and rounded precision, scope Bund date and remove unsupported causal stress wording.
 - path: templates/theme.js; templates/theme.css; site/theme.js; site/theme.css; tests/intl_workspace_page.test.cjs
   what: Keep both launcher states below mobile LENS custody and reserve text clearance for the44px native close target.
 - path: research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json; mockups/evidence/paper-international-library/lens-boot-occlusion/
@@ -175,6 +177,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Periphery direction and date match actual owner field scope.
+  command: pytest tests/test_intl_periphery_scope_render.py; selected Periphery Node cases; rates-supplemental-scope-20261014-r1/capture.py and inspect_cards.py
+  result: 13PythonPASS14warnings;4browserPASS8widthstates;8canonicalcaptures4focusedparentviews. Original10causalreds and3capitalization errors retained separately.
 - claim: Mobile LENS reading is clear of the resting launcher and close control in the scoped final fixture.
   command: Selected Mobile LENS Node cases; test_chat_launcher_stub.py; runtime-style and template-sync guards; lens-boot-occlusion-20261014-r1 capture.py and inspect_lens.py
   result: 4unique final browsercases8widthstates;2Dark individual passes retained from interrupted run and2Light terminal passes. Launcher15PASS1inheritedFAIL14warnings;115syncpairs pass;8canonical8focused views. Not live or independent acceptance.
@@ -574,3 +579,8 @@ The existing owner omits an unmeasured corridor and can return the same last spr
 ## Mobile LENS reading clearance — 2026-10-14
 
 LENS_BOOT_OCCLUSION_ACCEPTANCE.json binds the actual resting launcher omission and subsequent close-control text overlap. Both repairs use canonical presentation, preserve existing lifecycle, and do not activate the assistant. The inherited stock.html# asset-guard finding remains explicit; no whole-suite green claim. Distinct next source evidence is rates-supplemental-scope-20261014-r1/OWNER_COUNTEREXAMPLES.json: absent or roundedzero periphery changes become tightening, and a flat ECB balance sheet becomes easing with a weekly-bin date. Preserve actual owner precision, independent clocks and all holds when adjudicating.
+
+
+## Periphery scope — 2026-10-14
+
+PERIPHERY_SCOPE_ACCEPTANCE.json binds actual-owner absent and rounded-zero counterexamples. Values and calculations are unchanged. The next distinct repair is ECB balance-sheet interpretation and weekly-bin clock, with12original-source render failures already retained. Independent review, CI, deployment and all original holds remain open.

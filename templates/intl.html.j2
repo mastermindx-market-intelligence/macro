@@ -1090,19 +1090,22 @@
     <!-- Eurozone periphery -->
     {% if rates.periphery %}
     <div>
-      <h3 id="intl-euro-fragmentation">🇪🇺 {{ t('Eurozone fragmentation — peripheral spreads over Bund', '欧元区分化 — 外围国相对德债利差') }} {{ help('Wider spreads mean more Eurozone stress; tighter spreads mean calmer conditions.', '利差走阔代表欧元区压力上升；收窄代表环境更稳。') }}</h3>
+      <h3 id="intl-euro-fragmentation">🇪🇺 {{ t('Eurozone fragmentation — peripheral spreads over Bund', '欧元区分化 — 外围国相对德债利差') }} {{ help('Issuer 10-year yield minus the German Bund yield. The 3m change compares 63 supplied intervals, not a causal stress diagnosis. Changes are rounded to whole basis points; a zero with no widening flag does not distinguish an exact zero from a small negative change. The supplied widening flag retains positive direction even when the rounded change is zero.', '发行国10年期收益率减去德国国债收益率。3月变化比较63个所供观测间隔，并非压力的因果诊断。变化取整至基点；零值且未标记走阔，无法区分精确为零和微小负变化。所供走阔标志在变化取整为零时仍保留正向变化。') }}</h3>
       <table class="sb">
         <thead><tr><th class="l">{{ t('Spread', '利差') }}</th><th>{{ t('bps', '基点') }}</th><th>{{ t('3m', '3月') }}</th><th class="l">{{ t('Read', '读数') }}</th></tr></thead>
         <tbody>
         {% for sp in rates.periphery.spreads %}
+          {% set measured = sp.chg3m_bps is number and sp.chg3m_bps is not boolean %}
+          {% set widening = measured and sp.widening is sameas true %}
+          {% set tightening = measured and sp.widening is sameas false and sp.chg3m_bps < 0 %}
           <tr><td class="l"><span class="flg">{{ sp.flag }}</span>{{ t(sp.label, sp.label_zh) }}</td>
             <td>{{ num(sp.bps,' bps',0) }}</td>
-            <td class="{{ 'neg' if sp.widening else 'pos' }}">{% if sp.chg3m_bps is not none %}{{ '%+.0f'|format(sp.chg3m_bps) }}{% else %}—{% endif %}</td>
-            <td class="l">{% if sp.widening %}<span class="chip caut">{{ t('widening', '走阔') }}</span>{% else %}<span class="chip ok">{{ t('tightening', '收窄') }}</span>{% endif %}</td></tr>
+            <td{% if widening or tightening %} class="{{ 'neg' if widening else 'pos' }}"{% endif %}>{% if measured %}{{ '%+.0f'|format(sp.chg3m_bps) }}{% else %}—{% endif %}</td>
+            <td class="l">{% if widening %}<span class="chip caut">{{ t('widening', '走阔') }}</span>{% elif tightening %}<span class="chip ok">{{ t('tightening', '收窄') }}</span>{% elif measured and sp.widening is sameas false and sp.chg3m_bps == 0 %}<span class="chip">{{ t('Non-widening at supplied precision', '所供精度下未走阔') }}</span>{% else %}<span class="chip">{{ t('Unavailable', '不可用') }}</span>{% endif %}</td></tr>
         {% endfor %}
         </tbody>
       </table>
-      <p class="caveat" style="margin-top:6px">{{ t('As of', '截至') }} {{ rates.periphery.asof }}</p>
+      <p class="caveat" data-periphery-date style="margin-top:6px">{{ t('Bund series date:', '德债序列日期：') }} {{ rates.periphery.asof|e if rates.periphery.asof else t('Unavailable', '不可用') }} · {{ t('Individual spread observation dates unavailable', '各项利差观测日期不可用') }}</p>
     </div>
     {% endif %}
     <!-- ECB liquidity impulse -->

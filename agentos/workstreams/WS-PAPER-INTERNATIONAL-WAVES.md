@@ -140,10 +140,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Adjudicate the distinct supplemental Rates owner counterexamples for periphery absence and roundedzero versus tightening.
-  Preserve actual owner precision and clocks; ECB weekly-bin labeling is a separate bounded gap.
-  Reuse accepted LENS and Dollar proof; all review, CI, release and IW2 holds persist.
+next_action: Repair the separately reproduced ECB balance-sheet interpretation and weekly-bin clock.
+  Preserve owner calculations and rounded precision; no inferred policy action or observation date.
+  Source is not deployed; independent review, CI and all original release and IW2 holds persist.
 artifacts:
+- research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LENS_BOOT_OCCLUSION_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json

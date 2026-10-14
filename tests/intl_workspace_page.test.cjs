@@ -55,6 +55,32 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Periphery keeps supplied precision and Bund clock scope ${theme} ${lang}`,async()=>{
+    const peripheryHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_periphery_scope_render import periphery_scope_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=periphery_scope_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const panel=page.locator('#intl-euro-fragmentation').locator('..');
+      assert.ok(await panel.isVisible());
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const reads=await panel.locator('tbody tr td:last-child').allInnerTexts();
+        assert.deepEqual(reads,lang==='zh'?['不可用','所供精度下未走阔','所供精度下未走阔','走阔','收窄','走阔']:
+          ['Unavailable','Non-widening at supplied precision','Non-widening at supplied precision','widening','tightening','widening']);
+        const clock=await panel.locator('[data-periphery-date]').innerText();
+        assert.ok(clock.includes(lang==='zh'?'德债序列日期：':'Bund series date:') && clock.includes('2026-04-08'));
+        assert.ok(clock.includes(lang==='zh'?'各项利差观测日期不可用':'Individual spread observation dates unavailable'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document must fit');
+        const layout=await panel.evaluate(n=>({width:innerWidth,box:n.getBoundingClientRect().toJSON(),scroll:n.scrollWidth,client:n.clientWidth}));
+        assert.ok(layout.scroll<=layout.client+1,JSON.stringify(layout));
+      }
+    },{htmlOverride:peripheryHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-euro-fragmentation'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Mobile LENS hides resting launcher and restores it ${theme} ${lang}`,async()=>{
     const lensHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_dollar_method_render import five_day_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=five_day_fixture()))"],
