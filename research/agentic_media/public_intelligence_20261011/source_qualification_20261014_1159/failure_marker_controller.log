@@ -1,0 +1,263 @@
+sweep	Set up job	﻿2026-10-14T11:58:57.6370532Z Current runner version: '2.337.0'
+sweep	Set up job	2026-10-14T11:58:57.6396648Z ##[group]Runner Image Provisioner
+sweep	Set up job	2026-10-14T11:58:57.6397659Z Hosted Compute Agent
+sweep	Set up job	2026-10-14T11:58:57.6398323Z Version: 20261002.596
+sweep	Set up job	2026-10-14T11:58:57.6399041Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+sweep	Set up job	2026-10-14T11:58:57.6399911Z Build Date: 2026-10-02T22:28:27Z
+sweep	Set up job	2026-10-14T11:58:57.6400657Z Worker ID: {11bc7943-9bbc-4356-86d6-f1deff9cd493}
+sweep	Set up job	2026-10-14T11:58:57.6401515Z Region: westus3
+sweep	Set up job	2026-10-14T11:58:57.6402181Z Cloud: Azure
+sweep	Set up job	2026-10-14T11:58:57.6402829Z ##[endgroup]
+sweep	Set up job	2026-10-14T11:58:57.6405055Z ##[group]Operating System
+sweep	Set up job	2026-10-14T11:58:57.6405779Z Ubuntu
+sweep	Set up job	2026-10-14T11:58:57.6406439Z 24.04.5
+sweep	Set up job	2026-10-14T11:58:57.6407016Z LTS
+sweep	Set up job	2026-10-14T11:58:57.6407590Z ##[endgroup]
+sweep	Set up job	2026-10-14T11:58:57.6408195Z ##[group]Runner Image
+sweep	Set up job	2026-10-14T11:58:57.6408830Z Image: ubuntu-24.04
+sweep	Set up job	2026-10-14T11:58:57.6409522Z Version: 20261004.327.1
+sweep	Set up job	2026-10-14T11:58:57.6410652Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+sweep	Set up job	2026-10-14T11:58:57.6412440Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+sweep	Set up job	2026-10-14T11:58:57.6413455Z ##[endgroup]
+sweep	Set up job	2026-10-14T11:58:57.6415208Z ##[group]GITHUB_TOKEN Permissions
+sweep	Set up job	2026-10-14T11:58:57.6417452Z Actions: write
+sweep	Set up job	2026-10-14T11:58:57.6418205Z Contents: write
+sweep	Set up job	2026-10-14T11:58:57.6418793Z Issues: write
+sweep	Set up job	2026-10-14T11:58:57.6419410Z Metadata: read
+sweep	Set up job	2026-10-14T11:58:57.6420094Z PullRequests: write
+sweep	Set up job	2026-10-14T11:58:57.6420668Z ##[endgroup]
+sweep	Set up job	2026-10-14T11:58:57.6422844Z Secret source: Actions
+sweep	Set up job	2026-10-14T11:58:57.6423831Z Cache mode: read
+sweep	Set up job	2026-10-14T11:58:57.6425202Z Prepare workflow directory
+sweep	Set up job	2026-10-14T11:58:57.6789284Z Prepare all required actions
+sweep	Set up job	2026-10-14T11:58:57.6837731Z Getting action download info
+sweep	Set up job	2026-10-14T11:58:58.0059571Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+sweep	Set up job	2026-10-14T11:58:58.1946691Z Complete job name: sweep
+sweep	Run actions/checkout@v4	﻿2026-10-14T11:58:58.2748070Z ##[group]Run actions/checkout@v4
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2749030Z with:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2749503Z   filter: blob:none
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2750739Z   sparse-checkout: scripts/merge_on_green.py
+sweep	Run actions/checkout@v4	scripts/ci_semantic_proof.py
+sweep	Run actions/checkout@v4	scripts/ci_authority_paths.py
+sweep	Run actions/checkout@v4	scripts/gh_path_filter.py
+sweep	Run actions/checkout@v4	scripts/run_ci_pack.py
+sweep	Run actions/checkout@v4	.github/workflows
+sweep	Run actions/checkout@v4	
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2752111Z   sparse-checkout-cone-mode: false
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2752749Z   repository: mastermindx-market-intelligence/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2757198Z   token: ***
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2757685Z   ssh-strict: true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2758240Z   ssh-user: git
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2758725Z   persist-credentials: true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2759243Z   clean: true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2759700Z   fetch-depth: 1
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2760161Z   fetch-tags: false
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2760637Z   show-progress: true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2761118Z   lfs: false
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2761559Z   submodules: false
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2762042Z   set-safe-directory: true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2762576Z   allow-unsafe-pr-checkout: false
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.2763581Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3836585Z Syncing repository: mastermindx-market-intelligence/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3839294Z ##[group]Getting Git version info
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3840348Z Working directory is '/home/runner/work/macro/macro'
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3841493Z [command]/usr/bin/git version
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3939833Z git version 2.55.0
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.3998927Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4014513Z Temporarily overriding HOME='/home/runner/work/_temp/c7cbefc8-3699-4f4a-99e4-2afa4d61bbfa' before making global git config changes
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4017062Z Adding repository directory to the temporary git global config as a safe directory
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4020530Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4075186Z Deleting the contents of '/home/runner/work/macro/macro'
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4080578Z ##[group]Initializing the repository
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4085469Z [command]/usr/bin/git init /home/runner/work/macro/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4199842Z hint: Using 'master' as the name for the initial branch. This default branch name
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4201999Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4203991Z hint: to use in all of your new repositories, which will suppress this warning,
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4205868Z hint: call:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4208292Z hint:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4209468Z hint: 	git config --global init.defaultBranch <name>
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4210784Z hint:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4212348Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4215242Z hint: 'development'. The just-created branch can be renamed via this command:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4216809Z hint:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4217654Z hint: 	git branch -m <name>
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4218356Z hint:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4219184Z hint: Disable this message with "git config set advice.defaultBranchName false"
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4221112Z Initialized empty Git repository in /home/runner/work/macro/macro/.git/
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4225411Z [command]/usr/bin/git remote add origin https://github.com/mastermindx-market-intelligence/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4267419Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4268813Z ##[group]Disabling automatic garbage collection
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4273444Z [command]/usr/bin/git config --local gc.auto 0
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4310010Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4311438Z ##[group]Setting up auth
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4318291Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4361158Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4768546Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.4806460Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5040269Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5080303Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5317409Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5365359Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5366935Z ##[group]Fetching the repository
+sweep	Run actions/checkout@v4	2026-10-14T11:58:58.5377530Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +761ccf1ce51e4f221c7db013c56927802b40b554:refs/remotes/origin/main
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7649087Z From https://github.com/mastermindx-market-intelligence/macro
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7652451Z  * [new ref]         761ccf1ce51e4f221c7db013c56927802b40b554 -> origin/main
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7663119Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7665101Z ##[group]Determining the checkout info
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7666215Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7667040Z ##[group]Setting up sparse checkout
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7667796Z [command]/usr/bin/git config core.sparseCheckout true
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7725719Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7753260Z .git/info/sparse-checkout
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7769841Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7771429Z ##[group]Checking out the ref
+sweep	Run actions/checkout@v4	2026-10-14T11:58:59.7777491Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1772955Z Updating files:   0% (1/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1773844Z Updating files:   1% (2/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1774752Z Updating files:   2% (3/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1775423Z Updating files:   3% (4/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1785918Z Updating files:   4% (5/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1787236Z Updating files:   5% (6/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1788325Z Updating files:   6% (7/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1789262Z Updating files:   7% (8/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1789927Z Updating files:   8% (9/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1790556Z Updating files:   9% (10/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1797262Z Updating files:  10% (11/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1799626Z Updating files:  11% (12/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1804564Z Updating files:  12% (13/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1805734Z Updating files:  13% (15/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1807340Z Updating files:  14% (16/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1809853Z Updating files:  15% (17/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1811160Z Updating files:  16% (18/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1812649Z Updating files:  17% (19/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1813516Z Updating files:  18% (20/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1837449Z Updating files:  19% (21/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1845819Z Updating files:  20% (22/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1846323Z Updating files:  21% (23/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1846805Z Updating files:  22% (24/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1847268Z Updating files:  23% (25/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1847694Z Updating files:  24% (26/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1849524Z Updating files:  25% (27/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1850524Z Updating files:  26% (29/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1851614Z Updating files:  27% (30/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1865783Z Updating files:  28% (31/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1866756Z Updating files:  29% (32/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1867593Z Updating files:  30% (33/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1868393Z Updating files:  31% (34/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1868936Z Updating files:  32% (35/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1869926Z Updating files:  33% (36/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1870465Z Updating files:  34% (37/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1870797Z Updating files:  35% (38/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1871235Z Updating files:  36% (39/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1872088Z Updating files:  37% (40/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1874556Z Updating files:  38% (42/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1875901Z Updating files:  39% (43/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1877146Z Updating files:  40% (44/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1877888Z Updating files:  41% (45/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1879291Z Updating files:  42% (46/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1880042Z Updating files:  43% (47/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1881675Z Updating files:  44% (48/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1882339Z Updating files:  45% (49/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1883561Z Updating files:  46% (50/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1884444Z Updating files:  47% (51/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1885523Z Updating files:  48% (52/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1886787Z Updating files:  49% (53/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1889777Z Updating files:  50% (54/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1891101Z Updating files:  51% (56/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1893235Z Updating files:  52% (57/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1894608Z Updating files:  53% (58/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1895979Z Updating files:  54% (59/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1897750Z Updating files:  55% (60/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1900188Z Updating files:  56% (61/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1901191Z Updating files:  57% (62/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1902471Z Updating files:  58% (63/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1904337Z Updating files:  59% (64/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1905372Z Updating files:  60% (65/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1906791Z Updating files:  61% (66/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1908188Z Updating files:  62% (67/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1909813Z Updating files:  63% (69/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1911226Z Updating files:  64% (70/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1911910Z Updating files:  65% (71/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1913151Z Updating files:  66% (72/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1914569Z Updating files:  67% (73/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1915810Z Updating files:  68% (74/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1917811Z Updating files:  69% (75/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1920106Z Updating files:  70% (76/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1920765Z Updating files:  71% (77/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1921384Z Updating files:  72% (78/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1921988Z Updating files:  73% (79/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1922814Z Updating files:  74% (80/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1925423Z Updating files:  75% (81/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1926923Z Updating files:  76% (83/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1928472Z Updating files:  77% (84/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1929357Z Updating files:  78% (85/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1930323Z Updating files:  79% (86/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1932823Z Updating files:  80% (87/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1933455Z Updating files:  81% (88/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1935135Z Updating files:  82% (89/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1936264Z Updating files:  83% (90/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1937118Z Updating files:  84% (91/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1938700Z Updating files:  85% (92/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1939489Z Updating files:  86% (93/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1941606Z Updating files:  87% (94/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1942549Z Updating files:  88% (96/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1945521Z Updating files:  89% (97/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1946625Z Updating files:  90% (98/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1948001Z Updating files:  91% (99/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1949397Z Updating files:  92% (100/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1951557Z Updating files:  93% (101/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1953172Z Updating files:  94% (102/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1960827Z Updating files:  95% (103/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1964049Z Updating files:  96% (104/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1965384Z Updating files:  97% (105/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1980605Z Updating files:  98% (106/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1989068Z Updating files:  99% (107/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1990639Z Updating files: 100% (108/108)
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.1991232Z Updating files: 100% (108/108), done.
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.2875048Z Switched to a new branch 'main'
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.2879894Z branch 'main' set up to track 'origin/main'.
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.2901397Z ##[endgroup]
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.2957076Z [command]/usr/bin/git log -1 --format=%H
+sweep	Run actions/checkout@v4	2026-10-14T11:59:01.2988993Z 761ccf1ce51e4f221c7db013c56927802b40b554
+sweep	install the yaml parser	﻿2026-10-14T11:59:01.3206109Z ##[group]Run if python3 -c "import yaml" 2>/dev/null; then
+sweep	install the yaml parser	2026-10-14T11:59:01.3206733Z ^[[36;1mif python3 -c "import yaml" 2>/dev/null; then^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3207228Z ^[[36;1m  echo "pyyaml already importable on ${RUNNER_NAME:-this runner}"^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3207659Z ^[[36;1m  exit 0^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3207918Z ^[[36;1mfi^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3208313Z ^[[36;1mpython3 -m pip install --quiet --disable-pip-version-check pyyaml \^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3208941Z ^[[36;1m  || python3 -m pip install --quiet --disable-pip-version-check --user pyyaml \^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3209523Z ^[[36;1m  || python3 -m pip install --quiet --disable-pip-version-check \^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3209990Z ^[[36;1m       --break-system-packages pyyaml^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3210369Z ^[[36;1mpython3 -c "import yaml"^[[0m
+sweep	install the yaml parser	2026-10-14T11:59:01.3459945Z shell: /usr/bin/bash -e {0}
+sweep	install the yaml parser	2026-10-14T11:59:01.3460385Z ##[endgroup]
+sweep	install the yaml parser	2026-10-14T11:59:01.3916237Z pyyaml already importable on GitHub Actions 1000327255
+sweep	sweep merge-on-green pull requests	﻿2026-10-14T11:59:01.4057489Z ##[group]Run python3 scripts/merge_on_green.py
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4057999Z ^[[36;1mpython3 scripts/merge_on_green.py^[[0m
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4121894Z shell: /usr/bin/bash -e {0}
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4122235Z env:
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4122542Z   GH_REPO: mastermindx-market-intelligence/macro
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4125799Z   READ_TOKEN: ***
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4126206Z   MERGE_TOKEN: ***
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4126552Z   TRIGGER_HEAD_SHA: 9001ecd9ab0442422e070cce9a60e514af8a68a3
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4126965Z   TRIGGER_CONCLUSION: cancelled
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4127282Z   CURRENT_RUN_ID: 38560422209
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.4127574Z ##[endgroup]
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:01.9310083Z API budget: 15000 of 15000 core API requests available; failure-marker pass.
+sweep	sweep merge-on-green pull requests	2026-10-14T11:59:02.3453173Z merge-on-green lease reconcile: no durable refresh owner; no full sweep dispatched.
+sweep	Post Run actions/checkout@v4	﻿2026-10-14T11:59:02.3731923Z Post job cleanup.
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4578800Z [command]/usr/bin/git version
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4626303Z git version 2.55.0
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4672469Z Temporarily overriding HOME='/home/runner/work/_temp/0faff3e4-b0b7-4447-9a30-19dc06393300' before making global git config changes
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4673965Z Adding repository directory to the temporary git global config as a safe directory
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4678825Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/macro/macro
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4722870Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.4761101Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5112104Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5140866Z http.https://github.com/.extraheader
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5154385Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5192059Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5519325Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+sweep	Post Run actions/checkout@v4	2026-10-14T11:59:02.5562061Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+sweep	Complete job	﻿2026-10-14T11:59:02.6019701Z Cleaning up orphan processes
+sweep	Complete job	2026-10-14T11:59:02.6329010Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

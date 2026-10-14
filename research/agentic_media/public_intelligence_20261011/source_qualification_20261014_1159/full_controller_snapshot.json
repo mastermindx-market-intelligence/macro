@@ -1,0 +1,59 @@
+{
+  "conclusion": "",
+  "event": "workflow_run",
+  "headSha": "a5a5482b1d64b8a064a0355189d90c428660a850",
+  "jobs": [
+    {
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "databaseId": 115839650116,
+      "name": "sweep",
+      "startedAt": "2026-10-14T11:59:57Z",
+      "status": "in_progress",
+      "steps": [
+        {
+          "completedAt": "2026-10-14T11:59:58Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-14T11:59:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-14T12:00:00Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-14T11:59:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-14T12:00:00Z",
+          "conclusion": "success",
+          "name": "install the yaml parser",
+          "number": 3,
+          "startedAt": "2026-10-14T12:00:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "name": "sweep merge-on-green pull requests",
+          "number": 4,
+          "startedAt": "2026-10-14T12:00:00Z",
+          "status": "in_progress"
+        },
+        {
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "name": "Post Run actions/checkout@v4",
+          "number": 8,
+          "startedAt": "0001-01-01T00:00:00Z",
+          "status": "pending"
+        }
+      ],
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38560365547/job/115839650116"
+    }
+  ],
+  "status": "in_progress"
+}

@@ -1,0 +1,47 @@
+{
+  "scope": "Source qualification only, not ingestion or publication.",
+  "sources": [
+    {
+      "url": "https://www.energy.gov/articles/energy-secretary-secures-mid-atlantic-grid-ahead-anticipated-stressed-system-conditions",
+      "publication_date": "2026-10-12",
+      "order_date": "2026-10-12",
+      "application_date": "2026-10-11",
+      "effective_from": "2026-10-13",
+      "effective_through": "2026-10-16",
+      "verdict": "FRESH_LEAD_NOT_ADMITTED",
+      "qualifiers": [
+        "Contingent dispatch to maintain reliability; backup generation is a last resort before or during EEA3.",
+        "National backup-capacity estimate is not PJM available capacity or an observed dispatch.",
+        "Do not confuse this with the separate September17 release using due rather than ahead in its title.",
+        "No qualified listed issuer or relevant first-party receipt set."
+      ]
+    },
+    {
+      "url": "https://www.energy.gov/articles/energy-department-backs-major-grid-expansion-across-eight-states-strengthen-reliability",
+      "publication_date": "2026-10-13",
+      "verdict": "EXISTING_TVA_LEAD_STILL_NOT_ADMITTED",
+      "qualifiers": [
+        "Plans/intention and expected capacity/jobs, not completed funding, construction or operating capacity.",
+        "Final funding, scope, schedules and conditions depend on executed agreements and reviews.",
+        "TVA named; do not infer listed supplier winners."
+      ]
+    }
+  ],
+  "rights": {
+    "url": "https://www.energy.gov/web-policies",
+    "finding": "Government-authored information may be reused with requested DOE attribution; third-party materials and images remain excepted. DOE requests links to current source pages.",
+    "qualification": "Policy identified; item-level Press admission and permitted ingress not established."
+  },
+  "documented_feed_probe": {
+    "url": "http://energy.gov/fe/techlines?view=rss",
+    "observed_redirect": "https://www.energy.gov/fe/techlines?view=rss",
+    "result": "non-retryable web tool fetch error, reported500 after redirect",
+    "retry": false,
+    "body_observed": false
+  },
+  "no_application_change": true,
+  "no_stage_or_provider_generation": true,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": 0
+}
