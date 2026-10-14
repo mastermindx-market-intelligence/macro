@@ -116,14 +116,28 @@ def _blank(value: object) -> bool:
 
 
 def _text_present(value: object) -> bool:
-    """A field the module documents as an id, ref, code, label, owner
+    """FAMILY TEXT RULE v2 (seat ruling).
+
+    A field the module documents as an id, ref, code, label, owner
     reference or other opaque text counts as present ONLY when this helper
-    returns True. Anything else (None, "", whitespace-only, leading or
+    returns True. Anything else (None, ``""``, whitespace-only, leading or
     trailing whitespace, int, float, bool, bytes, list, dict, set, or any
     other object) is ABSENT and maps to the SAME refusal reason the module
     already emits for a blank value of that field.
+
+    A string that begins or ends with whitespace is ABSENT, exactly like a
+    whitespace-only or empty string, so a padded id can never pass as a
+    different valid id. The check uses no normalisation method
+    (``.strip()`` / ``.lower()`` / ``.upper()`` / ``.casefold()`` /
+    ``.replace()``); its only calls are ``isinstance`` and ``.isspace()``,
+    which keeps the family's no-normalisation static scans green.
     """
-    return isinstance(value, str) and value.strip() != "" and value == value.strip()
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _present(fact: Mapping[str, object], key: str) -> bool:
