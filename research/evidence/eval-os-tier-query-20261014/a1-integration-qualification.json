@@ -17,7 +17,21 @@
   "repair": "existing handoff schema metadata; canonical actual-store validation1739records0errors164inheritedwarnings",
   "selection_controls": "2 PASS25.78s; all sixnewinputs select incumbentcodeowner",
   "ci_owner_changes": "eval-os-a1 sixpaths only; prior registry twopath additions preserved; all commands/gates/deps unchanged",
-  "actual_head_tracked_closure": "owed after localcommit",
-  "failed_controls_rerun": "pending before publication",
-  "scope": "local integration qualification in progress; not hosted CI, merge, installed adoption or programme completion"
+  "actual_head_tracked_closure": {
+    "head": "1870efdb15dfa1e5ce22978eb7a0e5e31549db62",
+    "a1": {
+      "paths": 1180,
+      "missing": []
+    },
+    "registry": {
+      "paths": 775,
+      "missing": []
+    },
+    "agentos": {
+      "paths": 44,
+      "missing": []
+    }
+  },
+  "failed_controls_rerun": "15 PASS226.03s; repaired schema consumer checks",
+  "scope": "Local combined regression qualified by709initialpasses +15affectedrepairpasses, existingselection2passes andactualHEADclosure. Newtwo-case tranche separately qualified; finalcontainingHEADhostedCI remainsowed."
 }

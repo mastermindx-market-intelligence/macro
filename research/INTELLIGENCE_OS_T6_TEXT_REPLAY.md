@@ -13,3 +13,11 @@ Before any callback, each case must bind its admitted canonical research documen
 The final affected suite passes96tests with no failures/errors/skips, and an independent scientific review accepted the sources and limits. Injected answer/judge tests prove the runner and fixture plumbing, not model reasoning performance. Output remains internal QA telemetry under the incumbent prohibition on publishing scores, pass rates or validation badges.
 
 This is a two-case tranche, not completion of the original twenty-case / at-least-fifteen-seeded requirement or a reconstruction of actually served historical PIT inputs. Source review, hosted CI coverage, protected delivery, semantic model acceptance and actual consumer use remain distinct. See `research/evidence/eval-os-tier-query-20261014/t6-acceptance.json`.
+
+## Second two-case tranche
+
+Two further supplied-text fixtures contrast an operator-forced directional reading on July11 with detection that was not narrated in the August3 adjudication. The forced case excludes the subsequent crash and distinguishes a promoted process rule from a candidate market rule. The narration case uses observations reported in the August3 document; it assigns no original generation timestamp and admits no directional/rank/membership/threshold change.
+
+Both source documents, IDs and names are registered in the existing bounded guard. Missing metadata still refuses before model defaults; both callbacks remain explicit. Four new CI inputs extend the same code owner. The response/adversarial suite plus four admission controls passes167tests with zero failures/errors/skips. These checks prove plumbing and retained contracts, not semantic model performance.
+
+These two cases and the capex case share a Mag7 episode. Their declared dependence group is descriptive metadata, not a statistical independence mechanism. Four newhistoricaltextfixtures plus the unchanged legacybearcase do not satisfy the original20/15objective or prove historicalPIT. See the t6-next acceptance, red/green and source-review receipts.

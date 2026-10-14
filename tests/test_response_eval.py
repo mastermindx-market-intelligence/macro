@@ -1087,6 +1087,8 @@ def test_nothing_in_the_harness_writes_to_site():
 HISTORICAL_TEXT_CASES = [
     "benchmark_gold_real_rate_2026-08-09.json",
     "benchmark_capex_bind_2026-07-22.json",
+    "benchmark_mag7_forced_override_2026-07-11.json",
+    "benchmark_mag7_narration_2026-08-03.json",
 ]
 
 
