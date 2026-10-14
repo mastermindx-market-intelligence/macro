@@ -4960,9 +4960,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 129, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5642,6 +5642,37 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     In the same run, build_free_content was already at 5,602 against its
     5,600 ceiling on the base. That was reported as inherited, not
     introduced, and is left for a separate heal.
+    2026-10-14 (main-red heal): JOB ceilings on templates/index.html and
+    engine/prophet/plan_book.py are RE-BASED +1 to measurement (136 / 130).
+    Two leadership-rotation jobs landed eleven minutes apart. Each passed
+    contract-delta on its own base, and each took a different probe one job
+    past a full bound. Main has been red on this test since:
+    - ``leadership-rotation-contract`` (#9240, 1b43a9947a4e) rides
+      plan_book.py on the FALLBACK ``engine/**`` claim only;
+    - ``lr-rotation-evidence-modes`` (#9225, 3af7a7be2f29) rides
+      templates/index.html on the FALLBACK ``templates/**`` /
+      ``templates/**/*.html`` claims only.
+    Neither job is ``scope: exclusive``. Each carries weight 4 (the
+    one-suite floor). Measured locally with packing_probe_measurements over
+    the full manifest, inference on. The before point is 9fd0cd7d2ca7
+    (#9104, the parent of #9240), which has no breach. The after point is
+    the heal base 38bcf8d46387, which shows the same rows as dfe3504b96b8:
+        templates/index.html          135 -> 136 jobs, 5,671 -> 5,678 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,472 -> 5,475 weight
+        engine/prophet/plan_book.py   129 -> 130 jobs, 5,434 -> 5,441 weight
+    The newly selected jobs are exactly those two, one per probe, and no job
+    left any probe. The build_free_content weight moved +3 with no change of
+    job set; that comes from unrelated estimator movement, below every
+    bound. JOB ceilings move only to the exact measurements, with no padding,
+    the #8596 shape for a fallback-tier entrant. WEIGHT and PACK ceilings are
+    unmoved: 5,803 / 5,600 / 5,600 and 10 packs; the measurements are 5,678
+    / 5,475 / 5,441 and 10 / 10 / 10. The build_free_content job ceiling
+    stays 134. No suite, registration, assertion or selector is removed or
+    weakened.
+    Curation follow-ons, owned by WS:LEADERSHIP-ROTATION-INTELLIGENCE:
+    leadership-rotation-contract-scope and lr-rotation-evidence-modes-scope.
+    Each job's ``scope: exclusive`` declaration must cover its whole suite
+    closure. Once curated, these two ceilings come back down by one each.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
