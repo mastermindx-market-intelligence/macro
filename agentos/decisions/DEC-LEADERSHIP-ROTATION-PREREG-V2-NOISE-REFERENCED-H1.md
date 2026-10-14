@@ -51,7 +51,7 @@ evidence:
   - "Seat ruling + correction: scratchpad judge/H1_REPAIR_RULING.md (2026-10-14 ~12:5xZ)."
   - "PREREG V2: research/LEADERSHIP_ROTATION_PREREG_V2.md blob 1fcd151cfc4cdeb321789feb50d3fbb127cce056 (PR #9327, head 13e9e5a30cdb0df5c35a91f37100bef73559cf5e)."
   - "Dual pin: scripts/leadership_rotation_study.py assert_protocol_landed; tests/test_leadership_rotation_study.py::test_protocol_guard_requires_both_versions; 43 tests pass (python3 -m pytest tests/test_leadership_rotation_study.py -q)."
-  - "Repair implementation + T12R/T13R re-size/power records: ORCH-REPAIR DRAFT PR on claude/lr-harness-repair-2026-10-14 (in flight at record time; its merge SHA is recorded in the WS record and the T26 report when landed)."
+  - "Repair implementation + T12R/T13R re-size/power records: PR #9380 (claude/lr-harness-repair-2026-10-14, head 258e6b32ba8b01f7b9fd725fd70a4760c6974ab5) MERGED exact-head → squash c55b54dab0561b02b18e29c7350584cf0f3de9bb (2026-10-14T22:17:11Z); T12R SIZED 42/42, T13R H1/H2/H3 NOT_EXECUTABLE at registered margins; V2 §2 falsifier did not fire → V3 not triggered. P1 withheld: DEC:LEADERSHIP-ROTATION-P1-WITHHELD-UNTIL-STATISTICS-REREGISTERED."
 affects:
   - "WS:LEADERSHIP-ROTATION-INTELLIGENCE"
   - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
