@@ -90,3 +90,50 @@ This is a continuation checkpoint, not programme acceptance or a session stop.
 Private evidence is retained under the original root's external-volume evidence
 directory. The source patch contains only synthetic benchmark bodies. The existing
 Research workstream and parent #8438 remain the programme records.
+
+
+## Continuation update — 2026-10-14 03:20 UTC
+
+This dated update supersedes earlier pending statements for the named operations.
+Intelligence source ef8a369a85ba6186c52b3b120e33d091f9567f73 rejects malformed
+analysis text before normalization and preserves the canonical whole-assertion
+support-loss behavior. Root qualification: 366 affected tests and 153 subtests
+passed; both CI curation contracts passed; 2547 trigger closures, zero gaps. The
+32 canonical AST/schema fences remain unchanged.
+
+The fifth actual development call used this exact source once, returned 23 claims,
+and passed canonical grounding plus private latest/version LocalStore replay with
+PARTIAL context retained. Independent review still WITHHOLDS semantic acceptance:
+PDF chart/title intrusions remain in selected original evidence, and several
+inferences are not fully supported by their cited claims. Review SHA256
+fdc13e7987c211f9026a2c736c8bf4f8125a1ddd9e7d15544e6129211588040d.
+No production RIO, held-out score or current-coverage claim follows. Next work is
+separately versioned development extraction qualification and relation-specific
+semantic acceptance, not another prompt-only replay against the same bad body.
+
+The original timing, processed-index and producer-generation Fabric results were
+recovered through the installed historical-validator compatibility path and
+consumed by their actual assigning parents. Original identities remain
+rv-materializer-timing-c420-20261013-01a13304,
+rv-processed-index-c420-20261013-01a13304 and
+rv-generation-01a13301-contract-r1. Delivery and worker completion are proven;
+controller/lease settlement remains UNKNOWN. The incumbent owner confirms no
+current supported settlement/adapter-accept operation for these recovered RV
+receipts. No replacement, ledger restamp or manual release is authorized. The four
+earlier interrupted operations retain their separate frozen recovery refusals.
+
+The M1 source collector's original supervisor was restarted exactly once after
+fresh process/source/storage/DB/profile guards. Old CPU-bound PID27579 was replaced
+by sole PID89695 at 03:07:59 UTC. By 03:19:42, 354 new discovery rows were observed;
+no fresh completed download, vault publication or final typed-auth snapshot had
+yet been proven. This is productive discovery recovery, not restored producer
+freshness. Continue the incumbent first wide-discovery/tick, with no second restart.
+
+Recovered producer timing/concurrency contributions were corrected and qualified
+by their assigning parent: 54 tests passed, including two causal red/green repairs.
+Composite SHA256 a7f6d86d329cd410f24e428c85037fab329446a0b73837a705b8314e3e5d5e5d
+awaits root integration into existing draft #9177 with its generation/read work.
+The existing workflow single-writer change is prepared on that carrier; generation
+and public-projection review are ongoing. Source implementation of the bounded I03
+Brain comparison consumer is commissioned separately using synthetic qualified
+owners; real basis/provenance resolution and two-source acceptance remain open.

@@ -160,3 +160,11 @@ program narrative stays on the carrier.
 
 Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (latest) and
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+
+
+Current dated frontier: the October 14 03:20 UTC continuation update records the
+fifth intelligence canary's semantic refusal, all three recovered original Fabric
+results with unresolved controller/lease state, and resumed M1 discovery without
+fresh publication proof. Root is integrating producer improvements and commissioning
+the bounded Brain comparison consumer; neither source progress nor the old producer
+counters satisfies the required current-generation 95 percent or live-client gates.
