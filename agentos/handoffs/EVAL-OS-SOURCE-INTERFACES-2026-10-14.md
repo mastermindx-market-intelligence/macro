@@ -284,3 +284,13 @@ Final source `fa9fc2d424a9267e4ff8889148c087b67ff07e06` adds one official-releas
 
 
 A1 repair correction at12:45Z: currentmain479 invalidated the priora8d9 proposal. Revised `1b7916353dd4609e2e092e16d466e93ca1597fd1` remains source-only with soleparent05a;22entries/9lists, all309jobs and memberships preserved, merge-treePASS against479. Old proposal remains historical evidence and must not be published.
+
+## Dependency coverage and actual A1 release sequencing — 2026-10-14T14:50Z
+
+The follow-on adds only the two incoming A1 inputs missing from its declared scope: engine/rates_command_basis.py and engine/neuralweb/market_memory_brain_citations.py. All314 job execution definitions/order, every existing path, all limits and runtime code are preserved. Three affected canonical manifest/A1 registration controls pass. This is positive scope widening; the accepted119runtime,1252+7qledger and twoCLI13proof remain bounded to their original sources and are not repeated or relabelled as hosted/current-main acceptance. See research/evidence/eval-os-tier-query-20261014/a1-scope-alignment-20261014/manifest.json for nine original-byte evidence records.
+
+A1's exact failing merge7c with five added dependency paths now has a complete A1 closure. Canonical measurements135/135/129jobs,5684/5502/5445weight and10packs each identify only the intended free-content job-count change134to135. A1's local source26bfb6a0b992 retains existing main's neighboring136/130 limits, all eight suites and every weight/pack/capacity limit. Eighty-three contract-delta and three registration controls passed, with four relevant specification controls passing after constant alignment. Packet-only Fabric review was accepted with explicit corrections, never labelled independent sourcePASS.
+
+The local A1 candidate is UNPUBLISHED and still conflicts in the shared packing literals against observedmain874c8fff. The actual remote1b7916353dd4 merges cleanly with that same main. Therefore the next lawful order is incumbent capacity-admitted base refresh of the existing remote carrier, then application of the retained local source correction to that refreshed carrier, fresh binding checks, incumbent merge and normal production proof. Do not push26b directly or manually merge main to force this order. The14:39census remained12active/cap8; the authoritative register still held PR7551 despite an empty lease-labelled issue list. No new controller/producer/PR, lease edit or capacity bypass was made.
+
+Original experience and lostCLI-review effects remain unresolved. All completion and production flags stayfalse. The existing original-root heartbeat and incumbent controller retain continuation; this handoff is a checkpoint, not programme completion.

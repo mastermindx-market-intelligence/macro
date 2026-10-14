@@ -7522,6 +7522,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_brain_citations.py
+      - engine/rates_command_basis.py
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
