@@ -204,6 +204,7 @@ on:
       # SSR page builder + its render test + the page template.
       - "engine/research_vault/**"
       - "scripts/ingest_research.py"
+      - "tests/test_research_vault_generation_cli.py"
       - "scripts/build_research_vault.py"
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
