@@ -4,9 +4,10 @@ if not re.fullmatch(r"[0-9a-f]{40}",release):
  raise SystemExit("Pass the verified merged release commit as the sole argument")
 from mmx_ancestry import load_proof
 ancestry = load_proof(release)
+expected=json.loads(pathlib.Path(__file__).with_name('mmx-current-expected-hashes.json').read_text())
 payload = """import json,hashlib,pathlib,subprocess,re,datetime
 root=pathlib.Path('/opt/macro')
-files=['scripts/inspect_press_staging.py', 'scripts/run_press.py', 'engine/press/validators.py', 'engine/press/desk_planner.py', 'config/press.yml', 'engine/press/earnings_adapter.py', 'engine/earnings_narrative/story_packets.py', 'engine/earnings_narrative/story_store.py', 'engine/earnings_narrative/admission.py', 'scripts/stage_earnings_story_press.py', 'engine/press/writer.py', 'scripts/publish_earnings_story_packets_r2.py', '.github/workflows/earnings-story-packets.yml', 'engine/press/external_candidate.py', 'engine/press/adjusted_baseline.py', 'engine/whitehouse_feed.py', 'engine/close_pass/massive_close.py', 'scripts/build_whitehouse.py', 'scripts/qualify_press_nvda_baseline.py', '.github/workflows/press-source-qualification.yml', 'research/licenses/MASSIVE_ENTITLEMENT_RECORD.md', 'engine/press/official_feed_candidate.py', 'engine/marketing/breaking_feed.py']
+files=__EXPECTED_SOURCE_FILES__
 pages=['blog/index.html','learn/index.html','tools/calculators/position-size.html']
 def fingerprint(p):
  if not p.is_file():return {'exists':False}
@@ -18,11 +19,11 @@ data['releaseCommit']='__RELEASE_SHA__'
 data['containsRelease']=subprocess.run(['git','-C',str(root),'merge-base','--is-ancestor','__RELEASE_SHA__','HEAD'],capture_output=True).returncode==0
 print(json.dumps(data))
 """
-payload=payload.replace('__RELEASE_SHA__',release)
+payload=payload.replace('__RELEASE_SHA__',release).replace('__EXPECTED_SOURCE_FILES__',json.dumps(sorted(expected)))
 cmd=['ssh','-i',str(pathlib.Path.home()/'.ssh/macro_dashboard_deploy_v2'),'-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','ConnectTimeout=10','root@146.190.142.17','python3 -']
 p=subprocess.run(cmd,input=payload,text=True,capture_output=True,timeout=45)
 if p.returncode:raise SystemExit('SSH check failed: '+p.stderr[:1500])
-data=json.loads(p.stdout);expected=json.loads(pathlib.Path(__file__).with_name('mmx-current-expected-hashes.json').read_text());pages=json.loads(pathlib.Path(__file__).with_name('mmx-current-expected-pages.json').read_text())
+data=json.loads(p.stdout);pages=json.loads(pathlib.Path(__file__).with_name('mmx-current-expected-pages.json').read_text())
 data['sourceMatch']={f:v.get('sha256')==expected[f] for f,v in data['source'].items()}
 data['siteMatch']={f:v.get('sha256')==pages[f]['sha256'] for f,v in data['site'].items()}
 data['servedMatch']={f:v.get('sha256')==pages[f]['sha256'] for f,v in data['served'].items()}
