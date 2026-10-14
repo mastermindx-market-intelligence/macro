@@ -6572,10 +6572,12 @@ jobs:
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
+      - "tests/test_fif_se_receipts.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
       - "tests/tools/fif_p2_evidence_capture.py"
+      - "tests/tools/fif_se_receipts.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
@@ -6621,6 +6623,7 @@ jobs:
           python -m pytest
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
+          tests/test_fif_se_receipts.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -28357,6 +28360,9 @@ jobs:
       # T03 economic fact rows. The suite reads the synthetic cell fixture.
       - "tests/fixtures/mining_economic_inputs/parenthesized_cell.json"
       - "tests/test_mining_economic_inputs.py"
+      # T07 evidence-drawer review pin and date-only cutoff. Closure of
+      # tests/test_mining_updates.py adds no path this job does not already list.
+      - "tests/test_mining_updates.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28369,7 +28375,7 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
