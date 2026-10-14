@@ -1,5 +1,6 @@
 """Tests for engine/rates_command_basis.py (B0 seat ruling para-8)."""
 
+import ast
 import json
 from datetime import date
 from pathlib import Path
@@ -845,3 +846,419 @@ class TestB0CutoffLawRepair:
         )
         assert self._q("2026-10-14", "2026-10-14").value_state == "present"
         assert self._q("2026-10", "2026-10").value_state == "present"
+
+
+def test_cpi_vs_breakeven_refuses_even_when_reference_end_matches():
+    cpi = _obs(value=0.2)  # reference_end 2026-09-30 from the CPI meta defaults
+    forged = _obs(
+        value=2.25,
+        subject="T10YIE",
+        unit="pct_yoy",
+        target="inflation_compensation",
+        basket_or_index=NA,
+        tenor="10y",
+        reference_start="2026-10-13",
+        reference_end="2026-09-30",  # forged EQUAL to the CPI operand's
+        source="fred:T10YIE",
+    )
+    result = compare_qualified(cpi, forged, RULES["cpi_month_vs_breakeven_10y.v1"])
+    assert result.status == "not_comparable"
+    assert result.reason == "basis_mismatch:reference_end"
+    assert result.difference is None
+    assert result.range is None
+    honest = _obs(
+        value=2.25,
+        subject="T10YIE",
+        unit="pct_yoy",
+        target="inflation_compensation",
+        basket_or_index=NA,
+        tenor="10y",
+        reference_start="2026-10-13",
+        reference_end="2036-10-15",
+        source="fred:T10YIE",
+    )
+    honest_result = compare_qualified(cpi, honest, RULES["cpi_month_vs_breakeven_10y.v1"])
+    assert honest_result.status == "not_comparable"
+    assert honest_result.reason == "basis_mismatch:reference_end"
+
+
+def test_month_end_effective_date_is_inside_the_month():
+    result = solve_reference_average(
+        (_zq_obs(value=134 / 30),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-30",), pre_change_rate=4.50,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert abs(result.identified["end_rate"] - 3.50) < 1e-6
+    assert "effective_date=2026-09-30" in result.assumptions_used
+    assert "no_intra_month_change" not in result.assumptions_used
+    assert result.identified["segments"][-1][0] == "2026-09-30"
+    # control: a date outside the month keeps the non-meeting branch
+    outside = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-10-01",)),
+    )
+    assert outside.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert "no_intra_month_change" in outside.assumptions_used
+
+
+def test_two_dates_last_on_month_end_cover_the_month():
+    result = solve_reference_average(
+        (_zq_obs(value=4.375),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15", "2026-09-30"),
+            pre_change_rate=4.50, rate_step_bp=25,
+        ),
+    )
+    assert result.status is PathStatus.FEASIBLE_ALTERNATIVES
+    returned = list(result.alternatives) + (
+        [result.identified] if result.identified else []
+    )
+    assert returned
+    for path in returned:
+        segments = path["segments"]
+        lengths = [
+            (date.fromisoformat(seg[1]) - date.fromisoformat(seg[0])).days
+            + (1 if i == len(segments) - 1 else 0)
+            for i, seg in enumerate(segments)
+        ]
+        assert sum(lengths) == 30  # 14 + 15 + the month-end day itself
+        assert segments[-1][0] == "2026-09-30"
+    assert abs(returned[0]["end_rate"] - 4.50) < 1e-9
+
+
+def test_grid_step_recorded_in_assumptions():
+    supplied = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",), rate_step_bp=25,
+        ),
+    )
+    assert "rate_step_bp=25" in supplied.assumptions_used
+    assert "rate_step_defaulted" not in supplied.assumptions_used
+    assert supplied.status.value == "inconsistent"  # status observed at lane base
+    defaulted = solve_reference_average(
+        (_zq_obs(value=4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-09-15",)),
+    )
+    assert defaulted.status.value == "missing_inputs"
+    assert defaulted.missing == ("pre_change_rate",)
+    assert "rate_step_unsupplied" in defaulted.assumptions_used
+    assert "rate_step_defaulted" not in defaulted.assumptions_used
+
+
+def test_module_is_pure_ast():
+    tree = ast.parse(MODULE_PATH.read_text(), filename=str(MODULE_PATH))
+    allowed_roots = {
+        "__future__", "dataclasses", "datetime", "enum", "hashlib", "json", "typing",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] in allowed_roots, alias.name
+        elif isinstance(node, ast.ImportFrom):
+            assert (node.module or "").split(".")[0] in allowed_roots, node.module
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                assert node.func.id not in ("open", "eval", "exec", "__import__"), node.func.id
+        elif isinstance(node, ast.Attribute):
+            assert node.attr not in ("now", "utcnow", "today", "system", "popen"), node.attr
+
+
+def _realised_assumptions(**over):
+    base = dict(
+        month_start="2026-09-01",
+        month_end="2026-09-30",
+        effective_dates=("2026-09-16",),
+        rate_step_bp=50.0,
+    )
+    base.update(over)
+    return PathAssumptions(**base)
+
+
+def test_realised_pre_rate_counts_days_up_to_the_effective_date():
+    # R1/R2/R3: a realised average over any pre-change prefix IS the pre rate
+    # on the whole pre segment [month_start, eff). ZQ 4.375 is the
+    # truth-weighted average of 15d @ 4.50 + 15d @ 4.25, so the identified
+    # end rate must be 4.25 whatever prefix the realised window covers.
+    for through, tag in (
+        (None, None),
+        ("2026-09-15", "2026-09-15"),
+        ("2026-09-10", "2026-09-10"),
+    ):
+        result = solve_reference_average(
+            (_zq_obs(4.375),),
+            _realised_assumptions(realised_through=through, realised_average=4.50),
+        )
+        assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+        assert abs(result.identified["end_rate"] - 4.25) < 1e-9
+        assert "pre_change_rate_source=realised_average" in result.assumptions_used
+        if tag is None:
+            assert not any(
+                a.startswith("realised_through=") for a in result.assumptions_used
+            )
+        else:
+            assert "realised_through=%s" % tag in result.assumptions_used
+
+
+def test_realised_pre_rate_with_month_end_effective_date():
+    # R4: an effective date on the month end still leaves a one-day post
+    # segment; the old d_post <= 0 fallback returned the average itself.
+    obs_value = (4.50 * 29 + 3.50) / 30
+    result = solve_reference_average(
+        (_zq_obs(obs_value),),
+        _realised_assumptions(effective_dates=("2026-09-30",), realised_average=4.50),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert abs(result.identified["end_rate"] - 3.50) < 1e-9
+    assert result.identified["segments"][-1][0] == "2026-09-30"
+    assert "no_intra_month_change" not in result.assumptions_used
+
+
+def test_realised_window_reaching_the_effective_date_is_not_a_pre_rate():
+    # A realised window that reaches or passes the effective date carries no
+    # pre-change information: the input falls back to the unknown-pre-rate
+    # grid and is tagged unusable.
+    fields = [
+        f for f in PathIdentification.__dataclass_fields__ if f != "assumptions_used"
+    ]
+    without = solve_reference_average((_zq_obs(4.375),), _realised_assumptions())
+    for through in ("2026-09-16", "2026-09-20"):
+        with_realised = solve_reference_average(
+            (_zq_obs(4.375),),
+            _realised_assumptions(realised_through=through, realised_average=4.50),
+        )
+        for field in fields:
+            assert getattr(with_realised, field) == getattr(without, field), field
+        assert "realised_average_unusable_as_pre_rate" in with_realised.assumptions_used
+
+
+def test_partial_realised_average_is_not_a_monthly_average():
+    # F7a/F7b: a realised average over part of the month is not the month's
+    # average -- with no present observation the result is missing_inputs,
+    # never an identified path (and never an identified "no change").
+    cases = (
+        _realised_assumptions(realised_through="2026-09-15", realised_average=4.50),
+        _realised_assumptions(
+            effective_dates=("2026-10-28",),
+            realised_through="2026-09-15",
+            realised_average=4.50,
+        ),
+        _realised_assumptions(realised_through=None, realised_average=4.50),
+    )
+    for assumptions in cases:
+        result = solve_reference_average((), assumptions)
+        assert result.status is PathStatus.MISSING_INPUTS
+        assert result.missing == ("monthly_average",)
+        assert result.identified is None
+
+
+def test_full_month_realised_average_stands_in_for_the_monthly_average():
+    # Only full-month coverage lets the realised average stand in for the
+    # monthly average, and the stand-in is recorded in the assumptions.
+    result = solve_reference_average(
+        (),
+        _realised_assumptions(
+            effective_dates=("2026-10-28",),
+            realised_through="2026-09-30",
+            realised_average=4.50,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert result.identified["end_rate"] == pytest.approx(4.50)
+    assert "monthly_average_source=realised_average" in result.assumptions_used
+    assert "no_intra_month_change" in result.assumptions_used
+
+
+def test_single_date_unknown_pre_rate_without_step_is_missing_inputs():
+    # F3: with no pre-change rate and no supplied step the solver returns
+    # missing_inputs; it may never mint a path from a default 50 bp grid.
+    result = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", effective_dates=("2026-09-15",)),
+    )
+    assert result.status.value == "missing_inputs"
+    assert result.missing == ("pre_change_rate",)
+    assert result.identified is None
+    assert result.alternatives == ()
+    assert result.end_rate_range is None
+    assert "rate_step_unsupplied" in result.assumptions_used
+    assert not any(t.startswith("rate_step_bp=") for t in result.assumptions_used)
+    # a realised average unusable as the pre rate is no better
+    unusable = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",),
+            realised_average=4.50, realised_through="2026-09-20",
+        ),
+    )
+    assert unusable.status.value == "missing_inputs"
+    assert unusable.missing == ("pre_change_rate",)
+    assert "realised_average_unusable_as_pre_rate" in unusable.assumptions_used
+    # control: with the step supplied the grid still enumerates
+    supplied = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-15",), rate_step_bp=25,
+        ),
+    )
+    assert supplied.status.value != "missing_inputs"
+    assert "rate_step_bp=25" in supplied.assumptions_used
+
+
+def test_grid_without_step_never_mints_paths():
+    # F3: every grid branch without a usable step is missing_inputs and
+    # never enumerates candidate end rates.
+    cases = []
+    no_dates = solve_reference_average(
+        (_zq_obs(4.25),), PathAssumptions("2026-09-01", "2026-09-30"),
+    )
+    assert no_dates.status.value == "missing_inputs"
+    assert no_dates.missing == ("rate_step_bp",)
+    cases.append(no_dates)
+    two_dates = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions(
+            "2026-09-01", "2026-09-30",
+            effective_dates=("2026-09-11", "2026-09-21"),
+        ),
+    )
+    assert two_dates.status.value == "missing_inputs"
+    assert two_dates.missing == ("rate_step_bp",)
+    cases.append(two_dates)
+    for bad_step in (0, -25, float("nan")):
+        invalid = solve_reference_average(
+            (_zq_obs(4.25),),
+            PathAssumptions(
+                "2026-09-01", "2026-09-30",
+                effective_dates=("2026-09-15",), rate_step_bp=bad_step,
+            ),
+        )
+        assert invalid.status.value == "missing_inputs"
+        assert invalid.missing == ("pre_change_rate",)
+        cases.append(invalid)
+    for case in cases:
+        assert case.alternatives == ()
+        assert "rate_step_defaulted" not in case.assumptions_used
+    # control: the canonical witness input with an explicit step still
+    # enumerates feasible alternatives
+    canonical = solve_reference_average(
+        (_zq_obs(4.25),),
+        PathAssumptions("2026-09-01", "2026-09-30", rate_step_bp=50.0),
+    )
+    assert canonical.status.value == "feasible_alternatives"
+
+
+def test_unknown_evidence_time_is_a_visible_limitation():
+    # FQ2: an unknown evidence time stays admitted but is always carried as
+    # a visible limitation; a refused record gets neither tag.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+    )
+    cutoff = "2026-10-14T00:00+00:00"
+    unstamped = qualify_observation(4.25, meta, cutoff)
+    assert unstamped.value_state == "present"
+    assert unstamped.value == pytest.approx(4.25)
+    assert "evidence_time_unknown" in unstamped.limitations
+    only_observation = qualify_observation(
+        4.25, dict(meta, observation_time="2026-10-01T08:30"), cutoff
+    )
+    assert "first_public_evidence_unknown" in only_observation.limitations
+    assert "evidence_time_unknown" not in only_observation.limitations
+    stamp = "2026-10-01T08:30"
+    stamped = qualify_observation(
+        4.25,
+        dict(meta, observation_time=stamp, first_public_evidence=stamp),
+        cutoff,
+    )
+    assert "evidence_time_unknown" not in stamped.limitations
+    assert "first_public_evidence_unknown" not in stamped.limitations
+    late = "2026-10-20T09:00"
+    refused = qualify_observation(
+        4.25,
+        dict(meta, observation_time=late, first_public_evidence=late),
+        cutoff,
+    )
+    assert refused.value_state == "refused"
+    assert "after_cutoff" in refused.limitations
+    assert "evidence_time_unknown" not in refused.limitations
+    assert "first_public_evidence_unknown" not in refused.limitations
+
+
+def test_realised_pre_rate_with_unknown_window_is_tagged():
+    # V1: a realised average used as the pre-change rate with no known
+    # window is tagged; a dated window is recorded as before.
+    zq = (4.50 * 15 + 4.00 * 15) / 30
+    unknown = solve_reference_average(
+        (_zq_obs(zq),),
+        _realised_assumptions(realised_average=4.50, realised_through=None),
+    )
+    assert unknown.status.value == "identified_conditional"
+    assert "realised_through_unknown" in unknown.assumptions_used
+    known = solve_reference_average(
+        (_zq_obs(zq),),
+        _realised_assumptions(realised_average=4.50, realised_through="2026-09-15"),
+    )
+    assert "realised_through_unknown" not in known.assumptions_used
+
+
+def test_string_limitation_is_one_entry():
+    # N1: a metadata limitations string is one entry, not split characters.
+    obs = qualify_observation(
+        4.25,
+        dict(
+            evidence_class="market_implied_expectation",
+            unit="pct_ann_rate",
+            subject="ZQX26",
+            target="effr_monthly_average",
+            observation_time="2026-10-01T08:30",
+            first_public_evidence="2026-10-01T08:30",
+            limitations="extra note",
+        ),
+        "2026-10-14T00:00",
+    )
+    assert obs.limitations == ("extra note",)
+
+
+def test_list_limitations_with_unknown_evidence_time_is_tagged():
+    # A list-valued limitations sequence is coerced to a tuple before the
+    # FQ2 tag append, so a list input can never crash the qualification.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+        limitations=["a", "b"],
+    )
+    cutoff = "2026-10-14T00:00+00:00"
+    unstamped = qualify_observation(4.25, meta, cutoff)
+    assert unstamped.value_state == "present"
+    assert unstamped.limitations == ("a", "b", "evidence_time_unknown")
+    only_observation = qualify_observation(
+        4.25, dict(meta, observation_time="2026-10-01T08:30"), cutoff
+    )
+    assert only_observation.limitations == ("a", "b", "first_public_evidence_unknown")
+
+
+def test_unknown_evidence_time_tag_survives_to_dict():
+    # The FQ2 tag must reach every consumer payload (T0 board rows, C0
+    # to_dict call), not only the dataclass; a round trip keeps the tag.
+    meta = dict(
+        evidence_class="market_implied_expectation",
+        unit="pct_ann_rate",
+        subject="ZQX26",
+        target="effr_monthly_average",
+    )
+    unstamped = qualify_observation(4.25, meta, "2026-10-14T00:00+00:00")
+    payload = unstamped.to_dict()
+    assert "evidence_time_unknown" in payload["limitations"]
+    assert "evidence_time_unknown" in QualifiedObservation.from_dict(payload).limitations
