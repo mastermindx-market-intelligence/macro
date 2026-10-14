@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T07:24:31.936154+00:00",
-  "count": 2879,
+  "generated_at": "2026-10-14T07:39:32.958085+00:00",
+  "count": 2880,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -247,6 +247,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 54,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oaxnrqnwjao-dd397c",
+      "title": "Orsted A S (ORSTED.CO) Downgrading to Neutral",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:45:04Z",
+      "summary_points": [
+        "Sovereign Risk & Earnings Miss: Rising EU/US sovereign rates (+50-65 bp since August) and underwhelming Q3 results driving earnings revisions, invalidating prior bullish thesis on US offshore wind policy.",
+        "EBITDA Growth Deceleration: Actual 39.7% EBITDA growth (12/25) vs. projected 10.2% (12/26E), signaling operational slowdown and consensus estimate downgrades (-7% by 2030E).",
+        "Cash Flow Erosion: Projected net cash flow plunging from 29,921.0 (12/26E) to 16,338.4 (12/28E), indicating severe liquidity risk despite historical strength.",
+        "Valuation Discount Under Pressure: Trading at double-digit discount to peers (2026E EV/EBITDA: 8.9x vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
