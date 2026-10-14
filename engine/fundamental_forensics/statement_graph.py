@@ -639,8 +639,8 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
 
     Origin slots keep text and facts. Colspan continuations are empty placeholders so
     spacer groups (the AAPL pattern) do not duplicate dates or facts. A label rowspan
-    carries its text down the occupied rows with ``rowspan_carry``. A row narrower
-    than the grid gets fact-free ``edge_pad`` slots on its right edge only. Overlap,
+    carries its text down the occupied rows with ``rowspan_carry``. A fact-free row
+    narrower than the grid gets ``edge_pad`` slots on its right edge only. Overlap,
     a span past the captured table, a span overflow, or an interior hole after
     expansion is ``displayed statement layout unsupported``.
     """
@@ -728,11 +728,14 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         # row with no occupied slot at all, k is None) is still unsupported;
         # missing slots from k to the table's right edge belong to a banner row
         # narrower than the body (the GOOGL and SNOW income shape) and are
-        # padded fact-free so the row expands onto the body's grid.
+        # padded fact-free so the row expands onto the body's grid. Only a
+        # fact-free row is padded: a narrow row carrying a fact would bind it to
+        # whichever column its left-packed position happens to land on.
         k = max(row_map) + 1 if row_map else None
+        row_has_facts = any(slot.get("facts") for slot in row_map.values())
         for column in range(max_col):
             cell = row_map.get(column)
-            if cell is None and (k is None or column < k):
+            if cell is None and (k is None or column < k or row_has_facts):
                 raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
             if cell is None:
                 cell = _grid_slot(
@@ -773,6 +776,7 @@ class _StatementTableParser(HTMLParser):
         self._table_depth = 0
         self._capturing = False
         self._seen_title = False
+        self._discarded = False
         self._ended = False
         self._in_row = False
         self._in_cell = False
@@ -786,16 +790,43 @@ class _StatementTableParser(HTMLParser):
         self._grid_finalized = False
 
     def _title_hit(self, text: str) -> str | None:
-        """The first declared title present in ``text``, or None."""
+        """The first declared title present in ``text``, or None.
+
+        After a factless capture has been discarded, a title only re-arms the
+        capture when ``text`` is the title itself: a narrative sentence or a
+        note row that merely names the statement no longer qualifies.
+        """
         if self._folded_titles is None:
+            stripped = re.sub(r"\s+", " ", text).strip()
             for candidate in self._titles:
-                if candidate and candidate in text:
+                if not candidate:
+                    continue
+                if self._discarded:
+                    if stripped == candidate.strip():
+                        return candidate
+                elif candidate in text:
                     return candidate
             return None
         normalized = _search_normalize(text)
         for candidate, folded_candidate in zip(self._titles, self._folded_titles):
-            if folded_candidate and folded_candidate in normalized:
+            if not folded_candidate:
+                continue
+            if self._discarded:
+                if normalized == folded_candidate:
+                    return candidate
+            elif folded_candidate in normalized:
                 return candidate
+        return None
+
+    def _row_title_hit(self, cells: list[dict[str, Any]]) -> str | None:
+        """Title hit for a finished row: the joined row text, or after a
+        discard, any single cell whose whole text is the title."""
+        if not self._discarded:
+            return self._title_hit(" ".join(cell["text"] for cell in cells))
+        for cell in cells:
+            hit = self._title_hit(cell["text"])
+            if hit is not None:
+                return hit
         return None
 
     def _finalize_grid(self) -> None:
@@ -815,6 +846,7 @@ class _StatementTableParser(HTMLParser):
         self.chrome_row_indices = set()
         self._capturing = False
         self._seen_title = False
+        self._discarded = True
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self._ended:
@@ -891,7 +923,7 @@ class _StatementTableParser(HTMLParser):
             self._in_row = False
             if self._row_cells:
                 joined = " ".join(cell["text"] for cell in self._row_cells)
-                hit = self._title_hit(joined)
+                hit = self._row_title_hit(self._row_cells)
                 if hit is not None:
                     self._seen_title = True
                     self._capturing = True

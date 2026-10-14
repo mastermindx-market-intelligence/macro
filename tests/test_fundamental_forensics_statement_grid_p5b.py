@@ -401,3 +401,174 @@ def test_r6_row_with_values_equal_to_dated_columns_still_parses() -> None:
         "syn-p5b-r6e-2025",
         "syn-p5b-r6e-2024",
     ]
+
+
+# --- R1 repair: only a fact-free row is padded ---
+
+
+def _ix(context: str, fact_id: str, value: str = "5") -> str:
+    return (
+        f'<ix:nonFraction name="us-gaap:Revenues" contextRef="{context}" id="{fact_id}" '
+        f'unitRef="usd" decimals="-6" scale="6">{value}</ix:nonFraction>'
+    )
+
+
+def test_r1_short_fact_row_after_colspan_dash_is_refused() -> None:
+    # The FY2024 fact sits in the 2024 column group but would land on the 2025
+    # column if the short row were padded on its right edge.
+    html = f"""
+    <html><body>
+    <div>SYNTHETIC STATEMENT OF OPERATIONS</div>
+    <table>
+    <tr><td>Line</td><td></td><td>December 31, 2025</td><td></td><td>December 31, 2024</td></tr>
+    <tr><td>Revenue</td><td>$</td><td>{_ix("c2025", "syn-p5b-r1d-2025", "10")}</td><td>$</td><td>{_ix("c2024", "syn-p5b-r1d-2024", "9")}</td></tr>
+    <tr><td>Legacy charge</td><td colspan="2">—</td><td>{_ix("c2024", "syn-p5b-r1d-legacy")}</td></tr>
+    </table>
+    </body></html>
+    """
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement layout unsupported: ragged grid at row 2 column 4$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_r1_short_prior_only_fact_row_is_refused() -> None:
+    html = f"""
+    <html><body>
+    <div>SYNTHETIC STATEMENT OF OPERATIONS</div>
+    <table>
+    <tr><td>Line</td><td>December 31, 2025</td><td>December 31, 2024</td></tr>
+    <tr><td>Revenue</td><td>{_ix("c2025", "syn-p5b-r1p-2025", "10")}</td><td>{_ix("c2024", "syn-p5b-r1p-2024", "9")}</td></tr>
+    <tr><td>Legacy charge</td><td>{_ix("c2024", "syn-p5b-r1p-legacy")}</td></tr>
+    </table>
+    </body></html>
+    """
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement layout unsupported: ragged grid at row 2 column 2$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_r1_fact_bearing_short_row_is_refused_by_the_grid() -> None:
+    narrow = dict(_cell("10"), facts=[{"fact_id": "syn-p5b-r1g"}])
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement layout unsupported: ragged grid at row 1 column 2$",
+    ):
+        _expand_displayed_statement_grid(
+            [
+                [_cell("Line"), _cell("March 31, 2025"), _cell("March 31, 2024")],
+                [_cell("Revenue"), narrow],
+            ]
+        )
+
+
+def test_r1_trailing_text_cell_beyond_dated_columns_binds_nothing() -> None:
+    # The original stray-cell shape: the narrow row is the fact-free date
+    # header, so it is padded; the stray text carries no fact and both values
+    # stay on their own dates.
+    html = f"""
+    <html><body>
+    <div>SYNTHETIC STATEMENT OF OPERATIONS</div>
+    <table>
+    <tr><td>Line</td><td>March 31, 2025</td><td>March 31, 2024</td></tr>
+    <tr><td>Revenue</td><td>{_ix("c2025", "syn-p5b-r1s-2025", "10")}</td><td>{_ix("c2024", "syn-p5b-r1s-2024", "9")}</td><td>stray extra cell</td></tr>
+    </table>
+    </body></html>
+    """
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-03-31", "2024-03-31"]
+    assert [item["fact_id"] for item in parsed["rows"][0]["value_facts"]] == [
+        "syn-p5b-r1s-2025",
+        "syn-p5b-r1s-2024",
+    ]
+
+
+# --- R3 repair: after a discard only the title itself re-arms the capture ---
+
+_R3_REAL_TABLE = f"""
+    <table>
+    <tr><td>Line</td><td>December 31, 2025</td><td>December 31, 2024</td></tr>
+    <tr><td>Revenue</td><td>{_ix("c2025", "syn-p5b-r3x-2025", "10")}</td><td>{_ix("c2024", "syn-p5b-r3x-2024", "9")}</td></tr>
+    </table>
+"""
+
+_R3_NOTE_TABLE = f"""
+    <p>Note 7. Lease cost is included in the SYNTHETIC STATEMENT OF OPERATIONS as follows:</p>
+    <table>
+    <tr><td></td><td>December 31, 2025</td><td>December 31, 2024</td></tr>
+    <tr><td>Lease cost</td><td>{_ix("c2025", "syn-p5b-r3x-lease-2025", "3")}</td><td>{_ix("c2024", "syn-p5b-r3x-lease-2024", "2")}</td></tr>
+    </table>
+"""
+
+
+def test_r3_span_split_title_after_discard_does_not_fall_to_a_note_table() -> None:
+    html = f"""
+    <html><body>
+    <table><tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>45</td></tr></table>
+    <p><span>SYNTHETIC STATEMENT</span> <span>OF OPERATIONS</span></p>
+    {_R3_REAL_TABLE}
+    {_R3_NOTE_TABLE}
+    </body></html>
+    """
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement table is absent: SYNTHETIC STATEMENT OF OPERATIONS$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_r3_split_header_table_after_discard_does_not_fall_to_a_note_table() -> None:
+    html = f"""
+    <html><body>
+    <table><tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>45</td></tr></table>
+    <p>SYNTHETIC STATEMENT OF OPERATIONS</p>
+    <table><tr><td>Line</td><td>December 31, 2025</td><td>December 31, 2024</td></tr></table>
+    <table>
+    <tr><td>Revenue</td><td>{_ix("c2025", "syn-p5b-r3h-2025", "10")}</td><td>{_ix("c2024", "syn-p5b-r3h-2024", "9")}</td></tr>
+    </table>
+    {_R3_NOTE_TABLE}
+    </body></html>
+    """
+    with pytest.raises(
+        StatementGraphError,
+        match=r"^displayed statement table is absent: SYNTHETIC STATEMENT OF OPERATIONS$",
+    ):
+        parse_displayed_primary_table(html, title=TITLE)
+
+
+def test_r3_whole_title_paragraph_after_discard_captures_the_real_table() -> None:
+    html = f"""
+    <html><body>
+    <table><tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>45</td></tr></table>
+    <p>SYNTHETIC STATEMENT OF OPERATIONS</p>
+    {_R3_REAL_TABLE}
+    {_R3_NOTE_TABLE}
+    </body></html>
+    """
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert [row["label"] for row in parsed["rows"]] == ["Revenue"]
+    assert [item["fact_id"] for item in parsed["rows"][0]["value_facts"]] == [
+        "syn-p5b-r3x-2025",
+        "syn-p5b-r3x-2024",
+    ]
+
+
+def test_r3_list_title_after_discard_needs_the_whole_chunk() -> None:
+    html = f"""
+    <html><body>
+    <table><tr><td>Synthetic Statement of Operations</td><td>45</td></tr></table>
+    <p>The synthetic statement of operations is presented below.</p>
+    {_R3_REAL_TABLE}
+    </body></html>
+    """
+    with pytest.raises(StatementGraphError, match=r"^displayed statement table is absent"):
+        parse_displayed_primary_table(html, title=["synthetic statement of operations"])
+    whole = html.replace(
+        "<p>The synthetic statement of operations is presented below.</p>",
+        "<p>  SYNTHETIC   Statement of Operations </p>",
+    )
+    parsed = parse_displayed_primary_table(whole, title=["synthetic statement of operations"])
+    assert [row["label"] for row in parsed["rows"]] == ["Revenue"]
