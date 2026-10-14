@@ -498,3 +498,96 @@ def test_legacy_manifest_without_recent_key_keeps_full_history_behaviour():
     assert any("R2 COVERAGE HOLE" in f for f in r["fail_reasons"])
     rec = r["anchors"]["massive_stock_day/coverage"]
     assert "max_missing_run_weekdays_recent" not in rec
+
+# --- NYSE-session tip SLA for the existing Massive daily source -------------
+# The published file-list manifest can be freshly re-PUT while its seven
+# underlying per-ticker stores still end on Friday. The ordinary 6-calendar-
+# day age and interior-hole checks do not see a missing Monday+Tuesday tip.
+def _massive_tip_at(now: datetime, latest: str, *, store: str = "massive_stock_day") -> dict:
+    published = {
+        "dir": store, "count": 21712, "files": ["AAPL.parquet", "NVDA.parquet"],
+        "store": {
+            "store": store, "latest_date": latest,
+            "coverage": {"max_missing_run_weekdays": 0,
+                         "max_missing_run_weekdays_recent": 0,
+                         "recent_window_bdays": 90},
+            "anchor": {"ticker": "SPY", "last": latest},
+        },
+    }
+    source = {
+        f"{store}/_manifest.json": (
+            200, {"Last-Modified": format_datetime(now - timedelta(hours=4), usegmt=True)},
+            json.dumps(published).encode(),
+        ),
+    }
+    return probe(now, base=BASE, anchors=[store], asof_key=None,
+                 fetch=_fetcher(source), retries=0)
+
+
+def test_massive_missing_two_completed_sessions_fails_even_when_manifest_is_fresh():
+    # Oct 12 2026 (Columbus Day) IS an NYSE session; Tue Oct 13 also closes.
+    now = datetime(2026, 10, 14, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09")
+    assert r["ok"] is False
+    assert not any("R2 CONTENT STALE" in s for s in r["fail_reasons"])
+    assert any("R2 SESSION TIP STALE: massive_stock_day" in s for s in r["fail_reasons"])
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 2
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-10-13"
+
+
+def test_massive_one_completed_session_grace_tolerates_nightly_delivery():
+    # Oct 13 at 10:30 ET: Oct 12 is completed, Oct 13 is not yet closed.
+    now = datetime(2026, 10, 13, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09")
+    assert r["ok"] is True
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 1
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-10-12"
+
+
+def test_massive_exchange_calendar_handles_thanksgiving_and_weekend():
+    # Thanksgiving Thu Nov 26 is closed; Fri Nov 27 was a shortened NYSE session.
+    # By Mon Nov 30 morning, a source on Wed Nov 25 is only one session behind.
+    now = datetime(2026, 11, 30, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-11-25")
+    assert r["ok"] is True
+    assert r["anchors"]["massive_stock_day/coverage"]["missing_completed_sessions"] == 1
+    assert r["anchors"]["massive_stock_day/coverage"]["expected_last_session"] == "2026-11-27"
+
+
+def test_massive_tip_rule_is_not_applied_to_other_data_dir_calendars():
+    # HK and other markets retain their own freshness rules; the US NYSE rule
+    # must not become a second calendar owner for non-US stores.
+    now = datetime(2026, 10, 14, 14, 30, tzinfo=timezone.utc)
+    r = _massive_tip_at(now, "2026-10-09", store="hk_stocks_ext")
+    assert r["ok"] is True
+    assert "missing_completed_sessions" not in r["anchors"]["hk_stocks_ext/coverage"]
+
+def test_massive_tip_session_grace_can_be_tightened_by_source_owner():
+    now = datetime(2026, 10, 13, 14, 30, tzinfo=timezone.utc)
+    published = {
+        "dir": "massive_stock_day", "store": {
+            "store": "massive_stock_day", "latest_date": "2026-10-09",
+            "coverage": {"max_missing_run_weekdays_recent": 0},
+            "anchor": {"ticker": "SPY", "last": "2026-10-09"},
+        },
+    }
+    objects = {
+        "massive_stock_day/_manifest.json": (
+            200, {"Last-Modified": format_datetime(now - timedelta(hours=4), usegmt=True)},
+            json.dumps(published).encode(),
+        ),
+    }
+    r = probe(now, base=BASE, anchors=["massive_stock_day"], asof_key=None,
+              massive_tip_max_missing_sessions=0, fetch=_fetcher(objects), retries=0)
+    assert r["ok"] is False
+    assert r["anchors"]["massive_stock_day/coverage"]["max_missing_completed_sessions"] == 0
+    assert any("R2 SESSION TIP STALE" in f for f in r["fail_reasons"])
+
+
+def test_massive_daily_tip_check_remains_active_in_config():
+    # audit_r2.DEFAULT_ANCHORS is intentionally not the heartbeat source of
+    # truth. Config replaces that list, so pin the actual production anchor.
+    from lib import config
+    from scripts.audit_r2 import COVERAGE_ANCHORS
+    assert "massive_stock_day" in COVERAGE_ANCHORS
+    assert "massive_stock_day" in config.load()["r2_data_plane"]["anchors"]

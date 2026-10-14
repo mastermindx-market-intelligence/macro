@@ -49,6 +49,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
+from lib.nyse_calendar import expected_last_session, sessions_behind  # noqa: E402
 
 # Cloudflare's WAF 403s python-default User-Agents on the public r2.dev host.
 UA = "macro-audit/1.0"
@@ -168,6 +169,10 @@ ACCRUAL_ANCHORS: list[dict] = [
 COVERAGE_ANCHORS = ["massive_stock_day", "hk_stocks_ext"]
 DEFAULT_COVERAGE_MAX_RUN_BDAYS = 5   # store-reported longest missing-weekday run tolerated
 DEFAULT_COVERAGE_MAX_AGE_DAYS = 6    # newest store content older than this = content-stale
+# A recent day-store tip must not lag by multiple COMPLETED NYSE sessions while
+# its R2 publish-side manifest is being refreshed. One-session grace allows a
+# pending nightly/T+1 delivery; calendar arithmetic belongs to lib.nyse_calendar.
+DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS = 1
 
 
 def _fetch(url: str, method: str = "HEAD", timeout: float = 20.0):
@@ -220,6 +225,7 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
           coverage_anchors: list[str] | None = None,
           coverage_max_run_bdays: int = DEFAULT_COVERAGE_MAX_RUN_BDAYS,
           coverage_max_age_days: int = DEFAULT_COVERAGE_MAX_AGE_DAYS,
+          massive_tip_max_missing_sessions: int = DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS,
           anchor_max_age: dict[str, float] | None = None,
           accrual_anchors: list[dict] | None = None) -> dict:
     """Pure evaluation -> {ok, fail_reasons, warnings, anchors}. `fetch` injectable for tests."""
@@ -403,15 +409,33 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
                                 "published store has an interior content gap")
         if latest:
             try:
-                age_d = (now.date() - date.fromisoformat(str(latest))).days
+                latest_day = date.fromisoformat(str(latest))
             except ValueError:
                 warn.append(f"coverage probe {d}: bad latest date {latest!r}")
             else:
+                age_d = (now.date() - latest_day).days
                 rec.update({"latest": str(latest), "age_days": age_d})
                 if age_d > coverage_max_age_days:
                     fail.append(f"R2 CONTENT STALE: {d} newest content {latest} is "
                                 f"{age_d}d old (limit {coverage_max_age_days}d) — "
                                 "publishes may be running but shipping old data")
+                if d == "massive_stock_day":
+                    # The collector's last session is the source clock. A publish-
+                    # side manifest can be re-PUT without adding one price bar;
+                    # the existing six-calendar-day age budget misses that freeze.
+                    # Reuse the incumbent NYSE calendar; do not infer sessions from
+                    # weekdays (Columbus Day trades; Thanksgiving does not).
+                    expected = expected_last_session(now)
+                    missing = sessions_behind(latest_day, now)
+                    rec.update({"expected_last_session": expected.isoformat(),
+                                "missing_completed_sessions": missing,
+                                "max_missing_completed_sessions": massive_tip_max_missing_sessions})
+                    if missing > massive_tip_max_missing_sessions:
+                        fail.append(f"R2 SESSION TIP STALE: {d} newest content {latest} "
+                                    f"is {missing} completed NYSE sessions behind "
+                                    f"(limit {massive_tip_max_missing_sessions}; "
+                                    f"expected latest {expected.isoformat()}) — "
+                                    "publisher manifest freshness is not bar freshness")
         if rec:
             detail[f"{d}/coverage"] = rec
 
@@ -486,6 +510,8 @@ def run(now: datetime | None = None, anchors: list[str] | None = None,
                                            DEFAULT_COVERAGE_MAX_RUN_BDAYS)),
         coverage_max_age_days=int(cfg.get("coverage_max_age_days",
                                           DEFAULT_COVERAGE_MAX_AGE_DAYS)),
+        massive_tip_max_missing_sessions=int(cfg.get(
+            "massive_tip_max_missing_sessions", DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS)),
         anchor_max_age=cfg.get("anchor_max_age_hours"),
         accrual_anchors=cfg.get("accrual_anchors"),
     )
