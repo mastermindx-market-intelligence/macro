@@ -36,6 +36,7 @@ import copy
 import dataclasses
 import math
 import numbers
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import NamedTuple
@@ -182,6 +183,11 @@ def _value_or_reason(x):
 
 def _is_count(x) -> bool:
     return isinstance(x, int) and not isinstance(x, bool)
+
+
+def _as_mapping(x):
+    """None / non-mapping payloads read as {} (adapters stay total, never raise)."""
+    return x if isinstance(x, Mapping) else {}
 
 
 def _zdiff(a, b):
@@ -1004,12 +1010,18 @@ def _sector_record_value(rec, horizon: str):
 
 
 def from_sector_record(rec, *, benchmark=None, session_end=None,
-                       horizon: str = "rs_63d") -> GroupMeasurement:
-    """One sector_cycles sector record -> a display-only GroupMeasurement."""
+                       horizon: str = "rs_63d") -> GroupMeasurement | Unmeasured:
+    """One sector_cycles sector record -> a display-only GroupMeasurement.
+
+    A record with no identity (None / non-mapping / no string ``ticker``) has
+    nothing to measure and returns ``Unmeasured("missing_input")`` instead.
+    """
     if horizon not in _SECTOR_HORIZON_SESSIONS:
         raise ValueError(
             f"horizon must be one of {sorted(_SECTOR_HORIZON_SESSIONS)}, got {horizon!r}"
         )
+    if not isinstance(rec, Mapping) or not isinstance(rec.get("ticker"), str):
+        return Unmeasured("missing_input")
     value = _sector_record_value(rec, horizon)
     return GroupMeasurement(
         group_id=rec["ticker"],
@@ -1031,6 +1043,7 @@ def from_sector_record(rec, *, benchmark=None, session_end=None,
 
 def sector_cohort_snapshot(payload, *, horizon: str = "rs_63d") -> dict:
     """Whole-cohort read over a sector_cycles.compute() payload (never re-sources)."""
+    payload = _as_mapping(payload)
     meta = payload.get("meta") or {}
     records = {}
     for rec in payload.get("sectors") or []:
@@ -1087,6 +1100,7 @@ def from_leadership_receipt(receipt, *, group_id: str, cohort_id: str,
         raise ValueError(
             f"horizon must be one of {sorted(_RECEIPT_HORIZON_SESSIONS)}, got {horizon!r}"
         )
+    receipt = _as_mapping(receipt)
     benchmark = receipt.get("benchmark") or {}
     sample = receipt.get("sample") or {}
     observed_n = sample.get("observed_n")
@@ -1117,6 +1131,7 @@ def diagnose_rotation_payload(payload, *, cohort_id: str) -> dict:
     label the exact origin "leading". Both are flagged here; the owner payload
     is never modified.
     """
+    payload = _as_mapping(payload)
     rows = []
     flag_counts = {}
     for row in payload.get("subsectors") or []:
@@ -1213,18 +1228,16 @@ def earliest_observable_coordinate(observations, *, before, roles=None):
     best = None
     best_date = None
     for obs in (observations if observations is not None else ()):
-        coordinate = getattr(obs, "coordinate", None)
-        if coordinate is None and isinstance(obs, dict):
-            coordinate = obs.get("coordinate")
+        if not isinstance(obs, TransitionObservation):
+            continue  # dicts / None and other non-observations are silently skipped
+        coordinate = obs.coordinate
         if not isinstance(coordinate, dict):
             continue
         when = parse_time(coordinate.get("date"))
         if isinstance(when, Unmeasured) or not when < cutoff:
             continue
-        obs_roles = getattr(obs, "roles", None)
-        if obs_roles is None and isinstance(obs, dict):
-            obs_roles = obs.get("roles")
         if roles:
+            obs_roles = obs.roles
             if not isinstance(obs_roles, dict) or any(
                 obs_roles.get(key) != value for key, value in roles.items()
             ):

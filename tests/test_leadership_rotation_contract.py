@@ -709,7 +709,7 @@ def _ratio_batch(*rows):
 
 
 def _ratio_receipt(group="defensive_sector", num="XLP", den="XLK",
-                   num_daily=0.003, den_daily=0.001):
+                   num_daily=0.003, den_daily=0.001, pid=None):
     import numpy as np
     import pandas as pd
 
@@ -725,7 +725,7 @@ def _ratio_receipt(group="defensive_sector", num="XLP", den="XLK",
                          index=pd.DatetimeIndex(dates))
 
     pair_row = {
-        "id": f"{num.lower()}_vs_{den.lower()}",
+        "id": pid or f"{num.lower()}_vs_{den.lower()}",
         "num": num, "den": den, "kind": "etf",
         "name_en": f"{num} vs {den}", "name_zh": f"{num} / {den}",
         "reads_as_en": "Relative price context", "reads_as_zh": "相对价格",
@@ -768,7 +768,7 @@ def test_sector_adapter_names_relative_wealth_pct_and_rolling():
     )
 
 
-def test_owner_receipt_adapter_names_return_difference():
+def test_owner_receipt_adapter_names_return_difference(tmp_path):
     receipt = {"schema": "mi.leadership_receipt.v1",
                "rel_5d": 0.001, "rel_20d": 0.02, "rel_60d": None,
                "benchmark": {"label": "S&P 500", "label_zh": "标普500"},
@@ -794,6 +794,36 @@ def test_owner_receipt_adapter_names_return_difference():
     gm2 = from_leadership_receipt(unknown_sample, group_id="g", cohort_id="c")
     assert gm2.expected_n is None and gm2.measured_n is None
     assert gm2.coverage == Unmeasured("empty_population")
+
+    # (2) the REAL owner output: leadership_receipt.build_receipt -> adapter
+    from engine.leadership_receipt import build_receipt
+
+    basket = {"id": "test_basket", "created": "2020-01-01",
+              "perf": {"5d": {"rel": 0.01}, "20d": {"rel": 0.02}, "60d": {"rel": 0.03}},
+              "observation": {"effective_as_of": "2026-10-02", "configured_n": 10,
+                              "observed_n": 10, "coverage": 1.0, "status": "complete",
+                              "basis": "exact_close_at_effective_as_of",
+                              "aggregate_eligible": True, "min_members": 3,
+                              "min_coverage": 0.6},
+              "members": []}
+    theme = {"breadth": {"pct50": 0.5, "pct200": 0.4, "n": 10},
+             "leadership": {"breadth": "broad",
+                            "top": [{"ticker": "AAA", "ret_20d": 0.1}]},
+             "leadership_split": False}
+    theme_intel = {"as_of": "2026-10-02", "bench_label": "S&P 500",
+                   "bench_label_zh": "标普500"}
+    r = build_receipt(basket, theme, theme_intel, "us", tmp_path)
+    r_frozen = copy.deepcopy(r)
+    g = from_leadership_receipt(r, group_id="test_basket", cohort_id="t",
+                                horizon="rel_20d")
+    assert g.metric == "return_difference"
+    assert g.units == "fraction"
+    assert g.window_sessions == 20
+    assert g.value == pytest.approx(r["rel_20d"]) == pytest.approx(0.02)
+    assert g.session_end == r["as_of"]
+    assert g.benchmark == "S&P 500"
+    assert g.expected_n == 10 and g.measured_n == 10
+    assert r == r_frozen  # the owner receipt is read, never modified
 
 
 def test_a17_all_at_origin_is_neutral_not_leading():
@@ -910,6 +940,10 @@ def test_extra_earliest_coordinate_and_legacy_separation():
     assert sep["transition_observations"] == [o.to_dict() for o in explicit]
     assert sep["relationship"] == "context_only"
     assert sep["attached_to_legacy"] == 0
+    # no ledger history at all is an unknown status, never a fabricated one
+    sep_none = separate_from_legacy(explicit, None)
+    assert sep_none["legacy_status"] is None
+    assert sep_none["attached_to_legacy"] == 0
 
 
 def test_extra_sector_cohort_snapshot():
@@ -947,13 +981,123 @@ def test_extra_sector_cohort_snapshot():
     assert all(m["metric"] == "relative_wealth_pct" for m in snap["measurements"])
 
 
+def test_adapters_total_over_none_payloads():
+    # F1: every owner adapter is TOTAL over a None / non-mapping payload --
+    # AttributeError is never a legal outcome (spec section 0).
+    snap = sector_cohort_snapshot(None)
+    assert snap["cohort_id"] == US_SECTOR_COHORT_ID
+    assert snap["measured"] == []
+    assert len(snap["missing"]) == 11
+    assert all(reason == "missing_input" for _, reason in snap["missing"])
+    assert snap["positive_breadth"]["coverage"] == pytest.approx(0.0)
+    assert snap["positive_breadth"]["k_over_n"] == {
+        "status": "unmeasured", "reason": "no_measured_members"
+    }
+    assert isinstance(breadth(0, 0, 11).k_over_n, Unmeasured)  # reused breadth marker
+    assert breadth(0, 0, 11).k_over_n == Unmeasured("no_measured_members")
+    assert snap["ranking"]["ranked"] == []
+    assert snap["ranking"]["unranked"] == list(us_sector_cohort())
+    assert snap["zscores"]["state"] == "insufficient_reference"
+    assert snap["session_end"] is None and snap["benchmark"] is None
+    assert sector_cohort_snapshot(42) == snap  # non-mapping payload reads as {}
+
+    diag = diagnose_rotation_payload(None, cohort_id="c")
+    assert diag["rows"] == []
+    assert diag["asof"] is None
+    assert diag["owner_fields_modified"] is False
+    assert diagnose_rotation_payload([], cohort_id="c") == diag
+
+    g = from_leadership_receipt(None, group_id="g", cohort_id="c")
+    assert isinstance(g, GroupMeasurement)
+    assert g.metric == "return_difference" and g.units == "fraction"
+    assert g.window_sessions == 20
+    assert g.value == Unmeasured("missing_input")
+    assert g.session_end is None and g.benchmark is None
+    assert g.expected_n is None and g.measured_n is None
+    with pytest.raises(ValueError):  # the horizon programmer error still fires first
+        from_leadership_receipt(None, group_id="g", cohort_id="c", horizon="rel_1d")
+
+    assert from_sector_record(None) == Unmeasured("missing_input")
+    assert from_sector_record(42) == Unmeasured("missing_input")
+    assert from_sector_record({"now": {}}) == Unmeasured("missing_input")  # no ticker
+    assert from_sector_record({"ticker": 5, "now": {}}) == Unmeasured("missing_input")
+    no_now = from_sector_record({"ticker": "XLF"})  # "now" None/missing: typed unknown
+    assert isinstance(no_now, GroupMeasurement)
+    assert no_now.value == Unmeasured("missing_input")
+    with pytest.raises(ValueError):
+        from_sector_record(None, horizon="rs_5d")
+
+    # F2: non-observation items are silently skipped, never raised over
+    assert earliest_observable_coordinate(
+        [{"coordinate": {"date": "2026-10-01"}}, None], before="2026-10-05"
+    ) == Unmeasured("missing_input")
+    assert earliest_observable_coordinate(None, before="2026-10-05") == (
+        Unmeasured("missing_input")
+    )
+
+
+def test_sector_cohort_snapshot_breadth_and_ranking():
+    sectors = [
+        {"id": t.lower(), "ticker": t, "kind": "sector",
+         "now": {"rs_63d": v, "thin_history": False}}
+        for t, v in (("XLK", 3.4), ("XLE", -2.0), ("XLF", 0.0), ("XLV", 1.0),
+                     ("XLI", 0.5), ("XLB", -0.3), ("XLP", -1.1), ("XLY", 2.2),
+                     ("XLC", 0.7))
+    ]
+    sectors.append({"id": "xlu", "ticker": "XLU", "kind": "sector",
+                    "now": {"thin_history": True}})
+    sectors.append({"id": "smh", "ticker": "SMH", "kind": "sector",
+                    "now": {"rs_63d": 9.9}})  # in payload, NOT in the cohort
+    payload = {"meta": {"asOf": "2026-10-06", "benchmark": "SPY"}, "sectors": sectors}
+    snap = sector_cohort_snapshot(payload)
+    assert snap["cohort_id"] == "us_sectors_11"
+    # breadth: 5 positives of 9 measured, over the expected 11
+    pb = snap["positive_breadth"]
+    assert pb["k_over_n"] == pytest.approx(5 / 9)
+    assert pb["coverage"] == pytest.approx(9 / 11)
+    assert pb["bounds"] == pytest.approx((5 / 11, 7 / 11))
+    # ranking: a valid 0.0 (XLF) ranks above a negative (XLB); XLRE absent and
+    # XLU thin never rank; SMH is outside the cohort and never enters
+    assert snap["ranking"]["unranked"] == ["XLRE", "XLU"]
+    assert (snap["ranking"]["ranked"].index("XLF")
+            < snap["ranking"]["ranked"].index("XLB"))
+    assert "SMH" not in snap["ranking"]["ranked"]
+    assert snap["outside_cohort"] == ["SMH"]
+    # z-scores bind the exact 9-member measured reference
+    assert snap["zscores"]["n_reference"] == 9
+    assert snap["zscores"]["cohort_id"] == "us_sectors_11"
+    assert ["XLRE", "missing_input"] in snap["missing"]
+    assert ["XLU", "thin_history"] in snap["missing"]
+
+
+def test_a20_aux_aliases_do_not_add_observations():
+    kw = dict(as_of=ASOF, vintage="v1", mode="reconstructed_price_history",
+              recorded_at="2026-10-06T22:00:00Z")
+    # (i) one pair, one observation
+    base = _ratio_receipt()
+    out = attribute_coordinate(_ratio_batch(base), **kw)
+    assert len(out["observations"]) == 1
+    # (ii) an identical AUX alias of the same pair adds NO observation
+    alias = _ratio_receipt(pid="xlp_vs_xlk_alias")
+    out_alias = attribute_coordinate(_ratio_batch(base, alias), **kw)
+    assert len(out_alias["observations"]) == 1
+    # (iii) a CONFLICTING observation under the alias id: the pair goes
+    # unavailable entirely -- typed reason codes, never a silent pick
+    conflict = _ratio_receipt(num_daily=0.005, pid="xlp_vs_xlk_alias")
+    out_bad = attribute_coordinate(_ratio_batch(base, conflict), **kw)
+    assert len(out_bad["observations"]) == 0
+    assert "CONFLICTING_PAIR_OBSERVATIONS" in out_bad["context_reason_codes"]
+    assert "PARTIAL_PAIR_COVERAGE" in out_bad["context_reason_codes"]
+
+
 def test_module_imports_stdlib_only():
     import ast
     from pathlib import Path
 
     from engine import leadership_rotation_context as lrc
 
-    allowed = {"math", "numbers", "copy", "dataclasses", "datetime", "typing", "__future__"}
+    allowed = {"__future__", "math", "numbers", "copy", "dataclasses", "datetime",
+               "typing", "json", "collections", "itertools", "functools", "re"}
     source = Path(lrc.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source)
     imported = set()
