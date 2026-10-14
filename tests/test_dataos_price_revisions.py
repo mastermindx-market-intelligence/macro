@@ -71,11 +71,12 @@ def test_P02_01_as_at_before_the_correction_uses_the_original_ratio() -> None:
     original = event("A", ratio=Fraction(2), known_at=ANNOUNCED)
     correction = event("B", ratio=Fraction(3), known_at=known(2026, 4, 1), supersedes="A")
     revisions = ActionRevisionSet("corr", (original, correction))
-    before = split_factor(ROW_DAY, revisions, PRE_CORRECTION)
+    before = split_factor(ROW_DAY, revisions, PRE_CORRECTION, mic="XNYS")
     assert before == Fraction(2)  # the original ratio
     # ... and the view is identical to a set that never carried the correction
     assert before == split_factor(
-        ROW_DAY, ActionRevisionSet("noB", (original,)), PRE_CORRECTION
+        ROW_DAY, ActionRevisionSet("noB", (original,)), PRE_CORRECTION,
+        mic="XNYS",
     )
 
 
@@ -83,7 +84,7 @@ def test_P02_01_as_at_after_the_correction_uses_the_corrected_ratio() -> None:
     original = event("A", ratio=Fraction(2), known_at=ANNOUNCED)
     correction = event("B", ratio=Fraction(3), known_at=known(2026, 4, 1), supersedes="A")
     revisions = ActionRevisionSet("corr", (original, correction))
-    assert split_factor(ROW_DAY, revisions, POST_CORRECTION) == Fraction(3)
+    assert split_factor(ROW_DAY, revisions, POST_CORRECTION, mic="XNYS") == Fraction(3)
 
 
 def test_P02_01_history_keeps_both_originals_untouched() -> None:
@@ -109,9 +110,10 @@ def test_P02_02_cancellation_known_after_as_at_changes_nothing() -> None:
     with_cancel = ActionRevisionSet("cancel", (original, cancellation))
     without_cancel = ActionRevisionSet("noCancel", (original,))
     # the cancellation is recorded but not yet known at PRE_CORRECTION
-    assert split_factor(ROW_DAY, with_cancel, PRE_CORRECTION) == Fraction(2)
-    assert split_factor(ROW_DAY, with_cancel, PRE_CORRECTION) == split_factor(
-        ROW_DAY, without_cancel, PRE_CORRECTION
+    assert split_factor(ROW_DAY, with_cancel, PRE_CORRECTION, mic="XNYS") == Fraction(2)
+    assert split_factor(ROW_DAY, with_cancel, PRE_CORRECTION, mic="XNYS") == split_factor(
+        ROW_DAY, without_cancel, PRE_CORRECTION,
+        mic="XNYS",
     )
 
 
@@ -121,8 +123,8 @@ def test_P02_02_cancellation_known_before_as_at_removes_the_event() -> None:
         "C", ratio=Fraction(2), known_at=known(2026, 4, 1), supersedes="A", cancelled=True
     )
     revisions = ActionRevisionSet("cancel", (original, cancellation))
-    assert split_factor(ROW_DAY, revisions, POST_CORRECTION) == Fraction(1)  # no longer applies
-    view = sadj_view([{"date": ROW_DAY, "close_raw": 100, "volume_raw": 4}], revisions, POST_CORRECTION)
+    assert split_factor(ROW_DAY, revisions, POST_CORRECTION, mic="XNYS") == Fraction(1)  # no longer applies
+    view = sadj_view([{"date": ROW_DAY, "close_raw": 100, "volume_raw": 4}], revisions, POST_CORRECTION, mic="XNYS")
     (row,) = view.rows
     assert row["close_sadj"] == Fraction(100)
     assert row["volume_sadj"] == Fraction(4)
@@ -139,14 +141,14 @@ def test_P02_03_family_correction_forward_split_to_spin_off_flips_the_view() -> 
                     known_at=known(2026, 4, 1), supersedes="A")
     revisions = ActionRevisionSet("retype", (original, retyped))
     # pre-correction view still answers with the original split
-    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION) == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION, mic="XNYS") == Fraction(2)
     # post-correction view refuses — a spin-off is never coerced into a split
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, revisions, POST_CORRECTION)
+        split_factor(ROW_DAY, revisions, POST_CORRECTION, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNSUPPORTED_ACTION
     assert raised.value.event_id == "B"
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": ROW_DAY, "close_raw": 100}], revisions, POST_CORRECTION)
+        sadj_view([{"date": ROW_DAY, "close_raw": 100}], revisions, POST_CORRECTION, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNSUPPORTED_ACTION
 
 
@@ -165,7 +167,7 @@ def test_P02_03_same_day_split_and_cash_keep_both_in_resolve_order() -> None:
     assert [e.event_id for e in resolved] == ["S", "D"]  # (ex_date, sequence) order
     assert len(resolved) == 2  # both kept — never merged/normalized away
     # only the split enters the factor
-    assert split_factor(ROW_DAY, revisions, AS_AT) == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS") == Fraction(2)
     # and the order tracks the sequences, not the storage order
     swapped = ActionRevisionSet(
         "sameday2",
@@ -185,7 +187,7 @@ def test_P02_04_each_known_unsupported_family_in_the_window_refuses(family) -> N
     unsupported = event("U1", family=family, ratio=Fraction(2), known_at=ANNOUNCED)
     revisions = ActionRevisionSet("unsup", (unsupported,))
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, revisions, AS_AT)
+        split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNSUPPORTED_ACTION
     assert raised.value.event_id == "U1"
 
@@ -204,7 +206,7 @@ def test_P02_04_rights_issue_carrying_a_ratio_is_still_refused_never_a_split() -
                known_at=ANNOUNCED),),
     )
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, revisions, AS_AT)
+        split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNSUPPORTED_ACTION  # not factor 2
 
 
@@ -213,11 +215,11 @@ def test_P02_04_unconfirmed_split_in_the_window_refuses_NOT_CONFIRMED() -> None:
                       qualification="SUSPECTED")
     revisions = ActionRevisionSet("suspect", (suspected,))
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, revisions, AS_AT)
+        split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NOT_CONFIRMED
     assert raised.value.event_id == "S1"
     # ... but the same event OUTSIDE the window never blocks the view
-    assert split_factor(EX_DAY, revisions, AS_AT) == Fraction(1)
+    assert split_factor(EX_DAY, revisions, AS_AT, mic="XNYS") == Fraction(1)
 
 
 def test_P02_04_two_eligible_records_superseding_the_same_id_is_AMBIGUOUS_REVISION() -> None:
@@ -230,7 +232,7 @@ def test_P02_04_two_eligible_records_superseding_the_same_id_is_AMBIGUOUS_REVISI
     assert raised.value.reason is RefusalReason.AMBIGUOUS_REVISION
     assert raised.value.event_id == "A"
     # before either correction is known the view still answers
-    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION) == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION, mic="XNYS") == Fraction(2)
 
 
 def test_P02_04_supersedes_naming_an_absent_id_is_NO_ELIGIBLE_REVISION() -> None:
@@ -289,13 +291,13 @@ def test_O2_P04_cash_correction_known_after_as_at_leaves_cash_at_2() -> None:
     correction = cash_event("D2", Fraction(3), known_at=known(2026, 4, 1), supersedes="D")
     revisions = ActionRevisionSet("trcorr", (original, correction))
     # at PRE_CORRECTION (2026-03-15) the correction is invisible: cash stays 2
-    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY)
+    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY, mic="XNYS")
     assert before.cash == Fraction(2)
     assert before.wealth1 == Fraction(100)  # 1*98 + 2
     assert before.holding_return == Fraction(0)
     assert before.events_applied == (("D", ActionFamily.CASH_DIVIDEND, Fraction(1)),)
     # once known (POST_CORRECTION, 2026-05-01) the corrected amount 3 applies
-    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY)
+    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY, mic="XNYS")
     assert after.cash == Fraction(3)
     assert after.wealth1 == Fraction(101)  # 1*98 + 3
     assert after.holding_return == Fraction(1, 100)
@@ -309,11 +311,11 @@ def test_O2_P04_cash_cancellation_known_before_as_at_removes_the_cash() -> None:
     )
     revisions = ActionRevisionSet("trcancel", (original, cancellation))
     # before the cancellation is known, the cash is still there
-    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY)
+    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY, mic="XNYS")
     assert before.cash == Fraction(2)
     assert before.holding_return == Fraction(0)
     # known before POST_CORRECTION: the event is gone, the view is pure price
-    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY)
+    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY, mic="XNYS")
     assert after.cash == Fraction(0)
     assert after.q1 == Fraction(1)
     assert after.wealth1 == Fraction(98)
@@ -330,7 +332,7 @@ def test_R02_M1_duplicate_event_id_refuses_in_split_factor() -> None:
         "dup", (event("s1", known_at=ANNOUNCED), event("s1", known_at=ANNOUNCED))
     )
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, revisions, AS_AT)
+        split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.DUPLICATE_EVENT_ID
     assert raised.value.event_id == "s1"
 
@@ -339,9 +341,9 @@ def test_R02_M1_a_correction_under_a_new_id_still_resolves() -> None:
     original = event("s1", ratio=Fraction(2), known_at=ANNOUNCED)
     correction = event("s1-c1", ratio=Fraction(3), known_at=known(2026, 4, 1), supersedes="s1")
     revisions = ActionRevisionSet("corr-new-id", (original, correction))
-    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION) == Fraction(2)
-    assert split_factor(ROW_DAY, revisions, POST_CORRECTION) == Fraction(3)
-    assert split_factor(ROW_DAY, revisions, AS_AT) == Fraction(3)
+    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION, mic="XNYS") == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, POST_CORRECTION, mic="XNYS") == Fraction(3)
+    assert split_factor(ROW_DAY, revisions, AS_AT, mic="XNYS") == Fraction(3)
 
 
 # ── P05 — correction-aware retained views (O3-P05) ────────────────────────────
@@ -607,19 +609,19 @@ def test_P05_05_the_gate_discards_the_caller_qualification_and_stamps_the_verdic
     assert admitted is not s1 and s1.qualification == "CONFIRMED"  # the original is untouched
     stamped = ActionRevisionSet("gate", (admitted,))
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(ROW_DAY, stamped, AS_AT)
+        split_factor(ROW_DAY, stamped, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NOT_CONFIRMED
     assert raised.value.event_id == "S1"
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": ROW_DAY, "close_raw": 100}], stamped, AS_AT)
+        sadj_view([{"date": ROW_DAY, "close_raw": 100}], stamped, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NOT_CONFIRMED
     assert raised.value.event_id == "S1"
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(TR_ROWS, stamped, AS_AT, TR_POLICY)
+        total_return_view(TR_ROWS, stamped, AS_AT, TR_POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.NOT_CONFIRMED
     assert raised.value.event_id == "S1"
     # outside every window the stamped event is inert
-    assert split_factor(EX_DAY, stamped, AS_AT) == Fraction(1)
+    assert split_factor(EX_DAY, stamped, AS_AT, mic="XNYS") == Fraction(1)
 
 
 def test_P05_05_composed_path_refuses_a_discontinuity_observation() -> None:
@@ -660,7 +662,7 @@ def test_P05_05_positive_control_a_source_record_observation_admits_confirmed() 
     admitted = admit_action_input(s1, _obs(s1.source_receipt), registry=_P05_REGISTRY)
     assert admitted.qualification == "CONFIRMED"
     revisions = admit_revision_set("gate-ok", ((s1, _obs(s1.source_receipt)),), registry=_P05_REGISTRY)
-    (row,) = sadj_view([{"date": ROW_DAY, "close_raw": 100, "volume_raw": 4}], revisions, AS_AT).rows
+    (row,) = sadj_view([{"date": ROW_DAY, "close_raw": 100, "volume_raw": 4}], revisions, AS_AT, mic="XNYS").rows
     assert row["close_sadj"] == Fraction(50)  # the exact projected Fractions
     assert row["volume_sadj"] == Fraction(8)
     composed = _p05_compose(known(2026, 3, 20), (_S1_ROW,))
@@ -686,3 +688,94 @@ def test_P05_non_exact_input_a_float_pass_through_value_cannot_be_retained() -> 
     with pytest.raises(ViewRefusal) as raised:
         retain_view(view, ViewVintage("G1", None, IDGEN, CODE), output_id="out-float")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
+
+
+# ── P06 — venue clock in the composed path (D00.A1) ──
+
+import hashlib
+import json
+
+from lib.dataos.price_views import view_receipt_sha256
+
+
+def _p06_contract(*, identity=None, field_units=None) -> ViewContract:
+    """The P05 witness contract with overridable identity / field_units."""
+    return ViewContract(
+        purpose="P06 venue-clock witness",
+        identity=identity if identity is not None
+        else {"security_id": "SEC-P05", "listing_id": "LST-P05", "mic": "XNYS"},
+        field_units=field_units if field_units is not None
+        else {"close_sadj": "USD/share"},
+        adjustment_reference={"basis": "sadj"},
+        coverage="synthetic rows local to this suite",
+    )
+
+
+def _p06_compose(contract, cutoff, action_rows, *, basis="SADJ"):
+    """reconstruct_price_view over a caller-supplied contract (P06 witness)."""
+    return reconstruct_price_view(
+        ReadRequest(ReadMode.RECONSTRUCT, contract, cutoff=cutoff, clock="published_at"),
+        bars=_P05_BARS,
+        actions=Dependency("actions", TemporalProfile.EVENT, rows=tuple(action_rows)),
+        observations={row["event_id"]: _obs(row["source_receipt"]) for row in action_rows},
+        registry=_P05_REGISTRY, code_version=CODE,
+        identity_generation_id=IDGEN, basis=basis)
+
+
+def test_P06_composed_view_is_schema_v2_with_currency() -> None:
+    a = _p06_compose(_p06_contract(), known(2026, 3, 20), (_S1_ROW,))
+    retained = retain_view(a.view, a.vintage, output_id="out-p06")
+    doc = json.loads(retained.payload.decode("utf-8"))
+    assert doc["schema"] == "dataos.retained_price_view.v2"
+    assert doc["currency"] == "USD"
+    assert a.view.currency == "USD"
+
+
+def test_P06_reopen_refuses_a_v1_payload_SCHEMA_MISMATCH() -> None:
+    a = _p06_compose(_p06_contract(), known(2026, 3, 20), (_S1_ROW,))
+    retained = retain_view(a.view, a.vintage, output_id="out-p06v1")
+    doc = json.loads(retained.payload.decode("utf-8"))
+    doc["schema"] = "dataos.retained_price_view.v1"
+    del doc["currency"]
+    payload = json.dumps(doc, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+                         allow_nan=False).encode()
+    digest = hashlib.sha256(payload).hexdigest()
+    receipt = view_receipt_sha256("out-p06v1", a.vintage, digest)
+    forged = replace(retained, payload=payload, view_digest=digest,
+                     publishing_receipt_sha256=receipt)
+    with pytest.raises(ViewRefusal) as raised:
+        reopen_view(forged, _p05_replay("out-p06v1"))
+    assert raised.value.reason is RefusalReason.SCHEMA_MISMATCH
+
+
+def test_P06_listing_key_and_identity_mic_disagree_refuses() -> None:
+    contract = _p06_contract(
+        identity={"security_id": "SEC-P05", "listing_id": "US-XNAS-ABC", "mic": "XNYS"})
+    with pytest.raises(ViewRefusal) as raised:
+        _p06_compose(contract, known(2026, 3, 20), (_S1_ROW,))
+    assert raised.value.reason is RefusalReason.VENUE_CLOCK_UNKNOWN
+
+
+def test_P06_no_mic_anywhere_refuses() -> None:
+    contract = _p06_contract(
+        identity={"security_id": "SEC-P05", "listing_id": "LST-P05"})
+    with pytest.raises(ViewRefusal) as raised:
+        _p06_compose(contract, known(2026, 3, 20), (_S1_ROW,))
+    assert raised.value.reason is RefusalReason.VENUE_CLOCK_UNKNOWN
+
+
+def test_P06_listing_key_alone_binds_the_venue() -> None:
+    contract = _p06_contract(
+        identity={"security_id": "SEC-P05", "listing_id": "US-XNYS-ABC"})
+    composed = _p06_compose(contract, known(2026, 3, 20), (_S1_ROW,))
+    assert composed.view.currency == "USD"
+    assert composed.view.rows[0]["close_sadj"] == Fraction(50)
+
+
+def test_P06_field_units_currency_must_match_the_venue() -> None:
+    contract = _p06_contract(
+        identity={"security_id": "SEC-P05", "listing_id": "US-XNYS-ABC"},
+        field_units={"close_sadj": "USD/share", "currency": "CAD"})
+    with pytest.raises(ViewRefusal) as raised:
+        _p06_compose(contract, known(2026, 3, 20), (_S1_ROW,))
+    assert raised.value.reason is RefusalReason.CURRENCY_MISMATCH
