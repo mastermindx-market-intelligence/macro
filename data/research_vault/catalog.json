@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T07:39:32.958085+00:00",
-  "count": 2880,
+  "generated_at": "2026-10-14T08:32:16.916156+00:00",
+  "count": 2882,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,7 @@
     "WGC",
     "Westpac",
     "William Blair",
+    "WisdomTree",
     "Wolfe Research",
     "World Gold Council",
     "ZKB",
@@ -513,6 +514,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2nhuzlcogbm-dffe57",
+      "title": "Siegel Weekly Commentary for 10.12.26",
+      "institution": "WisdomTree",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:29:56Z",
+      "summary_points": [
+        "Equity Return Upside: Long-term real equity returns upgraded to 5.5%-6.5% driven by rising real rates signaling stronger growth (S&P 500 at 19x earnings, inverse P/E implies 5.5% return); higher rates not bearish if productivity-led.",
+        "Fed Policy Stance: Rates held unless inflation surprises; yield curve steepening and bank deposits growth (exceeding 2-3% inflation) confirm no near-term easing.",
+        "Key Risk Factors: Tech disruption (data centers/compute) monitored but absent; AI infrastructure borrowing crowding out housing demand, pressuring lower-end markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-idbjwvtdzxk-85a47f",
       "title": "TDAGeneric US",
       "institution": "Other",
@@ -551,6 +571,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ucvm8ntl5sa-77d786",
+      "title": "Utilities Outlook US 9.30.26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-12T23:01:17Z",
+      "summary_points": [
+        "Data-Center Investment Tailwinds: $1T data-center investment (2023-2026) and AI-driven demand (55% of 166 GW peak demand by 2030) create structural growth, with hyperscalers (MSFT, META, GOOG, AMZN) planning >$800B annual capex, accelerating electricity demand (2% annual sales growth, EIA).",
+        "NextEra-Dominion Merger Impact: $420B merger targets 9%+ EPS growth via $22.3B Project Star (6.47 GW gas) and 10 GW Texas/Pennsylvania expansion, boosting regulated utility/data-center exposure and long-term growth.",
+        "EPS Growth Resilience: Utilities sustain 7% EPS growth (2025) despite 5.29% 10-yr Treasury yield, with median dividend growth (5.4%) and 16.5x 2027 earnings valuation supporting 9-11% total returns.",
+        "Regulatory ROE Lag Risk: Authorized ROEs lag capital market shifts (6–11 month rate cases), with regulatory reluctance to raise rates during affordability crises, creating valuation risks and margin pressure.",
+        "Texas Data-Center Policy Shift: ERCOT pauses 474-GW interconnections but Texas remains key (91-GW summer demand), with utilities like Entergy targeting 13% EPS growth via Meta/Amazon data centers ($27B campus, 5 GW power)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
