@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_em_coverage_render.py; tests/intl_workspace_page.test.cjs
+  what: Show owner EM indicator state and explicit coverage without false all-normal or position instructions.
 - path: templates/intl.html.j2; tests/test_intl_transmission_coverage_render.py; tests/intl_workspace_page.test.cjs
   what: Report four threshold tests with honest assessed coverage and a separate informational dollar flag.
 - path: templates/intl.html.j2; tests/test_intl_ecb_scope_render.py; tests/intl_workspace_page.test.cjs
@@ -603,3 +605,5 @@ ECB_BALANCE_SCOPE_ACCEPTANCE.json binds actual-owner flat, roundedpositive and r
 Initial5b7bf3f publication continued after a design-check failure because the outer shell did not stop when the Python guard loop aborted. The check flagged an inherited decorative bank emoji on the changed heading line. Removed that decoration;4affectedbrowsercases and8canonical/4focused captures refreshed. Original failure/images retained in ecb-balance-scope-20261014-r1. ECB_BALANCE_SCOPE_ACCEPTANCE.json records the exact correction; no deployment occurred. Subsequent publication runs only after checked guard exits.
 
 Transmission coverage: actual-owner synthetic counterexamples,10fail-before render cases and1browser failure; `python3 -m pytest -q tests/test_intl_transmission_coverage_render.py` passed10. Bounded Transmission browser pattern passed8unique cases/16width states. Eight canonical and8focused images inspected. `TRANSMISSION_COVERAGE_ACCEPTANCE.json` binds proof; review pending, not deployed. Next: actual-owner EM headline coverage gap.
+
+EM coverage: `python3 -m pytest -q tests/test_intl_em_coverage_render.py` passed11after11causal failures. New EM headline browser pattern passed12unique cases/24widthstates following1original failure.8canonical/4actual focused images; source receipt EM_STRESS_COVERAGE_ACCEPTANCE.json. Review pending and source not deployed. Next: reproduced connectedness model semantics.

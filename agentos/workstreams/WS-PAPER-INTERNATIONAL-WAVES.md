@@ -140,7 +140,7 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Repair reproduced EM headline coverage against actual owner aggregation; retain US indicator proof, independent review pending and all release holds.
+next_action: Correct reproduced connectedness method and denominator wording against actual owner calculations; preserve EM and US coverage proof and all holds.
 artifacts:
 - research/paper_international_wave1_wave2/ECB_BALANCE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/PERIPHERY_SCOPE_ACCEPTANCE.json

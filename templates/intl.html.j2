@@ -1152,7 +1152,10 @@
 
 {# ---- derive hero-chip states from payload ---- #}
 {%- set ems_state = EMS.get('state', 'unknown') if EMS else 'unknown' %}
-{%- set ems_legs_hot = EMS.get('legs_hot', []) if EMS else [] %}
+{%- set ems_legs_hot = EMS.get('legs_hot') %}
+{%- set ems_available = EMS.get('n_legs_available') %}
+{%- set ems_total = EMS.get('n_legs_total') %}
+{%- set ems_coverage_known = ems_available is integer and ems_total is integer and ems_total > 0 and ems_available >= 0 and ems_available <= ems_total and ems_legs_hot is sequence and ems_legs_hot is not string and ems_legs_hot is not mapping and ems_legs_hot|length <= ems_available %}
 {# Four owner threshold tests; the dollar five-day flag is informational. #}
 {%- set t2legs = (TTR.get('tier2') or {}).get('legs') or {} %}
 {%- set t2 = namespace(assessed=0, triggered=0, rows=[]) %}
@@ -1179,31 +1182,19 @@
 {%- set us_from = SPL.get('us_from_others') %}
 {%- set total_conn = SPL.get('total_connectedness') %}
 
-{# em_stress state → plain words #}
-{%- if ems_state == 'stressed' %}
-  {%- set ems_word_en = 'Under stress' %}
-  {%- set ems_word_zh = '处于压力中' %}
-  {%- set ems_stance_en = 'Watch — don\'t chase' %}
-  {%- set ems_stance_zh = '观望，勿追入' %}
-  {%- set ems_chip = 'warn' %}
-{%- elif ems_state == 'strained' %}
-  {%- set ems_word_en = 'Strains showing' %}
+{# Keep the owner's coincident state separate from coverage and position decisions. #}
+{%- if ems_coverage_known and ems_state == 'stressed' %}
+  {%- set ems_word_en = 'Stressed' %}
+  {%- set ems_word_zh = '压力较高' %}
+{%- elif ems_coverage_known and ems_state == 'strained' %}
+  {%- set ems_word_en = 'Strained' %}
   {%- set ems_word_zh = '压力显现' %}
-  {%- set ems_stance_en = 'Watch — don\'t chase' %}
-  {%- set ems_stance_zh = '观望，勿追入' %}
-  {%- set ems_chip = 'warn' %}
-{%- elif ems_state == 'calm' %}
+{%- elif ems_coverage_known and ems_state == 'calm' %}
   {%- set ems_word_en = 'Calm' %}
   {%- set ems_word_zh = '平静' %}
-  {%- set ems_stance_en = 'No action needed' %}
-  {%- set ems_stance_zh = '无需操作' %}
-  {%- set ems_chip = 'ok' %}
 {%- else %}
-  {%- set ems_word_en = 'Monitoring' %}
-  {%- set ems_word_zh = '持续监测' %}
-  {%- set ems_stance_en = 'Watch — check again tomorrow' %}
-  {%- set ems_stance_zh = '观望，明日再查' %}
-  {%- set ems_chip = 'mute' %}
+  {%- set ems_word_en = 'Unavailable' %}
+  {%- set ems_word_zh = '不可用' %}
 {%- endif %}
 
 {# connectedness plain read #}
@@ -1377,20 +1368,18 @@
 
   <div class="ird-hchips">
 
-    {# CHIP 1: EM Stress #}
-    <div class="ird-hchip state-{{ 'warn' if ems_chip == 'warn' else 'ok' if ems_chip == 'ok' else 'caut' }}">
+    {# CHIP 1: owner EM state with explicit supplied coverage #}
+    <div class="ird-hchip state-{{ 'caut' if ems_coverage_known and ems_state in ('strained', 'stressed') else 'unknown' }}">
       <div class="hc-lbl">{{ t('Emerging Markets', '新兴市场') }}</div>
-      <div class="hc-state {{ 'red' if ems_chip == 'warn' else 'green' if ems_chip == 'ok' else '' }}">
-        {{ t(ems_word_en, ems_word_zh) }}
-      </div>
+      <div class="hc-state">{{ t('Indicator state: ' ~ ems_word_en, '指标状态：' ~ ems_word_zh) }}</div>
       <div class="hc-detail">
-        {%- if ems_legs_hot %}
-          {{ t('Elevated: ' + (ems_legs_hot|length|string) + ' of ' + (EMS.get('n_legs_total', 6)|string) + ' stress signals hot', '偏高：' + (ems_legs_hot|length|string) + '/' + (EMS.get('n_legs_total', 6)|string) + '个压力信号触发') }}
+        {%- if ems_coverage_known %}
+          {{ t(ems_available|string ~ '/' ~ ems_total|string ~ ' signals available · ' ~ ems_legs_hot|length|string ~ ' triggered', ems_available|string ~ '/' ~ ems_total|string ~ '项指标可用 · ' ~ ems_legs_hot|length|string ~ '项触发') }}
         {%- else %}
-          {{ t('All stress signals within normal range', '所有压力信号均在正常范围') }}
+          {{ t('Coverage unavailable', '覆盖数据不可用') }}
         {%- endif %}
       </div>
-      <div class="hc-stance"><b>{{ t(ems_stance_en, ems_stance_zh) }}</b> {{ t('EM positions', '新兴市场仓位') }}</div>
+      <div class="hc-stance">{{ t('Coincident indicator · not a forecast', '同步指标 · 非预测') }}</div>
     </div>
 
     {# CHIP 2: coverage of supplied US threshold tests #}

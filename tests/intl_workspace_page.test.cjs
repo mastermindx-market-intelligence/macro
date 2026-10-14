@@ -54,6 +54,32 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const [available,hot] of [[0,0],[3,0],[6,3]]) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`EM headline coverage stays scoped ${available} ${theme} ${lang}`,async()=>{
+    const emHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      `from tests.test_intl_em_coverage_render import em_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=em_fixture(${available},${hot})))`],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const chip=page.locator('.ird-hchip').first();assert.ok(await chip.isVisible());
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const text=await chip.innerText();
+        assert.ok(text.includes(lang==='zh'?`${available}/6项指标可用`:`${available}/6 signals available`),text);
+        assert.ok(text.includes(lang==='zh'?`${hot}项触发`:`${hot} triggered`),text);
+        const state=available===0?(lang==='zh'?'不可用':'Unavailable'):available===3?(lang==='zh'?'平静':'Calm'):(lang==='zh'?'压力较高':'Stressed');
+        assert.ok((await chip.locator('.hc-state').innerText()).includes(state),text);
+        assert.ok(text.includes(lang==='zh'?'同步指标':'Coincident indicator'),text);
+        assert.ok(!/All stress|No action|Watch|EM positions|所有压力|无需操作|仓位|明日再查/.test(text));
+        assert.ok(!(await chip.getAttribute('class')).split(' ').includes('state-ok'));
+        assert.ok(await chip.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'coverage fits');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:emHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-contagion'});
+  });
+}
+
 for (const kind of ['absent','complete_hot']) for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Transmission coverage stays honest ${kind} ${theme} ${lang}`,async()=>{
     const transmissionHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
