@@ -90,6 +90,7 @@ do_not_redo:
 danger_areas:
   - candidate_term_id includes point_in_time, so it is minted once; only a re-observation through compile_document_term_records with existing_observations keeps it. A rebuilt direct ledger is refused, not re-minted.
   - An unavailable or not_built integration has empty records; never persist those records over an existing candidate ledger.
+prs: [9270]
 ---
 
 # Capital Structure V2 — T0 term integration handoff

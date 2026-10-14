@@ -2,17 +2,17 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-10-08",
-  "generated_utc": "2026-10-14T08:13:16Z",
+  "generated_utc": "2026-10-14T17:59:20Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 9,
-    "n_eff": 5.25,
+    "n": 10,
+    "n_eff": 6.05,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 9 candidates \u2248 5.25 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 10 candidates \u2248 6.05 independent bets."
   },
   "same_thesis_groups": [],
-  "earnings_coverage_frac": 0.778,
+  "earnings_coverage_frac": 0.8,
   "by_ticker": {
     "EDU": {
       "verdict": "duplicate",
@@ -55,7 +55,8 @@
         "next_date": "2026-10-27",
         "same_week_peers": [
           "ABBV",
-          "FOX"
+          "FOX",
+          "ICE"
         ],
         "has_data": true
       },
@@ -236,22 +237,158 @@
           "factor_basis": "beta-read-thin:r2=0.11<0.2",
           "shared_groups": [],
           "same_earnings_week": false
-        },
-        {
-          "ticker": "BKH",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.09<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
         "next_date": "2026-10-30",
         "same_week_peers": [
           "EDU",
-          "FOX"
+          "FOX",
+          "ICE"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer EDU at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "APA": {
+      "verdict": "duplicate",
+      "max_similarity": 0.9968,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "DVN",
+          "combined": 0.9968,
+          "membership_jaccard": 0.6667,
+          "factor_cosine": 0.9968,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "basket:us_sector_energy",
+            "sector:Energy"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "ICE",
+          "combined": 0.1676,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1676,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "EDU",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "BKH",
+          "DVN",
+          "NWE"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as DVN \u2014 us_sector_energy, Energy (similarity 100%).",
+      "why_zh": "\u4e0e DVN \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
+    "DVN": {
+      "verdict": "duplicate",
+      "max_similarity": 0.9968,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "APA",
+          "combined": 0.9968,
+          "membership_jaccard": 0.6667,
+          "factor_cosine": 0.9968,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "basket:us_sector_energy",
+            "sector:Energy"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "ICE",
+          "combined": 0.1506,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1506,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "EDU",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:insufficient-factors",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "APA",
+          "BKH",
+          "NWE"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as APA \u2014 us_sector_energy, Energy (similarity 100%).",
+      "why_zh": "\u4e0e APA \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
+    "FOX": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:r2=0.08<0.2",
+      "nearest": [
+        {
+          "ticker": "EDU",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "SCHL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "NWE",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-29",
+        "same_week_peers": [
+          "ABBV",
+          "EDU",
+          "ICE"
         ],
         "has_data": true
       },
@@ -305,148 +442,51 @@
       "why_en": "Distinct bet \u2014 nearest peer EDU at 33% similarity.",
       "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
     },
-    "FOX": {
+    "ICE": {
       "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.08<0.2",
+      "max_similarity": 0.1676,
+      "basis": "membership+high-tier-factor",
       "nearest": [
+        {
+          "ticker": "APA",
+          "combined": 0.1676,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1676,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "DVN",
+          "combined": 0.1506,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1506,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
         {
           "ticker": "EDU",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "factor_basis": "beta-read-thin:insufficient-factors",
           "shared_groups": [],
           "same_earnings_week": true
-        },
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "NWE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.11<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
         "next_date": "2026-10-29",
         "same_week_peers": [
           "ABBV",
-          "EDU"
+          "EDU",
+          "FOX"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EDU at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    },
-    "APA": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9968,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DVN",
-          "combined": 0.9968,
-          "membership_jaccard": 0.6667,
-          "factor_cosine": 0.9968,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:insufficient-factors",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "BKH",
-          "DVN",
-          "NWE"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as DVN \u2014 us_sector_energy, Energy (similarity 100%).",
-      "why_zh": "\u4e0e DVN \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
-    },
-    "DVN": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9968,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "APA",
-          "combined": 0.9968,
-          "membership_jaccard": 0.6667,
-          "factor_cosine": 0.9968,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:insufficient-factors",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "APA",
-          "BKH",
-          "NWE"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as APA \u2014 us_sector_energy, Energy (similarity 100%).",
-      "why_zh": "\u4e0e APA \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer APA at 17% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 APA\uff0c\u76f8\u4f3c\u5ea6 17%\u3002"
     }
   },
   "pair_basis": {
@@ -480,6 +520,27 @@
       "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
+    "EDU__APA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
+    "EDU__DVN": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:insufficient-factors",
+      "shared_groups": []
+    },
+    "EDU__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
     "EDU__ULTA": {
       "membership_jaccard": 0.3333,
       "factor_cosine": null,
@@ -489,21 +550,7 @@
         "sector:Consumer Discretionary"
       ]
     },
-    "EDU__FOX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "EDU__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:insufficient-factors",
-      "shared_groups": []
-    },
-    "EDU__DVN": {
+    "EDU__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -531,6 +578,27 @@
       "factor_basis": "beta-read-thin:r2=0.06<0.2",
       "shared_groups": []
     },
+    "SCHL__APA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
+    "SCHL__DVN": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
+    "SCHL__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
     "SCHL__ULTA": {
       "membership_jaccard": 0.3333,
       "factor_cosine": null,
@@ -540,21 +608,7 @@
         "sector:Consumer Discretionary"
       ]
     },
-    "SCHL__FOX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
-    "SCHL__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
-    "SCHL__DVN": {
+    "SCHL__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -577,20 +631,6 @@
       "factor_basis": "beta-read-thin:r2=0.11<0.2",
       "shared_groups": []
     },
-    "NWE__ULTA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.11<0.2",
-      "shared_groups": []
-    },
-    "NWE__FOX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.11<0.2",
-      "shared_groups": []
-    },
     "NWE__APA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -605,21 +645,28 @@
       "factor_basis": "beta-read-thin:r2=0.11<0.2",
       "shared_groups": []
     },
+    "NWE__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
+    "NWE__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
+    "NWE__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
     "BKH__ABBV": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.09<0.2",
-      "shared_groups": []
-    },
-    "BKH__ULTA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.09<0.2",
-      "shared_groups": []
-    },
-    "BKH__FOX": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -640,39 +687,25 @@
       "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
-    "ULTA__FOX": {
+    "BKH__FOX": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
-    "ULTA__APA": {
+    "BKH__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
-    "ULTA__DVN": {
+    "BKH__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
-    "FOX__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "FOX__DVN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
     "ABBV__APA": {
@@ -689,39 +722,25 @@
       "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
-    "ULTA__FOX": {
+    "ABBV__FOX": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
-    "ULTA__APA": {
+    "ABBV__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
-    "ULTA__DVN": {
+    "ABBV__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
-    "FOX__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "FOX__DVN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
     "APA__DVN": {
@@ -733,6 +752,69 @@
         "basket:us_sector_energy",
         "sector:Energy"
       ]
+    },
+    "APA__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "APA__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
+    },
+    "APA__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.1676,
+      "combined": 0.1676,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "DVN__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "DVN__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
+    },
+    "DVN__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.1506,
+      "combined": 0.1506,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "FOX__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "FOX__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "ULTA__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
     }
   },
   "verdicts": {
@@ -744,7 +826,7 @@
   },
   "n_eff_by_lane": {
     "entry_open": 2.8,
-    "setting_up": 2.7
+    "setting_up": 3.5
   },
   "source_passport": {
     "factor_betas": {

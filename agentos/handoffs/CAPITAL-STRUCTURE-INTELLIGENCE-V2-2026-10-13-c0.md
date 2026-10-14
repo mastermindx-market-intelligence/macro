@@ -122,6 +122,7 @@ danger_areas:
   - Sparse worktree: never git add -A; a write into an omitted tree truncates the committed artifact.
 decisions:
   - DEC:CS-V2-STATE-CONTRACTS-FROZEN-V2
+prs: [9159]
 ---
 
 C0 is a freeze, not a product. No state has been compiled against the

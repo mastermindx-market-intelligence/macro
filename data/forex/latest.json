@@ -14,7 +14,7 @@
       "quote": 1.1211,
       "chg": -2.8,
       "action": "FLAT",
-      "score": -8.0,
+      "score": -8.1,
       "headline": "Risk-context: net neutral EUR (-8)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aEUR \u51c0\u4e2d\u6027\uff08-8\uff09",
       "sub": "Led by trend (idiosyncratic), carry (rate diff).",
@@ -29,7 +29,7 @@
       "quote": 1.3273,
       "chg": -0.6,
       "action": "FLAT",
-      "score": -10.0,
+      "score": -10.2,
       "headline": "Risk-context: net neutral GBP (-10)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aGBP \u51c0\u4e2d\u6027\uff08-10\uff09",
       "sub": "Led by residual shock, value (reer).",
@@ -59,7 +59,7 @@
       "quote": 0.8341,
       "chg": 2.1,
       "action": "FLAT",
-      "score": 16.4,
+      "score": 16.3,
       "headline": "Risk-context: net neutral CHF (+16)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCHF \u51c0\u4e2d\u6027\uff08+16\uff09",
       "sub": "Led by carry (rate diff), price structure. SNB has historically capped CHF (2015 floor gapped ~20%).",
@@ -74,7 +74,7 @@
       "quote": 0.7004,
       "chg": -1.7,
       "action": "SHORT",
-      "score": -29.9,
+      "score": -30.0,
       "headline": "Risk-context: net short AUD (-30)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aAUD \u51c0\u504f\u7a7a\uff08-30\uff09",
       "sub": "Led by risk index, value (reer).",
@@ -89,7 +89,7 @@
       "quote": 1.428,
       "chg": 2.1,
       "action": "FLAT",
-      "score": 17.6,
+      "score": 17.7,
       "headline": "Risk-context: net neutral CAD (+18)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aCAD \u51c0\u4e2d\u6027\uff08+18\uff09",
       "sub": "Led by carry (rate diff), price structure.",
@@ -104,7 +104,7 @@
       "quote": 18.3884,
       "chg": 7.2,
       "action": "LONG",
-      "score": 28.6,
+      "score": 28.5,
       "headline": "Risk-context: net long MXN (+29)",
       "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aMXN \u51c0\u504f\u591a\uff08+29\uff09",
       "sub": "Led by price structure, residual shock.",
@@ -119,15 +119,15 @@
       "quote": 5.0264,
       "chg": -1.9,
       "action": "FLAT",
-      "score": -10.5,
-      "headline": "Risk-context: net neutral BRL (-10)",
-      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-10\uff09",
+      "score": -10.6,
+      "headline": "Risk-context: net neutral BRL (-11)",
+      "head_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-11\uff09",
       "sub": "Led by trend (idiosyncratic), residual shock.",
       "sub_zh": "\u4e3b\u5bfc\u56e0\u7d20\uff1a\u8d8b\u52bf\uff08\u7279\u5f02\uff09\u3001\u6b8b\u5dee\u51b2\u51fb\u3002",
       "shock_state": "exogenous_bid",
       "cycle_position": null,
       "reliable": true,
-      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-10\uff09"
+      "headline_zh": "\u98ce\u9669\u80cc\u666f\uff1aBRL \u51c0\u4e2d\u6027\uff08-11\uff09"
     },
     "USDCNH": {
       "label": "USD/CNH",
@@ -193,7 +193,7 @@
       "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
       "gaps": [],
       "display_only": true,
-      "built": "2026-10-14T08:38:37.471098+00:00"
+      "built": "2026-10-14T18:19:04.487075+00:00"
     }
   },
   "transmission": {
@@ -1279,7 +1279,7 @@
     "intensity": {
       "carry_unwind": 5.8,
       "dollar_wrecking_ball": 46.2,
-      "em_crisis_capital_flight": 61.2,
+      "em_crisis_capital_flight": 63.5,
       "haven_flight_risk_off": 0.0,
       "reflation_risk_on": 1.7,
       "intervention_risk": 34.7
@@ -1325,17 +1325,17 @@
         "key": "em_crisis_capital_flight",
         "name_en": "EM Crisis / Capital Flight",
         "name_zh": "\u65b0\u5174\u5e02\u573a\u5371\u673a / \u8d44\u672c\u5916\u9003",
-        "intensity": 61.2,
+        "intensity": 63.5,
         "active": true,
         "illustrative": true,
         "prob": {
           "status": "insufficient",
-          "p_cond": 0.3933,
+          "p_cond": 0.3625,
           "base_rate": 0.2804,
-          "wilson_lo": 0.1066,
-          "wilson_hi": 0.7789,
-          "n_raw": 89,
-          "n_eff": 4.5,
+          "wilson_lo": 0.0867,
+          "wilson_hi": 0.773,
+          "n_raw": 80,
+          "n_eff": 4.0,
           "N": 20
         }
       },
@@ -1460,7 +1460,7 @@
   "em": {
     "cnh_basis_bps": -61.0,
     "cnh_basis_state": "neutral",
-    "risk_off_composite": 0.056
+    "risk_off_composite": 0.066
   },
   "stance": {
     "word_en": "Get ready",
