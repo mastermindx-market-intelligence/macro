@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T11:25:22.665160+00:00",
-  "count": 2891,
+  "generated_at": "2026-10-14T11:40:44.219130+00:00",
+  "count": 2892,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -31,6 +31,7 @@
     "Citi",
     "CommBank",
     "Curvature",
+    "DBS",
     "Danske",
     "Deutsche Bank",
     "DoubleLine",
@@ -148,6 +149,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q4wcptf4o7j-c2da47",
+      "title": "insights taiwan",
+      "institution": "DBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:37:51Z",
+      "summary_points": [
+        "Taiwan Semiconductor Moat & NVIDIA Dependency: Taiwan's semiconductor leadership (NVIDIA 55% AI chip market share in China) sustains export growth but creates strategic vulnerability; AI-driven expansion moderates 4Q26-2027 due to hyperscaler cash-flow pressures and higher rates.",
+        "Hyperscaler Debt Reliance & FCF Risk: Hyperscalers (Microsoft, Amazon) face negative FCF from 4Q, escalating debt reliance and investment risk amid AI capex moderation (95% YoY → 39% by 2027).",
+        "US-China AI Competition & Supply Chain Risk: China's integrated AI ecosystem challenges US dominance, yet semiconductor reliance on foreign suppliers (NVIDIA) persists; Taiwan's moat critical for supply chain resilience amid US-China tech decoupling.",
+        "CBC Rate Hike & Inflation Trigger: Central bank hikes rates to 2.125% in Dec driven by sustained CPI >2% (2.0%/2.1% 4Q26) and tightening liquidity (M2 7% YoY, bank loans >10% YoY).",
+        "US-Iran Conflict & Energy Volatility: Geopolitical standoff (midterms Nov) fuels crude oil at ~$100/bbl and LNG/refined product price surges due to supply disruptions (refining logistics, shipping bottlenecks)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
