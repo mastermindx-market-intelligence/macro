@@ -22765,6 +22765,25 @@ jobs:
       - name: Brain history, principal isolation and narrow-screen controls
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
 
+  ric-y0-yield-momentum:
+    if: ${{ false }}
+    gate: code
+    # RIC Y0 (A20/A21, 2026-10-14): engine/yield_momentum.py extensions on the #8030 v4 contract. tests/test_yield_momentum.py is also listed in unrun-macro-panels, but that job is gate: data and is never packed on pull requests, so this code-gate job is what proves the suite on a PR. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    timeout-minutes: 10
+    paths:
+      - "engine/yield_momentum.py"
+      - "tests/test_yield_momentum.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: ric-y0-yield-momentum
+        run: python -m pytest tests/test_yield_momentum.py -q -p no:cacheprovider
+
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
