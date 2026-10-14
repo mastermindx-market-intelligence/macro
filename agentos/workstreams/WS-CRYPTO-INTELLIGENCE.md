@@ -31,37 +31,69 @@ waves:
     title: Crypto H5 authority closure
     status: in_progress
     depends_on: [P0A]
-    pr: 8901
+    pr: [8901, 9118, 9117, 9123, 9151, 9162, 9164, 9166]
     next_action: >
-      Integrate the accepted wave-1/wave-2 lane heads on top of merge 0918bc8c7c69 in
-      three streams (engine lane/cx-int-engine-20261013, science
-      lane/cx-int-science-20261013, governance lane/cx-int-governance-20261013),
-      each a DRAFT PR with its own committed visual-evidence receipt, reviewed and
-      merged by the seat on concluded-green checks. Then prove the regenerated
-      crypto.html and vector.html on the real deployment path
-      (https://www.mastermind-x.com/ plus /opt/macro/site bytes) with happy, valid-zero
-      and unavailable behavior intact before closing P0B.
+      Phase 2: (a) DONE — collector capture-gap packet (record_unavailable() in
+      collectors/_crypto_observations.py + bgeo/okx call sites + tests, ruling R9) built by
+      fabric lane cxp2-obs-r1-20261013T1228Z (glm, host mb) and landed as PR #9151 (squash
+      dc64736b7ab3); (b) DONE — glance-tier polish item 0 (nowrap on the
+      'Last on file … · date' and '在册天数 N/M' phrases) landed as PR #9162 (squash
+      e390119a8f19, 2026-10-13 15:41Z) from fabric lane cxp2-polish-r1-20261013T1501Z (glm,
+      ubuntu2; the lane's push was refused by repo policy, the seat-side driver pushed); the
+      14 pre-existing design items listed in
+      agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md remain Phase-2
+      polish; (c) DONE — the 27 superseded lane PRs were closed 2026-10-13 ~14:5xZ with the
+      carrying squash named; (d) wave-2 glance-tier polish (11 of the 14 logged items, A–K:
+      falsifier words off /vector, plain-word budget source, ZH regime words + Chinese dates,
+      Building/积累中 chip, FIGR_HELOC receipt, label alignment, P0 → percentile words,
+      empty-context null, one shared brain label, 390 tab scroll, sign-following 24H colour)
+      is PR #9164 (lane/cx-p2-polish-w2-20261013, head 449a2c47cd3a): Opus two-theme review
+      PASS (ruling R26), MERGED 2026-10-13 18:10Z (squash 7fc0d068e03f, 47/47 paths landed on
+      origin/main); (e) wave-3 polish (L hover affordance, M Drivers-row composition, H'
+      vector empty-context tone class, the two near-zero sign nits — unsigned flat 24H chips,
+      live repaint honouring the flat cut-off) is PR #9166 (lane/cx-p3-polish-w3-20261013,
+      head 8f3be876a7d4): Opus two-theme review PASS-WITH-NITS (ruling R33), p0b zero-FOUC
+      receipts re-minted for the live.js change (ruling R34), MERGED 2026-10-13 20:48Z
+      (squash 7e16897a6cac, 38/38 paths landed on origin/main). Frontier after #9166 is
+      wave 4 (TERMINAL): H'' context line never carries a tone class + N3 data-flat
+      one-decimal repaint, commissioned to ORCH-E as lane/cx-p4-terminal-20261013
+      (R32 + addenda R33/R34). P0B closes at
+      its acceptance boundary once the nightly data lane commits again and the live crypto
+      hero shows a current as-of date on the Phase-1 templates.
     note: >
       The H5 presentation/evidence head left #8050 and landed on main through PR #8901
       (squash 0918bc8c7c69ba4db36c88bc8874da671c3f0572): canonical cockpit receipt preserved, missing asset breakdown
       distinguished from an invalid total budget, valid zero rendered without
       class-model inputs, bilingual source-specific failure copy, committed
       visual-evidence receipt under mockups/evidence/crypto-r2-8901/. #7645 ordering is
-      no longer a release dependency for this carrier. Phase-1 integration of the
-      accepted lane heads and the production proof remain open.
+      no longer a release dependency for this carrier. Phase-1 integration landed
+      2026-10-13 in three seat-merged streams: science #9118 (squash af2f8752b112, 48
+      files), governance #9117 (squash b8686fb1be3c, 11 files; t22p collector patches
+      kept as receipts under ruling R9) and engine #9123 (squash 6ecdbd2993ba804bf59a682db8766390268ccfde, 91
+      files incl. the committed visual-evidence receipt
+      mockups/evidence/crypto-int-engine-20261013/ and the R12 glance-tier repair).
+      Main re-proven under the merged CI authority by ci.yml run 38416529877; live
+      bytes proven on https://www.mastermind-x.com/crypto.html and /vector.html.
+      Phase-2 observations landed the same day as PR #9151 (squash dc64736b7ab3, 4
+      files): pre-response collector failures (raise/skip) now reach
+      source_capture_status through record_unavailable(), so the publication contract's
+      stale/unavailable receipts cover the bgeo funding and okx taker paths.
 next_action: >
-  Phase 1 of the lane integration: the integration orchestrator assembles the accepted
-  lane heads into the engine, science and governance streams on top of 0918bc8c7c69, applies
-  the seat rulings recorded in agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-12-grok-fanout.md
-  (decision-binding attributes without visible raw dates, plain-word lane copy, filled
-  unattributed hero summary, test registration in legacy-jobs.yml), and returns DRAFT PRs
-  the seat reviews, merges on concluded green and proves live. Close superseded lane
-  PRs once their content lands.
+  Phase 2 of the program: the collector capture-gap build is DONE (#9151, ruling R9) and
+  glance-tier polish item 0 is DONE (#9162, squash e390119a8f19); the 14 pre-existing design
+  items in agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md remain as
+  Phase-2 polish lanes (lane/* DRAFT PR judged by artifact, merged by the seat on concluded
+  green); the 27 superseded lane PRs are CLOSED; wave-2 polish (items A–K) is PR #9164 (head
+  449a2c47cd3a), review PASS (R26), MERGED (squash 7fc0d068e03f); wave-3 polish (L / M / H' /
+  two sign nits) is PR #9166 (head 8f3be876a7d4), review PASS-WITH-NITS (R33), MERGED (squash
+  7e16897a6cac); the frontier is wave 4 (TERMINAL: H'' + N3, lane/cx-p4-terminal-20261013,
+  commissioned to ORCH-E). P0B's acceptance boundary waits on the nightly data lane
+  committing again so the live crypto hero carries a current as-of date.
 blocked_by:
   - >
-    Integration stream PRs are not yet open; the seat sends the merge sha to the
-    orchestrator and judges returns by artifact. Production proof of the regenerated
-    routes after each stream merge is still owed.
+    Nightly data lane stalled: origin/main carries no `data: daily collection` commit since
+    cdab77c46a9e (2026-10-09); the live crypto page shows 2026-10-09 data on the Phase-1
+    templates until it resumes (runner-broker blocker 38192634426, operator item).
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"
@@ -145,6 +177,8 @@ artifacts:
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-24-p0a-close-p0b-commission.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-24-p0b-runtime-gate.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-25-personal-pro-ingress-unblock.md
+  - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-12-grok-fanout.md
+  - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md
   - agentos/decisions/DEC-CRYPTO-H5-BTC-BUDGET-AUTHORITY.md
   - agentos/discoveries/DSC-CRYPTO-H5-BYPASSES-BTC-DECISION.md
   - agentos/discoveries/DSC-PERSONAL-PRO-INGRESS-PRINCIPAL-GAP.md
