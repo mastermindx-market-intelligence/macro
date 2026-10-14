@@ -105,6 +105,11 @@ S2_V1_1_TRIAL_LEDGER_PATH = (
 # so a regeneration differs in exactly that field while the seal blob is
 # byte-identical at both commits.
 S1_V1_1_SEAL_COMMIT_PRE_SQUASH = "5ebab11da1f80b754a4047fb87f06eadf37edfb6"
+# XREP-05 (XREP5 repair round, 2026-10-14): pin the seal blob at
+# research/single_name_intelligence/runs/s1_residual_v1_1/SEAL_AND_BUDGET.json
+# so the produced-side resolution is fail-closed on every clone (depth-1 CI
+# included). Same blob at the pre-squash and squash commits.
+S1_V1_1_SEAL_BLOB = "018cc8bdd9e102f976f0d6d31b13a1546565e72e"
 
 KIND_MISSING = "missing-in-produced"
 KIND_EXTRA = "extra-in-produced"
@@ -405,11 +410,14 @@ def XREP05_S1_MANIFEST_SEAL_COMMIT(committed: Path, produced: Path) -> list[Diff
     Passes ONLY when: both sides parse as JSON; every key other than
     seal_commit_sha is equal (same key set, same values); the COMMITTED
     seal_commit_sha equals S1_V1_1_SEAL_COMMIT_PRE_SQUASH exactly; the
-    PRODUCED value is a 40-char lowercase hex commit sha; and, when the
-    pre-squash commit object is present locally, both commits resolve the
-    run's SEAL_AND_BUDGET.json path to the SAME git blob (never fetches; a
-    missing pre-squash commit passes with the XREP-03 attestation note).
-    Any other difference is a KIND_DIFFER Diff naming the changed keys.
+    PRODUCED value is a 40-char lowercase hex commit sha; and the
+    PRODUCED value resolves the run's SEAL_AND_BUDGET.json path to the
+    pinned seal blob S1_V1_1_SEAL_BLOB on every clone (never fetches);
+    and, when the pre-squash commit object is present locally, it ALSO
+    resolves the same blob (a missing pre-squash commit passes because
+    the produced-side pin is fail-closed on its own; the pass detail
+    says so). Any other difference is a KIND_DIFFER Diff naming the
+    changed keys.
     """
     refuse_nonfalse_authority(AUTHORITY_FLAGS)
     rel = committed.name
@@ -443,21 +451,10 @@ def XREP05_S1_MANIFEST_SEAL_COMMIT(committed: Path, produced: Path) -> list[Diff
             f"produced seal_commit_sha {p_sha!r} is not a 40-char lowercase "
             "hex commit sha (XREP-05)",
         ))
-    if diffs:
-        return diffs
 
-    # Provenance: the same seal bytes at the pre-squash and produced commits.
+    # Produced-side seal blob resolution (fail-closed on every clone).
     # Repo root from this module's location, never from the /tmp compare dirs.
     repo_root = Path(__file__).resolve().parents[3]
-    present = subprocess.run(
-        ["git", "cat-file", "-e", f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}^{{commit}}"],
-        cwd=repo_root, capture_output=True,
-    ).returncode == 0
-    if not present:
-        print(
-            f"XREP-05 {rel}: pre-squash provenance commit not present locally; "
-            "seal bytes attested by XREP-03")
-        return []
     seal_rel = f"{S1_V1_1_REL}/SEAL_AND_BUDGET.json"
 
     def blob_at(rev: str) -> str | None:
@@ -467,15 +464,42 @@ def XREP05_S1_MANIFEST_SEAL_COMMIT(committed: Path, produced: Path) -> list[Diff
         )
         return r.stdout.strip() if r.returncode == 0 else None
 
-    c_blob = blob_at(S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
-    p_blob = blob_at(p_sha)
-    if c_blob is None or p_blob is None or c_blob != p_blob:
+    p_blob = blob_at(p_sha) if (isinstance(p_sha, str) and _HEX40.match(p_sha)) else None
+    found = p_blob if p_blob is not None else "unresolvable"
+    if p_blob != S1_V1_1_SEAL_BLOB:
         diffs.append(Diff(
             KIND_DIFFER, rel,
-            "seal blob provenance differs (XREP-05): "
-            f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}:{seal_rel} -> {c_blob!r}, "
-            f"{p_sha}:{seal_rel} -> {p_blob!r}",
+            f"produced seal_commit_sha {p_sha!r}:{seal_rel} -> {found!r}; "
+            f"expected pinned blob {S1_V1_1_SEAL_BLOB!r} (XREP-05)",
         ))
+    if diffs:
+        return diffs
+
+    # Provenance: when the pre-squash commit object is present locally, also
+    # pin its seal blob to S1_V1_1_SEAL_BLOB. Never fetches. Absence of the
+    # pre-squash commit is acceptable ONLY because the produced-side pin
+    # above is fail-closed on its own (the pass detail says so).
+    present = subprocess.run(
+        ["git", "cat-file", "-e", f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}^{{commit}}"],
+        cwd=repo_root, capture_output=True,
+    ).returncode == 0
+    if present:
+        c_blob = blob_at(S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+        if c_blob != S1_V1_1_SEAL_BLOB:
+            diffs.append(Diff(
+                KIND_DIFFER, rel,
+                f"pre-squash provenance {S1_V1_1_SEAL_COMMIT_PRE_SQUASH}:"
+                f"{seal_rel} -> {c_blob!r}; expected pinned blob "
+                f"{S1_V1_1_SEAL_BLOB!r} (XREP-05)",
+            ))
+            return diffs
+        print(
+            f"XREP-05 {rel}: pre-squash provenance commit present locally; "
+            f"seal blob pinned to {S1_V1_1_SEAL_BLOB} at both commits")
+        return diffs
+    print(
+        f"XREP-05 {rel}: pre-squash provenance commit not present locally; "
+        f"produced-side seal blob pin ({S1_V1_1_SEAL_BLOB}) is the gate")
     return diffs
 
 
