@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T17:56:08.595810+00:00",
-  "count": 2913,
+  "generated_at": "2026-10-14T18:26:12.743296+00:00",
+  "count": 2914,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -350,6 +350,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xtr3psvcwid-76ada8",
+      "title": "WMM 13 Oct 2026 Pricing fiscal risk",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:28:21Z",
+      "summary_points": [
+        "Fiscal Risk Spike: French government bond term premiums hit 2000s highs amid budget talks, with UK/US/Germany showing elevated premiums (C.O.T.W. chart), signaling systemic sovereign debt concerns.",
+        "Gold ETF Flows: European investors continue allocating to gold ETFs despite YTD price weakness (-4.2%), reflecting risk aversion to fiscal sustainability issues (per YTD % change bar chart).",
+        "Gold Forward Returns: Gold’s negative YTD (-4.16%) contrasts with strong forward returns (54% 4w/61% 12w), indicating tactical rebound potential amid current underperformance.",
+        "Key Data Releases: US Sept Core CPI easing may strengthen October rate hold expectations; US PPI climb signals sustained inflation pressures (policy risk)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
