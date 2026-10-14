@@ -368,3 +368,26 @@ or hosted acceptance. Three original receipts are retained in the same evidence
 manifest. Follow-on source-order correction b0ca was published and read back clean
 with no open PR. A reviewable follow-on PR body is prepared on the programme
 evidence carrier; actual creation remains behind A1 landing and fresh admission.
+
+
+## 2026-10-14T16:32Z — normal deployment path readiness
+
+While A1 publication awaits shared capacity, read-only production observation
+confirms the existing three-minute updater schedule and natural revision
+progression through1302 to installedb4e1d4c724a9. Admin remains active/running,
+PID1756456 with start09:27:15UTC. The installed updater, checkout script and
+installed HEAD's updater bytes have identical SHA256. Eight tracked modifications
+are generated site/live JSON paths; none intersects the17A1production paths.
+Only path metadata was inspected; no generated file contents or outcomes were
+read. No pull, reset, restart, timer mutation or forced owner execution occurred.
+This resolves deployment-transport readiness, not candidate installation or
+post-release acceptance. Final17fileprobe and assetprojector remain unbound until
+actual A1 landing. Three original receipts and their hashes are retained under
+research/evidence/eval-os-tier-query-20261014/production-readiness-20261014/.
+
+The existing lease owner's run38595742539 at16:29:17 has passed contract-delta
+and packs0/1/5/7/9, with seven packs still running. No broad timer-only census
+was repeated. The next admission observation may use that actual owner progress
+and this distinct production-readiness result, respecting300seconds. An updated
+A1PRdescription is prepared locally for application only after admitted same-
+carrier publication and exact remote readback. All completion flags remainfalse.
