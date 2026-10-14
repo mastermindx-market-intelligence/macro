@@ -1,0 +1,77 @@
+{
+  "base_head": "a2dbb6c335db480ff88330063a5bca41b4b782d7",
+  "candidate_template_sha256": "53a89f75cbfee9103ee34cb8bf0bd20dba2a1d4e7101be983ab6df54ee10ba3e",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "NOT_OBSERVED",
+  "limits": [
+    "Synthetic source fixtures only; no live data acquisition or qualification.",
+    "No native zoom, speech, physical touch or complete accessibility acceptance.",
+    "All custody, frozen-effect, rights, Saved, migration and release holds retained."
+  ],
+  "capability": "Each spread retains its own observation date; missing date stays unavailable; date text is escaped and shared EM date footer removed.",
+  "verification": {
+    "python": "6 causal original failures;19 final passes14 inherited warnings, including13 affected earlier cases.",
+    "browser": "Initial12 cases:10PASS2tool-timeoutFAIL after visible element resolution. Exact2failed LightEnglish cases PASS with unchanged assertions in the final6case run alongside4newDollar cases.12unique Credit cases covered, no timing-cause claim.",
+    "reuse": "Credit section hash unchanged by subsequent Dollar repair; successful earlier cases not rerun."
+  },
+  "canonical_captures": 8,
+  "manifest_sha256": "7242380d34fac2e68f42a491b796402d935c9fa6f4f04b9fa4b0984fbd1c4e80",
+  "focused_images": 4,
+  "parent_review": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "images_viewed": [
+      "cards-1440-dark-en.png",
+      "cards-1440-light-en.png",
+      "cards-390-dark-zh.png",
+      "cards-390-light-zh.png"
+    ],
+    "findings": [
+      "1440px English and390px Chinese in both Dark and Light: distinct dates remain attached to their own cards, with unavailable only on the missing clock.",
+      "Existing dark instrument card and light research card retain value hierarchy and readable subordinate dates; no new CSS or palette.",
+      "No clipping observed in these four focused views. Rendered fixture proof is not live or complete accessibility acceptance."
+    ],
+    "scope": "No independent review because retained original routing-policy refusal prohibits a replacement."
+  },
+  "capture_limits": {
+    "console_error_count": 1,
+    "by_viewport": {
+      "desktop": {
+        "document_height_px": 3756,
+        "elements_wider_than_viewport": 0,
+        "horizontal_overflow": false
+      },
+      "mobile": {
+        "document_height_px": 5187,
+        "elements_wider_than_viewport": 4,
+        "horizontal_overflow": false
+      }
+    }
+  },
+  "capture_limit_note": "Isolated live_config.js404 and inherited mobile wide-element heuristics retained; no document overflow in measured reference states.",
+  "source_trace": {
+    "EM_HY": "engine.intl_risk._leg returns asof from last series index; nonempty source date only. Existing stale computation unchanged and not inferred here.",
+    "regional": "engine.contagion tier1 regional_oas rows expose value, vel_20d_z and independent asof from each series last index; no regional stale field.",
+    "presentation_before": "One EM HY date was printed in a common footer, with three regional dates omitted.",
+    "test_scope": "Actual _leg on one synthetic EM observation; regional synthetic fields match existing owner dictionary contract. Missing/null/empty clocks and absent legs are boundary inputs, not real acquisition or market qualification.",
+    "design": {
+      "dark": "Existing instrument card and muted small text subordinate dates to values and comparisons.",
+      "light": "Existing research card and muted small text retain hierarchy on the light material. No new palette or CSS.",
+      "degraded": "Localised unavailable in each card; no shared date/freshness."
+    }
+  },
+  "capture_source_identity": {
+    "base_head": "a2dbb6c335db480ff88330063a5bca41b4b782d7",
+    "full_template_sha256": "d5440e80b74bb97875ca6d9e1a60b8f47a976deb3b9134b400e509e4fcb86125",
+    "credit_section_sha256": "0afe98f026da55dcd2d52aff511bc3b1d406ab79c7e66368b21bab04091dcbe9",
+    "capture_html": "0d92ca8beffdb5041483bbaf095f9e45cbf570aaa76d85050a0997cd5319cea0",
+    "scope": "Uncommitted candidate after Credit-only repair, before subsequent independent Dollar repair. No immutable-base test coverage claimed."
+  },
+  "source_reuse": {
+    "credit_section_unchanged": true,
+    "sha256": "0afe98f026da55dcd2d52aff511bc3b1d406ab79c7e66368b21bab04091dcbe9",
+    "source_change": "Dollar enum admission/copy only; global CSS/JS and Credit section unchanged.",
+    "initial_browser": "12cases:10PASS2timeoutFAIL after visible element resolution; source geometry/content assertions did not fail. Cause unproved.",
+    "next": "Only two failed LightEnglish cases run again with unchanged assertions alongside new Dollar cases. Successful cases are not repeated."
+  }
+}

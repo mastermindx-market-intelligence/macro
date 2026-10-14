@@ -1,0 +1,194 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en.png",
+    "sha256": "1266e957dbab25aa610fdcbc3fedd54b2b792d85ef66824f3313430956045850",
+    "cells": [
+      "Unavailable \u2014 no supported dollar regime is supplied.",
+      "Dollar regime unavailable in supplied data."
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 373.40625,
+        "width": 673,
+        "height": 169.640625,
+        "top": 373.40625,
+        "right": 1400,
+        "bottom": 543.046875,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "header-1440-dark-en.png",
+    "sha256": "56187abc8bc3f5cd81a7c536fba8324a86491ca97baa8c690876d7f278fa0081",
+    "text": "DOLLAR\nUnavailable\nNo supported dollar regime supplied\nWatch \u2014 don't chase dollar strength",
+    "class": "ird-hchip state-unknown",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "chip": {
+        "x": 725,
+        "y": 398.40625,
+        "width": 321,
+        "height": 103.390625,
+        "top": 398.40625,
+        "right": 1046,
+        "bottom": 501.796875,
+        "left": 725
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en.png",
+    "sha256": "199995162b5e2552cb507751db3f57453320cbb6fd4a0fc90e80056e91d7abea",
+    "cells": [
+      "Unavailable \u2014 no supported dollar regime is supplied.",
+      "Dollar regime unavailable in supplied data."
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 373.40625,
+        "width": 673,
+        "height": 169.640625,
+        "top": 373.40625,
+        "right": 1400,
+        "bottom": 543.046875,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "header-1440-light-en.png",
+    "sha256": "84886299914033ac597681438d8d9d959c94b9dddf9dd90dd13c15fde576e9fa",
+    "text": "DOLLAR\nUnavailable\nNo supported dollar regime supplied\nWatch \u2014 don't chase dollar strength",
+    "class": "ird-hchip state-unknown",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "chip": {
+        "x": 725,
+        "y": 398.40625,
+        "width": 321,
+        "height": 103.390625,
+        "top": 398.40625,
+        "right": 1046,
+        "bottom": 501.796875,
+        "left": 725
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh.png",
+    "sha256": "64ce14b1ae4617791d4b13eba303d08693a8e15bcd1dd2014b856f86bf4bf410",
+    "cells": [
+      "\u4e0d\u53ef\u7528\u2014\u2014\u672a\u63d0\u4f9b\u6709\u6548\u7684\u7f8e\u5143\u5236\u5ea6\u8bfb\u6570\u3002",
+      "\u6240\u63d0\u4f9b\u6570\u636e\u4e2d\u7684\u7f8e\u5143\u5236\u5ea6\u4e0d\u53ef\u7528\u3002"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 162.96875,
+        "width": 350,
+        "height": 199.234375,
+        "top": 162.96875,
+        "right": 370,
+        "bottom": 362.203125,
+        "left": 20
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "header-390-dark-zh.png",
+    "sha256": "51c820dfdef5b59379070089f1090d1ff6abff46b683df8fa1fc021685a9b22d",
+    "text": "\u7f8e\u5143\n\u4e0d\u53ef\u7528\n\u672a\u63d0\u4f9b\u53ef\u7528\u7684\u7f8e\u5143\u5236\u5ea6\u8bfb\u6570\n\u89c2\u671b\uff0c\u52ff\u8ffd\u5165 \u7f8e\u5143\u5f3a\u52bf",
+    "class": "ird-hchip state-unknown",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "chip": {
+        "x": 43,
+        "y": 399.265625,
+        "width": 304,
+        "height": 101.984375,
+        "top": 399.265625,
+        "right": 347,
+        "bottom": 501.25,
+        "left": 43
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh.png",
+    "sha256": "4e5a7a0b4876e4b6caec3bbc59db97d874ba0ebfd5b4e2d2a54f29896340264e",
+    "cells": [
+      "\u4e0d\u53ef\u7528\u2014\u2014\u672a\u63d0\u4f9b\u6709\u6548\u7684\u7f8e\u5143\u5236\u5ea6\u8bfb\u6570\u3002",
+      "\u6240\u63d0\u4f9b\u6570\u636e\u4e2d\u7684\u7f8e\u5143\u5236\u5ea6\u4e0d\u53ef\u7528\u3002"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 162.96875,
+        "width": 350,
+        "height": 199.234375,
+        "top": 162.96875,
+        "right": 370,
+        "bottom": 362.203125,
+        "left": 20
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "header-390-light-zh.png",
+    "sha256": "478ea4c77a23c75e4387b81b473e52a7573342eb32a42658e5064f9d2604d704",
+    "text": "\u7f8e\u5143\n\u4e0d\u53ef\u7528\n\u672a\u63d0\u4f9b\u53ef\u7528\u7684\u7f8e\u5143\u5236\u5ea6\u8bfb\u6570\n\u89c2\u671b\uff0c\u52ff\u8ffd\u5165 \u7f8e\u5143\u5f3a\u52bf",
+    "class": "ird-hchip state-unknown",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "chip": {
+        "x": 43,
+        "y": 399.265625,
+        "width": 304,
+        "height": 101.984375,
+        "top": 399.265625,
+        "right": 347,
+        "bottom": 501.25,
+        "left": 43
+      }
+    }
+  }
+]

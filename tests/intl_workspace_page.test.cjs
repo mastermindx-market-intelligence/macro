@@ -55,6 +55,59 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Dollar unavailable owner never becomes a mixed read ${theme} ${lang}`,async()=>{
+    const dollarHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_dollar_absence_render import dollar_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=dollar_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const chip=page.locator('.ird-hchip').nth(2), card=page.locator('.ird-dollar-card');
+        for(const el of [chip,card]) {
+          const text=await el.innerText();
+          assert.ok(text.includes(lang==='zh'?'不可用':'Unavailable'));
+          assert.ok(!/Mixed picture|信号混合|tonight|今晚/.test(text));
+          assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'unavailable explanation fits');
+        }
+        assert.ok(!(await chip.getAttribute('class')).includes('state-ok'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:dollarHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-dollar-conditions'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Credit observation dates remain independent ${theme} ${lang}`,async()=>{
+    const creditHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_credit_dates_render import credit_dates_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=credit_dates_fixture()))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const clocks=page.locator('[data-credit-observation]');
+        assert.equal(await clocks.count(),4);
+        const expected=['2026-10-13','2026-10-09','2026-09-30',lang==='zh'?'不可用':'Unavailable'];
+        for(let i=0;i<4;i++) {
+          const clock=clocks.nth(i),text=await clock.innerText();
+          assert.ok(text.includes(expected[i]));
+          assert.ok(text.includes(lang==='zh'?'观测日：':'Observed:'));
+          for(let j=0;j<3;j++)if(i!==j)assert.ok(!text.includes(expected[j]));
+          assert.ok(await clock.evaluate(n=>n.scrollWidth<=n.clientWidth+1 && n.scrollHeight<=n.clientHeight+1),'own clock fits its card');
+        }
+        assert.deepEqual(await page.locator('.ird-spread-card .sc-val').allInnerTexts(),['4.25%','1.75%','0.00%','2.50%']);
+        const footer=page.locator('#intl-credit-bonds').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]').locator('.ird-asof');
+        assert.ok(!(await footer.innerText()).includes('2026-10-13'),'EM date must not masquerade as a shared clock');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:creditHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-credit-bonds'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Credit standardized change never claims raw direction ${theme} ${lang}`,async()=>{
     const creditHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_credit_velocity_render import credit_velocity_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=credit_velocity_fixture()))"],

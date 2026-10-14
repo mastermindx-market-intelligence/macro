@@ -1142,6 +1142,7 @@
 {%- set CBD = RD.cb_desk or {} %}
 {%- set INV = RD.inversion_board or {} %}
 {%- set SM  = RD.smile %}
+{%- set sm_regime_known = SM and SM.get('regime') in ('rates-driven', 'safety-driven', 'mixed') %}
 {%- set TXDISP = RD.top_transmitters_display or [] %}
 {%- set SWAP = RD.get('swap_lines_bn') %}
 
@@ -1409,9 +1410,9 @@
     </div>
 
     {# CHIP 3: Dollar — honest null when smile absent #}
-    <div class="ird-hchip state-{{ 'caut' if safety_bid else 'ok' if not SM else 'ok' }}">
+    <div class="ird-hchip state-{{ 'caut' if safety_bid else 'ok' if sm_regime_known else 'unknown' }}">
       <div class="hc-lbl">{{ t('Dollar', '美元') }}</div>
-      {%- if SM %}
+      {%- if sm_regime_known %}
         {%- set regime_label_en = 'Dollar moving on rate differences, not fear' if SM.get('regime') == 'rates-driven' else 'Dollar being bought as shelter' if SM.get('regime') == 'safety-driven' else 'Mixed picture' %}
         {%- set regime_label_zh = '受利差驱动' if SM.get('regime') == 'rates-driven' else '避险买入' if SM.get('regime') == 'safety-driven' else '信号混合' %}
         {%- set regime_detail_en = 'Rate gaps, not fear, explain recent moves' if SM.get('regime') == 'rates-driven' else 'Investors are paying up for dollar safety' if SM.get('regime') == 'safety-driven' else 'Rate gaps and risk mood both in play' %}
@@ -1419,8 +1420,8 @@
         <div class="hc-state info">{{ t(regime_label_en, regime_label_zh) }}</div>
         <div class="hc-detail">{{ t(regime_detail_en, regime_detail_zh) }}</div>
       {%- else %}
-        <div class="hc-state" style="color:var(--muted);font-size:12px;">{{ t('Read updates tonight', '今晚更新读数') }}</div>
-        <div class="hc-detail">{{ t('Not enough fresh data', '数据暂不足') }}</div>
+        <div class="hc-state" style="color:var(--muted);font-size:12px;">{{ t('Unavailable', '不可用') }}</div>
+        <div class="hc-detail">{{ t('No supported dollar regime supplied', '未提供可用的美元制度读数') }}</div>
       {%- endif %}
       {%- if safety_bid %}
         <div class="ird-safety-tag">
@@ -1647,6 +1648,7 @@
             {{ t('Near usual 20d change', '20日变动接近常态') }}
             {%- endif %}
           </div>
+          <div class="muted small" data-credit-observation>{{ t('Observed:', '观测日：') }}<br>{{ em_hy.get('asof')|e if em_hy.get('asof') else t('Unavailable', '不可用') }}</div>
         </div>
         <!-- Asia -->
         {%- set asia_v = asia_oas.get('value') %}
@@ -1665,6 +1667,7 @@
             {{ t('Near usual 20d change', '20日变动接近常态') }}
             {%- endif %}
           </div>
+          <div class="muted small" data-credit-observation>{{ t('Observed:', '观测日：') }}<br>{{ asia_oas.get('asof')|e if asia_oas.get('asof') else t('Unavailable', '不可用') }}</div>
         </div>
         <!-- LatAm -->
         {%- set latam_v = latam_oas.get('value') %}
@@ -1689,6 +1692,7 @@
             {{ t('Near usual 20d change', '20日变动接近常态') }}
             {%- endif %}
           </div>
+          <div class="muted small" data-credit-observation>{{ t('Observed:', '观测日：') }}<br>{{ latam_oas.get('asof')|e if latam_oas.get('asof') else t('Unavailable', '不可用') }}</div>
         </div>
         <!-- EMEA -->
         {%- set emea_v = emea_oas.get('value') %}
@@ -1707,6 +1711,7 @@
             {{ t('Near usual 20d change', '20日变动接近常态') }}
             {%- endif %}
           </div>
+          <div class="muted small" data-credit-observation>{{ t('Observed:', '观测日：') }}<br>{{ emea_oas.get('asof')|e if emea_oas.get('asof') else t('Unavailable', '不可用') }}</div>
         </div>
       </div>
 
@@ -1736,7 +1741,6 @@
 
       <p class="caveat ird-asof">
         {{ t('EM spread history collected since Jul 2023 (data-vendor cap) — long-term comparisons build up over time.', '新兴市场利差数据自2023年7月起收集（数据供应商限制）——长期比较数据将随时间积累。') }}
-        {%- if em_hy.get('asof') %} {{ t('Spread data as of ' + em_hy.get('asof',''), '利差数据截至' + em_hy.get('asof','')) }}.{%- endif %}
       </p>
     </div><!-- /credit -->
 
@@ -1744,7 +1748,7 @@
     <div class="panel">
       <div class="sec-h">
         <h2 id="intl-dollar-conditions">{{ t('What\'s driving the dollar?', '美元走势的驱动因素') }}
-          {%- if SM %}
+          {%- if sm_regime_known %}
             {{ help('Dollar regime uses a 120-day rolling window. Rate-differential weight: how much of the DXY move correlates with the US-vs-world short-rate spread. Risk-off weight: DXY vs VIX co-movement. Residual: unexplained. Dual-window confirmed over both 5d and 20d. Weights used: ' + (SM.get('weights_used')|string if SM.get('weights_used') else 'standard') + '. Window-sensitive: regime may shift with a different window.', '美元制度使用120日滚动窗口。利差权重：DXY走势与美国对全球短期利差的相关程度。避险权重：DXY与VIX的同步走势。残差：不可解释部分。双窗口在5日和20日均已确认。使用权重：' + (SM.get('weights_used')|string if SM.get('weights_used') else '标准') + '。窗口敏感：不同窗口下制度判断可能不同。') }}
           {%- else %}
             {{ help('Dollar read updates nightly from the forex desk. The regime is determined by a 120-day rolling decomposition comparing rate-differential vs risk-off vs residual drivers. When data is fresh, this panel shows the dominant regime and a one-sentence explanation.', '美元读数每晚从外汇台更新。制度由120日滚动分解确定，比较利差、避险与残差驱动因素。数据刷新后，本面板显示主导制度及一句话说明。') }}
@@ -1754,7 +1758,7 @@
       </div>
 
       <div class="ird-dollar-card">
-        {%- if SM %}
+        {%- if sm_regime_known %}
           {%- set regime = SM.get('regime', '') %}
           {%- if regime == 'rates-driven' %}
             <div class="regime-word">{{ t('Rate-driven', '利差驱动') }}</div>
@@ -1780,7 +1784,7 @@
         {%- else %}
           {# Honest null — smile is absent #}
           <div class="ird-dollar-null">
-            {{ t('Not enough fresh data — the dollar read updates after tonight\'s build.', '数据暂不足——美元读数将在今晚构建后更新。') }}
+            {{ t('Unavailable — no supported dollar regime is supplied.', '不可用——未提供有效的美元制度读数。') }}
           </div>
           {%- if safety_bid %}
           <div style="margin-top:10px;">
@@ -1796,10 +1800,10 @@
         {%- endif %}
       </div>
       <p class="caveat ird-asof">
-        {%- if SM %}
+        {%- if sm_regime_known %}
           {{ t('120-day rolling window · As of ' + (RD.get('built','')[:10] or ''), '120日滚动窗口 · 截至' + (RD.get('built','')[:10] or '')) }}
         {%- else %}
-          {{ t('Dollar regime read not yet available — updates nightly.', '美元制度读数暂不可用——每晚更新。') }}
+          {{ t('Dollar regime unavailable in supplied data.', '所提供数据中的美元制度不可用。') }}
         {%- endif %}
       </p>
     </div><!-- /dollar -->

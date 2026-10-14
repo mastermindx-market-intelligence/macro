@@ -140,10 +140,12 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Investigate distinct or missing Credit regional observation clocks from the existing owner contract.
-  Current footer only displays EM HY date; do not infer shared freshness or fabricate regional stale flags.
-  Reuse accepted semantic, absence, clocks and keyboard proof; all review, release, live-browser and IW2 holds remain.
+next_action: Investigate known Dollar regime method wording and observation scope using the existing owner fields.
+  Credit clocks and unavailable Dollar states now have bounded source proof; do not repeat accepted cases.
+  Do not invent causal market claims, dates, freshness flags or contracts; all review, release, browser and IW2 holds persist.
 artifacts:
+- research/paper_international_wave1_wave2/CREDIT_OBSERVATION_DATES_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/DOLLAR_UNAVAILABLE_REGIME_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_CLOCKS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_OBSERVATION_DATES_ACCEPTANCE.json
