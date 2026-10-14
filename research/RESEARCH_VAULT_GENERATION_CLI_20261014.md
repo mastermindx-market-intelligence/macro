@@ -14,8 +14,8 @@ The existing generation writer retains its capability, catalog, BUILDING,
 conditional-write and completion checks. Before workflow adoption, the release
 owner must qualify actual executed source identity, recurring run/attempt identity,
 all-writer settlement and supported recovery of an interrupted original epoch.
-The first adoption must not precede the recurring invocation's ability to continue
-from COMPLETE. BUILDING remains closed to a successor.
+The first adoption must not precede the recurring invocation's ability to start
+from a prior COMPLETE generation. BUILDING remains closed to a successor.
 
 The public catalog mirror now uses the exact projection already reviewed on
 F11: only the top-level `producer_generation` block is removed. Canonical private
@@ -36,7 +36,7 @@ with an unchanged catalog fence. It did not prove all-writer exclusion, a
 producer-published generation or the selected corpus binding. F11's release
 hold and runtime/client acceptance obligations remain in force.
 
-Local validation: 402 distinct affected tests pass with no remaining skips.
+Historical CLI-only validation before consolidation: 402 distinct affected tests passed with no remaining skips.
 The two sparse-catalog cases pass after hydration of the exact committed fixture.
 All 2744 indexed CI trigger closures are reachable with zero gaps. The independent
 CI curation checks and hosted exact-head checks remain separate release gates.
@@ -61,30 +61,34 @@ caller, remote-settlement or COMPLETE authority. Broken or closed output must no
 replace the original ingest result, exception, KeyboardInterrupt or SystemExit.
 No digest retry, later rehash or invented capture is performed.
 
-The exact capture-only Fabric review was consumed and accepted after root repair
-of the unguarded output notice. Ten actual-CLI causal cases failed before repair;
-56CLI/workspace cases and five capture cases pass. The reviewer inspected the
-actual journal and a CLI control-flow replica; later workspace and output-error
-repairs are root-verified, not a claimed peer postimage. The integrated core has
-144passing CLI/journal/writer cases. Broader affected and CI checks are recorded
-on the final PR head, separately from these earlier candidate measurements.
+The capture-only Fabric review was consumed and accepted after root repair of an
+unguarded output notice. Ten actual-CLI cases reproduced the original error.
+The reviewer inspected the actual journal and a CLI control-flow replica; later
+workspace and output-error repairs were verified by the root. The review does not
+claim coverage of those later changes.
 
-PR9311 consolidates the source originally in9302 by attributed cherry-pick, plus
-this capture/workspace integration. The two prior carriers were visibly disarmed
-before integration. No workflow generation flag, production writer-policy,
-source pin, runtime, external scope or credential was activated by these changes.
+PR #9311 consolidates the source originally in #9302 by attributed cherry-pick,
+plus the capture and workspace integration. Both carriers were disarmed before
+integration. This change activates no workflow generation flag, production writer
+policy, source pin, runtime, external scope or credential.
 
+## Consolidated validation
 
-Final integration qualification:146direct CLI/journal/writer tests pass, including
-five path-disclosure cases (three existing-workspace cases failed before repair).
-The broader exact F3/F5-M invocation passed1035tests and5subtests;2title/SEO
-failures reproduce with the exact0db562b2b58fbase catalog implementation and38
-unchanged loaded source/input files. One retrieval evaluation snapshot is already
-moved and remains explicitly skipped. This is not an all-green claim. The final
-CLI-only privacy repair was rechecked in the146case set. Both CI curation cases
-pass(160.26s);2771trigger closures are reachable with0gaps. Twelve real Linux
-private-filesystem checks pass against journalSHA256
-b645d79e7b0adfc4956d7b80203960f4057ff90238585632f8c9d684225c0278,
-including actual writer-side capture, uncertain fsync refusal and no close retry.
-The first updated fixture reported a stale literal source hash; its receipt is
-not used. The bound fixture was rerun and hashes the actual executed bytes.
+The final direct CLI, journal and writer suite passes 146 tests. This includes
+five path-disclosure cases; three existing-workspace cases failed before repair.
+The broader F3/F5-M invocation passed 1,035 tests and five subtests. Two title/SEO
+failures reproduce with the exact base catalog implementation at
+`0db562b2b58f518df1cdf688af73930e5bf6e9eb` and 38 unchanged loaded source/input
+files. One retrieval evaluation snapshot had moved and remains explicitly skipped.
+These results do not establish an all-green suite. The final CLI-only privacy
+repair was checked in the 146-test group.
+
+Both CI curation cases pass (160.26 seconds); all 2,771 indexed trigger closures
+are reachable. Twelve Linux filesystem checks pass against the actual journal
+source SHA256 `b645d79e7b0adfc4956d7b80203960f4057ff90238585632f8c9d684225c0278`,
+including original writer-side capture, uncertain-fsync refusal and no close retry.
+An earlier fixture printed a stale literal source hash; its receipt is excluded.
+The accepted rerun derives the hash from the executed bytes.
+
+Hosted checks must bind the published head. Source merge does not qualify actual
+writer settlement, a producer-published generation or client acceptance.
