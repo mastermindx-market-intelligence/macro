@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T06:39:42.676283+00:00",
-  "count": 2877,
+  "generated_at": "2026-10-14T06:54:28.021325+00:00",
+  "count": 2878,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -572,6 +572,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-s8rnoottqe9-6727c8",
+      "title": "Americas Homebuilders, Building Products & Wood Products 3Q26 Earnings Preview",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:13:19Z",
+      "summary_points": [
+        "30-Year Mortgage Rate Surge: 74bps increase to 7%+ range (first since Jan 2025), driving affordability crisis (40%+ mortgage payments vs. income in 10 states) and inverse correlation (R²=0.819) with homebuying demand.",
+        "Earnings & Margin Pressure: 3Q results muted, 2026 EPS estimates cut 3% avg.",
+        "(homebuilders) and 2% (building products); gross margins projected to fall 146bps Q3 (to 20.2%) amid input cost inflation outpacing home prices.",
+        "Sector Valuation & Seasonality: Building products trade at 31st percentile vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
       "language": "en",
       "needs_metadata": false
     },
