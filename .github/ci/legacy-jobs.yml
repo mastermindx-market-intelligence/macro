@@ -14654,6 +14654,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
+      # 2026-10-14 RIC D1 (EFFR meeting-path identification, A16-A19): engine/fed_path.py now lazily
+      # imports engine.rates_command_basis (B0 basis qualification) and engine.event_calendar (FOMC
+      # meeting dates), so the closure reaches both. Declared exactly, widening only; ceilings unchanged.
+      - "engine/event_calendar.py"
+      - "engine/rates_command_basis.py"
       # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
       # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
       # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
