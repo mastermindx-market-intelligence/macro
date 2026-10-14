@@ -45,3 +45,20 @@ and24-source manifest. Its9historical groups preserve the inspection/cadence,
 clock and held-record boundaries. Together with10integrity+5DOJ controls this is
 24portable groups, all locally passed. A wrong-manifest control fails before
 imports. No probe has been run against production for this unmerged follow-on.
+
+October14 radar receipt addition (application8eb467112b83): desk_planner also
+preserves the current radar loss target and calibration limits, omitting
+probabilities from unqualified legacy rows. See ../../radar_receipt_phase/
+review_binding.json for the exact independently accepted runtime hash. Only this
+source hash changes from the previous accepted Research-pool bundle;23 remain
+unchanged and all3 reviewed page hashes match. The older tests/counts above are
+historical. Current affected proof is429 passed/1 sparse-site skip plus1 separately
+passed unchanged real-data hygiene test. Runtime is still uninstalled.
+
+After actual protected landing also run
+../../radar_receipt_phase/installed_radar_receipt_probe.py against this same
+24-source manifest. It adds7 groups for target/calibration/advisory fidelity,
+legacy/malformed/nonfinite/mismatched refusals and valid zero. Total portable
+acceptance is31 groups (10+5+9+7), all passed locally with zero real provider or
+production writes; a wrong hash refuses before import. Do not mistake a fixture
+probe for a model-quality, source-rights or public-story approval.

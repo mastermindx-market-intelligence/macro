@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete controller-admitted repair refresh and protected installation of PR 9209, then ship the same reviewed validator/writer/DOJ/Research-intake follow-on using its 24-source bundle and 24 portable control groups. Continue corroborating newly reachable source candidates; preserve held history and the refused issuer review.
+next_action: Complete controller-admitted repair refresh and protected installation of PR 9209, then ship the same reviewed validator/writer/DOJ/Research-intake follow-on using its 24-source bundle and 31 portable control groups, including the reviewed radar receipt scope repair. Continue corroborating newly reachable source candidates; preserve held history and the refused issuer review.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -520,3 +520,5 @@ All three are retained as unedited source exclusions, with exact hashes and reas
 in source_qualification_20261014_0531/primary_source_review.json. No provider or
 producer write, new Press stage, publication, cutover or D14 credit occurred.
 Accepted application 2c23601ff0f5 and its test/probe evidence remain unchanged.
+
+Own-receipt repair, October14 06:15UTC: application8eb467112b83 preserves the radar probability target/calibration/advisory limits and omits unqualified probabilities. Fabric mmx-press-radar-receipt-review-20261014-001 ACCEPTED;429 affected tests pass/1 sparse skip plus1 unchanged real-data hygiene pass. Same24-source bundle and3pages,31 local portable groups pass. Not installed. BlackRock corporate terms leave its public lead unqualified; Treasury BAC release is the existing held event, not a replay opportunity. See radar_receipt_phase/review_binding.json, source_qualification.json and CHECKPOINT.md.

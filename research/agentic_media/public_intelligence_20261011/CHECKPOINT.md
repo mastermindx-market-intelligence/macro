@@ -1,3 +1,67 @@
+## 2026-10-14 06:15 UTC — own-receipt consumer repaired and independently accepted
+
+Application commit `8eb467112b832101385f7256b83036f45ae5d759` repairs the Press
+risk-radar extractor. The current installed source artifact explicitly scopes
+its probability to a five-percent SPY closing-price decline over 21 sessions,
+and labels its calibration reconstructed historical and not precision-grade.
+Press previously dropped that scope/limitation and exposed unspoken h5/h10
+values. The consumer now carries the target, calibration limits and supplied
+advisory status. Missing or mismatched evidence leaves state/score available but
+omits probabilities. This changes no producer, model, threshold, cadence, held
+draft, publication approval or trading authority.
+
+Seventeen targeted cases produced 16 failures before repair. After repair the
+affected suite passes 429 tests with one existing sparse-site skip and one
+real-data test deselected; that unchanged test separately passes against the
+original workspace's engine inputs, all hashes unchanged. One legacy JSONL test
+expectation was tightened to require omission of probabilities without target
+metadata; its corrupt/nonobject-row refusal controls remain intact. Independent
+Fabric `mmx-press-radar-receipt-review-20261014-001` ran on admitted MiniMax/ubuntu1;
+root consumed its retained PASS and recorded ACCEPTED. Runtime SHA
+852a8889adb59d490f8ddd3de813ceb5de7776885cdb336ff44532be4d6ef8eb
+exactly equals reviewed bytes. This is a consumer-fidelity review, not independent
+statistical validation or a replacement of the refused optional issuer review.
+
+The SAME follow-on manifest remains24 sources, only desk_planner rebound after
+review; all3 acceptance pages unchanged. Local portable controls now pass31
+groups: prior10 integrity +5 DOJ +9 Research pool +7 radar. A corrupt manifest
+refuses before import. All are LOCAL fixture proof; no follow-on PR or install.
+The installed context-reader probe failed before effects with ImportError because
+PR9209's _reviewed_context is not installed. No local source was injected into
+production. The separate local context preflight used4 exact installed-byte
+matches from the original workspace:6 date-eligible facts accepted,8 stale facts
+refused, plus bad-hash refusal. Local fear/greed was omitted because its hash
+differs. Date eligibility alone establishes neither event relevance nor rights.
+
+Source qualification changed direction after reviewing actual terms. BlackRock's
+corporate terms restrict public/commercial reuse without written permission;
+public-distribution wording alone is not this operation's Press rights receipt.
+Its public lead remains unqualified. Treasury sb0657 is the SAME October13 BAC
+enforcement event as the held OCC draft, not a fresh attempt under another URL.
+The cartel sanctions release has no qualified listed-issuer association here.
+No raw third-party report, provider call, producer edit, or new staging occurred.
+Current own gamma/breadth datesOct8 and moversOct9 remain outside Brief freshness.
+
+The single PR/controller read at05:52 found9209 OPEN8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI38508325200 inherited pack4 FAILURE,11otherpacks PASS, merge-on-green armed.
+Existing9227 remains the landed repair. Admission was19activeproofs/cap8 with
+8920lease register populated and main baseline pending/running. No manual
+refresh, duplicate CI/repair/observer, gate waiver or lease mutation occurred.
+
+Next: finish controller-admitted9209 exact-head protected release and normal
+installation using its actual merge SHA. Then integrate landed main into this
+SAME reviewed follow-on, retain accepted hashes, create ONE PR, and complete its
+protected release plus24-source/3-page and31-group installed acceptance. Continue
+source qualification through existing permitted paths. Publication/cutover false,
+D14credit0/10; preserve all original held history, Oct11 12:07 EFFECT_UNKNOWN,
+Commission19, Catalyst8678, refused issuer review and shared dirty accounting.
+
+verified: radar_receipt_phase/{regression_red.txt,affected_tests.txt,
+preserved_input_hygiene.txt,real_input_comparison.json,review_binding.json,
+review_status.json,local_radar_probe.json,local_integrity_probe.json,
+local_doj_probe.json,local_pool_probe.json,wrong_manifest_control.json,
+source_qualification.json,installed_own_receipts.json,pr9209_observation.json}.
+
 ## 2026-10-14 05:45 UTC — private primary-source review rejects two inaccurate summaries
 
 This wake advanced source qualification while PR 9209 awaited admitted refresh.
