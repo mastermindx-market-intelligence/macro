@@ -367,6 +367,9 @@ def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
         "benchmark": "SPY",
         "horizons_sessions": [21, 63],
         "max_points_per_sector": 252,
+        "as_of": str(panel.index[-1].date()),
+        "min_history_sessions": 210,
+        "source_cohort": {"registry": "engine.sector_cycles.SECTORS", "tickers": ["XLK"]},
     }
     assert data["sectors"][0]["rs_history"]
     assert data["sectors"][0]["rs_history"][-1]["rs_21d"] == data["sectors"][0]["now"]["rs_21d"]

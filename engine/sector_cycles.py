@@ -432,7 +432,15 @@ def _relative_strength_series(
 
 def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
                 asof: pd.Timestamp | None = None) -> dict:
-    """RS vs SPY: 21d/63d/126d relative momentum + above-200d ratio trend."""
+    """RS vs SPY: 21d/63d/126d relative momentum + above-200d ratio trend.
+
+    Parameters
+    ----------
+    asof : when provided, slice BOTH ticker and benchmark series to ≤ asof
+        before computing RS.  This makes historical/PIT rebuilds explicit and
+        verifiable.  In the live path `closes` is already sliced by compute(),
+        so asof is not strictly required there, but can be passed for clarity.
+    """
     rs = _relative_strength_series(close_full, ticker, bench=bench, asof=asof)
     if rs.empty and (ticker not in close_full or bench not in close_full):
         return {"thin_history": False}
@@ -1354,6 +1362,14 @@ def compute(asof: str | None = None) -> dict | None:
                 "benchmark": benchmark,
                 "horizons_sessions": [21, 63],
                 "max_points_per_sector": RS_HISTORY_MAX_POINTS,
+                "as_of": str(last_ts.date()),
+                "min_history_sessions": _RS_MIN_ROWS,
+                "source_cohort": {
+                    "registry": "engine.sector_cycles.SECTORS",
+                    "tickers": sorted(
+                        rec["ticker"] for rec in sectors if rec.get("rs_history")
+                    ),
+                },
             },
             "n_sectors": len(sectors),
             "n_baskets": len(baskets),
