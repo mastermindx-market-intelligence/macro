@@ -4,11 +4,14 @@
     {
       "as_of": "2026-10-14",
       "tickers": [
-        "GL",
-        "MO",
-        "SHW",
+        "ATO",
+        "BKH",
+        "FIBK",
+        "MUB",
         "STX",
-        "TLN"
+        "TLN",
+        "TNDM",
+        "TSN"
       ]
     },
     {
