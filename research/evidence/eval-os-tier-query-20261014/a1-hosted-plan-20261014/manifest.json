@@ -1,0 +1,23 @@
+{
+  "records": [
+    {
+      "file": "ci-semantic-plan.zip",
+      "sha256": "444cc9a30a0443faf0b13080c712dafdcfc6354fd78382f22716a70090631db4",
+      "bytes": 34431
+    },
+    {
+      "file": "first-hosted-observation.json",
+      "sha256": "41d0639fb5b1d2b4a97a431905b06cf5dc78703a08ce0b069a355cf97689f296",
+      "bytes": 11825
+    },
+    {
+      "file": "hosted-source-identity.json",
+      "sha256": "bd31348375a6932957551b7c7b354a85bd8c8da1fd9a68e349ff1f38b49a70f4",
+      "bytes": 4347
+    }
+  ],
+  "scope": "Original hosted semantic plan artifact and source identity; tests still running",
+  "zip_member": "ci-plan.json",
+  "member_sha256": "77cf47c5621907a0bbe997aae8848afcad56b36ae255b31e871d19a7f8925319",
+  "artifact_digest_verified": true
+}

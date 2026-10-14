@@ -431,3 +431,28 @@ head successes do not qualify it. First next observation respects the300second
 boundary (conservatively after16:54:53). Incumbent owns final merge and any
 subsequent admitted base refresh. Deployment probes stay unbound until real
 qualified A1 landing. Original effects/refusals remain untouched; finalflagsfalse.
+
+
+## 2026-10-14T16:57Z — fresh hosted A1 plan bound and retained
+
+Publishedb1 has exactly one observed current-head ci.yml run38601317870,
+attempt1, started16:49:17; no manual dispatch or duplicate producer. At16:55
+ci-planPASS, contract-delta and all12packsRUNNING. The plan selects126 eligible
+jobs from247code-gated legacy jobs; this is a different census from318global
+manifest definitions. A1 is explicitly selected in pack6. The original artifact
+ZIP SHA444cc9a30a0443faf0b13080c712dafdcfc6354fd78382f22716a70090631db4
+matches GitHub's digest; its plan binds subjectb1, base9b8cb7526390, tested
+f4c3d4fb57701fad0c04f64b42b45acb0943aeff and planSHAd947437146ecab6c6179f191bf90bf042100b721e9c29883aa1fdf85b50b23b3.
+The actual tested Git tree exactly matches the admitted read-only preview
+d554b237e7466ecec0b0d69fd36b417bc351605d. All17production files and the
+complete A1 job definition/path list match the qualified head. This is hosted
+selection/source identity, not terminal tests, merge or production acceptance.
+Original artifact and receipts are under a1-hosted-plan-20261014/.
+
+Main authority, self-mod fence, capability broker and grader manifest passed.
+The separate inactive-pilot context is red, as previously classified; no bypass
+or reclassification of any binding check is inferred. Actual terminal required
+checks and incumbent merge remain owed. PRbody edits are not CI lifecycle triggers
+(the checked workflow starts only opened/synchronize/reopened), so the metadata
+update introduced no extra proof producer. The release verification tab remains
+actualbrowser2 numeric ID2/tab1925922370, authenticated in the original profile.
