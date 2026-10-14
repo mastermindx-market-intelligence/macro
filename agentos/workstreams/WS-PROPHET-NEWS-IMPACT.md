@@ -37,6 +37,7 @@ do_not_redo:
   - "Orchestration shape: Fable seat → one native Opus orchestrator → read-only fabric lanes on local m2 pools (glm-5.3-flash census, glm-5.3 candidates + attack reviews) → orchestrator synthesis → seat adjudication. The Workflow tool is platform-blocked in the seat session (hook dispatch timeout, verified twice); do not try it a third time."
   - "Orchestration shape from 2026-10-12 (Chairman directive): no native Claude children of any kind; the seat launches Grok (grok-4.6) and GLM (glm-5.3 / glm-5.3-flash) lanes directly with ext/remote_sub.sh on ubuntu0/ubuntu2/ubuntu3/mb, one launcher task per lane as its only watcher, and judges every return by artifact. The Phase 0 native-Opus orchestrators ORCH-W1/W1c/W1d are history, never a template."
   - "Wave-2 lanes B1-B5, A1-A7 and C1-C3 are ACCEPTED by artifact and integrated in the Phase 1 integration PR (2026-10-13); the hostile corpus reproduces 33/33 seat-ratified verdicts. Do not re-run them; repair forward."
+  - "The nine W3 build lanes (X4 transfer, X4 observation, C5 cascade, M2 mechanisms, E3 receipt, E3 grade, T1 thesis, P7 adapter, L6 agreement) are ACCEPTED by artifact and integrated in W3 commit 0980ee37 (617 passed, 0 skipped). Do not re-launch them; the seven open design defects are repaired forward in wave w1c."
 waves:
   - id: p0
     title: Phase 0 — recovery census, three-candidate commission A, seat freeze of event templates + closed schemas
@@ -49,9 +50,14 @@ waves:
     next_action: none; landed by the Phase 1 integration PR (validate.py with the S1-S13 semantic layer and strict loading, sampler, cluster, issuer, 33 hostile fixtures, A1-A7 designs, C2/C3 census).
   - id: w1b
     title: Wave 1b - Phase 1 leaf modules built from the accepted A-designs (thesis fold, mechanism mapper, transfer/observation, eval harness, labeler agreement, cost cascade planner, Prophet evidence adapter leaf)
-    status: in_progress
+    status: done
     depends_on: [w1]
-    next_action: seat-launched Grok/GLM build lanes on ubuntu0/ubuntu1/ubuntu2 implement engine/news_impact/{thesis,mechanisms,transfer,observation,eval,agreement,cascade,prophet_adapter}.py from phase1_designs/ section 4 frozen-spec drafts and section 7 defaults; the seat judges by artifact, integrates and ships; the adapter stays a leaf and is not wired into engine/intelligence.py until the w2 benchmark gate.
+    next_action: none; the nine leaf modules (transfer, observation, cascade, mechanisms, eval_receipt, eval_grade, thesis, prophet_adapter, agreement) and the 15 Phase 1 contracts landed by the Phase 1 integration PR (W3 commit 0980ee37) with fail-closed tests; prophet_adapter stays a leaf, not wired into engine/intelligence.py.
+  - id: w1c
+    title: Wave 1c - repair the seven design defects found at W3 integration (C5 cascade, X4 observation, M2 mechanisms, E3 receipt, T1 thesis, P7 adapter, L6 agreement)
+    status: todo
+    depends_on: [w1b]
+    next_action: one seat-launched Grok/GLM lane per defect against the frozen spec; each repair either changes the module to match the design or records a seat ruling amending the design, and the defect list lives in the 2026-10-13 handoff unresolved section.
   - id: w2
     title: Wave 2 — commission D 600-case graded benchmark (200 capital allocation / 200 demand-guidance / 200 strategic-partnership)
     status: todo
@@ -60,7 +66,7 @@ waves:
     title: Wave 3 — Phase 1 measured packet producer wired to the existing event ledger, context_only, behind the benchmark gate
     status: todo
     depends_on: [w2]
-next_action: Wave w1b - build the A1-A7 leaf modules in engine/news_impact/ via seat-launched Grok (grok-4.6) and GLM (glm-5.3) lanes on ubuntu0/ubuntu1/ubuntu2 (no native Claude children), then wave w2 - label the 600-case benchmark with the A6 labeler packet and score it with the eval harness; keep the v1 contract byte-frozen.
+next_action: Wave w1c - repair the seven W3 design defects via seat-launched Grok/GLM lanes (no native Claude children), then wave w2 - label the 600-case benchmark with the A6 labeler packet and score it with eval_receipt/eval_grade; keep the v1 contract byte-frozen.
 ---
 
 # Prophet news-to-business-impact
