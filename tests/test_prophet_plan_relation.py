@@ -10,6 +10,143 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize("book", [
+    [], 7, True, "plans",
+    {"plans": None}, {"plans": {}}, {"plans": "LFUS"}, {"plans": 7},
+    {"plans": [], "lifecycle_counts": [1]},
+    {"plans": [], "lifecycle_counts": []},
+    {"plans": [], "lifecycle_counts": "counts"},
+    {"plans": [], "lifecycle_counts": 7},
+    {"plans": [], "lifecycle_counts": False},
+    {"plans": [], "intake": 7},
+    {"plans": [], "intake": True},
+    {"plans": [], "intake": 1.5},
+    {"plans": [None]}, {"plans": ["LFUS"]},
+    {"plans": [{"id": "P1", "asset": "LFUS"}, None]},
+    {"plans": [{"asset": "LFUS"}]},
+    {"plans": [{"id": " ", "asset": "LFUS"}]},
+    {"plans": [{"id": [], "asset": "LFUS"}]},
+    {"plans": [{"id": "P1", "asset": []}]},
+    {"plans": [{"id": "P1", "asset": " "}]},
+    {"plans": [{"id": [], "asset": "LFUS", "closed": True}]},
+    {"plans": [{"id": "P1", "asset": "LFUS", "lifecycle_state": ["entered"]}]},
+    {"plans": [{"id": "P1", "asset": "LFUS", "lifecycle_state": {"state": "entered"}}]},
+    {"plans": [{"id": "P1", "asset": "LFUS", "entry_date": 7},
+               {"id": "P2", "asset": "LFUS", "entry_date": "2026-10-01"}]},
+])
+def test_invalid_plan_book_reaches_existing_stock_route_unavailable(tmp_path, book):
+    import json
+    from scripts.build_site import (
+        _read_us_prophet_book, _split_us_prophet_board, _us_prophet_episode_map,
+        _us_life_repair_context, _plan_relations_for, _plan_relation_for_row,
+    )
+    from tests.test_dashboard_template_render import _base_vm, _env
+
+    path = tmp_path / "index.json"
+    path.write_text(json.dumps(book))
+    admitted, error = _read_us_prophet_book(path)
+    assert (admitted, error) == (None, True)
+    vm = _base_vm()
+    vm.update(us_prophet_book=admitted, us_prophet_book_error=error)
+    shell, gate, locked = _split_us_prophet_board(admitted, 1)
+    episodes = _us_prophet_episode_map((admitted or {}).get("plans") or [])
+    context = _us_life_repair_context(vm, shell, gate, 1)
+    relations = _plan_relations_for(admitted, error)
+    assert relations == ("unknown", {})
+    assert _plan_relation_for_row(relations, {"ticker": "LFUS"}) == {
+        "state": "unknown", "plans": []}
+    vm.update(context, us_prophet_book=shell, life_gate=gate,
+              us_prophet_episodes=episodes,
+              plan_rel={"state": relations[0], "plans": []},
+              plan_rel_by_ticker=relations[1])
+    page = BeautifulSoup(_env().get_template("dashboard.html.j2").render(
+        **vm, mode="stocks"), "html.parser")
+    assert page.select_one("#us-plan-block .mx-error")
+    assert not locked
+    relation_sections = page.select(".pvs-plan-relation")
+    assert relation_sections, "the existing candidate details must exercise the relation"
+    for section in relation_sections:
+        assert section["data-plan-relation"] == "unknown"
+        assert "Plan records could not be read for this candidate." in section.get_text()
+        assert not section.select(".pvs-plan-link, .pvs-plan-rec")
+
+
+def test_plan_book_reader_distinguishes_missing_from_unreadable(tmp_path):
+    from scripts.build_site import _read_us_prophet_book, _plan_relations_for
+
+    path = tmp_path / "index.json"
+    assert _read_us_prophet_book(path) == (None, False)
+    path.write_text("{broken")
+    assert _read_us_prophet_book(path) == (None, True)
+    assert _plan_relations_for(None, False) == ("unknown", {})
+    from tests.test_dashboard_template_render import _env
+    ladder = BeautifulSoup(str(_env().get_template("_prophet_card.html.j2").module.mx_ladder(
+        None, error=False)), "html.parser")
+    assert ladder.select_one('[aria-busy="true"]')
+    assert not ladder.select_one('.mx-error')
+
+
+@pytest.mark.parametrize("book", [{}, {"source_asof": "2026-10-01"}, {"plans": []}])
+def test_plan_book_reader_preserves_legacy_empty_books(tmp_path, book):
+    import json
+    from scripts.build_site import _read_us_prophet_book, _plan_relations_for
+
+    path = tmp_path / "index.json"
+    encoded = json.dumps(book, indent=2)
+    path.write_text(encoded)
+    admitted, error = _read_us_prophet_book(path)
+    assert admitted == book and error is False
+    assert path.read_text() == encoded
+    assert _plan_relations_for(admitted, error) == ("none", {})
+
+
+def test_plan_book_reader_preserves_valid_full_book_and_native_projection(tmp_path, monkeypatch):
+    import json
+    import scripts.build_site as build
+
+    book = _lfus_book()
+    encoded = json.dumps(book, indent=2)
+    path = tmp_path / "index.json"
+    path.write_text(encoded)
+    # JSON decoding returns this exact object: admission must not copy or rewrite it.
+    monkeypatch.setattr(build.json, "loads", lambda raw: book)
+    admitted, error = build._read_us_prophet_book(path)
+    assert admitted is book and error is False
+    assert path.read_text() == encoded
+    before = json.dumps(book, sort_keys=True)
+    shell, gate, locked = build._split_us_prophet_board(admitted, 1)
+    assert shell["plans"] == book["plans"][:1]
+    assert gate["total"] == 2 and gate["preview"] == 1 and gate["locked"] == 1
+    assert locked == book["plans"][1:]
+    # Existing episode grouping uses raw asset identity; preserve that behavior.
+    assert build._us_prophet_episode_map(admitted["plans"]) == {}
+    vm = {"us_prophet_book": admitted, "us_standouts": {"buy": [{"ticker": "LFUS"}]}}
+    assert build._us_life_repair_context(vm, shell, gate, 1) == {
+        "us_candidate_map": {"LFUS": {"ticker": "LFUS"}},
+        "cand_no_plan": {"sample": [{"ticker": "LFUS"}], "all_no_plan": False},
+        "life_gate_visible_preview": 0, "life_gate_visible_locked": 2,
+    }
+    state, by_ticker = build._plan_relations_for(admitted, error)
+    assert state == "none" and [row["id"] for row in by_ticker["LFUS"]] == ["LFUS-BULL-20260810"]
+    assert json.dumps(book, sort_keys=True) == before
+
+
+def test_native_plan_book_read_assigns_existing_book_and_error_state():
+    import ast
+    import inspect
+    from scripts.build_site import main
+
+    tree = ast.parse(inspect.getsource(main))
+    assignments = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                   and isinstance(node.value, ast.Call)
+                   and isinstance(node.value.func, ast.Name)
+                   and node.value.func.id == "_read_us_prophet_book"]
+    assert len(assignments) == 1
+    target = assignments[0].targets[0]
+    assert isinstance(target, ast.Tuple)
+    assert [item.id for item in target.elts] == ["us_prophet_book", "us_prophet_book_error"]
+
+
 def _detail():
     from tests.test_dashboard_template_render import _env
 
@@ -77,6 +214,20 @@ def test_plan_relation_excludes_every_truthy_closed_value():
         {"id": "AAA-NUMBER", "asset": "AAA", "closed": 1, "formation_date": "2026-08-02"},
     ]}
     assert _plan_relations_for(book) == ("none", {})
+
+
+@pytest.mark.parametrize("lifecycle", [["entered"], {"state": "entered"}])
+def test_direct_relation_rejects_unrenderable_lifecycle_collection(lifecycle):
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+
+    relations = _plan_relations_for({"plans": [
+        {"id": "P1", "asset": "LFUS", "lifecycle_state": lifecycle}]})
+    assert relations == ("unknown", {})
+    relation = _plan_relation_for_row(relations, {"ticker": "LFUS"})
+    section = BeautifulSoup(str(_detail().body({"ticker": "LFUS"}, "board", None, relation)),
+                            "html.parser").select_one(".pvs-plan-relation")
+    assert section["data-plan-relation"] == "unknown"
+    assert not section.select(".pvs-plan-link, .pvs-plan-rec")
 
 
 def test_plan_relation_sorts_multiple_open_plans_and_matches_normalized_tickers():
@@ -404,3 +555,160 @@ def test_plan_relation_preserves_existing_machine_attribute_sets():
         values = {name: sorted(re.findall(rf'{name}="([^"]*)"', html)) for name in attrs}
         extracted.append(values)
     assert extracted[0] == extracted[1]
+
+
+@pytest.mark.parametrize(
+    'plans_value',
+    [None, False, True, 0, 7, '', 'plans', {}, {'stale': True}],
+)
+def test_appended_plan_relations_reject_malformed_plans_container(plans_value):
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    # Explicit null/bool/int/string/mapping plans leave the owner unreadable,
+    # without raising; only an absent plans key or an empty list stays "none".
+    assert _plan_relations_for({'plans': plans_value}) == ('unknown', {})
+
+
+@pytest.mark.parametrize(
+    'plan_row',
+    [
+        'p1',
+        42,
+        None,
+        [],
+        {'id': 'p1'},
+        {'asset': 'LFUS'},
+        {'id': '   ', 'asset': 'LFUS'},
+        {'id': 'p1', 'asset': '  '},
+        {'id': 7, 'asset': 'LFUS'},
+        {'id': 'p1', 'asset': 7},
+        {'id': 'p1', 'asset': None},
+    ],
+)
+def test_appended_plan_relations_reject_malformed_open_record(plan_row):
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    # Open record (no truthy `closed`): id and asset must both be nonblank
+    # strings, and a malformed record must surface as unknown, never a skip.
+    assert _plan_relations_for({'plans': [plan_row]}) == ('unknown', {})
+
+
+def test_appended_plan_relations_mixed_valid_and_malformed_record_is_unknown():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    book = {'plans': [
+        {'id': 'p1', 'asset': 'LFUS', 'closed': 0, 'lifecycle_state': 'signal',
+         'formation_date': '2026-02-02', 'signal_date': '2026-02-03',
+         'plan_asof': '2026-02-04'},
+        {'id': 'p2', 'asset': '   '},
+    ]}
+    assert _plan_relations_for(book) == ('unknown', {})
+
+
+def test_appended_plan_relations_mixed_valid_and_nonmapping_record_is_unknown():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    book = {'plans': [
+        {'id': 'p1', 'asset': 'LFUS', 'lifecycle_state': 'signal'},
+        'stale-entry',
+    ]}
+    assert _plan_relations_for(book) == ('unknown', {})
+
+
+@pytest.mark.parametrize(
+    'closed_value',
+    [True, 1, 1.0, 'yes', 'true', 'closed', [0], {'x': 1}, (1,)],
+)
+def test_appended_plan_relations_closed_truthy_forms_excluded(closed_value):
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    # Every truthy closed value excludes the record, legacy string/numeric
+    # forms included, and exclusion happens before id/asset validation.
+    book = {'plans': [{'id': 'old', 'asset': 'LFUS', 'closed': closed_value}]}
+    assert _plan_relations_for(book) == ('none', {})
+
+
+def test_appended_plan_relations_malformed_closed_record_is_skipped():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    # A closed record missing `id` is skipped before validation, so the
+    # remaining valid open record still yields a readable owner.
+    book = {'plans': [
+        {'asset': 'LFUS', 'closed': 'yes'},
+        {'id': 'p1', 'asset': 'LFUS', 'closed': False, 'lifecycle_state': 'signal',
+         'formation_date': '2026-01-02', 'signal_date': '2026-01-03',
+         'plan_asof': '2026-01-04'},
+    ]}
+    state, by_ticker = _plan_relations_for(book)
+    assert state == 'none'
+    assert [entry['id'] for entry in by_ticker['LFUS']] == ['p1']
+
+
+@pytest.mark.parametrize(
+    'book',
+    [{}, {'plans': []}, {'asof': '2026-01-01'}],
+)
+def test_appended_plan_relations_empty_or_absent_plans_stay_none(book):
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    assert _plan_relations_for(book) == ('none', {})
+
+
+
+
+
+
+
+
+def test_appended_plan_relations_unknown_propagates_via_row_helper():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    relation = _plan_relations_for({'plans': None})
+    assert relation == ('unknown', {})
+    assert _plan_relation_for_row(relation, {'ticker': ' lfus '}) == {
+        'state': 'unknown', 'plans': []}
+
+
+
+
+def test_appended_detail_template_unknown_copy_and_no_view_in_plans():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    # One valid record plus one malformed open record: the owner is unreadable,
+    # so the real candidate-detail template must show unknown copy and must
+    # not offer View in Plans (no silent skip of the malformed record).
+    book = {'plans': [
+        {'id': 'p1', 'asset': 'LFUS', 'closed': False, 'lifecycle_state': 'signal',
+         'formation_date': '2026-01-02', 'signal_date': '2026-01-03',
+         'plan_asof': '2026-01-04'},
+        {'id': 'p2'},
+    ]}
+    html = str(_detail().body({"ticker": "LFUS"}, "board", None, _relation(book)))
+    assert "Plan records could not be read for this candidate." in html
+    assert 'View in Plans' not in html
+
+
+def test_appended_detail_template_view_in_plans_control_for_valid_book():
+    from scripts.build_site import _plan_relations_for, _plan_relation_for_row
+    html = str(_detail().body({"ticker": "LFUS"}, "board", None, _relation(_lfus_book())))
+    assert 'View in Plans' in html
+
+
+@pytest.mark.parametrize("counts", [None, {}, {"entered": 3, "resolved": 1}])
+def test_plan_book_reader_preserves_valid_lifecycle_counts(tmp_path, counts):
+    import json
+    from scripts.build_site import _read_us_prophet_book
+    book = {"plans": [], "lifecycle_counts": counts}
+    path = tmp_path / "index.json"
+    original = json.dumps(book).encode()
+    path.write_bytes(original)
+    assert _read_us_prophet_book(path) == (book, False)
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("intake", [None, False, 0, {}, [], "", "early_turn_watch", ["early_turn_watch"], {"early_turn_watch": 2}])
+def test_plan_book_reader_preserves_supported_intake(tmp_path, intake):
+    import json
+    from scripts.build_site import _read_us_prophet_book
+    from tests.test_dashboard_template_render import _env, _base_vm
+    book = {"plans": [], "intake": intake}
+    path = tmp_path / "index.json"
+    original = json.dumps(book).encode()
+    path.write_bytes(original)
+    admitted, error = _read_us_prophet_book(path)
+    assert (admitted, error) == (book, False)
+    assert path.read_bytes() == original
+    vm = _base_vm()
+    vm.update(us_prophet_book=admitted, us_prophet_book_error=error)
+    _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")

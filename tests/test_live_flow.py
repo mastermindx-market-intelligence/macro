@@ -1735,10 +1735,13 @@ class TestSweepLikeFlag:
             session_date=SESSION_DATE, batch_ts=BATCH_TS,
             etf_floor=0, name_floor=0, etf_anchors=["SPY"],
         )
-        # Check at least one event exists and is swept
-        if result["events"]:
-            assert result["events"][0]["swept"] is True, \
-                "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        # Non-vacuous: an empty event list must not pass this case.
+        assert result["events"], (
+            "3 prints, 2 exchanges, 1.5s span must emit a notable event"
+        )
+        assert result["events"][0]["swept"] is True, (
+            "3 prints, 2 exchanges, 1.5s span must be swept=True"
+        )
 
     def test_not_swept_single_exchange(self):
         """3 prints, 1 exchange → swept=False (not multi-exchange)."""
@@ -1788,6 +1791,160 @@ class TestSweepLikeFlag:
             assert "swept" in ev, f"'swept' key missing from event: {ev}"
             assert isinstance(ev["swept"], bool), \
                 f"'swept' must be bool, got {type(ev['swept'])}"
+
+    def _run(self, df: pd.DataFrame) -> dict:
+        return lf.process_batch(
+            calls_df=df, puts_df=None,
+            session_date=SESSION_DATE, batch_ts=BATCH_TS,
+            etf_floor=0, name_floor=0, etf_anchors=["SPY"],
+        )
+
+    @pytest.mark.parametrize(
+        "missing",
+        [None, np.nan, "", "   "],
+        ids=["none", "nan", "empty", "whitespace"],
+    )
+    def test_missing_exchange_is_not_a_venue(self, missing):
+        """A missing exchange is not a second venue.
+
+        Three timed prints within 2s on exchanges [CBOE, <missing>, <missing>]
+        are one venue. None, NaN, "" and whitespace are missing.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        df.loc[df.index[1], "exchange"] = missing
+        df.loc[df.index[2], "exchange"] = missing
+        stored = df["exchange"].tolist()
+        assert stored[0] == "CBOE"
+        for raw in stored[1:]:
+            blank = isinstance(raw, str) and raw.strip() == ""
+            assert blank or pd.isna(raw), repr(raw)
+
+        result = self._run(df)
+        assert result["events"], "missing-exchange fixture must still emit the contract"
+        assert result["events"][0]["swept"] is False, (
+            f"missing exchange {missing!r} counted as a venue; "
+            f"swept={result['events'][0]['swept']}"
+        )
+
+    def test_untimed_print_venue_is_not_counted(self):
+        """An unparseable timestamp does not contribute its exchange.
+
+        Three CBOE prints within 2s plus one ISE print whose trade_timestamp
+        does not parse is one venue, so the contract is not sweep-like.
+
+        Called on ``_detect_sweeps`` directly. ``process_batch`` drops an
+        unparseable ``trade_timestamp`` at the source gate
+        (``_source_times_et`` / ``rth_valid``, engine/live_flow.py around the
+        ``expirations_valid`` block) before step 4c, so the venue-count defect
+        is only visible on the frame the heuristic itself receives.
+        """
+        timed = self._make_prints(n_prints=3, n_exchanges=1, span_sec=1.0)
+        assert set(timed["exchange"]) == {"CBOE"}
+        untimed = timed.iloc[[0]].copy()
+        untimed["exchange"] = "ISE"
+        untimed["trade_timestamp"] = "not-a-timestamp"
+        untimed["sequence"] = int(timed["sequence"].max()) + 1
+        frame = pd.concat([timed, untimed], ignore_index=True)
+        parsed = pd.to_datetime(frame["trade_timestamp"], errors="coerce")
+        assert int(parsed.isna().sum()) == 1
+        assert frame.loc[parsed.isna(), "exchange"].tolist() == ["ISE"]
+
+        flags = lf._detect_sweeps(frame, {})
+        key = ("2026-07-05", 550.0, "C")
+        assert flags.get(key, False) is False, (
+            f"unparseable-timestamp ISE print counted as a venue; flags={flags}"
+        )
+
+    def test_cross_contract_prints_are_not_grouped(self):
+        """Prints on two strikes are not one sweep, even inside one 2s window."""
+        left = self._make_prints(n_prints=2, n_exchanges=2, span_sec=1.0)
+        right = self._make_prints(n_prints=1, n_exchanges=1, span_sec=0.0)
+        right["strike"] = 555.0
+        right["exchange"] = "PHLX"
+        right["sequence"] = int(left["sequence"].max()) + 1
+        frame = pd.concat([left, right], ignore_index=True)
+
+        flags = lf._detect_sweeps(frame, {})
+        assert flags.get(("2026-07-05", 550.0, "C"), False) is False
+        assert flags.get(("2026-07-05", 555.0, "C"), False) is False
+        assert not any(flags.values()), flags
+
+        result = self._run(frame)
+        assert len(result["events"]) == 2, result["events"]
+        by_strike = {ev["strike"]: ev["swept"] for ev in result["events"]}
+        assert by_strike == {550.0: False, 555.0: False}
+
+    def test_qualified_sweep_with_unqualified_extras_still_flags(self):
+        """Three qualifying prints still flag when a missing-exchange print is added.
+
+        The extra print sits inside the same 2s window. Rejecting the contract
+        because one print has no exchange would be an over-reject.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        extra = df.iloc[[0]].copy()
+        extra["sequence"] = int(df["sequence"].max()) + 1
+        extra["exchange"] = None
+        frame = pd.concat([df, extra], ignore_index=True)
+        # Keep a real missing value if concat coerced None into the string dtype.
+        frame.loc[frame.index[-1], "exchange"] = None
+        tail = frame["exchange"].iloc[-1]
+        assert pd.isna(tail) or tail is None, repr(tail)
+
+        result = self._run(frame)
+        assert result["events"], "qualifying sweep must still emit"
+        assert result["events"][0]["swept"] is True, (
+            "3 qualifying prints on 2 venues within 2s must stay swept "
+            "when a missing-exchange print is also present"
+        )
+
+    def test_sweep_flag_key_parity_with_process_batch_lookup(self):
+        """S6: sweep flag keys match process_batch for expirations it admits.
+
+        ``_make_prints`` carries expiration ``"2026-07-05"`` as a str. The
+        source gate ``_is_canonical_date`` (engine/live_flow.py:243) admits
+        only strings matching ``^\\d{4}-\\d{2}-\\d{2}$``, applied in
+        ``process_batch`` at ``expirations_valid`` (engine/live_flow.py:792).
+        ``_coalesce_batch`` rewrites admitted expirations with
+        ``strftime("%Y-%m-%d")`` (engine/live_flow.py:339). Step 5 looks the
+        flag up with ``str(row.get("expiration", ""))`` from that coalesced
+        row (engine/live_flow.py:1029 and the ``sweep_key`` at line 1065).
+
+        Compact ``20260705`` and a Timestamp are not formats this path
+        carries: ``process_batch`` drops them before ``_detect_sweeps``.
+        """
+        df = self._make_prints(n_prints=3, n_exchanges=2, span_sec=1.5)
+        assert bool(df["expiration"].map(type).eq(str).all())
+        assert set(df["expiration"].tolist()) == {"2026-07-05"}
+
+        lookup = (
+            str(df["expiration"].iloc[0]),
+            float(df["strike"].iloc[0]),
+            str(df["right"].iloc[0]).upper()[:1],
+        )
+        flags = lf._detect_sweeps(df, {})
+        assert flags.get(lookup) is True, flags
+        assert list(flags) == [lookup]
+
+        result = self._run(df)
+        assert result["events"], "ISO expiration fixture must emit"
+        ev = result["events"][0]
+        assert ev["exp"] == lookup[0]
+        assert ev["right"] == lookup[2]
+        assert float(ev["strike"]) == lookup[1]
+        assert ev["swept"] is True
+
+        for raw in ("20260705", 20260705, pd.Timestamp("2026-07-05")):
+            other = df.copy()
+            other["expiration"] = raw
+            rejected = self._run(other)
+            assert rejected["events"] == [], (
+                f"expiration {raw!r} is not an admitted process_batch format; "
+                f"events={rejected['events']!r} notes={rejected['meta_notes']!r}"
+            )
+            assert any(
+                "invalid_source_rows_dropped" in note
+                for note in rejected["meta_notes"]
+            ), rejected["meta_notes"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
