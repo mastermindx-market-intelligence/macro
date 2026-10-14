@@ -369,6 +369,8 @@ def _reason_code_error(
     """Return one ``path: message`` error for a reason that is not a member."""
     if not isinstance(reason, str):
         return f"{path}: reason must be a non-null catalogue reason code string"
+    if any(not (0x20 <= ord(character) <= 0x7E) for character in reason):
+        return f"{path}: {reason!r} contains a control or non-ASCII character"
     code, sep, param = reason.partition(":")
     if code not in members:
         return f"{path}: {reason!r} is not a catalogue reason code"
@@ -417,6 +419,15 @@ def _reason_code_errors(
             errors.append(
                 "applicability.reason: an applicable result must cite"
                 " applicability_rule_satisfied"
+            )
+        elif (
+            applicability.get("state") != "applicable"
+            and isinstance(reason, str)
+            and reason.partition(":")[0] == "applicability_rule_satisfied"
+        ):
+            errors.append(
+                "applicability.reason: applicability_rule_satisfied is only"
+                " valid for an applicable result"
             )
     for index, row in enumerate(fields):
         reason = row.get("reason")
@@ -481,6 +492,13 @@ def catalogue_errors(pack_id: str) -> list[str]:
         code = row.get("code")
         if not isinstance(code, str):
             continue
+        if re.fullmatch(r"[a-z][a-z0-9_]*", code) is None:
+            # The meta-schema pattern uses re.search, so a trailing newline or
+            # any other boundary slip passes it; refuse anything fullmatch
+            # would not accept.
+            errors.append(
+                f"reason_codes.{index}.code: {code!r} does not fully match ^[a-z][a-z0-9_]*$"
+            )
         if code in seen_reason_codes:
             errors.append(
                 f"reason_codes.{index}.code: duplicate reason code {code!r}"
@@ -545,7 +563,14 @@ def validate_pack_result(obj: Any) -> list[str]:
     errors.extend(_row_semantic_errors(fields))
     errors.extend(_evidence_errors(fields, checks))
     errors.extend(_coverage_errors(obj, fields))
-    if pack_schema is not None and pack_schema.get("catalogue_state") == "specified":
-        errors.extend(_catalogue_membership_errors(obj, pack_schema, fields, checks))
-        errors.extend(_reason_code_errors(obj, pack_schema, fields, checks))
+    if pack_schema is not None:
+        catalogue_state = pack_schema.get("catalogue_state")
+        if catalogue_state == "specified":
+            errors.extend(_catalogue_membership_errors(obj, pack_schema, fields, checks))
+            errors.extend(_reason_code_errors(obj, pack_schema, fields, checks))
+        elif catalogue_state != "unspecified":
+            errors.append(
+                f"catalogue_state: {catalogue_state!r} is not a known catalogue"
+                " state; result refused"
+            )
     return errors

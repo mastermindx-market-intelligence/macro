@@ -694,6 +694,7 @@ def test_specified_catalogue_disallowed_evidence_kind_rejected(
     errors = validate_pack_result(obj)
     assert errors
     assert any("fields.0.evidence_kind" in item for item in errors)
+    assert any("is not in allowed_evidence_kinds" in item for item in errors)
 
 
 def test_specified_catalogue_required_field_absent_rejected(
@@ -989,7 +990,11 @@ def test_reason_code_meta_schema_specified_with_empty_reason_codes_rejected(
 def test_reason_code_cross_catalogue_consistency() -> None:
     seen: dict[str, tuple] = {}
     for pack_id in PACK_IDS:
-        for row in load_pack_schema(pack_id).get("reason_codes") or []:
+        schema = load_pack_schema(pack_id)
+        assert "reason_codes" in schema, (
+            f"{pack_id} catalogue is missing the reason_codes key"
+        )
+        for row in schema["reason_codes"]:
             code = row.get("code")
             signature = (row.get("parameter"), row.get("meaning"))
             if code in seen:
@@ -1005,5 +1010,296 @@ def test_reason_code_all_pack_files_pass_catalogue_errors_with_empty_reason_code
     pack_id: str,
 ) -> None:
     schema = load_pack_schema(pack_id)
-    assert schema.get("reason_codes", []) == []
+    assert "reason_codes" in schema
+    assert schema["reason_codes"] == []
     assert catalogue_errors(pack_id) == []
+
+
+# --- r2 additions: discriminating tests, fail-closed reason codes, catalogue state ---
+
+
+def test_specified_catalogue_disallowed_non_text_span_evidence_kind_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-1b: a disallowed NON-text_span kind must trip the allowed_evidence_kinds
+    # membership check itself, not a collateral numeric/text_span refusal.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="formula",
+            required_evidence_kind="formula",
+            source_occurrence_ids=[],
+            concept=None,
+            formula_rule_id="probe_formula_rule",
+            dependency_field_ids=["probe_field"],
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("is not in allowed_evidence_kinds" in item for item in errors)
+
+
+def test_reason_code_valued_field_row_with_non_member_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-a: a VALUED row may still carry a non-null reason, and that reason must
+    # be a catalogue member.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(reason="totally_unknown_code")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_not_applicable_check_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-b: not_applicable checks need a non-null reason, like not_evaluable.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_applicable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("state", ["not_evaluable", "not_applicable"])
+def test_reason_code_applicability_membership_checked_in_every_state(
+    state: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-c: applicability.reason membership holds in every state, not only when
+    # applicable.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["applicability"] = {
+        "state": state,
+        "reason": "totally_unknown_code",
+        "rule_id": "specialist_pack.fixture_unapplicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    obj["fields"] = [_field_row()]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("applicability.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("status", ["pass", "fail"])
+def test_reason_code_pass_fail_check_with_non_member_reason_rejected(
+    status: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-d: a pass/fail check with a non-null reason still owes catalogue
+    # membership.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": status,
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": "totally_unknown_code",
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("row_type", ["integer", "ratio", "shares"])
+def test_r5_numeric_text_span_valued_row_rejected_for_every_numeric_type(
+    row_type: str,
+) -> None:
+    # M-e, result side (R-5): the numeric/text_span refusal is not decimal-only.
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            type=row_type,
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 4},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.evidence_kind:") for item in errors)
+
+
+@pytest.mark.parametrize("row_type", ["integer", "ratio", "shares"])
+def test_r3_catalogue_numeric_field_allowing_text_span_rejected_for_every_numeric_type(
+    row_type: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-e, catalogue side (R-3): numeric fields may not admit text_span for any
+    # numeric type, not only decimal.
+    fake = _specified_catalogue()
+    fake["fields"] = [
+        _catalogue_field(
+            type=row_type, allowed_evidence_kinds=["xbrl_fact", "text_span"]
+        )
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("fields.0.allowed_evidence_kinds:") for item in errors)
+
+
+def test_reason_code_concept_grammar_enforced_exactly(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-f: pinned with re.fullmatch on ^[a-z][a-z0-9-]*:[A-Za-z_][A-Za-z0-9_.-]*$
+    # before writing: us-gaap:Revenues matches; x:, :Revenues,
+    # "us-gaap:Rev enues", US-GAAP:Revenues, a:b:c and a trailing newline do not.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    accepted = "missing_standard_fact:us-gaap:Revenues"
+    rejected = [
+        "missing_standard_fact:x:",
+        "missing_standard_fact::Revenues",
+        "missing_standard_fact:us-gaap:Rev enues",
+        "missing_standard_fact:US-GAAP:Revenues",
+        "missing_standard_fact:a:b:c",
+        "missing_standard_fact:us-gaap:Revenues\n",
+    ]
+    for reason in rejected:
+        obj = _set_applicable(_minimal_result("PK01"))
+        obj["fields"] = [_field_row(reason=reason)]
+        _finish(obj)
+        errors = validate_pack_result(obj)
+        assert errors, reason
+        assert any(item.startswith("fields.0.reason:") for item in errors), reason
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason=accepted)]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_catalogue_reason_code_trailing_newline_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-3, catalogue side: the meta-schema pattern uses re.search, so "evil\n"
+    # slips past it; the code-side fullmatch must refuse it.
+    fake = _specified_catalogue()
+    fake["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES) + [
+        _reason_code("evil\n", None, "trailing newline escapes the meta-schema pattern")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(
+        item.startswith("reason_codes.4.code:")
+        and "does not fully match ^[a-z][a-z0-9_]*$" in item
+        for item in errors
+    )
+
+
+def test_result_reason_control_character_rejected_even_for_member(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-3, result side: "probe_missing\n" is refused even though
+    # "probe_missing" is a member, and the control-character message is the
+    # one that fires.
+    fake = _specified_catalogue()
+    fake["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES) + [
+        _reason_code("probe_missing", None, "probe member for the control-character test")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="probe_missing\n")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item.startswith("fields.0.reason:")
+        and "contains a control or non-ASCII character" in item
+        for item in errors
+    )
+
+
+@pytest.mark.parametrize("state", ["not_evaluable", "not_applicable"])
+def test_r7_applicability_rule_satisfied_refused_for_non_applicable_state(
+    state: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # RULING R-7: applicability_rule_satisfied is only valid for an applicable
+    # result.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["applicability"] = {
+        "state": state,
+        "reason": "applicability_rule_satisfied",
+        "rule_id": "specialist_pack.fixture_unapplicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "applicability.reason: applicability_rule_satisfied is only valid for an applicable result"
+        for item in errors
+    )
+
+
+def test_r8_pack_schema_unknown_catalogue_state_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # RULING R-8: validate_pack_result fails closed on an unknown catalogue
+    # state instead of silently skipping the specified-catalogue gates.
+    fake = load_pack_schema("PK01")
+    fake["catalogue_state"] = "Specified"
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "catalogue_state: 'Specified' is not a known catalogue state; result refused"
+        for item in errors
+    )
+
+
+def test_r8_pack_schema_missing_catalogue_state_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # RULING R-8, missing key: absent is not unspecified.
+    fake = load_pack_schema("PK01")
+    del fake["catalogue_state"]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "catalogue_state: None is not a known catalogue state; result refused"
+        for item in errors
+    )
