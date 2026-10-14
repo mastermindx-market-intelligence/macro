@@ -124,13 +124,12 @@ def _text_present(value: object) -> bool:
     only after both sides pass ``_text_present``; a non-text side is ABSENT
     (its *_MISSING-style reason) and never equals anything.
     """
-    if not isinstance(value, str):
-        return False
-    if value.strip() == "":
-        return False
-    if value != value.strip():
-        return False
-    return True
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _blank(value: object) -> bool:
