@@ -7,6 +7,7 @@ let a three-day tolerance rewrite the cell end to 30 June.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from copy import deepcopy
 from datetime import date
 
@@ -140,6 +141,29 @@ def test_bad_tolerance_rejected_on_cell_path(
         )
 
 
+def _cell_without_period() -> dict:
+    cell = deepcopy(case("same_number_two_headers")["cells"][0])
+    cell.pop("period")
+    return _one_release(cells=[cell])
+
+
+# A shape error elsewhere in the input would raise its own refusal; the
+# tolerance check runs first, so the tolerance refusal is the one raised.
+_SHAPE_ERRORS = [
+    pytest.param(_cell_without_period, id="cell-without-period"),
+    pytest.param(lambda: _one_release(cells="nope"), id="cells-not-a-list"),
+]
+
+
+@pytest.mark.parametrize("build", _SHAPE_ERRORS)
+def test_bad_tolerance_preempts_shape_errors(build: Callable[[], dict]) -> None:
+    """A bad ``tolerance_days`` is refused before a case- or cell-shape error."""
+    with pytest.raises(
+        TypeError, match=re.escape("tolerance_days must be an int, not bool")
+    ):
+        enroll_stated_period(build(), tolerance_days=True)
+
+
 # Pins for the branches of ``_shared_label`` and ``_with_stated_end`` that had
 # no test. These pin current behaviour only.
 
@@ -205,5 +229,4 @@ def test_malformed_period_end_names_the_field(raw_end: str) -> None:
         ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
     ) as caught:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
-    assert "period.end" in str(caught.value)
     assert isinstance(caught.value.__cause__, ValueError)

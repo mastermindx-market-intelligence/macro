@@ -47,6 +47,9 @@ def enroll_stated_period(
     ``no_cell_fiscal_label``. Distinct labels leave it null and name
     ``fiscal_label_disagreement``. The cell's ``quality.rights_profile`` is
     not copied; ``rights_profile`` stays the class default.
+
+    ``tolerance_days`` is checked first, so a bad tolerance is refused before
+    any case-shape or cell-shape error the same call would otherwise raise.
     """
     check_tolerance_days(tolerance_days)
     cells = extract_case_cells(case)
