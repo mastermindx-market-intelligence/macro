@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D81 2026-10-14T04:15Z snapshot.) Rows superseding older rows below:
+(D82 2026-10-14T04:30Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | DELIVERED → ACCEPTED by artifact → PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) OPEN, label `merge-on-green` only (no `--auto`), head `cf557978ff17`, CI running. Repair round 1 (`f02-q2c-r1`, rc=0, 04:11:50–04:15:45Z) added `1281456b` (tests) and `cf557978` (fix). Seat re-runs: a 39-value probe raises 7× at `ab5bb1be` and 0× at `cf557978`; 380 + 99 passed (pc); 41 API/unknown-expiry tests passed (ubuntu2, fastapi); custody clean; merge-tree clean vs main. Watcher `bcqwff2a0`. Production proof after merge is a natural cycle: `/api/flow/dte` carries `unclassified` (D82) |
 | F02-Q2 (live flow unknown expiry) | REQUEST_REPAIR round 1, RUNNING on Cursor. Round 0 (`f02-q2c`, rc=0, 04:00:59–04:05:18Z) DELIVERED commits `42415b1a` (tests) and `ab5bb1be` (fix), pushed. The seat verified 9 RED + 2 GREEN at base and 11 GREEN after; pc gate 358 passed + `test_flow_signals` 99 passed; the 12 API tests pass on ubuntu2. Three defects: (1) `_classify_expiry` raises `TypeError` on a tz-aware expiry (ruling 1); (2) the ruling-6 vocabulary search was not reported; (3) the PR-body draft overstates the live reach. Repair lane `f02-q2c-r1` (mastermind-pc, `gpt-5.3-codex-high`, `timeout 5400`, started 04:11:50Z, same worktree and branch); watcher `bg5mdwbbz` (D81) |
 | F02-Q2 live reach | Defense-in-depth. `process_batch` filters `expirations_valid` (#5102, `engine/live_flow.py:808-812`; `_is_canonical_date` requires a canonical `YYYY-MM-DD` str `>= session_day`) before `_accumulate_tide` (only caller, line 1013) and `_enrich_contract_row` (only caller, line 1073). Today's live path therefore never reaches the unknown branch, and `unclassified` stays 0. The repair lane confirms this with citations (D81) |
 | F02-Q2 (live flow unknown expiry) | RUNNING on Cursor CLI (operator carrier decision, D80). Lane `f02-q2c`, mastermind-pc, `cursor-agent` 2026.10.12, model `gpt-5.3-codex-high`. Worktree `~/lanes/wt/f02-q2c` on `claude/f02q2-unknown-expiry-not-0dte-20261013` at `42415b1a`. Launched 2026-10-14T04:01:00Z with an 18000 s kill. Return dir `~/lanes/returns/f02-q2c/`; watcher `b8023y7gq`. The ubuntu3 `~/lanes/wt/f02-q2` is dead and left untouched; f02-q2c is the only writer on the branch (D80) |
@@ -1956,4 +1957,39 @@ NEXT:
 2. #8923 watcher `b6y5c7v9y` → on MERGED: `pool hosts`, then Fabric or Cursor per D80 ruling 1, overlap scans, then R04-B1 and D04-A2.
 3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
 4. #8920/#9079/#9083 watcher `bp9y00b9l` (re-armed after `bqitfw30c` timed out) → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
+
+### D82 (2026-10-14T04:30Z) — F02-Q2 repair round 1 accepted by artifact; Macro PR #9231 opened with `merge-on-green`
+
+Facts observed this cycle (each re-run by the seat):
+- Lane `f02-q2c-r1` (mastermind-pc, Cursor `gpt-5.3-codex-high`) ran 04:11:50–04:15:45Z, ended rc=0 and returned STATUS: COMPLETE. Watcher `bg5mdwbbz` ended at 04:16:29Z.
+- New commits on `claude/f02q2-unknown-expiry-not-0dte-20261013`:
+  - `1281456b32b` (tests): `test_classify_expiry_tz_aware_is_readable` and `test_classify_expiry_never_raises`.
+  - `cf557978ff17dd81b2ecc8f38a77f5c57c3f7410` (fix): `tz_localize(None)` on tz-aware `exp_ts`/`sess_ts` in `_classify_expiry`. One hunk, +5 lines.
+  - Pushed; local HEAD equals the remote. Neither pushed commit was rewritten.
+  - Cursor auto-appended a second trailer, `Co-authored-by: Cursor <cursoragent@cursor.com>`. The lane reported it as a deviation; it is harmless.
+- Lane's RED/GREEN: 4 RED at `ab5bb1be` (the `TypeError`), 22 GREEN at `cf557978`.
+- Seat's independent probe (ubuntu2, pandas 3.0.6, 39 values): 7 raises at `ab5bb1be`, 0 at `cf557978`.
+  - The probe covers values the lane was not given: offsets `-05:00` and `+14:00`, `America/New_York`, a tz-aware session, `date`, `datetime64`, 1000/1677/1700/2262/2300/0001-dated strings, `inf`, `-1` and `True`.
+  - Wall-clock dates are kept: `2026-07-12T23:30:00-05:00` → `(10, "8_30d")`.
+- Seat gate re-runs:
+  - mastermind-pc full checkout: 380 passed (12 API deselected) and `test_flow_signals.py` 99 passed. `diff --check` is clean and the tree is clean.
+  - ubuntu2 (fastapi 0.143): API routes + param sanitization + `TestUnknownExpiry` = 41 passed.
+  - The ubuntu2 snapshot has the same 80 snapshot-only failures (no `scripts/`) at base and fix; the fix adds exactly 22 passes.
+- Custody: `git log HEAD..origin/main` (18 commits) is empty over the owned files and the flow consumers. `merge-tree` against main is clean.
+- Ruling-6 search reported:
+  - `_DTE_BUCKETS` (`engine/live_flow.py:1354`) is published via `dte_tide_current.json` and `/api/flow/dte`, and stays five-bucket. This is a GAP; `unclassified` is a separate key.
+  - `engine/tape_flow.py` and `scripts/ops_flow_atlas.py` hold internal lists only.
+- Reach confirmed with citations: `expirations_valid` (#5102) runs before both call sites, so live output is unchanged (defense in depth).
+
+Rulings:
+1. ACCEPT round 1. F02-Q2 is DELIVERED and accepted by artifact. PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) is opened by the seat against `main` with the `merge-on-green` label only (Macro `main` is unprotected; never `--auto`). Its body carries the measured reach, the evidence table and the GAPs. The F02-Q2T dependency is met (Terminal #986, merged 2026-10-13T11:02:51Z).
+2. The lane worktree `~/lanes/wt/f02-q2c` on mastermind-pc stays until the PR merges (repair host). A REQUEST_REPAIR from CI goes to a new lane id on the same carrier and branch.
+3. PRODUCTION_PROOF for #9231 is a natural cycle, never a manual poller run. After merge and the normal Macro deploy, the next live flow publication's `/api/flow/dte` (or `dte_tide_current.json`) carries `unclassified: {ncp: 0, npp: 0}` while the five buckets are unchanged.
+
+NEXT:
+1. Watcher `bcqwff2a0` → on MERGED: read the natural `/api/flow/dte` after the next live-flow publication (ruling 3). On `merge-blocked`: read the failing check and repair on a new lane id.
+2. #8923 watcher `b6y5c7v9y` → on MERGED: `pool hosts`, then Fabric or Cursor per D80 ruling 1, overlap scans, then R04-B1 and D04-A2.
+3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
+4. #8920/#9079/#9083 watcher `bp9y00b9l` → R04-B2 and the M04 red specs (M04 is also gated on #8684).
 5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
