@@ -115,7 +115,7 @@ unresolved:
   - "Filing-discovery horizon stuck at 2026-09-17 on the last landed generation is a second R2 bucket not resolved by sharding."
   - "tests/test_compile_capital_structure_registration_lifecycles.py has 2 pre-existing local failures (event identity digest mismatch under pandas 3.0.5); green on main CI."
   - "tests/test_capital_structure_document_terms.py [cpython-3.12.2-python-org] params fail locally because that interpreter is actually 3.12.10; an environment pin, not code."
-  - "The Company Facts external head-witness test fails locally; bounded diagnosis is owed before any repair."
+  - "RESOLVED 2026-10-14: the Company Facts external head-witness test failed locally on 2026-10-13; the whole file passes 98/98 at af5cf079 (pytest tests/test_sec_capital_structure_companyfacts.py), so no repair was owed."
 next_actions:
   - Merge the R2 PR by hand on concluded green with --match-head-commit, then prove main under the changed scripts/workflows authority with one ci.yml baseline after the in-flight preflight.
   - Observe the first natural nightly for a generation commit carrying part-0002; do not dispatch daily.yml.
