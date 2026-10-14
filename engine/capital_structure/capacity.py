@@ -702,7 +702,7 @@ class _Builder:
         ))
         pools = self._constraints(pessimistic, active)
         routes = self._routes()
-        aggregate = self._aggregate(pessimistic, optimistic, ceiling, active)
+        aggregate = self._aggregate(pessimistic, optimistic, ceiling, active, routes, pools)
         witness = self._witness(pessimistic, active)
         unknown_constraints = tuple(sorted(pool.constraint_id for pool in pools if pool.bound.status != "known"))
         inputs = self._inputs(pessimistic, optimistic, ceiling, routes, pools)
@@ -2298,11 +2298,16 @@ class _Builder:
                 + ", ".join(sorted(both))
                 + " in every branch, so no feasible amount is left to raise"
             )
+        # The price label is used only when the price path is the sole branch
+        # reason; a programme-usage branch (alone or combined) gets the plain one.
+        label = (
+            "asserted_actions_infeasible_on_price_branch"
+            if self.branch_reasons == ("price_path",)
+            else "asserted_actions_infeasible_on_branch"
+        )
         for branch in BRANCHES:
             for constraint_id in sorted(single[branch]):
-                self.blockers.append(
-                    f"asserted_actions_infeasible_on_price_branch:{branch}:{constraint_id}"
-                )
+                self.blockers.append(f"{label}:{branch}:{constraint_id}")
         for path_id in sorted(self.registered):
             if f"programme_usage_exceeds_reservation:{path_id}" not in self.blockers:
                 continue
@@ -2510,6 +2515,8 @@ class _Builder:
         optimistic: JointSolution | None,
         ceiling: JointSolution,
         active: tuple[str, ...],
+        routes: tuple[RouteBound, ...],
+        pools: tuple[Constraint, ...],
     ) -> Quantity:
         """§2.7: one aggregate.  Fixed actions are added; branch optima never are."""
         if self.contradiction is not None:
@@ -2521,7 +2528,9 @@ class _Builder:
         )
         ceiling_value = None if ceiling_raw is None else fixed_optimistic + ceiling_raw
         ceiling_text = "unbounded" if ceiling_value is None else _floor_text(ceiling_value)
-        agree = (
+        # §2.6: an asserted action that fails in one branch leaves the answer
+        # open, even when the two branch optima happen to coincide.
+        agree = not self.branch_infeasible_on_one and (
             not self.branching
             or (
                 optimistic is not None
@@ -2531,7 +2540,7 @@ class _Builder:
                 and fixed_optimistic == fixed_pessimistic
             )
         )
-        if pessimistic.determined and active and agree:
+        if pessimistic.determined and active and agree and self._aggregate_knowable(routes, pools):
             return Quantity.known(
                 _floor_text(fixed_pessimistic + (pessimistic.value or Fraction(0))),
                 "usd",
@@ -2557,10 +2566,41 @@ class _Builder:
             "usd", f"floor {floor_text} / ceiling {ceiling_text} under stated unknowns"
         )
 
+    @staticmethod
+    def _aggregate_knowable(
+        routes: tuple[RouteBound, ...], pools: tuple[Constraint, ...]
+    ) -> bool:
+        """§2.7: the C0 preconditions of a known USD aggregate.
+
+        Every active route needs a known USD limit, and every USD pool with two
+        or more active consumers needs a known bound.  When either is missing
+        the aggregate is unknown with its floor and ceiling, never a number the
+        envelope would refuse.
+        """
+        active = [route for route in routes if route.status in ACTIVE_ROUTE_STATUSES]
+        for route in active:
+            if route.limit.unit != "usd" or route.limit.status != "known":
+                return False
+        for pool in pools:
+            if pool.bound.unit != "usd":
+                continue
+            consumers = [
+                route
+                for route in active
+                if pool.constraint_id in route.consumes or route.route_id in pool.shared_by
+            ]
+            if len(consumers) >= 2 and pool.bound.status != "known":
+                return False
+        return True
+
     def _witness(
         self, pessimistic: JointSolution, active: tuple[str, ...]
     ) -> tuple[WitnessAllocation, ...]:
         """§2.7: the pessimistic witness plus each route's own fixed action."""
+        if self.contradiction is not None or self.branch_infeasible_on_one:
+            # §2.6: no allocation that honours the asserted actions is feasible
+            # in every branch, so there is nothing to witness.
+            return ()
         allocations = (
             dict(pessimistic.witness) if pessimistic.determined else dict(pessimistic.floor_witness)
         )

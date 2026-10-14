@@ -853,8 +853,96 @@ def test_l258_d_fixed_atm_share_action_branches() -> None:
     assert dict(remaining["optimistic"]["pools"])[NASDAQ_POOL] == "2200000/1"
     assert Fraction(dict(remaining["pessimistic"]["pools"])[REGISTERED_A]) == Fraction(18_400_000)
     assert Fraction(dict(remaining["optimistic"]["pools"])[REGISTERED_A]) == Fraction(17_600_000)
-    # The witness is the pessimistic one: the fixed 1,600,000 plus the 400,000 left.
-    assert witness_of(evaluation)[ATM_A] == Decimal("2000000.00")
+    # No allocation honouring 800,000 shares fits the optimistic branch, so no witness.
+    assert witness_of(evaluation) == {}
+
+
+def test_review_fixed_takedown_over_the_route_limit_is_contradicted_without_a_witness() -> None:
+    """25,000,000 committed against a 20,000,000 registration fails in every branch."""
+    evaluation, _, _ = evaluate_with_actions(
+        [cash(TAKE_A, "shelf_takedown", "25000000")], **path_kwargs(path=PRICE_PATH)
+    )
+    envelope = evaluation.envelope
+    assert envelope.aggregate_bound.status == "contradicted"
+    assert envelope.aggregate_bound.value is None
+    assert f"asserted_actions_infeasible:{TAKE_A}" in envelope.blockers
+    assert f"asserted_actions_infeasible:{REGISTERED_A}" in envelope.blockers
+    assert f"asserted_actions_infeasible:{NASDAQ_POOL}" in envelope.blockers
+    assert witness_of(evaluation) == {}
+
+
+def test_review_two_fixed_takedowns_over_the_shared_pool_are_contradicted() -> None:
+    """A21: committing 8,000,000 + 7,000,000 is infeasible, never capped to 10,000,000."""
+    evaluation, _, _ = evaluate_with_actions(
+        [cash(TAKE_A, "shelf_takedown", "8000000"), cash(TAKE_B, "shelf_takedown", "7000000")],
+        **a21_kwargs(outstanding="30000005"),
+    )
+    envelope = evaluation.envelope
+    assert envelope.aggregate_bound.status == "contradicted"
+    assert envelope.aggregate_bound.value is None
+    assert f"asserted_actions_infeasible:{BABY_POOL}" in envelope.blockers
+    assert f"asserted_actions_infeasible:{NASDAQ_POOL}" in envelope.blockers
+    assert witness_of(evaluation) == {}
+
+
+def test_review_unknown_atm_limit_with_agreeing_branches_stays_unknown() -> None:
+    """One price point and unresolved usage: the branches agree but the ATM limit is unknown."""
+    evaluation, _, _ = evaluate(
+        **path_kwargs(path=(("2026-10-14", "2.00"),), programme=(usd(RESERVATION_A, "2000000"),))
+    )
+    envelope = evaluation.envelope
+    assert envelope.aggregate_bound.status == "unknown"
+    assert envelope.aggregate_bound.value is None
+    assert envelope.aggregate_bound.note == (
+        "floor 6000000.00 / ceiling 6000000.00 under stated unknowns"
+    )
+    assert USAGE_A in unknown_ids(evaluation)
+    assert REGISTERED_A in envelope.unknown_constraints
+
+
+def test_review_action_infeasible_on_one_price_branch_never_gives_a_number() -> None:
+    """R = S = 7,000,000, nothing sold, 7,000,000 committed to the programme at $2 to $3.
+
+    At $2.00 the sale is 3,500,000 shares, over the 3,000,000-share threshold; at $3.00 it
+    fits. Both branch optima are 7,000,000, but the answer stays open on the sale schedule.
+    """
+    evaluation, _, _ = evaluate_with_actions(
+        [cash(ATM_A, "at_the_market", "7000000")],
+        **path_kwargs(
+            path=PRICE_PATH,
+            registered="7000000",
+            programme=(usd(RESERVATION_A, "7000000"), usd(USAGE_A, "0")),
+        ),
+    )
+    envelope = evaluation.envelope
+    assert envelope.aggregate_bound.status == "unknown"
+    assert envelope.aggregate_bound.value is None
+    assert envelope.aggregate_bound.note == (
+        "floor 7000000.00 / ceiling 7000000.00 under stated unknowns"
+    )
+    assert (
+        f"asserted_actions_infeasible_on_price_branch:pessimistic:{NASDAQ_POOL}"
+        in envelope.blockers
+    )
+    assert f"asserted_actions_infeasible:{NASDAQ_POOL}" not in envelope.blockers
+    assert SCHEDULE_A in unknown_ids(evaluation)
+    assert witness_of(evaluation) == {}
+
+
+def test_review_usage_branch_infeasibility_is_not_labelled_a_price_branch() -> None:
+    """No price path: an action failing only at P = S is named on the usage branch."""
+    evaluation, _, _ = evaluate_with_actions(
+        [cash(ATM_A, "at_the_market", "1000000")], **usage_kwargs(C10_02)
+    )
+    envelope = evaluation.envelope
+    assert envelope.aggregate_bound.status == "unknown"
+    assert envelope.aggregate_bound.value is None
+    assert envelope.aggregate_bound.note == (
+        "floor 14000000.00 / ceiling 16000000.00 under stated unknowns"
+    )
+    assert f"asserted_actions_infeasible_on_branch:pessimistic:{ATM_A}" in envelope.blockers
+    assert not any("on_price_branch" in blocker for blocker in envelope.blockers)
+    assert witness_of(evaluation) == {}
 
 
 def test_l258_e_two_fixed_actions_in_one_group_raise() -> None:
