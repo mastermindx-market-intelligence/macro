@@ -1,0 +1,120 @@
+{
+  "schema": "mastermind.research.finance_r10e_integration_governance_measurements.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "557c3507819b6cc2d91b33ef509fdc0be33fba74"
+  },
+  "authority": {
+    "may_admit_source": false,
+    "may_bind_identity": false,
+    "may_create_basket": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "ubs": {
+    "case_id": "R10-CH-UBS-CS-CLOSE-20230612",
+    "clocks": {
+      "rescue_merger_agreement": "2023-03-19",
+      "expected_close_communication": "2023-06-05",
+      "swiss_loss_protection_agreement": "2023-06-09",
+      "legal_close": "2023-06-12"
+    },
+    "adjusted_return_proxy_pct": {
+      "0": 0.8242,
+      "1": 1.2637,
+      "5": 1.6758,
+      "20": -2.6923,
+      "60": 30.0549,
+      "120": 27.4725,
+      "252": 57.6945,
+      "max_drawdown": -12.605
+    },
+    "current_member_swiss_financial_context_ex_ubs_pct": {
+      "0": 0.7642,
+      "1": 1.3366,
+      "5": 0.8404,
+      "20": -2.5734,
+      "60": 6.2069,
+      "120": 5.1607,
+      "252": 20.5989,
+      "max_drawdown": -6.6415
+    },
+    "ubs_minus_context_252_pp": 37.0956,
+    "fy2023_execution": {
+      "gwm_net_new_assets_since_close_usd_bn": 77,
+      "gwm_p_and_c_net_new_deposits_since_close_usd_bn": 77,
+      "exit_rate_gross_cost_savings_vs_2022_combined_usd_bn_approx": 4,
+      "cet1_ratio_pct": 14.5,
+      "ordinary_dividend_yoy_pct": 27
+    },
+    "accounting_warning": "2Q23 reported PBT dominated by ~USD28.9bn negative goodwill; underlying PBT and integration/PPA economics must remain separate.",
+    "causal_outcome": "UNMEASURED"
+  },
+  "tse": {
+    "case_id": "R10-JP-TSE-COST-OF-CAPITAL-REQUEST-20230331",
+    "anchor_date": "2023-03-31",
+    "cohort": [
+      "8306.T",
+      "8316.T",
+      "8411.T",
+      "8604.T",
+      "8766.T",
+      "8697.T"
+    ],
+    "cohort_adjusted_return_proxy_pct": {
+      "0": 1.0468,
+      "1": 2.5734,
+      "5": 1.5884,
+      "20": 4.5682,
+      "60": 21.4616,
+      "120": 40.4619,
+      "252": 87.7331,
+      "max_drawdown": -7.0192
+    },
+    "individual_252_pct": {
+      "8306.T": 91.0565,
+      "8316.T": 74.7158,
+      "8411.T": 64.7387,
+      "8604.T": 92.5783,
+      "8766.T": 94.4823,
+      "8697.T": 108.8273
+    },
+    "current_membership_context_252_pct": {
+      "japan_financials": 70.3728,
+      "japan_nonfinancials": 48.1259,
+      "japan_all": 50.9746
+    },
+    "financials_minus_nonfinancials_252_pp": 22.2469,
+    "core_cohort_minus_nonfinancials_252_pp": 39.6072,
+    "smfg_witness": {
+      "pbr_fy2022_end": 0.58,
+      "pbr_fy2023_end": 0.86,
+      "profit_attributable_owners_fy2023_jpy_bn": 962.9,
+      "tse_standard_roe_fy2022_pct": 6.5,
+      "tse_standard_roe_fy2023_pct": 7,
+      "equity_holdings_reduced_fy2023_jpy_bn": 134,
+      "buyback_announced_may_2024_jpy_bn": 100,
+      "management_cet1_target_pct_approx": 10
+    },
+    "selection_warning": "Later TSE disclosure status is endogenous and cannot define a pre-event treatment/control group.",
+    "causal_outcome": "UNMEASURED"
+  },
+  "global_limitations": [
+    "retrospective mechanism research",
+    "legal close is not first-information date",
+    "current membership context is not PIT constituent history",
+    "historical analyst consensus not established",
+    "BOJ/rates, yen and broad market are major Japan confounders",
+    "Swiss comparator set contains heterogeneous business models",
+    "adjusted return is not quote-price valuation basis",
+    "no causal event-study verdict or investment recommendation"
+  ],
+  "next_action": "R10F: China May 2024 housing easing and Hong Kong RBC insurer-capital implementation, then whole-R10 synthesis."
+}

@@ -1,0 +1,1175 @@
+{
+  "schema": "mastermind.research.finance_assertion_packet.v0_1",
+  "state": "RESEARCH_ONLY_NON_CANONICAL",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "created_on": "2026-09-23",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pull_request": 7786,
+    "branch": "sol/finance-sector-research-20260923",
+    "parent_head": "ca9d898c803049c3bfb25db9eaba0325ade34c58"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "research_contract_refs": [
+    "research/finance/FINANCE_ASSET_WEALTH_INSURANCE_RERATING_2026-09-23.md",
+    "research/finance/FINANCE_ASSET_WEALTH_INSURANCE_COMPANY_BUSINESS_CENSUS_2026-09-23.md",
+    "research/finance/FINANCE_ASSET_WEALTH_INSURANCE_METRIC_DICTIONARY_2026-09-23.md"
+  ],
+  "authority": {
+    "may_create_canonical_identity": false,
+    "may_write_theme_graph": false,
+    "may_admit_source": false,
+    "may_publish_current_paid_payload": false,
+    "may_create_basket_membership": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "global_limitations": [
+    "Ticker values are research hints and are not validated canonical security bindings.",
+    "Values are source-native observations, not current consensus, normalized earnings or valuation conclusions.",
+    "Publication timestamps are null unless separately verified in this pass.",
+    "Exact native locators require owner review before any source admission.",
+    "No assertion is an approved graph fact, basket member, recommendation or trade signal.",
+    "Current market price, valuation multiple and analyst expectations are deliberately absent."
+  ],
+  "metric_dictionary": "research/finance/FINANCE_ASSET_WEALTH_INSURANCE_METRIC_DICTIONARY_2026-09-23.md",
+  "records": [
+    {
+      "record_id": "fin-research-blk-2025",
+      "issuer_label": "BlackRock, Inc.",
+      "ticker_hint": "BLK",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "consolidated diversified asset manager, ETF sponsor, private-markets manager and technology provider",
+      "economic_modes": ["FIDUCIARY", "ETF_SPONSOR", "INDEX_MANAGER", "PRIVATE_MARKETS_MANAGER", "FINANCIAL_TECHNOLOGY_PROVIDER"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526071966/blk-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-blk-2025-total-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 14.041518,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "fee_state": "MIXED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Total AUM includes materially different fee rates and products; it is not average fee-paying AUM."
+        },
+        {
+          "assertion_id": "fin-blk-2025-total-net-inflows",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total net inflows",
+          "normalized_metric_family": "NET_CLIENT_FLOWS",
+          "value": 698.261,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes long-term and cash-management flows; does not equal fee revenue."
+        },
+        {
+          "assertion_id": "fin-blk-2025-etf-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "ETF assets under management",
+          "normalized_metric_family": "ETF_ASSETS_UNDER_MANAGEMENT",
+          "value": 5.467710,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "ETF AUM spans products with different fee rates and does not establish index-provider revenue."
+        },
+        {
+          "assertion_id": "fin-blk-2025-unfunded-nonfee-commitments",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "non-fee paying unfunded uninvested commitments",
+          "normalized_metric_family": "NON_FEE_PAYING_UNFUNDED_COMMITMENTS",
+          "value": 91.0,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "CONTRACTED_NOT_RECOGNIZED",
+          "as_of_date": "2025-12-31",
+          "fee_state": "NON_FEE_PAYING",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Potential future fee base; deployment timing and realized economics are not established."
+        }
+      ],
+      "research_rerating_bridge": "organic flow and fee mix; private-market deployment; technology ACV; operating leverage; integration and per-share FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-trow-2025",
+      "issuer_label": "T. Rowe Price Group, Inc.",
+      "ticker_hint": "TROW",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "traditional active manager with target-date, multi-asset and alternatives businesses",
+      "economic_modes": ["FIDUCIARY", "ACTIVE_ASSET_MANAGER", "RETIREMENT_SOLUTION_PROVIDER"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1113169/000162828026008002/trow-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-trow-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 1.7756,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Ending AUM includes market appreciation and a 2025 model-delivery population addition."
+        },
+        {
+          "assertion_id": "fin-trow-2025-net-flows",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "net cash flows",
+          "normalized_metric_family": "NET_CLIENT_FLOWS",
+          "value": -56.9,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Product mix matters; equity outflows were partly offset by other strategies."
+        },
+        {
+          "assertion_id": "fin-trow-2025-fee-rate",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "investment advisory annualized effective fee rate without performance-based fees",
+          "normalized_metric_family": "EFFECTIVE_MANAGEMENT_FEE_RATE",
+          "value": 39.4,
+          "unit": "basis_points",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ISSUER_DEFINED_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-native revenue and average-AUM basis controls comparison."
+        }
+      ],
+      "research_rerating_bridge": "active-flow stabilization; investment performance; effective fee rate; expense discipline; target-date and alternatives growth",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ben-fy2025",
+      "issuer_label": "Franklin Resources, Inc.",
+      "ticker_hint": "BEN",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "multi-boutique public and private asset manager",
+      "economic_modes": ["FIDUCIARY", "ACTIVE_ASSET_MANAGER", "PRIVATE_MARKETS_MANAGER"],
+      "source": {
+        "source_family": "SEC_EARNINGS_RELEASE",
+        "url": "https://www.sec.gov/Archives/edgar/data/38777/000003877725000234/exhibit991q4fy25.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ben-fy2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 1.6612,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-09-30",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fiscal-year-end AUM; specialist and fee-state mix remains issuer-native."
+        },
+        {
+          "assertion_id": "fin-ben-fy2025-longterm-net-flows",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "long-term net outflows",
+          "normalized_metric_family": "NET_LONG_TERM_FLOWS",
+          "value": -97.4,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2024-10-01",
+          "period_end": "2025-09-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes reinvested distributions under issuer presentation; Western Asset was a material driver."
+        }
+      ],
+      "research_rerating_bridge": "ex-Western organic growth; higher-value alternatives/SMAs/ETFs; acquisition integration; fee mix and FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ivz-2025",
+      "issuer_label": "Invesco Ltd.",
+      "ticker_hint": "IVZ",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "global active, ETF/index and private-markets asset manager",
+      "economic_modes": ["FIDUCIARY", "ACTIVE_ASSET_MANAGER", "ETF_SPONSOR", "INDEX_MANAGER"],
+      "source": {
+        "source_family": "SEC_AUM_RELEASE",
+        "url": "https://www.sec.gov/Archives/edgar/data/914208/000091420826000010/ivzaumexhibit991-1225.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ivz-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "preliminary assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 2.1699,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED_PRELIMINARY",
+          "limitations": "Preliminary month-end AUM; active/passive/fee-state and average balance are not established by this value."
+        },
+        {
+          "assertion_id": "fin-ivz-dec2025-longterm-flow",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "net long-term inflows in December 2025",
+          "normalized_metric_family": "NET_LONG_TERM_FLOWS",
+          "value": 7.7,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-12-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_PRELIMINARY",
+          "limitations": "One-month observation; cannot be annualized as normalized flow."
+        }
+      ],
+      "research_rerating_bridge": "fee-earning active/passive flow mix; Americas/equity stabilization; expense and debt discipline",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-schw-2025",
+      "issuer_label": "The Charles Schwab Corporation",
+      "ticker_hint": "SCHW",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "wealth, brokerage, adviser custody, bank/cash and lending platform",
+      "economic_modes": ["WEALTH_PLATFORM", "BROKER_DEALER", "DEPOSIT_INSTITUTION", "FIDUCIARY", "LENDER"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/316709/000031670926000009/schw-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-schw-2025-client-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total client assets",
+          "normalized_metric_family": "TOTAL_CLIENT_ASSETS",
+          "value": 11.90,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Client assets include populations with different fee, cash, custody and brokerage economics."
+        },
+        {
+          "assertion_id": "fin-schw-2025-core-nna",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "core net new assets",
+          "normalized_metric_family": "ORGANIC_NET_NEW_ASSETS",
+          "value": 519.4,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-defined core exclusions control."
+        },
+        {
+          "assertion_id": "fin-schw-2025-organic-rate",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "annualized organic growth rate",
+          "normalized_metric_family": "ORGANIC_CLIENT_ASSET_GROWTH_RATE",
+          "value": 5.1,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ISSUER_DEFINED_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Company-defined denominator and exclusions required for comparison."
+        }
+      ],
+      "research_rerating_bridge": "organic gathering; advisory/engagement; cash sorting and bank funding; expense/capital normalization",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-lpla-2025",
+      "issuer_label": "LPL Financial Holdings Inc.",
+      "ticker_hint": "LPLA",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "independent-adviser brokerage and advisory platform with acquisition/recruiting growth",
+      "economic_modes": ["WEALTH_PLATFORM", "BROKER_DEALER", "FIDUCIARY", "ADVISER_CUSTODY_PLATFORM"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1397911/000162828026010705/lpla-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-lpla-2025-total-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total advisory and brokerage assets",
+          "normalized_metric_family": "TOTAL_CLIENT_ASSETS",
+          "value": 2.3705,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Advisory and brokerage assets carry different monetization."
+        },
+        {
+          "assertion_id": "fin-lpla-2025-advisory-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "advisory assets",
+          "normalized_metric_family": "ADVISORY_ASSETS",
+          "value": 1.3927,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Ending assets; does not establish net fee yield."
+        },
+        {
+          "assertion_id": "fin-lpla-2025-organic-nna",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "total organic net new assets",
+          "normalized_metric_family": "ORGANIC_NET_NEW_ASSETS",
+          "value": 146.5,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer-defined organic population; materially lower than total NNA."
+        }
+      ],
+      "research_rerating_bridge": "same-store organic assets; advisory mix; advisor cohort payback; cash and gross-profit economics; debt/dilution",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-rjf-fy2025",
+      "issuer_label": "Raymond James Financial, Inc.",
+      "ticker_hint": "RJF",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "wealth/adviser, bank, capital-markets and asset-management conglomerate",
+      "economic_modes": ["WEALTH_PLATFORM", "BROKER_DEALER", "DEPOSIT_INSTITUTION", "ASSET_MANAGER", "CAPITAL_MARKETS_INTERMEDIARY"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/720005/000072000525000093/rjf-20250930.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-rjf-fy2025-pcg-net-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Private Client Group net revenues",
+          "normalized_metric_family": "WEALTH_SEGMENT_NET_REVENUE",
+          "value": 10.18,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2024-10-01",
+          "period_end": "2025-09-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Segment revenue includes multiple fee, brokerage and service mechanisms."
+        },
+        {
+          "assertion_id": "fin-rjf-fy2025-am-net-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Asset Management net revenues",
+          "normalized_metric_family": "ASSET_MANAGEMENT_SEGMENT_NET_REVENUE",
+          "value": 1.19,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2024-10-01",
+          "period_end": "2025-09-30",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Source segment definition controls; not consolidated revenue."
+        }
+      ],
+      "research_rerating_bridge": "advisor/fee-asset growth; bank cash/funding; capital markets; segment SOTP and capital return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-pfg-2025",
+      "issuer_label": "Principal Financial Group, Inc.",
+      "ticker_hint": "PFG",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "retirement, asset management and workplace benefits/protection",
+      "economic_modes": ["RETIREMENT_PLATFORM", "FIDUCIARY", "ASSET_MANAGER", "INSURANCE_PRINCIPAL"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1126328/000110465926017031/pfg-20251231x10k.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-pfg-2025-aua",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under administration",
+          "normalized_metric_family": "ASSETS_UNDER_ADMINISTRATION_OR_ADVISEMENT",
+          "value": 1.8146,
+          "unit": "USD_trillions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes AUM; requires elimination and revenue-role mapping."
+        },
+        {
+          "assertion_id": "fin-pfg-2025-aum",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "assets under management",
+          "normalized_metric_family": "ASSETS_UNDER_MANAGEMENT",
+          "value": 781.0,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Product/geography/fee mix remains source-native."
+        },
+        {
+          "assertion_id": "fin-pfg-2025-rbc",
+          "assertion_type": "REPORTED_CAPITAL_MEASURE",
+          "native_metric_name": "Principal Life Insurance Company RBC ratio",
+          "normalized_metric_family": "RISK_BASED_CAPITAL_RATIO",
+          "value": 406,
+          "unit": "percent",
+          "measurement_class": "REGULATORY_CAPITAL_MEASURE",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Legal-entity statutory ratio; not consolidated excess capital."
+        }
+      ],
+      "research_rerating_bridge": "retirement/AUA monetization; asset-management flows; spread/benefits margins; capital return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-voya-2025",
+      "issuer_label": "Voya Financial, Inc.",
+      "ticker_hint": "VOYA",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "retirement recordkeeping, investment management, workplace benefits and spread products",
+      "economic_modes": ["RETIREMENT_PLATFORM", "FIDUCIARY", "ASSET_MANAGER", "INSURANCE_PRINCIPAL"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1535929/000153592926000043/voya-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-voya-2025-consolidated-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "consolidated AUM and AUA",
+          "normalized_metric_family": "TOTAL_AUM_AND_AUA",
+          "value": 1.1,
+          "unit": "USD_trillions_approximately",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes eliminations and populations with different fee/spread economics."
+        },
+        {
+          "assertion_id": "fin-voya-2025-retirement-assets",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "Retirement AUM and AUA",
+          "normalized_metric_family": "RETIREMENT_TOTAL_CLIENT_ASSETS",
+          "value": 796.5,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "AUM/AUA mix and eliminations remain source-native."
+        },
+        {
+          "assertion_id": "fin-voya-2025-retirement-aoe",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Retirement adjusted operating earnings before income taxes",
+          "normalized_metric_family": "INSURANCE_ADJUSTED_OPERATING_INCOME",
+          "value": 959,
+          "unit": "USD_millions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls; not GAAP or cash remittance."
+        }
+      ],
+      "research_rerating_bridge": "organic plan/participant growth; proprietary assets; fee/spread margin; benefits underwriting; integration and excess capital",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-pgr-2025",
+      "issuer_label": "The Progressive Corporation",
+      "ticker_hint": "PGR",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "personal and commercial property-casualty insurer",
+      "economic_modes": ["INSURANCE_PRINCIPAL", "DIRECT_DISTRIBUTOR", "AGENCY_DISTRIBUTOR", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_ANNUAL_PROXY_BUSINESS_PERFORMANCE",
+        "url": "https://www.sec.gov/Archives/edgar/data/80661/000008066126000099/pgr-20260318.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-pgr-2025-npw",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "net premiums written",
+          "normalized_metric_family": "NET_PREMIUM_WRITTEN",
+          "value": 83.2,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reinsurance_basis": "NET",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Written premium is not earned premium or underwriting profit."
+        },
+        {
+          "assertion_id": "fin-pgr-2025-pif",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "policies in force",
+          "normalized_metric_family": "POLICIES_IN_FORCE",
+          "value": 38.6,
+          "unit": "millions_of_policies",
+          "measurement_class": "COUNT",
+          "as_of_date": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Policy is not exposure unit, vehicle or customer."
+        },
+        {
+          "assertion_id": "fin-pgr-2025-underwriting-margin",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "underwriting profit margin",
+          "normalized_metric_family": "UNDERWRITING_MARGIN",
+          "value": 12.6,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Issuer basis controls; result includes current period loss, catastrophe and prior-year development effects."
+        },
+        {
+          "assertion_id": "fin-pgr-2025-recurring-investment-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "recurring investment income",
+          "normalized_metric_family": "NET_INVESTMENT_INCOME",
+          "value": 3.6,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Recurring issuer definition; portfolio and realized/unrealized treatment remain separate."
+        }
+      ],
+      "research_rerating_bridge": "profitable policy growth; pricing/segmentation; frequency/severity; capital and investment income",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-cb-2025",
+      "issuer_label": "Chubb Limited",
+      "ticker_hint": "CB",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "global commercial/consumer P&C and life insurer",
+      "economic_modes": ["INSURANCE_PRINCIPAL", "SPECIALTY_UNDERWRITER", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/896159/000089615926000005/cb-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-cb-2025-npw",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "consolidated net premiums written",
+          "normalized_metric_family": "NET_PREMIUM_WRITTEN",
+          "value": 54.84,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reinsurance_basis": "NET",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Consolidated P&C/life mix; does not establish rate adequacy."
+        },
+        {
+          "assertion_id": "fin-cb-2025-net-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net income attributable to Chubb",
+          "normalized_metric_family": "GAAP_NET_INCOME",
+          "value": 10.31,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_GAAP",
+          "limitations": "Includes underwriting, life, investment and other effects; not normalized operating earnings."
+        },
+        {
+          "assertion_id": "fin-cb-2025q4-combined",
+          "assertion_type": "REPORTED_RISK_MEASURE",
+          "native_metric_name": "P&C combined ratio",
+          "normalized_metric_family": "COMBINED_RATIO",
+          "value": 81.2,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-10-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Quarter-specific; cannot be annualized as normalized cycle earnings."
+        }
+      ],
+      "research_rerating_bridge": "rate/exposure; CAY ex-cat quality; reserve credibility; investment income and BVPS compounding",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-acgl-2025",
+      "issuer_label": "Arch Capital Group Ltd.",
+      "ticker_hint": "ACGL",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "specialty insurance, reinsurance and mortgage insurance",
+      "economic_modes": ["INSURANCE_PRINCIPAL", "REINSURANCE_PRINCIPAL", "MORTGAGE_INSURER", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/947484/000094748426000017/acgl-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-acgl-2025-bvps",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "book value per share",
+          "normalized_metric_family": "BOOK_VALUE_PER_SHARE",
+          "value": 65.11,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Common-equity/share basis is issuer-defined."
+        },
+        {
+          "assertion_id": "fin-acgl-2025-bvps-growth",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "book value per share growth",
+          "normalized_metric_family": "BOOK_VALUE_PER_SHARE_GROWTH",
+          "value": 22.6,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Dividend treatment must be reviewed separately for total economic growth."
+        }
+      ],
+      "research_rerating_bridge": "risk-adjusted underwriting; investment return; capital allocation across insurance/reinsurance/mortgage; BVPS compounding",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-rnr-2025",
+      "issuer_label": "RenaissanceRe Holdings Ltd.",
+      "ticker_hint": "RNR",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "reinsurance and third-party capital management",
+      "economic_modes": ["REINSURANCE_PRINCIPAL", "THIRD_PARTY_CAPITAL_MANAGER", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_10K_AND_EARNINGS_RELEASE",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/913144/000091314426000012/rnr-20251231.htm",
+          "https://www.sec.gov/Archives/edgar/data/913144/000091314426000003/rnrearningsrelease2025q4.htm"
+        ],
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-rnr-2025-bvps",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "book value per common share",
+          "normalized_metric_family": "BOOK_VALUE_PER_SHARE",
+          "value": 247.00,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Dividend-inclusive total growth requires separate calculation."
+        },
+        {
+          "assertion_id": "fin-rnr-2025-combined",
+          "assertion_type": "REPORTED_RISK_MEASURE",
+          "native_metric_name": "combined ratio",
+          "normalized_metric_family": "COMBINED_RATIO",
+          "value": 87.2,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Large-loss events and adjustment anatomy must remain attached."
+        },
+        {
+          "assertion_id": "fin-rnr-2025-underwriting-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "underwriting income",
+          "normalized_metric_family": "UNDERWRITING_INCOME",
+          "value": 1.3,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Rounded annual observation; not total earnings."
+        },
+        {
+          "assertion_id": "fin-rnr-2025-fee-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "fee income",
+          "normalized_metric_family": "FEE_INCOME_FROM_THIRD_PARTY_CAPITAL",
+          "value": 328.9,
+          "unit": "USD_millions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Fee source, expenses and third-party capital obligations remain source-native."
+        }
+      ],
+      "research_rerating_bridge": "rate/terms and tail loss; book compounding; investment and third-party-capital fees; retrocession and accretive capital return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-met-2025",
+      "issuer_label": "MetLife, Inc.",
+      "ticker_hint": "MET",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "life, group benefits, retirement/PRT, asset management and general-account businesses",
+      "economic_modes": ["INSURANCE_PRINCIPAL", "RETIREMENT_SPREAD_BUSINESS", "FIDUCIARY", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000013/met-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-met-2025-net-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net income available to common shareholders",
+          "normalized_metric_family": "GAAP_NET_INCOME",
+          "value": 3.2,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_GAAP",
+          "limitations": "GAAP result includes market/investment and other effects distinct from adjusted earnings."
+        },
+        {
+          "assertion_id": "fin-met-2025-adjusted-earnings",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "adjusted earnings available to common shareholders",
+          "normalized_metric_family": "INSURANCE_ADJUSTED_OPERATING_INCOME",
+          "value": 5.9,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls; not statutory income or cash remittance."
+        },
+        {
+          "assertion_id": "fin-met-2025-premiums",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "premiums",
+          "normalized_metric_family": "LIFE_INSURANCE_PREMIUMS",
+          "value": 49.779,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Premium is not revenue quality or profit; may have corresponding benefit/liability effects."
+        },
+        {
+          "assertion_id": "fin-met-2025-nii",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net investment income",
+          "normalized_metric_family": "NET_INVESTMENT_INCOME",
+          "value": 22.559,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Recurring/variable, segment and general-account anatomy require source review."
+        }
+      ],
+      "research_rerating_bridge": "fee/spread/insurance margin; assumptions and hedges; statutory cash/capital; adjusted book and per-share return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-pru-2025",
+      "issuer_label": "Prudential Financial, Inc.",
+      "ticker_hint": "PRU",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "retirement, life, international insurance and asset management",
+      "economic_modes": ["INSURANCE_PRINCIPAL", "RETIREMENT_SPREAD_BUSINESS", "FIDUCIARY", "FLOAT_INVESTOR"],
+      "source": {
+        "source_family": "SEC_10K_AND_EARNINGS_RELEASE",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1137774/000113777426000048/pru-20251231.htm",
+          "https://www.sec.gov/Archives/edgar/data/1137774/000113777426000012/exhibit991-4q25earningspre.htm"
+        ],
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-pru-2025-net-income",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "net income attributable to Prudential Financial",
+          "normalized_metric_family": "GAAP_NET_INCOME",
+          "value": 3.576,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_GAAP",
+          "limitations": "Not adjusted operating income or statutory cash."
+        },
+        {
+          "assertion_id": "fin-pru-2025-aoi",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "after-tax adjusted operating income",
+          "normalized_metric_family": "INSURANCE_ADJUSTED_OPERATING_INCOME",
+          "value": 5.161,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation and assumption-update treatment control."
+        },
+        {
+          "assertion_id": "fin-pru-2025-aoi-per-share",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "after-tax adjusted operating income per common share",
+          "normalized_metric_family": "ADJUSTED_OPERATING_EPS",
+          "value": 14.43,
+          "unit": "USD_per_common_share",
+          "measurement_class": "PER_SHARE_VALUE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        }
+      ],
+      "research_rerating_bridge": "normalized adjusted earnings; assumption/hedge/legacy risk; statutory cash; adjusted book and capital return",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-mrsh-2025",
+      "issuer_label": "Marsh McLennan",
+      "ticker_hint": "MRSH",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "insurance and reinsurance brokerage plus health/wealth/management consulting",
+      "economic_modes": ["AGENCY_INTERMEDIARY", "REINSURANCE_BROKER", "CONSULTANT", "FIDUCIARY_FUNDS_HOLDER"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/62709/000006270926000022/mrsh-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-mrsh-2025-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "consolidated revenue",
+          "normalized_metric_family": "BROKER_REPORTED_REVENUE",
+          "value": 27.0,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes risk/insurance, consulting, acquisitions and FX effects."
+        },
+        {
+          "assertion_id": "fin-mrsh-2025-underlying-growth",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "underlying revenue growth",
+          "normalized_metric_family": "BROKER_UNDERLYING_REVENUE_GROWTH",
+          "value": 4.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer adjustment policy controls; not identical to other firms' organic growth."
+        },
+        {
+          "assertion_id": "fin-mrsh-2025-risk-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "Risk and Insurance Services revenue",
+          "normalized_metric_family": "INSURANCE_BROKER_REVENUE",
+          "value": 17.3,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes brokerage and related services; source segment controls."
+        }
+      ],
+      "research_rerating_bridge": "underlying retention/new business; rate/exposure; acquisition integration; margin, fiduciary interest, leverage and FCF",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-aon-2025",
+      "issuer_label": "Aon plc",
+      "ticker_hint": "AON",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "risk capital and human capital brokerage/advisory",
+      "economic_modes": ["AGENCY_INTERMEDIARY", "REINSURANCE_BROKER", "CONSULTANT", "DATA_ANALYTICS_PROVIDER"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/315293/000162828026008116/aon-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-aon-2025-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "total revenue",
+          "normalized_metric_family": "BROKER_REPORTED_REVENUE",
+          "value": 17.2,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Includes NFP acquisition and segment mix."
+        },
+        {
+          "assertion_id": "fin-aon-2025-organic-growth",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "organic revenue growth",
+          "normalized_metric_family": "BROKER_ORGANIC_REVENUE_GROWTH",
+          "value": 6.0,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer definition and market-impact treatment control."
+        },
+        {
+          "assertion_id": "fin-aon-2025-adjusted-margin",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "adjusted operating margin",
+          "normalized_metric_family": "ADJUSTED_OPERATING_MARGIN",
+          "value": 32.4,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Acquisition, restructuring and compensation adjustments require reconciliation."
+        },
+        {
+          "assertion_id": "fin-aon-2025-fcf",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "free cash flow",
+          "normalized_metric_family": "FREE_CASH_FLOW",
+          "value": 3.218,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        }
+      ],
+      "research_rerating_bridge": "organic retention/new business; NFP integration; margin/FCF; reinsurance/health/wealth mix; leverage and fiduciary interest",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-ajg-2025",
+      "issuer_label": "Arthur J. Gallagher & Co.",
+      "ticker_hint": "AJG",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "insurance brokerage, risk management and acquisition consolidator",
+      "economic_modes": ["AGENCY_INTERMEDIARY", "RISK_MANAGEMENT_SERVICE_PROVIDER", "ACQUISITION_CONSOLIDATOR"],
+      "source": {
+        "source_family": "SEC_10K",
+        "url": "https://www.sec.gov/Archives/edgar/data/354190/000162828026008662/ajg-20251231.htm",
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-ajg-2025-acquisitions-count",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "acquisitions completed",
+          "normalized_metric_family": "ACQUISITION_COUNT",
+          "value": 33,
+          "unit": "acquisitions",
+          "measurement_class": "COUNT",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Count does not establish size, quality or accretion."
+        },
+        {
+          "assertion_id": "fin-ajg-2025-acquired-annualized-revenue",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "annualized revenues of businesses acquired",
+          "normalized_metric_family": "ANNUALIZED_ACQUIRED_REVENUE",
+          "value": 3.562,
+          "unit": "USD_billions_approximately",
+          "measurement_class": "ANNUALIZED_RUN_RATE",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "annualization_basis": "ISSUER_DEFINED_ANNUALIZED",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Not recognized 2025 revenue, organic growth or per-share accretion."
+        },
+        {
+          "assertion_id": "fin-ajg-2025-senior-notes",
+          "assertion_type": "REPORTED_BALANCE_SHEET_MEASURE",
+          "native_metric_name": "senior notes outstanding",
+          "normalized_metric_family": "BROKER_DEBT_OUTSTANDING",
+          "value": 9.550,
+          "unit": "USD_billions",
+          "measurement_class": "BALANCE_STOCK",
+          "as_of_date": "2025-12-31",
+          "balance_basis": "PERIOD_END",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Excludes other note-purchase and facility borrowings."
+        }
+      ],
+      "research_rerating_bridge": "organic revenue and retention; acquisition economics; producer integration; EBITDAC-to-FCF conversion and deleveraging",
+      "review_state": "RESEARCH_CANDIDATE"
+    },
+    {
+      "record_id": "fin-research-vrsk-2025",
+      "issuer_label": "Verisk Analytics, Inc.",
+      "ticker_hint": "VRSK",
+      "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
+      "business_scope": "insurance underwriting/claims data, analytics and workflow",
+      "economic_modes": ["DATA_PROVIDER", "RISK_ANALYTICS_PROVIDER", "SOFTWARE_WORKFLOW_PROVIDER"],
+      "source": {
+        "source_family": "SEC_10K_AND_EARNINGS_RELEASE",
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1442145/000143774926004452/vrsk20251231_10k.htm",
+          "https://www.sec.gov/Archives/edgar/data/1442145/000143774926004451/ex_895228.htm"
+        ],
+        "publication_at": null,
+        "observed_at": "2026-09-23"
+      },
+      "assertions": [
+        {
+          "assertion_id": "fin-vrsk-2025-revenue",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "revenue",
+          "normalized_metric_family": "REVENUE",
+          "value": 3.073,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Subscription, transaction, consulting and acquisition effects require decomposition."
+        },
+        {
+          "assertion_id": "fin-vrsk-2025-subscription-share",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "share of revenue derived from hosted subscriptions",
+          "normalized_metric_family": "SUBSCRIPTION_REVENUE_SHARE",
+          "value": 83.0,
+          "unit": "percent",
+          "measurement_class": "RATIO",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED",
+          "limitations": "Recurring share does not establish retention, organic growth or pricing power."
+        },
+        {
+          "assertion_id": "fin-vrsk-2025-fcf",
+          "assertion_type": "REPORTED_FINANCIAL_MEASURE",
+          "native_metric_name": "free cash flow",
+          "normalized_metric_family": "FREE_CASH_FLOW",
+          "value": 1.192,
+          "unit": "USD_billions",
+          "measurement_class": "PERIOD_FLOW",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer reconciliation controls."
+        },
+        {
+          "assertion_id": "fin-vrsk-2025-underwriting-organic-growth",
+          "assertion_type": "REPORTED_OPERATING_MEASURE",
+          "native_metric_name": "underwriting revenue growth excluding recent acquisitions and dispositions",
+          "normalized_metric_family": "ORGANIC_CONSTANT_CURRENCY_REVENUE_GROWTH",
+          "value": 8.1,
+          "unit": "percent",
+          "measurement_class": "RATE_OR_YIELD",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "reported_derived_estimated": "REPORTED_NON_GAAP",
+          "limitations": "Issuer adjustment and segment basis controls."
+        }
+      ],
+      "research_rerating_bridge": "subscription retention/price/cross-sell; claims/underwriting organic growth; margin and FCF; model/data trust",
+      "review_state": "RESEARCH_CANDIDATE"
+    }
+  ],
+  "packet_summary": {
+    "records": 19,
+    "canonical_identity_bindings": 0,
+    "approved_basket_memberships": 0,
+    "ranking_or_trade_fields": 0,
+    "records_with_numeric_assertions": 19,
+    "current_market_valuations": 0,
+    "current_consensus_estimates": 0
+  },
+  "exact_next_action": "Run deterministic semantic validation and source-locator review; then continue principal research into Finance disruption, cross-subtheme product design, historical rerating evaluation and the implementation plan before drafting the final Fable CEO handoff."
+}

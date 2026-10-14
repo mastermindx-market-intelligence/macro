@@ -1,0 +1,76 @@
+{
+  "schema": "mastermind.research.finance_r11_product_visualization_contract.v0_1",
+  "state": "RESEARCH_ONLY_DESIGN_FREEZE",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "compatibility_main": "da092e5d4a64dbb7c3958826f8cd60d7cbd02cc5",
+  "theme_tracker": {
+    "role": "canonical_theme_router",
+    "finance_integration": "sector_deep_dive_affordance_outside_canonical_lanes",
+    "prohibit": [
+      "ADD_FINANCE_AS_CANONICAL_THEME",
+      "APPLY_SEVEN_THEME_LEGS_TO_WHOLE_FINANCE_SECTOR",
+      "INCREMENT_CANONICAL_THEME_COUNT"
+    ]
+  },
+  "financials_context": {
+    "incumbent_surface": "basket/us_sector_financials.html",
+    "role": "broad_equal_weight_price_participation_context",
+    "finance_module": "launch_to_finance_intelligence"
+  },
+  "dossier_sections": [
+    "WHAT_CHANGED",
+    "RERATING_MAP",
+    "SYSTEM_FLOW_MAP",
+    "SUBTHEME_ATLAS",
+    "COMPANY_EXPOSURE_MATRIX",
+    "MACRO_REGIME_MATRIX",
+    "CONSTRAINT_MAP",
+    "EVIDENCE_DRAWER"
+  ],
+  "primary_order": [
+    "WHAT_CHANGED",
+    "RERATING_MAP",
+    "SYSTEM_FLOW_MAP",
+    "SUBTHEME_ATLAS"
+  ],
+  "company_click_behavior": "reuse_existing_company_stock_owner",
+  "missing_states": [
+    "NO_HISTORICAL_CONSENSUS",
+    "EXPOSURE_NOT_SEPARATELY_DISCLOSED",
+    "CURRENT_MEMBERSHIP_ONLY",
+    "PIT_MEMBERSHIP_INCOMPLETE",
+    "IDENTITY_UNRESOLVED",
+    "PRICE_BASIS_UNQUALIFIED",
+    "SOURCE_STALE",
+    "SOURCE_RIGHTS_HELD",
+    "REGIME_BREAK_NOT_COMPARABLE",
+    "VALUATION_ANCHOR_UNAVAILABLE",
+    "CAUSAL_EFFECT_UNMEASURED"
+  ],
+  "acceptance_matrix": {
+    "widths": [
+      1440,
+      390
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "keyboard": true,
+    "reduced_motion": true,
+    "no_page_horizontal_scroll_mobile": true
+  },
+  "authority": {
+    "display_only": true,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "next_action": "R12 current-main collision/custody review before implementation handoff."
+}
