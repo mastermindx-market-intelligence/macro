@@ -17,7 +17,11 @@ from engine.fundamental_forensics.financial_intelligence_packet import (
     canonical_json,
     sha256_file,
 )
-from engine.fundamental_forensics.query import PeriodRequest, QueryPolicy
+from engine.fundamental_forensics.query import (
+    FILING_METADATA_SCHEMA,
+    PeriodRequest,
+    QueryPolicy,
+)
 from engine.fundamental_forensics.query_service import (
     CanonicalEntityBinding,
     FinancialQueryAdmissionError,
@@ -891,3 +895,94 @@ class _StaticPacketProvider:
 
     def resolve(self, entity_id: str) -> FinancialPacketDataset:
         return self._dataset
+
+
+# ---------------------------------------------------------------------------
+# A0-h1 (MINOR-4): metadata keying runs AFTER the typed admission gates and
+# its ValueError is converted to a typed FinancialQueryUnavailableError
+# ---------------------------------------------------------------------------
+
+# A key that is neither a ledger occurrence id nor an accession: the
+# occurrence-keyed helper fails closed on it (raw ValueError pre-fix). The
+# revisions metric gate also loads the raw metadata into its engine, so this
+# defect is visible to BOTH layers — right for the floor-ordering test.
+_UNKNOWN_METADATA_KEY = "not-an-occurrence-id-or-accession"
+
+
+def _unknown_metadata_key_dataset(**replacements) -> FinancialPacketDataset:
+    base = fip1_packet_dataset(ROOT)
+    filing_metadata = dict(base.filing_metadata)
+    filing_metadata[_UNKNOWN_METADATA_KEY] = dict(
+        next(iter(base.filing_metadata.values()))
+    )
+    return replace(base, filing_metadata=filing_metadata, **replacements)
+
+
+def _gate_invisible_conflict_dataset(**replacements) -> FinancialPacketDataset:
+    """A filing-metadata defect ONLY the occurrence-keyed helper refuses.
+
+    The same occurrences are bound twice — once by their occurrence ids,
+    once via the accession — with values that differ RAW (the accession
+    entry carries an explicit ``schema`` key, the occurrence entries omit
+    it) but coerce to the SAME FilingMetadata in the query engine (the
+    engine defaults ``schema``; ``schema`` is allowed-but-optional in
+    ``_strict_wire_mapping``). The admission gates' engine construction
+    therefore accepts the dataset, while the helper's raw ``!=`` conflict
+    check fails closed — the NIT-1 asymmetry, pinned here as the defect
+    carrier. If R-4 ever canonicalizes the helper's comparison, switch
+    this fixture to an unknown-key defect.
+    """
+    base = fip1_packet_dataset(ROOT)
+    filing_metadata = dict(base.filing_metadata)
+    _occurrence_id, meta = next(iter(base.filing_metadata.items()))
+    filing_metadata[meta["accession"]] = {
+        **meta,
+        "schema": FILING_METADATA_SCHEMA,
+    }
+    return replace(base, filing_metadata=filing_metadata, **replacements)
+
+
+def test_t6a_floor_refusal_wins_over_metadata_defect() -> None:
+    """Unknown metadata key AND a dataset whose admission clock is after the
+    request's recorded_at: the admission floor's typed refusal (the exception
+    enforce_dataset_admission_floor raises in its own tests —
+    FinancialQueryUnavailableError) wins, never the helper's raw
+    ValueError."""
+    dataset = _unknown_metadata_key_dataset(
+        dataset_admitted_at=datetime(2026, 8, 6, tzinfo=timezone.utc)
+    )
+    # _t3_latest() records at T3_RECORDED (2026-08-05T12:00:02Z), strictly
+    # before the clock above, so the floor excludes the generation.
+    with pytest.raises(FinancialQueryUnavailableError):
+        execute_financial_revisions(
+            body=_t3_latest(), provider=_StaticPacketProvider(dataset)
+        )
+
+
+def test_t6b_unsupported_metric_refusal_wins_over_metadata_defect() -> None:
+    """A metadata defect AND an unsupported metric: the metric gate's typed
+    400 ``unsupported metric`` wins — never a 503-shaped unavailability and
+    never the helper's raw ValueError. The defect carrier is engine-invisible
+    (see _gate_invisible_conflict_dataset) so the gate reaches its metric
+    verdict before the helper ever runs."""
+    dataset = _gate_invisible_conflict_dataset()
+    body = _t3_latest(metric_ids=["revenue", "not_a_real_metric_xyz"])
+    with pytest.raises(FinancialQueryAdmissionError) as exc_info:
+        execute_financial_revisions(
+            body=body, provider=_StaticPacketProvider(dataset)
+        )
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "unsupported metric"
+
+
+def test_t6c_metadata_defect_alone_is_typed_unavailable() -> None:
+    """A metadata defect the gates cannot see (engine-invisible conflict):
+    the helper's ValueError is converted to the typed
+    FinancialQueryUnavailableError inside the service, never escaping as a
+    raw ValueError into the API catch-all."""
+    dataset = _gate_invisible_conflict_dataset()
+    with pytest.raises(FinancialQueryUnavailableError) as exc_info:
+        execute_financial_revisions(
+            body=_t3_latest(), provider=_StaticPacketProvider(dataset)
+        )
+    assert not isinstance(exc_info.value, ValueError)

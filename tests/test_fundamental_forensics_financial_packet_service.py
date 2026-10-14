@@ -769,3 +769,59 @@ def test_fif2b_t2_t3_regression_remains_green() -> None:
     rows = [row for row in t3.envelope["revisions"] if row["metric_id"] == "revenue"]
     assert rows[0]["root_value"] == "1050"
     assert rows[0]["revised_value"] == "1060"
+
+
+# ---------------------------------------------------------------------------
+# A0-h1 (MINOR-4): metadata keying runs AFTER the admission floor and its
+# ValueError is converted to a typed FinancialQueryUnavailableError
+# ---------------------------------------------------------------------------
+
+# A key that is neither a ledger occurrence id nor an accession: the
+# occurrence-keyed helper fails closed on it (raw ValueError pre-fix).
+_UNKNOWN_METADATA_KEY = "not-an-occurrence-id-or-accession"
+
+
+class _StaticPacketProvider:
+    def __init__(self, dataset) -> None:
+        self._dataset = dataset
+
+    def resolve(self, entity_id: str) -> FinancialPacketDataset:
+        return self._dataset
+
+
+def _metadata_defect_dataset(**replacements) -> FinancialPacketDataset:
+    base = fip1_packet_dataset(ROOT)
+    filing_metadata = dict(base.filing_metadata)
+    filing_metadata[_UNKNOWN_METADATA_KEY] = dict(
+        next(iter(base.filing_metadata.values()))
+    )
+    return replace(base, filing_metadata=filing_metadata, **replacements)
+
+
+def test_t6d_floor_refusal_wins_over_metadata_defect() -> None:
+    """Unknown metadata key AND a dataset whose admission clock is after the
+    request's recorded_at: the admission floor's typed refusal (the exception
+    enforce_dataset_admission_floor raises in its own tests —
+    FinancialQueryUnavailableError) wins, never the helper's raw
+    ValueError."""
+    dataset = _metadata_defect_dataset(
+        dataset_admitted_at=datetime(2026, 8, 6, tzinfo=timezone.utc)
+    )
+    # _t3_latest() records at T3_RECORDED (2026-08-05T12:00:02Z), strictly
+    # before the clock above, so the floor excludes the generation.
+    with pytest.raises(FinancialQueryUnavailableError):
+        execute_financial_packet(
+            body=_t3_latest(), provider=_StaticPacketProvider(dataset)
+        )
+
+
+def test_t6e_metadata_defect_alone_is_typed_unavailable() -> None:
+    """Unknown metadata key only: the service raises the typed
+    FinancialQueryUnavailableError, never the helper's raw ValueError (which
+    would reach the API catch-all instead of the typed service path)."""
+    dataset = _metadata_defect_dataset()
+    with pytest.raises(FinancialQueryUnavailableError) as exc_info:
+        execute_financial_packet(
+            body=_t3_latest(), provider=_StaticPacketProvider(dataset)
+        )
+    assert not isinstance(exc_info.value, ValueError)

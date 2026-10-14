@@ -325,10 +325,6 @@ def execute_financial_revisions(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
-    # A0 (D-2): the production store keys filing metadata by accession while
-    # the packet assembler resolves it by occurrence id; normalize at this
-    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
-    filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
     # A12: the dataset's own admission clock gates the system view. The
     # admitted QueryPolicy object itself passes through untouched.
     enforce_dataset_admission_floor(admitted.policy, dataset)
@@ -337,7 +333,18 @@ def execute_financial_revisions(
         dataset=dataset,
         query_request=query_request,
     )
+    # A0 (D-2): the production store keys filing metadata by accession while
+    # the packet assembler resolves it by occurrence id; normalize at this
+    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
+    # A0-h1 (MINOR-4): the normalization sits INSIDE the assemble try, AFTER
+    # the typed admission gates above (floor, unsupported metrics) and
+    # immediately before the assembly it feeds — so a request those gates
+    # refuse keeps its typed refusal instead of the helper's raw ValueError
+    # winning the race, and a metadata defect (unknown key, conflicting
+    # metadata) surfaces as a typed FinancialQueryUnavailableError from the
+    # service, never a raw ValueError into the API catch-all.
     try:
+        filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
             ledger=dataset.ledger,

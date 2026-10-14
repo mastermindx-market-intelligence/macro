@@ -1102,15 +1102,24 @@ def _stage_contract_issuers(
             if canonical_cik(admitted_package.manifest.get("cik")) != binding.cik:
                 refusals.append("admission_refused:issuer_cik_mismatch")
                 continue
-            manifest_entity_id = admitted_package.manifest.get("entity_id")
-            if (
-                isinstance(manifest_entity_id, str)
-                and manifest_entity_id
-                and manifest_entity_id != binding.entity_id
-            ):
-                refusals.append("admission_refused:issuer_entity_mismatch")
-                continue
-            if manifest_entity_id != binding.entity_id:
+            # A0-h1 (MINOR-1): a PRESENT entity_id that is not exactly the
+            # binding's entity string — a foreign string, an empty string,
+            # or any non-string value (None, int, list, dict) — is a
+            # disagreeing package: refused, never relabelled. Only an ABSENT
+            # key is stamped with the binding's entity (the capture manifest
+            # writes entity_id only as a non-empty string, so a
+            # present-but-malformed value never comes from the real capture
+            # path and refusing it costs nothing real). A present value
+            # exactly equal to the binding keeps the package unchanged.
+            if "entity_id" in admitted_package.manifest:
+                manifest_entity_id = admitted_package.manifest["entity_id"]
+                if not (
+                    isinstance(manifest_entity_id, str)
+                    and manifest_entity_id == binding.entity_id
+                ):
+                    refusals.append("admission_refused:issuer_entity_mismatch")
+                    continue
+            else:
                 admitted_package = replace(
                     admitted_package,
                     manifest={**admitted_package.manifest, "entity_id": binding.entity_id},
