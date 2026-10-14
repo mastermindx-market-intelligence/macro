@@ -8951,6 +8951,8 @@ jobs:
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
+          tests/test_research_codegen_contracts.py
+          tests/test_research_codegen_input_contract.py
           -q
 
   cycle-pattern-authority:
