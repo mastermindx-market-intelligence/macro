@@ -1089,6 +1089,8 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_capex_bind_2026-07-22.json",
     "benchmark_mag7_forced_override_2026-07-11.json",
     "benchmark_mag7_narration_2026-08-03.json",
+    "benchmark_healthcare_coherence_2026-07-13.json",
+    "benchmark_rotation_wiring_2026-07-16.json",
 ]
 
 

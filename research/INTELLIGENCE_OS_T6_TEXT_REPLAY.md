@@ -21,3 +21,12 @@ Two further supplied-text fixtures contrast an operator-forced directional readi
 Both source documents, IDs and names are registered in the existing bounded guard. Missing metadata still refuses before model defaults; both callbacks remain explicit. Four new CI inputs extend the same code owner. The response/adversarial suite plus four admission controls passes167tests with zero failures/errors/skips. These checks prove plumbing and retained contracts, not semantic model performance.
 
 These two cases and the capex case share a Mag7 episode. Their declared dependence group is descriptive metadata, not a statistical independence mechanism. Four newhistoricaltextfixtures plus the unchanged legacybearcase do not satisfy the original20/15objective or prove historicalPIT. See the t6-next acceptance, red/green and source-review receipts.
+
+
+## Healthcare and rotation-diagnostic tranche
+
+Two further cases cover the simultaneous healthcare buy/Reduce readings on July 13 and the distinct clock-versus-consumer-wiring failures described in the July 16 adjudication. The former binds only the July 13 table, excluding the subsequent tape; the latter is explicitly diagnostic text reported on July 16. Neither proves when any historical product actually served those inputs. Separate later adjudication excerpts bound the expected display and authority constraints. Historical charter prose is fixture evidence, not current execution authorization.
+
+The existing guard admits six named documents and six case identities; all function bodies are unchanged. Four red controls reproduced unadmitted-source and missing-metadata/default-model failures before registration. The affected runner/adversarial/admission suite passes 171 tests with no failures, errors or skips. The assigning root verified exact source bytes, excerpt lines, dates and limits; an independent review is not claimed. Fabric refused support publication before the extraction worker launched.
+
+These cases share a July US-rotation context and may also overlap earlier Mag7 cases. Dependence-group labels do not prove independence across labels. Six new supplied-text cases plus the unchanged bear case remain below the original twenty/fifteen objective; injected callbacks prove execution plumbing only. See the t6-third receipts.

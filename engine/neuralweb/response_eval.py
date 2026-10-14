@@ -1043,13 +1043,16 @@ def _benchmark_extra_context(case: dict) -> str:
 
 
 _HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_2026-07-22",
-                                      "mag7_forced_override_2026-07-11", "mag7_narration_2026-08-03"})
+                                      "mag7_forced_override_2026-07-11", "mag7_narration_2026-08-03",
+                                      "healthcare_coherence_2026-07-13", "rotation_wiring_2026-07-16"})
 _HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
 _HISTORICAL_TEXT_SOURCES = frozenset({
     "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
     "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
     "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
     "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+    "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+    "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
 })
 _HISTORICAL_SCOPE_LIMITS = [
     "Supplied adjudication text only; historical source availability is unverified.",
@@ -1073,7 +1076,7 @@ def historical_text_digest(meta: dict) -> str:
 def _historical_text_case_error(case: dict, root: Path) -> str | None:
     """Validate the optional frozen text contract before any answer/judge call.
 
-    Reads only the four named canonical documents, bounded and regular-file-only. Full
+    Reads only the six named canonical documents, bounded and regular-file-only. Full
     bytes and exact excerpts bind input and adjudication separately. No historical
     stores, model defaults, rights escalation or claim/grade reads are involved.
     """

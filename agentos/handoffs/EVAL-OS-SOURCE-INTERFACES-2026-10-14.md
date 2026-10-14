@@ -6,7 +6,7 @@ ended_because: ci_handoff
 mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected
   source, CI and actual consumer adoption. This is a continuity checkpoint; the active
   root continues.
-state_before: A1 release approved on sole PR6651; follow-on source published through7c41a768073d,
+state_before: A1 release approved on sole PR6651; follow-on published at 9c18ec900c93,
   separate carrier with no PR.
 changed:
 - path: engine/intelligence_registry.py
@@ -18,8 +18,8 @@ changed:
   what: Classify supported source/data observations from one supplied output-health
     view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit two bounded source-bound historical supplied-text replay cases with
-    explicit callbacks.
+  what: Admit six bounded source-bound historical supplied-text replay cases with
+    explicit callbacks; latest two are root-adjudicated, not independently reviewed.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
 verified:
@@ -33,10 +33,17 @@ verified:
     and production verification.
   command: Read direct Chairman approval and existing GitHub release record.
   result: Recorded at https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
+- claim: Integrated source interfaces and latest two historical text cases passed
+    affected checks.
+  command: Retained combined regression, repaired Agent OS nodes and runner/adversarial
+    checks.
+  result: Combined 709 PASS plus all 15 repaired nodes PASS; latest text tranche 171
+    PASS, zero failures/errors/skips. Exact HEAD 9c18 dependency inventory had 1184
+    inputs and none missing.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
-  what_would_verify: Finish local combined qualification, exact tracked closure, fresh
-    hosted selection and execution, and the existing controller.
+  what_would_verify: Verify actual committed closure after the latest two-case tranche,
+    then fresh hosted selection/execution and the existing controller.
 - claim: Installed source, live consumer adoption, subsequent normal owner update
     and operator comprehension.
   what_would_verify: Normal deployment followed by installed identity, authenticated
@@ -46,8 +53,8 @@ unresolved:
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing
   admission payload.
 next_actions:
-- Repair this handoff metadata and qualify the combined source after the retained
-  integration failure.
+- Publish the six-case source tranche after local qualification; preserve the separate
+  A1 release carrier.
 - Let existing PR6651 controller finish binding checks and merge; verify the normal
   updater and authenticated production surface.
 - Complete the separate follow-on carrier with fresh main and actual owner CI, then
@@ -61,8 +68,8 @@ danger_areas:
 - Keep A1 release source separate from follow-on changes.
 - Reserved Prophet outcomes, source rights, actual admission and human operator acceptance
   remain distinct.
-- Two Mag7 draft cases are not yet implemented or accepted and must not be counted
-  as independent observations.
+- Six historical text cases are distinct fixtures, not six independent empirical observations
+  or completed model-performance acceptance.
 prs:
 - 6651
 ---
@@ -74,8 +81,8 @@ The active Chairman assignment is end-to-end programme ownership by Fable with b
 ## Current carriers
 
 - A1 retains PR #6651, branch `claude/eval-os-a1-evidence-view-20260828`. Chris explicitly released HOLD-FOR-SOL and authorized the ordinary repository controller, fresh checks, deployment and production verification. Release decision: https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
-- Candidate `0fb4b0d0633f488a0d904c5e15be3d93e3fced29` repairs the controller-confirmed conflict and preserves main816d. Fresh hosted plan38507675183 selects124jobs with matching execution contracts; contract-delta, authority and fences pass, while terminal pack execution remains pending. The Ready PR remains controller-owned and armed. No merge or live claim is made.
-- New source interfaces are isolated on `claude/eval-os-required-tier-20261014`, published through `7c41a768073d` with no separate PR yet. Root is the sole writer. Do not import that work into the armed A1 carrier.
+- Candidate `2a4236dc89710cb86f6aab771f0eed073b34b978` carries the exact landed PR9227 one-line path-prune test repair. Previous 0fb CI failed that lint; formal semantic classification was UNKNOWN, so no inherited-base waiver was used. The affected local suite passed 203 tests with one documented existing skip; runtime bindings are unchanged. Fresh CI38512444577 has a successful plan and queued packs. The Ready PR remains armed and controller-owned; no merge or live claim is made.
+- New source interfaces are isolated on `claude/eval-os-required-tier-20261014`, published through `9c18ec900c93` with no separate PR yet. Root is the sole writer. Do not import that work into the armed A1 carrier.
 
 ## Accepted source deltas
 
@@ -87,8 +94,13 @@ These are source qualifications. Containing-head CI, protected merge, installati
 
 ## Next useful actions and boundaries
 
-Finish the controller-requested A1 conflict repair on the same carrier, preserve both dependency-path sets, pass affected controls, and let the controller judge fresh hosted checks. Continue through the normal updater, installed source/process identity, authenticated API, actual page behavior and subsequent natural owner update. Operator comprehension must come from the actual operator; synthetic answers are not acceptance.
+Let the existing controller judge fresh hosted checks on the repaired A1 carrier; any further base-only refresh remains subject to current capacity and fresh checks. Continue through the normal updater, installed source/process identity, authenticated API, actual page behavior and subsequent natural owner update. Operator comprehension must come from the actual operator; synthetic answers are not acceptance.
 
-Ship the separate source-interface branch when its containing-base proof is ready. The first two-case T6 tranche from already adjudicated gold/real-rate and capex-bind text is implemented and source-qualified in the existing response-eval runner. It is labelled supplied-text/current-doctrine replay with unverified historical source availability, not a proven historically served PIT slice. Preserve the existing bear benchmark and the unfulfilled twenty-case/fifteen-seeded requirement.
+Ship the separate source-interface branch when its containing-base proof is ready. The first four historical text cases are published, and two further healthcare/rotation cases have passed local qualification. The latest two have assigning-root source adjudication, without an independent-review claim. It is labelled supplied-text/current-doctrine replay with unverified historical source availability, not a proven historically served PIT slice. Preserve the existing bear benchmark and the unfulfilled twenty-case/fifteen-seeded requirement.
 
 Original Fabric operation `eval-experience-01a1335a-a1` remains unresolved on its original carrier; no replay, replacement or invented cancellation. The independent T12 producer leaf failed before launch due to current host admission, so root completed its bounded work directly and consumed Sol review. New Fabric work must use current admitted routing without renewing the original immutable operator allowance or creating a new root.
+
+
+## Latest retained Fabric boundary
+
+New C0 extraction `eval-t6-sourcecensus-01a1333d-b1` ended before launch with rc75, `ROUTING_CRITICAL_POLICY_MISMATCH` / `SUPPORT_PUBLICATION_REFUSED`. No worker or retained result existed and no acceptance was recorded. The root completed the bounded source extraction directly; the refused publication was not retried or moved to another carrier. This is separate from the original unresolved experience operation.
