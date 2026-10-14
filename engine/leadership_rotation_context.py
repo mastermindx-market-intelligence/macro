@@ -32,10 +32,12 @@ Unmeasured semantics:
 
 from __future__ import annotations
 
+import copy
+import dataclasses
 import math
 import numbers
-from dataclasses import dataclass
-from datetime import date, datetime
+from dataclasses import dataclass, field
+from datetime import date, datetime, timezone
 from typing import NamedTuple
 
 __all__ = [
@@ -66,6 +68,16 @@ __all__ = [
     "concentration",
     "shared_members",
     "weight_coverage",
+    "cohort_at",
+    "parse_time",
+    "admissible_as_known",
+    "admit_use",
+    "observation_clock",
+    "confirmation_maturity",
+    "clock_identities",
+    "GroupMeasurement",
+    "TransitionObservation",
+    "ResearchEstimate",
     "rolling_carry",
     "decompose_trailing_change",
     "beta_only_residual",
@@ -490,9 +502,191 @@ def weight_coverage(expected_weights, measured_ids) -> dict:
     }
 
 
+def cohort_at(memberships, *, as_of, as_known=False):
+    """Cohort population at ``as_of`` (A08); optionally as-known-at ``as_of`` (A06).
+
+    A row is IN iff ``effective_from <= as_of`` and (``effective_to`` is None or
+    ``as_of < effective_to``) and, when ``as_known=True``, ``known_at`` is not
+    None and ``known_at <= as_of``. A late joiner is never in an older cohort.
+    """
+    when = parse_time(as_of)
+    if isinstance(when, Unmeasured):
+        return Unmeasured("missing_input" if as_of is None else "unparseable_time")
+    members = []
+    future_effective = []
+    expired = []
+    not_yet_known = []
+    knowledge_unknown = []
+    unparseable = []
+    for row in (memberships if memberships is not None else ()):
+        try:
+            member_id = row.get("member_id")
+            from_raw = row.get("effective_from")
+            to_raw = row.get("effective_to")
+            known_raw = row.get("known_at")
+        except AttributeError:
+            unparseable.append(str(row))
+            continue
+        eff_from = parse_time(from_raw)
+        eff_to = None if to_raw is None else parse_time(to_raw)
+        known_at = None if known_raw is None else parse_time(known_raw)
+        row_unparseable = (
+            member_id is None
+            or isinstance(eff_from, Unmeasured)
+            or (to_raw is not None and isinstance(eff_to, Unmeasured))
+            or (known_raw is not None and isinstance(known_at, Unmeasured))
+        )
+        if row_unparseable:
+            unparseable.append(member_id if isinstance(member_id, str) else str(row))
+            continue
+        if eff_from > when:
+            future_effective.append(member_id)
+        elif eff_to is not None and when >= eff_to:
+            expired.append(member_id)
+        elif as_known and known_at is None:
+            knowledge_unknown.append(member_id)
+        elif as_known and known_at > when:
+            not_yet_known.append(member_id)
+        else:
+            members.append(member_id)
+    return {
+        "as_of": as_of,
+        "population": "as_known" if as_known else "reconstructed",
+        "members": sorted(members),
+        "excluded_future_effective": sorted(future_effective),
+        "excluded_expired": sorted(expired),
+        "excluded_not_yet_known": sorted(not_yet_known),
+        "excluded_knowledge_unknown": sorted(knowledge_unknown) if as_known else [],
+        "excluded_unparseable": sorted(unparseable),
+    }
+
+
 # ---------------------------------------------------------------------------
-# 5. T03 -- rolling-window carry math (clock contracts live in a later slice)
+# 5. T03 -- group input and clock contracts
 # ---------------------------------------------------------------------------
+
+def parse_time(x):
+    """Aware-UTC datetime from a date/datetime/ISO string; Unmeasured otherwise.
+
+    A naive datetime (or naive ISO string, incl. plain ``YYYY-MM-DD``) is read
+    as UTC; a ``date`` becomes 00:00 UTC. No clock is ever read here.
+    """
+    if x is None:
+        return Unmeasured("missing_input")
+    if isinstance(x, datetime):
+        dt = x
+    elif isinstance(x, date):
+        dt = datetime(x.year, x.month, x.day)
+    elif isinstance(x, str):
+        text = x.strip()
+        if not text:
+            return Unmeasured("unparseable_time")
+        if text[-1] in ("Z", "z"):
+            text = text[:-1] + "+00:00"
+        try:
+            dt = datetime.fromisoformat(text)
+        except ValueError:
+            return Unmeasured("unparseable_time")
+    else:
+        return Unmeasured("unparseable_time")
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def admissible_as_known(available_at, decision_cutoff) -> str:
+    """Is the input's ``available_at`` knowledge admissible at ``decision_cutoff`` (A06)?
+
+    String states on purpose: a truthy marker must never admit an input. A
+    revision available only AFTER the decision cutoff is not admissible.
+    """
+    if available_at is None:
+        return "unknown"
+    available = parse_time(available_at)
+    cutoff = parse_time(decision_cutoff)
+    if isinstance(available, Unmeasured) or isinstance(cutoff, Unmeasured):
+        return "unknown"
+    if available <= cutoff:
+        return "admissible"
+    return "not_admissible"
+
+
+def admit_use(rights, use) -> str:
+    """Use permission from a rights map (A05): acquisition is not permission.
+
+    "permitted" iff ``rights[use] == "permitted"``; "refused" iff it equals
+    "refused"; anything else -- None rights, absent use, a truthy non-string --
+    is "withheld".
+    """
+    if rights is None:
+        return "withheld"
+    try:
+        value = rights.get(use)
+    except AttributeError:
+        return "withheld"
+    if value == "permitted":
+        return "permitted"
+    if value == "refused":
+        return "refused"
+    return "withheld"
+
+
+def _checked_count(name, x) -> int:
+    """Validate a session count: a real int >= 0; bools are programmer errors."""
+    if isinstance(x, bool) or not isinstance(x, int) or x < 0:
+        raise ValueError(f"{name} must be an int >= 0 (bool rejected), got {x!r}")
+    return x
+
+
+def observation_clock(session_end, *, vintage=None, confirmation_sessions=0,
+                      horizon_sessions=0) -> dict:
+    """Confirmation clock of an observation: maturity offset is c + H sessions."""
+    c = _checked_count("confirmation_sessions", confirmation_sessions)
+    h = _checked_count("horizon_sessions", horizon_sessions)
+    return {
+        "session_end": session_end,
+        "vintage": vintage,
+        "confirmation_sessions": c,
+        "horizon_sessions": h,
+        "maturity_offset_sessions": c + h,
+        "maturity_rule": "t+c+H from the original origin",
+    }
+
+
+def confirmation_maturity(origin_index, c, h) -> int:
+    """A transition matures at the origin t plus c confirmation plus H horizon."""
+    t = _checked_count("origin_index", origin_index)
+    cs = _checked_count("confirmation_sessions", c)
+    hs = _checked_count("horizon_sessions", h)
+    return t + cs + hs
+
+
+def clock_identities(evidence_as_of, live_price_at) -> dict:
+    """Keep the evidence clock and the live price clock distinct (A07).
+
+    The two clocks are NEVER merged: the dict carries both labels and
+    ``merged: False`` always. ``evidence_older_than_live`` is None when either
+    side is missing or unparseable -- never a silent False.
+    """
+    evidence = parse_time(evidence_as_of)
+    live = parse_time(live_price_at)
+    evidence_known = not isinstance(evidence, Unmeasured)
+    live_known = not isinstance(live, Unmeasured)
+    if evidence_known and live_known:
+        older = evidence < live
+    else:
+        older = None
+    return {
+        "evidence_as_of": evidence_as_of,
+        "live_price_at": live_price_at,
+        "evidence_older_than_live": older,
+        "evidence_label": (f"group evidence as of {evidence_as_of}" if evidence_known
+                           else "group evidence date unknown"),
+        "live_label": (f"live price {live_price_at}" if live_known
+                       else "live price unavailable"),
+        "merged": False,
+    }
+
 
 def rolling_carry(L, h) -> dict:
     """Shared terms of a rolling L-window stepped by h: L-h (>0 => carry_flag)."""
@@ -553,6 +747,226 @@ def decompose_trailing_change(window_before, new_returns):
         "trailing_change": trailing_change,
         "carry_only": abs(new_return_component) <= EPS and abs(trailing_change) > EPS,
     }
+
+
+# ---------------------------------------------------------------------------
+# 6. Objects -- group_measurement (T03), transition_observation (T08),
+#    research_estimate. Three distinct objects, never substitutable.
+# ---------------------------------------------------------------------------
+
+_GROUP_MEASUREMENT_SCHEMA = "leadership_rotation_context.group_measurement/v1"
+_TRANSITION_OBSERVATION_SCHEMA = "leadership_rotation_context.transition_observation/v1"
+_RESEARCH_ESTIMATE_SCHEMA = "leadership_rotation_context.research_estimate/v1"
+_RESEARCH_ESTIMATE_IDENTITY_FIELDS = (
+    "target",
+    "horizon_sessions",
+    "origin",
+    "exit_rule",
+    "model",
+    "protocol",
+    "cohort_id",
+    "training_cutoff",
+    "supported_population",
+    "uncertainty_definition",
+    "evidence_tier",
+)
+
+
+def _object_to_dict(obj, schema: str, extra: dict) -> dict:
+    """JSON-safe projection of a frozen contract object (private)."""
+    payload = {"schema": schema, "display_only": True}
+    for f in dataclasses.fields(obj):
+        payload[f.name] = _json(getattr(obj, f.name))
+    payload.update(extra)
+    return payload
+
+
+@dataclass(frozen=True)
+class GroupMeasurement:
+    """One measured group reading; display-only, never a ranking authority.
+
+    Keyword construction is the contract. ``value`` is either a measured real
+    (a valid 0.0 IS measured) or an explicit ``Unmeasured`` marker; it is never
+    coerced. The object may never rank anything: ``may_rank`` is False in
+    ``to_dict()`` by construction.
+    """
+
+    group_id: str
+    group_kind: str
+    cohort_id: str
+    metric: str
+    units: str
+    membership_source: object = None
+    membership_revision: object = None
+    market: object = None
+    session_end: object = None
+    benchmark: object = None
+    price_basis: object = None
+    currency: object = None
+    window_sessions: object = None
+    rolling_window: bool = False
+    observed_at: object = None
+    source_available_at: object = None
+    issued_at: object = None
+    freshness: object = None
+    correction_generation: int = 0
+    expected_members: tuple = ()
+    admitted_members: tuple = ()
+    measured_members: tuple = ()
+    missing_members: tuple = ()
+    expected_n: object = None
+    measured_n: object = None
+    weight_source: object = None
+    weight_effective_at: object = None
+    weight_convention: object = None
+    value: object = field(default_factory=lambda: Unmeasured("missing_input"))
+    breadth: object = None
+    concentration: object = None
+    overlap_with: tuple = ()
+    source_roots: tuple = ()
+    withheld_inputs: tuple = ()
+    evidence_mode: str = "reconstructed_price_history"
+    use_rights: str = "withheld"
+    notes: tuple = ()
+
+    def __post_init__(self) -> None:
+        if self.group_kind not in GROUP_KINDS:
+            raise ValueError(f"group_kind must be one of GROUP_KINDS, got {self.group_kind!r}")
+        if self.metric not in METRICS:
+            raise ValueError(f"metric must be one of METRICS, got {self.metric!r}")
+        if self.units not in UNITS:
+            raise ValueError(f"units must be one of UNITS, got {self.units!r}")
+        if self.evidence_mode not in EVIDENCE_MODES:
+            raise ValueError(
+                f"evidence_mode must be one of EVIDENCE_MODES, got {self.evidence_mode!r}"
+            )
+        if not isinstance(self.value, Unmeasured) and not is_measured(self.value):
+            raise ValueError(
+                "value must be an Unmeasured marker or a measured real (bool rejected), "
+                f"got {self.value!r}"
+            )
+
+    @property
+    def coverage(self):
+        """Measured share of the expected population, or Unmeasured when unknown."""
+        if self.expected_members:
+            return len(self.measured_members) / len(self.expected_members)
+        if _is_count(self.expected_n) and self.expected_n > 0 and _is_count(self.measured_n):
+            return self.measured_n / self.expected_n
+        return Unmeasured("empty_population")
+
+    def to_dict(self) -> dict:
+        return _object_to_dict(
+            self,
+            _GROUP_MEASUREMENT_SCHEMA,
+            {"coverage": _json(self.coverage), "may_rank": False},
+        )
+
+
+@dataclass(frozen=True)
+class TransitionObservation:
+    """One early-transition coordinate observation; CONTEXT-ONLY, never an event.
+
+    A reconstructed coordinate is ``naturally_observed=False`` by law: it was
+    rebuilt from price history, not witnessed at the time. The observation is
+    never attached to a legacy event (``relationship`` is pinned to
+    "context_only"); confirmed status lives in the legacy event owner, not here.
+    """
+
+    definition_id: str
+    definition_version: str
+    roles: dict
+    coordinate: dict
+    evidence_mode: str
+    naturally_observed: bool
+    first_known_observation_id: object = None
+    first_known_at: object = None
+    current_observation_at: object = None
+    episode_id: object = None
+    status: str = "context_only"
+    contrary_evidence: tuple = ()
+    interpretation: object = None
+    source_context: object = None
+    relationship: str = "context_only"
+
+    def __post_init__(self) -> None:
+        if self.evidence_mode not in EVIDENCE_MODES:
+            raise ValueError(
+                f"evidence_mode must be one of EVIDENCE_MODES, got {self.evidence_mode!r}"
+            )
+        if not isinstance(self.naturally_observed, bool):
+            raise ValueError(
+                f"naturally_observed must be a bool, got {self.naturally_observed!r}"
+            )
+        if self.naturally_observed and self.evidence_mode != "original_retained":
+            raise ValueError(
+                "a reconstructed coordinate cannot claim natural observation: only "
+                f"evidence_mode='original_retained' may be naturally_observed, got "
+                f"{self.evidence_mode!r}"
+            )
+        if not isinstance(self.coordinate, dict):
+            raise ValueError(f"coordinate must be a dict, got {self.coordinate!r}")
+        for key in ("date", "vintage", "as_of"):
+            if key not in self.coordinate:
+                raise ValueError(f"coordinate lacks required key {key!r}")
+        if self.relationship != "context_only":
+            raise ValueError(
+                "a transition observation is context-only and is never attached to a "
+                f"legacy event, got relationship={self.relationship!r}"
+            )
+
+    def to_dict(self) -> dict:
+        return _object_to_dict(self, _TRANSITION_OBSERVATION_SCHEMA, {})
+
+
+@dataclass(frozen=True)
+class ResearchEstimate:
+    """A predictive research claim; unavailable unless BOTH probability and a
+    complete identity are present.
+
+    An estimate with an incomplete identity is unavailable -- never a placeholder
+    probability, and a coverage percentage never enters the probability slot.
+    """
+
+    target: object = None
+    horizon_sessions: object = None
+    origin: object = None
+    exit_rule: object = None
+    model: object = None
+    protocol: object = None
+    cohort_id: object = None
+    training_cutoff: object = None
+    supported_population: object = None
+    uncertainty_definition: object = None
+    evidence_tier: object = None
+    probability: object = field(
+        default_factory=lambda: Unmeasured("no_admitted_model_support")
+    )
+
+    def __post_init__(self) -> None:
+        if isinstance(self.probability, Unmeasured):
+            return
+        if not is_measured(self.probability) or not 0.0 <= float(self.probability) <= 1.0:
+            raise ValueError(
+                "probability must be an Unmeasured marker or a measured real in [0, 1] "
+                f"(bool rejected), got {self.probability!r}"
+            )
+        missing = [
+            name for name in _RESEARCH_ESTIMATE_IDENTITY_FIELDS
+            if getattr(self, name) is None
+        ]
+        if missing:
+            raise ValueError(
+                "an estimate with an incomplete identity is unavailable; missing "
+                f"identity fields: {missing}"
+            )
+
+    @property
+    def status(self) -> str:
+        return "unavailable" if isinstance(self.probability, Unmeasured) else "estimate"
+
+    def to_dict(self) -> dict:
+        return _object_to_dict(self, _RESEARCH_ESTIMATE_SCHEMA, {"status": self.status})
 
 
 # ---------------------------------------------------------------------------
