@@ -7,6 +7,7 @@ be settled outside this helper before writer_protocol_qualified can become True.
 from __future__ import annotations
 
 import copy
+import base64
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
@@ -115,7 +116,8 @@ class ProducerGenerationSession:
     """One in-process writer session over the incumbent canonical catalog."""
 
     @classmethod
-    def begin(cls, store: Any, catalog: dict, identity: dict, *, now: datetime):
+    def begin(cls, store: Any, catalog: dict, identity: dict, *, now: datetime,
+              evidence=None):
         if not isinstance(now, datetime) or now.tzinfo is None:
             raise GenerationWriteUnavailable("explicit aware producer clock required")
         if (not isinstance(identity, dict)
@@ -125,6 +127,10 @@ class ProducerGenerationSession:
                 or any(c not in "0123456789abcdef" for c in identity["source_commit"])
                 or not isinstance(identity["run"], str) or not identity["run"].strip()):
             raise GenerationWriteUnavailable("explicit producer identity required")
+        if evidence is not None:
+            from engine.research_vault.generation_evidence import FileGenerationEvidence
+            if type(evidence) is not FileGenerationEvidence or evidence.identity != identity:
+                raise GenerationWriteUnavailable("original evidence identity mismatch")
         for name in ("get_bytes_strict_bounded", "get_bytes_strict_bounded_versioned",
                      "put_bytes_strict_conditional",
                      "validate_strict_conditional_write_capability"):
@@ -149,6 +155,7 @@ class ProducerGenerationSession:
         session.catalog_bytes = current.data
         session.active = True
         session.failure = ""
+        session.evidence = evidence
         session._confirmed_writes: dict[str, bytes] = {}
         session.record = {
             "schema": contract.GENERATION_SCHEMA, "epoch": str(uuid4()),
@@ -175,6 +182,74 @@ class ProducerGenerationSession:
         self.failure = reason
         raise GenerationWriteUnavailable(reason)
 
+    def _evidence(self, kind: str, payload: dict):
+        if self.evidence is None:
+            return None
+        try:
+            return self.evidence.append(kind, payload)
+        except Exception as exc:
+            self._fail("original-run evidence unavailable: " + type(exc).__name__)
+
+    def _intent(self, key: str, data: bytes, content_type: str, *, conditional=False,
+                expected_version=None):
+        if self.evidence is None:
+            return None
+        payload = {"key": key, "sha256": _sha(data), "bytes": len(data),
+                   "content_type": content_type, "conditional": conditional,
+                   "expected_version": expected_version,
+                   "epoch": self.record["epoch"]}
+        # Preserve the actual visibility intent, including BEGIN/COMPLETE, before
+        # its CAS. Corpus/PDF bytes stay on their existing carrier; the journal
+        # records their actual write digest, never duplicates report contents.
+        if key == catalog_mod.CATALOG_KEY:
+            payload["catalog_base64"] = base64.b64encode(data).decode("ascii")
+        return self._evidence("write_intent", payload)
+
+    def _result(self, operation, outcome: str):
+        if self.evidence is not None:
+            self._evidence("write_result", {"operation": operation, "outcome": outcome})
+
+    def record_publication(self, corpus_path, pending_receipts):
+        """Retain pending receipt bytes before the corpus/catalog visibility cut.
+
+        This is evidence for the original owner, not a replay or completion API.
+        An unavailable sink refuses before this publication batch begins.
+        """
+        if self.evidence is None:
+            return
+        from pathlib import Path
+        self.assert_current()
+        path = Path(corpus_path)
+        try:
+            before = path.stat()
+            if before.st_size > contract.CORPUS_MAX_BYTES:
+                self._fail("publication corpus outside evidence bound")
+            digest = hashlib.sha256()
+            total = 0
+            with path.open("rb") as stream:
+                for block in iter(lambda: stream.read(1024 * 1024), b""):
+                    total += len(block)
+                    if total > contract.CORPUS_MAX_BYTES:
+                        self._fail("publication corpus outside evidence bound")
+                    digest.update(block)
+            after = path.stat()
+            if (total != before.st_size or
+                    (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns)):
+                self._fail("publication corpus changed during evidence capture")
+            pending = [{"key": key, "sha256": _sha(data), "bytes": len(data),
+                        "body_base64": base64.b64encode(data).decode("ascii")}
+                       for key, data in pending_receipts]
+            self._evidence("publication_plan", {
+                "epoch": self.record["epoch"],
+                "catalog_predecessor_sha256": _sha(self.catalog_bytes),
+                "catalog_predecessor_version": self.catalog_version,
+                "corpus_sha256": digest.hexdigest(), "corpus_bytes": before.st_size,
+                "pending_receipts": pending})
+        except GenerationWriteUnavailable:
+            raise
+        except Exception as exc:
+            self._fail("publication evidence unavailable: " + type(exc).__name__)
+
     def assert_current(self):
         if not self.active:
             raise GenerationWriteUnavailable(self.failure or "session closed")
@@ -188,14 +263,19 @@ class ProducerGenerationSession:
 
     def _cas(self, data: bytes):
         self.assert_current()
+        operation = self._intent(catalog_mod.CATALOG_KEY, data, "application/json",
+                                 conditional=True, expected_version=self.catalog_version)
         try:
             ok = self.store.put_bytes_strict_conditional(catalog_mod.CATALOG_KEY, data,
                                                   expected_version=self.catalog_version,
                                                   content_type="application/json")
         except Exception as exc:
+            self._result(operation, "exception_effect_unknown")
             self._fail("catalog conditional effect uncertain: " + type(exc).__name__)
         if not ok:
+            self._result(operation, "conditional_conflict")
             self._fail("catalog conditional conflict")
+        self._result(operation, "returned_true")
         try:
             current = _catalog_read(self.store)
         except Exception as exc:
@@ -203,6 +283,8 @@ class ProducerGenerationSession:
         if current is None or current.data != data:
             self._fail("catalog conditional readback mismatch")
         self.catalog_bytes, self.catalog_version = current.data, current.version
+        self._evidence("catalog_observed", {"sha256": _sha(current.data),
+                       "version": current.version, "operation": operation})
 
     def prepare_catalog(self, document: dict) -> bytes:
         self.assert_current()
@@ -220,12 +302,18 @@ class ProducerGenerationSession:
                 self._fail("catalog write must preserve current BUILDING")
             self._cas(data)
             return True
+        operation = self._intent(key, data, content_type)
         try:
             ok = bool(self.store.put_bytes(key, data, content_type))
         except Exception as exc:
+            self._result(operation, "exception_effect_unknown")
             self._fail("covered write effect uncertain: " + type(exc).__name__)
         if not ok:
+            # The legacy Store boolean may hide a transport exception. False is
+            # not proof that an unconditional PUT had no remote effect.
+            self._result(operation, "returned_false_effect_unknown")
             self._fail("covered write rejected")
+        self._result(operation, "returned_true")
         if key == contract.CORPUS_KEY or key.startswith(fulltext_store.RECEIPT_PREFIX):
             self._confirmed_writes[key] = data
         return True
@@ -270,6 +358,8 @@ class ProducerGenerationSession:
         selected[contract.GENERATION_FIELD] = record
         data = _dump(selected)
         self._cas(data)
+        self._evidence("terminal", {"epoch": record["epoch"], "state": "COMPLETE",
+                       "catalog_sha256": _sha(data), "catalog_version": self.catalog_version})
         self.active = False
         document[contract.GENERATION_FIELD] = record
         return data
@@ -296,5 +386,14 @@ class FencedProducerStore:
         # A catalog or fixed-key conditional PUT must not bypass the session.
         if not key.startswith(fulltext_store.FULLTEXT_PREFIX) or expected_version is not None:
             raise GenerationWriteUnavailable("only immutable derivative conditional writes allowed")
-        return self._store.put_bytes_strict_conditional(
-            key, data, expected_version=None, content_type=content_type)
+        operation = self.generation_session._intent(
+            key, data, content_type, conditional=True, expected_version=None)
+        try:
+            result = self._store.put_bytes_strict_conditional(
+                key, data, expected_version=None, content_type=content_type)
+        except Exception as exc:
+            self.generation_session._result(operation, "exception_effect_unknown")
+            self.generation_session._fail("immutable conditional effect uncertain: " + type(exc).__name__)
+        self.generation_session._result(
+            operation, "returned_true" if result else "conditional_conflict")
+        return result

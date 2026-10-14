@@ -1,5 +1,7 @@
 """Synthetic writer-CAS tests; never evidence of production writer adoption."""
 import copy
+import base64
+import hashlib
 import json
 from datetime import datetime, timezone
 
@@ -9,6 +11,7 @@ from engine.research_vault import catalog, corpus, fulltext_store, fulltext_writ
 from engine.research_vault import producer_generation as contract
 from engine.research_vault import producer_generation_writer as writer
 from engine.research_vault.r2_store import LocalStore
+from engine.research_vault.generation_evidence import FileGenerationEvidence, read_evidence
 
 NOW = datetime(2026, 10, 13, tzinfo=timezone.utc)
 IDENTITY = {"source_commit": "a" * 40, "run": "synthetic-test-only"}
@@ -56,6 +59,171 @@ def begin(seeded):
     store, doc = seeded
     session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW)
     return store, doc, session, writer.FencedProducerStore(store, session)
+
+
+def test_evidence_identity_must_match_before_begin_effect(seeded, tmp_path):
+    store, doc = seeded
+    with FileGenerationEvidence.create(tmp_path / "original.jsonl", IDENTITY) as evidence:
+        with pytest.raises(writer.GenerationWriteUnavailable, match="identity mismatch"):
+            writer.ProducerGenerationSession.begin(
+                store, doc, {**IDENTITY, "run": "other"}, now=NOW, evidence=evidence)
+    assert store.events == []
+
+
+def test_actual_write_intent_is_persisted_before_store_call(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+        original = store.put_bytes
+        def observed_put(key, data, content_type):
+            event = json.loads(path.read_bytes().splitlines()[-1])["event"]
+            assert event["kind"] == "write_intent"
+            assert event["payload"]["key"] == key
+            assert event["payload"]["sha256"] == hashlib.sha256(data).hexdigest()
+            return original(key, data, content_type)
+        monkeypatch.setattr(store, "put_bytes", observed_put)
+        session.put(contract.CORPUS_KEY, b"original intended bytes", "application/octet-stream")
+    events = read_evidence(path, expected_identity=IDENTITY)
+    assert events[-1]["payload"]["outcome"] == "returned_true"
+
+
+def test_failed_intent_persistence_prevents_remote_write(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    with FileGenerationEvidence.create(tmp_path / "original.jsonl", IDENTITY) as evidence:
+        session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+        prior = list(store.events)
+        monkeypatch.setattr(evidence, "append", lambda *a: (_ for _ in ()).throw(OSError("disk")))
+        with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
+            session.put(contract.CORPUS_KEY, b"never sent", "application/octet-stream")
+        assert store.events == prior
+        assert not session.active
+
+
+def test_lost_result_evidence_never_invents_confirmation(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+        original = evidence.append
+        def failing_result(kind, payload):
+            if kind == "write_result":
+                raise OSError("disk after effect")
+            return original(kind, payload)
+        monkeypatch.setattr(evidence, "append", failing_result)
+        with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
+            session.put(contract.CORPUS_KEY, b"applied but unrecorded", "application/octet-stream")
+        assert store.get_bytes(contract.CORPUS_KEY) == b"applied but unrecorded"
+        assert contract.CORPUS_KEY not in session._confirmed_writes
+        assert not session.active
+    assert read_evidence(path, expected_identity=IDENTITY)[-1]["kind"] == "write_intent"
+
+
+def test_lost_begin_response_preserves_original_unknown_without_takeover(seeded, tmp_path):
+    store, doc = seeded
+    store.lost_response = True
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        with pytest.raises(writer.GenerationWriteUnavailable, match="effect uncertain"):
+            writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+    events = read_evidence(path, expected_identity=IDENTITY)
+    intent = events[1]["payload"]
+    assert base64.b64decode(intent["catalog_base64"]) == store.get_bytes(catalog.CATALOG_KEY)
+    assert events[-1]["payload"]["outcome"] == "exception_effect_unknown"
+    assert len(store.events) == 1
+    current = json.loads(store.get_bytes(catalog.CATALOG_KEY))
+    with pytest.raises(writer.GenerationWriteUnavailable, match="owner must settle"):
+        writer.ProducerGenerationSession.begin(store, current, IDENTITY, now=NOW)
+    assert len(store.events) == 1
+
+
+def test_actual_ingest_retains_receipt_plan_before_checkpoint_visibility(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    monkeypatch.setattr(ingest, "_list_inbox_pdfs", lambda _: ["research_inbox/synthetic.pdf"])
+    monkeypatch.setattr(ingest, "_ingest_one", lambda *a, **k: {
+        "status": "ingested", "item": doc["items"][0], "title_source": "sidecar",
+        "facts": {"content_sha256": "b" * 64, "text_layer": "full"}})
+    monkeypatch.setattr(fulltext_writer, "materialize_pending", lambda *a, **k: {"aborted": None})
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        result = ingest.run(store, tmp_path / "working.sqlite", now=NOW, checkpoint_every=1,
+                            generation_identity=IDENTITY, generation_evidence=evidence)
+    assert result.get("error") is None, result
+    assert result["generation_complete"] is True
+    events = read_evidence(path, expected_identity=IDENTITY)
+    plans = [i for i, event in enumerate(events) if event["kind"] == "publication_plan"]
+    corpus_writes = [i for i, event in enumerate(events) if event["kind"] == "write_intent"
+                     and event["payload"]["key"] == contract.CORPUS_KEY]
+    assert len(plans) == len(corpus_writes) == 2
+    assert all(plan < write for plan, write in zip(plans, corpus_writes))
+    pending = events[plans[0]]["payload"]["pending_receipts"]
+    assert len(pending) == 1
+    assert base64.b64decode(pending[0]["body_base64"]) == store.get_bytes(pending[0]["key"])
+    assert events[plans[1]]["payload"]["pending_receipts"] == []
+    assert events[-1]["kind"] == "terminal"
+    assert events[-1]["payload"]["catalog_sha256"] == hashlib.sha256(store.get_bytes(catalog.CATALOG_KEY)).hexdigest()
+
+
+def test_unknown_immutable_write_prevents_completion(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+        wrapped = writer.FencedProducerStore(store, session)
+        monkeypatch.setattr(store, "put_bytes_strict_conditional",
+                            lambda *a, **k: (_ for _ in ()).throw(TimeoutError("lost")))
+        with pytest.raises(writer.GenerationWriteUnavailable, match="immutable conditional effect uncertain"):
+            wrapped.put_bytes_strict_conditional(fulltext_store.FULLTEXT_PREFIX + "synthetic.json",
+                                                 b"original", expected_version=None)
+        assert not session.active
+        with pytest.raises(writer.GenerationWriteUnavailable):
+            session.complete(doc, now=NOW)
+    assert read_evidence(path, expected_identity=IDENTITY)[-1]["payload"]["outcome"] == "exception_effect_unknown"
+
+
+def test_unpersisted_publication_plan_blocks_the_entire_batch(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    store.events.clear()
+    with FileGenerationEvidence.create(tmp_path / "original.jsonl", IDENTITY) as evidence:
+        original = evidence.append
+        def refuse_plan(kind, payload):
+            if kind == "publication_plan":
+                raise OSError("disk before visibility batch")
+            return original(kind, payload)
+        monkeypatch.setattr(evidence, "append", refuse_plan)
+        with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
+            ingest.run(store, tmp_path / "working.sqlite", now=NOW,
+                       generation_identity=IDENTITY, generation_evidence=evidence)
+    assert store.events == [("cas", catalog.CATALOG_KEY)]
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]["state"] == "BUILDING"
+
+
+def test_legacy_false_put_remains_unknown_in_original_evidence(seeded, tmp_path):
+    store, doc = seeded
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+        store.fail_key = contract.CORPUS_KEY
+        with pytest.raises(writer.GenerationWriteUnavailable, match="write rejected"):
+            session.put(contract.CORPUS_KEY, b"unknown remote effect", "application/octet-stream")
+        assert not session.active
+    assert read_evidence(path, expected_identity=IDENTITY)[-1]["payload"]["outcome"] == "returned_false_effect_unknown"
+
+
+@pytest.mark.parametrize("dry_run,identity", [(True, IDENTITY), (False, None)])
+def test_evidence_requires_an_explicit_real_generation(seeded, tmp_path, dry_run, identity):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    store.events.clear()
+    path = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(path, IDENTITY) as evidence:
+        result = ingest.run(store, tmp_path / "working.sqlite", now=NOW, dry_run=dry_run,
+                            generation_identity=identity, generation_evidence=evidence)
+    assert result["error"] == "generation_evidence_requires_explicit_producer"
+    assert store.events == []
+    assert len(read_evidence(path, expected_identity=IDENTITY)) == 1
 
 
 def test_building_precedes_first_covered_put(seeded):
