@@ -1,3 +1,5 @@
+> Historical phase snapshot. For the current integrated private OCC staging source, checks, active review and release state, read the cumulative CHECKPOINT.md and official_staging_phase/REVIEW.md. The parent publication heartbeat is active; controller refresh capacity is not an initial authored-PR ban.
+
 # Current public-source qualification phase — October 13, 2026
 
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.

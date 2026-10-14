@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.press.continuation_registration.v1",
   "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
-  "observed_at": "2026-10-14T01:34:20.962941+00:00",
+  "observed_at": "2026-10-14T01:56:39.891828+00:00",
   "automation_id": "complete-press-delivery",
   "kind": "heartbeat",
   "status": "ACTIVE",
@@ -18,7 +18,7 @@
   },
   "release_authority": "Existing GitHub protected controller only; no gate changed",
   "publication_approved": false,
-  "current_prompt_sha256": "bbd0db772397152a6212e752134364fff22a7ad797991b201469e938a70ba4b0",
+  "current_prompt_sha256": "b4841440add8acf3c69233af013053c8ce27a7b24b162e7559a78328590c965e",
   "current_prompt_readback_at": "2026-10-14T01:34:20.976393+00:00",
   "first_scheduled_execution_at": "2026-10-12T08:31:49.007Z",
   "execution_evidence": "Native same-thread user heartbeat carrying automation_id complete-press-delivery",
@@ -39,11 +39,12 @@
     "current_follow_on_pr": 9041,
     "current_ci_conclusion": "success"
   },
-  "current_prompt_bytes": 1978,
-  "current_source_head": "332e49f5ae00143f48a24bf1f313176b0aa85e6e",
+  "current_prompt_bytes": 1962,
+  "current_source_head": "55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec",
   "current_release_pr": null,
   "current_release_ci": null,
-  "current_worker": "mmx-press-official-staging-20261013-001",
+  "current_worker": "mmx-press-private-ingress-review-20261014-001",
   "reactivation_verified": true,
-  "reactivated_prompt_execution_observed": false
+  "reactivated_prompt_execution_observed": false,
+  "controller_refresh_cap_scope": "Automatic update-branch refreshes; ordinary authored PR creation is not gated by this cap"
 }

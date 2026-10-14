@@ -1634,4 +1634,3 @@ D14's ten consecutive unedited mixed-desk acceptance and real release gates are
 met. Original October 11 12:07 EFFECT_UNKNOWN remains unreplayed. Earlier
 #8786/#9041 installation and scoped browser acceptance remain historical accepted
 capabilities; this new source is not yet installed or publicly available.
-
