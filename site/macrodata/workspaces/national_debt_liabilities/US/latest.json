@@ -252,7 +252,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "national_debt_liabilities-US-d84f1ea440371c80"
+    "predecessor_generation_id": "national_debt_liabilities-US-ac5b91504c228f09"
   },
   "drivers": {
     "balance_sheet": [
@@ -373,11 +373,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-13T06:57:13Z",
+    "built_at": "2026-10-14T06:19:54Z",
     "calculation_as_of": "2026-10-08",
-    "code_version": "8847cfc6de330b36595e3793010e6599845adc2f",
-    "content_sha256": "ac5b91504c228f0942b7d2fe010e58ba3a2cab0d536e7b7bfc7bc67a46dd1471",
-    "generation_id": "national_debt_liabilities-US-ac5b91504c228f09",
+    "code_version": "bcf999b1431069915c91a6a9a059beb8e268d93a",
+    "content_sha256": "ee961266cde7cb3a263666efe05a8cf27aa3ef4943225c89b0c30f41b4aaf1a1",
+    "generation_id": "national_debt_liabilities-US-ee961266cde7cb3a",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },

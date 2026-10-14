@@ -4793,6 +4793,10 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-14: rotation AST/render fallback curation; retain full static
+    # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
 }
 
 
