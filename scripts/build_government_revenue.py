@@ -1138,7 +1138,11 @@ def _government_revenue_critical_css(env) -> str:
             if not path or not (Path(filename).parent / path).is_file():
                 raise ValueError("unresolved canonical CSS dependency: " + url)
         parts.append(css)
-    return "\n".join(parts)
+    # Preserve the complete canonical cascade; remove only transfer overhead.
+    # A missing build dependency fails closed rather than silently shipping a
+    # larger, differently qualified first-paint artifact.
+    from rcssmin import cssmin
+    return cssmin("\n".join(parts), keep_bang_comments=True)
 
 
 def _write_site_projection(

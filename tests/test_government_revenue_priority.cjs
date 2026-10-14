@@ -25,3 +25,25 @@ function startup(authMode,failed=''){
 }
 for(const mode of ['missing','disabled'])test('actual early startup '+mode+' auth settles locked without network and releases every public tool',async()=>{let f=startup(mode);let result=await f.window.__govrevFirstInvestor.modulesReady;assert.equal(f.window.__govrevFirstInvestor.ui.state().status,'locked');assert.equal(f.network,0);assert.equal(f.clientCalls,0);assert.equal(result.state,'ready');assert.equal(f.scripts.length,7);assert(f.scripts.slice(0,6).every(s=>s.async===false));assert.equal(f.scripts[6].type,'module')});
 test('actual early typed403 settles then loads modules, with visible partial on one module failure',async()=>{let f=startup('enabled','government-revenue-dossiers.js');f.callbacks[0](null,'INITIAL_SESSION');let result=await f.window.__govrevFirstInvestor.modulesReady;assert.equal(f.network,1);assert.equal(f.window.__govrevFirstInvestor.ui.state().status,'locked');assert.equal(result.state,'partial');assert.deepEqual(Array.from(result.failed),['government-revenue-dossiers.js']);assert.equal(f.notes.length,1);assert.match(f.notes[0].textContent,/could not load/)});
+
+function restorationRace(){
+ let resolve,notify,loads=0;
+ const session=new Promise(r=>{resolve=r});
+ const window={createGovernmentRevenueInvestor:()=>({mount(){},load(){loads++;return Promise.resolve(null)}}),MDXAuth:{onChange:f=>{notify=f},client:()=>Promise.resolve({auth:{getSession:()=>session}})}};
+ const document={createElement:()=>({setAttribute(){}}),head:{appendChild:s=>queueMicrotask(()=>s.onload())}};
+ vm.runInNewContext(fs.readFileSync(root+'/templates/government-revenue-investor-start.js','utf8'),{window,document,Promise});
+ return {window,resolve,emit:(user,event)=>notify(user,event),get loads(){return loads}};
+}
+test('completed initial session starts finance before a delayed auth notification',async()=>{
+ const f=restorationRace();f.resolve({data:{session:{user:{id:'restored'}}}});await flush();
+ assert.equal(f.loads,1);assert.equal(f.window.__govrevFirstInvestor.subject,'restored');
+ f.emit({id:'restored'},'INITIAL_SESSION');await flush();assert.equal(f.loads,1);
+});
+for(const event of ['SIGNED_OUT','SIGNED_IN'])test('newer '+event+' wins over pending initial session result',async()=>{
+ const f=restorationRace();f.emit(event==='SIGNED_OUT'?null:{id:'new-user'},event);
+ f.resolve({data:{session:{user:{id:'old-user'}}}});await flush();
+ assert.equal(f.loads,1);assert.equal(f.window.__govrevFirstInvestor.subject,event==='SIGNED_OUT'?'':'new-user');
+});
+test('initial session result cannot reclaim finance from page owner',async()=>{
+ const f=restorationRace();f.window.__govrevFirstInvestor.owned=true;f.resolve({data:{session:{user:{id:'restored'}}}});await flush();assert.equal(f.loads,0);
+});

@@ -13,3 +13,38 @@ test('primary sources and public copy are escaped; technical pointers remain opt
 test('per-call auth, same-principal last-good refresh and403 clearing',async()=>{env();let answer={ok:true,json:async()=>copy()},headers=0;const h=host(),c=ui.create({host:()=>h,authHeaders:async()=>{headers++;return {test:'current'};},fetch:async(url,opts)=>{assert.equal(url,'/api/government-revenue/theme-context');assert.equal(opts.headers.test,'current');assert.equal(opts.credentials,'same-origin');return answer;}});await c.load();answer={ok:false,status:503};await c.load(true);assert.equal(c.state().status,'unavailable');assert.match(h.innerHTML,/last verified source context/);answer={ok:true,json:async()=>({})};await c.load(true);assert.equal(c.state().status,'invalid');answer={ok:false,status:403};await c.load(true);assert.equal(c.state().status,'locked');assert.equal(c.state().content_id,null);assert.doesNotMatch(h.innerHTML,/gr-theme-item/);assert.equal(headers,4);});
 test('logout/account switch discards delayed old read and cannot overwrite new403',async()=>{env();let subject='fixture-a',resolves=[];const h=host(),listeners={};global.addEventListener=(name,fn)=>{listeners[name]=fn;};const c=ui.create({host:()=>h,authSubject:()=>subject,fetch:()=>new Promise(r=>resolves.push(r))});c.mount();const old=c.load();await new Promise(setImmediate);subject='';listeners['mdx-auth']({detail:{user:null}});assert.equal(c.state().status,'locked');subject='fixture-b';c.setAuthSubject(subject);const current=c.load();await new Promise(setImmediate);resolves[1]({ok:false,status:403});await current;resolves[0]({ok:true,json:async()=>copy()});await old;assert.equal(c.state().status,'locked');assert.equal(c.state().content_id,null);assert.doesNotMatch(h.innerHTML,/gr-theme-item/);});
 test('source context completeness cannot be inferred from labels or source count',()=>{const x=copy();x.themes[0].research_state='SOURCE_CONTEXT_COMPLETE';assert.equal(ui.validate(x),false);});
+
+function disclosureHost(){
+  let html='',nodes=[],focusNodes=[];
+  return {get innerHTML(){return html;},set innerHTML(value){html=value;nodes=Array.from(value.matchAll(/<details\b([^>]*)>/g),m=>{const key=/data-theme-disclosure="([^"]+)"/.exec(m[1]);return key?{open:/\bopen(?:\s|=|$)/.test(m[1]),getAttribute(name){return name==='data-theme-disclosure'?key[1]:null;}}:null;}).filter(Boolean);focusNodes=Array.from(value.matchAll(/<[^>]+data-theme-focus="([^"]+)"[^>]*>/g),m=>({getAttribute(name){return name==='data-theme-focus'?m[1]:null;},focus(){global.document.activeElement=this;}}));},querySelectorAll(selector){if(selector==='[data-theme-disclosure][open]'||selector==='details[open]')return nodes.filter(n=>n.open);if(selector==='[data-theme-disclosure]')return nodes;if(selector==='[data-theme-focus]')return focusNodes;return[];},contains(node){return nodes.includes(node)||focusNodes.includes(node);},querySelector(){return null;}};
+}
+function defaultText(html){
+  let at=0,result='',closed=[];
+  for(const match of html.matchAll(/<\/?details\b[^>]*>/g)){
+    if(!closed.some(Boolean))result+=html.slice(at,match.index);
+    if(match[0].startsWith('</'))closed.pop();else closed.push(!/\bopen(?:\s|=|>)/.test(match[0]));
+    at=match.index+match[0].length;
+  }
+  if(!closed.some(Boolean))result+=html.slice(at);
+  return result.replace(/<[^>]+>/g,'');
+}
+test('theme narratives and sources stay complete inside native closed disclosures while typed reasons remain visible',async()=>{
+  for(const lang of ['en','zh']){
+    env(lang);const x=copy(),h=disclosureHost(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>x})});await c.load();
+    for(const theme of x.themes){
+      for(const field of ['known','missing','next'])assert.ok(h.innerHTML.includes(theme[field+'_'+lang].replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))),'Complete supplied narrative must survive '+field);
+      for(const part of ['known','missing','next','sources'])assert.ok(h.querySelectorAll('[data-theme-disclosure]').some(n=>n.getAttribute('data-theme-disclosure')===theme.theme_id+':'+part),'Missing semantic disclosure '+theme.theme_id+':'+part);
+      const visible=defaultText(h.innerHTML);assert.ok(!visible.includes(theme['known_'+lang]),'Full known narrative must not dominate default composition');assert.ok(!visible.includes(theme['missing_'+lang]),'Full gap narrative must not dominate default composition');assert.ok(!visible.includes(theme['next_'+lang]),'Full next narrative must remain accessible through its disclosure');
+      const card=h.innerHTML.split('aria-labelledby="themeTitle-'+theme.theme_id+'"')[1].split('</article>')[0];assert.match(defaultText(card),/gr-theme-overview|Funding stage|资金阶段/);
+    }
+    const keys=h.querySelectorAll('[data-theme-disclosure]').map(n=>n.getAttribute('data-theme-disclosure'));assert.equal(new Set(keys).size,keys.length);assert.ok(h.innerHTML.includes('href="#gov-workspace"'));assert.match(fs.readFileSync(path.join(__dirname,'../templates/government_revenue.html.j2'),'utf8'),/id="gov-workspace"/);
+  }
+});
+test('new narrative disclosure openness and focused summary survive an actual language refresh',async()=>{
+  env();const h=disclosureHost(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>copy()})});await c.load();
+  const key=fixture.themes[0].theme_id+':known',detail=h.querySelectorAll('[data-theme-disclosure]').find(n=>n.getAttribute('data-theme-disclosure')===key);assert.ok(detail,'Known-source disclosure must exist');detail.open=true;global.document.activeElement=h.querySelectorAll('[data-theme-focus]').find(n=>n.getAttribute('data-theme-focus')===key);assert.ok(global.document.activeElement);
+  global.document.documentElement.getAttribute=()=> 'zh';c.refresh();assert.ok(h.querySelectorAll('[data-theme-disclosure]').find(n=>n.getAttribute('data-theme-disclosure')===key).open);assert.equal(global.document.activeElement.getAttribute('data-theme-focus'),key);assert.match(h.innerHTML,/已知来源背景/);
+});
+test('mobile queue keeps a bounded scroll surface instead of expanding every retained record',()=>{
+  const source=fs.readFileSync(path.join(__dirname,'../templates/government_revenue.html.j2'),'utf8'),rules=Array.from(source.matchAll(/\.queue-list\{([^}]+)\}/g)),mobile=rules.at(-1)[1];assert.doesNotMatch(mobile,/height:\s*auto|max-height:\s*none/,'Mobile breakpoint must not unbound the retained500-row queue');assert.match(mobile,/overflow:\s*auto|height:/);assert.match(mobile,/min-height:\s*[1-9]/,'Short viewport scroll surface must remain nonzero');
+});

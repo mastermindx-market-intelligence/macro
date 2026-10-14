@@ -1,6 +1,6 @@
 /* Restore the normal auth subject, mount one investor instance, then load tools. */
 (function(){
-  var initial={subject:null,promise:null,owned:false,ui:null,failedModules:[]},auth=window.MDXAuth,started=false,resolveModules;
+  var initial={subject:null,promise:null,owned:false,ui:null,failedModules:[]},auth=window.MDXAuth,started=false,authObserved=false,resolveModules;
   initial.modulesReady=new Promise(function(resolve){resolveModules=resolve});
   function modules(){
     if(started)return;started=true;
@@ -16,6 +16,8 @@
   function releaseProgressive(){var release=window.__govrevReleaseProgressive;if(typeof release!=='function')return;var frame=window.requestAnimationFrame||function(cb){setTimeout(cb,0)};frame(function(){frame(function(){release()})})}
   function settled(user,event){if(initial.owned)return;if(event==='INITIAL_SESSION'&&initial.promise&&initial.subject===(user&&user.id||''))return;initial.subject=user&&typeof user.id==='string'?user.id:'';initial.promise=initial.ui.load(true);Promise.resolve(initial.promise).then(function(){releaseProgressive();modules()},function(){releaseProgressive();modules()})}
   if(!auth||(auth.enabled&&!auth.enabled()))settled(null,'AUTH_UNAVAILABLE');
-  else if(auth.onChange)auth.onChange(settled);
-  if(auth&&auth.client&&!(auth.enabled&&!auth.enabled()))auth.client().then(function(c){return c.auth.getSession()}).catch(function(){})
+  else if(auth.onChange)auth.onChange(function(user,event){authObserved=true;settled(user,event)});
+  // A completed SDK restoration is usable before its separate auth notification.
+  // A newer notification (including sign-out) or the page owner always wins.
+  if(auth&&auth.client&&!(auth.enabled&&!auth.enabled()))auth.client().then(function(c){return c.auth.getSession()}).then(function(r){if(!authObserved&&r&&!r.error&&r.data&&Object.prototype.hasOwnProperty.call(r.data,'session'))settled(r.data.session&&r.data.session.user,'INITIAL_SESSION')}).catch(function(){})
 })();

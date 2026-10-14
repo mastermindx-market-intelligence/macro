@@ -48,18 +48,41 @@ def test_actual_projection_preserves_full_canonical_twins_and_projected_data(tmp
 
 
 def test_critical_css_preserves_canonical_components_order_and_link_identity():
+    from rcssmin import cssmin
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")))
     names = ("theme.css", "government-revenue-sbir.css", "government-revenue-investor.css",
              "government-revenue-theme-context.css", "government-revenue-parity.css")
     icon = (ROOT / "templates/product-nav-icons.css").read_text()
     parts = [(ROOT / "templates" / name).read_text() for name in names]
     parts[0] = parts[0].replace('@import url("product-nav-icons.css?v=093ad1ea");', icon, 1)
-    assert owner._government_revenue_critical_css(env) == "\n".join(parts)
+    assert owner._government_revenue_critical_css(env) == cssmin("\n".join(parts), keep_bang_comments=True)
     source = (ROOT / "templates/government_revenue.html.j2").read_text()
     assert 'href="government-revenue-critical-theme.css"' in source
     assert '<script data-sync src="{{ asset_url(\'theme.js\')' in source
     assert '{% include "_site_nav.html.j2" %}' in source
     assert 'link[href*="theme.css"]' in (ROOT / "templates/theme.js").read_text()
+
+
+def test_minified_critical_css_keeps_strings_calculations_urls_and_license_comments():
+    from jinja2 import DictLoader
+    env = Environment(loader=DictLoader({
+        'theme.css': '@import url("product-nav-icons.css?v=093ad1ea");'
+                     '/*! retained license */ /* removable explanation */'
+                     ':root { --label: "/* retained string */"; --gap: calc(100% - 2px); }'
+                     '.x { content: "a ; b"; background: url("data:text/plain;utf8,/* data */"); }',
+        'product-nav-icons.css': '.icon { display: inline-block; }',
+        'government-revenue-sbir.css': '',
+        'government-revenue-investor.css': '',
+        'government-revenue-theme-context.css': '',
+        'government-revenue-parity.css': '',
+    }))
+    emitted = owner._government_revenue_critical_css(env)
+    assert 'removable explanation' not in emitted
+    assert '/*! retained license */' in emitted
+    assert '"/* retained string */"' in emitted
+    assert 'calc(100% - 2px)' in emitted
+    assert '"a ; b"' in emitted
+    assert '"data:text/plain;utf8,/* data */"' in emitted
 
 
 def test_critical_css_refuses_missing_changed_or_unresolved_dependencies(tmp_path):
@@ -123,3 +146,27 @@ def test_critical_hint_and_loading_urls_match_in_each_publisher_path(tmp_path, o
     Assets().feed(text)
     assert len(hints) == len(loads) == 1
     assert hints == loads, 'normal and optimized publication must each reuse their preload cache key'
+
+
+def _script_tags(text):
+    from html.parser import HTMLParser
+    rows=[]
+    class Parser(HTMLParser):
+        def handle_starttag(self,tag,attrs):
+            if tag=='script' and dict(attrs).get('src'):rows.append(dict(attrs))
+    Parser().feed(text)
+    return rows
+
+def test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements():
+    env=Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=True)
+    html=env.get_template('government_revenue.html.j2').render(payload_json='{}')
+    rows=_script_tags(html)
+    names=('logo_config.js','stock-logos.js','live_config.js','live.js')
+    enhancements=[r for r in rows if r['src'] in names]
+    assert [r['src'] for r in enhancements]==list(names)
+    assert all('defer' in r and r.get('fetchpriority')=='low' and 'async' not in r for r in enhancements)
+    primary=[r for r in rows if r['src'] in ('supabase.js','theme.js','government-revenue-investor.js','government-revenue-investor-start.js')]
+    assert [r['src'] for r in primary]==['supabase.js','theme.js','government-revenue-investor.js','government-revenue-investor-start.js']
+    assert all('data-sync' in r and 'async' not in r and 'defer' not in r for r in primary)
+    baseline=_script_tags(env.get_template('_site_nav.html.j2').render(t=lambda en,zh='':en))
+    assert all('defer' not in r and 'fetchpriority' not in r for r in baseline if r['src'] in names)

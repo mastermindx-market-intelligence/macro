@@ -3465,7 +3465,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest
+        run: pip install pytest rjsmin==1.2.5
       - name: lens must not steal a tap from a control nested in a tip wrapper
         run: python -m pytest tests/test_lens_nested_control_taps.py -q
 
@@ -4383,7 +4383,7 @@ jobs:
         # Forensics workbench (#4184) and predate it respectively, are reachable only
         # through lazy first-party paths, and are RETAINED deliberately — nothing here
         # proves those paths unreachable, and a wrong subtraction costs a red lane.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
       # onto ONE shell line, where `#` starts a SHELL comment — everything after it,
       # including every remaining test path and the trailing `-q`, silently vanishes
@@ -5650,7 +5650,7 @@ jobs:
         # No boto3: engine/prophet_live/r2io.py imports it lazily inside client() and
         # the prophet-live suites monkeypatch that factory; the only boto3 mentions in
         # this lane are string assertions ABOUT another workflow's pip line.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema rjsmin==1.2.5
       # The import-light tier-gate runs the shell/boundary cases, while the two
       # builder assertions intentionally require pandas + plotly. Pair the suite
       # with this lane's fat deps so those assertions execute instead of skip
@@ -7065,7 +7065,7 @@ jobs:
         # with Draft202012Validator, which is a COLLECTION-time import — without it
         # the step dies at exit 2 having asserted nothing, which reads as a lane
         # failure rather than as the missing dep it is.
-        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema jinja2
+        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema jinja2 rjsmin==1.2.5
       - name: china native interaction + sell-side collector tests (W1 CNH)
         run: python -m pytest tests/test_china_irm_collector.py tests/test_china_einteraction_collector.py tests/test_china_reports_collector.py tests/test_china_holder_counts_collector.py -q
       # China Alpha Intelligence P1 (#6050): institutional-visit tape, derived
@@ -10685,25 +10685,16 @@ jobs:
       # _site_nav.html.j2 rather than grepping it (CI packs install minimal deps,
       # not requirements.txt — an unlisted import here is an ImportError, not a skip).
       - name: install minimal deps (theme.js bake reads config.yml)
-        run: pip install pyyaml pytest jinja2 markupsafe
+        run: pip install pyyaml pytest jinja2 markupsafe rjsmin==1.2.5
       - name: template-site-sync selftest (gate fires on synthetic divergence)
         run: python3 scripts/check_template_site_sync.py --selftest
       - name: site copies of template assets must byte-match templates/
         run: python3 scripts/check_template_site_sync.py
-      # Unrun backfill 2026-08-19 (audit_unrun_tests.py, #5976-class): the token-
-      # segmentation unit tests for THIS job's own checker were named by no run:
-      # step. `_token_segments`/`_matches_around_tokens` are the stdlib fallback
-      # `check_template_site_sync.py` uses when PyYAML cannot reproduce the bake
-      # (pages.yml, a DEPLOY GATE) — it walks N tokens -> N+1 invariant segments,
-      # and this suite is what proved the generalization from one token
-      # (Supabase) to two (mm_brain.js's content hash, added by #5976) still
-      # accepts the real committed pair and still rejects a one-sided edit. Rides
-      # this step's own venv (pytest + pyyaml, already above) and this job's full
-      # checkout (it reads templates/theme.js AND site/theme.js). Ordered right
-      # after the checker it tests, before the unrelated chat-nav/asset-stamp
-      # steps below, so a regression here is not masked behind them.
-      - name: template-site-sync token-segmentation unit tests (N-token fallback)
-        run: python -m pytest tests/test_template_site_sync_tokens.py -q
+      # The exact emitter owns baked config, overlay composition and minification.
+      # Missing build dependencies fail closed; token-segmentation utilities are
+      # historical regression coverage, never a production verification fallback.
+      - name: exact theme emitter and shared navigation contract tests
+        run: python -m pytest tests/test_template_site_sync_tokens.py tests/test_site_assets.py tests/test_navigation_refresh.py -q
       # Unrun backfill 2026-08-19 (audit_unrun_tests.py, #5976): theme.js's lazy
       # assistant launcher (#mmb-boot stub) — the RESOLUTION guard (every
       # dynamically injected same-origin child asset must resolve from
@@ -13755,7 +13746,7 @@ jobs:
       # install turns three green tests red against code the droplet never runs. CI must
       # test the SDK production actually has.
       - name: install deps
-        run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13"
+        run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13" rjsmin==1.2.5
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
@@ -16411,7 +16402,7 @@ jobs:
         # projection silently collapses to empty (PR #4300 shipped red on exactly that).
         # The endpoint suite imports app.main, whose eagerly mounted Market Memory
         # router imports requests at module scope.
-        run: pip install pytest pandas pyarrow jinja2 fastapi httpx pydantic pyyaml requests
+        run: pip install pytest pandas pyarrow jinja2 fastapi httpx pydantic pyyaml requests rjsmin==1.2.5
       - name: portfolio-ctx bake unit tests
         run: python -m pytest tests/test_build_portfolio_ctx.py tests/test_portfolio_ctx_chains.py -q
       - name: portfolio-brief composer + endpoint tests
@@ -16628,7 +16619,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow
+        run: pip install pytest fastapi httpx pyyaml requests pandas pyarrow rjsmin==1.2.5
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
@@ -18810,7 +18801,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps for the defense rail batteries
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 jsonschema fastapi httpx pdfplumber==0.11.10
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 jsonschema fastapi httpx pdfplumber==0.11.10 rjsmin==1.2.5 rcssmin==1.2.2
       # D6-A DoD budget live rail (PR #6377): the hostile law battery for the
       # production P-1/R-1 acquisition + parser — fetch/R2-readback order, no
       # receipt without readback proof, §5b/§5b.1 row-model refusals (sign law,
@@ -18895,7 +18886,7 @@ jobs:
         # fastapi.testclient imports the httpx module, and the API/dossier
         # suites below use TestClient. pdfplumber rides for
         # scripts/build_government_revenue.py's collector closure.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema fastapi httpx pdfplumber==0.11.10
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema fastapi httpx pdfplumber==0.11.10 rjsmin==1.2.5 rcssmin==1.2.2
       # Wave 9D: the admissibility fences on issuer graph expansion — exact
       # identifier + verbatim Exhibit 21 name only, no discovery_query_ticker, no
       # similarity, no LLM assertion; PIT; the proposed-edge-cannot-become-a-
@@ -19887,7 +19878,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
       - name: one product header + nav prefix + hover/anchor geometry
         run: python -m pytest tests/test_product_chrome.py tests/test_subdir_nav_prefix.py tests/test_nav_hover_bridge.py tests/test_nav_menu_mockup_hover.py tests/test_nav_wide_menu_anchor.py -q
       - name: landing IA + nav front-door regroup + start-page voice and publish integrity
@@ -24102,7 +24093,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)

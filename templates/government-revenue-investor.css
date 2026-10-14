@@ -23,7 +23,7 @@
 .gr-investor-context > div { display:grid; grid-template-columns:minmax(6em,1fr) minmax(0,2fr); gap:var(--sp-2,8px); padding:var(--sp-1,4px) 0; }
 .gr-investor-context dt,.gr-investor-context dd { font-size:var(--fs-sm); overflow-wrap:anywhere; }
 .gr-investor-context dt { font-weight:400; }
-.gr-investor-contrary { border-left:3px solid var(--warn); padding:var(--sp-3,12px) var(--sp-4,16px); background:color-mix(in srgb,var(--warn) 5%,var(--panel)); }
+.gr-investor-contrary { border-left:3px solid var(--warn); padding:var(--sp-3,12px) var(--sp-4,16px); background:var(--ff-tint-warn-6); }
 .gr-investor-contrary h3 { color:var(--ink-warn); }
 .gr-investor-contrary p { font-size:var(--fs-body); }
 .gr-investor-next { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4,16px); margin-top:var(--sp-4,16px); font-size:var(--fs-sm); }
