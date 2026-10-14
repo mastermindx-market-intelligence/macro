@@ -1,9 +1,4 @@
 ---
-
-## Current base conflict resolved — 2026-10-14
-
-GitHub reported a real conflict after published501e714310cc27cccc1df1ec2284e11eb05e98bf. Incoming main ee3b1907497c4d5179d76626777b007e0da93d18 was integrated on the same carrier. The only conflict was the curated CI set; its exact union preserves eval-os-a1 and deploy-git-history. All300candidate job blocks remain unchanged; main adds only its dedicated deployment-history job. The updater adopts main’s removal of depth-one fetch, preserving the accepted A1 restart triggers. Other incoming owner/data/site changes are preserved. Independent review found no issue. All288affected CI/updater/history controls pass with zero skips, the separate packing-budget control passes, and A1 tracked closure remains1166/1166with no omissions. Application, science, rendering and acceptance-suite bytes remain unchanged; their accepted373-test/browser/resource proofs are reused. See research/evidence/eval-os-20261012/ee3-requalification-20261014.json. Final containing/published head must still prove actual hosted A1 selection and execution before reserved release and production acceptance. The original T2 row now maps the distinct plan-ledger and candidate-grading owners without claiming plan sector/MFE/MAE completion.
-
 key: EVAL-OS-EVIDENCE-VIEW
 title: Intelligence Evaluation OS — T7 per-engine evidence scorecards + T8 CEO evidence view
 objective: >
@@ -34,9 +29,9 @@ waves:
       Finish exact-head verification, independent review and authenticated production proof for
       the derived Intelligence OS evidence view, without persisting a new score state.
 next_action: >
-  Continue the existing held PR #6651 under current Chairman assignment and root
+  Continue the existing PR #6651 under current Chairman assignment and root
   01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
-  reads, dark/light EN/ZH experience, exact-head CI/review, authorized hold release and
+  reads, dark/light EN/ZH experience, exact-head CI/review, Chairman-authorized governed merge and
   authenticated normal-release proof. Historical receiver labels do not imply a live writer.
   Natural accrual remains independent and must remain honestly qualified.
 owns_paths:
@@ -63,6 +58,16 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
+
+## Chairman release decision and CI repair — 2026-10-14
+
+Chris explicitly released the reserved hold on PR #6651 in the original root conversation and authorized the existing repository merge controller, including base-only updates with fresh checks, followed by autonomous deployment and production verification. This supersedes historical hold statements below. It does not waive any binding check or establish merge, installation, production proof or completion.
+
+Hosted run 38490118984 on 30c61c5c failed: A1 reported 371 passes and two missing declared dependencies (jsonschema and markupsafe); the Agent OS validator rejected a progress paragraph inside this workstream's YAML header. The repair adds those two dependencies to the unchanged eight-suite job and moves the narrative into the Markdown body. The classifier, validation law, product/science/UI behavior and acceptance assertions remain unchanged. An isolated Python 3.12 environment with system packages disabled and only the declared dependencies passed all 373 A1 tests with zero failures/errors/skips in 195.36 seconds. The canonical Agent OS validator passed 1732 records with zero errors. See research/evidence/eval-os-20261012/ci-execution-repair-20261014.json. Fresh hosted checks remain required before controller arming.
+
+## Current base conflict resolved — 2026-10-14
+
+GitHub reported a real conflict after published501e714310cc27cccc1df1ec2284e11eb05e98bf. Incoming main ee3b1907497c4d5179d76626777b007e0da93d18 was integrated on the same carrier. The only conflict was the curated CI set; its exact union preserves eval-os-a1 and deploy-git-history. All300candidate job blocks remain unchanged; main adds only its dedicated deployment-history job. The updater adopts main’s removal of depth-one fetch, preserving the accepted A1 restart triggers. Other incoming owner/data/site changes are preserved. Independent review found no issue. All288affected CI/updater/history controls pass with zero skips, the separate packing-budget control passes, and A1 tracked closure remains1166/1166with no omissions. Application, science, rendering and acceptance-suite bytes remain unchanged; their accepted373-test/browser/resource proofs are reused. See research/evidence/eval-os-20261012/ee3-requalification-20261014.json. Final containing/published head must still prove actual hosted A1 selection and execution before reserved release and production acceptance. The original T2 row now maps the distinct plan-ledger and candidate-grading owners without claiming plan sector/MFE/MAE completion.
 
 ## Ordinary PR acceptance coverage repair — 2026-10-14
 

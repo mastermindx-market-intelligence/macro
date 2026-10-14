@@ -8651,7 +8651,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy
+        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy jsonschema markupsafe
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
