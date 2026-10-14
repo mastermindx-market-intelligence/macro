@@ -42,3 +42,38 @@ and runtime budget qualification. The consumer's writer qualification remains
 false until those conditions are evidenced. This prerequisite can land separately
 from F11's held95-percent release, avoiding a circular source dependency. Original
 E04/E05/citation recoveries and semantic RIO acceptance remain separate obligations.
+
+## Bounded derivative preparation without corpus publication
+
+The completed ordinary run at `ce99adc45881536da6ba511b287127832ca7a6ea`
+spent 642 seconds in aggregate publication and entered the full-text pass after
+797 seconds; its remaining wall budget was zero. The next run timed out in
+publication. A read-only reconciliation retained its local candidate and observed
+the prior completed cloud catalog/corpus. That observation does not settle every
+possible effect of the interrupted writer and does not authorize replay.
+
+The existing `research-ingest` workflow now offers explicit `materialize_only`.
+It retains the same noncanceling concurrency group, 15-minute job limit and
+incumbent materializer limits (200 attempts, 180-second pass, 600-second run wall).
+It reads the published catalog with a version, restores the corpus into a private
+per-invocation directory, validates SQLite and catalog membership/digests, and
+uses the existing PDF/receipt-bound materializer. The store boundary permits only
+create-only canonical derivative keys; catalog, corpus, receipts, PDF objects and
+repository snapshots cannot be published by this mode. A catalog-version fence
+runs before each creation and again at return. Existing derivatives and the
+ordinary producer's retained scratch file remain intact. No writer qualification
+or reader readiness follows from a successful pass.
+
+A generation-bearing catalog refuses this preparation path: its adopted writer
+must own derivative work. Forensics publication/bootstrap cannot be combined with
+this mode. Missing or invalid source, missing store, moved catalog and uncertain
+create responses fail the invocation without a same-pass retry. Cap and budget
+exhaustion are explicit partial-pass counters, not an acceptance claim. Corpus
+restore retains the incumbent version-checked range reconstruction; the mode
+checks its returned image against 256 MiB after that read. That check is not a new
+streaming allocation bound. Actual production resource qualification remains due.
+
+Activation requires this source to pass protected CI/merge, reconciliation of the
+original producer owner, and one dispatch through the existing workflow group.
+Do not add another schedule, parallel publication writer, larger cap or timeout.
+A retained result must report derivative counts and mutable publications separately.
