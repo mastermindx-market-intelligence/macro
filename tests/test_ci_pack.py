@@ -4867,10 +4867,16 @@ def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> 
                if job.job_id == "qledger-cluster-honest-ci")
     for dependency in (
         "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
         "engine/qledger_validity.py",  # ci-trigger-closure: data
         "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
         "tests/test_qledger_validity.py",  # ci-trigger-closure: data
     ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
         selected, reason = PACK.select_jobs([job], [dependency])
         assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
     selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data

@@ -10873,6 +10873,50 @@ jobs:
     # unchanged; an opaque transitive import must not select unrelated builders.
     scope: exclusive
     paths:
+      # The existing clock invariant audits this tracked namespace, including new files.
+      - data/qledger/control_evidence_clock_start/**
+      # Runtime-loaded reader modules and their complete source closure.
+      - config/dag.yml
+      - engine/seasonality/__init__.py
+      - engine/seasonality/event_clock.py
+      - engine/seasonality/foundation.py
+      - engine/seasonality/model.py
+      - engine/seasonality/program_watch.py
+      - engine/seasonality/prophet_bridge.py
+      - engine/seasonality/regime.py
+      - engine/seasonality/screener.py
+      - engine/seasonality/universe.py
+      - research/SEASONALITY_BIOCATALYST_INTEGRATION_SEAM.md
+      - research/SEASONALITY_PROGRAM_HANDOFF_2026-08-02.md
+      - scripts/ci/daily_engine_regional_desk_builders.sh
+      - site/seasonalitydata/index.json
+      - site/stock_seasonality.html
+      - templates/stock_seasonality.html.j2
+      # Reviewed real preregistration/config inputs plus shared fixture closure.
+      - config.yml
+      - engine/indicators_m2.py
+      - engine/marketing/__init__.py
+      - engine/marketing/accounts.py
+      - engine/marketing/authority.py
+      - engine/marketing/campaign_compiler.py
+      - engine/marketing/chart_render.py
+      - engine/marketing/charter.py
+      - engine/marketing/claims.py
+      - engine/marketing/cmo.py
+      - engine/marketing/departments.py
+      - engine/marketing/economics.py
+      - engine/marketing/events.py
+      - engine/marketing/ledgers.py
+      - engine/marketing/logo_cache.py
+      - engine/marketing/opportunity_bus.py
+      - engine/marketing/publication.py
+      - engine/marketing/share_cards.py
+      - engine/marketing/source_authority.py
+      - engine/marketing/state.py
+      - research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json
+      - tests/__init__.py
+      - tests/conftest.py
       # load_phrase_book joins a data-path tuple, which static inference misses.
       - data/china_official/phrase_book.yml
       - collectors/__init__.py
