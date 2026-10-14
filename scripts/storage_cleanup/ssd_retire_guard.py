@@ -124,7 +124,7 @@ def remove_candidate(*, gc, primary: Path, w, cfg: dict, procs, pr_states,
         return skip("remote publication or process evidence unavailable")
     if (pr_states.get(w.branch) or {}).get("state") == "OPEN":
         return skip("open PR")
-    if any(_inside(path, Path(r)) for r in protected):
+    if any(_inside(path, Path(r)) for r in protected) or _inside(path, Path(member["root"]) / "manual"):
         return skip("human-driven root")
     root = Path(member["root"])
     if not _inside(path, root / "claude") and not _inside(path, root / "codex") and not _inside(path, root / "manual"):
