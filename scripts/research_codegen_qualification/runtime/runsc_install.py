@@ -825,6 +825,73 @@ EXIT_UNCERTAIN = 4
 EXIT_INTERNAL = 5
 
 
+def qualified_reload_hup(value):
+    """Return True iff `value` is the canonical kill -s HUP $MAINPID shape."""
+    if not isinstance(value, str):
+        return False
+    if len(value) > 4096:
+        return False
+    # ASCII printable only, no control characters
+    for o in (ord(c) for c in value):
+        if o < 0x20 or o > 0x7e:
+            return False
+
+    s = value.strip()
+    if len(s) < 2 or s[0] != '{' or s[-1] != '}':
+        return False
+    inner = s[1:-1]
+    if '{' in inner or '}' in inner:
+        return False
+    if not inner.strip():
+        return False
+
+    # Fields emitted by systemctl-show.c for ExecReload
+    allowed = {
+        'path', 'argv[]', 'ignore_errors',
+        'start_time', 'stop_time', 'pid', 'code', 'status',
+    }
+    required = ('path', 'argv[]', 'ignore_errors')
+
+    parsed = {}
+    seen = set()
+    for raw in inner.split(';'):
+        f = raw.strip()
+        if not f:
+            return False
+        if '=' not in f:
+            return False
+        key, _, val = f.partition('=')
+        key = key.strip()
+        val = val.strip()
+        if not key or not val:
+            return False
+        if key not in allowed:
+            return False
+        if key in seen:
+            return False
+        seen.add(key)
+        parsed[key] = val
+
+    for k in required:
+        if k not in parsed:
+            return False
+
+    if parsed['ignore_errors'] != 'no':
+        return False
+
+    path = parsed['path']
+    if path not in ('/bin/kill', '/usr/bin/kill'):
+        return False
+
+    # argv[] must exactly match path + " -s HUP $MAINPID" with ordinary
+    # single space separation. No shell, no extra flags, no extra targets,
+    # no substitutions, no quoted/escaped spellings.
+    if parsed['argv[]'] != path + ' -s HUP $MAINPID':
+        return False
+
+    return True
+
+
 class InstallEngine:
     """Gated orchestration.  Default is a no-effects proposal; mutations happen
     only inside execute() after every pin/platform/scratch/socket/preimage
@@ -1047,6 +1114,10 @@ class InstallEngine:
                 continue
             key, value = line.split("=", 1)
             if key in SYSTEMD_ALLOWED_KEYS:
+                # Multiple ExecReload commands render as repeated properties;
+                # none may be hidden by accepting the final line alone.
+                if key in facts:
+                    raise InstallError("SERVICE_FACT_DUPLICATE")
                 facts[key] = value
         return facts
 
@@ -1055,13 +1126,10 @@ class InstallEngine:
                          "--property=" + ",".join(SYSTEMD_ALLOWED_KEYS)], role)
         facts = self._parse_show(res["out"])
         reload_value = facts.get("ExecReload", "")
-        # Qualified actual reload method: the installed unit's ExecReload argv
-        # must carry the exact HUP signal token.  Only the boolean is recorded;
-        # the unit's private path values are never printed.
-        argv_section = reload_value.split("argv=[", 1)[1].split("]", 1)[0] \
-            if "argv=[" in reload_value else ""
-        tokens = [t.strip().strip('"').strip('",') for t in argv_section.split()]
-        self.exec_reload_hup = "HUP" in tokens
+        # systemctl renders argv[] as a joined string. This only qualifies
+        # the narrow standard kill/HUP rendering, not argv authentication or
+        # effect settlement; the existing reload and settlement gates remain.
+        self.exec_reload_hup = qualified_reload_hup(reload_value)
         return facts
 
     def _info_field(self, fmt: str, what: str, role: str = "main") -> str:
@@ -1077,7 +1145,16 @@ class InstallEngine:
             raise InstallError("DOCKER_FACT_UNPARSEABLE") from None
 
     def _runtime_mapping(self, role: str = "main") -> Dict[str, Any]:
-        raw = self._info_field("{{json .Runtimes}}", "runtimes", role)
+        # Docker 29.1.3 RuntimeWithStatus embeds Runtime plus potentially large
+        # capability/status data. Project the complete Runtime configuration
+        # in the CLI before its output enters our unchanged bounded collector.
+        # This preserves path, args, shim type and options for every runtime;
+        # only volatile status is excluded from before/after configuration
+        # comparisons. JSON encoding also preserves unusual map keys safely.
+        fmt = ('{ {{ $first := true }}{{range $name, $runtime := .Runtimes}}'
+               '{{if not $first}},{{end}}{{ $first = false }}'
+               '{{json $name}}:{{json $runtime.Runtime}}{{end}} }')
+        raw = self._info_field(fmt, "runtimes", role)
         mapping = json_loads_strict(raw, "docker-info-runtimes")
         if not isinstance(mapping, dict) or not all(isinstance(v, dict)
                                                     for v in mapping.values()):

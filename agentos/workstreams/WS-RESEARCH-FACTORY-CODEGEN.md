@@ -31,12 +31,11 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Obtain the pending explicit authorization to send the corrected-canary
-  v2 recovery request; the reviewed PID observer and calendar evidence are pushed.
-  The corrected-canary v2 retrieval-only message awaits explicit cross-chat authorization;
-  original rc65 and unresolved inner effects remain preserved. Normal dependency
-  controller owns refresh and landing. The US calendar patch is prepared externally
-  against primary notices; reconcile the incumbent CN source change before application.
+next_action: Consume the existing Fabric projection review and systemd parser return,
+  integrate qualified bounded preflight repairs, then prepare a distinct reviewed
+  physical commission. V2 exact recovery is complete and proves a known pre-config
+  output-budget stop, not successful installation or containment. Normal dependency
+  controller owns landing; the calendar's existing CN writer retains shared custody.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -61,6 +60,25 @@ landmines:
   denial remains closed. User directed continuation with a documented gap and actual
   execution/publisher separation.
 ---
+
+## V2 recovery and bounded preflight repair — 2026-10-14
+
+Chris authorized the v2 cross-chat recovery request. It was sent to Fabric Integration, independently reviewed by Mastermind OS, and installed by its existing owner. The original assigning parent then used the installed adapter once to recover both requested files. Receipt SHA256 `bbfc887d9762bf126d11354b00997de4134957ed0f46d1215a9c638345077711`; parent adjudication `runtime-release/physical-qualification/ROOT_CORRECTED_CANARY_V2_RECOVERY_ADJUDICATION.json`, SHA256 `72e977b8205707f158768ed823eb0d6adc4b3af68d96d9ece5d77705fbcdef14`. This supersedes the earlier authorization-pending statements below. No Chris-only gate remains for this recovery.
+
+The complete inner return is `STOPPED_NO_RETRY`: CLI isolation and pinned archive acquisition completed; installer preflight's tenth Docker query exhausted the unchanged 8192-byte main output allowance. The bounded collector terminated its own query, and the installer froze before bundle creation, daemon-config commit or reload. Image and smoke phases did not run. Known owned scratch, intent, client config and archive remain preserved. The outer carrier settled rc0; the original Fabric delivery remains rc65/unaccepted. Current recovered bytes are not a historical producer attestation. The structural verifier correctly refused phase settlement.
+
+Root repaired the full-runtime query by projecting Docker's complete embedded Runtime configuration before CLI capture, excluding volatile status. Local Docker29.7.2 against an owned fake Unix API produced a 20319-byte legacy response versus a 280-byte configuration projection; the complete affected suite passed72 tests and2subtests with2Linux-only skips. This is not Docker29.1.3 physical proof. Independent Fabric review `rf-runtime-projection-review-01a1333c-v1` is running on the normal admitted route.
+
+A second source mismatch was found before another physical commission: actual systemd255 renders `argv[]=...`, while inherited fixtures/parser use synthetic `argv=[...]`. A separate Fabric source-only parser leaf `rf-systemd-reload-parser-01a1333c-v1` is running. Root's integration regressions reproduced9 failures in13 cases; five duplicate-property failures are already repaired, preventing multiple ExecReload commands from being silently overwritten. No physical retry or new canary has been dispatched.
+
+The archival calendar leaf returned no newly qualified dates and remains unaccepted; complete2010–2013 annual tables remain missing. The same previously unstarted Linux pidfd commission was ordinarily readmitted after a material admission change, then terminated on provider quota429 with no qualifying test artifact. That refusal is final for the operation: no provider/carrier fallback or retry. Both existing release dependencies9099/9190 remain OPEN/UNSTABLE at their exact prior heads under the normal controller.
+
+### Prepared v3 source qualification
+
+The delegated parser was consumed as15925bytes, SHA256 `86e2064daaa66e489b57cf69ad7f0f83a2eeac5f053d75ce9ce2e44ecae0f6e6`. Root inspected its source and reran all65 tests successfully. The exact parser AST was integrated into the existing installer; existing synthetic service fixtures now use systemd's actual `argv[]=` rendering. Root accepted the bounded parser through its original Fabric result owner. The integrated preflight tests pass85 with2Linux-only skips and2subtests. The parser checks only rendered command text; it does not authenticate argv or prove reload settlement.
+
+The prepared v3 identity uses fresh `/var/lib/mastermind/rf-canary-01a1333c-v3` and `rf-fixed-smoke-runsc-01a1333c-v3`. The new source capsule SHA256 is `9b27615877fdca1a3a7c463b4092e4904a3576e764a38cb1b7b5f9621b543d71`. Full local runtime checks passed455 tests and67subtests with3Linux-only skips in4.16seconds; XML SHA256 `3b9fb61a4a31424396b1e495818955bf7ab134d9207060f31b14eb8fd8702538`. The physical precheck package collects126tests and must pass without skips on the admitted Linux host, including the actual installed CLI against an owned fake API. This is package preparation only: no new physical operation has been requested. The existing independent projection review remains pending, and original v2 keeps its terminal failure and preserved artifacts.
+
 
 This record carries work identity and continuity only. Existing source, runtime and release owners retain their actual authority. It neither dispatches work nor grants execution.
 

@@ -12,8 +12,8 @@ import time
 from phase_budget import QualificationBudget, PHASE_ORDER, BudgetRefused
 
 ROOT = '01a1333c-a475-7052-95a8-72a88eb8c17b'
-OPERATION = 'rf-fixed-smoke-runsc-01a1333c-v2'
-BASE = Path('/var/lib/mastermind/rf-canary-01a1333c-v2')
+OPERATION = 'rf-fixed-smoke-runsc-01a1333c-v3'
+BASE = Path('/var/lib/mastermind/rf-canary-01a1333c-v3')
 FINAL_HEADROOM = 2048
 
 

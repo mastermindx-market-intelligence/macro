@@ -1,35 +1,45 @@
 {
   "schema": "research_codegen.fixed_canary_source.v1",
   "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
-  "state": "CORRECTED_SOURCE_QUALIFIED_V2_TERMINAL_DELIVERY_FAILURE_INNER_RECEIPT_PENDING",
+  "state": "PREFLIGHT_REPAIR_V3_SOURCE_PREPARED_INDEPENDENT_PROJECTION_REVIEW_PENDING",
   "source_sha256": {
     "cli29_anonymous_config.py": "727f76b5c5a50bcaadc09a7358f6be270981c38321ec0e1029e7a8634600a0d8",
-    "fixed_canary.py": "4095b9c42358c05ed057b0d8cef4106b47dbf0a33a5d13226dd62cfdbe7e02db",
-    "fixed_image_phase.py": "95a7557783ec7272dab80066a75f2823fb61789a31396b0c9307c481780a2c16",
+    "fixed_canary.py": "6fb0b9c268135e6cb60ab9765515824cff9609a064e34f6bbf316adcb1493c95",
+    "fixed_image_phase.py": "3035bf94745dee520db699e353bd9f04709916ca06f00b7e14b3a7af6ee2a1f9",
     "fixed_smoke_probe.py": "92fad6f371419f4cbb4bafba83257846429eae2df77feead83678905a9988cf7",
     "image_preparation_gate.py": "5f03635d02fbf75e30e1b8c5c0912dc26decb208a3dea94f9eb22c44ed48b699",
     "phase_budget.py": "3b6436f1a7bd102a6cf4f46178b4a2b2fb72e985177cdd8cc61dfb3be89e9010",
     "pinned_archive_phase.py": "c684c986e54ca8de2c548036a04a5e100b7cc099105ee2fce0c9d35a9b9b755e",
     "qualification_manifest.py": "634108fd1e4b793311bdb480c16203e26232d136b864c36db701ccd32230a7a4",
-    "qualification_runsc_smoke.py": "36d39abc62c30506a4ce8d86cb6beaef9a0869ad86e9e8ecb0cd9a4d86883835",
+    "qualification_runsc_smoke.py": "bce764b78a651ac99a952cfe9fd481edbb64857f932fdf7097f5214f0c2d9f83",
     "qualification_smoke.py": "9282af4c442432e812db43948fe4e56116d9b92e3982e1fc76504240cdca545f",
-    "runsc_install.py": "19a12afc55dbb6b7610aeba3fa0194c697b8a07a3502e6a70302bc0f2270cba0",
-    "canary_bootstrap.py": "eea92fda46a7ef158ba9412b4f04abd7074e830de1ddb1464b0605ed7f746be4",
-    "canary_carrier.py": "b67fc32ef850b6bf67c80b7f987d42e07c461a647eeec65c14cee4acac52e089",
+    "runsc_install.py": "f23e4ba24077621cf00b64381ae6afd1e0a1e15efb9f2257b20ede16d84a895a",
+    "canary_bootstrap.py": "e7a9b1567226cc8013656f8224c2f2d925e735dbaf71b28b71aa1d63037e3d9b",
+    "canary_carrier.py": "7fc884d49600a224b157b4edea9e815733098d91ca246a379297590f44d35082",
     "verify_canary_return.py": "3e75d61f3368b52dac2a246406ef974d038b5ceb6d51a6d797cfb7355e76ee46"
   },
   "transport_source": "engine/research_codegen/transport.py",
   "transport_sha256": "b6d36717ad3630d127b16fe9e117d9401bea1136880e28d19f0d18061933c633",
-  "physical_capsule_sha256": "9d53dd48da90a53ecf6750ef024f2a68327fbfddc71a4ff1873f81e9fc2e497a",
+  "physical_capsule_sha256": "9b27615877fdca1a3a7c463b4092e4904a3576e764a38cb1b7b5f9621b543d71",
   "original_unknown_preserved": "rf-codegen-contracts-impl-01a1333c-v1",
   "candidate_admission": false,
   "containment_qualified": false,
-  "prior_physical_operation": {
-    "id": "rf-fixed-smoke-runsc-01a1333c-v1",
-    "capsule_sha256": "e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809",
-    "state": "TERMINAL_RC65_CLI_STOPPED_TWO_CURRENT_ARTIFACTS_RECOVERED",
-    "replayed": false,
-    "accepted": false
-  },
-  "current_operation": "rf-fixed-smoke-runsc-01a1333c-v2"
+  "current_operation": "rf-fixed-smoke-runsc-01a1333c-v3",
+  "prior_physical_operations": [
+    {
+      "id": "rf-fixed-smoke-runsc-01a1333c-v1",
+      "capsule_sha256": "e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809",
+      "state": "TERMINAL_RC65_CLI_STOPPED_TWO_CURRENT_ARTIFACTS_RECOVERED",
+      "replayed": false,
+      "accepted": false
+    },
+    {
+      "id": "rf-fixed-smoke-runsc-01a1333c-v2",
+      "capsule_sha256": "9d53dd48da90a53ecf6750ef024f2a68327fbfddc71a4ff1873f81e9fc2e497a",
+      "state": "TERMINAL_RC65_CURRENT_BYTES_RECOVERED_PRE_CONFIG_OUTPUT_CAP_STOP",
+      "accepted": false,
+      "replayed": false,
+      "recovery_receipt_sha256": "bbfc887d9762bf126d11354b00997de4134957ed0f46d1215a9c638345077711"
+    }
+  ]
 }

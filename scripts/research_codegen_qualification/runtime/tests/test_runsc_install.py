@@ -136,15 +136,15 @@ CONFIG_BYTES = (json.dumps(CONFIG_OBJ, indent=2) + "\n").encode("utf-8")
 
 SHOW_OK = (
     b"ActiveState=active\nSubState=running\nLoadState=loaded\nCanReload=yes\n"
-    b'ExecReload={ path=/bin/kill ; argv=["/bin/kill" "-s" "HUP" "$MAINPID" ] ; '
+    b'ExecReload={ path=/bin/kill ; argv[]=/bin/kill -s HUP $MAINPID ; '
     b"ignore_errors=no ; start_time=[Mon 2026-10-13 12:00:00 UTC] }\n")
 SHOW_FAILED = (
     b"ActiveState=failed\nSubState=failed\nLoadState=loaded\nCanReload=yes\n"
-    b'ExecReload={ path=/bin/kill ; argv=["/bin/kill" "-s" "HUP" "$MAINPID" ] ; '
+    b'ExecReload={ path=/bin/kill ; argv[]=/bin/kill -s HUP $MAINPID ; '
     b"ignore_errors=no ; start_time=[Mon 2026-10-13 12:00:00 UTC] }\n")
 SHOW_NO_HUP = (
     b"ActiveState=active\nSubState=running\nLoadState=loaded\nCanReload=yes\n"
-    b'ExecReload={ path=/bin/true ; argv=["/bin/true"] ; ignore_errors=no }\n')
+    b'ExecReload={ path=/bin/true ; argv[]=/bin/true ; ignore_errors=no }\n')
 
 
 # The runtime entry path as the engine sees it (layout-resolved in tests):
