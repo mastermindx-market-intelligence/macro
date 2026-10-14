@@ -78,6 +78,14 @@ __all__ = [
     "GroupMeasurement",
     "TransitionObservation",
     "ResearchEstimate",
+    "us_sector_cohort",
+    "from_sector_record",
+    "sector_cohort_snapshot",
+    "from_leadership_receipt",
+    "diagnose_rotation_payload",
+    "attribute_coordinate",
+    "earliest_observable_coordinate",
+    "separate_from_legacy",
     "rolling_carry",
     "decompose_trailing_change",
     "beta_only_residual",
@@ -967,6 +975,297 @@ class ResearchEstimate:
 
     def to_dict(self) -> dict:
         return _object_to_dict(self, _RESEARCH_ESTIMATE_SCHEMA, {"status": self.status})
+
+
+# ---------------------------------------------------------------------------
+# 7. Adapters over the existing owners (lazy imports; read-only)
+# ---------------------------------------------------------------------------
+
+_SECTOR_HORIZON_SESSIONS = {"rs_21d": 21, "rs_63d": 63, "rs_126d": 126}
+_RECEIPT_HORIZON_SESSIONS = {"rel_5d": 5, "rel_20d": 20, "rel_60d": 60}
+
+
+def us_sector_cohort() -> tuple:
+    """The existing 11 US sector ETF tickers from the frozen owner -- no new ids."""
+    from engine import sector_cycles
+
+    return tuple(sorted(sector_cycles.SECTORS))
+
+
+def _sector_record_value(rec, horizon: str):
+    """(value) float or Unmeasured for one sector_cycles record (private)."""
+    now = rec.get("now") or {}
+    if now.get("thin_history") is True:
+        return Unmeasured("thin_history")
+    raw = now.get(horizon)
+    if is_measured(raw):
+        return float(raw)
+    return Unmeasured("missing_input")
+
+
+def from_sector_record(rec, *, benchmark=None, session_end=None,
+                       horizon: str = "rs_63d") -> GroupMeasurement:
+    """One sector_cycles sector record -> a display-only GroupMeasurement."""
+    if horizon not in _SECTOR_HORIZON_SESSIONS:
+        raise ValueError(
+            f"horizon must be one of {sorted(_SECTOR_HORIZON_SESSIONS)}, got {horizon!r}"
+        )
+    value = _sector_record_value(rec, horizon)
+    return GroupMeasurement(
+        group_id=rec["ticker"],
+        group_kind="sector",
+        cohort_id=US_SECTOR_COHORT_ID,
+        metric="relative_wealth_pct",
+        units="pct",
+        benchmark=benchmark,
+        session_end=session_end,
+        window_sessions=_SECTOR_HORIZON_SESSIONS[horizon],
+        rolling_window=True,
+        price_basis="total_return",
+        membership_source="etf_proxy:engine.sector_cycles.SECTORS",
+        source_roots=("engine.sector_cycles",),
+        value=value,
+        notes=("trailing rolling window: consecutive readings share L-h sessions",),
+    )
+
+
+def sector_cohort_snapshot(payload, *, horizon: str = "rs_63d") -> dict:
+    """Whole-cohort read over a sector_cycles.compute() payload (never re-sources)."""
+    meta = payload.get("meta") or {}
+    records = {}
+    for rec in payload.get("sectors") or []:
+        ticker = rec.get("ticker")
+        if isinstance(ticker, str):
+            records[ticker] = rec
+    expected = us_sector_cohort()
+    outside_cohort = sorted(set(records) - set(expected))
+    values = {}
+    measured_values = {}
+    measured = []
+    missing = []
+    measurements = []
+    for ticker in expected:
+        rec = records.get(ticker)
+        if rec is None:
+            missing.append([ticker, "missing_input"])
+            values[ticker] = Unmeasured("missing_input")
+            continue
+        value = _sector_record_value(rec, horizon)
+        if is_measured(value):
+            values[ticker] = float(value)
+            measured_values[ticker] = float(value)
+            measured.append(ticker)
+        else:
+            values[ticker] = value
+            missing.append([ticker, value.reason])
+        measurements.append(
+            from_sector_record(rec, benchmark=meta.get("benchmark"),
+                               session_end=meta.get("asOf"), horizon=horizon).to_dict()
+        )
+    positives = sum(1 for v in measured_values.values() if v > 0)
+    return {
+        "schema": "leadership_rotation_context.sector_cohort/v1",
+        "cohort_id": US_SECTOR_COHORT_ID,
+        "session_end": meta.get("asOf"),
+        "benchmark": meta.get("benchmark"),
+        "expected": list(expected),
+        "measured": sorted(measured),
+        "missing": sorted(missing),
+        "positive_breadth": breadth(positives, len(measured), len(expected)).to_dict(),
+        "ranking": rank_measured(values),
+        "zscores": _json(cohort_zscores(values, cohort_id=US_SECTOR_COHORT_ID)),
+        "measurements": measurements,
+        "outside_cohort": outside_cohort,
+    }
+
+
+def from_leadership_receipt(receipt, *, group_id: str, cohort_id: str,
+                            group_kind: str = "curated_theme",
+                            horizon: str = "rel_20d") -> GroupMeasurement:
+    """One leadership_receipt reading -> a FRACTION return_difference measurement."""
+    if horizon not in _RECEIPT_HORIZON_SESSIONS:
+        raise ValueError(
+            f"horizon must be one of {sorted(_RECEIPT_HORIZON_SESSIONS)}, got {horizon!r}"
+        )
+    benchmark = receipt.get("benchmark") or {}
+    sample = receipt.get("sample") or {}
+    observed_n = sample.get("observed_n")
+    configured_n = sample.get("configured_n")
+    raw = receipt.get(horizon)
+    value = float(raw) if is_measured(raw) else Unmeasured("missing_input")
+    return GroupMeasurement(
+        group_id=group_id,
+        group_kind=group_kind,
+        cohort_id=cohort_id,
+        metric="return_difference",
+        units="fraction",
+        benchmark=benchmark.get("label"),
+        session_end=receipt.get("as_of"),
+        window_sessions=_RECEIPT_HORIZON_SESSIONS[horizon],
+        rolling_window=True,
+        expected_n=configured_n if _is_count(configured_n) else None,
+        measured_n=observed_n if _is_count(observed_n) else None,
+        source_roots=("engine.leadership_receipt",),
+        value=value,
+    )
+
+
+def diagnose_rotation_payload(payload, *, cohort_id: str) -> dict:
+    """Name the two owner coercions in a subsector_rotation payload; never re-rank.
+
+    The frozen owner maps a missing z to 0.0 (``_nanmean(...) or 0.0``) and can
+    label the exact origin "leading". Both are flagged here; the owner payload
+    is never modified.
+    """
+    rows = []
+    flag_counts = {}
+    for row in payload.get("subsectors") or []:
+        perf = row.get("perf") or {}
+        missing_coerced_to_zero = perf.get("1M") is None or perf.get("3M") is None
+        rs_ratio = row.get("rs_ratio")
+        rs_mom = row.get("rs_mom")
+        neutral_origin_labelled_leading = bool(
+            is_measured(rs_ratio) and is_measured(rs_mom)
+            and abs(float(rs_ratio)) <= 1e-9 and abs(float(rs_mom)) <= 1e-9
+            and row.get("quadrant") == "leading"
+        )
+        if missing_coerced_to_zero:
+            projection_quadrant = "unmeasured"
+        else:
+            projection_quadrant = classify_coordinate(rs_ratio, rs_mom)
+        flags = sorted(
+            flag for flag, present in (
+                ("missing_coerced_to_zero", missing_coerced_to_zero),
+                ("neutral_origin_labelled_leading", neutral_origin_labelled_leading),
+            ) if present
+        )
+        for flag in flags:
+            flag_counts[flag] = flag_counts.get(flag, 0) + 1
+        rows.append({
+            "key": row.get("key"),
+            "owner_quadrant": row.get("quadrant"),
+            "projection_quadrant": projection_quadrant,
+            "flags": flags,
+        })
+    return {
+        "schema": "leadership_rotation_context.rotation_diagnostic/v1",
+        "cohort_id": cohort_id,
+        "asof": payload.get("asof"),
+        "rs_units": "return_difference_pp_vs_median",
+        "rows": rows,
+        "flag_counts": flag_counts,
+        "owner_fields_modified": False,
+    }
+
+
+def attribute_coordinate(receipts, *, as_of, vintage=None,
+                         mode: str = "reconstructed_price_history",
+                         recorded_at=None) -> dict:
+    """Attribute early-rotation pair rows to context-only coordinate observations.
+
+    A reconstructed mode can never claim natural observation: only
+    ``original_retained`` with a ``recorded_at`` is naturally_observed.
+    """
+    if mode not in EVIDENCE_MODES:
+        raise ValueError(f"mode must be one of EVIDENCE_MODES, got {mode!r}")
+    from engine import rotation_events
+
+    ctx = rotation_events.early_rotation_context(receipts, as_of=as_of)
+    observations = []
+    unavailable_pair_ids = []
+    for row in ctx.get("pairs") or []:
+        if row.get("eligible_2s") is not True:
+            pair_id = row.get("pair_id")
+            if isinstance(pair_id, str):
+                unavailable_pair_ids.append(pair_id)
+            continue
+        observations.append(TransitionObservation(
+            definition_id=ctx["definition_id"],
+            definition_version=ctx["schema"],
+            roles={"receiver": row["num"], "donor": row["den"],
+                   "context_group": row["context_group"]},
+            coordinate={"date": row.get("value_as_of") or ctx["as_of"],
+                        "vintage": vintage, "as_of": as_of},
+            evidence_mode=mode,
+            naturally_observed=(mode == "original_retained" and recorded_at is not None),
+            first_known_observation_id=f"{ctx['definition_id']}:{row['pair_id']}:{as_of}",
+            first_known_at=recorded_at,
+            current_observation_at=as_of,
+            interpretation=row.get("interpretation"),
+            source_context=copy.deepcopy(row),
+        ))
+    return {
+        "schema": "leadership_rotation_context.coordinate_attribution/v1",
+        "context_state": ctx.get("state"),
+        "context_reason_codes": list(ctx.get("reason_codes") or []),
+        "observations": observations,
+        "unavailable_pair_ids": sorted(unavailable_pair_ids),
+        "relationship": "context_only",
+        "legacy_events_modified": False,
+    }
+
+
+def earliest_observable_coordinate(observations, *, before, roles=None):
+    """Earliest observation strictly before ``before`` (roles filter optional)."""
+    cutoff = parse_time(before)
+    if isinstance(cutoff, Unmeasured):
+        return Unmeasured("missing_input")
+    best = None
+    best_date = None
+    for obs in (observations if observations is not None else ()):
+        coordinate = getattr(obs, "coordinate", None)
+        if coordinate is None and isinstance(obs, dict):
+            coordinate = obs.get("coordinate")
+        if not isinstance(coordinate, dict):
+            continue
+        when = parse_time(coordinate.get("date"))
+        if isinstance(when, Unmeasured) or not when < cutoff:
+            continue
+        obs_roles = getattr(obs, "roles", None)
+        if obs_roles is None and isinstance(obs, dict):
+            obs_roles = obs.get("roles")
+        if roles:
+            if not isinstance(obs_roles, dict) or any(
+                obs_roles.get(key) != value for key, value in roles.items()
+            ):
+                continue
+        if best_date is None or when < best_date:
+            best, best_date = obs, when
+    if best is None:
+        return Unmeasured("missing_input")
+    return {
+        "coordinate": dict(best.coordinate),
+        "evidence_mode": best.evidence_mode,
+        "naturally_observed": best.naturally_observed,
+        "first_known_observation_id": best.first_known_observation_id,
+        "relationship": "context_only",
+        "legacy_event_untouched": True,
+    }
+
+
+def separate_from_legacy(observations, ledger_history) -> dict:
+    """Keep transition observations DISTINCT from legacy event history -- never attached."""
+    legacy_events = [
+        {
+            "lifecycle_id": row.get("lifecycle_id"),
+            "observation_date": row.get("observation_date"),
+            "recorded_at": row.get("recorded_at"),
+            "mode": row.get("mode"),
+            "from_key": row.get("from_key"),
+            "to_key": row.get("to_key"),
+        }
+        for row in (ledger_history or {}).get("rows") or []
+    ]
+    return {
+        "schema": "leadership_rotation_context.legacy_separation/v1",
+        "legacy_status": (ledger_history or {}).get("status"),
+        "legacy_events": legacy_events,
+        "transition_observations": [
+            obs.to_dict() for obs in (observations or ())
+        ],
+        "relationship": "context_only",
+        "attached_to_legacy": 0,
+    }
 
 
 # ---------------------------------------------------------------------------

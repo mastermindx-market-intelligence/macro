@@ -7,6 +7,7 @@ LR-MEAS-B2 adds the clock/input contracts (section 5), cohort_at (section 4)
 and the three contract objects (section 6).
 """
 
+import copy
 import json
 import math
 
@@ -23,6 +24,7 @@ from engine.leadership_rotation_context import (
     Unmeasured,
     admissible_as_known,
     admit_use,
+    attribute_coordinate,
     beta_only_residual,
     breadth,
     breadth_change,
@@ -35,6 +37,10 @@ from engine.leadership_rotation_context import (
     decompose_trailing_change,
     decompose_z_change,
     dedupe_source_roots,
+    diagnose_rotation_payload,
+    earliest_observable_coordinate,
+    from_leadership_receipt,
+    from_sector_record,
     is_measured,
     normalize_weights,
     observation_clock,
@@ -45,7 +51,10 @@ from engine.leadership_rotation_context import (
     relative_wealth,
     return_difference,
     rolling_carry,
+    sector_cohort_snapshot,
+    separate_from_legacy,
     shared_members,
+    us_sector_cohort,
     weight_coverage,
     z_for,
 )
@@ -684,3 +693,294 @@ def test_extra_parse_time_and_clocks():
     assert naive == utc  # a naive string is read as UTC
     assert naive.tzinfo is not None
     assert admissible_as_known("2026-10-06T21:00:00Z", None) == "unknown"
+
+
+# ---------------------------------------------------------------------------
+# owner adapters (spec section 7) -- read-only projections, lazy imports
+# ---------------------------------------------------------------------------
+
+ASOF = "2026-10-06"
+
+
+def _ratio_batch(*rows):
+    return {"schema": "ratio_lens.short_horizons/v1", "as_of": ASOF,
+            "definition_id": "ratio_lens.short_horizons/1",
+            "pairs": list(rows), "reason_codes": []}
+
+
+def _ratio_receipt(group="defensive_sector", num="XLP", den="XLK",
+                   num_daily=0.003, den_daily=0.001):
+    import numpy as np
+    import pandas as pd
+
+    from engine.oracle import ratio_lens as RL
+    from lib import nyse_calendar as cal
+
+    def levels(n=45, daily=0.001):
+        dates = cal.sessions_between(
+            pd.Timestamp(ASOF).date() - pd.Timedelta(days=n * 3),
+            pd.Timestamp(ASOF).date(),
+        )[-n:]
+        return pd.Series(100.0 * (1 + daily) ** np.arange(len(dates)),
+                         index=pd.DatetimeIndex(dates))
+
+    pair_row = {
+        "id": f"{num.lower()}_vs_{den.lower()}",
+        "num": num, "den": den, "kind": "etf",
+        "name_en": f"{num} vs {den}", "name_zh": f"{num} / {den}",
+        "reads_as_en": "Relative price context", "reads_as_zh": "相对价格",
+        "context_group": group,
+    }
+    return RL.short_horizon_receipt(pair_row, levels(daily=num_daily),
+                                    levels(daily=den_daily), as_of=ASOF)
+
+
+def test_sector_cohort_is_existing_eleven():
+    from engine import sector_cycles
+
+    cohort = us_sector_cohort()
+    assert cohort == tuple(sorted(sector_cycles.SECTORS))
+    assert len(cohort) == 11  # the existing eleven; the adapter mints no new ids
+
+
+def test_sector_adapter_names_relative_wealth_pct_and_rolling():
+    rec = {"ticker": "XLK", "kind": "sector",
+           "now": {"rs_21d": 1.2, "rs_63d": 3.4, "rs_126d": 5.6,
+                   "rs_above_trend": True, "thin_history": False}}
+    gm = from_sector_record(rec, benchmark="SPY", session_end=ASOF)
+    assert gm.metric == "relative_wealth_pct"  # a pp-vs-benchmark RS reading, NOT wealth ratio
+    assert gm.units == "pct"
+    assert gm.group_id == "XLK" and gm.group_kind == "sector"
+    assert gm.cohort_id == US_SECTOR_COHORT_ID
+    assert gm.value == pytest.approx(3.4)
+    assert gm.window_sessions == 63 and gm.rolling_window is True
+    assert gm.price_basis == "total_return"
+    assert gm.membership_source == "etf_proxy:engine.sector_cycles.SECTORS"
+    assert gm.source_roots == ("engine.sector_cycles",)
+    assert from_sector_record(rec, horizon="rs_21d").window_sessions == 21
+    with pytest.raises(ValueError):
+        from_sector_record(rec, horizon="rs_5d")
+    thin = {"ticker": "XLF", "kind": "sector",
+            "now": {"thin_history": True, "rs_rows": 150}}
+    assert from_sector_record(thin).value == Unmeasured("thin_history")
+    assert from_sector_record({"ticker": "XLE", "kind": "sector", "now": {}}).value == (
+        Unmeasured("missing_input")
+    )
+
+
+def test_owner_receipt_adapter_names_return_difference():
+    receipt = {"schema": "mi.leadership_receipt.v1",
+               "rel_5d": 0.001, "rel_20d": 0.02, "rel_60d": None,
+               "benchmark": {"label": "S&P 500", "label_zh": "标普500"},
+               "as_of": ASOF,
+               "sample": {"observed_n": 8, "configured_n": 10}}
+    gm = from_leadership_receipt(receipt, group_id="ai_infra", cohort_id="theme:ai_infra")
+    assert gm.metric == "return_difference"  # a plain difference, never a wealth relative
+    assert gm.units == "fraction"
+    assert gm.value == pytest.approx(0.02)
+    assert gm.window_sessions == 20 and gm.rolling_window is True
+    assert gm.benchmark == "S&P 500" and gm.session_end == ASOF
+    assert gm.expected_n == 10 and gm.measured_n == 8
+    assert gm.coverage == pytest.approx(0.8)
+    assert gm.group_kind == "curated_theme"
+    assert gm.source_roots == ("engine.leadership_receipt",)
+    assert from_leadership_receipt(receipt, group_id="g", cohort_id="c",
+                                   horizon="rel_5d").window_sessions == 5
+    assert from_leadership_receipt(receipt, group_id="g", cohort_id="c",
+                                   horizon="rel_60d").value == Unmeasured("missing_input")
+    with pytest.raises(ValueError):
+        from_leadership_receipt(receipt, group_id="g", cohort_id="c", horizon="rel_1d")
+    unknown_sample = dict(receipt, sample={"observed_n": "—", "configured_n": "—"})
+    gm2 = from_leadership_receipt(unknown_sample, group_id="g", cohort_id="c")
+    assert gm2.expected_n is None and gm2.measured_n is None
+    assert gm2.coverage == Unmeasured("empty_population")
+
+
+def test_a17_all_at_origin_is_neutral_not_leading():
+    payload = {
+        "asof": ASOF,
+        "subsectors": [
+            {"key": "semis", "perf": {"1M": 2.0, "3M": 5.0},
+             "rs_ratio": 0.9, "rs_mom": 0.4, "quadrant": "leading"},
+            {"key": "broken", "perf": {"1M": None, "3M": None},
+             "rs_ratio": 0.0, "rs_mom": 0.0, "quadrant": "leading"},
+        ],
+    }
+    frozen = copy.deepcopy(payload)
+    diag = diagnose_rotation_payload(payload, cohort_id="us_subsectors")
+    assert payload == frozen  # the owner payload is read, never modified
+    assert diag["schema"] == "leadership_rotation_context.rotation_diagnostic/v1"
+    assert diag["rs_units"] == "return_difference_pp_vs_median"
+    assert diag["owner_fields_modified"] is False
+    by_key = {row["key"]: row for row in diag["rows"]}
+    assert by_key["semis"]["projection_quadrant"] == "leading"
+    assert by_key["semis"]["flags"] == []
+    # the exact origin is a tie, not Leading -- and a missing z was coerced to 0.0
+    assert by_key["broken"]["projection_quadrant"] == "unmeasured"
+    assert by_key["broken"]["owner_quadrant"] == "leading"
+    assert by_key["broken"]["flags"] == [
+        "missing_coerced_to_zero", "neutral_origin_labelled_leading"
+    ]
+    assert diag["flag_counts"] == {
+        "missing_coerced_to_zero": 1, "neutral_origin_labelled_leading": 1
+    }
+    # the underlying law, pinned through THIS module's own functions as well
+    assert cohort_zscores({"a": 5.0, "b": 5.0}, cohort_id="c")["state"] == "neutral_tie"
+    assert classify_coordinate(0.0, 0.0) == "neutral"
+
+
+def test_cf06_reconstructed_coordinate_never_naturally_observed():
+    receipt = _ratio_receipt()
+    batch = _ratio_batch(receipt)
+    frozen = copy.deepcopy(batch)
+    out = attribute_coordinate(batch, as_of=ASOF,
+                               mode="reconstructed_price_history",
+                               recorded_at="2026-10-06T21:00:00Z")
+    assert batch == frozen  # the owner input is read, never modified
+    assert out["schema"] == "leadership_rotation_context.coordinate_attribution/v1"
+    assert out["relationship"] == "context_only"
+    assert out["legacy_events_modified"] is False
+    assert out["unavailable_pair_ids"] == []
+    assert len(out["observations"]) == 1
+    obs = out["observations"][0]
+    assert obs.naturally_observed is False  # reconstructed: never a natural observation
+    assert obs.evidence_mode == "reconstructed_price_history"
+    assert obs.roles == {"receiver": "XLP", "donor": "XLK",
+                         "context_group": "defensive_sector"}
+    assert obs.coordinate["date"] == ASOF and obs.coordinate["as_of"] == ASOF
+    assert obs.first_known_observation_id == f"rotation_early_context/1:xlp_vs_xlk:{ASOF}"
+    assert isinstance(obs.source_context, dict)  # a deepcopy, not the owner row
+    retained = attribute_coordinate(batch, as_of=ASOF, mode="original_retained",
+                                    recorded_at="2026-10-06T21:00:00Z")
+    assert retained["observations"][0].naturally_observed is True
+    unrecorded = attribute_coordinate(batch, as_of=ASOF, mode="original_retained")
+    assert unrecorded["observations"][0].naturally_observed is False
+    with pytest.raises(ValueError):
+        attribute_coordinate(batch, as_of=ASOF, mode="hallucinated")
+    with pytest.raises(ValueError):
+        TransitionObservation(
+            definition_id="d", definition_version="v", roles={"receiver": "a", "donor": "b"},
+            coordinate={"date": ASOF, "vintage": None, "as_of": ASOF},
+            evidence_mode="reconstructed_price_history", naturally_observed=True,
+        )
+
+
+def test_extra_earliest_coordinate_and_legacy_separation():
+    receipt = _ratio_receipt()
+    out = attribute_coordinate(_ratio_batch(receipt), as_of=ASOF,
+                               mode="reconstructed_price_history")
+    first = earliest_observable_coordinate(out["observations"], before="2026-10-07")
+    assert first["relationship"] == "context_only"
+    assert first["legacy_event_untouched"] is True
+    assert first["coordinate"]["date"] == ASOF
+    assert earliest_observable_coordinate(out["observations"], before="2026-10-05") == (
+        Unmeasured("missing_input")
+    )
+    roles_hit, roles_miss = out["observations"][0], None
+    explicit = [
+        TransitionObservation(
+            definition_id="d", definition_version="v",
+            roles={"receiver": "A", "donor": "B"},
+            coordinate={"date": "2026-10-01", "vintage": None, "as_of": ASOF},
+            evidence_mode="synthetic_fixture", naturally_observed=False),
+        TransitionObservation(
+            definition_id="d", definition_version="v",
+            roles={"receiver": "B", "donor": "C"},
+            coordinate={"date": "2026-10-02", "vintage": None, "as_of": ASOF},
+            evidence_mode="synthetic_fixture", naturally_observed=False),
+    ]
+    picked = earliest_observable_coordinate(explicit, before="2026-10-07",
+                                            roles={"receiver": "B"})
+    assert picked["evidence_mode"] == "synthetic_fixture"
+    assert picked["coordinate"]["date"] == "2026-10-02"  # the B observation, not the A one
+    # legacy separation: the two evidence classes stay distinct, nothing attaches
+    ledger = {"status": "OK", "rows": [
+        {"lifecycle_id": "L1", "observation_date": "2026-09-30",
+         "recorded_at": "2026-10-01T00:00:00Z", "mode": "RECONSTRUCTED_REPLAY",
+         "from_key": "xlp", "to_key": "xlk", "native_extra": "kept-out"}]}
+    ledger_frozen = copy.deepcopy(ledger)
+    sep = separate_from_legacy(explicit, ledger)
+    assert ledger == ledger_frozen
+    assert sep["schema"] == "leadership_rotation_context.legacy_separation/v1"
+    assert sep["legacy_status"] == "OK"
+    assert sep["legacy_events"] == [{
+        "lifecycle_id": "L1", "observation_date": "2026-09-30",
+        "recorded_at": "2026-10-01T00:00:00Z", "mode": "RECONSTRUCTED_REPLAY",
+        "from_key": "xlp", "to_key": "xlk"}]
+    assert sep["transition_observations"] == [o.to_dict() for o in explicit]
+    assert sep["relationship"] == "context_only"
+    assert sep["attached_to_legacy"] == 0
+
+
+def test_extra_sector_cohort_snapshot():
+    cohort = us_sector_cohort()
+    sectors = []
+    values = {ticker: (2.0 + i) if i < 8 else (-1.0 - (i - 8))
+              for i, ticker in enumerate(cohort)}
+    thin_ticker = cohort[-1]
+    for ticker in cohort:
+        if ticker == thin_ticker:
+            now = {"thin_history": True, "rs_rows": 150}
+        else:
+            now = {"rs_21d": 1.0, "rs_63d": values[ticker], "rs_126d": 0.5,
+                   "rs_above_trend": True, "thin_history": False}
+        sectors.append({"ticker": ticker, "kind": "sector", "now": now})
+    sectors.append({"ticker": "ZZZZ", "kind": "sector",
+                    "now": {"rs_63d": 9.9, "thin_history": False}})
+    payload = {"meta": {"asOf": ASOF, "benchmark": "SPY"}, "sectors": sectors}
+    frozen = copy.deepcopy(payload)
+    snap = sector_cohort_snapshot(payload)
+    assert payload == frozen  # read-only over the owner payload
+    assert snap["schema"] == "leadership_rotation_context.sector_cohort/v1"
+    assert snap["cohort_id"] == US_SECTOR_COHORT_ID
+    assert snap["session_end"] == ASOF and snap["benchmark"] == "SPY"
+    assert snap["expected"] == list(cohort)
+    assert snap["measured"] == sorted(cohort[:-1])
+    assert snap["missing"] == [[thin_ticker, "thin_history"]]
+    assert snap["outside_cohort"] == ["ZZZZ"]
+    pb = snap["positive_breadth"]
+    assert pb["k_over_n"] == pytest.approx(0.8) and pb["coverage"] == pytest.approx(10 / 11)
+    assert snap["ranking"]["unranked"] == [thin_ticker]
+    assert snap["zscores"]["state"] == "ok"
+    assert snap["zscores"]["cohort_id"] == US_SECTOR_COHORT_ID
+    assert len(snap["measurements"]) == 11  # every expected ticker found in the payload
+    assert all(m["metric"] == "relative_wealth_pct" for m in snap["measurements"])
+
+
+def test_inputs_not_mutated():
+    sector_payload = {
+        "meta": {"asOf": ASOF, "benchmark": "SPY"},
+        "sectors": [{"ticker": t, "kind": "sector",
+                     "now": {"rs_63d": 1.0 + i, "thin_history": False}}
+                    for i, t in enumerate(us_sector_cohort())],
+    }
+    receipt = {"schema": "mi.leadership_receipt.v1", "rel_5d": 0.001, "rel_20d": 0.02,
+               "rel_60d": -0.01, "benchmark": {"label": "S&P 500"}, "as_of": ASOF,
+               "sample": {"observed_n": 8, "configured_n": 10}}
+    rotation_payload = {"asof": ASOF, "subsectors": [
+        {"key": "semis", "perf": {"1M": 2.0, "3M": 5.0},
+         "rs_ratio": 0.9, "rs_mom": 0.4, "quadrant": "leading"}]}
+    ledger = {"status": "OK", "rows": [
+        {"lifecycle_id": "L1", "observation_date": "2026-09-30",
+         "recorded_at": "2026-10-01T00:00:00Z", "mode": "RECONSTRUCTED_REPLAY",
+         "from_key": "xlp", "to_key": "xlk"}]}
+    ratio_batch = _ratio_batch(_ratio_receipt())
+    frozen = {
+        "sector": copy.deepcopy(sector_payload),
+        "receipt": copy.deepcopy(receipt),
+        "rotation": copy.deepcopy(rotation_payload),
+        "ledger": copy.deepcopy(ledger),
+        "ratio": copy.deepcopy(ratio_batch),
+    }
+    sector_cohort_snapshot(sector_payload)
+    from_leadership_receipt(receipt, group_id="g", cohort_id="c")
+    diagnose_rotation_payload(rotation_payload, cohort_id="c")
+    attrib = attribute_coordinate(ratio_batch, as_of=ASOF,
+                                  mode="reconstructed_price_history")
+    separate_from_legacy(attrib["observations"], ledger)
+    earliest_observable_coordinate(attrib["observations"], before="2026-10-07")
+    assert sector_payload == frozen["sector"]
+    assert receipt == frozen["receipt"]
+    assert rotation_payload == frozen["rotation"]
+    assert ledger == frozen["ledger"]
+    assert ratio_batch == frozen["ratio"]
