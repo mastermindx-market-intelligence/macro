@@ -2,13 +2,14 @@
 workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
 session: claude/ssd-leadership-rotation-fable-ea1aa1-e607a9aeaf45c29e (seat 135304d0, SSD tree)
 model: fable
-ended_because: ci_handoff
+ended_because: complete
 mission: >-
   Programme completion for Rotation Command / Sector Central (Chairman masterplan zip
   2026-10-13, task graph T01–T26). Updated 2026-10-14 ~20:00Z: waves 1–4 MERGED+LANDED
   (contracts, evidence modes, replay isolation, science protocol + prereg V1/V2, measured read,
   journey, counter-cases, challenge repair packets A–D with Terminal D in production); wave 5
-  (harness repair under prereg V2.1) in flight.
+  (harness repair under prereg V2.1) MERGED+LANDED 2026-10-14 (#9380 → c55b54dab056); T26 four states
+  recorded in research/LEADERSHIP_ROTATION_T26_CLOSEOUT_2026_10_14.md.
 state_before: >-
   #8470 merged; carriers #8412 (replay isolation), #8476 (rs_history.v1) and Terminal #881
   (journey) were unmerged prior drafts on stale bases; no contracts module existed; `build_rotation_events`
@@ -81,19 +82,14 @@ unresolved:
   on mb by hand until the fabric-policy owner republishes.
 next_actions:
 - >-
-  Consume the ORCH-REPAIR return ($S/returns/ORCH-REPAIR_RETURN_<UTC>.md; branch
-  claude/lr-harness-repair-2026-10-14): gate read (reviewDecision, rollup, mergeable), `gh pr ready`,
-  `gh pr merge --squash --match-head-commit <head40>`, land-check against bare-fetched origin/main.
-  If `.github/ci/legacy-jobs.yml` paths widen it is a CI-authority edit: ONE main baseline over a
-  clear field, one watcher.
+  DONE 2026-10-14: ORCH-REPAIR return consumed; #9380 merged exact-head → c55b54dab056; baseline 38627611213
+  SUCCESS → MEASURED_PRODUCT_COMPLETE = COMPLETE; T12R SIZED 42/42; T13R all NOT_EXECUTABLE; V3 not
+  triggered by V2 rules. The #9380 merged head is CI-authority-frozen until one green main ci.yml run on a
+  descendant (baseline dispatch chained by one seat watcher behind live main run 38642010515, which predates the merge; id and verdict recorded on conclusion); never re-dispatch over a live run.
 - >-
-  Main baseline 38627611213 @a1297d93 (⊇ C 56ea4f18) is the clearing lever for #9368's
-  CI-authority freeze; on SUCCESS set MEASURED_PRODUCT_COMPLETE = COMPLETE in the T26 report.
-  Never re-dispatch while it runs.
-- >-
-  After the repair lands: T12R/T13R re-size/power under prereg V2.1 (F9 gate must pass before
-  run_p1); record SIZED/POWERED verdicts; V3 ruling if the re-size fails. NO P1/P2 real-data read
-  before that.
+  Follow-on LR-W6 (not in this masterplan): author PREREG V3 (own blob pin) re-registering H1 (statistic
+  not T_a ≡ 5 by construction) and H2/H3 effect scales vs margins; re-run size+power; only SIZED+POWERED
+  authorises a P1 read. Until then P1/P2/P3 stay unread (DEC:LEADERSHIP-ROTATION-P1-WITHHELD-UNTIL-STATISTICS-REREGISTERED).
 - >-
   Terminal D visual acceptance: crop matrix + `qualify_sector_rotation.cjs` not executed (lane-only
   claims); signed-in visual pass is a human gap — never call D visually accepted.
@@ -139,9 +135,8 @@ danger_areas:
   compare step wall time with a sibling before attributing a timeout red to the PR; remedy = re-run.
 - Writes into data/ or site/ in a sparse tree truncate committed artifacts; builders must redirect to
   scratch art_dir.
-- The engine must never read PREREG V2 as settled for F1/F3 until ORCH-REPAIR confirms; V2.1 gets its
-  own blob SHA pin — never edit V2 in place.
-prs: [9224, 9225, 9240, 9245, 9288, 9250, 9251, 9258, 9293, 9327, 9332, 9345, 9257, 9271, 9368, 9371, 9372, 9205]
+- F1/F3 are settled by V2 §3/§5 per V2.1 §5 (blob 8f48509b); never edit V1/V2/V2.1 in place — any change is a dated V3 with its own blob pin.
+prs: [9224, 9225, 9240, 9245, 9288, 9250, 9251, 9258, 9293, 9327, 9332, 9345, 9257, 9271, 9368, 9371, 9372, 9205, 9380, 9386]
 ---
 
 # LEADERSHIP-ROTATION-INTELLIGENCE — handoff 2026-10-14 (wave 1 at CI rung)
