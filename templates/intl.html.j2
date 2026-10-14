@@ -1237,9 +1237,9 @@
 {%- endfor %}
 
 {# CB stance labels #}
-{%- set CB_STANCE_EN = {'easing': 'Cutting', 'hiking': 'Raising', 'holding': 'Holding'} %}
-{%- set CB_STANCE_ZH = {'easing': '降息', 'hiking': '加息', 'holding': '按兵不动'} %}
-{%- set CB_STANCE_CSS = {'easing': 'stance-cutting', 'hiking': 'stance-raising', 'holding': 'stance-holding'} %}
+{%- set CB_STANCE_EN = {'easing': 'Cutting', 'hiking': 'Raising', 'hold': 'Holding', 'holding': 'Holding'} %}
+{%- set CB_STANCE_ZH = {'easing': '降息', 'hiking': '加息', 'hold': '按兵不动', 'holding': '按兵不动'} %}
+{%- set CB_STANCE_CSS = {'easing': 'stance-cutting', 'hiking': 'stance-raising', 'hold': 'stance-holding', 'holding': 'stance-holding'} %}
 {%- set CC_FLAG = {'US':'🇺🇸','XM':'🇪🇺','JP':'🇯🇵','GB':'🇬🇧','CH':'🇨🇭','CA':'🇨🇦','AU':'🇦🇺'} %}
 
 {# inversion board #}
@@ -1321,6 +1321,7 @@
   .ird-us-recv .ur-text{font-size:12px;color:var(--muted);}
   .ird-us-recv .ur-text b{color:var(--text);}
   .ird-channels{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .ird-cb-scroll:focus-visible{outline:2px solid var(--link);outline-offset:3px;}
   table.ird-cb{border-collapse:collapse;width:100%;font-size:12.5px;}
   table.ird-cb th,table.ird-cb td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;}
   table.ird-cb th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
@@ -1547,9 +1548,10 @@
     {%- if CBD and CBD.get('cbs') %}
     <div class="panel">
       <div class="sec-h">
-        <h2 id="intl-central-banks">{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (public weekly data); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（公开周度数据）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
+        <h2 id="intl-central-banks" tabindex="-1">{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (public weekly data); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（公开周度数据）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
         <span class="sub">{{ t('What the major central banks are actually doing', '主要央行的实际政策动向') }}</span>
       </div>
+      <div class="tbl-scroll ird-cb-scroll" role="region" tabindex="0" aria-labelledby="intl-central-banks">
       <table class="ird-cb">
         <thead><tr>
           <th>{{ t('Bank', '央行') }}</th>
@@ -1561,10 +1563,10 @@
         </tr></thead>
         <tbody>
         {%- for cb in CBD.get('cbs', []) %}
-        {%- set trend = cb.get('trend_3m', 'holding') %}
-        {%- set stance_css = CB_STANCE_CSS.get(trend, 'stance-holding') %}
-        {%- set stance_en = CB_STANCE_EN.get(trend, 'Holding') %}
-        {%- set stance_zh = CB_STANCE_ZH.get(trend, '按兵不动') %}
+        {%- set trend = cb.get('trend_3m') %}
+        {%- set stance_css = CB_STANCE_CSS.get(trend, 'muted') %}
+        {%- set stance_en = CB_STANCE_EN.get(trend, 'Unavailable') %}
+        {%- set stance_zh = CB_STANCE_ZH.get(trend, '不可用') %}
         {%- set last_chg = cb.get('last_change') or {} %}
         {%- set next_mtg = cb.get('next_meeting') or {} %}
         {%- set bs = cb.get('bs_impulse') %}
@@ -1580,12 +1582,12 @@
             {%- else %}<span class="muted">—</span>{%- endif %}
           </td>
           <td>
-            {%- if bs %}
-              {%- set imp = bs.get('impulse_13w', 0) or 0 %}
+            {%- if bs and bs.get('impulse_13w') is not none %}
+              {%- set imp = bs.get('impulse_13w') %}
               <span class="ird-bs {{ 'adding' if imp > 0 else 'draining' if imp < 0 else '' }}">
                 {{ t('Adding' if imp > 0 else 'Draining' if imp < 0 else 'Flat', '扩表' if imp > 0 else '缩表' if imp < 0 else '持平') }}
               </span>
-            {%- else %}<span class="muted">—</span>{%- endif %}
+            {%- else %}<span class="muted">{{ t('Unavailable', '不可用') }}</span>{%- endif %}
           </td>
           <td>
             {%- if next_mtg.get('date') %}
@@ -1601,6 +1603,7 @@
         {%- endfor %}
         </tbody>
       </table>
+      </div>
       <p class="caveat" style="margin-top:8px;">
         {{ t('Balance-sheet data available for Fed, ECB, and BoJ only — others are honest nulls. Rate data as of ' + (CBD.get('as_of','') or ''), '资产负债表数据仅限美联储、欧央行和日本央行——其余为实际缺失。利率数据截至' + (CBD.get('as_of','') or '')) }}
       </p>

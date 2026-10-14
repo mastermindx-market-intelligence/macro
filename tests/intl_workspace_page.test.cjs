@@ -55,6 +55,45 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Central bank unavailable readings survive Library keyboard return ${theme} ${lang}`,async()=>{
+    const cbHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      "from tests.test_intl_central_bank_render import central_bank_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk={'cb_desk':central_bank_fixture()}))"],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const input=page.locator('[data-im-library-search]:visible');const query=lang==='zh'?'央行':'Central';
+      await input.fill(query);
+      const link=page.locator('[data-im-library-tool="central_banks_liquidity"] a[href="#intl-central-banks"]');
+      assert.equal(await link.count(),1);const origin=page.url();
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});await link.focus();await page.keyboard.press('Enter');
+        const target=page.locator('#intl-central-banks');assert.equal(await target.evaluate(n=>document.activeElement===n),true);
+        assert.equal(new URL(page.url()).hash,'#intl-central-banks');
+        const cells=page.locator('.ird-cb tbody tr').first().locator('td');
+        assert.equal(await cells.nth(1).innerText(),'0.00%');
+        assert.equal(await cells.nth(2).innerText(),lang==='zh'?'不可用':'Unavailable');
+        assert.equal(await cells.nth(4).innerText(),lang==='zh'?'不可用':'Unavailable');
+        const scroll=page.locator('.ird-cb').locator('..');
+        console.log('Central-bank scroll semantics',await scroll.evaluate(n=>({role:n.getAttribute('role'),label:n.getAttribute('aria-labelledby'),tabindex:n.getAttribute('tabindex'),client:n.clientWidth,total:n.scrollWidth})));
+        assert.equal(await scroll.getAttribute('role'),'region');
+        assert.equal(await scroll.getAttribute('aria-labelledby'),'intl-central-banks');
+        for(let i=0;i<5 && !(await scroll.evaluate(n=>document.activeElement===n));i++) await page.keyboard.press('Tab');
+        assert.equal(await scroll.evaluate(n=>document.activeElement===n),true,'table scroller is reachable by native Tab');
+        if(width===320) {
+          assert.ok(await scroll.evaluate(n=>n.scrollWidth>n.clientWidth),'narrow table needs scrolling');
+          for(let i=0;i<24;i++) await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>{const n=document.querySelector('.ird-cb-scroll');return n.scrollLeft>=n.scrollWidth-n.clientWidth-2});
+          assert.ok(await cells.nth(5).evaluate(n=>{const r=n.getBoundingClientRect(),s=n.closest('.ird-cb-scroll').getBoundingClientRect();return r.right<=s.right+1 && r.left>=s.left-1}),'last column is reachable');
+          for(let i=0;i<24;i++) await page.keyboard.press('ArrowLeft');await page.waitForFunction(()=>document.querySelector('.ird-cb-scroll').scrollLeft<1);
+        }
+        assert.ok(await scroll.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1}));
+        await page.goBack();assert.equal(page.url(),origin);assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:cbHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Rates observation dates preserve independent clocks ${theme} ${lang}`,async()=>{
     const ratesHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       'from tests.test_intl_rates_dates_render import rates_dates_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=rates_dates_fixture()))'],

@@ -140,12 +140,13 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Evaluate the actual conditional Central bank desk Library journey against its existing owner roster,
-  supplied clocks, absence and keyboard return; do not substitute the ECB-only liquidity card or invent market coverage.
-  Rates geometry and independent observation-date repairs are locally verified, not deployed.
-  Original live Library Stock Back awaits Chris completing/dismissing the Chrome extension UI; preserve its tab.
-  Independent review, genuine source qualification, Saved and release holds persist; IW2 owns TerminalPR804.
+next_action: Expose supplied Central bank per-row clocks and owner stale flags; the current aggregate latest-row
+  date is not a common observation date. Discriminate real cadence and absent balances without inventing qualification.
+  Repair the verified blanket-weekly copy against the existing owner metadata; preserve all supplied values.
+  Original live Library Stock Back awaits Chris completing/dismissing Chrome extension UI; preserve its tab.
+  Independent review, genuine qualification, Saved and release remain held; IW2 owns all TerminalPR804 surfaces.
 artifacts:
+- research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_OBSERVATION_DATES_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_CURVE_GEOMETRY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/RATES_MISSING_ENDPOINTS_ACCEPTANCE.json

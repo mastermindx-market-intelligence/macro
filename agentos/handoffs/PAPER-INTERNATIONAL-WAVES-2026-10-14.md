@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_central_bank_render.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
+  what: Preserve unknown Central bank assessments as unavailable, retain actual hold and zero, and add native heading focus plus a named keyboard-scrollable canonical table.
+- path: research/paper_international_wave1_wave2/CENTRAL_BANK_ABSENCE_ACCEPTANCE.json; mockups/evidence/paper-international-library/central-bank-absence/
+  what: Bind actual-owner synthetic red/green evidence, eight final captures and six focused views; source not deployed and independent review pending.
 - path: templates/intl.html.j2; tests/test_intl_rates_dates_render.py; tests/intl_workspace_page.test.cjs
   what: Expose supplied10y/CPI observation months and US10y date with explicit field scope, honest missing clocks and escaped date strings.
 - path: research/paper_international_wave1_wave2/RATES_OBSERVATION_DATES_ACCEPTANCE.json; mockups/evidence/paper-international-library/rates-observation-dates/
@@ -143,6 +147,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Central bank unknown trend and impulse do not become Holding or Flat, and keyboard users can reach final table columns.
+  command: pytest tests/test_intl_central_bank_render.py tests/test_intl_workspace_integration.py; Node Central bank unavailable readings; central-bank-absence-20261014-r1 capture.py and inspect_cards.py.
+  result: TwoPythonreds and35PythonPASS14inheritedwarnings before final scroller markup; final4browserPASS8widthstates with native focus, narrow arrow traversal and exact Library Back. Eight final canonical captures and six focused views; no complete-accessibility or live claim.
 - claim: Rates clocks retain their independent owner scope and absent fields.
   command: pytest tests/test_intl_rates_dates_render.py; Node Rates observation dates; rates-observation-dates-20261014-r1/capture.py and inspect_cards.py.
   result: 4PythonPASS14inheritedwarnings;4browserPASS8width states;8canonical captures and4settled focused images. Final escaping keeps benign optimized HTML byte-identical; malicious strings cannot add script nodes. Independent review pending.
