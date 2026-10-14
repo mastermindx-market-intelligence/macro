@@ -29669,6 +29669,31 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+  ric-f0-a10-canonical-calendar:
+    if: ${{ false }}
+    gate: code
+    # RIC F0 (A10, 2026-10-14): engine/event_window.py and the HK desk (engine/hk_event_calendar.py: FOMC, US CPI, US payrolls) read the canonical engine/event_calendar.py at call time (no literal mirror); catalyst/marketing FOMC copies pinned to canonical; HK US drift ledgers empty. test_hk_event_calendar.py (grandfathered unrun) is wired here because the HK desk now depends on the canonical calendar. Hermetic: synthetic indices + explicit asofs, no data/ reads or writes, no network.
+    timeout-minutes: 10
+    paths:
+      - "engine/event_window.py"
+      - "engine/event_calendar.py"
+      - "engine/hk_event_calendar.py"
+      - "engine/china_event_calendar.py"
+      - "engine/catalyst_tone.py"
+      - "engine/marketing/fomc_statements.py"
+      - "engine/validation.py"
+      - "tests/test_ric_f0_a10.py"
+      - "tests/test_hk_event_calendar.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: ric-f0-a10-canonical-calendar
+        run: python -m pytest tests/test_ric_f0_a10.py tests/test_hk_event_calendar.py -q -p no:cacheprovider
   c19-wp24-superseded-generations:
     if: ${{ false }}
     gate: code
