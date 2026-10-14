@@ -1789,7 +1789,12 @@ def ancestor_init_census(
     ``<dir>/__init__.py`` EXISTS on disk and is not (i) declared literally,
     (ii) matched by one of the job's declared globs, nor (iii) in
     ``allowlist``, emit one candidate. Deduplicate per ``(job, init_path)``
-    keeping the lexicographically first ``declared_path``.
+    keeping the lexicographically first ``declared_path``. Walking is limited
+    to LITERAL declarations: the lexical ancestors of GLOB entries are NOT
+    walked — a declared path containing ``*`` or ``?`` contributes no ancestor
+    traversal of its own (the ``_has_glob(declared)`` skip), and a glob can
+    only ever SUPPRESS a candidate found under a literal path, never create
+    one.
 
     A missing init (namespace package) is never a finding. The file is
     never read — ``os.stat`` size only. The function does not import the
@@ -4747,7 +4752,12 @@ def _find_repo_root(workflow_path: Path) -> Path:
     non-repo tree (a fixture under ``tmp_path``, for example), git fails
     closed and the function falls back to the workflow's parent directory.
     The ``relative_to`` sanity check keeps a silently-discovered parent
-    repo from being honoured when the manifest lives elsewhere.
+    repo from being honoured when the manifest lives elsewhere — but note
+    what it does NOT do: a manifest inside a SUBDIRECTORY of an enclosing
+    checkout passes that check and resolves against that checkout's root,
+    so discovery is not bounded to the manifest's own tree unless the
+    caller sets ``GIT_CEILING_DIRECTORIES`` (which blocks git from chdir'ing
+    up INTO a listed directory; naming the fixture's parent pins the walk).
     """
     try:
         result = subprocess.run(
@@ -4771,12 +4781,15 @@ def _find_repo_root(workflow_path: Path) -> Path:
 
 
 def _run_ancestor_init_census(args: argparse.Namespace) -> int:
-    """Print the report-only ancestor-init census and exit 0.
+    """Print the report-only ancestor-init census; exit 0 on a loadable manifest.
 
     The census is informational only: every curated-exclusive job's declared
     NON-GLOB paths are walked for ancestor inits, and each undeclared init
-    that exists on disk is emitted as one finding. The flag never validates,
-    gates, or fails — the curator already owns failure in
+    that exists on disk is emitted as one finding. The flag never validates
+    pack selection and never gates. It DOES exit nonzero when
+    ``load_legacy_jobs`` refuses the manifest — a ``ManifestError`` propagates
+    to ``main``'s fail-closed handler (observed rc=2 on an unparseable
+    fixture) — and the curator already owns closure failure in
     ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
     is the published baseline; per-init rows follow sorted by cross-job
     count descending then path.
@@ -5193,9 +5206,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "report-only: list ``__init__.py`` files a curated-exclusive job "
             "executes on import but never declares — never gates, never "
-            "validates, always exits 0; pairs the curated-tier closure audit "
-            "with the silent ancestor-init blind spot the closure audit "
-            "cannot see"
+            "validates pack selection; exits 0 on a loadable manifest and "
+            "nonzero (observed 2) when load_legacy_jobs refuses the manifest; "
+            "pairs the curated-tier closure audit with the silent "
+            "ancestor-init blind spot the closure audit cannot see"
         ),
     )
     parser.add_argument(
@@ -5332,6 +5346,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--execute and --plan-only are mutually exclusive")
     if args.plan_json is not None and args.plan_only:
         parser.error("--plan-json consumes a plan and cannot pair with --plan-only")
+    for _census_conflict, _flag in (
+        (args.execute, "--execute"),
+        (args.validate_only, "--validate-only"),
+        (args.plan_only, "--plan-only"),
+    ):
+        if args.ancestor_init_census and _census_conflict:
+            parser.error(
+                "--ancestor-init-census is a terminal report-only mode and "
+                f"cannot pair with {_flag}"
+            )
     if args.tracked_paths_file is not None and not args.plan_only:
         parser.error("--tracked-paths-file is planner-only and requires --plan-only")
     if args.tracked_paths_file is not None and not args.tested_tree_sha:

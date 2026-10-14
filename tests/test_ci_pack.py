@@ -6587,8 +6587,15 @@ def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_
 # is exactly the silent scope gap the curated tier exists to prevent. These
 # tests pin the pure census function and the ``--ancestor-init-census`` report
 # flag. Building the manifest, inits, and paths under ``tmp_path`` keeps the
-# suite hermetic from HEAD's manifest, HEAD's git shape, and any other
-# branch's history.
+# suite hermetic from HEAD's manifest and any other branch's history. The
+# isolation mechanism is EXPLICIT, not the location of ``tmp_path``: the
+# pure-function tests pass ``repo_root=tmp_path`` directly, and the CLI test
+# runs its subprocess with ``GIT_CEILING_DIRECTORIES`` set to the fixture's
+# PARENT so the git discovery inside ``_find_repo_root`` cannot chdir up out
+# of the fixture tree (git never excludes the cwd itself, only the dirs it
+# would chdir up into). Without that ceiling, a ``--basetemp`` placed inside
+# a checkout makes the census resolve against the enclosing checkout and
+# silently print ``pairs=0`` instead of the fixture's pairs.
 # ---------------------------------------------------------------------------
 
 
@@ -6791,16 +6798,119 @@ def test_ancestor_init_census_dedupes_per_job_init(tmp_path: Path) -> None:
     assert by_init["pkg/sub/__init__.py"].declared_path == "pkg/sub/mod.py"
 
 
+def test_ancestor_init_census_glob_entry_ancestors_not_walked(tmp_path: Path) -> None:
+    """(j) a glob whose OWN ancestors are not covered by it emits nothing.
+
+    ``tests/test_x_*.py`` sits under ``tests/``, and ``tests/__init__.py`` is
+    neither declared literally nor matched by the glob. Only the rule that
+    lexical ancestors of GLOB entries are not walked keeps this at zero
+    findings — dropping the ``if _has_glob(declared): continue`` guard
+    (mutant m2) walks ``test_x_*.py`` upward, finds the uncovered init, and
+    turns this test RED.
+    """
+    workflow = _aic_manifest(tmp_path, job_id="c-j", paths=["tests/test_x_*.py"])
+    _aic_optional_init(tmp_path / "tests", body=b"# tests package\n")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_glob_covered_init_suppresses_literal(
+    tmp_path: Path,
+) -> None:
+    """(k) literal path + covering glob ⇒ 0 findings for both ancestors.
+
+    ``pkg/**`` matches ``pkg/__init__.py`` and ``pkg/sub/__init__.py`` (verified
+    against ``_glob_to_regex``: ``**`` crosses ``/``), so the ancestors walked
+    from the literal ``pkg/sub/mod.py`` are suppressed by the glob-coverage
+    check. Dropping ``if _matches_any(job.paths, init_path): continue``
+    (mutant m3) emits both pairs and turns this test RED. The glob entry itself
+    is still never walked — (j) pins that half.
+    """
+    workflow = _aic_manifest(
+        tmp_path, job_id="c-k", paths=["pkg/sub/mod.py", "pkg/**"]
+    )
+    _aic_optional_init(tmp_path / "pkg", body=b"# package\n")
+    _aic_optional_init(tmp_path / "pkg" / "sub", body=b"")
+    jobs = _aic_load(workflow)
+
+    assert PACK.ancestor_init_census(jobs, repo_root=tmp_path) == ()
+
+
+def test_ancestor_init_census_findings_sorted_by_job_then_init(
+    tmp_path: Path,
+) -> None:
+    """(l) return order is sorted by ``(job, init_path)``, not discovery order.
+
+    Two jobs, two inits each, and the manifest lists ``z-job`` FIRST, so raw
+    discovery would emit ``z-job`` findings before ``a-job`` ones. The census
+    contract is the sorted tuple: reversing the return (mutant m6) puts
+    ``z-job`` first and turns the exact-order assertion RED; dropping the sort
+    altogether does the same.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "z-job": {**job_block, "paths": ["zsub/deep/mod.py"]},
+                    "a-job": {**job_block, "paths": ["asub/deep/mod.py"]},
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "zsub", body=b"# z\n")
+    _aic_optional_init(tmp_path / "zsub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "asub", body=b"# a\n")
+    _aic_optional_init(tmp_path / "asub" / "deep", body=b"")
+    jobs = PACK.load_legacy_jobs(workflow)
+    assert [j.job_id for j in jobs] == ["z-job", "a-job"], "discovery order"
+
+    findings = PACK.ancestor_init_census(jobs, repo_root=tmp_path)
+
+    order = [(f.job, f.init_path) for f in findings]
+    assert order == [
+        ("a-job", "asub/__init__.py"),
+        ("a-job", "asub/deep/__init__.py"),
+        ("z-job", "zsub/__init__.py"),
+        ("z-job", "zsub/deep/__init__.py"),
+    ], order
+    assert {f.declared_path for f in findings} == {
+        "zsub/deep/mod.py",
+        "asub/deep/mod.py",
+    }
+
+
 def test_ancestor_init_census_cli_flag_prints_summary_line(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """(i) ``--ancestor-init-census`` on a tmp manifest exits 0 with summary line."""
+    """(i) ``--ancestor-init-census`` on a tmp manifest exits 0 with summary line.
+
+    ``GIT_CEILING_DIRECTORIES`` pins git discovery to the fixture tree, so the
+    assertion holds whether pytest's ``--basetemp`` sits outside any checkout or
+    inside this repository's worktree.
+    """
     workflow = _aic_manifest(
         tmp_path, job_id="cli-fixture", paths=["pkg/sub/mod.py"]
     )
     _aic_optional_init(tmp_path / "pkg", body=b"# package pkg\n")
     _aic_optional_init(tmp_path / "pkg" / "sub", body=b"# sub\n")
     script = ROOT / "scripts" / "run_ci_pack.py"
+    # The ceiling must name the PARENT of the fixture dir: observed with git
+    # 2.43.0, ``GIT_CEILING_DIRECTORIES=<cwd itself>`` still discovered the
+    # enclosing checkout (rc=0, the cwd is never excluded), while
+    # ``GIT_CEILING_DIRECTORIES=<cwd's parent>`` stopped the walk-up with
+    # ``fatal: not a git repository`` (rc=128). Blocked discovery makes
+    # ``_find_repo_root`` fall back to ``workflow.parent`` == ``tmp_path``,
+    # so the fixture census prints ``pairs=2`` under any ``--basetemp``.
     proc = subprocess.run(
         [
             sys.executable,
@@ -6813,6 +6923,7 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
         text=True,
         check=False,
         cwd=str(tmp_path),
+        env={**os.environ, "GIT_CEILING_DIRECTORIES": str(tmp_path.resolve().parent)},
     )
     assert proc.returncode == 0, (proc.stdout, proc.stderr)
     out_lines = proc.stdout.strip().splitlines()
@@ -6833,3 +6944,21 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
         ("pkg/__init__.py", "bytes=14", "jobs=1"),
         ("pkg/sub/__init__.py", "bytes=6", "jobs=1"),
     ], parsed
+
+
+@pytest.mark.parametrize(
+    "other_flag", ["--execute", "--validate-only", "--plan-only"]
+)
+def test_ancestor_init_census_refuses_ambiguous_modes(other_flag: str) -> None:
+    """(n) the census is terminal: pairing it with another mode exits 2 at parse.
+
+    Before this refusal ``--ancestor-init-census`` silently WON the dispatch
+    in ``main`` (observed rc=0 with the paired flag ignored). ``parse_args``
+    must now reject the combination the same way it rejects
+    ``--execute``/``--validate-only`` — a usage error, exit code 2.
+    """
+    with pytest.raises(SystemExit) as excinfo:
+        PACK.parse_args(
+            ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
+        )
+    assert excinfo.value.code == 2
