@@ -48,6 +48,7 @@ SHELL_ALIAS_NAMES = (
     "_filter_interpretation_blocks",
     "_correction_lineage",
     "_collapse_syndicated",
+    "_in_anchor_scope",
 )
 
 

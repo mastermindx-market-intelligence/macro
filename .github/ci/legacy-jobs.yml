@@ -3760,7 +3760,8 @@ jobs:
     # composer import reaches company-intelligence and theme-graph modules
     # whose reads fall back to site/ and templates/ roots. Those fallbacks
     # are not declared, so this job does not select on the packing probes.
-    # paths are the two suites' owned import closure (no globs).
+    # paths are the two suites' owned import closure plus the fixture tree
+    # the equality suite reads.
     scope: exclusive
     paths:
       - "config/earnings_story_promotion.yml"
@@ -3810,6 +3811,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/evidence_foundation.py"
       - "lib/pages.py"
+      - "tests/fixtures/semiconductor_theme_research/**"
       - "tests/test_theme_research_shell_ast_binding.py"
       - "tests/test_theme_research_shell_equality.py"
     runs-on: ubuntu-latest

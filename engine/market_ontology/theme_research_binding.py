@@ -12,15 +12,19 @@ defaults".
 The str-typed ``ResearchQuery`` / ``OwnerBundle`` carriers and the five
 gates ``passes_time_mode``, ``review_excluded``,
 ``filter_interpretation_blocks``, ``correction_lineage`` and
-``collapse_syndicated`` live here too. They moved out of the semiconductor
-composer. ``passes_time_mode`` still compares the three mode tokens that
-composer compared (``latest``, ``source_history``, ``system_replay``), so
-the move does not change a semiconductor response byte.
-``filter_interpretation_blocks`` is that composer's replay filter on
+``collapse_syndicated`` live here too, but they did not all arrive from the
+same place. ``passes_time_mode`` and ``filter_interpretation_blocks`` moved
+out of the semiconductor composer. ``passes_time_mode`` still compares the
+three mode tokens that composer compared (``latest``, ``source_history``,
+``system_replay``), so the move does not change a semiconductor response
+byte. ``filter_interpretation_blocks`` is that composer's replay filter on
 interpretation blocks, same rule. ``review_excluded``,
-``correction_lineage`` and ``collapse_syndicated`` are the vertical-neutral
-forms of the gates the other verticals had copied; the semiconductor
-composer does not call them.
+``correction_lineage`` and ``collapse_syndicated`` were never on that
+composer: they are vertical-neutral forms of gates the Robotics and Nuclear
+verticals each carried. They land here unwired: nothing in this tree calls
+them except the shared-shell equality suite, which exercises them
+directly. The semiconductor module binds them in its alias block and never
+invokes them, so no semiconductor response byte depends on them.
 
 What is deliberately NOT here
 -----------------------------

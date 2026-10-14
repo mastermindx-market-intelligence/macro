@@ -127,6 +127,7 @@ def test_semiconductor_names_are_the_shell_objects():
     assert semi._filter_interpretation_blocks is shell.filter_interpretation_blocks
     assert semi._correction_lineage is shell.correction_lineage
     assert semi._collapse_syndicated is shell.collapse_syndicated
+    assert semi._in_anchor_scope is shell.in_anchor_scope
     assert semi.review_excluded is shell.review_excluded
     assert semi.filter_interpretation_blocks is shell.filter_interpretation_blocks
     assert semi.correction_lineage is shell.correction_lineage
