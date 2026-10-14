@@ -131,12 +131,12 @@ unresolved:
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
   byte-custody witness. All model, historical availability and adoption obligations remain open.
 - Current published A1 b1db2fc7510b has exact-head CI38601317870/attempt1 still running. Its
-  contract-delta and packs1/2/3/6/9/10 passed at17:12:45; six packs remain running. The old1b failure
+  contract-delta and packs1/2/3/5/6/9/10 passed at17:19:53; five packs remain running. The old1b failure
   remains historical evidence, not the current source verdict. Binding completion and incumbent
   landing remain owed. No raw-log escape, duplicate producer or release bypass.
 next_actions:
 - Consume original CI38601317870/attempt1 for published A1 b1db2fc7510b3121bb9494f7f55a4351e6a48c77.
-  Last observation17:12:45UTC; next observation no earlier than17:17:52UTC. Repair a real failure
+  Last observation17:19:53UTC; next observation no earlier than17:25:00UTC. Repair a real failure
   or let the incumbent perform final merge and any subsequent admitted base refresh. Chris's
   one-time integration exception is consumed in7e; no second manual integration, force push,
   rerun, duplicate controller or producer.
@@ -164,14 +164,14 @@ prs:
 
 The active Chairman assignment is end-to-end programme ownership by Fable with bounded Sol coordination and the existing M2 Fabric. The current original root is `01a1333d-b0c0-7f33-9259-dd718391d9e4`. Historical receiver restrictions describe their retired operations; they do not assign another writer. This record is continuity, not a runtime queue or release grant.
 
-## Current source and execution — 2026-10-14T17:12Z
+## Current source and execution — 2026-10-14T17:19Z
 
 This section and the structured next_actions above supersede historical carrier
 instructions below. A1 is published on the original PR6651 at full SHA
 b1db2fc7510b3121bb9494f7f55a4351e6a48c77. The one-time Chairman-approved base
 integration was consumed in7e; the incumbent exclusively owns final merge and
 subsequent admitted refresh. Fresh hosted run38601317870/attempt1 has passed
-contract-delta and packs1/2/3/6/9/10; six packs remain running. A1 pack6 passed.
+contract-delta and packs1/2/3/5/6/9/10; five packs remain running. A1 pack6 passed.
 No nonpilot binding failure was observed. The current PR is open atb1;
 mergeabilityUNKNOWN is not a demonstrated conflict or release qualification.
 Original hosted observations are retained losslessly as1707/1712 gzip records
@@ -500,3 +500,22 @@ owner receipt. Recheck changed source contracts on final qualified landing; do
 not dispatch, force re-derive, read sealed corpora or reset clocks to obtain proof.
 If release misses that normal owner execution, retain the next normal eligible
 owner progression obligation. Final flags remainfalse.
+
+
+## 2026-10-14T17:19Z — original A1 pack result consumed
+
+The retained pack6 artifact11915291369 has ZIP SHA256
+18e70c6477dcd82a7241b685a2428c10432815672c42fa51f303ee0adb5e3fbe, exactly
+matching GitHub metadata. The canonical b1 semantic reconciler accepts its
+subject/base/tested/plan identity and execution/step hashes. All13 planned pack
+jobs are present and all45 semantic command steps passed. A1's Node requirement
+and API/renderer/source/finite-measurement step both passed with the original
+execution digest327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45.
+These are command-step results, not45 unit tests or proof of zero pytest skips.
+
+This consumes one original result without rerunning tests or publishing a
+replacement CI artifact. The local reconciliation intentionally supplies only
+pack6; its other fragments are unobserved here, not new hosted failures. Actual
+terminal full-run artifact and binding gate remain owed. Canonical retained ZIP,
+consumption receipt and lossless1719 observation live in a1-hosted-plan-20261014/.
+No merge, deployment, owner progression or final acceptance is claimed.
