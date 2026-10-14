@@ -56,8 +56,24 @@ function actualInvestorRestoration(){
  const ctx={window,document,Promise,URL,Date,console};vm.createContext(ctx);
  vm.runInContext(fs.readFileSync(root+'/templates/government-revenue-investor.js','utf8'),ctx);
  vm.runInContext(fs.readFileSync(root+'/templates/government-revenue-investor-start.js','utf8'),ctx);
- return {window,requests,emit(next,event){user=next;session=next?{user:next,access_token:'fixture-token'}:null;listeners.forEach(cb=>cb({detail:{user:next,event}}))},complete(index,status=200){requests[index]({ok:status===200,status,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(root+'/tests/fixtures/defense_economics.json','utf8')))})}};
+ return {ctx,window,requests,emit(next,event){user=next;session=next?{user:next,access_token:'fixture-token'}:null;listeners.forEach(cb=>cb({detail:{user:next,event}}))},complete(index,status=200){requests[index]({ok:status===200,status,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(root+'/tests/fixtures/defense_economics.json','utf8')))})}};
 }
+test('actual page reuses the early investor and owns its later account reloads',async()=>{
+ const f=actualInvestorRestoration();await flush();const initial=f.window.__govrevFirstInvestor;
+ f.complete(0);await initial.promise;
+ const start=template.indexOf('  var investorUI='),end=template.indexOf('\n',template.indexOf('if(!(window.__govrevFirstInvestor||{}).ui)investorUI.mount();',start));
+ assert(start>=0&&end>start);f.window.createGovernmentRevenueInvestor=()=>{throw new Error('page must reuse the existing instance')};
+ vm.runInContext(template.slice(start,end),f.ctx);assert.equal(f.ctx.investorUI,initial.ui);
+ // Other panels are independent of investor ownership and stay bounded stubs.
+ for(const name of ['budgetUI','programsUI','candidateUI','fmsUI','sbirUI','themeUI'])f.ctx[name]={load(){}};
+ f.ctx.state={mode:'changes',ticker:'',selected:''};f.ctx.hydrateWorkspace=()=>{};f.ctx.investorUI.loadResearch=()=>{};
+ vm.runInContext(controller,f.ctx);f.ctx.bindAuthReload();assert.equal(initial.owned,true);
+ f.emit({id:'restored'},'INITIAL_SESSION');await f.ctx.priorityPending;assert.equal(f.requests.length,1);
+ f.emit({id:'second'},'SIGNED_IN');await flush();assert.equal(f.requests.length,2);
+ f.complete(1);await f.ctx.priorityPending;assert.equal(initial.ui.state().status,'ready');
+ f.emit(null,'SIGNED_OUT');await flush();assert.equal(f.requests.length,3);
+ f.complete(2,401);await f.ctx.priorityPending;assert.equal(initial.ui.state().status,'locked');assert.equal(initial.ui.state().content_id,null);
+});
 for(const eventBeforeResponse of [false,true])test('actual investor retains restored subject when matching INITIAL_SESSION arrives '+(eventBeforeResponse?'during':'after')+' its finance read',async()=>{
  const f=actualInvestorRestoration();await flush();assert.equal(f.requests.length,1);
  const initial=f.window.__govrevFirstInvestor;

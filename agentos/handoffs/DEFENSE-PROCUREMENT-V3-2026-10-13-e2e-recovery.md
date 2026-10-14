@@ -486,3 +486,72 @@ Terminal custody and independent acceptance obligations remain. No financial-own
 or production write occurred. The next T0/A21 capacity source packet remains staged
 outside the frozen generation; its availability clocks were conservatively
 reconciled to completed retrieval without changing original acquisition receipts.
+
+
+### October 14 hosted-CI recovery after sealed V10 proof
+
+V10 completed the immutable candidate proof at source f0a1d8db6992ca2db4d2072d794f424fc563dc2e:
+104 passed, one explicit `no unaccounted rows to exercise` skip, 105 collected,
+7,470 dependencies and 109 outputs. Receipt 323c6eb5827baabdba1690ef8bd255977a03972512d999fb8c768a3e4e52820e
+was verified against committed bytes and saved/pushed on original PR9066 at
+2779bad8673da8a9efb161456175512d68c0c2b0. That is historical proof for later source changes.
+
+Hosted run38524304418 tested that head against abbded0de82ffe2d2841ba8372db3c0608304e5f.
+All jobs have settled and failures are retained, not waived. A preserving merge
+at e664e6f02d84f7b44d01a3ee89f7c963dc89fb43 brought in that exact tested base.
+The twelve demonstrated failure classes and individual job logs are in
+`e2e_20261011/v10_ci_recovery/HOSTED_CI_TRIAGE.json` and its hashed evidence index.
+Repairs retain every CI ceiling and gate: the publisher scalar is now20,464
+characters; DAG declares the real restorers/research/sealed prover; the actual
+source-guard file and execution order are tested; the company bridge extracts
+real helpers from the external page script; the screener matches its canonical
+bake; isolated CI installs declare actual dependencies; and the shared minified
+bundle's behavioral test executes its exact emitted block. No excluded product
+implementation was added.
+
+Canonical closure/suite census found no gaps. The three packing probes pass at
+135/5673/10,134/5474/10 and129/5436/10 (jobs/weight/packs), and all four absolute
+curated scope tests pass. Other relevant results:165 publisher/render/shared
+behavior checks,115 first-frame checks,33 company-bridge checks,11 import-hygiene
+checks,41 investor/sequencing JavaScript checks, and22 market checks with8 existing
+browser skips. The first broad local run lacked two already-declared CI packages;
+its failure is preserved alongside the165-pass run after provisioning those local
+dependencies. Do not count overlapping suites as independent cases.
+
+The HK/Canada summary now aggregates the existing current browser receipts after
+verifying all128 cases,61 loaded assets,38 construction-input pins and16 screenshots.
+Historical target, baseline and prior extension remain preserved. This is evidence
+aggregation, not a fresh capture or production proof.
+
+The only product asset delta is the exact Chinese label SEC申报主体CIK→SEC披露主体CIK.
+Four actual-source ASGI ADR disclosure states pass (dark/light×1440/390), including
+exact CIK/ISIN and historical-eligibility limitations. The first mobile probe failed
+because it did not open the native Inspect sheet; the corrected normal button flow
+passes and both attempts are retained. Generated HTML, all16 static payloads,
+11 other standalone assets,35 API source modules and98 input bindings match V10.
+Its unchanged finance timing,24-cell composition and density/navigation evidence
+are retained under the explicit V11 byte-delta adjudication. The local ASGI process
+was stopped and its request journal saved. This remains local test-principal proof.
+
+The V10 independent startup reviewer returned a complete retained transcript but
+rc65/artifact-delivery failure; its original export was refused. No Fabric acceptance
+or retry is claimed. Its orphan-instance concern is disproved by the actual page's
+reuse of the early instance and the new account-change/sign-out regression; the
+other non-blocking observations and coverage limits are preserved in the adjudication.
+
+The bounded FMS shell-test migration is running through the existing adapter as
+`defense-fms-extracted-shell-tests-01a13300-a` (GLM Flash,ubuntu1), root and parent
+01a13300-c75b-79c3-83f9-79b3b4c01dc7, onlytests/test_fms_ui.py. Its one current-output
+observation was refused original_current_output_unconfirmed; no retry or duplicate.
+The original T0/A21 capacity core operation remains unsettled on
+`defense-t0-capacity-core-01a13300-a`; its prior observation refusal is preserved.
+A disjoint, committed local capacity-consumer preparation has163 passing tests on
+the admitted SSD preparation tree; it has not been published or adopted as final
+capacity implementation. Q3/P2 remain on their original carriers without replay.
+
+Next: consume and verify the FMS worker return, seal a new complete candidate proof
+on the final repaired source, and push the same PR9066 for exact-head protected CI.
+Then continue the existing ordered merge/financial-CAS/natural-publication/install
+chain. Original7175, Terminal778 custody, the second entitled subject and independent
+product acceptance remain open obligations. No production or financial-owner write
+has occurred in this recovery phase; the30-task/45-case mission is not complete.

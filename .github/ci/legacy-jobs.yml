@@ -19206,6 +19206,7 @@ jobs:
     paths:
       - "templates/government-revenue-dossiers.js"
       - "templates/government_revenue.html.j2"
+      - "templates/government-revenue-page.js.j2"
       - "tests/fixtures/govrev_company_bridge/p00032_event.json"
       - "tests/test_government_revenue_company_bridge.py"
     runs-on: ubuntu-latest
@@ -21319,7 +21320,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
@@ -22680,7 +22681,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy rjsmin==1.2.5
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
@@ -23745,7 +23746,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       - name: import-time logging.disable + warnings-filter ratchet over engine, lib, scripts, research
         run: python -m pytest tests/test_no_module_level_logging_disable.py -q
       - name: file-path entry scripts pin this repository before importing it
@@ -26142,6 +26143,81 @@ jobs:
     # printing a state it cannot support.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
+    # Pin the measured import closure; unrelated template changes do not select GR3.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/dod_budget.py"
+      - "collectors/dod_budget_live.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fms_notifications.py"
+      - "collectors/usaspending_awards.py"
+      - "contracts/government_revenue/government_procurement_event.v2.schema.json"
+      - "engine/__init__.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_region.py"
+      - "engine/canon.py"
+      - "engine/coiled.py"
+      - "engine/conditions.py"
+      - "engine/cross_asset.py"
+      - "engine/cycles.py"
+      - "engine/equity_factors.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/government_revenue/amount_semantics.py"
+      - "engine/government_revenue/award_events.py"
+      - "engine/government_revenue/budget_allocation_context.py"
+      - "engine/government_revenue/budget_program.py"
+      - "engine/government_revenue/entity_resolution.py"
+      - "engine/government_revenue/federation.py"
+      - "engine/government_revenue/fms_cases.py"
+      - "engine/government_revenue/freshness.py"
+      - "engine/government_revenue/issuer_graph_expansion.py"
+      - "engine/government_revenue/metrics.py"
+      - "engine/government_revenue/opportunities.py"
+      - "engine/government_revenue/point_in_time.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/grading.py"
+      - "engine/group_flow.py"
+      - "engine/group_linked_outsiders.py"
+      - "engine/group_pulse.py"
+      - "engine/indicators.py"
+      - "engine/ledger_lane.py"
+      - "engine/name_score_grader.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/residual_alpha.py"
+      - "engine/session_anchor.py"
+      - "engine/sue.py"
+      - "engine/technicals.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/weinstein_stage.py"
+      - "lib/__init__.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/test_group_linked_outsiders.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -28330,7 +28406,7 @@ jobs:
       # scripts/build_markets.py:_persisted_ms_view). markupsafe
       # arrives with jinja2. Never importorskip.
       - name: install regime-strip test dependencies
-        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
+        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow rjsmin==1.2.5
       - name: markets risk-regime strip + cycle-stage mobile detail
         # The whole suite runs here, fresh-render byte guard included.
         # That guard baked IN PLACE and compared the live result against the
