@@ -216,7 +216,13 @@ _MODULE_COMPOUND_TYPES = (
     ast.With,
     ast.AsyncWith,
     ast.TryStar,  # except*; Python 3.11+, CI pins 3.12
+    ast.Match,  # match; Python 3.10+, CI pins 3.12
+    ast.match_case,  # a match_case is not an ast.stmt, like ExceptHandler
 )
+# Children of a walked compound that keep the descent going. ``ast.ExceptHandler``
+# and ``ast.match_case`` are not ``ast.stmt`` subclasses, so the stmt filter
+# alone would drop them and their bodies.
+_MODULE_DESCENT_CHILD_TYPES = (ast.stmt, ast.ExceptHandler, ast.match_case)
 _OTHER_SCOPE_TYPES = (
     ast.FunctionDef,
     ast.AsyncFunctionDef,
@@ -231,11 +237,20 @@ def _walrus_targets(node: ast.AST) -> set[str]:
     """``ast.NamedExpr`` targets that a walked statement binds at module level.
 
     The walk covers the statement's own expressions and conditions but stops
-    at ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` and ``Lambda``: those
-    open another scope. Comprehensions are descended, not skipped — per
+    at ``FunctionDef``/``AsyncFunctionDef``/``ClassDef`` and ``Lambda``, so
+    def/class/lambda BODIES are not walked: those open another scope. The
+    skip falls on the whole statement, not only the body, so a def's
+    default and annotation expressions — evaluated in the ENCLOSING scope —
+    are not reached either: a ``:=`` there is a known miss, acceptable
+    because the engine modules contain no ``:=`` at all. Comprehensions are
+    descended, not skipped — per
     PEP 572 a ``:=`` target written inside a comprehension binds in the
     enclosing scope, while the comprehension's own iteration variable stays
-    local, so ``ast.comprehension.target`` is never collected here.
+    local. The walk also skips ``ast.comprehension.target``, but that branch
+    is defensive: the grammar already forbids a ``:=`` there — parsing
+    ``[i for (x := 1) in range(3)]`` raises ``cannot assign to named
+    expression`` — and only ``ast.NamedExpr`` targets are collected, so no
+    reachable input today could make the skip matter.
     """
     found: set[str] = set()
     stack: list[ast.AST] = [node]
@@ -246,7 +261,8 @@ def _walrus_targets(node: ast.AST) -> set[str]:
         if isinstance(current, ast.NamedExpr) and isinstance(current.target, ast.Name):
             found.add(current.target.id)
         if isinstance(current, ast.comprehension):
-            # the iteration target belongs to the comprehension's own scope
+            # defensive: the iteration target belongs to the comprehension's
+            # own scope, and the grammar forbids a := target in that slot
             stack.extend(
                 child for child in ast.iter_child_nodes(current)
                 if child is not current.target
@@ -267,8 +283,9 @@ def _module_level_bound_names(tree: ast.AST) -> set[str]:
     Walked: the direct children of ``Module.body`` and, nesting-aware, the
     statements inside module-level compound blocks — ``if`` (its body,
     ``elif``/``else``), ``try``/``except``/``except*``/``else``/``finally``,
-    ``with``/``async with``, ``for``/``async for`` and ``while`` bodies and
-    ``else`` clauses — recursing through compounds nested in compounds.
+    ``with``/``async with``, ``for``/``async for``, ``while`` bodies and
+    ``else`` clauses, and ``match`` ``case`` bodies — recursing through
+    compounds nested in compounds.
     Handlers reach the stack because the extension filter admits
     ``ast.ExceptHandler``, which is not an ``ast.stmt`` subclass.
     Walrus targets are collected from the expressions and conditions of
@@ -310,7 +327,35 @@ def _module_level_bound_names(tree: ast.AST) -> set[str]:
         if isinstance(node, _MODULE_COMPOUND_TYPES):
             stack.extend(
                 child for child in ast.iter_child_nodes(node)
-                if isinstance(child, (ast.stmt, ast.ExceptHandler))
+                if isinstance(child, _MODULE_DESCENT_CHILD_TYPES)
+            )
+    return found
+
+
+def _module_level_except_as_names(tree: ast.AST) -> set[str]:
+    """``except ... as name`` handler names bound at module level.
+
+    ``ExceptHandler.name`` is a plain string field, not a binding node, so
+    ``_module_level_bound_names`` deliberately does not collect it: Python
+    deletes the name when the handler exits, so it never stays in the
+    module globals. It still shadows a shell object for the handler body's
+    extent, so the suite pins it with this separate collector — a separate
+    helper keeps the binding collector's count stable. The descent mirrors
+    the binding collector: direct children of ``Module.body``, recursing
+    through ``_MODULE_COMPOUND_TYPES`` blocks only.
+    """
+    if not isinstance(tree, ast.Module):
+        return set()
+    found: set[str] = set()
+    stack: list[ast.AST] = list(tree.body)
+    while stack:
+        node = stack.pop()
+        if isinstance(node, ast.ExceptHandler) and node.name:
+            found.add(node.name)
+        if isinstance(node, _MODULE_COMPOUND_TYPES):
+            stack.extend(
+                child for child in ast.iter_child_nodes(node)
+                if isinstance(child, _MODULE_DESCENT_CHILD_TYPES)
             )
     return found
 
@@ -424,6 +469,11 @@ def test_shadowing_defs_scope_table():
     fnested = ast.parse("def f():\n    def within():\n        pass\n")
     assert "within" not in _shadowing_defs(fnested)
     assert "within" in _inner_shadowing_defs(fnested)
+    class_in_fn = ast.parse(
+        "def f():\n    class C:\n        def readable(self):\n            pass\n"
+    )
+    assert "readable" not in _inner_shadowing_defs(class_in_fn)
+    assert "C" in _inner_shadowing_defs(class_in_fn)
     ifnested = ast.parse("if True:\n    def within():\n        pass\n")
     assert "within" in _shadowing_defs(ifnested)
     assert "within" not in _inner_shadowing_defs(ifnested)
@@ -441,6 +491,15 @@ def test_shadowing_defs_scope_table():
         "try:\n    pass\nexcept ImportError as within:\n    pass\n"
     )
     assert "within" not in _module_level_bound_names(except_as)
+    assert "within" in _module_level_except_as_names(except_as)
+    match_import = ast.parse(
+        "match _probe:\n    case 1:\n        from json import dumps as within\n"
+    )
+    assert sorted(_module_level_bound_names(match_import)) == ["within"]
+    match_assign = ast.parse(
+        "match _probe:\n    case 1:\n        within = 1\n"
+    )
+    assert sorted(_module_level_bound_names(match_assign)) == ["within"]
     comp_walrus = ast.parse("_probe = [(within := i) for i in range(1)]\n")
     assert "within" in _module_level_bound_names(comp_walrus)
     assert _module_level_bound_names(ast.parse("[x for x in range(3)]\n")) == set()
@@ -456,6 +515,22 @@ def test_semiconductor_does_not_rebind_a_shell_name():
     bound = _module_level_bound_names(_tree(SEMICONDUCTOR))
     rebinding = sorted(bound & set(MOVED + SHELL_PUBLIC_REEXPORTS))
     assert rebinding == []
+
+
+def test_semiconductor_has_no_except_as_on_a_shell_name():
+    """No module-level ``except ... as name`` transiently rebinds a shell name.
+
+    Python deletes the handler name when the handler exits, so this is not
+    a durable rebind — ``_module_level_bound_names`` cannot see it and does
+    not pin it. While the handler body runs the name does shadow the shell
+    object in the module namespace, so it is pinned here against the same
+    name set the rebind pin uses.
+    """
+    handler_names = _module_level_except_as_names(_tree(SEMICONDUCTOR))
+    collision = sorted(handler_names & set(MOVED + SHELL_PUBLIC_REEXPORTS))
+    assert collision == [], (
+        f"module-level except-as transiently rebinds a shell name: {collision}"
+    )
 
 
 def test_shell_import_names_collector_is_runtime_accurate():
