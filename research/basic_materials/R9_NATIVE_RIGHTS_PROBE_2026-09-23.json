@@ -1,0 +1,121 @@
+{
+  "scope": "Native-source local probe using only a synthetic temporary registry. No production reads/writes, no leak allegation, no product implementation.",
+  "interface_commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+  "source_path": "engine/theme_graph/rights.py",
+  "source_git_blob": "63ba2b60e9be6615208fab5b53b1fbcb44f4f433",
+  "checks": [
+    {
+      "id": "RIGHTS-01",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": true,
+      "expected": true,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-02",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": false,
+      "expected": false,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-03",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": false,
+      "expected": false,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-04",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": false,
+      "expected": false,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-05",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": [
+        true,
+        true,
+        false
+      ],
+      "expected": [
+        true,
+        true,
+        false
+      ],
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-06",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": [
+        true,
+        true,
+        true
+      ],
+      "expected": [
+        true,
+        true,
+        true
+      ],
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-07",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": null,
+      "expected": null,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-08",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": null,
+      "expected": null,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-09",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": [
+        true,
+        false,
+        false
+      ],
+      "expected": [
+        true,
+        false,
+        false
+      ],
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-10",
+      "kind": "BEHAVIOR_CHECK",
+      "observed": true,
+      "expected": true,
+      "matches": true
+    },
+    {
+      "id": "RIGHTS-11",
+      "kind": "V0_REVOCATION_REQUIREMENT",
+      "observed": true,
+      "expected": false,
+      "matches": false
+    },
+    {
+      "id": "RIGHTS-12",
+      "kind": "CACHE_INVALIDATION_CONTROL",
+      "observed": false,
+      "expected": false,
+      "matches": true
+    }
+  ],
+  "expected_behavior_checks_matching": 11,
+  "unmet_v0_requirement_probes": 1,
+  "finding": "Path-cached native registry returns the earlier allowed class after an in-place policy change in the same process; explicit cache invalidation observes the denial. Production caller reload discipline remains uninspected.",
+  "native_admission": false,
+  "production_proven": false
+}

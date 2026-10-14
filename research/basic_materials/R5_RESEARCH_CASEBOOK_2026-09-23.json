@@ -1,0 +1,237 @@
+{
+  "format_notice": "Original R5 research display examples, NOT an accepted product or canonical evidence schema. Native mapping belongs to existing source/identity/evidence/F04 owners.",
+  "research_date": "2026-09-23",
+  "consumer_goal": "Existing Themes dossier -> company economic explanation -> original source, with unchanged decision authority.",
+  "records": [
+    {
+      "case_id": "R5-C01",
+      "subject": "Nutrien / phosphate manufactured product",
+      "source_refs": [
+        "F02"
+      ],
+      "source_publication": "2026-08-05",
+      "reference_period": "Q2 2026 versus Q2 2025",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "output_price_vs_retained_margin",
+      "arithmetic_refs": [
+        "NTR01",
+        "NTR02",
+        "NTR03"
+      ],
+      "expected_read": "Higher comparable selling prices did not offset the measured cost increase; do not turn phosphate price strength into company profitability.",
+      "scope_warning": "Issuer manufactured-product basis, not all world phosphate producers.",
+      "next_evidence": "Subsequent same-basis realization, consumed input cost and operating volume.",
+      "unresolved": [],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C02",
+      "subject": "Mosaic / sulfur-to-phosphate cost timing",
+      "source_refs": [
+        "F03"
+      ],
+      "source_publication": "2026-08-04",
+      "reference_period": "Q2 actual costs; Q3 contracts; management Q4 accounting expectation",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "contract_to_cogs_horizon",
+      "arithmetic_refs": [
+        "MOS01",
+        "MOS04",
+        "MOS05",
+        "MOS06"
+      ],
+      "expected_read": "A later purchase-contract cost is not current-period COGS; preserve the expected accounting lag and actual-versus-forecast split.",
+      "scope_warning": "DAP realization is narrower than the whole phosphate segment margin.",
+      "next_evidence": "Original inventory/consumption and later earnings evidence; a new spot quote alone is insufficient.",
+      "unresolved": [
+        "Full source-specific input consumption/yield bridge"
+      ],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C03",
+      "subject": "CF / ownership-sensitive cash and capacity denominator",
+      "source_refs": [
+        "F01"
+      ],
+      "source_publication": "2026-08-05",
+      "reference_period": "TTM cash reconciliation and H1 2026 capital",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "cash_definition_and_ownership",
+      "arithmetic_refs": [
+        "CF01",
+        "CF02",
+        "CF03",
+        "CF04"
+      ],
+      "expected_read": "Reported FCF includes cash exchanges with noncontrolling holders; an ownership allocation of construction is not the same as actual funding cash.",
+      "scope_warning": "No mixing of TTM cash and H1 capex; utilization excludes unavailable capacity.",
+      "next_evidence": "Actual partner contributions, spending and plant availability on matched periods.",
+      "unresolved": [
+        "Full actual parent funding attribution"
+      ],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C04",
+      "subject": "Yara / seasonal working capital",
+      "source_refs": [
+        "F04"
+      ],
+      "source_publication": "2026-07-17",
+      "reference_period": "Q2 2026",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "earnings_to_cash_timing",
+      "arithmetic_refs": [
+        "YAR01",
+        "YAR02",
+        "YAR03",
+        "YAR04",
+        "YAR05"
+      ],
+      "expected_read": "Keep seasonal operating cash separate from asset receipts; a future inventory release is a hypothesis until observed.",
+      "scope_warning": "Analytical cash subtractions are not a universal normalized FCF definition.",
+      "next_evidence": "Sell-through, collection and inventory movements during the relevant sales/application season.",
+      "unresolved": [
+        "One-million displayed investing reconciliation gap retained"
+      ],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C05",
+      "subject": "FMC / licensing and operating outlook",
+      "source_refs": [
+        "F06"
+      ],
+      "source_publication": "2026-07-29",
+      "reference_period": "Q2 actual and FY2026 guidance vintage",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "liquidity_vs_recurring_operations",
+      "arithmetic_refs": [
+        "FMC01",
+        "FMC02",
+        "FMC03",
+        "FMC04"
+      ],
+      "expected_read": "An identified upfront receipt can improve liquidity while the operating outlook weakens; do not claim a recurring recovery.",
+      "scope_warning": "Subtracting one receipt is not a modeled company without the licensing agreement.",
+      "next_evidence": "Remaining contract economics, recurring orders and cash collections after the event.",
+      "unresolved": [
+        "Complete contractual future rights are not modeled"
+      ],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C06",
+      "subject": "K+S / guidance and financial investments",
+      "source_refs": [
+        "F07a",
+        "F07b"
+      ],
+      "source_publication": "2026-08-12",
+      "reference_period": "H1 2026 cash; annual guidance; July16 cited consensus",
+      "available_for": [
+        "dated_research_explanation"
+      ],
+      "dimension": "definition_and_expectation_vintage",
+      "arithmetic_refs": [
+        "KS01",
+        "KS02",
+        "KS03",
+        "KS04",
+        "KS05",
+        "KS06",
+        "KS07"
+      ],
+      "expected_read": "A guidance increase is distinct from an expectation surprise; cash purchases of financial investments differ from operating loss.",
+      "scope_warning": "Consensus is attributed to the issuer-cited vintage, not independently verified latest consensus.",
+      "next_evidence": "Matched expectation revisions and resolution of capital-perimeter difference.",
+      "unresolved": [
+        "EUR19.6m capital-perimeter difference, not silently assigned"
+      ],
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    },
+    {
+      "case_id": "R5-C07",
+      "subject": "USDA AMS Illinois asking-price report",
+      "source_refs": [
+        "F14",
+        "F15"
+      ],
+      "source_publication": null,
+      "reference_period": null,
+      "available_for": [
+        "source_failure_explanation"
+      ],
+      "dimension": "unavailable_current_quote",
+      "arithmetic_refs": [],
+      "expected_read": "Current numeric quote unavailable: parsed text carries September18 while its rendered page carries July10.",
+      "scope_warning": "No value, date or unit from these versions may be fused into a current quote.",
+      "next_evidence": "A genuinely version-bound original body with matching date, extraction and rendering.",
+      "unresolved": [
+        "Retrieval/version mismatch; source market reporting is not declared erroneous"
+      ],
+      "current_quote": null,
+      "authority_caps": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      },
+      "runtime_state": "research_example_only"
+    }
+  ]
+}
