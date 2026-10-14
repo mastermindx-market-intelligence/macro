@@ -18,11 +18,22 @@ out of the semiconductor composer. ``passes_time_mode`` still compares the
 three mode tokens that composer compared (``latest``, ``source_history``,
 ``system_replay``), so the move does not change a semiconductor response
 byte. ``filter_interpretation_blocks`` is that composer's replay filter on
-interpretation blocks, same rule. ``review_excluded``,
-``correction_lineage`` and ``collapse_syndicated`` were never on that
-composer: they are vertical-neutral forms of gates the Robotics and Nuclear
-verticals carried on their own branches (see
-research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md).
+interpretation blocks, same rule. ``review_excluded`` and
+``correction_lineage`` were never on that composer: they are vertical-neutral
+forms of gates the Robotics and Nuclear verticals carried on their own
+branches, and neither branch is on this tree — each vertical module is
+absent at this commit and on ``origin/main``, Robotics' first carrier
+merged then was reverted the same day
+(``agentos/workstreams/WS-GMI-ROBOTICS.md``, ROB-W1) and nuclear never
+landed. ``correction_lineage`` is the R3-7 family pattern of
+research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md;
+``review_excluded`` is recorded in the Robotics known-revisions decision
+and the nuclear implementation handoff. ``collapse_syndicated`` has no
+provenance this tree can show: the token occurs in no ``research/`` or
+``agentos/`` artifact at this commit — only in this shell, the composer's
+re-export and alias block, and the two shared-shell suites — so it is
+documented here as an unwired proposed form, not as another vertical's
+carried gate.
 They land here unwired: nothing in this tree calls
 them except the shared-shell equality suite, which exercises them
 directly. The semiconductor module binds them in its alias block and never

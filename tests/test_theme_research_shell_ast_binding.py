@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SHELL = ROOT / "engine" / "market_ontology" / "theme_research_binding.py"
 SEMICONDUCTOR = ROOT / "engine" / "market_ontology" / "semiconductor_theme_research.py"
 
+# The shared shell leaf the composer re-exports from, by module path.
+SHELL_MODULE = "engine.market_ontology.theme_research_binding"
+
 VERTICAL_PREFIXES = (
     "semiconductor_",
     "mining_",
@@ -113,6 +116,87 @@ def _simple_alias_lines(tree: ast.AST) -> dict[str, int]:
     return found
 
 
+def _shadowing_defs(tree: ast.AST) -> set[str]:
+    """def/class names that can really shadow a shell binding.
+
+    ``ast.walk`` also reports the methods declared in a class body, but a
+    def/class whose immediate parent is a ``ClassDef`` binds a *class*
+    attribute, never a module name: ``class _Probe: def readable(self)``
+    cannot shadow the shell's ``readable``. A def nested inside a function or
+    method body IS kept — it shadows the shell name inside its enclosing
+    scope. Parents are recorded from the tree, never by string matching.
+    """
+    parent_of: dict[int, ast.AST] = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parent_of[id(child)] = node
+    found: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        if isinstance(parent_of.get(id(node)), ast.ClassDef):
+            continue
+        found.add(node.name)
+    return found
+
+
+def _assignment_target_names(target: ast.expr) -> list[str]:
+    """``ast.Name`` ids an assignment target binds, unpacking Tuple/List/Starred."""
+    if isinstance(target, ast.Name):
+        return [target.id]
+    if isinstance(target, (ast.Tuple, ast.List)):
+        unpacked: list[str] = []
+        for element in target.elts:
+            unpacked.extend(_assignment_target_names(element))
+        return unpacked
+    if isinstance(target, ast.Starred):
+        return _assignment_target_names(target.value)
+    return []
+
+
+def _module_level_bound_names(tree: ast.AST) -> set[str]:
+    """Names the module binds at module level, except its shell re-export block.
+
+    The shell ``ImportFrom`` is the re-export this stack is supposed to have;
+    every other module-level binding — assignment target or import alias — is
+    a candidate rebinding of a shell name.
+    """
+    if not isinstance(tree, ast.Module):
+        return set()
+    found: set[str] = set()
+    for node in tree.body:
+        if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            for target in targets:
+                found.update(_assignment_target_names(target))
+        elif isinstance(node, ast.Import):
+            found.update(
+                alias.asname or alias.name.split(".")[0] for alias in node.names
+            )
+        elif isinstance(node, ast.ImportFrom) and node.module != SHELL_MODULE:
+            found.update(alias.asname or alias.name for alias in node.names)
+    return found
+
+
+def _shell_import_names(tree: ast.AST, *, module_level_only: bool) -> set[str]:
+    """Names imported from the shell; module-level-only when that flag is set.
+
+    An import under ``if TYPE_CHECKING:`` or inside a function body never
+    executes at import time, so it cannot re-export anything. The
+    runtime-accurate collector accepts only direct children of ``Module.body``.
+    """
+    if module_level_only:
+        nodes: list[ast.AST] = list(tree.body) if isinstance(tree, ast.Module) else []
+    else:
+        nodes = list(ast.walk(tree))
+    found: set[str] = set()
+    for node in nodes:
+        if not isinstance(node, ast.ImportFrom) or node.module != SHELL_MODULE:
+            continue
+        found.update(alias.name for alias in node.names)
+    return found
+
+
 def test_shell_imports_no_vertical_module():
     modules = _imported_modules(_tree(SHELL))
     vertical = sorted(module for module in modules if _is_vertical(module))
@@ -127,20 +211,21 @@ def test_shell_defines_the_moved_names():
 
 
 def test_semiconductor_does_not_define_the_moved_names():
-    defined = _defined_names(_tree(SEMICONDUCTOR))
+    defined = _shadowing_defs(_tree(SEMICONDUCTOR))
     present = [name for name in MOVED if name in defined]
     assert present == []
 
 
 def test_semiconductor_reexports_the_moved_names_from_the_shell():
     tree = _tree(SEMICONDUCTOR)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.ImportFrom):
-            continue
-        if node.module != "engine.market_ontology.theme_research_binding":
-            continue
-        imported.update(alias.name for alias in node.names)
+    assert isinstance(tree, ast.Module)
+    shell_blocks = [
+        node
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module == SHELL_MODULE
+    ]
+    assert shell_blocks, "the shell import block is not a direct child of the module body"
+    imported = _shell_import_names(tree, module_level_only=True)
     missing = [name for name in MOVED + SHELL_PUBLIC_REEXPORTS if name not in imported]
     assert missing == []
 
@@ -163,7 +248,40 @@ def test_semiconductor_does_not_redefine_a_shell_alias():
 
 
 def test_semiconductor_does_not_define_a_shell_reexport():
-    """A def/class named like a shell re-export shadows the shared object."""
-    defined = _defined_names(_tree(SEMICONDUCTOR))
+    """A module-/function-scope def or class shadows the shared object.
+
+    A class-body def is excluded by ``_shadowing_defs``: it binds a class
+    attribute and leaves ``semiconductor.<name>`` pointing at the shell object.
+    """
+    defined = _shadowing_defs(_tree(SEMICONDUCTOR))
     shadowed = sorted(defined & set(MOVED + SHELL_PUBLIC_REEXPORTS))
     assert shadowed == []
+
+
+def test_shadowing_defs_scope_table():
+    """A class-body def binds a class attribute; a nested def shadows its scope."""
+    assert _shadowing_defs(ast.parse("x = 1\n")) == set()
+    assert _shadowing_defs(
+        ast.parse("class _Probe:\n    def readable(self):\n        return 1\n")
+    ) == {"_Probe"}
+    assert "canonical_text" in _shadowing_defs(ast.parse("def canonical_text():\n    pass\n"))
+    assert "within" in _shadowing_defs(ast.parse("def f():\n    def within():\n        pass\n"))
+
+
+def test_semiconductor_does_not_rebind_a_shell_name():
+    """A module-level assignment or non-shell import must not rebind a shell name."""
+    bound = _module_level_bound_names(_tree(SEMICONDUCTOR))
+    rebinding = sorted(bound & set(MOVED + SHELL_PUBLIC_REEXPORTS))
+    assert rebinding == []
+
+
+def test_shell_import_names_collector_is_runtime_accurate():
+    """A conditional import of a shell name must not satisfy the re-export check."""
+    source = (
+        "from typing import TYPE_CHECKING\n"
+        "if TYPE_CHECKING:\n"
+        "    from engine.market_ontology.theme_research_binding import within\n"
+    )
+    tree = ast.parse(source)
+    assert "within" in _shell_import_names(tree, module_level_only=False)
+    assert "within" not in _shell_import_names(tree, module_level_only=True)
