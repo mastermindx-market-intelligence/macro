@@ -33,6 +33,7 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     SCHEMA_VERSION,
+    _DEFINITION_CONTRADICTED,
     _FORBIDDEN_BARE_KEYS,
     _LEAD_FULL,
     _LEAD_GENERIC,
@@ -2034,11 +2035,11 @@ def test_result_envelope_contradiction_withholds_advertising_net_change(
     if expect_withheld:
         assert row["value_text"] is None, row
         assert (
-            row["withheld_reason"] == "result_envelope_contradicts_stated_definition"
+            row["withheld_reason"] == _WITHHELD_REASON
         ), row
     else:
         assert (
-            row["withheld_reason"] != "result_envelope_contradicts_stated_definition"
+            row["withheld_reason"] != _WITHHELD_REASON
         ), row
         assert row["value_text"] == "-4", row
 
@@ -2056,7 +2057,7 @@ def test_result_envelope_contradiction_withholds_advertising_net_change(
 # derived from it kept publishing values computed from withheld input.
 
 
-_WITHHELD_REASON = "result_envelope_contradicts_stated_definition"
+_WITHHELD_REASON = _DEFINITION_CONTRADICTED
 
 
 def _contradict(
@@ -2276,6 +2277,49 @@ def test_emit_result_backstop_withholds_row_level_quantum_contradiction() -> Non
     assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
 
 
+def test_emit_result_backstop_withholds_prior_side_contradiction() -> None:
+    """W15-F-FUY item 1: the backstop must read BOTH envelope sides.
+
+    #9331 mirrored only the ROW-level clause into the ``_emit_result``
+    BACKSTOP; the envelope trigger still read just the CURRENT side's
+    quantum, while ``_stated_definition_contradicted`` checks both sides.
+    The review PROVED a row with a clean current envelope and an EUR /
+    ``scale_power10`` 6 / ``1_million`` PRIOR envelope makes the predicate
+    return True, yet ``_emit_result`` alone published value_text='24344'
+    with withheld_reason=None. It must now withhold with the same reason
+    literal (bound to the engine's ``_DEFINITION_CONTRADICTED`` via
+    ``_WITHHELD_REASON`` below). Behaviour-neutral THROUGH
+    ``project_economic_change``: the screen runs the predicate first and
+    stamps ``withheld_reason``, and the emit guard
+    ``not filled.get("withheld_reason")`` keeps existing reasons, so no
+    pipeline row reaches this clause un-withheld (proved by the replay
+    capture over the four owning suites).
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "prior_period_fact": {
+            "unit": "EUR",
+            "scale_power10": 6,
+            "display_quantum": "1_million",
+        },
+    }
+    assert _stated_definition_contradicted(row) is True, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] is None, emitted
+    assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
+
+
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
     """The golden case, untouched."""
 
@@ -2324,7 +2368,7 @@ def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
 #: (W15-F-FUR item 2), hence ONE shared constant instead of per-param
 #: sets. Pinned so a row silently omitted by that filter fails HERE,
 #: instead of passing with a shrunken ``withheld_keys`` derived from
-#: ``document[\"results\"]``.
+#: ``document["results"]``.
 _EXPECTED_EMITTED_KEYS = {
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
@@ -2336,8 +2380,9 @@ _EXPECTED_EMITTED_KEYS = {
 
 # Each case pins the EXACT withheld set (result keys whose emitted row
 # carries ``value_text`` None), the EXACT emitted key set, and the
-# withheld_reason of every withheld row. The sets and reasons were derived by running the code on HEAD
-# (f98fe270) and reading the output, not guessed. They make this test
+# withheld_reason of every withheld row. The sets and reasons were derived
+# by running the code on seed 479e2c69 (#9318), the commit that pinned
+# them, and reading the output, not guessed. They make this test
 # discriminating: the old form only cross-checked availability and the
 # lead against the rows, so a screen that silently stopped withholding a
 # prior-side contradiction (defect D2) still passed -- the verdicts moved

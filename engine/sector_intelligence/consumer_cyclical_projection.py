@@ -887,6 +887,22 @@ def _result_provenance(
     return out
 
 
+def _envelope_side_contradicts(side: Any) -> bool:
+    """Does one period-fact envelope contradict the stated definition?
+
+    The per-side logic of ``_stated_definition_contradicted``'s side loop,
+    factored out (W15-F-FUY item 1) so the ``_emit_result`` backstop checks
+    BOTH envelope sides with the SAME comparisons instead of duplicating
+    them. A non-Mapping side cannot contradict -- the envelope is simply
+    absent -- exactly as the predicate's loop already treated it.
+    """
+    return isinstance(side, Mapping) and (
+        side.get("unit") != _STATED_DEFINITION_UNIT
+        or side.get("scale_power10") != _STATED_DEFINITION_SCALE
+        or side.get("display_quantum") != _STATED_DEFINITION_QUANTUM
+    )
+
+
 def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     """Project an internal result envelope onto the contract's closed shape.
 
@@ -935,14 +951,20 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         # percentage and says nothing about a currency, so it is unaffected
         # -- the ``not key.endswith("_pct")`` guard above exempts it exactly
         # as ``_screen_stated_definition`` skips it.
-        source = filled.get("current_period_fact")
-        source_quantum = (
-            source.get("display_quantum") if isinstance(source, Mapping) else None
-        )
+        # Both envelope sides are now checked with the predicate's own
+        # per-side logic (W15-F-FUY item 1): the old trigger read only the
+        # CURRENT side's quantum, so the backstop itself still carried
+        # defect D2's prior-side asymmetry -- a row with an EUR /
+        # ``scale_power10`` 6 / ``1_million`` PRIOR envelope published
+        # through this path alone. Behaviour-neutral through
+        # ``project_economic_change``: the screen runs the predicate on
+        # both sides first, and the ``not filled.get("withheld_reason")``
+        # guard above keeps any existing reason.
         if (
             filled.get("unit") != _STATED_DEFINITION_UNIT
             or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
-            or source_quantum != _STATED_DEFINITION_QUANTUM
+            or _envelope_side_contradicts(filled.get("current_period_fact"))
+            or _envelope_side_contradicts(filled.get("prior_period_fact"))
             # Row-level mirror of ``_stated_definition_contradicted``'s
             # defensive clause (#9318 review nit 4, W15-F-FUR item 4): a
             # row that ARRIVES pre-stamped with a ``display_quantum``
@@ -1008,12 +1030,7 @@ def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
         # the screen, its own quantum contradicts like an envelope does.
         return True
     for side_key in ("current_period_fact", "prior_period_fact"):
-        side = result.get(side_key)
-        if isinstance(side, Mapping) and (
-            side.get("unit") != _STATED_DEFINITION_UNIT
-            or side.get("scale_power10") != _STATED_DEFINITION_SCALE
-            or side.get("display_quantum") != _STATED_DEFINITION_QUANTUM
-        ):
+        if _envelope_side_contradicts(result.get(side_key)):
             return True
     return False
 
