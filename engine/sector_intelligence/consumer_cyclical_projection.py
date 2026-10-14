@@ -1018,6 +1018,27 @@ def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
     return False
 
 
+#: Derived rows and the rows whose values they are computed from, read
+#: off the build function: ``advertising_net_change`` is
+#: ``ar_change - ae_change`` of the two advertising change rows, and
+#: ``advertising_share_of_revenue_change_pct`` is the ratio of numerator
+#: ``advertising_revenue_change`` over denominator ``total_revenue_change``.
+#: When the screen withholds one of these constituent rows, the derived
+#: row must not publish a value computed from it. No derived key here is
+#: itself a constituent of another, so one pass over this table already
+#: reaches the fixed point; if that ever changes, iterate to a fixed point.
+_DERIVED_ROW_CONSTITUENTS: dict[str, tuple[str, ...]] = {
+    RESULT_KEY_ADVERTISING_NET_CHANGE: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    ),
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    ),
+}
+
+
 def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     """Withhold contradicting internal results IN PLACE, before the verdicts.
 
@@ -1026,8 +1047,11 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     ``None`` and the existing ``_DEFINITION_CONTRADICTED`` reason -- no new
     vocabulary. The ``_pct`` ratio stays exempt exactly as the check in
     ``_emit_result`` exempted it (the ratio describes itself as a
-    percentage and says nothing about a currency); which ratio cases
-    withhold does not change. A row already withheld keeps its own reason.
+    percentage and says nothing about a currency); which ratio
+    cases THIS contradiction screen withholds does not change -- the
+    ``_DERIVED_ROW_CONSTITUENTS`` cascade below is a separate mechanism
+    that can withhold the ratio only for a withheld constituent, never
+    for its own envelopes. A row already withheld keeps its own reason.
 
     The screened rows are INTERNAL envelopes, and the row's own
     ``display_quantum`` is absent on every internal row when this screen
@@ -1042,14 +1066,20 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
     withheld exactly like an envelope contradiction -- but no reachable
     input triggers it today.
 
-    ``advertising_net_change`` is arithmetic on the two advertising change
-    ROWS: when one of them is withheld here while the net row's own
-    envelopes are clean, the net value derives from a withheld row and
-    cannot publish. It is then withheld with the build branch's own
-    existing reason, ``dependency_suppressed`` -- the same verdict the net
-    derivation reaches when a constituent is not READY at build time
-    (review defect D1: the emitted expense row was withheld while ``-4``
-    computed from it still published).
+    Every derived row in ``_DERIVED_ROW_CONSTITUENTS`` is arithmetic on
+    other ROWS: ``advertising_net_change`` on the two advertising change
+    rows, and ``advertising_share_of_revenue_change_pct`` on its
+    numerator ``advertising_revenue_change`` and denominator
+    ``total_revenue_change``. When one of a derived row's constituents is
+    withheld here while the derived row's own envelopes are clean, the
+    derived value is computed from a withheld row and cannot publish. It
+    is then withheld with the build branch's own existing reason,
+    ``dependency_suppressed`` -- the same verdict each derivation reaches
+    when a constituent is not READY at build time (review defect D1: the
+    emitted expense row was withheld while ``-4`` computed from it still
+    published; the ratio row reached the same defect from the other side
+    -- the screen runs after the build, so a constituent the build found
+    READY but the screen withholds left the ratio publishing 41.66).
     """
     for result in results:
         key = str(result.get("key") or "")
@@ -1062,18 +1092,18 @@ def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
             result["withheld_reason"] = _DEFINITION_CONTRADICTED
 
     by_key = {str(r.get("key")): r for r in results}
-    net = by_key.get(RESULT_KEY_ADVERTISING_NET_CHANGE)
-    if net is not None and not net.get("withheld_reason"):
-        for constituent_key in (
-            RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
-            RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
-        ):
+    for derived_key, constituent_keys in _DERIVED_ROW_CONSTITUENTS.items():
+        derived = by_key.get(derived_key)
+        if derived is None or derived.get("withheld_reason"):
+            # Absent, or already withheld: an existing reason is kept.
+            continue
+        for constituent_key in constituent_keys:
             constituent = by_key.get(constituent_key)
             if constituent is not None and constituent.get("withheld_reason"):
-                net["state"] = "WITHHELD"
-                net["value_text"] = None
-                net["value_decimal"] = None
-                net["withheld_reason"] = "dependency_suppressed"
+                derived["state"] = "WITHHELD"
+                derived["value_text"] = None
+                derived["value_decimal"] = None
+                derived["withheld_reason"] = "dependency_suppressed"
                 break
 
 

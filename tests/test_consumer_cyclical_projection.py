@@ -2370,23 +2370,48 @@ _EXPECTED_EMITTED_KEYS = {
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
                 RESULT_KEY_ADVERTISING_NET_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
             },
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE: _WITHHELD_REASON,
                 # The net row's own envelopes stay clean here; it withholds
                 # as a dependent of the withheld revenue-change constituent.
                 RESULT_KEY_ADVERTISING_NET_CHANGE: "dependency_suppressed",
+                # The ratio withholds as a dependent of its withheld numerator.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
             },
         ),
         (
             _mutate_total_revenue_unit,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
         (
             _mutate_total_revenue_scale,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
     ],
     ids=[
@@ -2463,3 +2488,70 @@ def test_availability_lead_and_emitted_rows_agree_under_contradictions(
             "advertising-expense changes, but at least one of them emitted "
             "no value"
         )
+
+
+#: W15-F-FVA item 3 -- an INDEPENDENT oracle of the derived-row dependency
+#: mapping, hand-written from the build function (the net derivation is
+#: ``ar_change - ae_change`` of the two advertising change rows, engine
+#: near :1712-1715; the ratio's numerator is advertising_revenue_change
+#: and its denominator total_revenue_change, engine near :1792-1800).
+#: Deliberately NOT read from the engine table it checks below.
+_ORACLE_DERIVED_CONSTITUENTS = {
+    RESULT_KEY_ADVERTISING_NET_CHANGE: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    ),
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    ),
+}
+
+
+def test_no_published_derived_row_has_a_withheld_constituent() -> None:
+    """A derived row never publishes a value computed from a withheld row.
+
+    (a) the engine's private ``_DERIVED_ROW_CONSTITUENTS`` equals the
+    independent oracle above (read through the same function-local
+    ``import ... as mod`` pattern the private-name tests already use);
+    (b) the cascade holds over a grid: every single-fact contradiction of
+    ``display_quantum`` / ``unit`` / ``scale_power10`` -- the field names
+    the ``_mutate_*`` helpers use -- applied to each of the six PLNT
+    facts (6 facts x 3 fields = 18 grid points). At each point every
+    derived row that publishes a value must have every constituent also
+    publishing (or absent from the emitted document entirely).
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    assert mod._DERIVED_ROW_CONSTITUENTS == _ORACLE_DERIVED_CONSTITUENTS
+
+    base_facts = _plnt_facts()
+    for index in range(len(base_facts)):
+        fact_key = base_facts[index]["key"]
+        for field, value in (
+            ("display_quantum", "5_thousand"),
+            ("unit", "EUR"),
+            ("scale_power10", 6),
+        ):
+            facts = [dict(fact) for fact in base_facts]
+            _contradict(facts, fact_key, field, value)
+            document = project_economic_change(_plnt_case(facts=facts))
+            rows = {r["key"]: r for r in document["results"]}
+            for derived_key, constituents in (
+                _ORACLE_DERIVED_CONSTITUENTS.items()
+            ):
+                derived = rows.get(derived_key)
+                if derived is None or derived["value_text"] is None:
+                    continue
+                for constituent_key in constituents:
+                    constituent = rows.get(constituent_key)
+                    suppressed = constituent is not None and (
+                        constituent["value_text"] is None
+                    )
+                    assert not suppressed, (
+                        f"grid point fact[{index}]={fact_key} "
+                        f"field={field}: derived row {derived_key} "
+                        f"publishes {derived['value_text']!r} while "
+                        f"constituent {constituent_key} is withheld "
+                        f"({constituent['withheld_reason']!r})"
+                    )
