@@ -1065,9 +1065,19 @@ def build_earnings_intelligence_vector(
     earnings_company_id: str | None = None
     identity_ambiguous = False
     try:
-        cik = issuer_master.cik_of_issuer(episode_company_id)
-        if cik is not None:
-            earnings_company_id = company_id_for_cik(cik)
+        # The episode id binds security/epoch/anchor, not the security-to-issuer
+        # join. Verify that join with its existing CURRENT identity owner before
+        # any issuer lookup. A disagreement is not a historical reassignment:
+        # retain the episode, withhold optional evidence, and never rewrite it.
+        bound_issuer = issuer_master.issuer_of_security(
+            str(episode.get("security_id") or "")
+        )
+        if bound_issuer is not None and bound_issuer != episode_company_id:
+            identity_ambiguous = True
+        elif bound_issuer is not None:
+            cik = issuer_master.cik_of_issuer(episode_company_id)
+            if cik is not None:
+                earnings_company_id = company_id_for_cik(cik)
     except IssuerIdentityError:
         identity_ambiguous = True
     except EarningsIdentityError:
