@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T10:25:40.278670+00:00",
-  "count": 2888,
+  "generated_at": "2026-10-14T10:40:20.287953+00:00",
+  "count": 2889,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -736,6 +736,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kmezekrmkat-af1df9",
+      "title": "JPM Asia Thematic Strategy (must read)",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:34:35Z",
+      "summary_points": [
+        "AI Hardware Supply-Demand Tightness: Hardware layer (Taiwan/Korea/China) faces persistent supply-demand imbalance through 2028, enabling $1T+ net income for AI ecosystem by 2028 and driving 70% of 2027 earnings growth in Asia.",
+        "Hyperscaler FCF Closure Timeline: Hyperscaler AI FCF hole closes by 2028, with 30%+ ROI on datacenters (5-year depreciation) and minimal interest rate sensitivity, critical for cash flow dynamics.",
+        "AI Model Layer Monetization: $300bn+ ARR by end-2026 (3x 2025), driven by token volume (not pricing), enterprise adoption, and fading token subsidies, signaling structural revenue growth.",
+        "Asia Hardware Dominance: Taiwan/Korea exceed 50% of Asia AI hardware exposure (vs.",
+        "US software/hardware mix), with TSMC/Samsung/Hynix dominating top holdings and concentration risks in ecosystem."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },
