@@ -269,6 +269,7 @@ def test_cli_economic_refresh_stage_error_returns_1(
         code = wire_builder.main(["--economic-refresh", str(refresh)])
     assert code == 1
     assert "earnings public wire failed" in caplog.text
+    assert "PriorClosureUnavailable" in caplog.text
     assert "prior_unverified" in caplog.text
 
 

@@ -217,9 +217,14 @@ def augment_private_stage(
         )
 
     prepared_document = prepared["document_metadata"]
+    stored_document_id = (
+        closure["chain"][-1]["document"]["document_id"] if closure is not None else None
+    )
     same_document = (
         closure is not None
-        and closure["chain"][-1]["document"]["document_id"] == prepared_document["document_id"]
+        and isinstance(stored_document_id, str)
+        and isinstance(prepared_document["document_id"], str)
+        and _plain_str(stored_document_id) == _plain_str(prepared_document["document_id"])
     )
     if same_document:
         chain = _chain_items(closure)
@@ -468,7 +473,7 @@ def _write_stage(
     if type(text) is not str:
         raise PrivateEconomicStageError("mismatched_source")
     company_id = workspace.get("issuer", {}).get("company_id") if type(workspace.get("issuer")) is dict else None
-    if company_id != pg_profile.pg_issuer().company_id:
+    if not isinstance(company_id, str) or _plain_str(company_id) != pg_profile.pg_issuer().company_id:
         raise PrivateEconomicStageError("cross_issuer")
     event_id = workspace.get("event_id")
     if type(event_id) is not str:
@@ -516,8 +521,19 @@ def _write_stage(
         if content_digest != item["document"].get("content_sha256"):
             raise PrivateEconomicStageError("mismatched_source")
         body_path = bodies / f"{content_digest}.txt"
-        if body_path.exists() and body_path.read_bytes() != text_body:
-            raise PrivateEconomicStageError("mismatched_source")
+        try:
+            body_status = os.lstat(body_path)
+        except FileNotFoundError:
+            body_status = None
+        if body_status is not None:
+            if stat.S_ISLNK(body_status.st_mode) or body_status.st_nlink > 1:
+                raise PrivateEconomicStageError("hardlinked_stage_file")
+            try:
+                existing_body = body_path.read_bytes()
+            except OSError as exc:
+                raise PrivateEconomicStageError("unreadable_stage_file") from exc
+            if existing_body != text_body:
+                raise PrivateEconomicStageError("mismatched_source")
         _write_stage_file(body_path, text_body)
         received[content_digest] = {
             "sha256": content_digest,

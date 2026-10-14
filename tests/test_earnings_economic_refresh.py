@@ -505,6 +505,207 @@ def test_public_admission_refuses_hostile_str_subclass() -> None:
     }
     assert_public_workspace_admission(public)
 
+
+def test_stage_refuses_cross_issuer_company_id_from_a_hostile_str_subclass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The ``cross_issuer`` guard must compare a plain-str copy, not the caller's id.
+
+    ``company_id != pg_issuer().company_id`` asks a caller-controlled id object
+    to perform its own ``__ne__``: a ``str`` subclass overriding both ``__eq__``
+    and ``__ne__`` answers "not unequal", so the raw guard never raises and the
+    foreign issuer leaks into the interpretation. The guard compares a
+    ``_plain_str`` copy instead; a non-str id keeps the same typed refusal
+    (``PrivateEconomicStageError("cross_issuer")``, engine/earnings_narrative/
+    private_economic_stage.py:472).
+    """
+    from engine.company_intelligence import pg_profile
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    class LieIssuerId(str):
+        def __eq__(self, other: object) -> bool:
+            return False
+
+        def __ne__(self, other: object) -> bool:
+            return False
+
+        def __hash__(self) -> int:
+            return 12345
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    foreign = "cik:0000999999"
+    assert str(foreign) != pg_profile.pg_issuer().company_id
+    baseline = tmp_path / "issuer-baseline"
+    shutil.copytree(receipt.private_dir, baseline)
+
+    for label, forged_id in (("hostile-str", LieIssuerId(foreign)), ("non-str", None)):
+        forged = copy.deepcopy(closure)
+        forged["chain"][-1]["workspace"]["issuer"]["company_id"] = forged_id
+        stage = tmp_path / f"issuer-stage-{label}"
+        shutil.copytree(baseline, stage)
+        before = _snapshot(stage)
+        with pytest.raises(PrivateEconomicStageError, match="cross_issuer"):
+            augment_private_stage(
+                stage, acquisition=None, prior_closure=forged, observed_at=LATER_OBSERVED_AT,
+            )
+        assert _snapshot(stage) == before
+
+    # CONTROL: a plain-str same-issuer id stays admitted.
+    control = tmp_path / "issuer-stage-control"
+    shutil.copytree(baseline, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+    assert type(stage_module._plain_str(LieIssuerId(foreign))) is str
+    assert str.__str__(LieIssuerId(foreign)) == foreign
+
+
+def test_hostile_document_id_cannot_dedup_away_a_newly_prepared_document(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``same_document`` must compare plain-str copies of both ids it is given.
+
+    A stored closure is caller data: with the raw ``==`` a ``str`` subclass
+    whose ``__eq__`` answers True makes the dedup believe the freshly prepared
+    document is already stored, and the new document is silently dropped from
+    the chain. The comparison takes ``_plain_str`` copies of both sides.
+    """
+
+    class LieDocId(str):
+        def __eq__(self, other: object) -> bool:
+            return True
+
+        def __ne__(self, other: object) -> bool:
+            return False
+
+        def __hash__(self) -> int:
+            return 12345
+
+    class ForgingChain(list):
+        """Caller-controlled closure chain with a hostile second ``[-1]`` read.
+
+        The first ``[-1]`` read is the prior handed to ``prepare_pg_workspace``
+        (private_economic_stage.py:201 via ``_prepare_prior``); it returns the
+        genuine stored item so preparation succeeds and produces a new,
+        different document. The second ``[-1]`` read is the dedup comparison
+        (private_economic_stage.py:222); it returns a copy whose
+        ``document_id`` forges equality with anything.
+        """
+
+        def __init__(self, items: list, *, forged_doc_id: str) -> None:
+            super().__init__(items)
+            self._forged_doc_id = forged_doc_id
+            self._negative_reads = 0
+
+        def __getitem__(self, index):
+            item = list.__getitem__(self, index)
+            if index == -1:
+                self._negative_reads += 1
+                if self._negative_reads >= 2:
+                    forged = dict(item)
+                    document = dict(item["document"])
+                    document["document_id"] = LieDocId(self._forged_doc_id)
+                    forged["document"] = document
+                    return forged
+            return item
+
+    def _links(stage: Path, slug: str) -> list:
+        latest = json.loads((stage / "native" / "latest.json").read_bytes())
+        return latest["selections"][slug]["chain"]
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    slug = closure["record"]["slug"]
+    amendment = _acquire("amendment_sequence", currentness="up_to_date", checked_at=PENDING_CLOCK)
+
+    # CONTROL: plain-str ids still append a genuinely different prepared document.
+    control = tmp_path / "stage-dedup-control"
+    shutil.copytree(receipt.private_dir, control)
+    written = augment_private_stage(
+        control, acquisition=copy.deepcopy(amendment), prior_closure=closure,
+        observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+    control_links = _links(control, slug)
+    assert len(control_links) == 2
+    assert control_links[0]["document"] != control_links[1]["document"]
+
+    # HOSTILE: the forged stored id claims equality with the new prepared doc.
+    forged = copy.deepcopy(closure)
+    forged["chain"] = ForgingChain(
+        list(closure["chain"]), forged_doc_id="disclosure_document_" + "f" * 64,
+    )
+    stage = tmp_path / "stage-dedup-hostile"
+    shutil.copytree(receipt.private_dir, stage)
+    written = augment_private_stage(
+        stage, acquisition=copy.deepcopy(amendment), prior_closure=forged,
+        observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+    links = _links(stage, slug)
+    assert len(links) == 2, f"hostile __eq__ silently dropped the prepared document: links={links}"
+    assert links[-1]["document"] != links[0]["document"]
+
+
+def test_stage_refuses_a_symlinked_source_body_before_reading_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The source-body read must not follow a planted symlink.
+
+    ``_reset_native`` wipes ``native/`` inside ``_write_stage`` before the body
+    loop reads ``native/source_bodies/<digest>.txt``, so a test cannot plant the
+    link from outside the call. The narrowest seam that puts the link into the
+    gap between the reset and the read is ``_reset_native`` itself: its only
+    caller is ``_write_stage`` (engine/earnings_narrative/private_economic_stage.py:503),
+    and the wrapper below runs the real reset first, then plants.
+    ``_reset_native`` itself is not weakened.
+    """
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    digest = closure["chain"][-1]["document"]["content_sha256"]
+    victim = tmp_path / "outside-victim.txt"
+    victim_bytes = b"a victim file outside the stage tree\n" * 8
+    victim.write_bytes(victim_bytes)
+
+    real_reset = stage_module._reset_native
+
+    def _reset_then_plant(root: Path) -> Path:
+        native = real_reset(root)
+        (native / "source_bodies" / f"{digest}.txt").symlink_to(victim)
+        return native
+
+    monkeypatch.setattr(stage_module, "_reset_native", _reset_then_plant)
+    stage = tmp_path / "stage-symlink-body"
+    shutil.copytree(receipt.private_dir, stage)
+    with pytest.raises(PrivateEconomicStageError, match="hardlinked_stage_file"):
+        augment_private_stage(
+            stage, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+        )
+    assert victim.read_bytes() == victim_bytes
+    link = stage / "native" / "source_bodies" / f"{digest}.txt"
+    assert link.is_symlink()
+    assert not (stage / "native" / "latest.json").exists()
+
+    # CONTROL: the same replay with no planted link still writes.
+    monkeypatch.setattr(stage_module, "_reset_native", real_reset)
+    control = tmp_path / "stage-symlink-control"
+    shutil.copytree(receipt.private_dir, control)
+    written = augment_private_stage(
+        control, acquisition=None, prior_closure=closure, observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+
+
 def test_clean_v1_baseline_has_no_native_stage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _permit(monkeypatch, tmp_path)
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source=None)

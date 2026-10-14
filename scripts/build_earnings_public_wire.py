@@ -67,7 +67,6 @@ from lib.seo import BRAND_NAME, SITE_BASE, page_url  # noqa: E402
 from engine.neuralweb import company_intelligence_reader as _company_reader  # noqa: E402
 from engine.earnings_narrative.private_economic_stage import (  # noqa: E402
     PrivateEconomicStageError,
-    PriorClosureUnavailable,
     assert_public_workspace_admission,
     augment_private_stage,
     load_verified_prior,
@@ -1848,14 +1847,11 @@ def main(argv: list[str] | None = None) -> int:
                 raise PublicWireBuildError("economic refresh inputs must be a mapping")
             build_kwargs["economic_refresh"] = loaded
         result = build(**build_kwargs)
-    except (
-        PublicWireBuildError,
-        PriorClosureUnavailable,
-        PrivateEconomicStageError,
-    ) as exc:
-        # PriorClosureUnavailable is a ValueError, so it used to escape as a
-        # traceback; the economic stage owns the same diagnostic exit.
-        log.error("earnings public wire failed: %s", exc)
+    except (PublicWireBuildError, PrivateEconomicStageError) as exc:
+        # ``PriorClosureUnavailable`` subclasses ``PrivateEconomicStageError``,
+        # so the base entry already covers it; name the concrete type so the
+        # operator sees which stage refused without a traceback.
+        log.error("earnings public wire failed: %s: %s", type(exc).__name__, exc)
         return 1
     print(json.dumps({
         "schema": "earnings.public_wire_build_result/v1", "status": "ready",
