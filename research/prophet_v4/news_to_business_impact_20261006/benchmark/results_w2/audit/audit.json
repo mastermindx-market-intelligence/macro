@@ -134,13 +134,13 @@
   {
    "case_id": "799c6e079075a08e",
    "class": "agree_present",
-   "conf": "high",
+   "conf": "medium",
    "fam_a_correct": true,
    "fam_b_correct": true,
    "field": "executed_amount",
    "n": 11,
    "template": "T1",
-   "why": "Executed repurchase amount as stated."
+   "why": "Completed sterling notes offering (T1 debt_issuance): aggregate offering price GBP 4.242B. Schema allOf[7] forces executed_amount to a value when commitment_status is completed, so the executed issuance amount is the lawful reading, though the guide's 'money spent' wording is written for buybacks."
   },
   {
    "case_id": "799c6e079075a08e",
@@ -151,18 +151,18 @@
    "field": "incremental_amount",
    "n": 12,
    "template": "T1",
-   "why": "New authorization amount as stated, basis incremental."
+   "why": "Same notes offering: GBP 4.242B is the new money raised by this action, basis incremental (T1 debt_issuance)."
   },
   {
    "case_id": "845257bdbf199c74",
    "class": "agree_present",
-   "conf": "high",
+   "conf": "medium",
    "fam_a_correct": true,
    "fam_b_correct": true,
    "field": "incremental_amount",
    "n": 13,
    "template": "T1",
-   "why": "New authorization amount as stated."
+   "why": "New USD 20.0B three-year delayed-draw term loan facility (T1 debt_issuance): new committed capacity, basis incremental; undrawn, consistent with the card-9 bridge-facility ruling."
   },
   {
    "case_id": "913f696c23cbedaa",
@@ -173,7 +173,7 @@
    "field": "incremental_amount",
    "n": 14,
    "template": "T1",
-   "why": "New authorization amount as stated."
+   "why": "Board approved an additional USD 250M repurchase authorization, basis incremental."
   },
   {
    "case_id": "add57ab031c0e17b",
@@ -184,7 +184,7 @@
    "field": "incremental_amount",
    "n": 15,
    "template": "T1",
-   "why": "Authorization amount as stated; template fit judged acceptable."
+   "why": "Company targets at least USD 9B of repurchases in FY2026: a planned spend rather than a board authorization; bound at_least and FY2026 period are stated, slot fit judged acceptable."
   },
   {
    "case_id": "b95967705eb0bb54",
@@ -195,7 +195,7 @@
    "field": "stated_quantity",
    "n": 16,
    "template": "T3",
-   "why": "Stated transaction quantity as stated."
+   "why": "Acquisition closed with cash consideration of approximately USD 165M; bound approximately."
   },
   {
    "case_id": "bce9289ad020a763",
@@ -206,7 +206,7 @@
    "field": "stated_amount",
    "n": 17,
    "template": "T2",
-   "why": "Guided amount and period as stated."
+   "why": "Raised FY2026 revenue guidance, range USD 8.150B-8.158B. fam_a's bound None and fam_b's exact are both acceptable for a range."
   },
   {
    "case_id": "c10d748fb16821ae",
@@ -217,7 +217,7 @@
    "field": "stated_amount",
    "n": 18,
    "template": "T2",
-   "why": "Guided amount and period as stated."
+   "why": "Raised FY2026 full-year revenue guidance, range USD 85.0B-87.0B."
   },
   {
    "case_id": "e50497c035a03dc1",
@@ -228,7 +228,7 @@
    "field": "stated_amount",
    "n": 19,
    "template": "T2",
-   "why": "Guided amount and period as stated."
+   "why": "FY2026 adjusted EPS guidance, range USD 17.73-17.87 per share."
   },
   {
    "case_id": "ebe79d38ec54ba71",
@@ -239,7 +239,7 @@
    "field": "stated_amount",
    "n": 20,
    "template": "T2",
-   "why": "Stated amount as stated."
+   "why": "FY2027 adjusted diluted EPS target, range USD 3.00-3.20 per share."
   },
   {
    "case_id": "6594f06e4e1d82ac",
