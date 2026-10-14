@@ -15,6 +15,7 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="market_memory.css">
+<link rel="stylesheet" href="market_memory_retained.css">
 </head>
 <body class="mm-page">
 {% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
@@ -22,29 +23,7 @@
 {% include "_site_nav.html.j2" %}
 
 <main class="mm-shell">
-  <header class="mm-hero">
-    <div class="mm-hero-copy">
-      <p class="mm-kicker">{{ t('Historical context · Neural Web memory', '历史语境 · 智脑记忆') }}</p>
-      <h1>{{ t('Market Memory', '市场记忆') }}</h1>
-      <p class="mm-deck">{{ t('Put today beside comparable episodes — then inspect both the rhyme and the difference.', '将今天与可比历史片段并排 — 同时审视相似之处与关键差异。') }}</p>
-    </div>
-    <div class="mm-authority" aria-label="Authority boundary">
-      <span class="mm-authority-mark" aria-hidden="true">A0</span>
-      <div>
-        <strong>{{ t('Context only', '仅作语境') }}</strong>
-        <span>{{ t('No ranking · no gating · no sizing · no Prophet training authority', '不排名 · 不设闸 · 不定仓 · 无 Prophet 训练权限') }}</span>
-      </div>
-    </div>
-  </header>
-
-  <section class="mm-readline" aria-label="How to read this page">
-    <span class="mm-readline-glyph" aria-hidden="true">↳</span>
-    <div>
-      <strong>{{ t('Two memory lenses, one evidence boundary', '两种记忆视角，同一证据边界') }}</strong>
-      <span>{{ t('Macro episodes compare the whole tape. Symbol receipts compare the current event class with the same stock, its cohort, and the wider library.', '宏观片段比较整体市场；个股凭据则把当前事件类别与本股、同类组及全体样本进行比较。') }}</span>
-    </div>
-  </section>
-
+{% set legacy_memory %}
   <section class="mm-section" aria-labelledby="mm-macro-title">
     <div class="mm-section-head">
       <div>
@@ -104,9 +83,13 @@
       </article>
     </div>
   </section>
+{% endset %}
+{% include "market_memory_retained.html.j2" %}
 </main>
 
 <script src="theme.js" defer></script>
+<script src="market_memory_intent.js" defer></script>
 <script src="market_memory.js" defer></script>
+<script src="market_memory_retained.js" defer></script>
 </body>
 </html>
