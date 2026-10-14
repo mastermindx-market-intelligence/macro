@@ -4661,6 +4661,9 @@ CURATED_EXCLUSIVE = {
     # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
+    # 2026-10-13 Data OS completion acceptance suites (A02/A03/R01) - closure measured
+    # against main's own inference; seat applies the legacy-jobs.yml half.
+    "dataos-acceptance",
     "ratio-lens",
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
