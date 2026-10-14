@@ -184,9 +184,27 @@ def test_unknown_anchor_mounts_nothing(anchor):
 
 
 def test_registry_of_mounts_is_closed_and_read_only():
-    assert set(MOUNTS) == {ANCHOR}
+    assert set(MOUNTS) == {ANCHOR, "nuclear_power", "uranium_miners"}
     with pytest.raises(TypeError):
         MOUNTS["another_vertical"] = MOUNTS[ANCHOR]
+
+
+def test_nuclear_power_mounts_three_slices_and_uranium_miners_does_not():
+    """The nuclear basket mounts; the supplemental uranium basket does not."""
+    ctx = mount_context("nuclear_power")
+    assert ctx is not None, "nuclear_power has no mount"
+    assert ctx["slices"].split(",") == [
+        "reactor_technology", "nuclear_components", "fuel_cycle",
+    ]
+    labels = json.loads(ctx["slice_labels_json"])
+    assert labels["reactor_technology"] == ["Reactor technology", "反应堆技术"]
+    assert labels["nuclear_components"] == ["Nuclear components", "核电部件"]
+    assert labels["fuel_cycle"] == ["Fuel cycle", "核燃料循环"]
+    assert ctx["title_en"] == "Nuclear power industry research"
+    assert ctx["title_zh"] == "核电产业研究"
+    assert registered_anchor_for_basket("nuclear_power") == "nuclear_power"
+    assert registered_anchor_for_basket("uranium_miners") is None
+    assert mount_context_for_basket("uranium_miners") is None
 
 
 @pytest.mark.parametrize("overrides, reason", [

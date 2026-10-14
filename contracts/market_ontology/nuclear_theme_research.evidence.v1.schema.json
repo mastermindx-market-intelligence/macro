@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_ontology/nuclear_theme_research.evidence.v1.schema.json",
+  "title": "GMI nuclear theme research evidence v1",
+  "description": "One authorized assertion returned by select_authorized_evidence. Held, rejected, and review-expired rows are not served. The object carries no rank, gate, size, or entry authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "generation",
+    "assertion_ref",
+    "assertion",
+    "source",
+    "lineage",
+    "limitations",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "nuclear_theme_research.evidence.v1"
+    },
+    "generation": {
+      "type": "string",
+      "pattern": "^gen_[0-9a-f]{32}$"
+    },
+    "assertion_ref": {
+      "type": "string",
+      "pattern": "^gmi-curation://.+/gmirca_[0-9a-f]{32}$"
+    },
+    "assertion": {
+      "type": "object",
+      "required": [
+        "schema",
+        "curation_revision"
+      ],
+      "properties": {
+        "schema": {
+          "const": "theme_graph.curation_assertion.v1"
+        },
+        "curation_revision": {
+          "type": "string",
+          "pattern": "^gmirca_[0-9a-f]{32}$"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "source_uri",
+        "locator",
+        "published_at",
+        "published_at_grain",
+        "observed_at",
+        "retained_at"
+      ],
+      "properties": {
+        "publisher": {
+          "type": ["string", "null"]
+        },
+        "source_uri": {
+          "type": ["string", "null"]
+        },
+        "locator": {
+          "type": ["string", "null"]
+        },
+        "published_at": {
+          "type": ["string", "null"]
+        },
+        "published_at_grain": {
+          "type": ["string", "null"]
+        },
+        "observed_at": {
+          "type": ["string", "null"]
+        },
+        "retained_at": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "can_rank",
+        "can_gate",
+        "can_size",
+        "can_originate",
+        "can_open_entry"
+      ],
+      "properties": {
+        "can_rank": {
+          "const": false
+        },
+        "can_gate": {
+          "const": false
+        },
+        "can_size": {
+          "const": false
+        },
+        "can_originate": {
+          "const": false
+        },
+        "can_open_entry": {
+          "const": false
+        }
+      }
+    }
+  }
+}
