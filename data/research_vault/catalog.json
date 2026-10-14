@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T18:41:31.516144+00:00",
-  "count": 2915,
+  "generated_at": "2026-10-14T18:56:48.812181+00:00",
+  "count": 2916,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1015,6 +1015,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yfmzhgjtnxe-d89894",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:17:54Z",
+      "summary_points": [
+        "AI Stock Concentration: Top 10 S&P 500 (AI-heavy) firms now constitute ~40% of index cap, with passive investors holding >50% exposure to AI stocks, severely undermining diversification.",
+        "Key Macro Data: China CPI (Sep), US Core CPI (Sep), UK GDP (Aug), Eurozone industrial production (Aug), US retail sales (Sep), and US PPI (Sep) drive near-term volatility.",
+        "Flow Divergence: S&P 500’s 2.4% YTD gain vs.",
+        "DAX’s 2.4% YTD reflects divergent capital flows amid concentrated AI exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
