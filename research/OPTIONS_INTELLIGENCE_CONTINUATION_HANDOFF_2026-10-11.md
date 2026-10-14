@@ -581,10 +581,16 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D74 01:55Z snapshot.) Rows superseding older rows below:
+(D75 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| #948 | PRODUCTION_PROOF (D75): merged `afae6020`; `.deployment-id`, `.gitsrc` HEAD and public `data-dpl-id` agree; edge chunk `1304p4nhxan10.js` carries `usRegularSessionWindow(...)` and has 0 hits for `l>=570&&l<960`; the quote-hub restart at 01:52:59Z serves master hashes; proof comment 6159152201. DO_NOT_REDO the proof or the comment |
+| CENSUS wave 3 | all 12 judged (D75). F03, F04, U03, U04 and N02 transitions: NO-BUILD. M04: red specs FROZEN, gated on #8684/#8920. V03-A03: reclassified PROVEN-BY-RECEIPT, because the #781 engine sha256 `5e1a5259…` equals the 10-02 Fraction-oracle engine (5948959305). #781 finding comment 6159214546. Deferred upgrades are listed in D75 |
+| N02-U2 (latent) | the Terminal `asDisposition` fails OPEN: unknown → `research_candidate`, and the server verifier does not check the enum. It is unreachable while F04 is inactive. Candidate small fix (fail to `degraded` + vitest), decided in D75 |
+| #985 / #983 | the refreshed runs 38496639609 and 38496643758 were in_progress at 02:01Z (BLOCKED on required checks), watcher `bsy8vl4r6`. Deploy and live verify are owed after both merge, without overlapping #723's release (D75) |
+| Macro #8920 / #9079 / #9083 / #8923 | controller-owned. #8920 carries `merge-refresh-in-flight` (02:01Z); the others show `merge-on-green` with merge state UNKNOWN. Watchers `bqitfw30c` and `b6y5c7v9y`; never bypassed (D75) |
+| #723 | monitor only. GitHub head `bd76f2c9` (draft, updated 02:00:32Z) is the coordinator's act and is not judged by this seat (D75) |
 | D04A (source clocks) | Tuesday window DONE (8/8 ticks on time; 7 reads + 1 FAILED_READ 14:03Z); unfixed baseline + A02 falsifier captured; live board 116/116 real `ts` → new publish gate passes; hold RELEASED → `merge-on-green` label only, controller-owned (D74); D04-A2 owed after merge: `status()` projection + macro-api restart + strict flip, which must rule the ~158-min one-missed-build source age |
 | #948 | MERGED 01:34:29Z `afae6020`; git-gated deploy `--target-sha afae6020…` RUNNING (VPS pid 1403673, `/opt/terminal/deploy-fable-948.log`, watcher `bpxppq8qn`), also ships #955; baseline chunk `0vo6qjk1tapsi.js` has `l>=570&&l<960` (D74) |
 | #985 / #983 | refreshed after #948 merged: #985 `9c5a244d` run 38496639609, #983 `650d7005` run 38496643758; watcher `bsy8vl4r6`; deploy + live verify owed after both merge (D74) |
@@ -1667,3 +1673,92 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Macro #8923: label `merge-on-green`; the controller merges.
   - Macro #8920/#9079/#9083: CI (label), refresh deferred.
   - #723: RUNNING (coordinator `01a137a5`, not this seat).
+
+### D75 (2026-10-14T02:05Z) — #948 at PRODUCTION_PROOF; CENSUS wave 3 fully judged; V03-A03 reclassified; one #781 finding routed
+
+**#948 (N01 source-session clock), PRODUCTION_PROOF.**
+- Merged at 01:34:29Z as `afae6020` and deployed through the git-gated `--target-sha`.
+- All three identities agree: `.deployment-id`, the `.gitsrc` HEAD and the public `data-dpl-id`.
+- The edge-served chunk `/_next/static/chunks/1304p4nhxan10.js` (EdgeOne MISS, 200):
+  - contains `usRegularSessionWindow(Date.parse(\`${n}T00:00:00Z\`)/1e3+60*d)`;
+  - has 0 hits for the old `l>=570&&l<960` count.
+- The hub files in the merged range came from another merged PR. After quote-hub restarted at 01:52:59Z, the live hashes equal master.
+- Proof comment: issuecomment-6159152201. DO_NOT_REDO the deploy verification or the comment.
+
+**CENSUS wave 3 judgment (S.3, by artifact; cited lines spot-opened in local pinned trees).**
+
+Pins: Macro `9a47ac7f`, Terminal master `b30836b2`, #846 `eb57a683`, #781 `85d9f4ea`, #8684 `300754c6`.
+
+- **F03: ACCEPT as a frozen NO-BUILD spec. PROVEN 3, OUT-OF-REACH 1.**
+  - A01 needs three things: owner activation authorization, the absent `options_signal_campaign_correction_activation_receipt_v1.json`, and a natural night.
+  - Verified lines:
+    - `engine/options_signal_campaign.py:1936-1948`, `:711-722` and `:841-842`;
+    - prereg `:140`, `:144` and `:162` (fixture or manual runs may not satisfy the nightly proof);
+    - `build_options_alpha_candidate_feed.py:222-228`;
+    - `options_signal_nightly.sh:644-654`;
+    - `options_signal_episode.py:86` and `:3082-3086`.
+  - The census cited the status line as `:4`; it is `:5`.
+  - Deferred upgrades:
+    1. echo the feed state on the integrity line;
+    2. put `checkpoint_id` in the campaign commit message;
+    3. show physical versus effective counts.
+- **F04: ACCEPT as NO-BUILD. PROVEN 5.**
+  - The activation receipt `options_alpha_candidate_feed_activation_receipt_v1.json` is absent, so the #8358 publisher stays inactive.
+  - Verified lines:
+    - `options_alpha_candidate_feed.py:64-69` (four preconditions) and `:851-853` (fewer than 2 members → INSUFFICIENT);
+    - Terminal `optionsAlphaCandidatePair.ts:122-125` (the server rejects a receipt-map mismatch);
+    - `OptionsAlphaCandidatePanel.tsx:499-502` and `:328`.
+  - Upgrade 2 is REDUNDANT because the server already rejects a mismatch. Upgrades 1 and 3 are deferred because the feed is inactive.
+  - Gap noted: a stale comment at `app/api/flow/stream/route.ts:41-46`.
+- **M04: red-test specs FROZEN. PROVEN 0, OWED 4 (A01, A02, A03, A05), OUT-OF-REACH 1 (A04, settlement model absent).**
+  - The pin's `options_scenario_surface.py:226` has `build_scenario_surface` only; `build_hedge_target_change` is absent.
+  - The #8684 head `300754c6:340-344` has a symmetric inventory-repricing attribution with no spot/vol/time split.
+  - Four red specs are to be appended to `tests/test_options_scenario_surface.py` after #8684 and #8920 land (DNR: no M04 engine work before then). Owned files:
+    - `engine/options_scenario_surface.py`;
+    - `tests/test_options_scenario_surface.py`;
+    - `scripts/build_options_scenario_surface.py`.
+- **N02: transitions are NO-BUILD. PROVEN 4, OWED 1 (A03, a descriptive transition per new revision).**
+  - Remaining gates: F04 activation, a frozen policy predicate, and admitted `OPT_TYPES` only. The N01 gate is CLEARED by #948 at PRODUCTION_PROOF.
+  - Verified: `options_alpha_candidate_feed.py:882-887`.
+  - The census cites `:1349` and `:1399` resolve only to `else:` and `measurement_reasons = {`, so those cites are imprecise.
+  - **Confirmed latent defect (N02-U2).** On Terminal master, `components/prophet/optionsAlphaCandidateFeed.ts` `asDisposition` maps any unknown value to `research_candidate` (fail-OPEN). `lib/optionsAlphaCandidatePair.ts` does not validate the disposition enum (grep for `disposition|research_candidate|degraded` returns nothing). The defect is reachable as soon as the feed activates. Fix: fail to `degraded`, plus a vitest.
+- **U03: ACCEPT as NO-BUILD. PROVEN 5.** The consumer lives only on draft #846, which the DNR keeps off this seat.
+  - Verified on `eb57a683`:
+    - `OptionsResearchLab.tsx:31-36`, `:82-83`, `:122` and `:137-143` (save disabled);
+    - `researchLabAdapter.ts:28-30`, `:50-55` and `:63-67`;
+    - `investigations.ts:7-13`, byte-identical to master (diff rc=0);
+    - Macro `options_matrix.py:13-16` and `:274-280`.
+  - Deferred upgrades:
+    1. show the selected cell's `netGexDollars` under an aggregate-dollar label;
+    2. print both session dates on an IV mismatch;
+    3. add a joined IV column when the sessions match.
+- **U04: ACCEPT as NO-BUILD. PROVEN 5** on #846.
+  - Verified:
+    - `ResearchScene.tsx:87` (`marks.slice(0, 20000)` is a draw prefix only), `:24-25` and `:138-139` (context loss calls `onFailure`);
+    - `options/page.tsx:19-24` (`userScalable: true`) against master `layout.tsx:24-29` (the chart lock).
+  - Physical pinch and the raw presentation traces stay out of reach; do not manufacture them.
+  - Deferred upgrades:
+    1. keep the keyboard-selected row on the visible table page;
+    2. move focus to the WebGL-loss status;
+    3. print drawn versus table counts when the cap binds.
+- **V03: ACCEPT as NO-BUILD. PROVEN 4 (A01, A02, A04, A05), plus A03 reclassified OWED → PROVEN-BY-RECEIPT.**
+  - O.10 lens: the census searched only in-tree tests and truncated review bodies to 400 characters.
+  - Comment 5948959305 records an independent `fractions.Fraction` oracle: 4,214 portfolios, 0 mismatches, on engine sha256 `5e1a52594ca1…3c86`.
+  - `terminal/lib/optionsPayoff.ts` at #781 head `85d9f4ea` hashes to exactly `5e1a52594ca1…3c86`, byte-identical (the last engine commit is `fd3504e0`, 2026-10-02).
+  - Remaining upgrade: wire that oracle into CI.
+  - **Real minor display defect, verified.** `PayoffLab.tsx:137` uses 0 fraction digits for every |v| ≥ 100. The max-loss KPI `money(analysis.maxLoss)` at `:220` renders the engine's `800.01` as `$800`. The view tests assert only whole-dollar amounts.
+  - Also: `reset` (`:211-215`) does not restore the shared expiration.
+  - Routed once to the carrier owner as issuecomment-6159214546; custody stays with Sol. #781 is still CONFLICTING and CHANGES_REQUESTED, with the required check red from `drawing-system.spec.ts:1712` (another owner's spec).
+
+Census outcome: of the 12 wave-3 packages, none needs a new build lane today. One latent Terminal defect (N02-U2) is buildable, and one display finding has been routed to #781.
+
+**FACTS at 02:01Z.**
+- #985 `9c5a244d` and #983 `650d7005`: refreshed runs in progress, merge state BLOCKED, with `merge-on-green`.
+- Macro #8920 carries `merge-refresh-in-flight`; #9079, #9083 and #8923 carry `merge-on-green`.
+- #723's GitHub head is `bd76f2c9` (draft, updated 02:00:32Z). That is the coordinator's act; this seat monitors only.
+
+**NEXT.**
+1. N02-U2 fail-closed `asDisposition`: commission it as a small Grok lane (owned files `terminal/components/prophet/optionsAlphaCandidateFeed.ts` plus a new vitest; confirm it is not on #723's list) or justify direct work under L.7.
+2. #985/#983: merge, then the git-gated deploy and live verify.
+3. Macro D04-A2 after #8923 merges.
+4. M04 red specs after #8684/#8920 land.
