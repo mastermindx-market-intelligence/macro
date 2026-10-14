@@ -22,6 +22,14 @@ data. Every factual claim about the codebase carries a file:line citation; every
 registry/cohort fact the lane did not re-measure is cited "measured by ORCH-SCI
 2026-10-14".
 
+**Review integration.** One adversarial review (lane `LR-T10-2`, 12 findings: 2
+blocker, 7 major, 3 minor) was integrated by ORCH-SCI before merge, on the drafted text
+at `35ef7a207cc9`. Every integrated change is a unit definition, a denominator, an order
+of operations or a test construction that the frozen decisions left unstated, so that a
+harness can run this document without making a further analytical choice. No frozen
+number, arm, horizon, partition date, margin, seed, block length or replicate count was
+changed, and no market outcome had been read by anyone when the choices were made.
+
 ---
 
 ## §0 Status & identity
@@ -184,6 +192,16 @@ claims throughout V1.
   earlier execution (A32).
 - **Outcome states, kept distinct, never dropped from denominators:** `MATURED`,
   `IMMATURE`, `UNPRICEABLE` (missing leg at `o` or `o+h`), `SOURCE_INVALID`.
+- **Unit convention (binding):** 1 log-ratio point = 0.01 in the log units of `Y_h`.
+  The H2 margin (+0.50 log-ratio points) and the H3 margin (+0.25 log-ratio points) are
+  therefore +0.0050 and +0.0025 in `Y_20` / `Y_20^res` — the same scale as the §8 P0
+  drift grid δ ∈ {0, 0.25 %, 0.5 %, 1.0 %} per 20 sessions.
+- **Per-metric denominators (binding):** coverage uses all four outcome states and
+  UNMEASURED pair-days (§7 clause 3); means of `Y_h` / `Y_h^res` are over MATURED
+  entries only, with the IMMATURE, UNPRICEABLE and SOURCE_INVALID counts printed beside
+  every mean; the detection-rate denominator is the partition's §5 zig-zag onsets
+  (MISSES included); the false-start-rate denominator is MATURED entries at `h = 20`. No
+  metric reclassifies an UNMEASURED day as zero.
 
 ---
 
@@ -205,6 +223,13 @@ claims throughout V1.
 | **B6** known-window carry / zero-new-return placebo | recompute A1 with the day-`t` fresh return set to zero; an entry that still fires is expiry-driven ("carry entry"); its share is reported (A31). |
 | **B7** abstention | no transition called. |
 | **C3a/C3b** breadth arms (development/prospective only, SOURCE_LIMITED) | C3a = breadth level of the receiver sector (`pct_above_50`); C3b = level + 5-session change; same ± hysteresis form. |
+
+**Order of operations (binding, every arm):** raw daily states → the arm's onset
+definition (A0: `positive_2s` days, then the ≥ 5-session suppression transform;
+A1/A2/B3/C3: hysteresis entries; B2: crossings) → the §8 within-pair 20-session merge
+(the later onset is a repeated alarm) → §5 one-event/one-attempt matching. Burden =
+unmatched alarm onsets per pair-year, computed after the merge. The A0 comparison uses
+suppressed onsets; A0's raw burden is printed beside it and is never substituted.
 
 **Incumbent vocabulary (context, measured by ORCH-SCI 2026-10-14):** the producer's
 context states are MIXED_ROTATION / DEFENSIVE_RELATIVE_STRENGTH / BROADENING /
@@ -256,7 +281,7 @@ descriptive sensitivity only (never in a verdict).**
 |---|---|---|
 | **P0** synthetic | No market data; any number of runs (power design §8). | Synthetic; sizes the test, supports no market claim. |
 | **P1** development / discovery | Formation **2015-01-02 → 2026-10-12**, outcomes truncated as IMMATURE past the last close. Contaminated (roster §11). Every P1 number is labelled **DEVELOPMENT** and can support no claim. Every arm/metric computed in P1 is counted and the count is reported. | DEVELOPMENT only. |
-| **P2** era-inspected reconstructed holdout | Formation from each pair's first eligible session (leg start + 252-session warm-up) to the last session with `o+c+63 ≤ 2014-12-31`; **63-session embargo before P1**. Exactly **ONE look for the whole family**. Because 1998-12 → 2014 was already inspected by `thematic_rotation_phase0` and was the in-sample of `defensive_rotation_phase0` (§11), P2 is **FALSIFICATION-ONLY**: it can issue `NOT_SUPPORTED` (binding, preserved) or `CONSISTENT` (no claim) — it can **NEVER** issue `SUPPORTED`. | RECONSTRUCTED (`naturally_observed=false`). |
+| **P2** era-inspected reconstructed holdout | Formation from each pair's first eligible session (the first pair-session — an NYSE session on which both legs trade — that is preceded by 252 pair-sessions on which both legs traded) to the last session with `o+c+63 ≤ 2014-12-31`; **63-session embargo before P1**. Exactly **ONE look for the whole family**. Because 1998-12 → 2014 was already inspected by `thematic_rotation_phase0` and was the in-sample of `defensive_rotation_phase0` (§11), P2 is **FALSIFICATION-ONLY**: it can issue `NOT_SUPPORTED` (binding, preserved) or `CONSISTENT` (no claim) — it can **NEVER** issue `SUPPORTED`. | RECONSTRUCTED (`naturally_observed=false`). |
 | **P3** prospective confirmatory accrual | Formation dates from the **first NYSE session after the UTC date on which this document merges to main**. The ONLY partition that can issue `SUPPORTED`. | Prospective. |
 
 **P3 look budget.** Look 1 when every (hypothesis, group) has ≥ 20 matured honest-N
@@ -285,9 +310,17 @@ clusters for that hypothesis × group; underpowered ≠ no effect) · `IMMATURE`
 
 1. **Incremental value:** point estimate ≥ practical margin AND one-sided bootstrap
    lower bound > 0, after Holm across the 6 tests H1–H3 × 2 groups.
-2. **Stability:** same sign in ≥ 2 of 3 chronological thirds of the partition.
-3. **Coverage:** evaluable pair-days ≥ 80 % of registered pair-days; all-event and
-   supported coverage both printed with withheld states (A35).
+2. **Stability:** the read partition's calendar pair-sessions are split into three
+   contiguous blocks of equal count; a cluster belongs to the third containing its
+   earliest-onset date and is never split; the clause holds when the point estimate
+   restricted to each third's clusters has the same sign as the full-partition point
+   estimate in ≥ 2 of 3 thirds.
+3. **Coverage:** all-event coverage ≥ 80 %. Denominator = every NYSE pair-session of
+   the group's registered pairs (§2) from each pair's first eligible session (§6)
+   through the partition's last formation session — UNMEASURED and all four outcome
+   states included. Numerator = pair-days MATURED with a finite `Y_20`. The gate applies
+   to all-event coverage only; supported coverage is printed beside it with the
+   withheld-state counts (A35) and is never the gated quantity.
 4. **False-alarm burden:** below, per hypothesis.
 5. **Minimum support:** ≥ 20 honest-N clusters.
 
@@ -302,10 +335,28 @@ probabilities and must not be presented as such.
 - AND versus A0 suppressed onsets: A1 cuts burden by ≥ 25 % with detection rate no more
   than 10 pp lower.
 
+**H1 test construction (binding).** H1 is an intersection–union test of its two
+conditions. Condition (a), versus A2: statistic = A1's median-delay reduction versus A2,
+in sessions; margin ≥ 5; the burden (+0.5) and detection (5 pp) clauses are
+non-inferiority pass clauses judged on their point estimates, with bootstrap intervals
+printed. Condition (b), versus A0 suppressed onsets: statistic = A1's relative burden
+reduction `1 − burden_A1 / burden_A0`; margin ≥ 0.25; the detection (10 pp) clause is a
+non-inferiority pass clause judged on its point estimate, with its interval printed.
+Each condition's one-sided p-value is computed from its own statistic (§8); the H1
+p-value entered into the Holm family is the larger of the two, and H1 meets clause 1 only
+if both conditions meet their margins.
+
 **H2 margins:** mean `Y_20` after A1 entries minus the better of B1 and B2 at the same
 pairs/partition ≥ **+0.50 log-ratio points**. Safety endpoint: A1's 20-session
 false-start rate (`Y_20 ≤ 0`) no more than 5 pp worse than B2's. Cost-of-delay (A1 at
 `o` vs `o_c`) and B6 carry share always printed.
+
+**"The better of B1 and B2" (binding):** the baseline with the higher mean `Y_20` over
+its own entry/formation set in the read partition — a within-read conservative maximum
+that can only shrink A1's margin. The same maximum is re-taken inside every bootstrap
+replicate; no P1 outcome selects the baseline. For H2 and H3 the statistic entering
+Holm is the margin quantity itself (A1 minus the better of B1/B2 on `Y_20`; A1 minus B3
+on `Y_20^res`).
 
 **H3 margins:** on residual targets `Y_20^res`, mean after pair entries (A1) minus mean
 after receiver-only leg entries (B3) ≥ **+0.25 log-ratio points**. Overlap rule: pairs
@@ -319,11 +370,19 @@ disclosed, not assumed zero.
 **Honest-N = number of common-shock clusters.** Events of the same group whose onsets
 fall within ±10 sessions form one cluster; within one pair, entries closer than 20
 sessions are merged (the later is a repeated alarm). Overlapping pairs and days are not
-N.
+N. Cluster formation is single-linkage (the transitive closure of the ±10-session rule).
+A cluster's calendar coordinate — for the block bootstrap and for the §7 stability
+thirds — is its earliest onset date.
 
 **Uncertainty:** stationary block bootstrap over calendar time, mean block 21 sessions,
 2000 replicates, clusters resampled whole, seed 20261014; report the two-sided 90 %
 interval and the one-sided lower bound.
+
+**Family p-values (binding):** each of the 6 family p-values is the one-sided bootstrap
+p-value `p = (1 + #{replicates with statistic ≤ 0}) / (1 + 2000)`. "One-sided bootstrap
+lower bound > 0 after Holm" (§7 clause 1) means the Holm-adjusted p-value is below the
+look's one-sided α = 0.025 — P2 and P3 alike; raw and Holm-adjusted p-values are both
+printed. P1 computes the same quantities, labelled DEVELOPMENT.
 
 **P0 synthetic power design** (run by the T11–T14 harness before any P2/P3 read; no
 market data): simulated `R` paths with daily vol σ ∈ {0.7 %, 1.0 %, 1.4 %}, planted
@@ -347,24 +406,24 @@ known expiry arithmetic; etc.) — never a live market claim.
 ## §9 DNR-to-hypothesis mapping (D9, A28)
 
 Rows transcribed from the commission (verified present in
-`research/DO_NOT_REBUILD.md`, line numbers as of base `54195c10bbeb` — cite as
-`DNR:<KEY>`, never by line):
+`research/DO_NOT_REBUILD.md` at base `54195c10bbeb`; cited by key only — `DNR:<KEY>`,
+never by row/line number, per that registry's own rule):
 
 | Row | Does / does not touch V1 |
 |---|---|
-| `DNR:KILL-ROTATION-CYCLE-CONFLUENCE` (L43) | DOES NOT TOUCH — no cycle conditioner, no rotation×cycle arm; `sector_cycles` is not read. |
-| `DNR:KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE` (L134) | DOES NOT TOUCH as the killed construction — killed: 11-GICS-sector, member-level, rank-linear group features against relative-to-SPY forward 20/60 returns, formation 2022-07-06..2026-06-02. H2 differs in unit (registered ETF pair ratio, not members), form (state-entry event, not rank-linear), and target (pair ratio, not member vs SPY). The killed formation window lies inside P1 (development only) and is never confirmatory; P3 is gated on post-merge formation dates as that row demands; P2 admission is reserved to a seat ruling (§6 act 5). |
-| `DNR:KILL-ROTATION-SCHEDULE` (L60) | DOES NOT TOUCH — no new display artifact or parallel surface; this is a study protocol only. |
-| `DNR:KILL-ROTATION-TM-KEEPS` (L97) | DOES NOT TOUCH — no same-complex Time-Machine keeps; intra-sector subsector pairs are excluded. |
-| `DNR:KILL-POSITIONING-FUSION` (L39) | DOES NOT TOUCH — no positioning/flow/options input, no fused score. |
-| `DNR:KILL-SPONSORSHIP-SCORE` (L110) | DOES NOT TOUCH — no fused score of any kind. |
-| `DNR:KILL-DEFENSIVE-FLOOR-BUNDLE` (L72) | DOES NOT TOUCH — no count-conjunction bundle; group states are reported, never fused into a floor. |
-| `DNR:KILL-OUTCOME-AUDITION` (L76) | DOES NOT TOUCH — one arm setting for every pair; no per-pair best-of-grid selection. |
-| `DNR:KILL-PSS-SR2-PEER-DIFFUSION` (L83) | DOES NOT TOUCH — no name-level peer diffusion. |
-| `DNR:KILL-PSS-SR3-PARTICIPATION` (L84) | DOES NOT TOUCH — no name-level participation construction. |
-| `DNR:HOLD-FACTOR-UNIVERSE-WIDENING` (L172) | DOES NOT TOUCH — no factor-universe change. |
-| `DNR:KILL-COMMODITY-XSEC-MOM` (L123) | DOES NOT TOUCH — no cross-sectional momentum long/short portfolio. |
-| LLM in detection | NONE — constitution A7; backed by `DNR:KILL-LLM-ORIGINATION` (L40) and the non-inputs list of §4. |
+| `DNR:KILL-ROTATION-CYCLE-CONFLUENCE` | DOES NOT TOUCH — no cycle conditioner, no rotation×cycle arm; `sector_cycles` is not read. |
+| `DNR:KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE` | DOES NOT TOUCH as the killed construction — killed: 11-GICS-sector, member-level, rank-linear group features against relative-to-SPY forward 20/60 returns, formation 2022-07-06..2026-06-02. H2 differs in unit (registered ETF pair ratio, not members), form (state-entry event, not rank-linear), and target (pair ratio, not member vs SPY). The killed formation window lies inside P1 (development only) and is never confirmatory; P3 is gated on post-merge formation dates as that row demands; P2 admission is reserved to a seat ruling (§6 act 5). |
+| `DNR:KILL-ROTATION-SCHEDULE` | DOES NOT TOUCH — no new display artifact or parallel surface; this is a study protocol only. |
+| `DNR:KILL-ROTATION-TM-KEEPS` | DOES NOT TOUCH — no same-complex Time-Machine keeps; intra-sector subsector pairs are excluded. |
+| `DNR:KILL-POSITIONING-FUSION` | DOES NOT TOUCH — no positioning/flow/options input, no fused score. |
+| `DNR:KILL-SPONSORSHIP-SCORE` | DOES NOT TOUCH — no fused score of any kind. |
+| `DNR:KILL-DEFENSIVE-FLOOR-BUNDLE` | DOES NOT TOUCH — no count-conjunction bundle; group states are reported, never fused into a floor. |
+| `DNR:KILL-OUTCOME-AUDITION` | DOES NOT TOUCH — one arm setting for every pair; no per-pair best-of-grid selection. |
+| `DNR:KILL-PSS-SR2-PEER-DIFFUSION` | DOES NOT TOUCH — no name-level peer diffusion. |
+| `DNR:KILL-PSS-SR3-PARTICIPATION` | DOES NOT TOUCH — no name-level participation construction. |
+| `DNR:HOLD-FACTOR-UNIVERSE-WIDENING` | DOES NOT TOUCH — no factor-universe change. |
+| `DNR:KILL-COMMODITY-XSEC-MOM` | DOES NOT TOUCH — no cross-sectional momentum long/short portfolio. |
+| LLM in detection | NONE — constitution A7; backed by `DNR:KILL-LLM-ORIGINATION` and the non-inputs list of §4. |
 
 **Additional rows found by this lane's grep** of `research/DO_NOT_REBUILD.md` for
 rotation / sector / breadth / leadership / handoff / momentum / relative strength, each
@@ -372,26 +431,26 @@ with its does/does-not-touch line:
 
 | Row | Match | Does / does not touch V1 |
 |---|---|---|
-| `DNR:KILL-REGIME-SCORECARD` (L62) | breadth fusion into a regime verdict | DOES NOT TOUCH — no composite regime score; C3 breadth arms are standalone level-vs-level+change comparisons, never fused. |
-| `DNR:KILL-COMPOSITE-REGIME-RELIABILITY-MONITOR` (L128) | breadth + leadership in a 16-input fusion list | DOES NOT TOUCH — no composite monitor; per-arm measurement only. |
-| `DNR:KILL-FORCED-CALLS` (L124) | Mag-7 "leadership board" | DOES NOT TOUCH as a construction — the row closes operator-forced un-gauntleted directional calls on signal surfaces and says a leadership read may return "only via prereg + gauntlet"; V1 IS that prereg path, and pins nothing to any signal surface. |
-| `DNR:KILL-DOW-TRANSPORTS` (L118) | "rotation physics" in the ruling text | DOES NOT TOUCH — no Dow-theory transports leg; the defensive radar legs that row cites are unrelated display organs. |
-| `DNR:KILL-PER-SIGNAL-FAMILY-RELIABILITY` (L129) | "momentum reliability" grid | DOES NOT TOUCH — no family×regime reliability table; registered arms on registered partitions only. |
-| `DNR:KILL-LIQUIDITY-SHOCK-REVERSAL-CLASSIFIER` (L130) | "momentum base state" in the ruling text | DOES NOT TOUCH — no shock classifier; no mean-reversion arm. |
-| `DNR:KILL-CN-SUPPLY-ABSORPTION` (L112) | "price-only absorption ≡ momentum" | DOES NOT TOUCH — CN share-supply family; different market, unit, construction. |
-| `DNR:KILL-ASHARE-SUBSECTOR-GATE` (L92) | "subsector" | DOES NOT TOUCH — A-share subsector state gating; V1's cohort is US sector ETF pairs and gates nothing. |
-| `DNR:KILL-MCO-THRUST` (L115) | "advanced_breadth" display homes | DOES NOT TOUCH — no McClellan thrust; C3 uses `pct_above_50` level/level+change only. |
-| `DNR:KILL-PSS-F3-RESIDUAL` (L79) | "beta-stripped vs sector ETF" | DOES NOT TOUCH as a construction — name-level residual-reset timers are closed; H3's residual target is pair-level with past-only betas and B4 is a control arm, not a standalone promotion. |
-| `DNR:KILL-PSS-SR1-ELASTICITY` (L82) | "same-sector-pulse clusters" | DOES NOT TOUCH — name-level stress-elasticity construction. |
-| `DNR:KILL-PRIMED-DIRECTIONAL-GATE` (L127) | "breadth/smallcap universe" revival clause | DOES NOT TOUCH — bottom-radar PRIMED gating; unrelated. |
-| `DNR:KILL-200DMA-RECLAIM-VETO-FLAT` (L131) | "CN handoff §6 machinery" doc pointer | DOES NOT TOUCH — US 200dma reclaim veto; "handoff" appears only as a document pointer. |
-| `DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE` (L133) | "sector/group persistence" revival clause | DOES NOT TOUCH as a construction — trailing path-shape features against forward drawdown are closed; its revival clause anticipates exactly a fresh prereg, and V1 is pair-level with different unit, form and target. |
-| `DNR:HOLD-PSS-CR1-CHALLENGE` (L156) | "sector-pullback" | DOES NOT TOUCH — name-level prospective charters. |
-| `DNR:HOLD-IGNITION-SURFACES` (L171) | "single-sector bids" | DOES NOT TOUCH — V1 opens no user-facing surface; T10 writes one research document. |
-| `DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION` (L65) | "Ledger rotation/sharding" | DOES NOT TOUCH — "rotation" there is ledger sharding; V1 touches no options-context audit ledger. |
-| `DNR:KILL-PARALLEL-KNOWLEDGE-BASE` (L63) | path fragment `agentos/handoffs` | DOES NOT TOUCH — string-level match only (and the row is OVERRULED 2026-08-12 regardless); V1 creates no knowledge store. |
-| `LAW-REVIEWED-MANIFEST-CENSUS` (L149) | "handoff §2.4/2.5" doc pointer | DOES NOT TOUCH — estimator law about manifest censuses; string-level match only. |
-| `DNR:KILL-RS-DISPERSION-GATES` (L44) | found by inspection (abbreviation "rs" is not matched by the grep pattern) | DOES NOT TOUCH — member-level relative-strength dispersion gates; V1's arms are pair-ratio level with no member dispersion gating. |
+| `DNR:KILL-REGIME-SCORECARD` | breadth fusion into a regime verdict | DOES NOT TOUCH — no composite regime score; C3 breadth arms are standalone level-vs-level+change comparisons, never fused. |
+| `DNR:KILL-COMPOSITE-REGIME-RELIABILITY-MONITOR` | breadth + leadership in a 16-input fusion list | DOES NOT TOUCH — no composite monitor; per-arm measurement only. |
+| `DNR:KILL-FORCED-CALLS` | Mag-7 "leadership board" | DOES NOT TOUCH as a construction — the row closes operator-forced un-gauntleted directional calls on signal surfaces and says a leadership read may return "only via prereg + gauntlet"; V1 IS that prereg path, and pins nothing to any signal surface. |
+| `DNR:KILL-DOW-TRANSPORTS` | "rotation physics" in the ruling text | DOES NOT TOUCH — no Dow-theory transports leg; the defensive radar legs that row cites are unrelated display organs. |
+| `DNR:KILL-PER-SIGNAL-FAMILY-RELIABILITY` | "momentum reliability" grid | DOES NOT TOUCH — no family×regime reliability table; registered arms on registered partitions only. |
+| `DNR:KILL-LIQUIDITY-SHOCK-REVERSAL-CLASSIFIER` | "momentum base state" in the ruling text | DOES NOT TOUCH — no shock classifier; no mean-reversion arm. |
+| `DNR:KILL-CN-SUPPLY-ABSORPTION` | "price-only absorption ≡ momentum" | DOES NOT TOUCH — CN share-supply family; different market, unit, construction. |
+| `DNR:KILL-ASHARE-SUBSECTOR-GATE` | "subsector" | DOES NOT TOUCH — A-share subsector state gating; V1's cohort is US sector ETF pairs and gates nothing. |
+| `DNR:KILL-MCO-THRUST` | "advanced_breadth" display homes | DOES NOT TOUCH — no McClellan thrust; C3 uses `pct_above_50` level/level+change only. |
+| `DNR:KILL-PSS-F3-RESIDUAL` | "beta-stripped vs sector ETF" | DOES NOT TOUCH as a construction — name-level residual-reset timers are closed; H3's residual target is pair-level with past-only betas and B4 is a control arm, not a standalone promotion. |
+| `DNR:KILL-PSS-SR1-ELASTICITY` | "same-sector-pulse clusters" | DOES NOT TOUCH — name-level stress-elasticity construction. |
+| `DNR:KILL-PRIMED-DIRECTIONAL-GATE` | "breadth/smallcap universe" revival clause | DOES NOT TOUCH — bottom-radar PRIMED gating; unrelated. |
+| `DNR:KILL-200DMA-RECLAIM-VETO-FLAT` | "CN handoff §6 machinery" doc pointer | DOES NOT TOUCH — US 200dma reclaim veto; "handoff" appears only as a document pointer. |
+| `DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE` | "sector/group persistence" revival clause | DOES NOT TOUCH as a construction — trailing path-shape features against forward drawdown are closed; its revival clause anticipates exactly a fresh prereg, and V1 is pair-level with different unit, form and target. |
+| `DNR:HOLD-PSS-CR1-CHALLENGE` | "sector-pullback" | DOES NOT TOUCH — name-level prospective charters. |
+| `DNR:HOLD-IGNITION-SURFACES` | "single-sector bids" | DOES NOT TOUCH — V1 opens no user-facing surface; T10 writes one research document. |
+| `DNR:KILL-OPTIONS-CONTEXT-AUDIT-OWNER-EVICTION` | "Ledger rotation/sharding" | DOES NOT TOUCH — "rotation" there is ledger sharding; V1 touches no options-context audit ledger. |
+| `DNR:KILL-PARALLEL-KNOWLEDGE-BASE` | path fragment `agentos/handoffs` | DOES NOT TOUCH — string-level match only (and the row is OVERRULED 2026-08-12 regardless); V1 creates no knowledge store. |
+| `LAW-REVIEWED-MANIFEST-CENSUS` | "handoff §2.4/2.5" doc pointer | DOES NOT TOUCH — estimator law about manifest censuses; string-level match only. |
+| `DNR:KILL-RS-DISPERSION-GATES` | found by inspection (abbreviation "rs" is not matched by the grep pattern) | DOES NOT TOUCH — member-level relative-strength dispersion gates; V1's arms are pair-ratio level with no member dispersion gating. |
 
 ---
 
@@ -487,6 +546,18 @@ Every T11–T14 study writes
 Every field named in SCIENCE_PROTOCOL §3, mapped to the section of THIS document that
 binds it, or to an explicit `NOT_EXECUTABLE`/`NOT_APPLICABLE` status with reason. No
 field is blank.
+
+Source of the field list: `SCIENCE_PROTOCOL.md` §3 of the Chairman's leadership-rotation
+masterplan (2026-10-13), which has no copy in this repository. The list is reproduced
+verbatim so the checklist can be audited here: *hypothesis ID; old trial/kill
+relationship; consumer task; group identities and effective membership; universe
+inclusion/exclusion and contamination; source/use rights; first-known/vintage/correction
+contract; dates and split roles; target/benchmark/currency; weighting/rebalance; allowed
+features and their supports; issue/price-entry rule; outcome maturity and missingness;
+model family and capacity; finite tuning grid; comparable baselines; primary and safety
+endpoints; practical margins; power and independent-block assumptions;
+dependence/multiplicity/look budget; confirmation custodian; and exact scripts/source
+revisions.* (22 fields; 22 rows below.)
 
 | SCIENCE_PROTOCOL §3 field | Bound by |
 |---|---|
