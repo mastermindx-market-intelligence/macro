@@ -21,6 +21,14 @@ from engine.research_vault import fulltext, fulltext_store
 from engine.research_vault import producer_generation as contract
 
 
+# Two opaque versions can appear after a catalog effect (readback and terminal).
+# At worst JSON escapes each UTF-8 byte as six bytes; 64KiB covers both, the
+# result record and their bounded metadata. The synchronous writer does not
+# append other operations between that intent and its acknowledgement records.
+CATALOG_VERSION_MAX_BYTES = 4096
+POST_EFFECT_EVIDENCE_BYTES = 64 * 1024
+
+
 class GenerationWriteUnavailable(RuntimeError):
     """Refusal or uncertain write; caller must not retry or publish COMPLETE."""
 
@@ -51,6 +59,11 @@ def _catalog_read(store: Any):
     if (type(value.data) is not bytes or len(value.data) > contract.CATALOG_MAX_BYTES
             or type(value.version) is not str or not value.version):
         raise GenerationWriteUnavailable("invalid catalog versioned read")
+    try:
+        if len(value.version.encode("utf-8")) > CATALOG_VERSION_MAX_BYTES:
+            raise GenerationWriteUnavailable("catalog version outside evidence bound")
+    except UnicodeError:
+        raise GenerationWriteUnavailable("invalid catalog version encoding") from None
     return value
 
 
@@ -125,7 +138,8 @@ class ProducerGenerationSession:
                 or not isinstance(identity["source_commit"], str)
                 or len(identity["source_commit"]) != 40
                 or any(c not in "0123456789abcdef" for c in identity["source_commit"])
-                or not isinstance(identity["run"], str) or not identity["run"].strip()):
+                or not isinstance(identity["run"], str) or not identity["run"]
+                or identity["run"] != identity["run"].strip()):
             raise GenerationWriteUnavailable("explicit producer identity required")
         if evidence is not None:
             from engine.research_vault.generation_evidence import FileGenerationEvidence
@@ -182,11 +196,11 @@ class ProducerGenerationSession:
         self.failure = reason
         raise GenerationWriteUnavailable(reason)
 
-    def _evidence(self, kind: str, payload: dict):
+    def _evidence(self, kind: str, payload: dict, *, reserve_bytes=0):
         if self.evidence is None:
             return None
         try:
-            return self.evidence.append(kind, payload)
+            return self.evidence.append(kind, payload, reserve_bytes=reserve_bytes)
         except Exception as exc:
             self._fail("original-run evidence unavailable: " + type(exc).__name__)
 
@@ -203,7 +217,8 @@ class ProducerGenerationSession:
         # records their actual write digest, never duplicates report contents.
         if key == catalog_mod.CATALOG_KEY:
             payload["catalog_base64"] = base64.b64encode(data).decode("ascii")
-        return self._evidence("write_intent", payload)
+        return self._evidence("write_intent", payload,
+                              reserve_bytes=POST_EFFECT_EVIDENCE_BYTES)
 
     def _result(self, operation, outcome: str):
         if self.evidence is not None:
@@ -323,13 +338,18 @@ class ProducerGenerationSession:
             return self._complete(document, now=now)
         except Exception as exc:
             self.active = False
-            self.failure = "completion refused: " + type(exc).__name__
+            if not self.failure:
+                self.failure = "completion refused: " + type(exc).__name__
             if isinstance(exc, GenerationWriteUnavailable):
                 raise
             raise GenerationWriteUnavailable(self.failure) from None
 
     def _complete(self, document: dict, *, now: datetime) -> bytes:
         self.assert_current()
+        published = catalog_mod.parse_strict(self.catalog_bytes, check_future_clock=False)
+        if (contract.compute_catalog_payload_digest(document)
+                != contract.compute_catalog_payload_digest(published)):
+            self._fail("completion catalog was not published in BUILDING")
         if (not isinstance(now, datetime) or now.tzinfo is None
                 or int(now.timestamp()) < self.record["started_at"]):
             self._fail("explicit completion clock must follow start")

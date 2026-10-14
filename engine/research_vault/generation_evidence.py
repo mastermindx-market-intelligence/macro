@@ -65,7 +65,7 @@ class FileGenerationEvidence:
         if (not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.getuid()
                 or parent.st_mode & 0o077):
             raise EvidenceUnavailable("existing private original-run directory required")
-        fd = None
+        fd, obj = None, None
         try:
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
             _private_regular(fd)
@@ -84,24 +84,33 @@ class FileGenerationEvidence:
                 os.close(directory)
             return obj
         except Exception as exc:
+            if obj is not None:
+                obj._fd = None
             if fd is not None:
-                os.close(fd)
+                try:
+                    os.close(fd)
+                except OSError:
+                    # close may already have released the descriptor. Never
+                    # retry it: the process may have reused that integer.
+                    pass
             raise EvidenceUnavailable("evidence creation unavailable: " + type(exc).__name__) from None
 
-    def append(self, kind, payload):
+    def append(self, kind, payload, *, reserve_bytes=0):
         if type(kind) is not str or kind not in KINDS:
             raise EvidenceUnavailable("unsupported evidence event")
-        return self._append(kind, payload)
+        return self._append(kind, payload, reserve_bytes=reserve_bytes)
 
     @property
     def identity(self):
         return dict(self._identity)
 
-    def _append(self, kind, payload):
+    def _append(self, kind, payload, *, reserve_bytes=0):
         if self._fd is None or self._poisoned:
             raise EvidenceUnavailable("evidence sink closed or uncertain")
         if type(payload) is not dict:
             raise EvidenceUnavailable("evidence payload must be a mapping")
+        if type(reserve_bytes) is not int or not 0 <= reserve_bytes <= self._bound:
+            raise EvidenceUnavailable("invalid evidence reservation budget")
         event = {"kind": kind, "payload": payload}
         document = {"schema": SCHEMA, "sequence": self._sequence,
                     "previous_sha256": self._previous, "event": event}
@@ -110,7 +119,7 @@ class FileGenerationEvidence:
                                separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
         except (TypeError, ValueError, UnicodeError):
             raise EvidenceUnavailable("noncanonical evidence payload") from None
-        if len(data) > MAX_LINE_BYTES or self._bytes + len(data) > self._bound:
+        if len(data) > MAX_LINE_BYTES or self._bytes + len(data) + reserve_bytes > self._bound:
             raise EvidenceUnavailable("evidence byte budget exhausted")
         try:
             remaining = memoryview(data)
@@ -131,8 +140,12 @@ class FileGenerationEvidence:
 
     def close(self):
         if self._fd is not None:
-            os.close(self._fd)
+            fd = self._fd
             self._fd = None
+            try:
+                os.close(fd)
+            except OSError as exc:
+                raise EvidenceUnavailable("evidence close uncertain: " + type(exc).__name__) from None
 
     def __enter__(self):
         return self

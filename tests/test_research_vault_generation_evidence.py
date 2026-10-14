@@ -369,3 +369,49 @@ def test_reader_total_bound_and_budget_refusal_preserve_bytes(tmp_path):
         assert p.read_bytes() == before
     with pytest.raises(EvidenceUnavailable):
         read_evidence(p, expected_identity=_identity(), max_bytes=1)
+
+
+def test_close_failure_never_retries_a_reused_descriptor(tmp_path, monkeypatch):
+    w = FileGenerationEvidence.create(tmp_path / "original.jsonl", _identity())
+    original_fd = w._fd
+    real_close = os.close
+    reused = []
+    def lost_close(fd):
+        real_close(fd)
+        reused.append(os.open(tmp_path / "unrelated", os.O_WRONLY | os.O_CREAT, 0o600))
+        assert reused[0] == original_fd
+        raise OSError("close completed but return failed")
+    try:
+        with monkeypatch.context() as scoped:
+            scoped.setattr(os, "close", lost_close)
+            with pytest.raises(EvidenceUnavailable, match="close uncertain"):
+                w.close()
+        w.close()
+        os.fstat(reused[0])
+        with pytest.raises(EvidenceUnavailable, match="closed"):
+            w.append("terminal", {})
+    finally:
+        real_close(reused[0])
+
+
+def test_reservation_refuses_without_appending_intent(tmp_path):
+    p = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(p, _identity(), max_bytes=4096) as w:
+        before = p.read_bytes()
+        with pytest.raises(EvidenceUnavailable, match="budget"):
+            w.append("write_intent", {"key": "synthetic"}, reserve_bytes=4096)
+        assert p.read_bytes() == before
+
+
+def test_reserved_budget_covers_worst_bounded_catalog_acknowledgements(tmp_path):
+    p = tmp_path / "original.jsonl"
+    with FileGenerationEvidence.create(p, _identity(), max_bytes=66000) as w:
+        operation = w.append("write_intent", {}, reserve_bytes=65536)
+        # Control characters require six JSON bytes each, the largest UTF-8 to
+        # JSON expansion. Both readback and terminal retain the opaque version.
+        version = "\x00" * 4096
+        w.append("write_result", {"operation": operation, "outcome": "exception_effect_unknown"})
+        w.append("catalog_observed", {"sha256": "a" * 64, "version": version, "operation": operation})
+        w.append("terminal", {"epoch": "x" * 36, "state": "COMPLETE",
+                              "catalog_sha256": "b" * 64, "catalog_version": version})
+    assert len(read_evidence(p, expected_identity=_identity())) == 5

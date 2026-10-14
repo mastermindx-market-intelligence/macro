@@ -28,7 +28,12 @@ evidence persistence fails. A failure after a remote effect leaves the original
 intent available and closes the session; it is never rewritten as success.
 
 The default hard limit is128MiB, with a32MiB per-record limit. A caller may narrow
-the total. Corpus and PDF bodies are not copied into this file. Actual catalog
+the total. Before every covered write, its intent must also leave64KiB for the
+synchronous result, catalog readback and possible COMPLETE terminal record.
+Opaque catalog versions are bounded to4096UTF-8bytes, so even their worst JSON
+escaping fits that reserve. Budget exhaustion therefore refuses before the
+effect; an actual disk/I/O failure after it still leaves an uncertain operation.
+Corpus and PDF bodies are not copied into this file. Actual catalog
 intents and pending receipt bodies are private and must stay on the original
 private run/artifact carrier. Nothing writes them to the repository mirror,
 GitHub source, a new object-store namespace or another scheduler.
@@ -63,6 +68,30 @@ adoption the owner still owes that supported continuation path, actual executed
 source/run binding for every recurring invocation, all-writer settlement,
 measured run/evidence budgets, and a successful producer-published generation.
 Missing evidence must remain a safe refusal even if the original host disappears.
+
+COMPLETE must use the non-generation catalog payload already published by the
+same BUILDING session. It cannot introduce a changed body during completion.
+Ordinary BUILDING checkpoints may still publish changed payloads. Refusals keep
+their specific cause on later use. Run identities reject surrounding whitespace,
+and a failed close invalidates the local descriptor before reporting uncertainty
+so a subsequent close cannot target an unrelated descriptor reused by the OS.
+
+## Independent review disposition
+
+The retained Qwen review of source0fdf71e277ab90a5ba48d39f8b3f1ab14f61e35a
+identified six items. The post-effect budget gap, unpublished COMPLETE payload,
+identity whitespace, close handling and overwritten refusal reason are repaired
+with causal failing tests. Exact catalog checkpoint bytes remain retained; a
+hash-only replacement would lose the original visibility intent. The128MiB run
+limit still requires workload qualification before adoption.
+
+The suggested generic mutator-name deny-list is not applied: an actual census
+of both current R2Store and LocalStore public APIs found exactly two mutators,
+`put_bytes` and `put_bytes_strict_conditional`, both intercepted by the fence.
+This cooperative wrapper is not a sandbox for arbitrary future/custom APIs.
+The review also suggested rejecting changed checkpoint bodies; that part is not
+applied because publishing changes is the purpose of a BUILDING checkpoint.
+The new payload-equality check applies at completion only.
 
 ## Verification
 

@@ -93,7 +93,7 @@ def test_failed_intent_persistence_prevents_remote_write(seeded, tmp_path, monke
     with FileGenerationEvidence.create(tmp_path / "original.jsonl", IDENTITY) as evidence:
         session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
         prior = list(store.events)
-        monkeypatch.setattr(evidence, "append", lambda *a: (_ for _ in ()).throw(OSError("disk")))
+        monkeypatch.setattr(evidence, "append", lambda *a, **k: (_ for _ in ()).throw(OSError("disk")))
         with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
             session.put(contract.CORPUS_KEY, b"never sent", "application/octet-stream")
         assert store.events == prior
@@ -106,10 +106,10 @@ def test_lost_result_evidence_never_invents_confirmation(seeded, tmp_path, monke
     with FileGenerationEvidence.create(path, IDENTITY) as evidence:
         session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
         original = evidence.append
-        def failing_result(kind, payload):
+        def failing_result(kind, payload, **kwargs):
             if kind == "write_result":
                 raise OSError("disk after effect")
-            return original(kind, payload)
+            return original(kind, payload, **kwargs)
         monkeypatch.setattr(evidence, "append", failing_result)
         with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
             session.put(contract.CORPUS_KEY, b"applied but unrecorded", "application/octet-stream")
@@ -188,10 +188,10 @@ def test_unpersisted_publication_plan_blocks_the_entire_batch(seeded, tmp_path, 
     store.events.clear()
     with FileGenerationEvidence.create(tmp_path / "original.jsonl", IDENTITY) as evidence:
         original = evidence.append
-        def refuse_plan(kind, payload):
+        def refuse_plan(kind, payload, **kwargs):
             if kind == "publication_plan":
                 raise OSError("disk before visibility batch")
-            return original(kind, payload)
+            return original(kind, payload, **kwargs)
         monkeypatch.setattr(evidence, "append", refuse_plan)
         with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
             ingest.run(store, tmp_path / "working.sqlite", now=NOW,
@@ -232,6 +232,56 @@ def test_building_precedes_first_covered_put(seeded):
     assert store.events == [("cas", catalog.CATALOG_KEY),
                             ("put", "research_vault/synthetic.pdf")]
     assert json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]["state"] == "BUILDING"
+
+
+def test_evidence_budget_refuses_before_begin_can_change_catalog(seeded, tmp_path):
+    store, doc = seeded
+    original = store.get_bytes(catalog.CATALOG_KEY)
+    # Fits this small BEGIN intent, but cannot reserve all post-effect records.
+    with FileGenerationEvidence.create(tmp_path / "small.jsonl", IDENTITY, max_bytes=8192) as evidence:
+        with pytest.raises(writer.GenerationWriteUnavailable, match="evidence unavailable"):
+            writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW, evidence=evidence)
+    assert store.events == []
+    assert store.get_bytes(catalog.CATALOG_KEY) == original
+
+
+def test_complete_refuses_payload_never_published_in_building(seeded):
+    store, doc, session, wrapped = begin(seeded)
+    wrapped.put_bytes(contract.CORPUS_KEY, b"synthetic corpus")
+    doc["items"][0]["title"] = "never published"
+    prior = store.get_bytes(catalog.CATALOG_KEY)
+    with pytest.raises(writer.GenerationWriteUnavailable, match="completion catalog was not published"):
+        session.complete(doc, now=NOW)
+    assert store.get_bytes(catalog.CATALOG_KEY) == prior
+    assert not session.active
+
+
+def test_complete_retains_specific_failure_on_subsequent_use(seeded):
+    store, doc, session, wrapped = begin(seeded)
+    with pytest.raises(writer.GenerationWriteUnavailable, match="final corpus publication not confirmed"):
+        session.complete(doc, now=NOW)
+    assert session.failure == "final corpus publication not confirmed"
+    with pytest.raises(writer.GenerationWriteUnavailable, match="final corpus publication not confirmed"):
+        wrapped.put_bytes("research_vault/not-sent", b"no")
+
+
+@pytest.mark.parametrize("run", [" padded", "padded ", "padded\n"])
+def test_padded_identity_refuses_before_store_effect(seeded, run):
+    store, doc = seeded
+    with pytest.raises(writer.GenerationWriteUnavailable, match="identity required"):
+        writer.ProducerGenerationSession.begin(store, doc, {**IDENTITY, "run": run}, now=NOW)
+    assert store.events == []
+
+
+def test_unbounded_catalog_version_refuses_before_store_effect(seeded, monkeypatch):
+    from engine.research_vault.r2_store import VersionedBytes
+    store, doc = seeded
+    data = store.get_bytes(catalog.CATALOG_KEY)
+    monkeypatch.setattr(store, "get_bytes_strict_bounded_versioned",
+                        lambda *a: VersionedBytes(data, "v" * 4097))
+    with pytest.raises(writer.GenerationWriteUnavailable, match="catalog version"):
+        writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW)
+    assert store.events == []
 
 
 def test_conflict_means_no_covered_put(seeded):
