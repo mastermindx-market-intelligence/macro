@@ -5,7 +5,7 @@ question: >
   interpretation tests as evidence, given that every model spec was frozen after its designers had seen the
   2010+ history it would be scored on, and the accuracy record mixed legacy cross-vintage targets?
 answer: >
-  A coherent-target retrospective walk-forward of the frozen specs (task M0, 15 declared evaluations) can
+  A coherent-target retrospective walk-forward of the frozen specs (task M0, 13 declared evaluations) can
   falsify or retrospectively qualify a model's claim but can never promote it; only forecasts issued after the
   E0 freeze commit and scored against their first print in the existing forward ledger are promotion-capable,
   with a prospective verdict at no fewer than 24 scored episodes per target (display from 12 with a CI).
@@ -32,11 +32,13 @@ alternatives:
   - option: Build a dedicated RIC evaluator or scorecard to run M0/E1.
     why_not: >
       Forbidden (no new evaluation/forecast/publication plane). Existing owners cover it: trial_ledger,
-      build_release_forecast forward ledger, event_window, grading_stats and the HAC/Holm helpers.
+      build_release_forecast forward ledger, the lib.store fred group, event_window's FOMC dates,
+      grading_stats and the existing HAC/Holm helpers.
 evidence:
   - "research/rates_inflation_command/seat_20261014/E0_RESEARCH_PROTOCOL.md (frozen questions, budgets, margins, stop rules)"
   - "E0 read-only census of origin/main 1e9364f5ab8c4452820731e87da2c138e53b0571 (PASS-WITH-GAPS): 2111 forward-ledger rows, no issued/withheld/abstained/missed row types; MRI families absent from trial_ledger"
-  - "config/release_forecast_model_registry.yml:25-32 — coherent_ridge_v1 target epoch alfred_same_release_vintage_proxy_v1, official_first_print_epoch withheld, historical_backfill_to_forward_ledger_allowed false"
+  - "config/release_forecast_model_registry.yml:26 (official_first_print_epoch withheld) and :194 (historical_backfill_to_forward_ledger_allowed false) — coherent_ridge_v1 retrospective runs are research artifacts, never forward-ledger rows"
+  - "Independent fabric review ric-e0-review-1 (grok-4.6, ubuntu2) of b493baa3: REJECT, 15 findings, all accepted and applied in protocol revision 2 (E0_RESEARCH_PROTOCOL.md §9)"
   - "PR #7909 head 1ddc25a80f6c2f6ce87a602f883056671f1f0d50 — RD1 48 configs (no-change MSE 176.53 vs 184.13), swing 18 configs (no candidate); DEC:RIC-RD1-NO-PROMOTION"
 affects:
   - WS:RATES-INFLATION-COMMAND

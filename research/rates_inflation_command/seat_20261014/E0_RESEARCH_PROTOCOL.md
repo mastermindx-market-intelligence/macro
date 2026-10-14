@@ -1,17 +1,20 @@
 # E0 — Frozen research and outcome protocol (Rates & Inflation Command, e2e 2026-10-13)
 
-Status: **FROZEN** on merge of the PR that adds this file (seat `fc3dfe4b`, task-graph row E0). Census basis:
-read-only E0 census of `origin/main` @ `1e9364f5ab8c4452820731e87da2c138e53b0571` (verdict PASS-WITH-GAPS, gaps in §8).
-Independent review: §9. Acceptance rows served: **A28** (finite trials) directly; inputs to M0 (A11, A28, A30),
-E1 (A09, A31, A32), X0 (A29), E2 (A29, A30, A32, A48). Masterplan pin:
-`research/rates_inflation_command/e2e_20261013/MASTERPLAN.md` @ `fd5c6600` §7, §8, §13.
+Status: **FROZEN** on merge of the PR that adds this file (seat `fc3dfe4b`, task-graph row E0). Revision 2: it applies
+the independent review recorded in §9. Census basis: read-only E0 census of `origin/main` @
+`1e9364f5ab8c4452820731e87da2c138e53b0571` (verdict PASS-WITH-GAPS, gaps in §8). Acceptance rows served: **A28**
+(finite trials) directly; inputs to M0 (A11, A28, A30), E1 (A09, A31, A32), X0 (A29), E2 (A29, A30, A32, A48).
+Masterplan pin: `research/rates_inflation_command/e2e_20261013/MASTERPLAN.md` @ `fd5c6600` §7, §8, §13.
 
 **Owners reused, nothing new minted.** Trial counting = `engine/trial_ledger.py` (`TrialLedger.log_declared_budget`,
 `data/trial_ledger.jsonl`). Frozen model specs = `research/release_forecast/PREREG_*.md`. Prospective record and the
 only advancer = `scripts/build_release_forecast.py` → `data/release_forecast/forward_ledger.jsonl` (MRI-R8).
-Reaction windows = `engine/event_window.py` + `scripts/build_event_windows.py` → `data/event_windows/forward_log.jsonl`
-and the MRI `reaction` rows. Statistics = existing primitives only: `engine/grading_stats.py`
-(`block_bootstrap_scalar_ci`, `wilson_ci`, `effective_n`), `engine/challenger_spa_comparison.py`
+Release dates = the ALFRED first-vintage `realtime_start` that the release owners already read
+(`engine/release_forecast.py`, `engine/release_cpi_target_history.py`, `engine/pit.py`). FOMC decision days =
+`engine/event_window.py::_FOMC_ANNOUNCEMENT_DATES`. Daily rates = the `fred` group of `lib/store` (DGS2, DGS10, DFII10,
+T10YIE are already collected for `engine/forex_dollar.py`, `engine/transmission_chains.py` and the market-OS rates
+curves). Statistics = existing primitives only, called with parameters and never re-implemented:
+`engine/grading_stats.py` (`block_bootstrap_scalar_ci`, `wilson_ci`), `engine/challenger_spa_comparison.py`
 (`newey_west_lag`, `newey_west_lrvar`), `engine/desk_placebo.py` (`holm_adjust`). The corrections owner is
 `data/release_forecast/{defect_notices.json,official_actual_defects.json}`. The CPI coherent target is
 `data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json` (parity in `cpi_truth/parity_report.json`).
@@ -20,15 +23,17 @@ No evaluator, scorecard, trial plane, Research Factory, queue, calendar or publi
 ## 0. What this protocol is and is not
 
 - It freezes finite questions **before** any new outcome work (masterplan §7). Each later task (M0, E1, X0, E2)
-  executes exactly what is frozen here, or records a deviation that this document's §7 rule allows.
-- **E0 only tightens claims.** It never overrides an owner's existing kill rule, never reactivates a killed or
-  `benchmark_only` family, and never changes a producer's live behaviour.
+  executes exactly what is frozen here, or records a deviation that §7 allows.
+- **E0 only tightens claims.** It never overrides an owner's existing kill rule and never reactivates a killed or
+  `benchmark_only` family. E0 itself changes no producer. Task E1 is a separate PR with its own review: it may
+  **extend** the forward-ledger writer's row vocabulary, append-only and nightly-only (§5). That is the only producer
+  change this protocol authorizes.
 - **Retrospective evidence can falsify or qualify; it cannot promote.** A coherent-target walk-forward over history
   was designed with that history visible (the PREREG files were frozen in 2026-07 after looking at 2010+ data). It is
   therefore in-sample to the design period. Only forecasts issued **after this protocol's freeze commit** and scored
   against their first print under the owner's immutable record are promotion-capable (§5).
-- Natural time governs. A forecast cannot be graded before its release. Underpowered evidence stays `INSUFFICIENT`
-  or `PENDING`, never "trending" or "promising".
+- Natural time governs. A forecast cannot be graded before its release. Underpowered evidence stays `INSUFFICIENT`,
+  `NOT_DEMONSTRATED` or `PENDING`, never "trending" or "promising".
 - A NO-GO closes the specific construction tested. It never waives a mandatory product capability
   (basis-qualified display, abstention, rights), and "not found yet" is not "does not exist".
 
@@ -54,207 +59,322 @@ and E2 consumes its verdicts as retained negatives.
 Every question lists: question · target · origin · baselines · criterion · margin · trial budget · dependence ·
 accept / hold / no-go. Metric families are never pooled (§4).
 
-### H1 — First-print models vs the strongest baseline on the same origin and target (task M0, then E1)
+### H1 — First-print models vs naive baselines on the same origin and target (task M0, then E1)
 
-**Question.** Under a coherent first-print target, does each inherited MRI model beat the strongest naive baseline
-for the same release, period, origin and target? A gain that disappears under coherent vintages falsifies the old
-accuracy claim (masterplan §7 H1; acceptance A11, A30).
+**Question.** Under a coherent first-print target, does each inherited MRI model beat the naive baselines for the
+same release, period, origin and target? A gain that disappears under coherent vintages falsifies the old accuracy
+claim (masterplan §7 H1; acceptance A11, A30).
 
 **Target (per family, never pooled).**
 - CPI headline / core m/m: `alfred_same_release_vintage_proxy_v1.published_proxy_1dp` (the registry's coherent
   epoch; `official_first_print_epoch` stays `withheld`). Rows whose proxy disagrees with `parity_report.json` are
-  reported as a sensitivity with and without them.
+  re-scored without them as a reported sensitivity (§2.H1 Sensitivities).
 - NFP m/m change, PCE headline / core m/m, PPI final demand m/m: the same-release ALFRED vintage first print
   (`realtime_start` = the release day), never a later revised value.
 - First-print target and revised-history fit are separate metric families and are never pooled (§4).
 
-**Origin.** D = the calendar day before the actual release. Features are point-in-time: only observations with
-ALFRED `realtime_start ≤ D`. ALFRED is day-precision, so "before the release" means "before the release day"; the
-A09 label is `day_precision_origin` and no intraday ordering is claimed.
+**Origin.** D = the calendar day before the actual release. Each spec builds its features under **the
+point-in-time rules of its own frozen PREREG**. ALFRED `realtime_start ≤ D` governs only the legs that the PREREG
+reads from ALFRED vintages. The A09 label is `day_precision_origin`, and no intraday ordering is claimed. Two kinds
+of leg are not vintage-exact, and M0 lists them per spec, from the PREREG text, before the run:
+- **Revision-optimistic legs**, as the PREREG itself declares them (for example `PREREG_V3_FACTOR.md` §1.2–1.3:
+  DTWEXBGS, PPIFES / PPIFIS, AWHMAN, ADP). A later vintage can only flatter the model. A spec with any such leg can
+  therefore still be `FALSIFIED`, but its best attainable verdict is `NOT_DEMONSTRATED` with reason `non_pit_inputs`.
+  It can never be `QUALIFIED_RETROSPECTIVE`.
+- **Assumed-lag legs** (for example champion v2's ZORI at observation date + 45 days, `PREREG_V2.md:41,92`). These
+  carry the limitation label `approximate_pit_lag` on every verdict for that spec.
 
 **Inclusion and missingness.** A period whose first print never appeared (shutdown-cancelled) is `MISSING_SOURCE`.
 It is excluded from accuracy and counted in coverage. A delayed release keeps D = the day before the actual release
 and carries the owner's quirk flag (`quirk_calendars/government_shutdowns.yml`, `hurricane_landfalls.yml`,
 `nfp_preliminary_benchmarks.yml`). Each excluded row is listed by (release, period, reason).
 
-**Ordinary corrections.** An agency erratum within the same release cycle is scored both ways, original and
-corrected, as a sensitivity owned by `defect_notices.json` / `official_actual_defects.json`. Ordinary later revisions
+**Ordinary corrections.** An agency erratum within the same release cycle is re-scored against the corrected value
+as a reported sensitivity, owned by `defect_notices.json` / `official_actual_defects.json`. Ordinary later revisions
 never change the first-print target.
 
 **Splits.** Expanding-window walk-forward, first prediction after `MIN_TRAIN_OBS = 60` (owner default,
 `engine/release_forecast.py`), refit every origin, with **zero tuning**: every spec runs at its PREREG commit.
-There is no held-out tuning split because nothing is tuned. Windows reported, in this order:
-1. **current regime 2024-01+**, reported first with episode-level honest-N;
-2. **2021-01+**;
-3. **full 2010-01+**.
+`mf_energy` runs at its T−1 configuration only (`PREREG_MF_ENERGY_V1.md:320-331`). Its early-run variants are not
+evaluated. There is no held-out tuning split because nothing is tuned. Three windows are reported, in this order:
+1. **current regime 2024-01+**, reported first with episode-level honest-N, for direction only;
+2. **2021-01+**, the only window that is tested (§2.H1 Statistic);
+3. **full 2010-01+**, reported, and used by the falsification rule and the qualification rule.
 
-**Baselines.** `naive_prior`, `trailing_3m` and `ar_model` (first-class owners in the forward ledger). For each
-window, the comparator is the **strongest** of the three in that window. Choosing the best baseline after the fact
-is deliberately conservative: it can only make a model look worse. Cleveland nowcast and Kalshi / Polymarket are
-**prospective-only** comparators (their PIT history starts at collection), so they enter in E1, not in M0.
+**Baselines.**
+- `naive_prior` is the **single predeclared** comparator. It is the last observed print (no change), set in
+  `engine/release_forecast.py` and used by the owner's own kill rule (`scripts/build_release_forecast.py:163`).
+- `trailing_3m` and `ar_model` are also first-class owners in the forward ledger. The **strongest** of the three in
+  a window (lowest MAE) is used only to qualify a model, never to falsify one. Selecting it after the fact can only
+  make a model look worse, so it is a conservative bar for a positive claim and is never used as the reason a claim
+  is withdrawn.
+- Cleveland nowcast and Kalshi / Polymarket are **prospective-only** comparators, because their PIT history starts
+  at collection. They enter in E1, not M0. No M0 input of any kind uses Cleveland.
 
-**Inherited models in the M0 set (budget ≤ 15 frozen-spec evaluations).**
+**Inherited models in the M0 set (budget = 13 primary evaluations).**
 
 | # | Release | Model (frozen spec) |
 |---|---|---|
-| 1–6 | CPI headline | champion v2 · v3_factor · cpi_bridge · mf_energy · coherent_ridge_v1 · combined_v1 |
-| 7–10 | CPI core | champion v2 · v3_factor · coherent_ridge_v1 · combined_v1 |
-| 11–12 | NFP | champion v1 · v3_factor |
-| 13–15 | PCE headline · PCE core · PPI | champion (Track N) |
+| 1–5 | CPI headline | champion v2 · v3_factor · cpi_bridge · mf_energy (T−1) · coherent_ridge_v1 |
+| 6–8 | CPI core | champion v2 · v3_factor · coherent_ridge_v1 |
+| 9–10 | NFP | champion v1 · v3_factor |
+| 11–13 | PCE headline · PCE core · PPI | champion (Track N) |
 
 Excluded, with reasons in §1: claims, NFP revision, bridge-core, AHE/AWH, retail, and any CPI revision model.
-`coherent_ridge_v1` has `historical_backfill_to_forward_ledger_allowed: false`. Its retrospective run is a research
-artifact only and is **never** written to the forward ledger.
+`combined_v1` is **E1-only** for two reasons: its PREREG fits weights on scored forward rows only
+(`PREREG_COMBINED_POINT_V1.md:47-49`), and it takes Cleveland as an input (`:41`). A retrospective run would invent
+weights it never had. `coherent_ridge_v1` has `historical_backfill_to_forward_ledger_allowed: false`
+(`config/release_forecast_model_registry.yml:194`). Its retrospective run is a research artifact only and is
+**never** written to the forward ledger.
 
-**Statistic.** Per release episode, loss differential `d_t = |e_model,t| − |e_base,t|` (absolute error, in the
-release's own units: pp for CPI/PCE/PPI, thousands for NFP).
-- Diebold–Mariano with the Newey–West long-run variance at lag `⌊4(n/100)^{2/9}⌋` (`newey_west_lrvar`), the
-  Harvey–Leybourne–Newbold small-sample correction, and a one-sided test with alternative "model better".
-- Holm across the M0 set (`holm_adjust`), family-wise α = 0.05.
-- Effect size: MAE ratio `R = MAE_model / MAE_base`, with a 90% moving-block bootstrap CI (block 6 releases,
-  10,000 reps, seed `20261014`, `block_bootstrap_scalar_ci`).
+**Statistic.** For each release episode t, the loss differential is `d_t = |e_model,t| − |e_base,t|`. It is an
+absolute error in the release's own units: pp for CPI/PCE/PPI, thousands for NFP. Negative d means the model is
+better.
+- **Test (2021+ only).** A Diebold–Mariano statistic `DM = √n · mean(d) / √newey_west_lrvar(d)`, with the owner's
+  default lag `newey_west_lag(n)` and a one-sided standard-normal p-value (alternative: mean d < 0). `base` is the
+  2021+ strongest baseline. With one-step-ahead forecasts (h = 1) and n ≥ 30, the Harvey–Leybourne–Newbold factor
+  √((n − 1)/n) is ≥ 0.983 and the t(n − 1) tail is within rounding of the normal, so no small-sample correction is
+  applied, and none exists in the owners.
+- **Multiplicity.** Holm (`holm_adjust`) at family-wise α = 0.05 across exactly the 13 primary 2021+ p-values. The
+  full and current-regime windows are reported and never tested. The H4 contrasts and interval coverage are
+  descriptive and are not in the Holm set.
+- **Precision.** For mean d in each window, a 95% moving-block bootstrap CI from
+  `block_bootstrap_scalar_ci(d, block=6, draws=10000, seed=20261014)`. These are owner parameters only, with no new
+  code. The owner returns `None` below `max(3 × block, 30)` = 30 episodes.
+- **Effect size.** The point ratio `R = MAE_model / MAE_base` is reported per window and baseline. It has no
+  separate CI: its uncertainty is that of mean d, because `R − 1 = mean(d) / MAE_base`.
 
-**Dependence.** Headline and core from the same release day form one episode cluster. Bootstrap blocks resample
-episodes, and cluster-aware counts are reported as honest-N (episodes, not rows). Families are never pooled to
-gain N.
+**Dependence.** CPI headline and core share a release day, so they share episodes. Their results are reported as
+separate rows and never added together to raise N. Bootstrap blocks resample contiguous episodes. Honest-N counts
+episodes, not rows. Families are never pooled to gain N.
 
 **Verdicts (per model × release; mutually exclusive, checked in this order).**
-- `INSUFFICIENT`: fewer than 24 episodes in the 2021+ window, OR the 2021+ R CI width exceeds 0.30.
-- `FALSIFIED_UNDER_COHERENT_TARGET`: 2021+ `R ≥ 1.00` (no better than the strongest baseline). The prior accuracy
-  claim for that model and release is withdrawn from every consumer.
-- `QUALIFIED_RETROSPECTIVE`: Holm-adjusted p < 0.05 in **both** the full and 2021+ windows, `R ≤ 0.90` in both,
-  AND current-regime `R ≤ 1.00`. This allows the display "beat the strongest naive baseline retrospectively under
-  the coherent target (in-sample to design)". It is **not** a promotion and never removes `accuracy_claim =
-  withheld` on its own.
-- `HOLD`: anything else. No claim either way, and the display remains "accuracy withheld".
+- `INSUFFICIENT`: fewer than 30 scored episodes in the 2021+ window, so the owner's bootstrap returns `None`.
+- `FALSIFIED_UNDER_COHERENT_TARGET`: against `naive_prior`, mean d ≥ 0 (MAE_model ≥ MAE_naive) in **both** the full
+  and the 2021+ windows. This is the owner's own kill rule, applied to the coherent target. The prior accuracy claim
+  for that model and release is withdrawn from every consumer.
+- `QUALIFIED_RETROSPECTIVE`: all of the following hold, and the spec has no revision-optimistic leg.
+  - The Holm-adjusted one-sided p is < 0.05 in 2021+, against the 2021+ strongest baseline.
+  - Point R is ≤ 0.95 in 2021+ against that baseline. This is the same 5% hurdle that RD1 failed.
+  - Point R is < 1.00 in the full window against the full-window strongest baseline.
+  - Point R is ≤ 1.00 in the current regime against the current-regime strongest baseline.
 
-The owner's own kill rule (model MAE ≥ naive MAE in BOTH full and 2021+ → `benchmark_only`) still runs. E0 can
-only add a stricter verdict, never relax it.
+  This allows the display "beat the strongest naive baseline retrospectively under the coherent target (in-sample to
+  design)". It is **not** a promotion, and on its own it never removes `accuracy_claim = withheld`.
+- `NOT_DEMONSTRATED`: anything else. No claim is made either way, and the display stays "accuracy withheld".
 
-**Trial budget.** Exactly the 15 evaluations above, declared once through `TrialLedger.log_declared_budget`
-(family `ric_mri_coherent_requal_v1`, n = 15) in the M0 PR, in a **full** checkout and never in a sparse tree. No new
-model variants are authorized in this programme. A sixteenth evaluation needs a superseding E0 revision and its
-own declared budget.
+The owner's own kill rule still runs on the owner's target. E0 can only add a stricter verdict, never relax one.
+
+**Sensitivities (verdict-free).** Exactly two re-scorings of the **same** 13 prediction series. No model is refit
+and no new prediction is made.
+- S1 drops the CPI rows that disagree with the parity report.
+- S2 scores errata against the corrected value.
+
+Each reports mean d with the bootstrap CI and point R, with no test. A sensitivity can never change, upgrade or
+downgrade a primary verdict. A large divergence is printed beside the verdict, as "verdict sensitive to {S1|S2}".
+
+**Trial budget.** Exactly the 13 primary evaluations above, declared once through `TrialLedger.log_declared_budget`
+(family `ric_mri_coherent_requal_v1`, n = 13). This happens in the M0 PR, in a **full** checkout, and never in a
+sparse tree. The 26 sensitivity re-scorings are listed in the M0 result with that family id, as non-trial
+re-scorings of declared predictions. No new model variants are authorized in this programme. A fourteenth
+evaluation needs a superseding E0 revision and its own declared budget.
 
 ### H2 — Basis-qualified interpretation lowers wrong answers (task E2, blinded)
 
-**Question.** Do the post-P2 surfaces (basis contract `rates_command_basis.v1` on the existing consumers) reduce
-wrong-horizon, wrong-index, stale-claim and unsupported-causality answers versus the surfaces at this freeze commit,
-without more omissions or fewer correct abstentions? (masterplan §7 H2; A29, A30, A48.)
+**Question.** Does the basis-qualified glass reduce wrong-horizon, wrong-index, stale-claim and
+unsupported-causality answers, without more omissions or fewer correct abstentions? The glass is the board's
+`qualified_comparisons` (T0, C0) shown through P1 on the existing consumers. The comparison is against the surfaces
+at this freeze commit (masterplan §7 H2; A29, A30, A48).
 
-**Instrument.**
-- About 24 question templates are frozen **now** in §2.H2.T, four per reference family: (1) release prints vs house
-  model and naive, (2) futures-implied policy path (ZQ / SR3), (3) SEP projections, (4) Treasury curve
-  par / zero / forward, (5) term-premium decompositions (KW / ACM), (6) real yields and breakevens.
-- A held-back set of about 12 questions is instantiated from the same templates **after** P2 lands, by a writer
-  who did not build P2. That set is the **primary endpoint**.
+**Arms.**
+- **Baseline** = the page and machine-export text at this E0 freeze commit.
+- **Treatment** = the same surfaces after T0, C0 and P1 have landed.
 
-**Arms.** Baseline = page content at this E0 freeze commit. Treatment = page content after P2 is live.
-- Participants: answer agents from at least two independent providers, given page text only (no repository, no web).
+Each arm is captured by rendering that commit's committed `site/` bytes locally in a headless browser, so text that
+JavaScript renders is included. P2 is **not** part of H2. If T0, C0 and P1 have not all landed when E2 runs, H2 is
+`PENDING` (A32), and E2 adjudicates H1, H3 and H4 without it.
+
+**Participants.**
+- Answer agents from at least two independent providers, given page text only (no repository, no web).
 - Humans are optional. If no human participants run, the human-usefulness claim is `PENDING`, never inferred from
   agents.
 
-**Grading.**
-- Two blinded graders, each scoring against a frozen rubric with five error types plus "correct abstention".
-- A third grader breaks ties.
-- If Cohen's κ < 0.60 between the first two graders, the result is `HOLD` and the rubric is not rewritten
-  after unblinding.
+**Instrument.**
+- The 24 stems below are frozen **now**: six reference families × 4 stems.
+- After T0, C0 and P1 land, a writer who did not build them fills the stems with live values to make the held-back
+  set. It has 36 questions, six per family, ordered by family. That set is the **primary endpoint**.
+- Each stem lists the error types it can expose.
 
-**Primary endpoint.** Summed error count per question, paired by question across arms.
-- **Accept:** a relative reduction of at least 30%, with the 90% paired-bootstrap CI excluding 0. Omissions must
-  not rise by more than 10% relative, and the correct-abstention rate must not fall.
+**Grading.**
+- The rubric is frozen now. Each question is scored for five error types plus one positive outcome:
+  - `wrong_horizon`
+  - `wrong_index_or_basis`
+  - `stale_claim`
+  - `unsupported_causality`
+  - `omission` (an available, requested number that is not given)
+  - `correct_abstention`
+- Two blinded graders score every answer. A third grader breaks ties.
+- If Cohen's κ < 0.60 between the first two graders, the result is `HOLD`. κ is computed from the agreement table in
+  the E2 result. The rubric is never rewritten after unblinding.
+
+**Primary endpoint.** The primary measure is each question's summed error count, paired by question across arms.
+For the per-question difference x = treatment − baseline, E2 reports
+`block_bootstrap_scalar_ci(x, block=6, draws=10000, seed=20261014)`. With 36 family-ordered items, a block of 6
+approximates resampling one family at a time.
+- **Accept** requires all of the following:
+  - the relative reduction in total errors is at least 30%;
+  - the 95% CI on mean x lies entirely below 0;
+  - treatment omissions are ≤ max(1.10 × baseline omissions, baseline omissions + 1), so the guard holds when the
+    baseline is 0;
+  - the correct-abstention rate does not fall.
 - **NO-GO:** treatment errors ≥ baseline errors.
 - Otherwise **HOLD**.
-- One confirmatory run only. Any rerun is labelled exploratory.
+- One confirmatory run only. Any rerun is labelled exploratory. E2 counts as one declared trial.
 
-**§2.H2.T templates (frozen; placeholders are filled at instantiation from live values).**
-1. "What did {release} print for {period}, and how did it compare with the house model and with a naive forecast?"
-   (traps: consensus wording, CPI↔PCE swap, revised vs first print)
-2. "Is {release} {period} hotter or cooler than expected?" (trap: an unsupported "expected" anchor; a correct
-   answer names the benchmark or abstains)
-3. "What is the house accuracy record for {model} on {release}?" (trap: a stale or legacy accuracy claim; a correct
-   answer reports it as withheld or qualified)
-4. "Why did yields move after {release}?" (trap: causal attribution; a correct answer is descriptive, gives the
-   window, and gives no unique cause)
-5. "What policy rate does the market price for the {meeting} FOMC?" (trap: ZQ monthly average vs a level; a correct
-   answer gives the feasible paths)
-6. "How many cuts are priced by {date}?" (trap: SR3 vs EFFR basis, and a forced single path)
-7. "Does the market agree with the Fed's dots for {year}?" (trap: SEP year-end median vs a meeting-level path;
-   horizon mismatch)
-8. "What is the {tenor} Treasury yield and the {tenor} forward?" (trap: par vs zero vs forward)
-9. "How much of the 10-year yield is term premium?" (trap: summing KW and ACM, or treating either as observed)
-10. "What is the 10-year real yield and breakeven?" (trap: a TIPS indexation-lag basis; breakeven ≠ expected CPI)
-11. "Is the curve inverted?" (trap: which spread, which basis, which date)
-12. "When will the Fed cut next?" (trap: a policy-timing prediction; a correct answer abstains or gives conditional
-    priced probabilities with basis)
-13–24. One "comparison" and one "freshness / vintage" variant of each family above. Each tests whether the answer
-    carries as-of date, vintage, model / target and rights qualification.
+**§2.H2.T stems (frozen; placeholders are filled at instantiation from live values).**
+
+*Family A — release prints.*
+1. "What did {release} print for {period}, and how did it compare with the house model and with a no-change
+   forecast?" (`wrong_index_or_basis`: CPI↔PCE swap, revised vs first print; `omission`)
+2. "Is {release} {period} hotter or cooler than expected?" (`unsupported_causality`: an "expected" anchor with no
+   source; a correct answer names the benchmark or abstains, and never says "consensus")
+3. "What is the house accuracy record for {model} on {release}?" (`stale_claim`: a legacy cross-vintage record; a
+   correct answer reports withheld, falsified or qualified)
+4. "Why did yields move after {release} {period}?" (`unsupported_causality`: a correct answer gives the window and
+   the co-movement, and names no unique cause)
+
+*Family B — futures-implied policy path.*
+5. "What policy rate does the market price for the {meeting} FOMC meeting?" (`wrong_index_or_basis`: a ZQ monthly
+   average read as a level; a correct answer gives the feasible paths)
+6. "How many cuts are priced by {date}, and when is the first one?" (`wrong_index_or_basis`: SR3 vs EFFR;
+   `unsupported_causality`: a forced single path or a timing prediction)
+7. "Do fed funds futures and SOFR futures agree on the path through {date}?" (`wrong_index_or_basis`: comparing
+   across rate indices without a qualified basis)
+8. "How has the priced path for {meeting} changed since {date}, and as of when?" (`stale_claim`, `wrong_horizon`)
+
+*Family C — SEP projections.*
+9. "What does the latest SEP median show for the policy rate at end-{year}?" (`wrong_horizon`: a year-end projection
+   read as a meeting level)
+10. "Does the market agree with the Fed's dots for {year}?" (`wrong_horizon`: a SEP year-end median vs a
+    meeting-level path)
+11. "How does the SEP {year} core PCE projection compare with the latest core inflation print?"
+    (`wrong_index_or_basis`: CPI ≠ PCE, Q4/Q4 vs m/m)
+12. "Which SEP is shown, and how old is it?" (`stale_claim`)
+
+*Family D — Treasury curve.*
+13. "What is the {tenor} Treasury yield?" (`wrong_index_or_basis`: par vs zero; `stale_claim`: as-of date)
+14. "Is the curve inverted?" (`wrong_index_or_basis`: which spread, which basis; `stale_claim`: which date)
+15. "What is the {tenor1}-in-{tenor2} forward rate, and how does it compare with the {tenor} par yield?"
+    (`wrong_index_or_basis`: par ≠ zero ≠ forward)
+16. "As of which date is the curve shown, and what changed since {release}?" (`stale_claim`,
+    `unsupported_causality`)
+
+*Family E — term-premium decompositions.*
+17. "How much of the 10-year yield is term premium?" (`wrong_index_or_basis`: a model estimate treated as observed;
+    KW vs ACM)
+18. "Did term premium or expected rates drive the 10-year move since {date}?" (`unsupported_causality`: a
+    model-dependent decomposition stated as the cause)
+19. "Do the KW and ACM estimates agree on the 10-year term premium?" (`wrong_index_or_basis`: summed or averaged into
+    one number)
+20. "As of when are the term-premium estimates shown, and from which model release?" (`stale_claim`)
+
+*Family F — real yields and breakevens.*
+21. "What are the 10-year real yield and the 10-year breakeven?" (`wrong_index_or_basis`: TIPS indexation basis;
+    `omission`)
+22. "What does the 10-year breakeven say about expected CPI?" (`wrong_index_or_basis`: a breakeven is not expected
+    CPI; it carries risk and liquidity premia)
+23. "How does the 10-year breakeven compare with the latest CPI print?" (`wrong_horizon`: a ten-year average vs a
+    monthly change)
+24. "As of when are the real yield and breakeven shown?" (`stale_claim`)
 
 ### H3 — Descriptive reaction around releases (task X0)
 
-**Question.** At a declared daily window, does the release surprise (versus a declared benchmark) co-move with the
-rates response? This is descriptive only. There is no causal DAG and no GLT, and Transmission stays the read owner
-of sensitivities (consumed read-only).
+**Question.** In a declared daily window, does the release surprise, measured against a declared benchmark, co-move
+with the rates response? This is descriptive only. There is no causal DAG and no GLT, and Transmission stays the read
+owner of sensitivities (consumed read-only).
 
-**Window.** Daily, from the existing `engine/event_window.py` phases.
-- **h0** (prior session close → release-day close) is primary.
-- **h1** (next session) is descriptive only.
-- No intraday data is claimed.
+**Release dates.** Release dates are the ALFRED first-vintage `realtime_start` of each release series, read through
+the existing release owners (§ header). This mints no calendar. FOMC decision days come from
+`engine/event_window.py::_FOMC_ANNOUNCEMENT_DATES`. The event-window phase tags are not used for the windows.
 
-**Surprise.** `actual_first_print − benchmark`, scaled by the benchmark's own prior walk-forward residual sd at D.
-- Primary benchmark: the house walk-forward champion, labelled "vs house model".
-- Secondary benchmark: the strongest naive baseline.
+**Window.** Daily FRED closes only, with no intraday claim. Each window is computed from the `fred` group of
+`lib/store`.
+- **h0** (prior trading-day close → release-day close) is the only window that is tested.
+- **h1** (release-day close → next trading-day close) is reported descriptively.
+
+**Surprise.** The release surprise is `first_print − naive_prior`, in the release's units. It is scaled by the sd
+of `naive_prior` residuals over the 24 episodes before D.
+- It is labelled "change vs a no-change benchmark", never "vs expectations".
+- The word "consensus" is never used, because street consensus is unavailable (§8).
+- No house model is the benchmark. Their PIT limits (§2.H1 Origin) would contaminate the surprise.
 - Cleveland and Kalshi are prospective-only.
-- The word "consensus" is never used. Street consensus is unavailable (§8).
 
-**Responses.** Daily changes in DGS2, DGS10, DFII10 and T10YIE, in bp.
-**Releases.** CPI headline, CPI core and NFP are primary. PCE core is secondary.
-**Primary tests.** 3 releases × 4 responses = 12.
+**Episodes and tests.**
+- **CPI** is one episode per release day. Core m/m is the single tested surprise, because headline and core share
+  the day. The headline slope is reported descriptively.
+- **NFP** is one episode per release day, with the payrolls m/m change as the surprise.
+- **Responses** are the h0 changes in DGS2, DGS10, DFII10 and T10YIE, in bp.
+- **Primary tests:** 2 releases × 4 responses = **8**.
 
-**Exclusions.** Days with a scheduled FOMC decision, or with a second tier-1 release, are excluded from the primary
-sample and included only as a sensitivity.
+**Exclusions.**
+- An episode is dropped if another tier-1 event falls on the same day. The tier-1 list is frozen: CPI, Employment
+  Situation, PCE / Personal Income, PPI, GDP advance estimate, and FOMC decision days.
+- Excluded episodes are counted and listed. They are never re-run as a sensitivity.
+- 2020 lies outside both eras.
 
 **Statistic.**
-- OLS slope of the response on the scaled surprise, with HC3 standard errors, Holm across the 12 tests.
-- Also reported: response distribution by surprise tercile, and sign agreement with a `wilson_ci`.
+- **Slope.** The OLS slope of the response on the scaled surprise, `β = Σx̃y / Σx̃²`, where x̃ is the demeaned
+  surprise and u the residual.
+- **Standard error.** The heteroskedasticity- and autocorrelation-consistent SE is
+  `√(n · newey_west_lrvar(x̃·u)) / Σx̃²`. Episodes are monthly and non-overlapping, and the owner's default lag is
+  used.
+- **Multiplicity.** Holm is applied across the 8 tests within each era: 2010-01 to 2019-12, and 2021-01+.
+- **Descriptive only.** Response distributions by surprise tercile, and sign agreement with a Wilson 95% interval
+  on episode counts (`wilson_ci`).
 
-**Accept as "calibrated context" only if** the slope CI excludes 0 in **both** the 2010–2019 and 2021+ eras, with
-at least 40 episodes per era. Even then the label is `DESCRIPTIVE_ONLY`: no forecast, no sizing, no causal language.
-Otherwise the claim is `NOT_IDENTIFIED` and the surface shows the raw window without a slope.
+**Accept as "calibrated context" only if** the Holm-adjusted p is < 0.05 with the **same sign in both eras**, with
+at least 40 episodes in each era. Even then the label is `DESCRIPTIVE_ONLY`: no forecast, no sizing, no causal
+language. Otherwise the claim is `NOT_IDENTIFIED`, and the surface shows the raw window without a slope.
 
-### H4 — Complexity must earn its cost (task M0, same evaluations)
+**Trial budget.** Declared through `TrialLedger.log_declared_budget` (family `ric_x0_release_reaction_v1`, n = 8)
+in the X0 PR, in a full checkout. h1, the terciles and sign agreement are descriptive and untested.
+
+### H4 — Complexity must earn its cost (task M0, same predictions; descriptive)
 
 **Question.** Does each complex model beat its preregistered simpler comparator, and are the published intervals
-calibrated and sharp?
+calibrated and sharp? Everything in H4 is descriptive: it is not in the Holm set and declares no trials.
 
-**Point contrasts (taken from the same 15 evaluations; no new trials).**
-- combined_v1 vs champion (its own PREREG success / kill rule: success n ≥ 12, kill n ≥ 24);
-- cpi_bridge vs champion;
-- v3_factor vs champion;
-- mf_energy vs the strongest naive.
+**Point contrasts.** These are computed from the same 13 prediction series:
+- cpi_bridge vs champion v2 (CPI headline);
+- v3_factor vs its champion (CPI headline, CPI core, NFP);
+- mf_energy (T−1) vs `naive_prior`.
 
-The H1 statistic and windows apply. A complex model that does not beat its simpler comparator is labelled
-`COMPLEXITY_NOT_EARNED` for that release, even if it beats naive.
+Each contrast reports mean d with the bootstrap CI and point R per window. A complex model whose 2021+ point R
+against its simpler comparator is ≥ 1.00 is labelled `COMPLEXITY_NOT_EARNED` for that release, even if it beats
+naive. The `combined_v1` vs champion contrast is prospective. It runs in E1 under its own PREREG rule (success
+n ≥ 12, kill n ≥ 24).
 
 **Intervals.** The `[p10, p90]` band (owner `_compute_quantiles`, MRI-R30 W = 24) should cover 80% ± 8 pp.
-- Coverage is reported with a cluster-aware `wilson_ci` on episodes.
-- Sharpness is the median band width relative to the naive interval at the same coverage.
-- Calibrated = the coverage CI contains 0.80, and sharpness is no worse than naive.
+- Coverage is k covered episodes out of n, with a Wilson 95% interval on episode counts from `wilson_ci(k, n)`. It is
+  computed per release family, so each episode counts once.
+- Sharpness is the median band width. It is reported beside the `naive_prior` residual band from the same owner and
+  window. If the owner cannot form that band, sharpness is `NOT_COMPARABLE`.
+- Calibrated = the Wilson interval contains 0.80, and sharpness is no worse than naive.
 
 ## 3. Freeze fields (masterplan §7)
 
 | Field | Frozen value |
 |---|---|
-| Forecast origin | D = calendar day before the actual release; `realtime_start ≤ D`; day precision (A09) |
+| Forecast origin | D = calendar day before the actual release; each spec's PREREG PIT rules; ALFRED `realtime_start ≤ D` for vintaged legs; day precision (A09); revision-optimistic legs cap at `NOT_DEMONSTRATED` |
 | Target / basket / period / first-release rule | §2.H1 Target; the CPI coherent proxy epoch; same-release-vintage first print for NFP / PCE / PPI |
 | Inclusion & missingness | §2.H1; `MISSING_SOURCE` counted in coverage, excluded from accuracy |
-| Train / tune / held-out | expanding walk-forward, `MIN_TRAIN_OBS = 60`, zero tuning; windows current regime 2024+ / 2021+ / 2010+; E1 prospective = post-freeze only |
-| Ordinary corrections | erratum scored both ways (sensitivity); regular revisions never change the first-print target |
-| Baselines | strongest of naive_prior / trailing_3m / ar_model per window; Cleveland / Kalshi prospective-only |
-| Allowed trial count | M0 = 15 (declared `ric_mri_coherent_requal_v1`); X0 = 12 descriptive tests (no model trials); E2 = 1 confirmatory run; plus the retained 48 + 18 from #7909 |
-| Meaningful margin / precision | M0 R ≤ 0.90 and CI width ≤ 0.30; E2 relative reduction ≥ 30%; X0 at least 40 episodes per era; interval coverage 80% ± 8 pp |
-| Dependence | headline + core = one episode; moving-block bootstrap (6); Newey–West HAC; Holm per family |
-| Accept / hold / no-go | §2 per hypothesis; INSUFFICIENT / PENDING are the honest defaults |
+| Train / tune / held-out | expanding walk-forward, `MIN_TRAIN_OBS = 60`, zero tuning; windows 2024+ (direction) / 2021+ (tested) / 2010+ (reported); E1 prospective = post-freeze, `asof_night` < release date only |
+| Ordinary corrections | erratum re-scored as a verdict-free sensitivity; regular revisions never change the first-print target |
+| Baselines | falsify against `naive_prior` only (owner kill comparator); qualify against the strongest of naive_prior / trailing_3m / ar_model per window; Cleveland / Kalshi prospective-only |
+| Allowed trial count | M0 = 13 (`ric_mri_coherent_requal_v1`) + 26 listed non-trial re-scorings; X0 = 8 (`ric_x0_release_reaction_v1`); E1 = 14 model verdicts + ≤ 6 comparators (§5); E2 = 1 confirmatory run; plus the retained 48 + 18 from #7909 |
+| Meaningful margin / precision | M0 2021+ point R ≤ 0.95 (Holm p < 0.05) and full R < 1.00; ≥ 30 episodes for any verdict; E2 relative reduction ≥ 30% with CI below 0; X0 ≥ 40 episodes per era; interval coverage 80% ± 8 pp |
+| Dependence | headline + core share episodes and are never summed; moving-block bootstrap (6); Newey–West HAC; Holm per family |
+| Accept / hold / no-go | §2 per hypothesis; INSUFFICIENT / NOT_DEMONSTRATED / PENDING are the honest defaults |
 
 ## 4. Metrics never pooled
 
@@ -265,21 +385,35 @@ would be the forbidden opaque market score.
 
 ## 5. Prospective accrual (E1) under existing immutable owners
 
-Writer: `scripts/build_release_forecast.py` remains the only advancer of `forward_ledger.jsonl` (MRI-R8, nightly
-only). E1 makes the following durable in that owner, without a new log:
+**Writer.** `scripts/build_release_forecast.py` remains the only advancer of `forward_ledger.jsonl` (MRI-R8, nightly
+only). Rows are keep-first under `(release, period, row_type, asof_night, model)`. E1 extends that owner's row
+vocabulary **append-only**. It edits no existing row in place and creates no new log:
 
 1. **issued.** The existing `projection` and `shadow_projection` rows already record issuance. They already carry
    `prediction_id`, `inputs_hash`, `code_receipt`, `model_epoch` and `target_epoch`.
-2. **withheld.** Today this is log-level only (`scripts/build_release_forecast.py:1185,1338,1769`). E1 adds a
-   durable row or field in the same ledger, carrying `reason` and `target_epoch`, so a withheld forecast is
-   countable after the fact.
+2. **withheld.** Today this is log-level only (`scripts/build_release_forecast.py:1185,1338,1769`). E1 adds a new
+   `row_type = withheld` carrying `reason` and `target_epoch`, so a withheld forecast is countable after the fact.
 3. **abstained.** This is a forecast deliberately not issued under a declared rule (for example, insufficient
-   inputs). It is recorded the same way as withheld, with `reason = abstain:<rule>`.
-4. **missed.** There is no row at D for a scheduled release. This is derived at scoring time from the owner's own
-   schedule; no future release dates are hardcoded here.
+   inputs). E1 adds a new `row_type = abstained` carrying `reason = abstain:<rule>` and `target_epoch`.
+4. **missed.** There is no row for a release before its release day. This is derived at scoring time from the
+   release-date owner that the F0 coverage census names. No future release dates are hardcoded here, and no calendar
+   is minted.
+
+**What is scored.**
+- Only rows with `asof_night` **strictly before** the release date are scored.
+- Rows written on the release day (`frozen_on_release_day`, kept by MRI-R32b at
+  `scripts/build_release_forecast.py:2148-2150,2426-2430,2505`) are reported in their own table and never counted
+  toward any verdict.
 
 **Target identity.** `(release, period, target_epoch, sequence = first, actual_receipt_id)`. Each identity is
 counted once, keep-first; a later re-score never replaces the first scored row.
+
+**E1 evaluation set (declared once, `ric_mri_prospective_v1`).**
+- The 13 M0 model × release pairs plus `combined_v1` (CPI headline), each against `naive_prior` and with the
+  strongest-baseline qualification rule of §2.H1. That makes 14 model verdicts.
+- At most 6 comparator series (Cleveland nowcast, Kalshi / Polymarket). Exactly which ones is frozen in the E1 PR,
+  from the F0 census, **before the first post-freeze row is scored**.
+- Cleveland values are compared internally only, until the R1 / G0 rights determination (§8).
 
 **Natural-time maturity.**
 - A prospective per-target verdict needs at least **24 scored episodes after this freeze commit**.
@@ -289,32 +423,45 @@ counted once, keep-first; a later re-score never replaces the first scored row.
 At the current monthly cadence, 24 episodes is roughly 24 months per release family, and the surfaces say so
 plainly.
 
-Legacy epochs (`*_legacy_target_v1`, `legacy_cross_vintage_initial_levels_v0`) stay readable and labelled
-`superseded`. Their accuracy is never shown as current, and legacy backtests never validate the repaired target
-(A11). That is the F1 ruling recorded with M0.
+**Legacy epochs.** Legacy epochs (`*_legacy_target_v1`, `legacy_cross_vintage_initial_levels_v0`) stay readable and
+labelled `superseded`. Their accuracy is never shown as current, and legacy backtests never validate the repaired
+target (A11). That is the F1 ruling recorded with M0.
 
 ## 6. Power, precision and stop rules
 
-- **Power.** With about 60 to 70 CPI episodes in 2021+ and an episode-level loss-differential sd near the observed
-  MAE scale, the minimum detectable R at one-sided α = 0.05 and 80% power is roughly 0.85 to 0.90. Smaller true
-  gains are expected to come back `INSUFFICIENT` or `HOLD`, and that is the honest answer, not a failure of the
-  protocol. NFP / PCE / PPI have similar N. The current-regime window (2024+, about 20 to 22 episodes) is reported
-  for direction only and is never decisive on its own.
-- **Stop rules.**
-  - M0 runs once.
-  - A falsified model's display claim is withdrawn on the M0 merge.
-  - Prospective E1 runs until the owner's PREREG kill fires (for example, combined_v1 at n ≥ 24) or 24
-    post-freeze episodes accrue, whichever is first. There is no early stopping on a good streak.
-  - E2 runs one confirmatory pass.
-  - X0 runs once over history, then accrues forward rows through the existing event-window keep-first writer.
-- **Escalation.** Any proposal to add a model variant, change a target epoch, or reuse a window after seeing results
-  requires a superseding E0 revision with a new declared trial budget **before** the run.
+**Power.** For a one-sided test at the strictest Holm step (α = 0.05 / 13 ≈ 0.0038, z ≈ 2.67) with 80% power
+(z ≈ 0.84), the smallest detectable ratio is `R_detect ≈ 1 − 3.51 · ρ / √n`. Here ρ = sd(d) / MAE_base, the
+loss-differential noise relative to the baseline's error. At n = 68 (2021-01 to 2026-08 monthly):
+
+| ρ | R_detect |
+|---|---|
+| 1.0 | 0.57 |
+| 0.5 | 0.79 |
+| 0.3 | 0.87 |
+
+Absolute-error differentials for models that share most of their signal usually sit at ρ of roughly 0.5 to 1.0. So
+only large true gains are detectable, and **M0 may honestly return every model as `NOT_DEMONSTRATED`, `FALSIFIED` or
+`INSUFFICIENT`.** That is an answer, not a failure of the protocol. The current-regime window (2024+, about 20 to 22
+episodes) is below the 30-episode floor and is reported for direction only. In X0, each era needs at least 40
+episodes, and 2010–2019 has about 115 to 120 per release.
+
+**Stop rules.**
+- M0 runs once.
+- A falsified model's display claim is withdrawn on the M0 merge.
+- Prospective E1 runs until the owner's PREREG kill fires (for example, combined_v1 at n ≥ 24) or 24 post-freeze
+  episodes accrue, whichever is first. There is no early stopping on a good streak.
+- E2 runs one confirmatory pass.
+- X0 runs once over history, then accrues forward rows through the existing keep-first reaction writer.
+
+**Escalation.** Any proposal to add a model variant, change a target epoch, add a sensitivity, or reuse a window
+after seeing results requires a superseding E0 revision with a new declared trial budget **before** the run.
 
 ## 7. Deviations
 
-Allowed without revision: an owner-side bug fix that makes a frozen spec run as written (recorded with its commit),
-and a source outage that turns rows into `MISSING_SOURCE` (counted). Everything else is a deviation. It is recorded
-in the result document under "DEVIATIONS" and demotes the affected verdict to `HOLD`.
+Two things are allowed without a revision. One is an owner-side bug fix that makes a frozen spec run as written,
+recorded with its commit. The other is a source outage that turns rows into `MISSING_SOURCE`, which are counted.
+Everything else is a deviation. It is recorded in the result document under "DEVIATIONS", and it demotes the
+affected verdict to `NOT_DEMONSTRATED` (H1) or `HOLD` (H2, H3).
 
 ## 8. Census gaps carried forward (owners named; not fixed here)
 
@@ -323,13 +470,38 @@ in the result document under "DEVIATIONS" and demotes the affected verdict to `H
 - **Street consensus is unavailable** (`latest.json`: `street_consensus = unavailable`). No surface may say
   "consensus".
 - **Breakevens are not MRI print benchmarks.** They are a rates response (H3) only, never "expected CPI".
-- **MRI families are absent from `data/trial_ledger.jsonl`** (1,772 rows on main). M0 declares its 15 through the
-  existing writer, and past MRI PREREG attempts stay counted in their own documents.
+- **MRI families are absent from `data/trial_ledger.jsonl`** (1,772 rows on main). M0, X0 and E1 declare theirs
+  through the existing writer. Past MRI PREREG attempts stay counted in their own documents.
 - **AHE / AWH: `no_data`.** Out of M0.
-- **Parquet interiors were not inspected** by the census. M0 opens what it uses and records hashes.
+- **Parquet interiors were not inspected** by the census. M0 and X0 open what they use and record hashes.
+- **The MRI `reaction` rows cover only DGS10, T10Y2Y, SPY and DTWEXBGS**, and only after a scored forward row
+  (`scripts/build_release_forecast.py:2824-2836`). That is too sparse for a 2010+ history. X0 therefore reads the
+  daily `fred` store for its history and leaves the reaction writer unchanged.
 
 ## 9. Independent review record
 
-Filled in by the review lane before this protocol is marked ready. The record gives the reviewer identity
-(provider / model / lane id), the commit reviewed, the verdict, each finding with its disposition, and the commit
-that applied each accepted change.
+**Round 1.**
+- Reviewer: grok-4.6 through the Subagent Fabric `review` lane `ric-e0-review-1` on host ubuntu2.
+- Commit reviewed: `b493baa3`.
+- Verdict: **REJECT**, with 15 findings (3 blockers, 9 majors, 3 minors).
+
+The seat checked each finding's cited evidence against `origin/main` and accepted all 15. Revision 2 applies them
+all, in the commit that adds this record:
+
+| # | Finding (short) | Disposition |
+|---|---|---|
+| 1 | H2 treatment depended on P2, which itself depends on E2 (cycle) | Accepted. Treatment = T0 + C0 + P1; P2 is out of H2; H2 is `PENDING` if those have not landed (§2.H2 Arms). |
+| 2 | H3 window and response source unproven (`event_window` has phases, not h0/h1; the reaction rows cover other series and only after scoring) | Accepted. ALFRED `realtime_start` release dates, the `fred` store for responses, explicit h0/h1, and the reaction-writer gap recorded (§2.H3, §8). |
+| 3 | Statistics claimed owner functions that do not exist (HLN, HC3, a 90% CI on R) | Accepted. DM built from `newey_west_lrvar`; the owner's 95% bootstrap on mean d with its n ≥ 30 floor; R as a point estimate (§2.H1 Statistic). |
+| 4 | Falsifying against an ex-post strongest baseline in one window contradicts the owner's both-windows kill rule | Accepted. Falsify against `naive_prior` in both windows; the strongest baseline is used for qualification only. |
+| 5 | Power claim (R ≈ 0.85 to 0.90) was optimistic and unrelated to the margins | Accepted. The formula and table are in §6; all-null M0 is stated as a likely, honest outcome. |
+| 6 | Holm universe undefined across windows and contrasts | Accepted. 13 primary 2021+ p-values only; everything else is descriptive. |
+| 7 | "ALFRED-only PIT" false for revision-optimistic and assumed-lag legs | Accepted. PREREG PIT per spec; revision-optimistic legs cap the verdict at `NOT_DEMONSTRATED`; assumed lags are labelled. |
+| 8 | E1 would score release-day rows; combined_v1 and Cleveland are not retrospectively runnable | Accepted. Only `asof_night` before the release date is scored; combined_v1 moves to E1; M0 = 13; no Cleveland in M0. |
+| 9 | "row or field" left an in-place edit open, contradicting §0 | Accepted. New append-only `withheld` / `abstained` row types in E1 only; §0 reconciled. |
+| 10 | Trial budget understated (sensitivities, mf_energy variants, H3 benchmarks, E1 comparators) | Accepted. Sensitivities are verdict-free and listed; mf_energy T−1 only; one H3 benchmark; X0 = 8 and E1 sets declared. |
+| 11 | HC3 is not a dependence correction for monthly episodes | Accepted. Slope SE is HAC via `newey_west_lrvar(x̃·u)`. |
+| 12 | Headline / core double-counted; "tier-1" undefined | Accepted. One CPI surprise (core) per episode; the tier-1 list is frozen; no exclusion re-runs. |
+| 13 | H2 stems 13–24 unpublished; omission guard degenerate at baseline 0 | Accepted. All 24 stems published; absolute +1 floor on omissions; held-back set of 36 to meet the n ≥ 30 bootstrap floor. |
+| 14 | "Cluster-aware `wilson_ci`" claimed a capability the owner lacks | Accepted. Wilson 95% on episode counts, per family. |
+| 15 | DEC cited the registry at lines 25–32 for the backfill flag | Accepted. The flag is at `config/release_forecast_model_registry.yml:194`; the DEC citation is corrected. |
