@@ -294,3 +294,27 @@ A1's exact failing merge7c with five added dependency paths now has a complete A
 The local A1 candidate is UNPUBLISHED and still conflicts in the shared packing literals against observedmain874c8fff. The actual remote1b7916353dd4 merges cleanly with that same main. Therefore the next lawful order is incumbent capacity-admitted base refresh of the existing remote carrier, then application of the retained local source correction to that refreshed carrier, fresh binding checks, incumbent merge and normal production proof. Do not push26b directly or manually merge main to force this order. The14:39census remained12active/cap8; the authoritative register still held PR7551 despite an empty lease-labelled issue list. No new controller/producer/PR, lease edit or capacity bypass was made.
 
 Original experience and lostCLI-review effects remain unresolved. All completion and production flags stayfalse. The existing original-root heartbeat and incumbent controller retain continuation; this handoff is a checkpoint, not programme completion.
+
+
+## 2026-10-14T15:52Z — base-refresh prerequisite disproved
+
+The prior wait-for-capacity order is invalidated by source-bound control-flow proof:
+semantic/current contract-delta red exits before incumbent refresh. Three diagnostic
+cases pass, including a clean/stale positive control; no network/write effects.
+The independent Fabric audit eval-a1-refresh-reachability-01a1333d-c1 is consumed and
+reviewer-accepted with corrections; protocol downgrade is explicitly prohibited.
+Current A1 remains published1b with local26 preserved and unpublished. A read-only
+integration with observed main9b is clean; the post-update correction preserves318
+job definitions and all existing paths, adds five A1 inputs, changes only the measured
+free-content job limit134->135, and retains all eight A1 suites and weight/pack limits.
+See research/evidence/eval-os-tier-query-20261014/a1-refresh-reachability-20261014/.
+
+Chris has been asked once for a narrow exception allowing one ordinary base integration
+on the same PR before applying the accepted repair. The current instruction expressly
+reserves that base update to the incumbent, which cannot reach it under the current
+red. No answer, branch/base change, PR, merge or deployment is inferred. Existing
+release authorization stays granted. On actual approval, fresh source/custody/capacity,
+changed-source qualification and new hosted checks remain required; incumbent alone
+still owns final merge. Do not repeatedly poll capacity or re-ask the release question.
+Follow-on runtime/product proof and all original Fabric effects stay unchanged. The
+programme remains incomplete; real production and consumer adoption remain owed.

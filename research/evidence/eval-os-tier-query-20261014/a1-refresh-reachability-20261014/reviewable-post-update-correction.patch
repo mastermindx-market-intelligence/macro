@@ -1,0 +1,64 @@
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -7514,6 +7514,11 @@
+     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
+     scope: exclusive
+     paths:
++      - engine/rates_command_basis.py
++      - engine/neuralweb/market_memory_brain_citations.py
++      - engine/neuralweb/market_memory_retained_catalog.py
++      - engine/neuralweb/market_memory_retained_legacy_guard.py
++      - engine/neuralweb/market_memory_retained_saved.py
+       - "config/market_memory_factory_bindings.v1.json"
+       - "site/basketdata/baskets.json"
+       - "site/basketdata/breadth_split.json"
+--- a/tests/test_ci_pack.py
++++ b/tests/test_ci_pack.py
+@@ -5021,7 +5021,7 @@
+ # reads both names with ast.literal_eval, so keep them plain module-level literals.
+ PACKING_PROBES = (
+     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
++    ("scripts/build_free_content.py", 135, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+     ("engine/prophet/plan_book.py", 130, 5_600),
+ )
+ # Twelve packs per shape was the pre-curation measurement.
+@@ -5030,6 +5030,38 @@
+ 
+ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
+     """The measured before/after this wave exists to produce.
++
++    2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
++    ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
++    Hosted contract-delta run 38568750084 / job 115868075914 measured
++    published 1b7916353dd4 on tested merge 7c610b6d8a77, base b4a515dcbab3:
++    eval-os-a1 is the sole entrant on that probe; no job leaves.
++    This job is already exclusive, and its builder dependency is real:
++    test_admin_server -> admin/server -> admin/press -> desk_planner ->
++    research_triage -> validators -> scripts/build_free_content._validate.
++    The other owners of the generic server/response suites are DATA-gated;
++    removing those suites would lose the required ordinary-PR proof.
++
++    On that exact tested merge, after adding the five missing A1 inputs,
++    canonical full-closure and packing measurements at 2026-10-14T14:25Z:
++
++        templates/index.html          135 jobs / 5,684 weight / 10 packs
++        scripts/build_free_content.py 135 jobs / 5,502 weight / 10 packs
++        engine/prophet/plan_book.py   129 jobs / 5,445 weight / 10 packs
++
++    A1 selects only the middle probe. Its closure is complete; the sole
++    remaining closure miss is leadership-rotation-science's inherited
++    rates input, already repaired separately on current main. Re-base only
++    the middle JOB ceiling to its exact measurement, without padding.
++    Current main 190311584167 already owns the neighboring 136/130 job
++    ceilings from the Market Memory / Leadership Rotation decision. Preserve
++    those exact protected-main values in the final integration; this
++    introduces no new baseline decision for either probe. All WEIGHT/PACK
++    ceilings, all eight A1 suites, existing job definitions and the selector
++    stay unchanged. Full source,
++    measurement and corrected advisory-review evidence lives under
++    research/evidence/eval-os-20261012/a1-ci-delta-20261014/.
++    Fresh checks of the final containing source remain mandatory.
+ 
+     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
+     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
