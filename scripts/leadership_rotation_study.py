@@ -289,17 +289,23 @@ def zscore(R) -> np.ndarray:
         return z
     changes = np.diff(R)  # changes[j] = R_{j+1} - R_j
     scale = np.sqrt(H_PRIMARY)
-    for t in range(SIGMA_CHANGES, n):
-        if np.isnan(R[t]) or np.isnan(R[t - Z_LOOKBACK]):
-            continue
-        # changes[t-63:t] are dR at s = t-62 .. t (ORCH-SCI window, R1).
-        window = changes[t - SIGMA_CHANGES : t]
-        if np.isnan(window).any():
-            continue
-        sigma = window.std(ddof=1)
-        if not np.isfinite(sigma) or sigma == 0.0:
-            continue
-        z[t] = (R[t] - R[t - Z_LOOKBACK]) / (sigma * scale)
+    # Vectorized form of the original per-t loop (prereg V2 harness repair,
+    # speed only): row i of ``win`` is changes[t-63:t] for t = 63 + i, i.e. dR
+    # at s = t-62 .. t (ORCH-SCI window, R1). Each row is reduced on its own
+    # contiguous copy with the same ``std(ddof=1)``, so the output is
+    # bitwise-identical to the loop (pinned by
+    # tests/test_leadership_rotation_study.py::test_zscore_vectorized_is_bitwise_identical_to_v1_loop).
+    t = np.arange(SIGMA_CHANGES, n)
+    win = np.ascontiguousarray(
+        np.lib.stride_tricks.sliding_window_view(changes, SIGMA_CHANGES)[: n - SIGMA_CHANGES]
+    )
+    ok = ~(np.isnan(R[t]) | np.isnan(R[t - Z_LOOKBACK]) | np.isnan(win).any(axis=1))
+    sigma = np.full(len(t), np.nan)
+    if ok.any():
+        sigma[ok] = win[ok].std(axis=1, ddof=1)
+    good = ok & np.isfinite(sigma) & (sigma != 0.0)
+    tg = t[good]
+    z[tg] = (R[tg] - R[tg - Z_LOOKBACK]) / (sigma[good] * scale)
     return z
 
 

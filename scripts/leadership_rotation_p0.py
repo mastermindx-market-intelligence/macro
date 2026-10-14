@@ -83,7 +83,11 @@ DEFAULT_SIMS_NULL = 200
 DEFAULT_SIMS_ALT = 100
 PATH_SEED_ROOT = 20261014
 
-_FORMATION_YEARS = (4, 8, 12, 16, 24, 32, 48)
+# prereg V2 §3 cell 2 (N80) must be reachable: H1 honest-N grows ~1.7/yr per
+# group, so the V1-era 48-year ceiling left N80 mostly UNREACHED.  64/96 are
+# appended (earlier entries unchanged, so every N20/N40 path that reached
+# before reaches at the same formation length).
+_FORMATION_YEARS = (4, 8, 12, 16, 24, 32, 48, 64, 96)
 _HYPOTHESES = ("H1", "H2", "H3")
 _GROUPS = ("defensive_sector", "broadening_proxy")
 
@@ -173,9 +177,110 @@ def simulate_family(
     return groups, truth
 
 
-def _honest_n_group(
-    pairs: Sequence[PairSeries], hypothesis: str, start: int, end: int
+class _PairPre:
+    """End-independent per-pair inputs to the honest-N search (speed only).
+
+    ``_evaluate_pair_core`` recomputes the whole-series arms (A1 hysteresis on
+    the 63-change z, betas, outcomes) for every candidate formation end, yet
+    none of them depends on the end: only the window filter, the within-pair
+    merge and the zigzag do.  Computing them once per path and re-windowing per
+    end reproduces the slow path exactly (pinned by the fast == slow identity
+    tests); it changes no arm, threshold, merge or clustering rule.
+    """
+
+    __slots__ = ("ps", "R", "invalid", "fe", "a1_entries", "_betas", "_log_spy", "_rec")
+
+    def __init__(self, ps: PairSeries) -> None:
+        self.ps = ps
+        self.R, self.invalid = st.log_ratio(ps.num, ps.den)
+        fe = st.first_eligible(ps.num, ps.den)
+        self.fe = None if fe is None else int(fe)
+        self.a1_entries: List[int] = []
+        if self.fe is not None:
+            _state, entries, _exits = st.arm_a1(self.R)
+            self.a1_entries = [int(t) for t in entries]
+        self._betas: Optional[Tuple[np.ndarray, np.ndarray]] = None
+        self._log_spy: Optional[np.ndarray] = None
+        self._rec: Dict[int, dict] = {}
+
+    def s0(self, start: int, end: int) -> Optional[int]:
+        if self.fe is None:
+            return None
+        s0 = max(int(start), self.fe)
+        return None if s0 > end else s0
+
+    def record(self, t: int) -> dict:
+        rec = self._rec.get(t)
+        if rec is None:
+            from scripts.leadership_rotation_run import _log_returns, _outcome_record
+
+            if self._betas is None:
+                ps = self.ps
+                lr_spy = _log_returns(ps.spy)
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    self._log_spy = np.log(
+                        np.where(np.isfinite(ps.spy) & (ps.spy > 0), ps.spy, np.nan)
+                    )
+                self._betas = (
+                    st.rolling_beta(_log_returns(ps.num), lr_spy),
+                    st.rolling_beta(_log_returns(ps.den), lr_spy),
+                )
+            bn, bd = self._betas
+            rec = _outcome_record(
+                self.R,
+                self.invalid,
+                t,
+                st.H_PRIMARY,
+                (float(bn[t]), float(bd[t])),
+                self._log_spy,
+            )
+            self._rec[t] = rec
+        return rec
+
+
+def _family_pre(groups: Dict[str, List[PairSeries]]) -> Dict[str, List[_PairPre]]:
+    return {g: [_PairPre(ps) for ps in plist] for g, plist in groups.items()}
+
+
+def _fast_honest_n_group(
+    pres: Sequence[_PairPre], hypothesis: str, start: int, end: int
 ) -> int:
+    from scripts import leadership_rotation_episodes as ep
+    from scripts.leadership_rotation_run import _cluster_n, _filter_window
+
+    group = pres[0].ps.group
+    items: List[inf.Item] = []
+    if hypothesis == "H1":
+        for pp in pres:
+            s0 = pp.s0(start, end)
+            if s0 is None:
+                continue
+            for ph in ep.zigzag(pp.R, start=s0, end=end + 1):
+                if ph.qualifies:
+                    items.append((group, pp.ps.pair_id, ph.T))
+        return _cluster_n(items)
+    fld = "y_res_20" if hypothesis == "H3" else "y20"
+    for pp in pres:
+        s0 = pp.s0(start, end)
+        if s0 is None:
+            continue
+        kept, _merged = ep.merge_within_pair(_filter_window(pp.a1_entries, s0, end))
+        for t in kept:
+            r = pp.record(int(t))
+            if r[fld]["state"] == "MATURED" and r[fld]["y"] is not None:
+                items.append((group, pp.ps.pair_id, int(r["t"])))
+    return _cluster_n(items)
+
+
+def _honest_n_group(
+    pairs: Sequence[PairSeries],
+    hypothesis: str,
+    start: int,
+    end: int,
+    pres: Optional[Sequence[_PairPre]] = None,
+) -> int:
+    if pres is not None:
+        return _fast_honest_n_group(pres, hypothesis, start, end)
     from scripts.leadership_rotation_run import (
         _cluster_n,
         _evaluate_pair_core,
@@ -198,13 +303,18 @@ def _honest_n_group(
 
 
 def _both_groups_reach(
-    groups: Dict[str, List[PairSeries]], hypothesis: str, end: int, n_target: int
+    groups: Dict[str, List[PairSeries]],
+    hypothesis: str,
+    end: int,
+    n_target: int,
+    pre: Optional[Dict[str, List[_PairPre]]] = None,
 ) -> bool:
     for g in _GROUPS:
         plist = groups.get(g, [])
         if not plist:
             return False
-        if _honest_n_group(plist, hypothesis, st.WARMUP, end) < n_target:
+        pres = pre.get(g) if pre is not None else None
+        if _honest_n_group(plist, hypothesis, st.WARMUP, end, pres=pres) < n_target:
             return False
     return True
 
@@ -213,8 +323,12 @@ def window_for_target(
     groups: Dict[str, List[PairSeries]],
     n_target: int,
     hypothesis: str,
+    pre: Optional[Dict[str, List[_PairPre]]] = None,
 ) -> Optional[int]:
-    """Smallest formation end e with both groups honest-N ≥ n_target (ORCH-SCI R10)."""
+    """Smallest formation end e with both groups honest-N ≥ n_target (ORCH-SCI R10).
+
+    ``pre`` (from ``_family_pre``) selects the exact cached search; omitted, the
+    original per-end ``_evaluate_pair_core`` search runs."""
     if not groups:
         return None
     n = len(next(iter(groups.values()))[0].spy)
@@ -222,11 +336,11 @@ def window_for_target(
     if last_e < st.WARMUP:
         return None
     lo, hi = st.WARMUP, last_e
-    if not _both_groups_reach(groups, hypothesis, hi, n_target):
+    if not _both_groups_reach(groups, hypothesis, hi, n_target, pre):
         return None
     while lo < hi:
         mid = (lo + hi) // 2
-        if _both_groups_reach(groups, hypothesis, mid, n_target):
+        if _both_groups_reach(groups, hypothesis, mid, n_target, pre):
             hi = mid
         else:
             lo = mid + 1
@@ -250,16 +364,31 @@ def wilson_interval(
     return (lo, hi)
 
 
-def _pick_n_formation(groups_fn, n_target: int) -> Optional[int]:
+def _pick_formation(groups_fn, n_target: int):
+    """First formation length at which every hypothesis reaches ``n_target``.
+
+    Returns ``(n_formation, groups, truth, ends)`` or None.  The groups and ends
+    found here are the ones the sim evaluates: re-simulating at the chosen
+    length with the same seed is deterministic, so reusing them is identical
+    to the former re-simulate-and-re-search."""
     for years in _FORMATION_YEARS:
         nf = 252 * years
-        groups, _truth = groups_fn(nf)
+        groups, truth = groups_fn(nf)
+        pre = _family_pre(groups)
+        ends: Dict[str, int] = {}
         for h in _HYPOTHESES:
-            if window_for_target(groups, n_target, h) is None:
+            e = window_for_target(groups, n_target, h, pre)
+            if e is None:
                 break
+            ends[h] = int(e)
         else:
-            return nf
+            return nf, groups, truth, ends
     return None
+
+
+def _pick_n_formation(groups_fn, n_target: int) -> Optional[int]:
+    picked = _pick_formation(groups_fn, n_target)
+    return None if picked is None else picked[0]
 
 
 def _extract_sim_metrics(
@@ -320,8 +449,8 @@ def _run_one_sim(
     def groups_fn(nf: int):
         return simulate_family(sigma, delta, rho, nf, seed)
 
-    n_formation = _pick_n_formation(groups_fn, n_target)
-    if n_formation is None:
+    picked = _pick_formation(groups_fn, n_target)
+    if picked is None:
         return {
             "cell_id": cell_id,
             "k": k,
@@ -329,19 +458,7 @@ def _run_one_sim(
             "n_formation": None,
         }
 
-    groups, truth = simulate_family(sigma, delta, rho, n_formation, seed)
-    ends: Dict[str, Optional[int]] = {}
-    for h in _HYPOTHESES:
-        ends[h] = window_for_target(groups, n_target, h)
-    if any(ends[h] is None for h in _HYPOTHESES):
-        return {
-            "cell_id": cell_id,
-            "k": k,
-            "status": "UNREACHED",
-            "n_formation": n_formation,
-        }
-
-    ends_i: Dict[str, int] = {h: int(ends[h]) for h in _HYPOTHESES}
+    n_formation, groups, truth, ends_i = picked
     cache: Dict[int, dict] = {}
     metrics: Dict[str, Any] = {}
     for h in _HYPOTHESES:

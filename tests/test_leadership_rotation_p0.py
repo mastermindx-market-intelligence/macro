@@ -606,3 +606,55 @@ def test_load_sim_records_unknown_cell_id(tmp_path: Path):
     p.write_text(json.dumps(bad) + "\n")
     with pytest.raises(ValueError, match="unknown cell_id"):
         load_sim_records([p])
+
+
+# --- prereg V2 harness repair: exact cached honest-N search (speed only) ---
+
+
+# MUTATION: scripts/leadership_rotation_p0.py _fast_honest_n_group drop ep.merge_within_pair
+# MUTATION: scripts/leadership_rotation_p0.py _PairPre.s0 replace max(int(start), self.fe) with int(start)
+def test_fast_honest_n_and_window_identical_to_slow():
+    from scripts import leadership_rotation_p0 as p0
+
+    groups, truth = simulate_family(
+        0.007, 0.0, 0.5, 252 * 2, np.random.SeedSequence([7, 7, 1])
+    )
+    pre = p0._family_pre(groups)
+    last = truth["n"] - TAIL - 1
+    ends = sorted(set(np.linspace(st.WARMUP, last, 3).astype(int).tolist()))
+    for e in ends:
+        for g in ("defensive_sector", "broadening_proxy"):
+            for h in ("H1", "H2", "H3"):
+                slow = p0._honest_n_group(groups[g], h, st.WARMUP, e)
+                fast = p0._honest_n_group(groups[g], h, st.WARMUP, e, pres=pre[g])
+                assert slow == fast, (e, g, h, slow, fast)
+    for h in ("H1", "H2", "H3"):
+        assert window_for_target(groups, 3, h) == window_for_target(groups, 3, h, pre)
+
+
+# MUTATION: scripts/leadership_rotation_p0.py _pick_formation return ends from a re-simulated path with seed+1
+def test_pick_formation_reuses_identical_groups_and_ends():
+    from scripts import leadership_rotation_p0 as p0
+
+    seed = np.random.SeedSequence([7, 7, 2])
+
+    def groups_fn(nf):
+        return simulate_family(0.007, 0.0, 0.5, nf, seed)
+
+    nf, groups, truth, ends = p0._pick_formation(groups_fn, 3)
+    again, _ = simulate_family(0.007, 0.0, 0.5, nf, seed)
+    assert np.array_equal(
+        groups["defensive_sector"][0].num, again["defensive_sector"][0].num
+    )
+    pre = p0._family_pre(again)
+    for h in ("H1", "H2", "H3"):
+        assert ends[h] == window_for_target(again, 3, h, pre)
+    assert p0._pick_n_formation(groups_fn, 3) == nf
+
+
+def test_formation_years_extension_preserves_v1_prefix():
+    from scripts import leadership_rotation_p0 as p0
+
+    assert p0._FORMATION_YEARS[:7] == (4, 8, 12, 16, 24, 32, 48)
+    assert max(p0._FORMATION_YEARS) >= 64
+    assert list(p0._FORMATION_YEARS) == sorted(set(p0._FORMATION_YEARS))
