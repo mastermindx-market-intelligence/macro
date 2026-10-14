@@ -319,7 +319,8 @@ def test_contamination_probe_reuses_the_cache_without_an_origin_checkout() -> No
 def test_contamination_probe_evaluates_after_dependencies_but_requires_success() -> None:
     job = workflow("selfhosted-ci-canary.yml")["jobs"]["contamination-probe"]
     condition = str(job["if"])
-    assert "always()" in condition
+    assert "!cancelled()" in condition
+    assert "always()" not in condition
     assert "inputs.slots == '1'" in condition
     assert "needs.plan.result == 'success'" in condition
     assert "needs.selfhosted-pack.result == 'success'" in condition
@@ -740,8 +741,11 @@ def test_no_other_canary_job_can_race_the_four_slot_candidate() -> None:
     assert jobs["four-slot-preflight"]["if"] == "inputs.slots == '4'"
     assert jobs["cache-negative-control"]["if"] == "inputs.slots == '1'"
     contamination_if = str(jobs["contamination-probe"]["if"])
-    assert "always()" in contamination_if
+    assert "!cancelled()" in contamination_if
+    assert "always()" not in contamination_if
     assert "inputs.slots == '1'" in contamination_if
+    assert "needs.plan.result == 'success'" in contamination_if
+    assert "needs.selfhosted-pack.result == 'success'" in contamination_if
 
 
 def test_four_slot_keeps_all_evidence_legs_and_production_parallelism_frozen() -> None:
