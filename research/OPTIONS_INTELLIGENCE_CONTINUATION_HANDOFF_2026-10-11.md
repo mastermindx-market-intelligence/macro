@@ -581,10 +581,14 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D77 snapshot.) Rows superseding older rows below:
+(D78 2026-10-14T03:05Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | PARKED, BLOCKED-EXTERNAL. The lane ended rc=1 at 02:53:32Z on a Grok 402 `Grok Build usage balance exhausted`, after 34 calls. Red-test commit `42415b1a` was pushed to `origin/claude/f02q2-unknown-expiry-not-0dte-20261013` as a recovery copy. The partial classifier is saved as `leads/F02Q2/partial.diff`. Not moved to another carrier; resumes on its original carrier after the operator tops up the balance (D78) |
+| Grok carrier (all hosts) | EXHAUSTED: the same 402 on ubuntu3 (lane), ubuntu1 and mb (one-turn probes, 02:57–02:58Z). New lanes go through normal Fabric routing until the balance is restored (D78) |
+| D04-A2 (status source clocks strict) | Commission FROZEN `leads/D04A2/commission.md`. Waiting for #8923 to merge. Fabric placement; PR goes up with `hold`; merge only outside weekday 15–19Z, after the live source-clock measurement (D78) |
+| Macro #8920/#8923/#9079/#9083 | Controller: checks clean, proof stale (main `ed1497887c99` changed check definitions), 0 of 8 CI slots free at 02:52Z. Waiting on the refresh governor, which is not forced; watchers `bqitfw30c`/`b6y5c7v9y` (D78) |
 | F02-Q2 (live flow unknown expiry) | RUNNING on mmx-ubuntu3, lane `f02-q2`, pid 2372466, from 2026-10-14T02:24:03Z. Base `a0fa9004`; branch `claude/f02q2-unknown-expiry-not-0dte-20261013`. Overlap scan of 704 open PRs: 0 hits. One watcher. PR is the seat's, after artifact judgment (D77) |
 | #985 OATRUTH (+N02-U2) | Refreshed to `ff1655df` (merge with #983 `ba29ba3b`, tree `751e27f5` = prediction). CI run 38499984163 in progress; one watcher. Deploy plus live verify follow its merge (D77) |
 | #983 | MERGED 2026-10-14T02:11:40Z `ba29ba3b`. Deploys with #985's master tip (D77) |
@@ -1806,3 +1810,32 @@ NEXT:
 2. F02-Q2 watcher event → judge by artifact (RED-at-base table, gates, hunks). Then open a Macro PR, label only.
 3. After #8923 merges: D04-A2 and R04-B1.
 4. After #8920 merges: R04-B2, plus the M04 red specs (also gated on #8684).
+
+### D78 (2026-10-14T03:05Z) — F02-Q2 stopped by an exhausted Grok Build balance (fleet-wide); its red tests saved; D04-A2 commission frozen; the Macro controller holds #8920/#8923/#9079/#9083 for stale proof
+
+Facts observed this cycle (each read from the host, GitHub or the artifact, not from memory):
+- F02-Q2 lane `f02-q2` (mmx-ubuntu3) ended at 2026-10-14T02:53:32Z with rc=1 after 34 model calls. Its stdout ends with `API error (status 402 Payment Required): Grok Build usage balance exhausted`. The process is gone (pid 2372466 absent). The return packet is STATUS: PARTIAL: custody was clean (#9080 MERGED `f1fc07bf`; no owned-file drift).
+- Work it left behind:
+  - commit 1 `42415b1ae3e7cf9e9c0f8e2b9579324b071e2b28` ("test(flow): F02-Q2 red tests for unknown expiry coerced to 0DTE": `tests/test_live_flow.py` +284, `tests/test_flow_enrich.py` +39). Its stdout reports the reds fail for the stated reason (unreadable and past expiries become `dte: 0`). The seat has not re-run them.
+  - an uncommitted partial `_classify_expiry` in `engine/live_flow.py`. It is saved to the seat scratch as `leads/F02Q2/partial.diff` (120 lines) and is not committed anywhere.
+- Commit 1 existed only on ubuntu3. The seat pushed it, unchanged, to `origin/claude/f02q2-unknown-expiry-not-0dte-20261013`; `ls-remote` shows `42415b1a`. No PR.
+- Grok capacity: a one-turn probe ("reply PONG", no tools) on mmx-ubuntu1 (02:57Z) and on mb (02:58Z) both returned the same 402 `Grok Build usage balance exhausted`. Three hosts on independent grok installs return the same budget refusal. Treat the Grok Build balance as exhausted fleet-wide until it is topped up.
+- Macro controller sweep (run 38503219466, 02:52Z): #8920, #8923, #9079 and #9083 are "checks are clean but the proof is stale". Main commit `ed1497887c99` changed the check definitions, and "0 CI workload slot(s) available this sweep" (10 indexed PR CI runs, global cap 8). #8923 itself is CLEAN at `03b168ab9d74`, and every required check passes (the non-required `ci-authority/codex/merge-queue-pilot` fails). The controller refreshes as slots free. The seat does not force or bypass the governor.
+
+Rulings:
+1. The Grok 402 is a budget control, not a technical fault. F02-Q2 is not relaunched on another host, account or carrier, and its remaining work is not re-commissioned elsewhere. It is PARKED as BLOCKED-EXTERNAL. The human-only action is to top up the Grok Build balance. Resume path: the same lane identity on its original carrier (`~/lanes/wt/f02-q2` on ubuntu3, branch at `42415b1a` plus the saved partial), with a continuation prompt, once the balance is restored and ubuntu3 qualifies. The pushed branch is a recovery copy, not a second writer.
+2. R04-B1 and D04-A2 have not started, so they are not refused lanes. When #8923 merges, place them through normal Fabric routing (`pool` with a mode that `pool hosts <mode>` shows ELIGIBLE at launch time). They do not go through the Grok carrier while the balance is exhausted. Each still gets an overlap scan, its own worktree and one watcher.
+3. D04-A2 commission frozen at `leads/D04A2/commission.md` (307 lines):
+   - Design: a stdlib-only `app/live_status_projection.py` (`flow_pulse_fields`, `intraday_quotes_fields`; values pass through, missing stays None) wired into `status()`. `intraday_quotes` joins the live loop after `flow_pulse`.
+   - The dead-man becomes strict in weekday 15–19Z: `"<key>: missing source_asof"` covers an absent key, `{"status":"missing"}`, `{"error":"unavailable"}` and `None`.
+   - Thresholds stay 150/30. The comment records why: a missed hourly build trips the 90-minute artifact-age check first (source age ~128 min at artifact age 90); 150 catches an on-time rebuild from stale bars.
+   - Why a pure module: `tests/test_vps_live_orchestration.py` runs at PR time only in `washout-turn-organ` (gate: code, exclusive), whose install has no fastapi, and `tests/test_status_error_leak.py` is in `config/unrun_test_baseline.json`. The wiring is therefore pinned by an AST test (T3), and an import-shape test (T6) proves no serving stack loads. The seat runs a TestClient real-path check at judgment, uncommitted.
+   - CI-path additions only if the repository's closure scripts require them.
+   - PR opens with `hold`. Release only after in-session live source-clock measurements inside weekday 15–19Z with #8923 deployed, and only outside weekday 15–19Z: GitHub's dead-man takes the strict flip at merge, but the VPS gets the projection minutes later through `app/deploy/update.sh`.
+4. Host eligibility for launches is re-read at launch. ubuntu3 is not used for new lanes. Any refusal at admission is recorded, not routed around.
+
+NEXT:
+1. #985 watcher `b8auz1ho1` event → on MERGED: check #723's release state, run the git-gated deploy `--target-sha <full40>`, then live verify at 1440×900, 820×1180 and 390×844.
+2. #8923 watcher `b6y5c7v9y` event → on MERGED: overlap scans, then launch R04-B1 and D04-A2 through the Fabric per ruling 2.
+3. #8920 merged → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+4. Operator-only: top up the Grok Build balance. Then F02-Q2 resumes per ruling 1.
