@@ -178,14 +178,14 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
         from engine import subsector_rotation_alerts as sra
         new_alerts = rotation_events.to_alerts(payload)
         if new_alerts:
-            by_id = {e["id"]: e for e in sra.load_events()}
+            by_id = {e["id"]: e for e in sra.load_events(data_root=data_dir)}
             for e in new_alerts:
                 by_id.setdefault(e["id"], e)
             merged = list(by_id.values())
             ref = max(pd.Timestamp(e["ts"]) for e in merged)
             merged = [e for e in merged if pd.Timestamp(e["ts"]) >= ref - pd.Timedelta(days=sra.KEEP_DAYS)]
             merged.sort(key=lambda e: e["ts"])
-            sra.write_events(merged)
+            sra.write_events(merged, data_root=data_dir)
             log.info("rotation-event alerts: %d fired (%s)", len(new_alerts),
                      ", ".join(a["asset"] for a in new_alerts[:4]))
     except Exception as e:  # noqa: BLE001 — alerts are additive, never fatal
