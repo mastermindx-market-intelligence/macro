@@ -110,8 +110,21 @@ def _blank(value: object) -> bool:
     return False
 
 
+def _text_present(value: object) -> bool:
+    """FAMILY TEXT RULE presence: a non-blank, non-padded, exact str.
+
+    A caller-supplied id, ref, code, label, or owner reference counts as
+    present ONLY when this helper returns True. Anything else — None, "",
+    whitespace-only, leading/trailing whitespace or a trailing newline, an
+    int, a float, a bool, bytes, a list, a dict, a set, or any other
+    object — is ABSENT and maps to the same refusal reason the module
+    emits for a blank value of that field.
+    """
+    return isinstance(value, str) and value.strip() != "" and value == value.strip()
+
+
 def _present(fact: Mapping[str, object], key: str) -> bool:
-    return not _blank(fact.get(key))
+    return _text_present(fact.get(key))
 
 
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
@@ -120,10 +133,45 @@ def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _as_date(text: object) -> date | None:
-    if not isinstance(text, str) or len(text) < 10:
+    """Accept ONLY (a) an exact 10-char ``YYYY-MM-DD`` that
+    ``date.fromisoformat`` parses, or (b) a string that
+    ``datetime.fromisoformat`` parses IN FULL (returns its ``.date()``).
+    Anything else — including "2026-08-20garbage", "2026-08-20 extra",
+    and any non-str — returns None and flows to the module's existing
+    DATE_INVALID / INTERVAL_INVALID handling.
+    """
+    if not isinstance(text, str) or text == "":
+        return None
+    if len(text) == 10:
+        try:
+            return date.fromisoformat(text)
+        except ValueError:
+            return None
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    return parsed.date()
+
+
+def _iso_date(text: object) -> date | None:
+    """Exactly a 10-character ISO date (YYYY-MM-DD). Anything else is invalid.
+
+    NOTE: the defect X8C-04 spec asked for ``_iso_date`` to mirror
+    ``_as_date`` (accept (a) exact 10-char YYYY-MM-DD OR (b) a string that
+    ``datetime.fromisoformat`` parses IN FULL). Pinning tests in
+    ``tests/test_sni_ads_ratio_guard.py`` (``test_a01g_reason_date_invalid``)
+    require ``on_date="2020-01-15T00:00:00"`` to be refused. To keep every
+    existing test passing unedited, the broader (b) path is applied in
+    ``_as_date`` only. ``_iso_date`` keeps its narrower 10-char strict
+    behaviour; X8C-04 is recorded as a PARTIAL close in GAPS.
+    """
+    if not isinstance(text, str) or text == "":
+        return None
+    if len(text) != 10:
         return None
     try:
-        return date.fromisoformat(text[:10])
+        return date.fromisoformat(text)
     except ValueError:
         return None
 
@@ -158,16 +206,6 @@ def _aware_datetime(text: object) -> datetime | None:
     if parsed.tzinfo is None:
         return None
     return parsed
-
-
-def _iso_date(text: object) -> date | None:
-    """Exactly a 10-character ISO date (YYYY-MM-DD). Anything else is invalid."""
-    if not isinstance(text, str) or len(text) != 10:
-        return None
-    try:
-        return date.fromisoformat(text)
-    except ValueError:
-        return None
 
 
 def _finite_positive(value: object) -> bool:
@@ -239,12 +277,32 @@ def _available_as_of(available_at: object, as_of: object) -> bool:
 
 
 def _ack_ids(request: Mapping) -> tuple[object, ...]:
+    """Return the acknowledged ratio-change ids, filtered to text-present.
+
+    Only caller-supplied str ids that pass ``_text_present`` count in the
+    ack tuple. bytes, ints, floats, bools, lists, dicts, sets, and any
+    other non-iterable or non-text-present value are treated as ABSENT and
+    are NEVER a match. A bare non-iterable (int, float, bool) is silently
+    ABSENT rather than raised.
+    """
     raw = request.get("acknowledged_ratio_changes")
     if raw is None:
         return ()
-    if isinstance(raw, (str, bytes)):
+    if _text_present(raw):
         return (raw,)
-    return tuple(raw)
+    if isinstance(raw, (str, bytes)):
+        # str/bytes that fail _text_present (empty / whitespace-only /
+        # padded). Treat as ABSENT rather than a match.
+        return ()
+    try:
+        iterator = iter(raw)
+    except TypeError:
+        return ()
+    out: list[object] = []
+    for item in iterator:
+        if _text_present(item):
+            out.append(item)
+    return tuple(out)
 
 
 def _verdict(
@@ -273,6 +331,21 @@ def check_ads_ratio(
 
     Reports every applicable reason, de-duplicated, in REASONS order.
     The verdict is invariant to the order of ``records``.
+
+    ``as_of`` semantics: an ``as_of`` that is None, non-str, or
+    unparseable — including empty string, an int, a bool, a list, or a
+    malformed datetime — is refused as ``RATIO_NOT_AVAILABLE_AS_OF``.
+    This is fail-closed: a missing or unparseable ``as_of`` never silently
+    coerces to "now".
+
+    Acknowledgement semantics: the caller-supplied
+    ``acknowledged_ratio_changes`` field is matched against the covering
+    ``ratio_record_id`` after the FAMILY TEXT RULE. Only text-present
+    caller-supplied str ids count in the ack tuple — bytes, ints, lists,
+    dicts, sets, or any other object are ABSENT and NEVER a match. An
+    ack that omits the covering ratio_record_id (or supplies any
+    non-text-present value) is refused as
+    ``RATIO_CHANGE_UNACKNOWLEDGED`` when the window-covers case fires.
     """
     refuse_nonfalse_authority()
     if not isinstance(request, Mapping):
