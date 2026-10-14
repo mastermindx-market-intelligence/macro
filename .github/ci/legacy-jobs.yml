@@ -23526,11 +23526,35 @@ jobs:
     if: ${{ false }}
     gate: code
     # RIC Y1 (A22/A23/A24, 2026-10-14): engine/yield_momentum.build_curve_accounting qualifies the 10y nominal/real/KW-term-premium inputs as B0 basis records and runs the canonical rates_command_basis comparison rules; ACM stays explicitly missing. Listed on engine/rates_command_basis.py too because the suite pins B0 rule outcomes. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    # RIC Y1b (2026-10-14, seat ruling Y1b-PRODUCER): the same job also pins the additive snapshot()["curve_accounting"] key (engine/rate_inflation_transmission.py, fail-open shell, existing keys byte-invariant against tests/fixtures/ric_y1b_snapshot_base.json), the verbatim display-only build_board passthrough (engine/rates_inflation_command.py, export closed until E1) and the engine/pit.py Kim-Wright note. Hermetic: synthetic frames + one committed fixture, no data/ reads or writes, no network.
     timeout-minutes: 10
     paths:
       - "engine/yield_momentum.py"
       - "engine/rates_command_basis.py"
       - "tests/test_ric_y1_curve_accounting.py"
+      # RIC Y1b producer suite and its direct subjects.
+      - "engine/rate_inflation_transmission.py"
+      - "engine/rates_inflation_command.py"
+      - "engine/pit.py"
+      - "tests/test_ric_y1b_curve_accounting_producer.py"
+      - "tests/fixtures/ric_y1b_snapshot_base.json"
+      # RIC Y1b measured static import closure (run_ci_pack.infer_job_scopes).
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/__init__.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/prediction_markets.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23540,7 +23564,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: ric-y1-curve-accounting
-        run: python -m pytest tests/test_ric_y1_curve_accounting.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_ric_y1_curve_accounting.py tests/test_ric_y1b_curve_accounting_producer.py -q -p no:cacheprovider
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
