@@ -229,3 +229,41 @@ for (const width of [1440,390]) test(`actual Library search and retained researc
     assert.equal(await page.inputValue('[data-im-library-search]'),'增长');
   },{width});
 });
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Compass verdict remains readable at narrow widths and enlarged text ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      await page.locator('[data-im-workspace] a[href="#intl-legacy-research"]').click();
+      await page.evaluate(()=>document.fonts.ready);
+      for (const width of [320,390,820,821,1440]) for (const scale of [1,2]) {
+        await page.setViewportSize({width,height:900});
+        await page.locator('.wc-gside').evaluate((side,scale)=>{
+          const nodes=[side,...side.querySelectorAll('*')];
+          nodes.forEach(n=>n.style.removeProperty('font-size'));
+          const sizes=nodes.map(n=>[n,parseFloat(getComputedStyle(n).fontSize)]);
+          if(scale===2)sizes.forEach(([n,size])=>n.style.fontSize=size*2+'px');
+        },scale);
+        const metrics=await page.locator('.wc').evaluate(card=>{
+          const rect=n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width};};
+          const side=card.querySelector('.wc-gside'),walker=document.createTreeWalker(side,NodeFilter.SHOW_TEXT);
+          const lines=[];let text;
+          while((text=walker.nextNode())) {
+            if(!text.textContent.trim())continue;
+            const range=document.createRange();range.selectNodeContents(text);
+            for(const r of range.getClientRects())if(r.width&&r.height)lines.push({left:r.left,right:r.right,top:r.top,bottom:r.bottom});
+          }
+          return {card:rect(card),gauge:rect(card.querySelector('.wc-gauge')),side:rect(side),lines,
+            verdictFont:parseFloat(getComputedStyle(card.querySelector('.wc-verdict')).fontSize),
+            pageWidth:document.documentElement.scrollWidth,viewport:innerWidth};
+        });
+        assert.ok(metrics.lines.length>0);
+        assert.ok(metrics.lines.every(r=>r.left>=metrics.card.left&&r.right<=metrics.card.right&&
+          r.top>=metrics.card.top&&r.bottom<=metrics.card.bottom),JSON.stringify({width,scale,theme,lang,...metrics}));
+        assert.ok(metrics.pageWidth<=metrics.viewport,JSON.stringify({width,scale,...metrics}));
+        assert.equal(metrics.verdictFont,22*scale);
+        if(width===1440&&scale===1)assert.ok(metrics.side.top<metrics.gauge.bottom&&metrics.side.bottom>metrics.gauge.top);
+      }
+    });
+  });
+}

@@ -64,9 +64,9 @@ waves:
   status: in_progress
   depends_on:
   - IM00
-  next_action: Repair the visible Overview composition against exact Paper R10 desktop and mobile references.
-    Prior fixture and functional checks do not establish Paper parity. Connect authentic return-qualification
-    evidence to the publisher and verify the actual served dual-theme, bilingual journey.
+  next_action: Repair the visible Overview composition against exact Paper R10 desktop and mobile references. Prior
+    fixture and functional checks do not establish Paper parity. Connect authentic return-qualification evidence
+    to the publisher and verify the actual served dual-theme, bilingual journey.
 - id: IM02
   title: Compare and Rotation
   status: in_progress
@@ -103,11 +103,11 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: J07 live manual calculation and recovery were exercised in the existing signed-in browser.
-    Reset/context selector disagreement reproduced live and is repaired with six red/green regressions,
-    184 controller browser tests and 12 full-page rollback cases. Publish the accepted repair through
-    the existing draft carrier after the retained release gates; verify repaired served behavior.
-    Real source qualification, full journey and accessibility acceptance remain open.
+  next_action: J07 live manual calculation and recovery were exercised in the existing signed-in browser. Reset/context
+    selector disagreement reproduced live and is repaired with six red/green regressions, 184 controller browser
+    tests and 12 full-page rollback cases. Publish the accepted repair through the existing draft carrier after
+    the retained release gates; verify repaired served behavior. Real source qualification, full journey and accessibility
+    acceptance remain open.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
@@ -119,36 +119,36 @@ waves:
 - id: IM08
   title: International Investigation adapter
   status: in_progress
-  next_action: Lossless evidence adapter and presentation accepted on Terminal804; Macro trusted-caller bridge
-    accepted source-only with45 tests. Retain actual publisher decision origin and supply genuine trusted context.
-    The separate raw-context review remains frozen and unaccepted.
+  next_action: Lossless evidence adapter and presentation accepted on Terminal804; Macro trusted-caller bridge accepted
+    source-only with45 tests. Retain actual publisher decision origin and supply genuine trusted context. The separate
+    raw-context review remains frozen and unaccepted.
   depends_on:
   - IM00
 - id: IM09
   title: Existing Saved workspace extension
   status: in_progress
-  next_action: IM08/09 UI source is accepted on Terminal804 at9deff951 with153 tests and strict TypeScript.
-    Connect through existing owner admission before mounting; preserve actual dark-only shell and persistence gates.
+  next_action: IM08/09 UI source is accepted on Terminal804 at9deff951 with153 tests and strict TypeScript. Connect
+    through existing owner admission before mounting; preserve actual dark-only shell and persistence gates.
   depends_on:
   - IM08
 - id: IM10
   title: Qualified policy comparison
   status: in_progress
-  next_action: Pure comparison, transient state and controlled preview source are accepted; IM10 panel has25
-    tests on Terminal804. Genuine auth epoch, raw validation, source projection and same-record Saved remain open.
+  next_action: Pure comparison, transient state and controlled preview source are accepted; IM10 panel has25 tests
+    on Terminal804. Genuine auth epoch, raw validation, source projection and same-record Saved remain open.
   depends_on:
   - IM04
   - IM08
   - IM09
-next_action: Retain draft PR8754 as the Macro carrier for the accepted J07 reset rollback and canonical CSS copy
-  repair; consume only genuinely new exact-head CI after publication. Original asset review, qualifier,
-  source-rights and release holds remain unresolved. Verify repaired served behavior only after lawful release.
-  IW2 alone owns Terminal PR804 source/capture/server/push/CI; no handback is implied. Genuine IntlSaved still
-  requires its existing owner admission and trusted context.
+next_action: Continue on existing draft Macro PR8754 after accepted base integration, Library announcement/reflow
+  and compass wrapping. Repair absent risk reading falsely displayed as Neutral/half gauge; then qualify genuinely
+  new admitted CI. Native zoom and complete served journeys remain open. Preserve all release, rights, qualification,
+  Saved, frozen-effect holds and IW2 exclusive Terminal PR804 custody.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 - research/paper_international_wave1_wave2/J07_RESET_ROLLBACK_ACCEPTANCE.json
+- research/paper_international_wave1_wave2/COMPASS_REFLOW_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.

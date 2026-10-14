@@ -35,6 +35,12 @@ changed:
 - path: research/paper_international_wave1_wave2/J08_LEGACY_REFLOW_ACCEPTANCE.json
   what: Bind final responsive source, reproduced overflow, rejected zero-width intermediate, browser evidence and
     accepted review.
+- path: templates/intl.html.j2 and tests/intl_workspace_page.test.cjs
+  what: Wrap compass gauge/verdict at constrained width; four measured text-line regressions distinguish local clipping
+    from page overflow.
+- path: research/paper_international_wave1_wave2/COMPASS_REFLOW_ACCEPTANCE.json
+  what: Bind one-property source fix, red/green/rendered evidence and verified Terra fallback review after Fabric
+    declined before launch.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -103,6 +109,15 @@ verified:
   result: Head81026574, plan andpack1 passed; contract-delta and11 packs in progress at observation. Authority38500267716
     andfences38500271017 terminalSUCCESS, retired. Inactive pilot explicitlyinactive_base_context. No full product
     acceptance.
+- claim: Compass English320 clipping is repaired in the local template.
+  command: node --test tests/intl_workspace_page.test.cjs; python3 -m pytest -q tests/test_intl_workspace_integration.py
+    tests/test_intl_mobile_layout.py; compass-reflow-20261014-r1/final_probe.py.
+  result: 2EN regressions fail before;2ZH already pass.17 page tests,16 Python tests and16 rendered cases pass after
+    repair. Counts overlap;2x font size is not native zoom.
+- claim: Shared launcher overlap is transient in the four scoped full-page samples.
+  command: compass-reflow-20261014-r1/launcher_probe.py against fresh synthetic EOD render.
+  result: 1440EN geometric overlap and320ZH2 hit-tested text overlaps clear on browser scroll; all result lines
+    can be exposed and method disclosure clicked. Shared launcher unchanged; no whole-product visual acceptance.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -113,8 +128,6 @@ unverified:
 unresolved:
 - The historical cause of no candidate product CI after943ee54 remains unproved; current merge conflicts are independently
   verified source blockers, not proof of that historical cause.
-- Existing desktop Ask Mastermind launcher overlaps the lower illustrative result in synthetic EOD rendering; the
-  24 behavior cases do not grant full visual acceptance.
 - Original qualifier/proc2217592/environ EFFECT_UNKNOWN, three pre-START reviews, T03k fifth refusal, release5989604142,
   migrations and rights holds remain.
 - Original app PR attachment remains PENDING_UNKNOWN in functions cell44; do not duplicate. Codex-app CUA refusal
@@ -123,15 +136,17 @@ unresolved:
   unknown; no timer or alternate-carrier retry.
 - New J08 source review paper-01a1101f-j08-announcement-review-20261014-r1 completed rc0/REMOTE_CLEANED; bounded
   parent review accepts the source conclusion with explicit corrections. Usage receipt missing.
-- Generic legacy summary overflow is source-repaired; inherited compass clipping and floating launcher overlap remain
-  outside this bounded acceptance.
+- Compass clipping source accepted. Missing risk input still reads Neutral and paints a half gauge; separate semantic
+  repair required.
+- Native Chrome zoom attempt stopped by changed foreground-window control; no zoom change, local server closed.
+  Transient shared launcher overlap remains a usability observation, not a demonstrated content trap.
 next_actions:
-- Publish the accepted legacy reflow repair on this same carrier, qualify only genuinely new CI against the resulting
-  exact head, and retain all release holds.
-- Advance the Library-to-international-stocks-and-return complete journey from its actual existing destination;
-  do not substitute synthetic Saved context or assume unavailable catalogue entries are accessible.
-- Use the latest local evidence checkpoint for exact CI identities and admission; never replay accepted unchanged
-  checks or poll retired runs.
+- 'Repair newly verified absent-risk presentation: no reading must not appear Neutral or draw an invented half gauge;
+  preserve genuine zero/neutral and engine-owned labels.'
+- Publish on same Macro carrier; observe genuinely new admitted exact-head CI only. Preserve all release and IW2
+  custody limits.
+- Continue remaining full journeys and native browser zoom when foreground control is available; do not re-run accepted
+  unchanged packages.
 do_not_redo:
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
@@ -140,6 +155,8 @@ do_not_redo:
   retired Terminal CI.
 - Do not reconsume or reaccept any closed Fabric result. Final reflow4 permanent/8 rendered/4 projection checks
   overlap; the initial13-case page closure predates final CSS.
+- Do not reconsume the native compass review. It is gpt-5.6-terra/medium with verified original parent. Fabric compass
+  review request75 and NOT_FOUND means no worker launched, not an accepted Fabric return.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
@@ -160,3 +177,5 @@ check. AgentOS validation returned0 with zero errors and146 inherited warnings. 
 represented as a completely warning-free repository.
 
 Additional J08 evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j08-legacy-reflow-20261014-r1` and sibling `j08-search-announcement-20261014-r1`.
+
+Compass evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-reflow-20261014-r1`.
