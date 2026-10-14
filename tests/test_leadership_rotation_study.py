@@ -542,3 +542,52 @@ def test_partition_guard_seals_p2_p3_and_p1_is_inclusive():
         study.partition_mask(cal, "P2")
     with pytest.raises(PartitionSealed):
         study.partition_mask(cal, "P3")
+
+
+# V2 amendment (research/LEADERSHIP_ROTATION_PREREG_V2.md section 6): the read
+# guard pins V1 AND V2. MUTATION: drop the second assert_prereg_landed call in
+# assert_protocol_landed -- the "V2 edited" case below then passes and FAILS this.
+def test_protocol_guard_requires_both_versions(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    _git(repo, "config", "user.email", "lane@example.com")
+    _git(repo, "config", "user.name", "lane")
+    _git(repo, "commit", "--allow-empty", "-q", "-m", "root")
+
+    v1 = repo / study.PREREG_PATH
+    v1.parent.mkdir(parents=True)
+    v1.write_text("prereg v1\n", encoding="utf-8")
+    _git(repo, "add", study.PREREG_PATH)
+    _git(repo, "commit", "-q", "-m", "land v1")
+    v1_landed = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    v1_blob = _git(repo, "rev-parse", f"{v1_landed}:{study.PREREG_PATH}").stdout.strip()
+
+    v2 = repo / study.PREREG_V2_PATH
+    v2.write_text("prereg v2\n", encoding="utf-8")
+    _git(repo, "add", study.PREREG_V2_PATH)
+    _git(repo, "commit", "-q", "-m", "land v2")
+    v2_landed = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    v2_blob = _git(repo, "rev-parse", f"{v2_landed}:{study.PREREG_V2_PATH}").stdout.strip()
+    monkeypatch.setattr(study, "PREREG_BLOB_SHA", v1_blob)
+    monkeypatch.setattr(study, "PREREG_V2_BLOB_SHA", v2_blob)
+
+    # a head between the two landings has V1 but not V2: refused
+    _git(repo, "update-ref", "refs/remotes/origin/main", v2_landed)
+    with pytest.raises(PreregNotLanded):
+        study.assert_protocol_landed(str(repo), head=v1_landed, main_ref="origin/main")
+
+    # a descendant of both landings passes and names both landing commits
+    _git(repo, "commit", "--allow-empty", "-q", "-m", "descendant")
+    descendant = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    result = study.assert_protocol_landed(str(repo), head=descendant, main_ref="origin/main")
+    assert result["v1"]["add_commit"] == v1_landed
+    assert result["v2"]["add_commit"] == v2_landed
+    assert result["head"] == descendant
+
+    # V2 edited after landing (V2 section 7 invalidator 9): refused
+    v2.write_text("prereg v2 edited\n", encoding="utf-8")
+    _git(repo, "commit", "-aqm", "edit v2")
+    edited = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    with pytest.raises(PreregChanged):
+        study.assert_protocol_landed(str(repo), head=edited, main_ref="origin/main")

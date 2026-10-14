@@ -7,6 +7,7 @@ let a three-day tolerance rewrite the cell end to 30 June.
 from __future__ import annotations
 
 import re
+import sys
 from collections.abc import Callable
 from copy import deepcopy
 from datetime import date
@@ -216,22 +217,44 @@ def test_string_and_none_labels_are_a_disagreement() -> None:
 
 
 def test_cell_without_period_is_refused() -> None:
-    """A cell carrying no ``period`` raises with the field named in the message."""
+    """A cell carrying no ``period`` raises with the field named in the message.
+
+    The non-mapping-``period`` branch is a bare ``raise``, so it chains nothing:
+    ``__cause__`` is ``None``, and ``__context__`` is ``None`` as well (measured
+    ``True`` on 3.12.3, where no other exception is in flight when it raises).
+    This is the other half of the split documented on ``_with_stated_end``: only
+    the shape gate and the parser chain. A regression that routes this refusal
+    through either of them chains something and fails here.
+    """
     cell = deepcopy(case("same_number_two_headers")["cells"][0])
     cell.pop("period")
-    with pytest.raises(ValueError, match=re.escape("cell period is required")):
+    with pytest.raises(
+        ValueError, match=re.escape("cell period is required")
+    ) as caught:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
+    assert caught.value.__cause__ is None
+    assert caught.value.__context__ is None
 
 
 def test_non_iso_period_end_is_refused() -> None:
-    """A non-string ``period.end`` raises with the field named in the message."""
+    """A non-string ``period.end`` raises with the field named in the message.
+
+    The non-``str``-``end`` branch is a bare ``raise``, so it chains nothing:
+    ``__cause__`` is ``None``, and ``__context__`` is ``None`` as well (measured
+    ``True`` on 3.12.3). An ``int`` end such as this one must be refused for its
+    TYPE here, before the shape gate ever sees it -- if the type check were
+    dropped, the same value would fall to the shape gate, which chains its
+    synthetic shape error, and the assertion below would fail.
+    """
     cell = deepcopy(case("same_number_two_headers")["cells"][0])
     cell["period"] = dict(cell["period"])
     cell["period"]["end"] = 20260703
     with pytest.raises(
         ValueError, match=re.escape("cell period.end must be a YYYY-MM-DD string")
-    ):
+    ) as caught:
         enroll_stated_period(_one_release(cells=[cell]), tolerance_days=3)
+    assert caught.value.__cause__ is None
+    assert caught.value.__context__ is None
 
 
 # Refusal shape is documented on ``_with_stated_end``. The two lists below
@@ -289,3 +312,27 @@ def test_parse_refused_period_end_chains_the_parser_error(raw_end: str) -> None:
         enroll_stated_period(_case_with_end(raw_end), tolerance_days=3)
     assert isinstance(caught.value.__cause__, ValueError)
     assert "expected exactly" not in str(caught.value.__cause__)
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 11),
+    reason="the compact and ISO-week forms below only parse on 3.11+; under "
+    "that the version premise this test guards does not exist",
+)
+def test_parser_still_admits_the_shape_refused_forms() -> None:
+    """Guard the discriminating power of ``_SHAPE_REFUSED_ENDS``.
+
+    The shape list and the parse list say different things only because the
+    3.11+ ``date.fromisoformat`` ADMITS the three forms below -- the basic form
+    without hyphens, the ISO week without a weekday, and the trailing-colon form
+    -- while the ASCII-only shape gate refuses them. If a future Python
+    tightened the parser so that it refused them too, both parametrized tests
+    would keep passing while the shape list silently lost its point: every
+    "shape-refused" form could then be refused by the parser branch alone, and
+    ``test_shape_refused_period_end_names_the_field`` would no longer prove that
+    the gate, rather than the parser, did the refusing. Measured on this 3.12.3:
+    ``date(2026, 7, 3)``, ``date(2026, 6, 29)``, ``date(207, 12, 3)``.
+    """
+    assert date.fromisoformat("20260703") == date(2026, 7, 3)
+    assert date.fromisoformat("2026-W27") == date(2026, 6, 29)
+    assert date.fromisoformat("02071203:6") == date(207, 12, 3)

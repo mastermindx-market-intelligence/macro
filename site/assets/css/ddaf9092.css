@@ -302,6 +302,7 @@
     letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
   .rr-shadow-warn{font-size:9.5px;color:var(--ink-down, var(--down));font-style:italic;
     border-left:2px solid var(--down);padding-left:6px;margin-top:4px;line-height:1.4}
+  .rr-shadow-retired{font-size:10.5px;color:var(--muted);line-height:1.45}
   /* surprise anatomy mini-table */
   .rr-anatomy-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:4px}
   .rr-anatomy-table th{font-size:9.5px;font-weight:700;text-transform:uppercase;

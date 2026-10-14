@@ -48,6 +48,7 @@
     epoch: 0,
     authEpoch: 0,
     authBlocked: false,
+    notice: null,           /* closed presentation state; locale changes never replay transitions */
     catalog: null,          /* normalized catalog { subject, generation, methods, entries, selection, requestClock } */
     catalogPages: 0,
     selected: null,         /* normalized catalog entry the user explicitly chose */
@@ -594,6 +595,7 @@
   }
   function beginIntent() {
     state.epoch += 1;
+    state.notice = null;
     state.committed = null; state.sourceCase = null;
     if (state.catalogAbort) { try { state.catalogAbort.abort(); } catch (error) { /* settled */ } }
     state.catalogAbort = null;
@@ -654,7 +656,7 @@
     state.committed = null;
     state.sourceCase = null;
     state.selected = null;
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     if (ui.sourceHeading) ui.sourceHeading.classList.remove('is-open');
@@ -810,7 +812,7 @@
    * analysis, no legacy recomputed substitution, ever. */
   function runSaved(intent) {
     var intentSlot = beginIntent();
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     ui.sourceHeading.classList.remove('is-open');
@@ -839,7 +841,7 @@
    * the server refuses unsupported cutoffs and the UI never shifts one. */
   function runCompare(intent) {
     var intentSlot = beginIntent();
-    ui.status.setAttribute('data-mmr-state', 'loading');
+    renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
     ui.sourceBody.innerHTML = '';
     ui.sourceHeading.classList.remove('is-open');
@@ -911,12 +913,36 @@
       esc(copy(labelEn, labelZh)) + '</button>';
   }
 
+  function renderLoading() {
+    state.notice = { kind: 'loading' };
+    renderNotice();
+  }
+
+  function renderNotice() {
+    var notice = state.notice;
+    if (!notice) return;
+    if (notice.kind === 'typed') renderTypedUnavailableNotice(notice.code);
+    else if (notice.kind === 'request') renderRequestFailureNotice(notice);
+    else if (notice.kind === 'signed_out') renderSignedOutNotice(notice);
+    else if (notice.kind === 'prompt') renderCatalogPromptNotice();
+    else if (notice.kind === 'loading') {
+      ui.status.setAttribute('data-mmr-state', 'loading');
+      ui.status.textContent = copy('Loading saved evidence', '正在加载已保存依据');
+    }
+  }
+
   function renderTypedUnavailable(kind, internalCode) {
     beginIntent(); state.referenceInvalid = true;
     state.selected = null; state.catalog = null;
     ui.sourceBody.innerHTML = ''; closeSourcePanel();
     ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
     renderCatalogDependentControls();
+    state.notice = { kind: 'typed', code: kind };
+    renderNotice();
+    try { if (window.console && console.info) console.info('[mm-retained]', kind, internalCode || ''); } catch (e) { /* noop */ }
+  }
+
+  function renderTypedUnavailableNotice(kind) {
     ui.status.setAttribute('data-mmr-state', 'error');
     ui.status.textContent = copy('Saved evidence unavailable', '已保存依据不可用');
     if (kind === 'oauth_return_unavailable') {
@@ -946,8 +972,6 @@
         actionLink('Retry this reference', '重试此引用', 'retry') +
         actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
     }
-    if (state.selected) { /* the explicit selection intent is preserved, never replaced */ }
-    try { if (window.console && console.info) console.info('[mm-retained]', kind, internalCode || ''); } catch (e) { /* noop */ }
   }
 
   function renderRequestFailure(error, options) {
@@ -957,12 +981,25 @@
     if (kind === 'auth_required' || kind === 'rights_blocked' || kind === 'subscription') {
       state.catalog = null; state.selected = null; ui.originalClock.hidden = true; ui.originalClock.innerHTML = ''; renderCatalogDependentControls();
     }
+    if (kind === 'auth_required') state.authBlocked = true;
+    if (kind === 'missing_exact_capture') {
+      return renderTypedUnavailable('missing_exact_capture', (error && error.reason) || 'http_404');
+    }
+    var seconds = Number(error && error.retryAfter);
+    state.notice = { kind: 'request', code: kind,
+      signinHref: kind === 'auth_required' ? retainedSigninHref() : null,
+      wait: Number.isFinite(seconds) && seconds > 0 ? Math.min(Math.ceil(seconds), 60) : 0,
+      retry: !!(options && typeof options.retry === 'function') };
+    renderNotice();
+  }
+
+  function renderRequestFailureNotice(notice) {
+    var kind = notice.code;
     var actions;
     if (kind === 'auth_required') {
-      state.authBlocked = true;
       ui.status.setAttribute('data-mmr-state', 'error');
       ui.status.textContent = copy('Sign in required', '需要登录');
-      var signInTarget = retainedSigninHref();
+      var signInTarget = noticeSigninHref(notice);
       ui.resultBody.innerHTML = banner('auth_required',
         'Sign in to open saved evidence', '登录以查看已保存依据',
         'Use your existing account to continue.' + oauthStorageWarning(false),
@@ -972,8 +1009,7 @@
     }
     ui.status.setAttribute('data-mmr-state', 'error');
     if (kind === 'busy') {
-      var seconds = Number(error.retryAfter);
-      var wait = Number.isFinite(seconds) && seconds > 0 ? Math.min(Math.ceil(seconds), 60) : 0;
+      var wait = notice.wait;
       ui.status.textContent = copy('Evidence is busy', '依据查询繁忙');
       ui.resultBody.innerHTML = banner('busy',
         'Evidence is busy', '依据查询繁忙',
@@ -1007,12 +1043,8 @@
         actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
       return;
     }
-    if (kind === 'missing_exact_capture') {
-      ui.status.textContent = copy('Capture unavailable', '记录不可用');
-      return renderTypedUnavailable('missing_exact_capture', (error && error.reason) || 'http_404');
-    }
     ui.status.textContent = copy('Saved evidence unavailable', '已保存依据不可用');
-    actions = options && typeof options.retry === 'function'
+    actions = notice.retry
       ? actionLink('Retry this reference', '重试此引用', 'retry')
       : '';
     ui.resultBody.innerHTML = banner('unavailable',
@@ -1023,6 +1055,11 @@
   }
 
   function renderCatalogPrompt() {
+    state.notice = { kind: 'prompt' };
+    renderNotice();
+  }
+
+  function renderCatalogPromptNotice() {
     ui.status.setAttribute('data-mmr-state', 'idle');
     ui.status.textContent = copy('Catalog loaded', '目录已加载');
     ui.resultBody.innerHTML = banner('prompt',
@@ -1034,7 +1071,7 @@
   function renderCatalogDependentControls() {
     var catalog = state.catalog;
     if (!catalog) {
-      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Sign in to list saved captures', '登录后列出已保存记录')) + '</option>';
+      ui.captureSelect.innerHTML = '<option value="">' + esc(copy('Saved captures not loaded', '已保存记录尚未加载')) + '</option>';
       ui.captureSelect.setAttribute('disabled', 'disabled');
       ui.cutoffSelect.innerHTML = '<option value="">' + esc(copy('—', '—')) + '</option>';
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
@@ -1115,6 +1152,7 @@
   }
 
   function renderCommitted() {
+    state.notice = null;
     ui.status.setAttribute('data-mmr-state', 'ok');
     ui.status.textContent = state.committed.kind === 'saved'
       ? copy('Saved output loaded', '原始输出已加载')
@@ -1516,16 +1554,32 @@
     state.committed = null;
     state.sourceCase = null;
     renderCatalogDependentControls();
+    state.notice = { kind: 'signed_out', signinHref: retainedSigninHref() };
+    renderNotice();
+    ui.sourceBody.innerHTML = '';
+    ui.originalClock.hidden = true; ui.originalClock.innerHTML = '';
+    closeSourcePanel();
+  }
+
+  function renderSignedOutNotice(notice) {
     ui.status.setAttribute('data-mmr-state', 'error');
     ui.status.textContent = copy('Sign in required', '需要登录');
     ui.resultBody.innerHTML = banner('auth_required',
       'Sign in to open saved evidence', '登录以查看已保存依据',
       'Authenticated saved evidence, counts and sources are cleared when you sign out.',
       '退出登录后，已保存依据、计数与来源将被清除。',
-      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(retainedSigninHref()) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
-    ui.sourceBody.innerHTML = '';
-    ui.originalClock.hidden = true;
-    closeSourcePanel();
+      '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(noticeSigninHref(notice)) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
+  }
+
+  function noticeSigninHref(notice) {
+    /* The owner target builder validates the current reference without writing
+     * the OAuth capsule. Persisting the real sign-in transition remains separate. */
+    if (!window.MarketMemoryIntent || typeof window.MarketMemoryIntent.target !== 'function') return notice.signinHref;
+    var target = window.MarketMemoryIntent.target({ language: isZh() ? 'zh' : 'en' });
+    if (!target.ok) return '#mmr-status';
+    var params = new URLSearchParams();
+    params.set('signin', '1'); params.set('ret', target.target);
+    return '/?' + params.toString();
   }
 
   function retainedSigninHref() {
@@ -1645,10 +1699,12 @@
     ui.root.addEventListener('click', onActionClick);
     window.addEventListener('popstate', onPopState);
     document.addEventListener('langchange', function () {
-      /* Locale switches re-render the committed intent only; they never
-       * refetch, never change selection, and never resurrect redacted data. */
+      /* Translate the current presentation without replaying its transition:
+       * no refetch, epoch change, abort, selection change or private-data revival. */
       if (state.committed) renderCommitted();
+      else renderNotice();
       renderCatalogDependentControls();
+      renderModeButtons();
       if (state.sourceCase) renderSourcePanel();
     });
     if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {

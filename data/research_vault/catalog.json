@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T13:56:50.200380+00:00",
-  "count": 2899,
+  "generated_at": "2026-10-14T15:10:45.206308+00:00",
+  "count": 2903,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -111,6 +111,87 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pk35lyapk08-713b6b",
+      "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:30Z",
+      "summary_points": [
+        "Semiconductor Flow Divergence: Foreigners extended net selling streaks (-$550mn Hynix, -$133mn SEC) amid TSMC/US CPI volatility risk, while local institutions net bought SEC (+$54mn) but sold Hynix (-$88mn), signaling sector-specific earnings-driven volatility.",
+        "EV Policy Tailwind: EU-China agreement curbing Chinese hybrid exports boosted EV supply chain (+4.4%, GSXAKREV), with POSCO FM/SAMSUNG SDI leading on AI-driven ESS growth structural tailwinds and policy-driven demand.",
+        "ESS Demand Catalyst: Local broker confirms AI power demand fueling ESS growth, positioning Korean battery makers for earnings improvement via structural (ESS/EV demand) and policy (EU-China) factors.",
+        "Earnings Volatility Risk: Sector volatility heightened ahead of TSMC earnings and US CPI prints, with Semis (SEC, SK Hynix) selling off (-1.7% each) despite local institutional buying in SEC."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hmlv6utzbiy-0241df",
+      "title": "GS Novak GS U.S. Industrials & Materials CPI HVAC changes pickup analysis 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:23Z",
+      "summary_points": [
+        "China Inflation Revisions: Headline CPI +0.9% yoy (vs +0.8% Aug), PPI +5.0% yoy (vs +3.8% Aug); 2026/27 PPI forecasts revised up to 2.8%/3.3% (vs 2.0%/0.0%), signaling persistent manufacturing demand and revised inflation trajectory.",
+        "Geopolitical Oil Shock: Middle East attacks spike crude 100bps (Brent $106, WTI $95); IEA warns diesel constrained until 2027, amplifying energy risk and supply chain volatility.",
+        "PPI Surge Signals Manufacturing Rebound: Recent PPI spike (2023-24) indicates industrial activity recovery, critical for global trade flows and commodity pricing, with Thursday’s PPI release pivotal for market positioning.",
+        "Trade Surplus Acceleration: Exports +36.3% yoy, imports +31.0% yoy; trade surplus widens to $133.5bn (record monthly), driven by strong container shipping and energy imports, reflecting export-driven economic momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zidfbw2dhyr-90424e",
+      "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:15Z",
+      "summary_points": [
+        "Geopolitical Energy Impact: Houthi strikes on Saudi Aramco HQ and Iran tanker attacks drive WTI crude up 1.25% to $95.30, highlighting acute supply risk and energy market volatility.",
+        "ASML Fundamentals & Supply Risk: Upgraded 2026 revenue guidance (€44bn-€45bn) and 56% gross margin, but targeted 30% EUV capacity increase deemed insufficient amid surging demand, signaling critical supply chain constraints.",
+        "TMT Sector Divergence: TMT hardware outperforms S&P 500 by +66.96% YTD (+80.98% vs S&P +14.02%), contrasting with China Internet’s -28.15% decline, revealing high-risk allocation opportunities and geopolitical exposure.",
+        "Fed Policy & Earnings Flow Catalyst: Dovish Fed remarks (William’s) precede key speakers, with pre-market earnings (PGR, BLK, BAC) and ASML’s mixed reaction (beat/raise but capacity concerns) driving sector-specific capital flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:00Z",
+      "summary_points": [
+        "US CPI Forecast: Core CPI +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6% consensus), driven by autos (used cars +0.5%, new cars +0.2%) and energy; September MoM SA Core CPI dips to 0.24% from August’s 0.29%, with Transportation services ex-public (-0.3pp) offsetting rent pressures.",
+        "AI-Driven Inflation Impact: Core PCE inflation boosted by ~45bp from AI demand (half genuine), peaking at 50bp by end-2026; monthly core CPI forecasted at 0.24% in September, signaling near-term inflation moderation but sustained rent pressure.",
+        "Energy Geopolitical Risks: GS Webcast highlights Middle East tensions and winter weather impacts on oil/nat gas forecasts, critical for energy portfolio positioning amid Europe’s energy shock (SX5E <95%, 9% EUR costs).",
+        "UK-EU Rejoining Sentiment Shift: UK polling shows rising support for full EU rejoining (vs customs union), signaling potential policy shifts that could reshape trade, investment flows, and market access for UK assets.",
+        "Equity-Rate Correlation Fragmentation: RTY vs 2y SOFR shows negative correlation (2023-2024), while STOXX50E vs 2y EUR remains positive, indicating regional market divergence and asymmetric risk exposure between US and EU equities vs rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-k5gzbnlti7v-bb4677",
       "title": "Market Update US, Europe & Asia",

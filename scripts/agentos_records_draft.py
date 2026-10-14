@@ -63,7 +63,14 @@ DISCOVERY_FALSIFIER_PLACEHOLDER = "UNFILLED"
 DISCOVERY_SO_WHAT_PLACEHOLDER = ""
 _PR_KEYS = frozenset({"number", "title", "head_sha", "files", "merged_at"})
 _WS_RE = re.compile(r"^WS:([A-Z0-9]+(?:-[A-Z0-9]+)*)$")
-_MERGED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}Z)?$")
+# ``re.ASCII``, not ``[0-9]``: the flag is local to this compiled pattern and
+# retroactively covers EVERY ``\d`` here -- present and future -- while the
+# readable ``\d{2}`` shape stays. Without it ``\d`` matches every Unicode Nd
+# digit (Arabic-Indic, fullwidth, Devanagari); ``fromisoformat`` rejects those
+# in the date field but ``strptime``/``int`` COERCE them in the time fields
+# (measured: ``2026-10-13T1٠:34:56Z`` passed every pre-fix check), so the
+# regex class was the only door that could refuse the whole family.
+_MERGED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}Z)?$", re.ASCII)
 _SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
 # This checkout can be a partial clone. A missing object must not promisor-fetch,
 # and a miss can walk a multi-gigabyte pack index, so the lookup is bounded.
@@ -82,9 +89,14 @@ _GIT_TIMEOUT_SECONDS = 5
 # ``-c core.hooksPath=`` is defense-in-depth, not a second proven vector: hooks
 # fire for commands that move refs or the index (commit, push, receive-pack,
 # checkout), not for read-only plumbing, so no command this drafter can record
-# reaches ``core.hooksPath`` today -- measured: a ``core.hooksPath`` seeded with
-# the standard hook names fires nothing for plain ``cat-file`` or ``diff-tree``
-# and five of them for ``git commit`` in the same repository. No test here
+# reaches ``core.hooksPath`` today -- measured on git 2.43.0 in a throwaway
+# repository whose ``core.hooksPath`` was seeded with all 28 hook names
+# documented in ``githooks(5)``: plain ``cat-file`` and ``diff-tree`` fire
+# NOTHING, and ``git commit`` fires SIX of them (pre-commit,
+# prepare-commit-msg, commit-msg, post-commit, reference-transaction,
+# post-index-change). An earlier revision here claimed five; that count is
+# seed-dependent -- it only reproduces from a seed that omits
+# post-index-change. No test here
 # proves a hook ran, because none can; what IS pinned is that the flag stays in
 # both prefixes (``test_recorded_git_commands_carry_the_hardening_flags``). It
 # is carried in the same list on purpose: if the ``_git`` subcommand set is ever
