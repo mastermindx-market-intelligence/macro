@@ -2965,3 +2965,80 @@ def test_unpaired_fact_dedupes_screen_withheld_row_in_degraded_dependencies() ->
         "lets the screen recorder add a second entry",
         deps_for_trc,
     )
+
+
+def test_unpaired_fact_dedupes_emittable_keys_loop_in_degraded_dependencies() -> None:
+    """Pin the result-side recorders' dedupe on ``dependency``.
+
+    A CONSTRUCTION: ``advertising_revenue_change`` is a result key, not a V1
+    metric, so admitting an unpaired fact under that metric name makes the
+    ``_compose_changes`` entry collide with the ``_emittable_keys`` loop's
+    entry for the absent result. Mutant (no-dedupe-guard) makes the count 2.
+    The test pins the count, not the reason.
+    """
+    # Leg 1: an unpaired fact under the result-key metric name; no
+    # advertising-revenue pair means the result is never built.
+    unpaired = _plnt_fact(
+        key="advertising_revenue_change",
+        period_role="current",
+        period_end="2026-06-30",
+        value_text="289",
+        native_ref="src_plnt_q2_2026_ex991",
+        metric="advertising_revenue_change",
+        # ``_plnt_fact`` derives ``kind`` only for V1 metrics; without it the
+        # admission gate refuses the fact (``fact_kind_outside_vocabulary``).
+        kind="revenue_line",
+    )
+    facts = [unpaired]
+
+    document = project_economic_change(_plnt_case(facts=facts))
+    deps_for_arc = [
+        entry
+        for entry in document["degraded_dependencies"]
+        if entry["dependency"] == "advertising_revenue_change"
+    ]
+    assert len(deps_for_arc) == 1, (
+        "dedupe should keep exactly one entry for the "
+        "``advertising_revenue_change`` dependency; removing the "
+        "``_already_degraded`` guard lets the ``_emittable_keys`` loop "
+        "add a second entry",
+        deps_for_arc,
+    )
+
+
+def test_v1_fact_metrics_and_emittable_result_keys_are_disjoint_and_ordered() -> None:
+    """Pin the disjointness, uniqueness, and order of the two vocabularies.
+
+    A CONSTRUCTION: ``_V1_FACT_METRICS`` and ``_EMITTABLE_RESULT_KEYS`` are
+    the inputs to the result-side recorders' dedupe on ``dependency``; if
+    they overlap or drift, an admitted fact collides with a result key and
+    the dedupe cannot restore the one-fact-one-entry invariant. Mutant (m1)
+    adds ``"total_revenue_change"`` to ``_V1_FACT_METRICS`` (overlap); mutant
+    (m2) swaps two adjacent entries of ``_EMITTABLE_RESULT_KEYS`` (order).
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as _proj
+
+    assert _proj._V1_FACT_METRICS.isdisjoint(_proj._EMITTABLE_RESULT_KEYS), (
+        "fact metrics and emittable result keys must be disjoint; mutant "
+        "(m1) adds a result key to ``_V1_FACT_METRICS``",
+        _proj._V1_FACT_METRICS,
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
+    assert len(set(_proj._EMITTABLE_RESULT_KEYS)) == len(
+        _proj._EMITTABLE_RESULT_KEYS
+    ), (
+        "_EMITTABLE_RESULT_KEYS must have no duplicates",
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
+    assert list(_proj._EMITTABLE_RESULT_KEYS) == [
+        _proj.RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_NET_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        _proj.RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    ], (
+        "_EMITTABLE_RESULT_KEYS must list the six RESULT_KEY_* values in "
+        "definition order; mutant (m2) swaps two adjacent entries",
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
