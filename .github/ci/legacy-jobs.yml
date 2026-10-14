@@ -11500,6 +11500,35 @@ jobs:
       - name: leadership rotation measured-product contract
         run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider
 
+  leadership-measured-read:
+    if: ${{ false }}
+    gate: code
+    # LR T17 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): one bounded display-tier measured
+    # group read — engine/leadership_rotation_context.py measured_group_read() appended
+    # section + the engine/sector_central.py wiring (measured_read key) + the frozen
+    # producer->parser fixture the Terminal lane parses with its real TS reader.
+    timeout-minutes: 10
+    paths:
+      - "engine/leadership_rotation_context.py"
+      - "engine/sector_central.py"
+      - "engine/sector_cycles.py"
+      - "engine/rotation_events.py"
+      - "engine/leadership_receipt.py"
+      - "scripts/build_sector_central.py"
+      - "tests/test_leadership_measured_read.py"
+      - "tests/fixtures/leadership_rotation/measured_read_v1.json"
+      - ".github/ci/legacy-jobs.yml"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy requests jinja2
+      - name: leadership measured group read contract
+        run: TZ=UTC python -m pytest tests/test_leadership_measured_read.py -q -p no:cacheprovider
+
   hk-confirming-turn:
     if: ${{ false }}
     gate: code
