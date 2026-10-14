@@ -6,6 +6,7 @@ let a three-day tolerance rewrite the cell end to 30 June.
 """
 from __future__ import annotations
 
+import builtins
 import re
 import sys
 from collections.abc import Callable
@@ -442,10 +443,39 @@ def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
     assert _parser_admits("20260703") == (sys.version_info >= (3, 11))
 
 
+def _matches_probe(obj: object) -> bool:
+    """``obj`` is a public ``Exception`` subclass constructible with ``"probe"``."""
+    if not isinstance(obj, type):
+        return False
+    if not issubclass(obj, Exception):
+        return False
+    if issubclass(obj, (TypeError, ValueError)):
+        return False
+    try:
+        instance = obj("probe")
+    except Exception:
+        return False
+    return "probe" in str(instance)
+
+
+# Derived from ``builtins``: every public class X with
+# ``issubclass(X, Exception) and not issubclass(X, (TypeError, ValueError))``
+# such that ``X("probe")`` constructs and ``"probe" in str(X("probe"))``.
+# Sorted by ``X.__name__``; the id set follows the running interpreter's
+# builtins (CI pins 3.12.13 in ``.github/workflows/ci.yml``). Duplicates by
+# class object are coalesced (multiple builtin names alias to one class).
+_PROBE_EXCEPTIONS = tuple(
+    sorted(
+        {obj for name, obj in vars(builtins).items() if _matches_probe(obj)},
+        key=lambda cls: cls.__name__,
+    )
+)
+
+
 @pytest.mark.parametrize(
     "probe_exc",
-    [RuntimeError, KeyError, AttributeError],
-    ids=["runtime", "key", "attribute"],
+    _PROBE_EXCEPTIONS,
+    ids=[cls.__name__ for cls in _PROBE_EXCEPTIONS],
 )
 def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
     monkeypatch: pytest.MonkeyPatch, probe_exc: type[Exception]
@@ -453,11 +483,12 @@ def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
     """Every exception outside ``(TypeError, ValueError)`` escapes ``_parser_admits``.
 
     The stub replaces the local ``date`` binding in THIS module and raises the
-    parameter's type from ``fromisoformat``: the probe is parametrized over
-    ``RuntimeError``, ``KeyError`` and ``AttributeError``, so a handler widened
-    by any ONE of them turns exactly that id red -- and ``except Exception:``
-    turns all three red. A one-type probe (this test's predecessor probed only
-    ``RuntimeError``) survives a widening that it should have caught.
+    parameter's type from ``fromisoformat``. The probe is parametrized over
+    ``_PROBE_EXCEPTIONS`` -- every builtin ``Exception`` subclass this
+    interpreter constructs with ``"probe"``. Widening the handler to any id
+    turns that id red; ``pytest.raises(..., match="probe")`` binds: a handler
+    that catches and re-raises a DIFFERENT message fails to match, so item
+    2 closes that hole.
     """
     class _ProbeDate:
         @staticmethod
@@ -465,6 +496,6 @@ def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
             raise probe_exc("probe")
 
     monkeypatch.setattr(sys.modules[__name__], "date", _ProbeDate)
-    with pytest.raises(probe_exc) as excinfo:
+    with pytest.raises(probe_exc, match="probe") as excinfo:
         _parser_admits("2026-07-03")
     assert type(excinfo.value) is probe_exc
