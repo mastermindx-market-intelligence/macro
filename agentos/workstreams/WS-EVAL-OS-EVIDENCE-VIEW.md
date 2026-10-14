@@ -1,4 +1,9 @@
 ---
+
+## Current base conflict resolved — 2026-10-14
+
+GitHub reported a real conflict after published501e714310cc27cccc1df1ec2284e11eb05e98bf. Incoming main ee3b1907497c4d5179d76626777b007e0da93d18 was integrated on the same carrier. The only conflict was the curated CI set; its exact union preserves eval-os-a1 and deploy-git-history. All300candidate job blocks remain unchanged; main adds only its dedicated deployment-history job. The updater adopts main’s removal of depth-one fetch, preserving the accepted A1 restart triggers. Other incoming owner/data/site changes are preserved. Independent review found no issue. All288affected CI/updater/history controls pass with zero skips, the separate packing-budget control passes, and A1 tracked closure remains1166/1166with no omissions. Application, science, rendering and acceptance-suite bytes remain unchanged; their accepted373-test/browser/resource proofs are reused. See research/evidence/eval-os-20261012/ee3-requalification-20261014.json. Final containing/published head must still prove actual hosted A1 selection and execution before reserved release and production acceptance. The original T2 row now maps the distinct plan-ledger and candidate-grading owners without claiming plan sector/MFE/MAE completion.
+
 key: EVAL-OS-EVIDENCE-VIEW
 title: Intelligence Evaluation OS — T7 per-engine evidence scorecards + T8 CEO evidence view
 objective: >

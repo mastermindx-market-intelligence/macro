@@ -260,7 +260,13 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	stop_reciprocal_market_memory_writers
 fi
 
-git -C "$APP_DIR" fetch --depth 1 -q origin main
+# Do not add --depth here: depth-one fetches sever the new tip from previously
+# published revisions, breaking the native accepts_revision ancestry check even
+# when both commit objects remain present. Ordinary fetch preserves connectivity
+# for later updates. Existing shallow boundaries require a separate repair;
+# this updater never deepens or rewrites them. A fetch failure still aborts
+# under strict mode before OLD/NEW and reset.
+git -C "$APP_DIR" fetch -q origin main
 OLD=$(git -C "$APP_DIR" rev-parse HEAD)
 NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
 CHANGED=""

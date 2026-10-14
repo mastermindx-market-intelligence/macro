@@ -4286,6 +4286,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
+    # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
+    # preserves the broader self-heal owner without widening unrelated probes.
+    "deploy-git-history",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
