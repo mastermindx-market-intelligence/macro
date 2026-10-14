@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P0_VIEW_CONTRACT.json"
 DOC = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P0_ANALYST_JOURNEYS.md"
@@ -34,6 +36,7 @@ PAYLOAD_LISTS = [
     "evidence_receipt_keys",
     "health_keys",
     "attested_history_latest_keys",
+    "query_cell_keys",
 ]
 JOURNEY_IDS = ["J1", "J2", "J3", "J4", "J5"]
 STATUS_ENUM = {"exists", "partial", "missing"}
@@ -129,6 +132,8 @@ def test_five_journeys_in_masterplan_order():
         assert row["name_zh"].strip()
         assert row["p2_question"].strip()
         assert isinstance(row["evidence"], list) and row["evidence"]
+        # P2 amendment: every journey records the seat ruling that resolved it.
+        assert row["p2_ruling"].strip()
 
 
 def test_journey_status_enum_and_gaps():
@@ -160,21 +165,26 @@ def test_panel_dom_ids_occur_once_in_template():
 def test_page_endpoints_in_js_and_registered_gets():
     js = _js()
     gets = set(GET_ROUTE_RE.findall(_api()))
+    posts = set(POST_ROUTE_RE.findall(_api()))
     endpoints = _contract()["page_endpoints"]
     assert endpoints
     for item in endpoints:
-        assert item["method"] == "GET"
+        method = item["method"]
+        assert method in {"GET", "POST"}
         path = item["path"]
         assert isinstance(path, str) and path.startswith("/api/forensics/")
         assert _js_knows_endpoint(path, js), path
-        assert path in gets, path
+        if method == "GET":
+            assert path in gets, path
+        else:
+            assert path in posts, path
 
 
 def test_api_not_called_by_page_are_posts_absent_from_js():
     js = _js()
     posts = set(POST_ROUTE_RE.findall(_api()))
     unused = _contract()["api_not_called_by_page"]
-    assert len(unused) == 4
+    assert len(unused) == 1
     for item in unused:
         assert item["method"] == "POST"
         path = item["path"]
@@ -216,11 +226,145 @@ def test_i18n_template_title_attribute_count():
     assert "pair(" in i18n["mechanism"]
 
 
-def test_first_viewport_measured_is_false():
+FOLD_RECEIPT = "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json"
+SPEC = ROOT / "research" / "financial_intelligence_fabric" / "FIF_P2_DESIGN_SPEC.md"
+
+
+def test_first_viewport_measured_records_the_fold_receipt():
     viewport = _contract()["first_viewport"]
-    assert viewport["measured"] is False
     assert viewport["desktop_1440"].strip()
     assert viewport["mobile_390"].strip()
+    measured = viewport["measured"]
+    assert isinstance(measured, dict)
+    assert measured["receipt"] == FOLD_RECEIPT
+    assert measured["desktop_1440"]["viewport_height"] == 900
+    assert measured["mobile_390"]["viewport_height"] == 844
+    assert measured["desktop_1440"]["meets_contract"] is True
+    # Recorded as measured, not as hoped: after the seat repair round the lead brief
+    # ends inside the 390 fold (it crossed it before the desk header was compacted).
+    assert measured["mobile_390"]["meets_contract"] is True
+
+
+def test_am7_amends_the_desktop_fold_clause():
+    """AM7 (seat ruling 10-12): at >=1100px the tab rail is navigation chrome."""
+    measured = _contract()["first_viewport"]["measured"]
+    desktop = measured["desktop_1440"]
+    assert desktop["amended_by"] == "AM7"
+    assert "AM7" in desktop["note"]
+    for viewport in (desktop, measured["mobile_390"]):
+        assert "tabs" not in viewport["within_first_viewport"]
+    assert desktop["navigation_chrome_in_first_viewport"] == ["tabs"]
+    spec = SPEC.read_text(encoding="utf-8")
+    assert any(
+        line.startswith("- **AM7 (1440 tab rail in the first viewport;")
+        for line in spec.splitlines()
+    )
+    assert "Tab bar and panels start below the fold (amended by AM7)." in spec
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_first_viewport_measured_matches_the_committed_receipt():
+    measured = _contract()["first_viewport"]["measured"]
+    probes = set(measured["probes"])
+    cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
+    rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
+    assert len(rest) == 8
+    for cell in rest:
+        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        inside = sorted(
+            n
+            for n, m in found.items()
+            if m["within_first_viewport"] and n not in probes
+        )
+        assert inside == want["within_first_viewport"], cell["cell_id"]
+        lead = found["lead"]
+        assert lead["viewport_height"] == want["viewport_height"]
+        span = [int(round(lead["top"])), int(round(lead["bottom"]))]
+        assert span == want["lead_px"][cell["locale"]], cell["cell_id"]
+        tabs = found["tabs"]
+        if cell["viewport"] == "desktop":
+            # AM7: the rail may sit inside the fold as navigation chrome, its top
+            # pinned by the receipt, with every glance module ending above it.
+            assert tabs["within_first_viewport"] is True, cell["cell_id"]
+            assert [
+                int(round(tabs["top"])),
+                int(round(tabs["bottom"])),
+            ] == want["tabs_px"][cell["locale"]], cell["cell_id"]
+            for name in want["within_first_viewport"]:
+                assert found[name]["bottom"] <= tabs["top"], (cell["cell_id"], name)
+        else:
+            # §1.1 at 390 is unchanged by AM7: the tab bar starts below the fold.
+            assert tabs["within_first_viewport"] is False, cell["cell_id"]
+
+
+def _rest_cells(measured: dict) -> list[dict]:
+    cells = json.loads((ROOT / measured["receipt"]).read_text(encoding="utf-8"))
+    rest = [c for c in cells if c["force_state"] is None and c["mode"] == "populated"]
+    assert len(rest) == 8
+    return rest
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_launcher_box_clears_every_first_viewport_module_and_the_coverage_stat():
+    """P2 r3 item c: the fab rect inflated by 8px touches no module nor covstat."""
+    measured = _contract()["first_viewport"]["measured"]
+    probes = set(measured["probes"])
+    for cell in _rest_cells(measured):
+        want = measured["desktop_1440" if cell["viewport"] == "desktop" else "mobile_390"]
+        assert set(want["within_first_viewport"]).isdisjoint(probes)
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        fab = found["fab"]
+        assert fab["found"] is True and fab["rendered"] is True, cell["cell_id"]
+        inflated = (fab["left"] - 8, fab["top"] - 8, fab["right"] + 8, fab["bottom"] + 8)
+        for name in [*want["within_first_viewport"], "covstat"]:
+            other = found[name]
+            overlaps = not (
+                other["right"] <= inflated[0]
+                or other["left"] >= inflated[2]
+                or other["bottom"] <= inflated[1]
+                or other["top"] >= inflated[3]
+            )
+            assert not overlaps, (cell["cell_id"], name)
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mobile_latest_button_is_one_line_in_both_locales():
+    """P2 r3 item b: ZH 最新 keeps the EN height (no wrap) in both themes."""
+    measured = _contract()["first_viewport"]["measured"]
+    heights: dict[tuple[str, str], float] = {}
+    for cell in _rest_cells(measured):
+        if cell["viewport"] != "mobile":
+            continue
+        latest = next(m for m in cell["measurements"] if m["name"] == "latest")
+        assert latest["found"] is True and latest["rendered"] is True, cell["cell_id"]
+        heights[(cell["locale"], cell["theme"])] = latest["height"]
+    assert set(heights) == {("en", "dark"), ("en", "light"), ("zh", "dark"), ("zh", "light")}
+    for theme in ("dark", "light"):
+        assert abs(heights[("en", theme)] - heights[("zh", theme)]) <= 0.5, theme
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_launcher_clearance_px_equals_the_receipt():
+    """P2 r3 item c: the contract clearance is the measured fab/covstat gap."""
+    measured = _contract()["first_viewport"]["measured"]
+    clearance = measured["mobile_390"]["launcher_clearance_px"]
+    assert set(clearance) == {"en", "zh"}
+    for cell in _rest_cells(measured):
+        if cell["viewport"] != "mobile":
+            continue
+        found = {m["name"]: m for m in cell["measurements"] if m["found"] and m["height"] > 0}
+        fab, covstat = found["fab"], found["covstat"]
+        overlaps_vertically = not (
+            fab["bottom"] <= covstat["top"] or covstat["bottom"] <= fab["top"]
+        )
+        if overlaps_vertically:
+            gap = round(fab["left"] - covstat["right"])
+        elif fab["top"] >= covstat["bottom"]:
+            gap = round(fab["top"] - covstat["bottom"])
+        else:
+            gap = round(covstat["top"] - fab["bottom"])
+        assert clearance[cell["locale"]] == gap, cell["cell_id"]
 
 
 def test_doc_mentions_journeys_and_every_dom_id():

@@ -1202,14 +1202,14 @@ def _validate_receipt_against_packet(
 
 
 def _load_stored_with_feature(
-    root: Path, receipt: Mapping[str, Any], *, store_id: str
+    root: Path, receipt: Mapping[str, Any], *, store_id: str, read_budget: Any = None
 ) -> tuple[market_memory_pit.StoredMarketMemoryContext, dict[str, Any]]:
     clean_receipt = _validate_receipt(receipt)
     if clean_receipt["store_id"] != store_id:
         raise market_memory_pit.MarketMemoryStoreError(
             "trusted capture belongs to another store"
         )
-    packet, packet_body = market_memory_pit._read_canonical_object(
+    packet, packet_body = (read_budget.read if read_budget is not None else market_memory_pit._read_canonical_object)(
         market_memory_pit._object_path(root, clean_receipt["packet_sha256"]),
         limit=market_memory_pit._MAX_PACKET_BYTES,
         label="trusted packet object",
@@ -1224,7 +1224,7 @@ def _load_stored_with_feature(
         )
     clean_packet = _validate_trusted_packet(packet)
     _validate_receipt_against_packet(clean_receipt, clean_packet)
-    clean_feature = _load_feature_object(root, clean_receipt)
+    clean_feature = _load_feature_object(root, clean_receipt, read_budget=read_budget)
     return (
         market_memory_pit.StoredMarketMemoryContext(clean_packet, clean_receipt),
         clean_feature,
@@ -1238,7 +1238,7 @@ def _load_stored(
 
 
 def _load_feature_object(
-    root: Path, receipt: Mapping[str, Any]
+    root: Path, receipt: Mapping[str, Any], *, read_budget: Any = None
 ) -> dict[str, Any]:
     """Reload the exact macro feature object named by one validated receipt."""
 
@@ -1246,7 +1246,7 @@ def _load_feature_object(
 
     clean_receipt = _validate_receipt(receipt)
     feature_digest = clean_receipt["feature_snapshot"]["content_sha256"]
-    feature, feature_body = market_memory_pit._read_canonical_object(
+    feature, feature_body = (read_budget.read if read_budget is not None else market_memory_pit._read_canonical_object)(
         _feature_path(root, feature_digest),
         limit=_MAX_FEATURE_BYTES,
         label="trusted feature object",
@@ -1353,6 +1353,21 @@ class TrustedFileAsKnownAtReader(market_memory.AsKnownAtReader):
             generation_sha256=str(state.head["generation_sha256"]),
             capture_count=count,
         )
+
+    def qualify_published_lineage(self, **kwargs):
+        """Distinct bounded OFFLINE qualification; original v1 limits unchanged."""
+        from engine.neuralweb.market_memory_lineage import _qualify_owner
+        return _qualify_owner(self, **kwargs)
+
+    def read_certified_generation(self, membership, *, budget, policy):
+        """Exact original object under an owner-issued certified membership."""
+        from engine.neuralweb.market_memory_lineage import _read_owner_generation
+        return _read_owner_generation(self, membership, budget=budget, policy=policy)
+
+    def read_certified_capture(self, membership, *, query_id, budget, policy):
+        """Validate full trusted receipt/alias/packet/feature from certified membership."""
+        from engine.neuralweb.market_memory_lineage import _read_owner_capture
+        return _read_owner_capture(self, membership, query_id=query_id, budget=budget, policy=policy)
 
     def read_pinned_generation(
         self,

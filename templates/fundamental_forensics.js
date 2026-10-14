@@ -9,6 +9,10 @@
     : '/api/forensics/state';
   var HEALTH_URL = '/api/forensics/health';
   var ATTESTED_HISTORY_URL = '/api/forensics/v1/attested-history';
+  var FINANCIAL_QUERY_URL = '/api/forensics/v1/financial/query';
+  var FINANCIAL_REVISIONS_URL = '/api/forensics/v1/financial/revisions';
+  var FINANCIAL_STATEMENTS_URL = '/api/forensics/v1/financial/statements';
+  var FINANCIAL_QUERY_XLSX_URL = '/api/forensics/v1/financial/query.xlsx';
   var DESKTOP_QUERY = '(min-width: 1100px)';
   var state = {
     payload: null,
@@ -20,6 +24,15 @@
     priority: 'all',
     topic: 'all',
     tab: 'radar',
+    // §6 URL state: everything below is serialised into the query string, so a
+    // permalink is the whole desk — no browser storage APIs are touched.
+    asOfDate: '',
+    policy: 'latest_known_as_of',
+    cohortId: '',
+    peerMetric: '',
+    peerAlign: 'exclude',
+    peerN: 3,
+    peerTol: 45,
     currentPeriod: 0,
     priorPeriod: 1,
     disclosureSection: 'all',
@@ -32,6 +45,16 @@
     lastFocus: null,
     unknownRequestedSymbol: '',
     sourceMode: 'map',
+    // §2/§3 — cell evidence + the query nodes the source controls resolve
+    // against (populated by the financial query fetch).
+    queryNodes: null,
+    cellEvidence: null,
+    financialToken: 0,
+    financial: { phase: 'idle' },
+    statementColumns: [],
+    statements: { phase: 'idle' },
+    statementCells: [],
+    exportUnavailable: false,
     receipt: {
       phase: 'idle',
       requestToken: 0,
@@ -44,7 +67,15 @@
       detail: null,
       detailPhase: 'idle',
       lastFocus: null
-    }
+    },
+    // X2-s saved views: the id of the restored view (kept until the user
+    // navigates away), a T1 refusal reason when a listed view will not load,
+    // and the stored request of a pinned restore, re-POSTed verbatim while
+    // the desk still matches the view's subject, policy and cutoff.
+    savedActiveId: '',
+    savedRefusal: '',
+    savedStoreError: false,
+    pinnedRequest: null
   };
 
   var ui = {};
@@ -116,6 +147,15 @@
     ui.freshnessStatus = byId('ff-freshness-status');
     ui.runMeta = byId('ff-run-meta');
     ui.sourceLabel = byId('ff-source-label');
+    ui.deskHeader = byId('ff-desk-header');
+    ui.deskStamp = byId('ff-desk-stamp');
+    ui.deskAsOf = byId('ff-desk-asof');
+    ui.asofLatest = byId('ff-asof-latest');
+    ui.asofInput = byId('ff-asof-input');
+    ui.exportLink = byId('ff-export-link');
+    ui.exportBtn = byId('ff-export-btn');
+    ui.exportWrap = byId('ff-desk-export');
+    ui.statCoverageLabel = byId('ff-stat-coverage-label');
     ui.search = byId('ff-company-search');
     ui.searchClear = byId('ff-search-clear');
     ui.companyOptions = byId('ff-company-options');
@@ -128,6 +168,7 @@
     ui.quickSignalLabel = byId('ff-quick-signal-label');
     ui.quickSignalTitle = byId('ff-quick-signal-title');
     ui.quickSignalSummary = byId('ff-quick-signal-summary');
+    ui.quickSignalMagnitude = byId('ff-quick-signal-magnitude');
     ui.statAttention = byId('ff-stat-attention');
     ui.statWatch = byId('ff-stat-watch');
     ui.statCoverage = byId('ff-stat-coverage');
@@ -295,6 +336,148 @@
     if (numeric === 0) return formatValue(numeric, format);
     var prefix = numeric > 0 ? '+' : '−';
     return prefix + formatValue(Math.abs(numeric), format);
+  }
+
+  // P2 repair (item 7): the difference between two percentages is a move in
+  // percentage POINTS, never a percent change — "−3.8% → 0.1%" reads
+  // "+3.9 pts", not "+4.0%". Non-percent formats keep formatSigned.
+  function isPercentFormat(format) {
+    return /percent|percentage|pct/.test(String(format || '').toLowerCase());
+  }
+
+  function formatChange(value, format, preferred) {
+    var numeric = numberValue(value);
+    if (numeric == null || !isPercentFormat(format)) return formatSigned(value, format);
+    var points = Math.abs(numeric * 100).toLocaleString('en-US', { maximumFractionDigits: 1 });
+    var prefix = numeric > 0 ? '+' : numeric < 0 ? '−' : '';
+    return prefix + points + (preferred === 'zh' ? ' 个百分点' : ' pts');
+  }
+
+  // The first value that actually moved: the glance number, the card summary
+  // and the rail all describe this one value (R2: never a sort key).
+  function firstChangedValue(finding) {
+    var values = Array.isArray(finding && finding.values) ? finding.values : [];
+    for (var index = 0; index < values.length; index += 1) {
+      var value = objectValue(values[index]);
+      if (value && numberValue(value.delta) != null) return value;
+    }
+    return null;
+  }
+
+  // Item 8: the value the change is measured FROM. When a sibling value's
+  // current equals this value's prior, that sibling names the basis (an
+  // annual series compares the latest year with the oldest, not the year
+  // before); otherwise the finding's prior filing period does.
+  function basisValue(finding, value) {
+    var prior = numberValue(value && value.prior);
+    var values = Array.isArray(finding && finding.values) ? finding.values : [];
+    if (prior == null) return null;
+    for (var index = 0; index < values.length; index += 1) {
+      var other = objectValue(values[index]);
+      if (other && other !== value && numberValue(other.current) === prior) return other;
+    }
+    return null;
+  }
+
+  function periodToken(label) {
+    var match = String(label || '').match(/^(FY\d{4}(?:\s?Q\d)?)(?:\s|$)/);
+    return match ? match[1] : '';
+  }
+
+  function trimSharedMetric(label, ownLabel) {
+    var a = String(label || '').match(/^(FY\d{4}(?:\s?Q\d)?)\s+(.+)$/);
+    var b = String(ownLabel || '').match(/^(FY\d{4}(?:\s?Q\d)?)\s+(.+)$/);
+    return a && b && a[2] === b[2] ? a[1] : String(label || '');
+  }
+
+  function comparisonBasis(finding, value) {
+    var basis = basisValue(finding, value);
+    if (basis) {
+      var basisEn = String(basis.label_en || basis.label || '');
+      var basisZh = String(basis.label_zh || basisEn);
+      var ownEn = String(value.label_en || value.label || '');
+      var ownZh = String(value.label_zh || ownEn);
+      return { en: trimSharedMetric(basisEn, ownEn), zh: trimSharedMetric(basisZh, ownZh) };
+    }
+    if (finding && finding.period_prior) return { en: String(finding.period_prior), zh: String(finding.period_prior) };
+    return { en: 'the comparison period', zh: '对比期' };
+  }
+
+  // Item 8: the period chip names the comparison the numbers make. An annual
+  // series ("FY2025 accrual intensity" vs "FY2023 …") names its own years;
+  // otherwise the finding's filing periods stand.
+  function findingPeriodText(finding) {
+    finding = finding || {};
+    var value = firstChangedValue(finding);
+    var basis = value ? basisValue(finding, value) : null;
+    var currentToken = value ? periodToken(value.label_en || value.label) : '';
+    var basisToken = basis ? periodToken(basis.label_en || basis.label) : '';
+    if (currentToken && basisToken) return currentToken + ' vs ' + basisToken;
+    var periods = [finding.period_current, finding.period_prior].filter(Boolean);
+    return periods.length > 1 ? periods[0] + ' vs ' + periods[1] : periods[0] || '—';
+  }
+
+  // Item 7: a percent-format change is described from the structured values
+  // (level, basis, move in points) instead of the engine sentence, whose
+  // ratio-difference wording prints points as a percent. Other formats keep
+  // the engine summary.
+  function findingSummaryHtml(finding, fallback) {
+    var value = firstChangedValue(finding);
+    var current = value ? numberValue(value.current) : null;
+    var prior = value ? numberValue(value.prior) : null;
+    var delta = value ? numberValue(value.delta) : null;
+    if (!value || !isPercentFormat(value.format) || current == null || prior == null || delta == null) {
+      return fieldPair(finding, 'summary', fallback);
+    }
+    var basis = comparisonBasis(finding, value);
+    var labelEn = String(value.label_en || value.label || prettify(value.key));
+    var labelZh = String(value.label_zh || labelEn);
+    var currentText = formatValue(current, value.format);
+    var priorText = formatValue(prior, value.format);
+    if (delta === 0) {
+      return pair(labelEn + ' was ' + currentText + ', unchanged from ' + basis.en + '.',
+        labelZh + '为 ' + currentText + '，与' + basis.zh + '持平。');
+    }
+    var up = delta > 0;
+    return pair(
+      labelEn + ' was ' + currentText + ', ' + (up ? 'up ' : 'down ') +
+        formatChange(Math.abs(delta), value.format, 'en').replace(/^\+/, '') +
+        ' from ' + basis.en + ' (' + priorText + ').',
+      labelZh + '为 ' + currentText + '，较' + basis.zh + '（' + priorText + '）' + (up ? '上升 ' : '下降 ') +
+        formatChange(Math.abs(delta), value.format, 'zh').replace(/^\+/, '') + '。'
+    );
+  }
+
+  // Item 9: GICS sector names carry a ZH twin at glance.
+  var SECTOR_ZH = {
+    'Information Technology': '信息技术',
+    'Health Care': '医疗保健',
+    'Financials': '金融',
+    'Consumer Discretionary': '非必需消费品',
+    'Consumer Staples': '必需消费品',
+    'Communication Services': '通信服务',
+    'Industrials': '工业',
+    'Energy': '能源',
+    'Materials': '原材料',
+    'Utilities': '公用事业',
+    'Real Estate': '房地产'
+  };
+
+  function sectorZh(sector) {
+    var text = String(sector || '');
+    return SECTOR_ZH[text] || text;
+  }
+
+  // Item 9: the glance names the source in plain words, never the state
+  // contract's internal projection label.
+  function plainSourcePair(source) {
+    source = source || {};
+    var rawEn = localized(source.label, 'en') || localized(source.basis, 'en');
+    var probe = [rawEn, localized(source.name, 'en'), localized(source.basis, 'en')].join(' ');
+    if (/\bSEC\b|EDGAR|company ?facts/i.test(probe)) return pair('SEC company filings', 'SEC 公司财报');
+    if (!rawEn) return '—';
+    var rawZh = localized(source.label, 'zh') || localized(source.basis, 'zh') || rawEn;
+    return pair(rawEn, translatedDataPhrase(rawZh, 'zh'));
   }
 
   function periodLabel(period) {
@@ -806,6 +989,7 @@
           return;
         }
         selectInitialCompany();
+        applyUrlState(true);
         renderAll();
         loadHealth();
       })
@@ -819,6 +1003,130 @@
   function requestedSymbol() {
     var params = new URLSearchParams(window.location.search);
     return String(params.get('symbol') || '').trim().toUpperCase();
+  }
+
+  // ── URL state schema (§6) ───────────────────────────────────────────────
+  // Unknown params are ignored and invalid enums fall back to their default;
+  // reading never throws. `symbol` keeps working exactly as before.
+  var URL_TABS = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
+  var URL_POLICIES = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+
+  function urlInt(value, fallback) {
+    var parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  }
+
+  function readUrlParams() {
+    var params = new URLSearchParams(window.location.search);
+    var tab = String(params.get('tab') || '');
+    var policy = String(params.get('policy') || '');
+    var align = String(params.get('align') || '');
+    var span = String(params.get('span') || '');
+    var src = String(params.get('src') || '');
+    return {
+      symbol: String(params.get('symbol') || '').trim().toUpperCase(),
+      tab: URL_TABS.indexOf(tab) >= 0 ? tab : 'radar',
+      asOfDate: /^\d{4}-\d{2}-\d{2}$/.test(String(params.get('as_of') || '')) ? String(params.get('as_of')) : '',
+      policy: URL_POLICIES.indexOf(policy) >= 0 ? policy : 'latest_known_as_of',
+      finding: String(params.get('finding') || ''),
+      disc: String(params.get('disc') || ''),
+      redline: String(params.get('redline') || ''),
+      drawer: String(params.get('drawer') || '') === '1',
+      occ: String(params.get('occ') || ''),
+      cell: String(params.get('cell') || ''),
+      snap: String(params.get('snap') || ''),
+      span: /^\d+-\d+$/.test(span) ? span : '',
+      src: src === 'receipt' ? 'receipt' : 'map',
+      cohort: String(params.get('cohort') || ''),
+      peerMetric: String(params.get('peer_metric') || ''),
+      align: align === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+      peerN: urlInt(params.get('peer_n'), 3),
+      peerTol: urlInt(params.get('peer_tol'), 45),
+      peers: String(params.get('peers') || '') === '1'
+    };
+  }
+
+  // Serialises the desk state table (§6.1). Drawer keys ride only the frame a
+  // source control pushed, so an ordinary permalink never carries them.
+  function writeUrl(push, drawerExtra) {
+    var params = new URLSearchParams();
+    if (state.symbol) params.set('symbol', state.symbol);
+    if (state.tab && state.tab !== 'radar') params.set('tab', state.tab);
+    if (state.asOfDate) params.set('as_of', state.asOfDate);
+    if (state.policy && state.policy !== 'latest_known_as_of') params.set('policy', state.policy);
+    if (state.findingId) params.set('finding', state.findingId);
+    if (state.disclosureFindingId) params.set('disc', state.disclosureFindingId);
+    if (state.redlineId) params.set('redline', state.redlineId);
+    if (state.sourceMode === 'receipt') params.set('src', 'receipt');
+    if (state.cohortId) params.set('cohort', state.cohortId);
+    if (state.peerMetric) params.set('peer_metric', state.peerMetric);
+    if (state.peerAlign === 'shift_labeled') params.set('align', 'shift_labeled');
+    if (state.peerN !== 3) params.set('peer_n', String(state.peerN));
+    if (state.peerTol !== 45) params.set('peer_tol', String(state.peerTol));
+    if (drawerExtra && drawerExtra.drawer) {
+      params.set('drawer', '1');
+      if (drawerExtra.occ) params.set('occ', drawerExtra.occ);
+      if (drawerExtra.cell) params.set('cell', drawerExtra.cell);
+      if (drawerExtra.snap) params.set('snap', drawerExtra.snap);
+      if (drawerExtra.span) params.set('span', drawerExtra.span);
+    }
+    var search = params.toString();
+    var next = window.location.pathname + (search ? '?' + search : '') + window.location.hash;
+    if (push) window.history.pushState({ ffDesk: true }, '', next);
+    else window.history.replaceState({ ffDesk: true }, '', next);
+  }
+
+  // Applies a parsed URL frame to the desk. `first` normalises the landing URL
+  // with replaceState so it becomes shareable without an extra back stop.
+  function applyUrlState(first) {
+    var url = readUrlParams();
+    if (url.symbol) {
+      var resolved = resolveSymbol(url.symbol);
+      if (resolved && resolved !== state.symbol) setCompany(resolved, false);
+    }
+    state.asOfDate = url.asOfDate;
+    state.policy = url.policy;
+    state.sourceMode = url.src;
+    state.cohortId = url.cohort;
+    state.peerMetric = url.peerMetric;
+    state.peerAlign = url.align;
+    state.peerN = url.peerN;
+    state.peerTol = url.peerTol;
+    if (url.finding) state.findingId = url.finding;
+    if (url.disc) state.disclosureFindingId = url.disc;
+    if (url.redline) state.redlineId = url.redline;
+    setTab(url.peers ? 'peers' : url.tab, false);
+    if (first) writeUrl(false);
+    return url;
+  }
+
+  // A drawer frame on the URL re-opens the exact occurrence a permalink points
+  // at. Source controls (row 4) carry the data attributes this resolves
+  // against; with no match the drawer simply stays closed — never a throw.
+  function openDrawerFromUrl(url) {
+    if (!url || !url.drawer) return;
+    var control = null;
+    if (url.occ) control = document.querySelector('[data-occurrence-id="' + cssEscape(url.occ) + '"]');
+    if (!control && url.cell) control = document.querySelector('[data-root-cell-id="' + cssEscape(url.cell) + '"].ff-source-control');
+    if (control) activateSourceControl(control);
+  }
+
+  function cssEscape(value) {
+    return window.CSS && typeof window.CSS.escape === 'function'
+      ? window.CSS.escape(String(value))
+      : String(value).replace(/[^a-zA-Z0-9_-]/g, '');
+  }
+
+  // Closing the drawer (Escape, close button, scrim): back out of a pushed
+  // drawer frame, else rewrite the URL without drawer keys (§6.2).
+  function closeDrawerAndSync() {
+    if (readUrlParams().drawer) {
+      closeEvidence(true);
+      window.history.back();
+      return;
+    }
+    writeUrl(false);
+    closeEvidence(true);
   }
 
   function resolveSymbol(candidate) {
@@ -855,18 +1163,25 @@
     state.redlineId = '';
     state.evidenceKind = 'finding';
     resetReceiptState();
+    resetFinancialState();
+    resetStatementsState();
     ui.search.value = resolved;
     ui.searchClear.hidden = false;
     closeSearch();
     closeEvidence(false);
     if (updateUrl) {
-      var next = new URL(window.location.href);
-      next.searchParams.set('symbol', resolved);
-      window.history.pushState({ symbol: resolved }, '', next.pathname + next.search + next.hash);
+      // A manual company switch ends the restored view's context — the badge
+      // and the pinned-bytes override must not describe another issuer.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
+      writeUrl(true);
       state.unknownRequestedSymbol = '';
     }
     renderCompany();
     if (state.sourceMode === 'receipt') ensureReceiptForCompany();
+    ensureFinancialData();
   }
 
   function renderAll() {
@@ -885,6 +1200,7 @@
   function applyHealth(health) {
     state.health = health && typeof health === 'object' ? health : { status: 'unavailable', clocks: {} };
     renderRunMeta();
+    setAsofControlsFromState();
   }
 
   function loadHealth() {
@@ -898,7 +1214,17 @@
       })
       .then(function (response) {
         if (!response.ok) throw response;
-        return response.json();
+        // X2-s: the newer-generation signal rides the SAME health fetch —
+        // names/ids only (app/forensics.py health headers), never a second
+        // request. Annotated onto the client-side copy, not the wire contract.
+        var generation = {
+          id: String(response.headers.get('X-FIF-Dataset-Generation-Id') || ''),
+          admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || '')
+        };
+        return response.json().then(function (payload) {
+          if (generation.id) payload.generation = generation;
+          return payload;
+        });
       })
       .then(applyHealth)
       .catch(function () {
@@ -920,10 +1246,22 @@
     if (ui.freshnessStatus) ui.freshnessStatus.innerHTML = pair(copy[0], copy[1]);
     if (ui.asOf) ui.asOf.textContent = filing ? formatDate(filing) : '—';
     if (ui.sourceSnapshot) ui.sourceSnapshot.textContent = snapshot ? formatDate(snapshot) : '—';
-    var sourceName = translatedDataPhrase(
-      localized(source.label, lang()) || localized(source.basis, lang()), lang()
-    ) || '—';
-    if (ui.sourceLabel) ui.sourceLabel.textContent = sourceName;
+    if (ui.sourceLabel) ui.sourceLabel.innerHTML = plainSourcePair(source);
+    // One as-of line for the desk (doctrine Law 4): the hidden dd cells above
+    // keep their ids for renderRunMeta and the tests, and the stamp carries the
+    // same two facts in one band.
+    var stampDate = (state.asOfDate || filing || snapshot || '').toString();
+    var stampText = formatDate(stampDate) || '—';
+    if (ui.deskStamp) {
+      // At <=700px the run-meta strip folds away (R-a), so the stamp also names
+      // the source there; CSS hides this span from 701px up.
+      var stampSource = plainSourcePair(source);
+      ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]) +
+        (stampSource && stampSource !== '—' ? '<span class="ff-desk-stamp-source"> · ' + stampSource + '</span>' : '');
+    }
+    setAsofControlsFromState();
+    refreshExportState();
+    renderSavedUI();
   }
 
   function renderCompany() {
@@ -933,9 +1271,10 @@
       return;
     }
     var symbol = target.symbol || state.symbol;
-    var identityCore = [target.sector, target.latest_period].filter(Boolean).join(' · ');
-    var identityDetailEn = [identityCore, target.latest_filed ? 'Filed ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
-    var identityDetailZh = [identityCore, target.latest_filed ? '披露于 ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
+    var identityCoreEn = [target.sector, target.latest_period].filter(Boolean).join(' · ');
+    var identityCoreZh = [sectorZh(target.sector), target.latest_period].filter(Boolean).join(' · ');
+    var identityDetailEn = [identityCoreEn, target.latest_filed ? 'Filed ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
+    var identityDetailZh = [identityCoreZh, target.latest_filed ? '披露于 ' + formatDate(target.latest_filed) : ''].filter(Boolean).join(' · ');
     ui.companyIdentity.innerHTML = '<div class="ff-company-mark" aria-hidden="true">' + esc(String(symbol).slice(0, 5)) + '</div>' +
       '<div><div class="ff-company-name">' + esc(target.name || symbol) + '</div>' +
       '<div class="ff-company-detail">' + pair(identityDetailEn || '—', identityDetailZh || '—') + '</div></div>';
@@ -990,6 +1329,14 @@
     ui.statAttention.textContent = String(high.length);
     ui.statWatch.textContent = String(watch.length);
     ui.statCoverage.textContent = coverageValue == null ? '—' : formatPercent(coverageValue);
+    // Item 3: partial coverage is disclosed at glance in the stat itself (the
+    // duplicate notice band is gone); nulls stay printed, gaps stay blank.
+    if (ui.statCoverageLabel) {
+      var partial = coverageValue != null && (coverageValue <= 1 ? coverageValue < 0.999 : coverageValue < 99.9);
+      ui.statCoverageLabel.innerHTML = partial
+        ? pair('of expected metrics compared · gaps left blank', '预期指标已对比 · 缺失值留空')
+        : pair('Metrics compared', '已对比指标');
+    }
     ui.statSources.textContent = String(evidenceCount);
 
     var statusKey = high.length ? 'attention' : watch.length ? 'watch' : first ? 'watch' : 'clear';
@@ -1002,6 +1349,10 @@
 
     if (!first) {
       ui.quickSignal.setAttribute('data-priority', 'clear');
+      if (ui.quickSignalMagnitude) {
+        ui.quickSignalMagnitude.innerHTML = '';
+        ui.quickSignalMagnitude.hidden = true;
+      }
       ui.quickSignalLabel.innerHTML = pair('Latest covered comparison', '最新已覆盖对比');
       ui.quickSignalTitle.innerHTML = pair('No unusual change surfaced', '暂无异常变化');
       ui.quickSignalSummary.innerHTML = pair(
@@ -1018,16 +1369,46 @@
     }
 
     ui.quickSignal.setAttribute('data-priority', first.priority || 'watch');
-    ui.quickSignalLabel.innerHTML = first.priority === 'high'
-      ? pair('First thing to understand', '首先需要了解')
-      : pair('Worth keeping an eye on', '值得持续观察');
+    ui.quickSignalLabel.innerHTML = pair('Why it matters', '为什么重要');
     ui.quickSignalTitle.innerHTML = fieldPair(first, 'title', 'Filing change');
-    ui.quickSignalSummary.innerHTML = fieldPair(first, 'summary', 'Open this signal to see the numbers and source.');
+    ui.quickSignalSummary.innerHTML = findingSummaryHtml(first, 'Open this signal to see the numbers and source.');
+    // R2: magnitude is a value on the card, never the sort key — the ranking
+    // stays orderedFindings (review priority, then recency). Item 7: it is the
+    // first value that MOVED (values[0] of an annual series has no delta), in
+    // percentage points for percent-format values.
+    if (ui.quickSignalMagnitude) {
+      var firstValue = firstChangedValue(first);
+      var magnitude = firstValue ? firstValue.delta : null;
+      if (magnitude != null) {
+        ui.quickSignalMagnitude.innerHTML = pair(
+          'Change ' + formatChange(magnitude, firstValue.format, 'en'),
+          '变化 ' + formatChange(magnitude, firstValue.format, 'zh')
+        );
+        ui.quickSignalMagnitude.hidden = false;
+      } else {
+        ui.quickSignalMagnitude.innerHTML = '';
+        ui.quickSignalMagnitude.hidden = true;
+      }
+    }
     var trigger = ui.quickSignal.querySelector('.ff-quick-signal-open');
     if (trigger) {
       trigger.setAttribute('data-open-primary-finding', '');
       trigger.removeAttribute('data-go-tab');
-      trigger.innerHTML = pair('Open signal analysis', '打开信号分析') + ' <span aria-hidden="true">→</span>';
+      // §2.2 — the CTA carries the primary finding's span attributes when the
+      // state has attached them (P1-b); none are invented here.
+      var findingBounds = spanBounds(first.source_span);
+      if (findingBounds) {
+        trigger.setAttribute('data-span-start', String(Math.trunc(findingBounds[0])));
+        trigger.setAttribute('data-span-end', String(Math.trunc(findingBounds[1])));
+      } else {
+        trigger.removeAttribute('data-span-start');
+        trigger.removeAttribute('data-span-end');
+      }
+      if (first.occurrence_id) trigger.setAttribute('data-occurrence-id', String(first.occurrence_id));
+      else trigger.removeAttribute('data-occurrence-id');
+      if (first.current_accession) trigger.setAttribute('data-accession', String(first.current_accession));
+      else trigger.removeAttribute('data-accession');
+      trigger.innerHTML = pair('Open source', '打开来源') + ' <span aria-hidden="true">→</span>';
     }
   }
 
@@ -1040,27 +1421,17 @@
     ui.viewStatus.innerHTML = pair('No companies this run', '本次更新没有公司');
   }
 
+  // Item 3: partial coverage is disclosed in #ff-stat-coverage at glance and
+  // the source limitations live in the Trace tab ("What to know about this
+  // data"), so the band carries only the one notice nothing else shows: an
+  // uncovered requested symbol.
   function renderNotice(target) {
-    var coverage = target.coverage || {};
-    var source = state.payload.source || {};
-    var pct = numberValue(coverage.metrics_pct);
-    var limitationsEn = Array.isArray(source.limitations_en) ? source.limitations_en : [];
-    var limitationsZh = Array.isArray(source.limitations_zh) ? source.limitations_zh : [];
     var headline = '';
     var details = '';
 
     if (state.unknownRequestedSymbol) {
       headline = pair(state.unknownRequestedSymbol + ' is not covered yet, so we are showing ' + state.symbol + '.',
         '尚未覆盖 ' + state.unknownRequestedSymbol + '，现显示 ' + state.symbol + '。');
-    } else if (pct != null && (pct <= 1 ? pct < 0.999 : pct < 99.9)) {
-      headline = pair(
-        'We could compare ' + formatPercent(pct) + ' of the expected metrics. Missing values were left blank.',
-        '本次可对比 ' + formatPercent(pct) + ' 的预期指标；缺失值保持空白。'
-      );
-    }
-    if (limitationsEn.length || limitationsZh.length) {
-      details = '<details class="ff-coverage-details"><summary>' + pair('About this coverage', '关于本次覆盖') +
-        '</summary><p>' + pair(limitationsEn[0] || limitationsZh[0], limitationsZh[0] || limitationsEn[0]) + '</p></details>';
     }
     if (!headline && !details) {
       ui.notice.hidden = true;
@@ -1115,7 +1486,7 @@
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 
-    ui.filterSummary.innerHTML = pair(visible.length + ' of ' + all.length + ' signals',
+    ui.filterSummary.innerHTML = pair(visible.length + ' of ' + all.length + (all.length === 1 ? ' signal' : ' signals'),
       '显示 ' + visible.length + ' / ' + all.length + ' 个信号');
 
     if (!visible.length) {
@@ -1153,8 +1524,7 @@
     ui.findings.innerHTML = visible.map(function (finding) {
       var priority = priorityInfo(finding.priority);
       var selected = String(finding.id) === String(state.findingId);
-      var periods = [finding.period_current, finding.period_prior].filter(Boolean);
-      var periodText = periods.length > 1 ? periods[0] + ' vs ' + periods[1] : periods[0] || '—';
+      var periodText = findingPeriodText(finding);
       return '<div role="listitem"><button type="button" class="ff-finding' + (selected ? ' is-selected' : '') + '"' +
         ' data-finding-id="' + esc(finding.id) + '" data-priority="' + esc(finding.priority || 'watch') + '"' +
         ' aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
@@ -1162,7 +1532,7 @@
         '<span class="ff-finding-copy"><span class="ff-finding-overline"><span class="ff-priority-label">' +
         pair(priority.en, priority.zh) + '</span><span aria-hidden="true">·</span><span>' + topicPair(finding.topic) + '</span></span>' +
         '<h3>' + fieldPair(finding, 'title', 'Untitled finding') + '</h3>' +
-        '<span class="ff-finding-summary">' + fieldPair(finding, 'summary', 'No summary supplied.') + '</span></span>' +
+        '<span class="ff-finding-summary">' + findingSummaryHtml(finding, 'No summary supplied.') + '</span></span>' +
         '<span class="ff-finding-periods"><strong>' + esc(periodText) + '</strong>' +
         pair('Why this matters', '为什么重要') + ' <span aria-hidden="true">→</span></span></button></div>';
     }).join('');
@@ -1172,6 +1542,1438 @@
   function emptyState(titleEn, titleZh, copyEn, copyZh, mark) {
     return '<div class="ff-empty-state"><div><span class="ff-empty-mark" aria-hidden="true">' + esc(mark || '—') + '</span>' +
       '<h3>' + pair(titleEn, titleZh) + '</h3><p>' + pair(copyEn, copyZh) + '</p></div></div>';
+  }
+
+  // ── Source controls (§2, R3) ────────────────────────────────────────────
+  // Every displayed number is a control into #ff-evidence on the exact
+  // occurrence/version/span. With no recorded span the control renders the
+  // explicit unavailable state — never a generic EDGAR browse fallback and
+  // never an invented span (AM1).
+  function spanBounds(value) {
+    if (Array.isArray(value) && value.length >= 2) {
+      var listStart = numberValue(value[0]);
+      var listEnd = numberValue(value[1]);
+      if (listStart != null && listEnd != null) return [Math.trunc(listStart), Math.trunc(listEnd)];
+    }
+    if (value && typeof value === 'object') {
+      var start = numberValue(value.start != null ? value.start : value.char_start);
+      var end = numberValue(value.end != null ? value.end : value.char_end);
+      if (start != null && end != null) return [Math.trunc(start), Math.trunc(end)];
+    }
+    return null;
+  }
+
+  // §2.3.1 — financial query cell provenance.
+  function controlFromQueryNode(node, compactText) {
+    node = objectValue(node) || {};
+    var provenance = objectValue(node.provenance) || {};
+    var fact = objectValue(provenance.selected_raw_fact) || {};
+    var bounds = spanBounds(fact.source_span);
+    return {
+      kind: 'cell',
+      compactText: compactText,
+      occurrenceId: String(fact.occurrence_id || ''),
+      rootCellId: String(node.cell_id || node.root_cell_id || ''),
+      snapshotId: String(node.snapshot_id || ''),
+      accession: String(provenance.accession || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  // §2.3.2 — statement cell receipt. The span is a mapping with start/char_start.
+  function controlFromStatementCell(cell, compactText) {
+    cell = objectValue(cell) || {};
+    var receipt = objectValue(cell.source_receipt) || {};
+    var bounds = spanBounds(receipt.source_span);
+    return {
+      kind: 'statement',
+      compactText: compactText,
+      occurrenceId: String(receipt.occurrence_id || cell.occurrence_id || ''),
+      rootCellId: String(receipt.root_cell_id || cell.cell_id || ''),
+      snapshotId: String(receipt.snapshot_id || ''),
+      accession: String(receipt.accession || cell.accession || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  // §2.3.3 — disclosure / redline receipts.
+  function controlFromEvidenceReceipt(receipt, kind, compactText) {
+    receipt = objectValue(receipt) || {};
+    var bounds = spanBounds(receipt.source_span);
+    return {
+      kind: kind,
+      compactText: compactText,
+      occurrenceId: String(receipt.occurrence_id || receipt.block_id || ''),
+      rootCellId: '',
+      snapshotId: '',
+      accession: String(receipt.accession || receipt.accession_number || ''),
+      spanStart: bounds ? bounds[0] : null,
+      spanEnd: bounds ? bounds[1] : null
+    };
+  }
+
+  function spanOk(opts) {
+    return opts.spanStart != null && opts.spanEnd != null &&
+      String(opts.spanStart) !== '' && String(opts.spanEnd) !== '';
+  }
+
+  // §2.4 — frozen control markup. `inlineInButton` emits the same classes and
+  // copy on a span: HTML forbids nesting a control button inside the card
+  // buttons (findings, disclosures, redlines), and the card itself keeps the
+  // select/open behaviour there.
+  function sourceControlHtml(opts, inlineInButton) {
+    opts = opts || {};
+    var compact = esc(opts.compactText == null || opts.compactText === '' ? '—' : opts.compactText);
+    if (!spanOk(opts)) {
+      var tag = inlineInButton ? 'span' : 'button';
+      var disabledAttrs = inlineInButton ? ' aria-disabled="true"' : ' disabled aria-disabled="true"';
+      return '<' + tag + ' type="button" class="ff-source-control is-unavailable"' + disabledAttrs +
+        ' data-tip-en="Source span unavailable" data-tip-zh="来源片段不可用">' +
+        '<span class="ff-compact tnum">' + compact + '</span>' +
+        '<span class="ff-source-unavail">' + pair('Source span unavailable', '来源片段不可用') + '</span></' + tag + '>';
+    }
+    return '<button type="button" class="ff-source-control"' +
+      ' data-source-kind="' + esc(opts.kind || 'cell') + '"' +
+      ' data-occurrence-id="' + esc(opts.occurrenceId || '') + '"' +
+      ' data-root-cell-id="' + esc(opts.rootCellId || '') + '"' +
+      ' data-snapshot-id="' + esc(opts.snapshotId || '') + '"' +
+      ' data-accession="' + esc(opts.accession || '') + '"' +
+      ' data-span-start="' + esc(String(opts.spanStart)) + '"' +
+      ' data-span-end="' + esc(String(opts.spanEnd)) + '"' +
+      ' aria-controls="ff-evidence"' +
+      ' data-tip-en="Open the source span for this number" data-tip-zh="打开该数字的来源片段">' +
+      '<span class="ff-compact tnum">' + compact + '</span></button>';
+  }
+
+  // §2.3.4 — a finding value with no attached occurrence is matched to a query
+  // node by metric id plus period label; no match stays disabled (AM1).
+  function queryNodeForValue(value) {
+    var nodes = state.queryNodes;
+    if (!Array.isArray(nodes) || !objectValue(value)) return null;
+    var wantedKey = String(value.metric_id || value.key || '');
+    var wantedPeriod = String(value.period_label || value.period || '');
+    for (var index = 0; index < nodes.length; index += 1) {
+      var node = objectValue(nodes[index]);
+      if (!node) continue;
+      if (wantedKey && String(node.metric_id || '') !== wantedKey) continue;
+      if (wantedPeriod && String(node.period_label || node.period || '') !== wantedPeriod) continue;
+      return node;
+    }
+    return null;
+  }
+
+  function valueControlOpts(value, which) {
+    var node = queryNodeForValue(value);
+    var text = which === 'prior' ? value.prior : which === 'delta' ? value.delta : value.current;
+    var shown = which === 'delta' ? formatChange(text, value.format, lang()) : formatValue(text, value.format);
+    if (node) {
+      var control = controlFromQueryNode(node, shown);
+      control.kind = 'finding';
+      control.exactText = node.value == null ? '' : String(node.value);
+      control.unit = node.unit || '';
+      return control;
+    }
+    return { kind: 'finding', compactText: shown };
+  }
+
+  // The plain-word cell glossary (R7): one sentence per glance metric, no
+  // detector jargon. The same sentences live in
+  // docs/site_semantics/fundamental_forensics.md.
+  var CELL_GLOSSARY = {
+    revenue: ['Revenue is the money the company billed for its goods or services in the period.', '营收是公司在该期间因商品或服务而开票的收入。'],
+    gross_profit: ['Gross profit is revenue minus the direct cost of producing what was sold.', '毛利润是营收减去直接生产成本后的金额。'],
+    accounts_receivable_net: ['Receivables are amounts customers owe the company and have not yet paid.', '应收账款是客户尚未支付给公司的款项。'],
+    inventory_net: ['Inventory is the value of goods made or bought and not yet sold.', '存货是已生产或采购但尚未售出的商品价值。'],
+    net_cash_from_operating_activities: ['Operating cash flow is the cash the core business generated or consumed in the period.', '经营现金流是核心业务在该期间产生或消耗的现金。'],
+    capital_expenditures: ['Capital expenditure is the cash spent on long-lived assets such as plants and equipment.', '资本开支是用于厂房、设备等长期资产的现金支出。'],
+    operating_income_loss: ['Operating income is profit from the core business before interest and taxes.', '营业利润是核心业务在扣除利息和税费前的利润。'],
+    net_income_loss: ['Net income is the profit remaining after all expenses and taxes.', '净利润是扣除全部费用与税负后剩余的利润。'],
+    contract_liabilities: ['Contract liabilities is cash customers paid in advance for goods or services not yet delivered.', '合同负债是客户已预付、但公司尚未交付商品或服务的现金。']
+  };
+
+  var METRIC_ID_BY_KEY = {
+    revenue: 'revenue',
+    gross_profit: 'gross_profit',
+    receivables: 'accounts_receivable_net',
+    inventory: 'inventory_net',
+    cfo: 'net_cash_from_operating_activities',
+    capex: 'capital_expenditures',
+    op_income: 'operating_income_loss',
+    ni: 'net_income_loss'
+  };
+
+  function glossarySentence(metricId) {
+    var entry = CELL_GLOSSARY[String(metricId || '')];
+    return entry ? pair(entry[0], entry[1]) : pair(
+      'This is a value the company reported in its filing; open the source span to read it in place.',
+      '这是公司在财报中披露的数值；打开来源片段可在原文中查看。'
+    );
+  }
+
+  // §2.5 — activating a control pushes one drawer frame (§6.2) and renders
+  // the cell evidence view: plain-word title, exact API bytes, compact
+  // secondary, bounded excerpt, technical ids folded into a details block.
+  function activateSourceControl(control) {
+    if (!control || control.disabled) return;
+    state.lastFocus = control;
+    state.evidenceKind = 'cell';
+    state.cellEvidence = cellEvidenceFromControl(control);
+    writeUrl(true, {
+      drawer: true,
+      occ: control.getAttribute('data-occurrence-id') || '',
+      cell: control.getAttribute('data-root-cell-id') || '',
+      snap: control.getAttribute('data-snapshot-id') || '',
+      span: (control.getAttribute('data-span-start') || '') + '-' + (control.getAttribute('data-span-end') || '')
+    });
+    renderCellEvidence(state.cellEvidence);
+    openAnalysisDrawer();
+  }
+
+  function metricLabelById(metricId) {
+    var wanted = String(metricId || '');
+    for (var index = 0; index < METRICS.length; index += 1) {
+      if (METRIC_ID_BY_KEY[METRICS[index].key] === wanted) return pair(METRICS[index].en, METRICS[index].zh);
+    }
+    return wanted ? pair(prettify(wanted), prettify(wanted)) : '';
+  }
+
+  function cellEvidenceFromControl(control) {
+    var cell = {
+      kind: control.getAttribute('data-source-kind') || 'cell',
+      occurrenceId: control.getAttribute('data-occurrence-id') || '',
+      rootCellId: control.getAttribute('data-root-cell-id') || '',
+      snapshotId: control.getAttribute('data-snapshot-id') || '',
+      accession: control.getAttribute('data-accession') || '',
+      spanStart: control.getAttribute('data-span-start') || '',
+      spanEnd: control.getAttribute('data-span-end') || '',
+      compactText: control.querySelector('.ff-compact') ? control.querySelector('.ff-compact').textContent : '',
+      metricId: '',
+      titlePair: '',
+      exactText: '',
+      unit: '',
+      excerpt: ''
+    };
+    // Exact facts attach only when this control backs onto a query node whose
+    // value is canonical decimal text; a JSON number is a contract break and
+    // renders unavailable rather than Number()-ed (A38 / AM1).
+    var nodes = Array.isArray(state.queryNodes) ? state.queryNodes : [];
+    for (var index = 0; index < nodes.length; index += 1) {
+      var node = objectValue(nodes[index]);
+      if (!node) continue;
+      var fact = objectValue(objectValue(node.provenance) && objectValue(node.provenance).selected_raw_fact) || {};
+      var occurrenceMatch = cell.occurrenceId && String(fact.occurrence_id || '') === cell.occurrenceId;
+      var cellMatch = cell.rootCellId && String(node.cell_id || node.root_cell_id || '') === cell.rootCellId;
+      if (!occurrenceMatch && !cellMatch) continue;
+      cell.metricId = String(node.metric_id || '');
+      cell.titlePair = metricLabelById(cell.metricId);
+      cell.exactText = typeof node.value === 'string' ? node.value : '';
+      cell.unit = node.unit == null ? '' : String(node.unit);
+      cell.excerpt = String(node.display_excerpt || node.source_excerpt || '').trim();
+      break;
+    }
+    // Statement-tree cells resolve against the flat cell list the tree
+    // renderer collected; the as-reported label is the plain-word title.
+    if (!cell.titlePair) {
+      var statementCells = Array.isArray(state.statementCells) ? state.statementCells : [];
+      for (var cellIndex = 0; cellIndex < statementCells.length; cellIndex += 1) {
+        var entry = statementCells[cellIndex];
+        var byOccurrence = cell.occurrenceId && entry.occurrenceId === cell.occurrenceId;
+        var byRoot = cell.rootCellId && entry.rootCellId === cell.rootCellId;
+        if (!byOccurrence && !byRoot) continue;
+        cell.metricId = entry.metricId;
+        cell.titlePair = entry.label ? pair(entry.label, entry.label) : '';
+        cell.exactText = entry.value;
+        cell.unit = entry.unit;
+        break;
+      }
+    }
+    // The revisions package supplies the three vintages verbatim for the
+    // drawer; glance compacts, the drawer prints bytes.
+    cell.revisionsRow = revisionsRowFor(cell.metricId);
+    return cell;
+  }
+
+  // ── Cutoff + revisions panel (§3, R4) ───────────────────────────────────
+  // One as-of line drives both PIT clocks; a picked day expands to
+  // {date}T23:59:59Z on both, and Latest passes the health clocks through.
+  function policyClocks() {
+    if (state.asOfDate) {
+      return { source_snapshot_at: state.asOfDate + 'T23:59:59Z', recorded_at: state.asOfDate + 'T23:59:59Z' };
+    }
+    var clocks = (state.health && state.health.clocks) || {};
+    return { source_snapshot_at: clocks.broad_source_at || '', recorded_at: clocks.composed_state_at || '' };
+  }
+
+  function queryMetricIds() {
+    var ids = [];
+    METRICS.forEach(function (metric) {
+      // contract_liabilities is not in the S1 core 40: state table only.
+      if (metric.key === 'contract_liabilities') return;
+      if (METRIC_ID_BY_KEY[metric.key]) ids.push(METRIC_ID_BY_KEY[metric.key]);
+    });
+    return ids;
+  }
+
+  // Periods on the wire carry exactly {kind, start, end, label}. A state
+  // period without a start is skipped — the panel then says so; a start is
+  // never invented (AM1).
+  function queryPeriods(target) {
+    var periods = [];
+    if (state.statementColumns.length) {
+      state.statementColumns.forEach(function (column) {
+        if (column && column.start && column.end) {
+          periods.push({ kind: 'duration', start: column.start, end: column.end, label: column.label });
+        }
+      });
+      return periods;
+    }
+    (Array.isArray(target.periods) ? target.periods : []).forEach(function (period) {
+      if (!objectValue(period) || !period.start || !period.end) return;
+      periods.push({ kind: 'duration', start: String(period.start), end: String(period.end), label: periodLabel(period) });
+    });
+    return periods;
+  }
+
+  function buildQueryBody(selection) {
+    var target = company() || {};
+    return {
+      schema: 'fundamental_forensics.financial_query_request/v1',
+      entity_id: String(target.entity_id || ''),
+      policy: Object.assign({ selection: selection || state.policy || 'latest_known_as_of' }, policyClocks()),
+      metric_ids: queryMetricIds(),
+      periods: queryPeriods(target)
+    };
+  }
+
+  function revisionsRequestBody(latestBody) {
+    var body = Object.assign({}, latestBody, {
+      schema: 'fundamental_forensics.financial_revision_request/v1'
+    });
+    body.policy = Object.assign({}, latestBody.policy, { selection: 'latest_known_as_of' });
+    return body;
+  }
+
+  function financialPost(url, body, meta) {
+    return withAuth({ 'Content-Type': 'application/json', Accept: 'application/json' })
+      .then(function (headers) {
+        return fetch(url, {
+          method: 'POST',
+          headers: headers,
+          credentials: 'same-origin',
+          cache: 'no-store',
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function (response) {
+        if (!response.ok) {
+          var failure = new Error('Financial request failed');
+          failure.status = response.status;
+          throw failure;
+        }
+        // A38: the adapter-byte equality header is verified against the raw
+        // body before anything parses; a missing or mismatched digest is
+        // treated as a 503 and no number renders.
+        var claimed = String(response.headers.get('X-FIF-Response-SHA256') || '').toLowerCase();
+        // X2-s: hand the verified digest to the caller (saved_against) without
+        // touching the envelope — meta is an optional sink, never read back.
+        if (meta) meta.responseSha256 = claimed;
+        return response.arrayBuffer().then(function (buffer) {
+          return sha256Hex(buffer).then(function (actual) {
+            if (!claimed || !actual || actual !== claimed) {
+              var mismatch = new Error('Financial response digest mismatch');
+              mismatch.status = 503;
+              throw mismatch;
+            }
+            return JSON.parse(new TextDecoder().decode(buffer));
+          });
+        });
+      });
+  }
+
+  function sha256Hex(buffer) {
+    if (!(window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === 'function')) {
+      return Promise.resolve('');
+    }
+    return window.crypto.subtle.digest('SHA-256', buffer).then(function (digest) {
+      var bytes = new Uint8Array(digest);
+      var hex = '';
+      for (var index = 0; index < bytes.length; index += 1) {
+        hex += (bytes[index] < 16 ? '0' : '') + bytes[index].toString(16);
+      }
+      return hex;
+    });
+  }
+
+  function queryNodesFrom(payload) {
+    var receipt = objectValue(payload && payload.receipt) || {};
+    return Array.isArray(receipt.nodes) ? receipt.nodes.filter(objectValue) : [];
+  }
+
+  function revisionsRowsFrom(payload) {
+    return Array.isArray(payload && payload.revisions) ? payload.revisions.filter(objectValue) : [];
+  }
+
+  function resetFinancialState() {
+    state.financialToken += 1;
+    state.financial = { phase: 'idle' };
+    state.queryNodes = null;
+    state.statementColumns = [];
+  }
+
+  function ensureFinancialData() {
+    if (state.tab !== 'compare') return;
+    var target = company();
+    if (!target) return;
+    // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
+    // on every leg — the latest-known leg too is the STORED bytes with only
+    // policy.selection switched to latest_known_as_of, so a pinned view saved
+    // under as_reported still compares like against like; without a pinned
+    // view the desk builds each leg exactly as before.
+    var pinnedBody = activePinnedRequest();
+    var latestBody = pinnedBody ? pinnedVariant('latest_known_as_of') : buildQueryBody('latest_known_as_of');
+    if (!latestBody.entity_id) {
+      state.financial = { phase: 'no-entity' };
+      renderRevisions();
+      return;
+    }
+    if (!latestBody.periods.length) {
+      state.financial = { phase: 'no-periods' };
+      renderRevisions();
+      return;
+    }
+    if (!latestBody.policy.source_snapshot_at || !latestBody.policy.recorded_at) {
+      state.financial = { phase: 'no-clocks' };
+      renderRevisions();
+      return;
+    }
+    var token = state.financialToken + 1;
+    state.financialToken = token;
+    // X2-s r1: the exported body is the pinned bytes while the pinned view is
+    // active, otherwise the DESK's own selection (buildQueryBody() with no
+    // argument) — never the forced latest_known_as_of leg above.
+    state.financial = { phase: 'loading', queryBody: pinnedBody || buildQueryBody() };
+    renderRevisions();
+    var latestMeta = {};
+    Promise.all([
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('as_reported') : buildQueryBody('as_reported')),
+      financialPost(FINANCIAL_QUERY_URL, latestBody, latestMeta),
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('latest_restated') : buildQueryBody('latest_restated')),
+      financialPost(FINANCIAL_REVISIONS_URL, revisionsRequestBody(latestBody))
+    ]).then(function (answers) {
+      if (token !== state.financialToken) return;
+      var delivery = objectValue(answers[1] && answers[1].delivery) || {};
+      state.financial = {
+        phase: 'ready',
+        asReported: queryNodesFrom(answers[0]),
+        latest: queryNodesFrom(answers[1]),
+        restated: queryNodesFrom(answers[2]),
+        revisions: revisionsRowsFrom(answers[3]),
+        receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
+        queryBody: pinnedBody || buildQueryBody(),
+        // X2-s: the verified digest and the dataset generation the answer was
+        // served from — refs for saved_against, never values.
+        responseSha256: latestMeta.responseSha256 || '',
+        generationId: String(delivery.dataset_generation_id || '')
+      };
+      state.queryNodes = state.financial.latest;
+      renderRevisions();
+      backfillSavedAgainst();
+      renderSavedUI();
+    }).catch(function (error) {
+      if (token !== state.financialToken) return;
+      if (error && (error.status === 401 || error.status === 403)) {
+        showLoadError(error);
+        return;
+      }
+      state.financial = { phase: 'error', errorStatus: error && error.status };
+      renderRevisions();
+    });
+  }
+
+  function revisionNodeFor(nodes, metricId) {
+    for (var index = 0; index < nodes.length; index += 1) {
+      if (String(nodes[index].metric_id || '') === String(metricId)) return nodes[index];
+    }
+    return null;
+  }
+
+  function revisionsRowFor(metricId) {
+    var rows = state.financial && Array.isArray(state.financial.revisions) ? state.financial.revisions : [];
+    for (var index = 0; index < rows.length; index += 1) {
+      if (String(rows[index].metric_id || '') === String(metricId)) return rows[index];
+    }
+    return null;
+  }
+
+  function absenceCell(copyEn, copyZh) {
+    return '<span class="ff-revisions-absence">' + pair(copyEn, copyZh) + '</span>';
+  }
+
+  function revisionControlCell(nodes, metricId) {
+    var node = revisionNodeFor(nodes, metricId);
+    if (!node) return absenceCell('No value at this cutoff', '该截止日无此值');
+    if (String(node.state || '') === 'missing') return absenceCell('No value at this cutoff', '该截止日无此值');
+    if (String(node.state || '') === 'not_evaluable') return absenceCell('Cannot evaluate', '无法评估');
+    var exact = typeof node.value === 'string' ? node.value : '';
+    if (!exact) return absenceCell('No value at this cutoff', '该截止日无此值');
+    var control = controlFromQueryNode(node, formatValue(node.value, 'currency'));
+    return sourceControlHtml(control);
+  }
+
+  // §3.3 — three columns map to the three policies; a restated value that
+  // differs from its root tints the column (dark fill / light hairline+fill).
+  function renderRevisions() {
+    var host = byId('ff-revisions-table');
+    if (!host) return;
+    var financial = state.financial || { phase: 'idle' };
+    var header = '<tr><th>' + pair('Metric / 指标', 'Metric / 指标') + '</th>' +
+      '<th>' + pair('Original reported', '原始披露') + '</th>' +
+      '<th>' + pair('Latest as of cutoff', '截止时点最新值') + '</th>' +
+      '<th>' + pair('Restated', '重述后') + '</th></tr>';
+    if (financial.phase === 'loading') {
+      host.innerHTML = '<div class="ff-loading" role="status"><span class="ff-loading-dot" aria-hidden="true"></span>' +
+        pair('Loading revisions…', '正在载入重述对照…') + '</div>';
+      return;
+    }
+    if (financial.phase === 'no-entity' || financial.phase === 'no-clocks' ||
+        (financial.phase === 'error' && financial.errorStatus === 400)) {
+      host.innerHTML = emptyState(
+        'Issuer identity unavailable', '发行人标识不可用',
+        'The desk cannot query this issuer yet, so no vintage is shown. Nothing is guessed from the ticker.',
+        '暂无法查询该发行人，因此不显示任何版本；不会从股票代码推测发行人标识。', '—'
+      );
+      return;
+    }
+    if (financial.phase === 'no-periods') {
+      host.innerHTML = emptyState(
+        'Period start unavailable', '期间起始日不可用',
+        'The state does not carry a period start date for this issuer, so no cutoff query can be built.',
+        '状态数据中没有该发行人的期间起始日，因此无法构建截止日查询。', '—'
+      );
+      return;
+    }
+    if (financial.phase === 'error') {
+      host.innerHTML = emptyState(
+        'Revisions temporarily unavailable', '重述服务暂不可用',
+        'The revisions service did not answer with verifiable bytes. Try again in a moment.',
+        '重述服务未返回可校验的数据，请稍后再试。', '↺'
+      ) + '<div class="ff-revisions-retry"><button type="button" data-financial-retry="1">' + pair('Retry', '重试') + '</button></div>';
+      return;
+    }
+    if (financial.phase !== 'ready') {
+      host.innerHTML = '';
+      return;
+    }
+    var hasRevision = Array.isArray(financial.revisions) && financial.revisions.length > 0;
+    var rows = queryMetricIds().map(function (metricId) {
+      var restatedCell = hasRevision
+        ? revisionControlCell(financial.restated, metricId)
+        : absenceCell('No revision in this package', '本数据包中无重述');
+      var revisionRow = revisionsRowFor(metricId);
+      var tinted = !!(revisionRow && revisionRow.revised_value !== revisionRow.root_value);
+      return '<tr' + (tinted ? ' class="is-restated"' : '') + '><td data-label-en="Metric" data-label-zh="指标">' + metricLabelById(metricId) + '</td>' +
+        '<td data-label-en="Original reported" data-label-zh="原始披露">' + revisionControlCell(financial.asReported, metricId) + '</td>' +
+        '<td data-label-en="Latest as of cutoff" data-label-zh="截止时点最新值">' + revisionControlCell(financial.latest, metricId) + '</td>' +
+        '<td data-label-en="Restated" data-label-zh="重述后">' + restatedCell + '</td></tr>';
+    }).join('');
+    var policy = financial.receiptPolicy || {};
+    var echo = policy.source_snapshot_at || policy.recorded_at
+      ? '<p class="ff-revisions-echo">' + pair(
+          'Cutoff ' + formatDate(policy.source_snapshot_at || '') + ' · ' + String(policy.selection || 'latest_known_as_of'),
+          '截止 ' + formatDate(policy.source_snapshot_at || '') + ' · ' + String(policy.selection || 'latest_known_as_of')
+        ) + '</p>'
+      : '';
+    host.innerHTML = echo + '<div class="ff-table-wrap"><table class="ff-table ff-revisions-table"><thead>' + header +
+      '</thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function setAsofControlsFromState() {
+    if (!ui.asofLatest || !ui.asofInput) return;
+    var latestActive = !state.asOfDate;
+    ui.asofLatest.classList.toggle('is-active', latestActive);
+    ui.asofLatest.setAttribute('aria-pressed', latestActive ? 'true' : 'false');
+    ui.asofInput.value = state.asOfDate || '';
+    ui.asofInput.setAttribute('lang', lang() === 'zh' ? 'zh-CN' : 'en');
+    // §3.1 — with no health clocks and no picked day there is no lawful
+    // cutoff, so the control is disabled rather than guessing one.
+    var clocks = (state.health && state.health.clocks) || {};
+    var clocksKnown = !!(clocks.broad_source_at || clocks.composed_state_at);
+    var disabled = !state.asOfDate && !clocksKnown;
+    ui.asofLatest.disabled = disabled;
+    ui.asofInput.disabled = disabled;
+  }
+
+  // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
+  // Accession comes from the disclosure layer's current filing or the query
+  // provenance — never guessed from a ticker or a period label.
+  function currentAccession() {
+    var current = disclosureDocuments(company()).find(function (document) {
+      return document._filing_role === 'current';
+    });
+    if (current && (current.accession || current.accession_number)) {
+      return String(current.accession || current.accession_number);
+    }
+    var finding = selectedDisclosureFinding();
+    if (finding && finding.current_accession) return String(finding.current_accession);
+    var nodes = Array.isArray(state.queryNodes) ? state.queryNodes : [];
+    for (var index = 0; index < nodes.length; index += 1) {
+      var provenance = objectValue(nodes[index] && nodes[index].provenance) || {};
+      if (provenance.accession) return String(provenance.accession);
+    }
+    return '';
+  }
+
+  function resetStatementsState() {
+    state.statements = { phase: 'idle' };
+    state.statementCells = [];
+    state.statementColumns = [];
+  }
+
+  function ensureStatements() {
+    if (state.tab !== 'statements') return;
+    var target = company();
+    if (!target) return;
+    if (state.statements.phase === 'loading' || state.statements.phase === 'ready') return;
+    var entityId = String(target.entity_id || '');
+    var accession = currentAccession();
+    if (!entityId || !accession) {
+      state.statements = { phase: 'unavailable' };
+      renderStatementTree();
+      return;
+    }
+    var token = state.financialToken + 1;
+    state.financialToken = token;
+    state.statements = { phase: 'loading' };
+    renderStatementTree();
+    financialPost(FINANCIAL_STATEMENTS_URL, {
+      schema: 'fundamental_forensics.financial_statement_request/v1',
+      entity_id: entityId,
+      accession: accession
+    }).then(function (payload) {
+      if (token !== state.financialToken) return;
+      var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
+      state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
+      state.statementCells = [];
+      var columns = [];
+      statements.forEach(function (statement) {
+        (Array.isArray(statement.columns) ? statement.columns : []).forEach(function (column) {
+          if (objectValue(column) && column.start && column.end) {
+            columns.push({ label: column.label, start: column.start, end: column.end });
+          }
+        });
+      });
+      state.statementColumns = columns;
+      renderStatementTree();
+    }).catch(function (error) {
+      if (token !== state.financialToken) return;
+      if (error && (error.status === 401 || error.status === 403)) {
+        showLoadError(error);
+        return;
+      }
+      state.statements = { phase: 'error' };
+      renderStatementTree();
+    });
+  }
+
+  function statementCellControl(cell, row) {
+    cell = objectValue(cell) || {};
+    var quality = String(cell.quality_state || '');
+    var exact = typeof cell.value === 'string' ? cell.value : '';
+    // A38/AM1: exact bytes render only as canonical decimal text; a JSON
+    // number or a non-available quality state renders the disabled control.
+    if (quality !== 'available' || !exact) {
+      return sourceControlHtml({ kind: 'statement' });
+    }
+    var control = controlFromStatementCell(cell, formatValue(cell.value, 'currency'));
+    control.metricId = String(row.standardized_metric_id || '');
+    state.statementCells.push({
+      occurrenceId: control.occurrenceId,
+      rootCellId: control.rootCellId,
+      label: String(row.as_reported_label || ''),
+      metricId: control.metricId,
+      value: exact,
+      unit: cell.unit == null ? '' : String(cell.unit),
+      accession: control.accession
+    });
+    return sourceControlHtml(control);
+  }
+
+  // S0 as-reported labels lead; spans come from each cell's source_receipt.
+  function renderStatementTree() {
+    if (!ui.statements) return;
+    var statements = state.statements || { phase: 'idle' };
+    if (statements.phase === 'idle' || statements.phase === 'unavailable' || statements.phase === 'error' || statements.phase === 'empty') {
+      var target = company() || {};
+      renderStatements(target);
+      var reason = statements.phase === 'unavailable'
+        ? pair('Issuer identity or filing accession unavailable, so the as-reported statement tree cannot be opened. The normalized state table below is unchanged.',
+               '发行人标识或财报文件编号不可用，因此无法打开按披露原样的报表树；下方标准化状态表保持不变。')
+        : statements.phase === 'error'
+          ? pair('The statement tree is temporarily unavailable, so the normalized state table is shown unchanged.',
+                 '报表树暂不可用，因此按原样显示标准化状态表。')
+          : statements.phase === 'empty'
+            ? pair('This filing carries no primary statements, so the normalized state table is shown unchanged.',
+                   '该财报没有主要报表，因此按原样显示标准化状态表。')
+            : '';
+      if (reason) {
+        ui.statements.insertAdjacentHTML('afterbegin', '<p class="ff-statement-notice">' + reason + '</p>');
+      }
+      return;
+    }
+    if (statements.phase === 'loading') {
+      ui.statements.innerHTML = '<div class="ff-loading" role="status"><span class="ff-loading-dot" aria-hidden="true"></span>' +
+        pair('Loading the as-reported statement tree…', '正在载入按披露原样的报表树…') + '</div>';
+      return;
+    }
+    state.statementCells = [];
+    var blocks = statements.statements.map(function (statement) {
+      var columns = Array.isArray(statement.columns) ? statement.columns.filter(objectValue) : [];
+      var rows = Array.isArray(statement.rows) ? statement.rows.filter(objectValue) : [];
+      var header = '<th>' + pair('Line item / 报表项目', 'Line item / 报表项目') + '</th>' + columns.map(function (column) {
+        return '<th>' + esc(column.label || '—') + '</th>';
+      }).join('');
+      var body = rows.map(function (row) {
+        var cells = Array.isArray(row.cells) ? row.cells : [];
+        var label = '<td data-label-en="Line item" data-label-zh="报表项目" class="ff-statement-label">' + esc(row.as_reported_label || '—') + '</td>';
+        var filled = columns.map(function (column, index) {
+          return '<td data-label-en="' + esc(column.label || '—') + '" data-label-zh="' + esc(column.label || '—') + '">' +
+            statementCellControl(cells[index], row) + '</td>';
+        }).join('');
+        return '<tr>' + label + filled + '</tr>';
+      }).join('');
+      return '<section class="ff-statement-block"><h3>' + esc(statement.title || statement.statement_type || 'Statement') + '</h3>' +
+        '<div class="ff-table-wrap"><table class="ff-table ff-statement-table"><thead><tr>' + header +
+        '</tr></thead><tbody>' + body + '</tbody></table></div></section>';
+    }).join('');
+    ui.statements.innerHTML = blocks;
+  }
+
+  // ── Peer panel (§4, R5) ─────────────────────────────────────────────────
+  // Read-only. URL state is the only persistence; no browser storage APIs
+  // are touched. The payload blob is C1's CohortTable.to_dict(); policy
+  // fields are not echoed by to_dict(), so the URL is the authority for the
+  // policy line.
+  var PEER_EXCLUSIONS = {
+    'A35-I1': ['Same company, another share class', '同一公司的另一类股份'],
+    'A35-X1': ['No observation in this package', '本数据包中无观察值'],
+    'A35-B1': ['This metric does not apply', '该指标不适用'],
+    'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
+    'A35-P2': ['Shifted period', '期间已平移']
+  };
+
+  function peerCohort() {
+    var cohort = objectValue(state.payload && state.payload.peer_cohort);
+    return cohort && Array.isArray(cohort.members) && Array.isArray(cohort.emissions) ? cohort : null;
+  }
+
+  function peerPolicyLine() {
+    var alignCopy = state.peerAlign === 'shift_labeled'
+      ? ['shift and label misaligned periods', '平移并标注未对齐期间']
+      : ['exclude misaligned periods', '排除未对齐期间'];
+    return pair(
+      'Policy: ' + alignCopy[0] + ' · ' + state.peerTol + '-day window · at least ' + state.peerN + ' peers',
+      '策略：' + alignCopy[1] + ' · ' + state.peerTol + ' 天窗口 · 至少 ' + state.peerN + ' 家同业'
+    );
+  }
+
+  function selectedPeerEmission(cohort) {
+    var emissions = cohort.emissions.filter(objectValue);
+    if (!emissions.length) return null;
+    if (state.peerMetric) {
+      for (var index = 0; index < emissions.length; index += 1) {
+        if (String(emissions[index].metric_id || '') === state.peerMetric) return emissions[index];
+      }
+    }
+    state.peerMetric = String(emissions[0].metric_id || '');
+    return emissions[0];
+  }
+
+  function anchorIssuerId(cohort) {
+    var target = company() || {};
+    if (target.entity_id) return String(target.entity_id);
+    var wanted = String(state.symbol || '').toUpperCase();
+    var members = cohort.members.filter(objectValue);
+    for (var index = 0; index < members.length; index += 1) {
+      var tickers = Array.isArray(members[index].tickers) ? members[index].tickers : [];
+      for (var tickerIndex = 0; tickerIndex < tickers.length; tickerIndex += 1) {
+        if (String(tickers[tickerIndex]).toUpperCase() === wanted) return String(members[index].issuer_id || '');
+      }
+    }
+    return '';
+  }
+
+  function renderPeers() {
+    var policyNode = byId('ff-peer-policy');
+    var includedNode = byId('ff-peer-included');
+    var excludedNode = byId('ff-peer-excluded');
+    if (!policyNode || !includedNode || !excludedNode) return;
+    policyNode.innerHTML = peerPolicyLine();
+    var cohort = peerCohort();
+    if (!cohort) {
+      includedNode.innerHTML = emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'This run did not publish a peer cohort, so no ranks or exclusions are shown. The link keeps its peer settings for when one lands.',
+        '本次更新未发布同业组，因此不显示排名或排除项。链接会保留同业设置，待其发布后生效。', '▦'
+      );
+      excludedNode.innerHTML = '';
+      return;
+    }
+    var emission = selectedPeerEmission(cohort);
+    if (!emission) {
+      includedNode.innerHTML = emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'The published cohort carries no metric emissions.',
+        '发布的同业组不包含任何指标排放。', '▦'
+      );
+      excludedNode.innerHTML = '';
+      return;
+    }
+    var metricOptions = cohort.emissions.filter(objectValue).map(function (entry) {
+      var metricId = String(entry.metric_id || '');
+      return '<option value="' + esc(metricId) + '"' + (metricId === state.peerMetric ? ' selected' : '') + '>' +
+        (metricLabelById(metricId) || esc(metricId)) + '</option>';
+    }).join('');
+    var selector = '<label class="ff-topic-filter ff-peer-metric"><span>' + pair('Metric', '指标') + '</span>' +
+      '<select id="ff-peer-metric-select">' + metricOptions + '</select></label>';
+    if (String(emission.emission_state || '') === 'below_min_n') {
+      includedNode.innerHTML = selector + emptyState(
+        'Not enough peers to rank', '同业数量不足以排名',
+        'The qualifying group is smaller than the minimum, so no rank or average is computed.',
+        '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
+      );
+    } else {
+      var anchorId = anchorIssuerId(cohort);
+      var rows = Array.isArray(emission.rows) ? emission.rows.filter(objectValue) : [];
+      var members = cohort.members.filter(objectValue);
+      var includedHtml = rows.map(function (row) {
+        var member = null;
+        for (var index = 0; index < members.length; index += 1) {
+          if (String(members[index].issuer_id || '') === String(row.issuer_id || '')) member = members[index];
+        }
+        var tickers = member && Array.isArray(member.tickers) ? member.tickers : [];
+        var isAnchor = anchorId && String(row.issuer_id || '') === anchorId;
+        // Row values are decimal strings from C1: compact on the face, and a
+        // control only where a span exists — peer rows carry none, so the
+        // disabled state keeps the number honest (no re-ranking in browser).
+        var valueControl = sourceControlHtml({ kind: 'peer', compactText: formatValue(row.value, 'currency') }, true);
+        return '<div class="ff-peer-row' + (isAnchor ? ' is-anchor' : '') + '"'+ (isAnchor ? ' aria-current="true"' : '') + '>' +
+          (isAnchor ? '<span class="ff-peer-anchor">' + pair('This company', '本公司') + '</span>' : '') +
+          '<span class="ff-peer-ticker">' + esc(tickers[0] || row.issuer_id || '—') + '</span>' +
+          '<span class="ff-peer-value">' + valueControl + '</span>' +
+          '<span class="ff-peer-period">' + esc(row.period_label || '—') + '</span>' +
+          (row.rank != null ? '<span class="ff-peer-rank">#' + esc(String(row.rank)) + '</span>' : '') +
+          '</div>';
+      }).join('');
+      includedNode.innerHTML = selector + (includedHtml || emptyState(
+        'Peer cohort unavailable', '同业组不可用',
+        'The selected emission carries no member rows.',
+        '所选指标排放不包含成员行。', '▦'
+      ));
+    }
+    var exclusions = Array.isArray(cohort.exclusions) ? cohort.exclusions.filter(objectValue) : [];
+    var exclusionHtml = exclusions.map(function (exclusion) {
+      var code = String(exclusion.code || '');
+      var known = PEER_EXCLUSIONS[code];
+      var copy = known ? pair(known[0], known[1]) : pair('Excluded', '已排除');
+      // Raw codes never sit on the glance tier; they fold into a details row.
+      return '<details class="ff-peer-exclusion"><summary>' + copy + '</summary><code>' + esc(code || '—') + '</code></details>';
+    }).join('');
+    excludedNode.innerHTML = exclusions.length
+      ? '<p class="ff-peer-subhead">' + pair('Excluded from this metric', '未计入本指标') + '</p>' + exclusionHtml
+      : '<p class="ff-peer-subhead">' + pair('No exclusions recorded for this metric.', '本指标没有记录排除项。') + '</p>';
+    var metricSelect = byId('ff-peer-metric-select');
+    if (metricSelect) {
+      metricSelect.addEventListener('change', function () {
+        state.peerMetric = metricSelect.value || '';
+        writeUrl(true);
+        renderPeers();
+      });
+    }
+  }
+
+  // ── Saved views (X2-s) ──────────────────────────────────────────────────
+  // Device-local briefcase (templates/fif_saved_briefcase.js, GovRev
+  // discipline: never fetches) + P2's URL writer as the permalink. The saved
+  // object binds to X0's request contract via its request_contract field; a
+  // drift refuses the load with the plain "saved view unavailable" state —
+  // never a repair, never a crash. Composed only from existing classes.
+  var SAVED_COPY = {
+    listLabel: ['Saved views', '已存视图'],
+    empty: ['No saved views yet', '暂无已存视图'],
+    choose: ['Choose a saved view', '选择已存视图'],
+    save: ['Save this view', '保存当前视图'],
+    rename: ['Rename', '重命名'],
+    remove: ['Delete', '删除'],
+    unavailable: ['unavailable', '不可用'],
+    unavailableTitle: ['Saved view unavailable', '已存视图不可用'],
+    unavailableContractCopy: [
+      'This view was saved against an older contract and cannot be opened here. You can still delete it.',
+      '此视图基于较早的契约保存，无法在此打开。你仍可将其删除。'
+    ],
+    unavailableIssuerCopy: [
+      'This view\'s company is not covered by the current run, so it cannot be opened.',
+      '当前更新未覆盖此视图的公司，因此无法打开。'
+    ],
+    unavailableMissingCopy: [
+      'This saved view is no longer on this device — it may have been deleted in another tab.',
+      '此已存视图已不在本设备上——可能已在其他标签页中删除。'
+    ],
+    unavailableStoreCopy: [
+      'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
+      '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
+    ],
+    writeFailedCopy: [
+      'Your browser did not save this change. Nothing else was changed.',
+      '浏览器未保存此更改，其他内容未变。'
+    ],
+    pinnedTo: ['Pinned to', '固定于'],
+    latest: ['latest', '最新'],
+    asOf: ['As of', '截止'],
+    newerGeneration: [
+      'A newer filing generation exists — this view stays pinned to its cutoff.',
+      '已有更新的财报数据版本——本视图仍固定于其截止日。'
+    ],
+    reResolve: ['Re-resolve at latest', '按最新重新解析'],
+    peerSave: ['Save this peer view', '保存同业视图']
+  };
+  var POLICY_PLAIN = {
+    as_reported: ['As reported', '按披露原样'],
+    // The badge reads "Pinned to <date> · <phrase>", so the phrase must
+    // stand on its own after the date (X2-s r1: no dangling "as of").
+    latest_known_as_of: ['Latest known on that date', '该日已知最新'],
+    latest_restated: ['Latest restated', '最新重述']
+  };
+
+  var savedBriefcase = null;
+
+  function initSavedBriefcase() {
+    if (!(window.FifSavedBriefcase && typeof window.FifSavedBriefcase.create === 'function')) return;
+    savedBriefcase = window.FifSavedBriefcase.create();
+    var controls = byId('ff-saved-controls');
+    if (controls) controls.hidden = false;
+    var peerRow = byId('ff-peer-save-row');
+    if (peerRow) peerRow.hidden = false;
+  }
+
+  function savedPlainPolicy(selection) {
+    var entry = POLICY_PLAIN[String(selection || '')];
+    return entry || POLICY_PLAIN.latest_known_as_of;
+  }
+
+  function savedStampDate() {
+    var clocks = (state.health && state.health.clocks) || {};
+    var payload = state.payload || {};
+    return clocks.broad_source_at || clocks.composed_state_at || payload.generated_at || '';
+  }
+
+  function savedSavePhase() {
+    if (state.access === 'signin' || state.access === 'pending') return 'signin';
+    if (state.access === 'upgrade') return 'upgrade';
+    var target = company() || {};
+    var body = buildQueryBody();
+    var legal = !!target.entity_id && !!body.periods.length &&
+      !!body.policy.source_snapshot_at && !!body.policy.recorded_at;
+    return legal ? 'ready' : 'unavailable';
+  }
+
+  function buildSavedViewInput(name) {
+    var target = company() || {};
+    var body = buildQueryBody();
+    var evidenceRefs = [];
+    // A ref is stored only for an open cell evidence view with a REAL span —
+    // a span is never invented (AM1); ids and spans only, never values.
+    if (state.evidenceKind === 'cell' && state.cellEvidence) {
+      var evidence = state.cellEvidence;
+      var spanStart = numberValue(evidence.spanStart);
+      var spanEnd = numberValue(evidence.spanEnd);
+      if ((evidence.occurrenceId || evidence.accession) && spanStart != null && spanEnd != null) {
+        evidenceRefs.push({
+          accession: String(evidence.accession || ''),
+          occurrence_id: String(evidence.occurrenceId || ''),
+          source_span: [Math.trunc(spanStart), Math.trunc(spanEnd)]
+        });
+      }
+    }
+    return {
+      name: name,
+      issuer: {
+        entity_id: String(target.entity_id || ''),
+        cik: String(target.cik || ''),
+        ticker: String(target.symbol || state.symbol || '')
+      },
+      request: body,
+      peers: {
+        cohort: state.cohortId || null,
+        peer_metric: state.peerMetric || null,
+        align: state.peerAlign === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+        peer_n: state.peerN,
+        peer_tol: state.peerTol
+      },
+      view: {
+        tab: state.tab,
+        finding: state.tab === 'radar' ? (state.findingId || null) : null
+      },
+      pinned: !!state.asOfDate,
+      saved_against: {
+        generation_id: ((state.health && state.health.generation) || {}).id ||
+          String(state.financial && state.financial.generationId || '') || null,
+        admitted_at: ((state.health && state.health.generation) || {}).admitted_at || null,
+        response_sha256: state.financial && state.financial.responseSha256 || null
+      },
+      evidence_refs: evidenceRefs,
+      watch: { issuer: false }
+    };
+  }
+
+  function performSavedSave(name) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    var result = savedBriefcase.save(buildSavedViewInput(name));
+    if (result.ok) {
+      state.savedActiveId = result.view.id;
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = result.view.pinned ? result.view.request : null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
+  }
+
+  // A pinned restore re-POSTs the stored request bytes VERBATIM — but only
+  // while the desk still matches the view's subject, policy and cutoff day.
+  // Any manual navigation away makes the override inert by itself.
+  function activePinnedRequest() {
+    var request = state.pinnedRequest;
+    if (!request || typeof request !== 'object') return null;
+    var target = company() || {};
+    if (!target.entity_id || String(target.entity_id) !== String(request.entity_id)) return null;
+    var selection = String((request.policy || {}).selection || '');
+    if (String(state.policy || 'latest_known_as_of') !== selection) return null;
+    if (state.asOfDate !== String((request.policy || {}).source_snapshot_at || '').slice(0, 10)) return null;
+    return request;
+  }
+
+  function pinnedVariant(selection) {
+    var request = activePinnedRequest();
+    if (!request) return null;
+    return Object.assign({}, request, {
+      policy: Object.assign({}, request.policy, { selection: selection })
+    });
+  }
+
+  function savedActiveView() {
+    // A refused restore (issuer or any load refusal) is never the active view:
+    // no pinned badge, no newer-generation chip, no saved_against backfill from
+    // a desk it does not describe. Any refusal keeps the view inactive; a
+    // write failure is tracked separately in state.savedStoreError. Delete
+    // stays reachable through savedActiveId.
+    if (!savedBriefcase || !state.savedActiveId) return null;
+    if (state.savedRefusal) return null;
+    var result = savedBriefcase.load(state.savedActiveId);
+    return result.ok ? result.view : null;
+  }
+
+  function backfillSavedAgainst() {
+    var view = savedActiveView();
+    if (!view || view.pinned) return;
+    var digest = state.financial && state.financial.responseSha256 || '';
+    if (!digest || view.saved_against.response_sha256 === digest) return;
+    savedBriefcase.update(view.id, {
+      saved_against: {
+        generation_id: view.saved_against.generation_id,
+        admitted_at: view.saved_against.admitted_at,
+        response_sha256: digest
+      }
+    });
+  }
+
+  function savedNoticeHtml(kind) {
+    var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
+      : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
+      : SAVED_COPY.unavailableContractCopy;
+    // Existing classes only: the notice is an icon span plus a title element
+    // and a copy element inside one container div (X2-s r1, MINOR-5).
+    return '<span class="ff-notice-icon" aria-hidden="true">i</span><div><strong>' +
+      pair(SAVED_COPY.unavailableTitle[0], SAVED_COPY.unavailableTitle[1]) +
+      '</strong><div>' + pair(copy[0], copy[1]) + '</div></div>';
+  }
+
+  function renderSavedUI() {
+    var select = byId('ff-saved-select');
+    if (!select || !savedBriefcase) return;
+    var saveBtn = byId('ff-saved-save');
+    var nameInput = byId('ff-saved-name');
+    var renameBtn = byId('ff-saved-rename');
+    var deleteBtn = byId('ff-saved-delete');
+    var badge = byId('ff-saved-badge');
+    var notice = byId('ff-saved-notice');
+    var peerSave = byId('ff-peer-save');
+    var listing = savedBriefcase.list();
+    var current = lang();
+    // X2-s r1: a populated list offers a choice; only a truly empty list says
+    // "No saved views yet".
+    var placeholder = listing.length ? SAVED_COPY.choose : SAVED_COPY.empty;
+
+    var options = '<option value="">' + (current === 'zh' ? placeholder[1] : placeholder[0]) + '</option>';
+    listing.forEach(function (entry) {
+      var label = entry.name;
+      if (!entry.available) label += ' · ' + (current === 'zh' ? SAVED_COPY.unavailable[1] : SAVED_COPY.unavailable[0]);
+      options += '<option value="' + esc(entry.id) + '">' + esc(label) + '</option>';
+    });
+    select.innerHTML = options;
+    select.value = state.savedActiveId || '';
+
+    // X2-s r1 (MAJOR-3): an unreadable store is read-only — Save/peer-save
+    // stay disabled and Rename/Delete stay hidden through attributes only,
+    // and the notice names the paused store instead of a contract drift.
+    var storeReadOnly = savedBriefcase.readOnly();
+    var phase = savedSavePhase();
+    var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
+    if (saveBtn) {
+      saveBtn.disabled = storeReadOnly || phase !== 'ready' || !name;
+      saveBtn.setAttribute('data-label-en', SAVED_COPY.save[0]);
+      saveBtn.setAttribute('data-label-zh', SAVED_COPY.save[1]);
+      saveBtn.setAttribute('aria-label', current === 'zh' ? SAVED_COPY.save[1] : SAVED_COPY.save[0]);
+    }
+    if (peerSave) {
+      peerSave.disabled = storeReadOnly || phase !== 'ready';
+      peerSave.innerHTML = pair(SAVED_COPY.peerSave[0], SAVED_COPY.peerSave[1]);
+    }
+    var active = storeReadOnly ? null : savedActiveView();
+    var renameable = !!active;
+    if (renameBtn) renameBtn.hidden = !renameable;
+    if (deleteBtn) deleteBtn.hidden = !state.savedActiveId || storeReadOnly;
+
+    if (badge) {
+      if (active && active.pinned) {
+        var pinnedDate = formatDate(String((active.request.policy || {}).source_snapshot_at || ''));
+        var policyCopy = savedPlainPolicy((active.request.policy || {}).selection);
+        badge.innerHTML = pair(SAVED_COPY.pinnedTo[0] + ' ' + pinnedDate + ' · ' + policyCopy[0],
+          SAVED_COPY.pinnedTo[1] + ' ' + pinnedDate + ' · ' + policyCopy[1]);
+        badge.hidden = false;
+      } else if (active) {
+        var latestDate = formatDate(savedStampDate());
+        badge.innerHTML = pair(SAVED_COPY.asOf[0] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[0],
+          SAVED_COPY.asOf[1] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[1]);
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+      }
+    }
+
+    if (notice) {
+      // X2-s r2 (R2-4) precedence, exactly: an unreadable store (read
+      // failure) -> a failed write (state.savedStoreError) -> a stale
+      // newer-generation chip -> a refused view -> hidden.
+      var action = '';
+      var stale = savedGenerationStale();
+      if (storeReadOnly) {
+        notice.innerHTML = savedNoticeHtml('store');
+        notice.hidden = false;
+      } else if (state.savedStoreError) {
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.writeFailedCopy[0], SAVED_COPY.writeFailedCopy[1]) + '</div>';
+        notice.hidden = false;
+      } else if (stale) {
+        action = ' <button type="button" class="ff-retry" data-saved-reresolve="1">' +
+          pair(SAVED_COPY.reResolve[0], SAVED_COPY.reResolve[1]) + '</button>';
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.newerGeneration[0], SAVED_COPY.newerGeneration[1]) + action + '</div>';
+        notice.hidden = false;
+      } else if (state.savedRefusal) {
+        notice.innerHTML = savedNoticeHtml(state.savedRefusal);
+        notice.hidden = false;
+      } else {
+        notice.hidden = true;
+        notice.innerHTML = '';
+      }
+    }
+  }
+
+  // The newer-generation signal: the view was saved against one production
+  // dataset generation and health now names a different one (headers read on
+  // the SAME health fetch P2 already makes; never ffprods_… at glance).
+  function savedGenerationStale() {
+    var view = savedActiveView();
+    if (!view || !view.pinned) return null;
+    var against = view.saved_against || {};
+    var generation = (state.health && state.health.generation) || {};
+    if (!against.generation_id || !generation.id) return null;
+    if (against.generation_id === generation.id) return null;
+    return { view: view, generation: generation };
+  }
+
+  function reResolveSavedView() {
+    var stale = savedGenerationStale();
+    if (!stale || !savedBriefcase) return { ok: false, reason: 'stale' };
+    var clocks = (state.health && state.health.clocks) || {};
+    if (!clocks.broad_source_at || !clocks.composed_state_at) return { ok: false, reason: 'clocks' };
+    var request = JSON.parse(JSON.stringify(stale.view.request));
+    request.policy.source_snapshot_at = clocks.broad_source_at;
+    request.policy.recorded_at = clocks.composed_state_at;
+    var result = savedBriefcase.update(stale.view.id, {
+      request: request,
+      pinned: false,
+      saved_against: {
+        generation_id: stale.generation.id,
+        admitted_at: stale.generation.admitted_at || '',
+        response_sha256: ''
+      }
+    });
+    if (result.ok) restoreSavedView(stale.view.id);
+    else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+      renderSavedUI();
+    }
+    return result;
+  }
+
+  function restoreSavedView(id) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    state.savedStoreError = false;
+    var result = savedBriefcase.load(id);
+    state.savedActiveId = String(id || '');
+    if (!result.ok) {
+      // 'missing' keeps its own kind (its own notice copy): the view was on
+      // this device and is gone now; everything else keeps its refusal reason.
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return result;
+    }
+    state.savedRefusal = '';
+    var view = result.view;
+    // issuer is display/index metadata; the query identity stays
+    // request.entity_id and is never inferred from the ticker. The ticker
+    // must resolve AND the resolved issuer must still carry the stored
+    // entity_id — a ticker that resolves to a different entity refuses as
+    // 'issuer' BEFORE any desk-state mutation.
+    var resolved = view.issuer && view.issuer.ticker ? resolveSymbol(view.issuer.ticker) : '';
+    var resolvedCompany = resolved ? companies()[resolved] : null;
+    if (!resolvedCompany || String(resolvedCompany.entity_id) !== String(view.request.entity_id)) {
+      state.savedRefusal = 'issuer';
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return { ok: false, reason: 'issuer' };
+    }
+    // Desk state first, then setCompany: the financial query it triggers must
+    // see the restored policy, cutoff and pinned bytes, not the defaults.
+    // checkView guarantees every field read below exists in canonical form —
+    // no defaults are applied here; an un-appliable value refuses at load as
+    // a contract refusal, never silently coerces.
+    state.policy = view.request.policy.selection;
+    state.asOfDate = view.pinned ? view.request.policy.source_snapshot_at.slice(0, 10) : '';
+    state.cohortId = view.peers.cohort == null ? '' : view.peers.cohort;
+    state.peerMetric = view.peers.peer_metric == null ? '' : view.peers.peer_metric;
+    state.peerAlign = view.peers.align === 'shift_labeled' ? 'shift_labeled' : 'exclude';
+    state.peerN = view.peers.peer_n;
+    state.peerTol = view.peers.peer_tol;
+    state.pinnedRequest = view.pinned ? view.request : null;
+    setCompany(resolved, false);
+    setTab(view.view.tab, false);
+    if (view.view.finding && state.tab === 'radar') {
+      state.findingId = String(view.view.finding);
+      state.evidenceKind = 'finding';
+      renderFindings();
+      renderCurrentEvidence();
+    }
+    // The permalink is P2's own writer — never a second URL builder.
+    writeUrl(true);
+    updateViewStatus();
+    // X2-s r1: the as-of controls and the desk stamp follow the restored
+    // cutoff (a pinned view shows its date, never "Latest" plus an empty
+    // field); renderRunMeta re-syncs both and then renders the saved UI.
+    renderRunMeta();
+    return { ok: true, view: view };
+  }
+
+  function savedRenameActive(name) {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.update(state.savedActiveId, { name: name });
+    if (result.ok) state.savedStoreError = false;
+    else if (result.reason === 'storage') state.savedStoreError = true;
+    renderSavedUI();
+    return result;
+  }
+
+  function savedDeleteActive() {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.remove(state.savedActiveId);
+    if (result.ok) {
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
+  }
+
+  // ── Export entry (§5, R6) ───────────────────────────────────────────────
+  // One Export control in the desk header. It POSTs the byte-identical query
+  // body for the current issuer, cutoff and policy; reload remains the only
+  // refresh. The route is X1: a 404/405 disables the control (AM3/R-D) and no
+  // JSON-download fallback is invented.
+  var XLSX_MEDIA_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+  function exportQueryBody() {
+    if (state.financial && state.financial.queryBody && state.financial.phase === 'ready') {
+      return state.financial.queryBody;
+    }
+    return buildQueryBody();
+  }
+
+  function exportPhase() {
+    if (state.access === 'signin' || state.access === 'pending') return 'signin';
+    if (state.access === 'upgrade') return 'upgrade';
+    if (state.exportUnavailable) return 'unavailable';
+    var target = company() || {};
+    var body = buildQueryBody();
+    var legal = !!target.entity_id && !!body.periods.length &&
+      !!body.policy.source_snapshot_at && !!body.policy.recorded_at;
+    return legal ? 'ready' : 'unavailable';
+  }
+
+  // Item 11: the tooltip names the actual reason the export is off.
+  function exportTip(phase) {
+    if (phase === 'signin') return ['Sign in to download this company\'s numbers as a workbook.', '登录后可将该公司的数据下载为工作簿。'];
+    if (phase === 'upgrade') return ['Workbook export is included in the Essential plan.', '工作簿导出包含在 Essential 方案中。'];
+    if (phase === 'ready') return ['Download this company\'s numbers as of the selected date.', '下载所选日期的该公司数据。'];
+    if (state.exportUnavailable) {
+      return state.exportUnavailableCause === 'route'
+        ? ['Export unavailable: this server does not offer workbook downloads yet.', '导出不可用：此服务器尚未提供工作簿下载。']
+        : ['Export unavailable: the last download request failed. Reload to try again.', '导出不可用：上次下载请求失败，请重新载入后再试。'];
+    }
+    var target = company() || {};
+    var body = buildQueryBody();
+    var en = [];
+    var zh = [];
+    if (!target.entity_id) { en.push('this company has no SEC identifier in this run'); zh.push('本次数据缺少该公司的 SEC 识别码'); }
+    if (!body.periods.length) { en.push('there are no filing periods to export'); zh.push('没有可导出的财报期间'); }
+    if (!body.policy.source_snapshot_at) { en.push('the source snapshot date is unknown'); zh.push('来源快照日期未知'); }
+    if (!body.policy.recorded_at) { en.push('the recording date is unknown'); zh.push('记录日期未知'); }
+    if (!en.length) return ['Export unavailable for this view.', '此视图暂不支持导出。'];
+    return ['Export unavailable: ' + en.join('; ') + '.', '导出不可用：' + zh.join('；') + '。'];
+  }
+
+  function refreshExportState() {
+    if (!ui.exportBtn) return;
+    var phase = exportPhase();
+    var copy = phase === 'signin' ? ['Sign in to export', '登录后导出'] :
+      phase === 'upgrade' ? ['Included in Essential', 'Essential 包含'] :
+        phase === 'unavailable' ? ['Export unavailable', '导出不可用'] : ['Export', '导出'];
+    ui.exportBtn.disabled = phase !== 'ready';
+    ui.exportBtn.innerHTML = pair(copy[0], copy[1]);
+    ui.exportBtn.setAttribute('data-label-en', copy[0]);
+    ui.exportBtn.setAttribute('data-label-zh', copy[1]);
+    var current = lang();
+    ui.exportBtn.setAttribute('aria-label', current === 'zh' ? copy[1] : copy[0]);
+    var tip = exportTip(phase);
+    // A disabled button receives no pointer events, so the wrapper carries
+    // the same tip for hover; the button keeps it for focus/assistive tech.
+    [ui.exportBtn, ui.exportWrap].forEach(function (node) {
+      if (!node) return;
+      node.setAttribute('data-tip-en', tip[0]);
+      node.setAttribute('data-tip-zh', tip[1]);
+    });
+  }
+
+  function exportFilename(response) {
+    var disposition = String(response.headers.get('Content-Disposition') || '');
+    var match = disposition.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+    if (match && match[1]) return match[1];
+    var queryId = String(response.headers.get('X-FIF-Query-Id') || '').trim();
+    if (queryId) return queryId + '.xlsx';
+    return 'fundamental_forensics.xlsx';
+  }
+
+  function runExport() {
+    if (!ui.exportBtn || ui.exportBtn.disabled) return;
+    var body = exportQueryBody();
+    withAuth({ 'Content-Type': 'application/json', Accept: XLSX_MEDIA_TYPE })
+      .then(function (headers) {
+        return fetch(FINANCIAL_QUERY_XLSX_URL, {
+          method: 'POST',
+          headers: headers,
+          credentials: 'same-origin',
+          cache: 'no-store',
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function (response) {
+        if (response.status === 404 || response.status === 405) {
+          // The workbook route is not present at this base (X1): the control
+          // goes disabled and stays disabled — no fallback download.
+          state.exportUnavailable = true;
+          state.exportUnavailableCause = 'route';
+          refreshExportState();
+          return null;
+        }
+        if (response.status === 401 || response.status === 403) {
+          showLoadError({ status: response.status });
+          return null;
+        }
+        if (!response.ok) throw new Error('Export request failed');
+        var filename = exportFilename(response);
+        return response.blob().then(function (blob) {
+          var url = URL.createObjectURL(blob);
+          var anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = filename;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          window.setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        });
+      })
+      .catch(function () {
+        state.exportUnavailable = true;
+        state.exportUnavailableCause = 'failed';
+        refreshExportState();
+      });
+  }
+
+  function renderCellEvidence(cell) {
+    if (!cell) {
+      renderEvidence(null);
+      return;
+    }
+    var glossaryId = cell.metricId || '';
+    ui.evidenceTitle.innerHTML = cell.titlePair || pair('What this number is', '这个数字是什么');
+    var exact = cell.exactText != null && String(cell.exactText) !== '' ? String(cell.exactText) : '';
+    var excerpt = String(cell.excerpt || '').trim();
+    var body = '<section class="ff-signal-meaning"><span>' + pair('What this number is', '这个数字是什么') + '</span><p>' +
+      glossarySentence(glossaryId) + '</p></section>' +
+      '<section class="ff-proof-section"><h3>' + pair('Exact value', '精确数值') + '</h3>' +
+      (exact ? '<code class="ff-exact">' + esc(exact) + '</code>' +
+        '<p class="ff-proof-compact-line"><b>' + pair('Compact', '简写') + '</b> ' + esc(cell.compactText || '—') + '</p>' +
+        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '')
+        : '<p class="ff-proof-compact-line">' + pair('Exact value unavailable for this cell.', '该单元格的精确数值不可用。') + '</p>') +
+      '</section>' +
+      '<section class="ff-proof-section"><h3>' + pair('Source span', '来源片段') + '</h3>' +
+      (excerpt ? '<blockquote class="ff-span-excerpt">' + esc(excerpt) + '</blockquote>' :
+        '<p class="ff-proof-compact-line">' + pair('Source span unavailable', '来源片段不可用') + '</p>') +
+      (cell.accession ? '<p class="ff-proof-compact-line"><b>' + pair('Accession', '文件编号') + '</b> <span class="ff-accession">' + esc(cell.accession) + '</span></p>' : '') +
+      '</section>' +
+      (cell.revisionsRow ? '<section class="ff-proof-section"><h3>' + pair('Original, latest, restated', '原始、截止最新、重述后') + '</h3>' +
+        '<dl class="ff-receipt-waterfall-fields">' +
+        '<div><dt>' + pair('Original reported', '原始披露') + '</dt><dd><code>' + esc(cell.revisionsRow.root_value == null ? '—' : String(cell.revisionsRow.root_value)) + '</code></dd></div>' +
+        '<div><dt>' + pair('Prior', '上期') + '</dt><dd><code>' + esc(cell.revisionsRow.prior_value == null ? '—' : String(cell.revisionsRow.prior_value)) + '</code></dd></div>' +
+        '<div><dt>' + pair('Restated', '重述后') + '</dt><dd><code>' + esc(cell.revisionsRow.revised_value == null ? '—' : String(cell.revisionsRow.revised_value)) + '</code></dd></div>' +
+        '</dl></section>' : '') +
+      '<details class="ff-proof-details"><summary>' + pair('Technical ids', '技术编号') + '</summary><div><dl class="ff-receipt-waterfall-fields">' +
+      (cell.occurrenceId ? '<div><dt>occurrence</dt><dd><code title="' + esc(cell.occurrenceId) + '">' + esc(shortTraceId(cell.occurrenceId)) + '</code></dd></div>' : '') +
+      (cell.rootCellId ? '<div><dt>root cell</dt><dd><code title="' + esc(cell.rootCellId) + '">' + esc(shortTraceId(cell.rootCellId)) + '</code></dd></div>' : '') +
+      (cell.snapshotId ? '<div><dt>snapshot</dt><dd><code title="' + esc(cell.snapshotId) + '">' + esc(shortTraceId(cell.snapshotId)) + '</code></dd></div>' : '') +
+      '<div><dt>span</dt><dd><code>' + esc(cell.spanStart && cell.spanEnd ? cell.spanStart + '-' + cell.spanEnd : '—') + '</code></dd></div>' +
+      '</dl></div></details>';
+    ui.evidenceBody.innerHTML = body;
   }
 
   function disclosureSectionPair(section) {
@@ -1375,8 +3177,22 @@
       var section = disclosureFindingSection(finding);
       var status = disclosureFindingState(finding);
       var form = String(finding._track_form || '');
+      // §2.2 — the change row carries the span of its first evidence receipt;
+      // opening the card opens the drawer on that exact occurrence.
+      var receiptControl = controlFromEvidenceReceipt(
+        (Array.isArray(finding.evidence_receipts) ? finding.evidence_receipts : []).filter(objectValue)[0],
+        'disclosure', ''
+      );
+      var spanAttrs = spanOk(receiptControl)
+        ? ' data-source-kind="disclosure"' +
+          ' data-occurrence-id="' + esc(receiptControl.occurrenceId) + '"' +
+          ' data-accession="' + esc(receiptControl.accession) + '"' +
+          ' data-span-start="' + esc(String(receiptControl.spanStart)) + '"' +
+          ' data-span-end="' + esc(String(receiptControl.spanEnd)) + '"'
+        : '';
       return '<div role="listitem"><button type="button" class="ff-disclosure-card' + (selected ? ' is-selected' : '') + '"' +
-        ' data-disclosure-finding-id="' + esc(disclosureFindingId(finding)) + '" aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
+        ' data-disclosure-finding-id="' + esc(disclosureFindingId(finding)) + '"' + spanAttrs +
+        ' aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
         '<span class="ff-disclosure-mark" aria-hidden="true">' + status.icon + '</span><span class="ff-disclosure-copy">' +
         '<span class="ff-finding-overline"><span class="ff-observed-label">' + pair(status.en, status.zh) + '</span>' +
         (form ? '<span aria-hidden="true">·</span><span>' + esc(form) + '</span>' : '') +
@@ -1430,11 +3246,28 @@
       var count = numberValue(redline.changed_token_count);
       var countText = count == null ? '' : count + (count === 1 ? ' changed word' : ' changed words');
       var zhCountText = count == null ? '' : count + ' 个变化词';
+      // §2.2 — changed tokens carry the span of the prior/current receipt.
+      // A span inside the card button cannot be its own button (HTML forbids
+      // the nesting), so the wrapper is a span and the card keeps the open
+      // behaviour on the exact occurrence.
+      var receiptControl = controlFromEvidenceReceipt(
+        objectValue(redline.current_receipt) || objectValue(redline.prior_receipt), 'redline', ''
+      );
+      var previewAttrs = spanOk(receiptControl)
+        ? ' data-source-kind="redline"' +
+          ' data-occurrence-id="' + esc(receiptControl.occurrenceId) + '"' +
+          ' data-accession="' + esc(receiptControl.accession) + '"' +
+          ' data-span-start="' + esc(String(receiptControl.spanStart)) + '"' +
+          ' data-span-end="' + esc(String(receiptControl.spanEnd)) + '"'
+        : '';
+      var previewClass = spanOk(receiptControl) ? 'ff-source-control' : 'ff-source-control is-unavailable';
       return '<div role="listitem"><button type="button" class="ff-redline-card' + (selected ? ' is-selected' : '') + '"' +
         ' data-redline-id="' + esc(redlineId(redline)) + '" aria-current="' + (selected ? 'true' : 'false') + '" aria-controls="ff-evidence">' +
         '<span class="ff-redline-operation" data-operation="' + esc(operation.key) + '">' + pair(operation.en, operation.zh) + '</span>' +
         '<span class="ff-redline-copy"><span class="ff-finding-overline">' + (form ? esc(form) + '<span aria-hidden="true">·</span>' : '') + disclosureSectionPair(redlineSection(redline)) +
-        (countText ? '<span aria-hidden="true">·</span><span>' + pair(countText, zhCountText) + '</span>' : '') + '</span><p>' + editPreview(redline) + '</p></span>' +
+        (countText ? '<span aria-hidden="true">·</span><span>' + pair(countText, zhCountText) + '</span>' : '') + '</span><p><span class="' + previewClass + '"' + previewAttrs +
+        (spanOk(receiptControl) ? '' : ' aria-disabled="true" data-tip-en="Source span unavailable" data-tip-zh="来源片段不可用"') + '>' +
+        editPreview(redline) + '</span></p></span>' +
         '<span class="ff-redline-open">' + pair('Inspect', '查看') + '<span aria-hidden="true">↗</span></span></button></div>';
     }).join('');
     if (state.evidenceKind === 'redline') renderCurrentEvidence();
@@ -1476,7 +3309,7 @@
         '<span class="ff-period-filed">' + esc(formatDate(period.filed || period.period_end)) + '</span></td>';
       return '<tr>' + first + METRICS.map(function (metric) {
         return '<td data-label-en="' + esc(metric.en) + '" data-label-zh="' + esc(metric.zh) + '">' +
-          esc(formatValue(period[metric.key], metric.format)) + '</td>';
+          sourceControlHtml({ kind: 'statement', compactText: formatValue(period[metric.key], metric.format) }) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     ui.statements.innerHTML = '<div class="ff-table-wrap"><table class="ff-table"><thead><tr>' + header +
@@ -1524,9 +3357,9 @@
       if (pct != null) deltaText += ' · ' + formatSigned(pct, 'percent');
       return '<article class="ff-compare-card"><h3>' + pair(metric.en, metric.zh) + '</h3>' +
         '<div class="ff-compare-values"><div class="ff-compare-value"><span>' + pair('Current · ' + periodLabel(current), '本期 · ' + periodLabel(current)) +
-        '</span><strong>' + esc(formatValue(current[metric.key], metric.format)) + '</strong></div>' +
+        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(current[metric.key], metric.format) }) + '</div>' +
         '<div class="ff-compare-value"><span>' + pair('Prior · ' + periodLabel(prior), '上期 · ' + periodLabel(prior)) +
-        '</span><strong>' + esc(formatValue(prior[metric.key], metric.format)) + '</strong></div></div>' +
+        '</span>' + sourceControlHtml({ kind: 'cell', compactText: formatValue(prior[metric.key], metric.format) }) + '</div></div>' +
         '<div class="ff-compare-delta">' + pair('Change ' + deltaText, '变化 ' + deltaText) + '</div></article>';
     }).join('');
   }
@@ -2655,6 +4488,10 @@
   }
 
   function renderCurrentEvidence() {
+    if (state.evidenceKind === 'cell' && state.cellEvidence) {
+      renderCellEvidence(state.cellEvidence);
+      return;
+    }
     if (state.evidenceKind === 'disclosure-finding') {
       renderDisclosureEvidence(selectedDisclosureFinding(), 'disclosure-finding');
       return;
@@ -2681,10 +4518,17 @@
     ui.evidenceTitle.innerHTML = fieldPair(finding, 'title', 'Untitled finding');
     var values = Array.isArray(finding.values) ? finding.values : [];
     var valueRows = values.length ? values.map(function (value) {
-      return '<div class="ff-value-row"><div class="ff-value-label">' + fieldPair(value, 'label', prettify(value.key)) + '</div>' +
-        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small><strong>' + esc(formatValue(value.current, value.format)) + '</strong></div>' +
-        '<div class="ff-value-cell"><small>' + pair('Prior', '上期') + '</small><strong>' + esc(formatValue(value.prior, value.format)) + '</strong></div>' +
-        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small><strong>' + esc(formatSigned(value.delta, value.format)) + '</strong></div></div>';
+      var cellOpts = [valueControlOpts(value, 'current'), valueControlOpts(value, 'prior'), valueControlOpts(value, 'delta')];
+      // Item 2 (§2.1): an unavailable span is shown, not dimmed — the number
+      // keeps full ink, the control takes a dashed hairline, and the row
+      // prints the visible .ff-source-unavail label once under its metric
+      // (each control still carries it in its accessible name and tip).
+      var rowUnavailable = cellOpts.some(function (opts) { return !spanOk(opts || {}); });
+      return '<div class="ff-value-row"><div class="ff-value-label">' + fieldPair(value, 'label', prettify(value.key)) +
+        (rowUnavailable ? '<span class="ff-source-unavail ff-value-row-unavail">' + pair('Source span unavailable', '来源片段不可用') + '</span>' : '') + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Current', '本期') + '</small>' + sourceControlHtml(cellOpts[0]) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Compared with', '对比基准') + '</small>' + sourceControlHtml(cellOpts[1]) + '</div>' +
+        '<div class="ff-value-cell"><small>' + pair('Change', '变化') + '</small>' + sourceControlHtml(cellOpts[2]) + '</div></div>';
     }).join('') : '<div class="ff-empty-state"><div><p>' + pair('No value bridge was supplied for this result.', '此结果未提供数值变化桥。') + '</p></div></div>';
 
     var receipts = Array.isArray(finding.evidence) ? finding.evidence : [];
@@ -2711,10 +4555,7 @@
     ui.evidenceBody.innerHTML = '<div class="ff-proof-badge" data-priority="' + esc(finding.priority || 'watch') + '"><span aria-hidden="true">' +
       priority.icon + '</span>' + pair(priority.en, priority.zh) + '</div>' +
       '<section class="ff-signal-meaning"><span>' + pair('Why this matters', '为什么重要') + '</span><p>' +
-      fieldPair(finding, 'summary', 'No summary supplied.') + '</p></section><div class="ff-proof-basis">' +
-      '<span><b>' + pair('Normalized inputs', '标准化输入') + '</b>' + esc([finding.period_current, finding.period_prior].filter(Boolean).join(' / ') || '—') + '</span>' +
-      '<span><b>' + pair('Calculated', '规则计算') + '</b>' + pair('Deterministic rule', '确定性规则') + '</span>' +
-      '<span><b>' + pair('Limits', '局限') + '</b>' + limitationCount + '</span></div>' +
+      findingSummaryHtml(finding, 'No summary supplied.') + '</p></section>' +
       '<section class="ff-proof-section"><h3>' + pair('Numbers behind the signal', '信号背后的数字') + '</h3><div class="ff-value-grid">' + valueRows + '</div></section>' +
       '<section class="ff-proof-section ff-proof-actions"><h3>' + pair('Explore the full picture', '继续查看完整情况') + '</h3><div class="ff-proof-action-grid">' +
       '<button type="button" data-go-tab="compare">' + pair('Compare periods', '对比期间') + '<span aria-hidden="true">→</span></button>' +
@@ -2722,14 +4563,17 @@
       '<button type="button" data-go-tab="trace">' + pair('Verify SEC sources', '核对 SEC 来源') + '<span aria-hidden="true">→</span></button>' +
       '</div></section>' +
       '<section class="ff-proof-section"><h3>' + pair('Verify with the SEC', '通过 SEC 核对') + '</h3><ol class="ff-receipts">' + receiptHtml + '</ol></section>' +
-      '<details class="ff-proof-details"><summary>' + pair('How this signal was detected', '这个信号如何识别') + '</summary><div><code class="ff-proof-code">' +
+      '<details class="ff-proof-details"><summary>' + pair('How this signal was detected', '这个信号如何识别') + '</summary><div>' +
+      // Item 10: the method facts sit here, in plain words, not at glance.
+      '<p class="ff-proof-method">' + pair('Compared: ' + findingPeriodText(finding) + '. Method: the same fixed rule for every company.',
+        '对比：' + findingPeriodText(finding) + '。方法：对每家公司使用同一固定规则。') + '</p><code class="ff-proof-code">' +
       fieldPair(finding, 'formula', 'Formula not supplied') + '</code><p class="ff-threshold"><strong>' + pair('Signal appears when: ', '信号触发条件：') + '</strong>' +
       fieldPair(finding, 'threshold', 'Threshold not supplied') + '</p></div></details>' +
       '<details class="ff-proof-details"><summary>' + pair('What this signal cannot tell you', '这个信号无法说明什么') + '</summary><div><ul class="ff-limitations">' + limitationHtml + '</ul></div></details>';
   }
 
   function setTab(tab, focusPanel) {
-    var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace'];
+    var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
     if (allowed.indexOf(tab) === -1) tab = 'radar';
     var previousTab = state.tab;
     state.tab = tab;
@@ -2764,6 +4608,18 @@
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
       setSourceMode(state.sourceMode, false);
+    } else if (tab === 'compare') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      ensureFinancialData();
+    } else if (tab === 'statements') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      ensureStatements();
+    } else if (tab === 'peers') {
+      state.evidenceKind = 'view';
+      renderTabEvidenceEmpty(tab);
+      renderPeers();
     } else {
       state.evidenceKind = 'view';
       renderTabEvidenceEmpty(tab);
@@ -2785,7 +4641,7 @@
       return total + (Array.isArray(finding.evidence) ? finding.evidence.length : 0);
     }, 0);
     if (state.tab === 'radar') {
-      ui.viewStatus.innerHTML = pair(findings.length + ' signals · filed ' + formatDate(target.latest_filed),
+      ui.viewStatus.innerHTML = pair(findings.length + (findings.length === 1 ? ' signal' : ' signals') + ' · filed ' + formatDate(target.latest_filed),
         findings.length + ' 个信号 · 披露于 ' + formatDate(target.latest_filed));
     } else if (state.tab === 'statements') {
       ui.viewStatus.innerHTML = pair(periods.length + ' normalized periods', periods.length + ' 个标准化期间');
@@ -2818,6 +4674,11 @@
       } else {
         ui.viewStatus.innerHTML = pair('Receipt on demand', '按需读取凭据');
       }
+    } else if (state.tab === 'peers') {
+      var cohort = peerCohort();
+      ui.viewStatus.innerHTML = cohort
+        ? pair((cohort.members_n != null ? cohort.members_n : cohort.members.length) + ' peer members', (cohort.members_n != null ? cohort.members_n : cohort.members.length) + ' 家同业成员')
+        : pair('Peer cohort unavailable', '同业组不可用');
     } else {
       ui.viewStatus.innerHTML = pair(evidenceCount + ' source links', evidenceCount + ' 条来源链接');
     }
@@ -2856,7 +4717,7 @@
       return '<button type="button" class="ff-company-option' + (index === state.searchIndex ? ' is-active' : '') + '" role="option"' +
         ' id="' + optionId + '" data-symbol="' + esc(entry.key) + '" aria-selected="' + (index === state.searchIndex ? 'true' : 'false') + '">' +
         '<span class="ff-option-symbol">' + esc(target.symbol || entry.key) + '</span><span><span class="ff-option-name">' +
-        esc(target.name || entry.key) + '</span><span class="ff-option-sector">' + esc(target.sector || '—') + '</span></span></button>';
+        esc(target.name || entry.key) + '</span><span class="ff-option-sector">' + pair(target.sector || '—', sectorZh(target.sector) || '—') + '</span></span></button>';
     }).join('');
     ui.companyOptions.hidden = false;
     ui.search.setAttribute('aria-expanded', 'true');
@@ -2957,13 +4818,13 @@
 
   function focusableInEvidence() {
     return Array.prototype.slice.call(ui.evidence.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
     )).filter(function (node) { return node.offsetParent !== null; });
   }
 
   function focusableInReceiptInspector() {
     return Array.prototype.slice.call(ui.receiptInspector.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
     )).filter(function (node) { return node.offsetParent !== null; });
   }
 
@@ -2971,7 +4832,7 @@
     if (!ui.evidence.classList.contains('is-open')) return;
     if (event.key === 'Escape') {
       event.preventDefault();
-      closeEvidence(true);
+      closeDrawerAndSync();
       return;
     }
     if (event.key !== 'Tab') return;
@@ -3017,8 +4878,15 @@
     }
   }
 
+  // Act only when the desktop match really CROSSES. A full-page capture (and some
+  // zoom / devtools resizes) re-dispatches `change` with an unchanged match; closing on
+  // that would drop an analysis drawer the reader opened on purpose.
+  var lastDesktopMatch = desktopMedia.matches;
   function handleViewportChange() {
-    if (desktopMedia.matches) {
+    var matches = desktopMedia.matches;
+    var crossed = matches !== lastDesktopMatch;
+    lastDesktopMatch = matches;
+    if (matches && crossed) {
       closeEvidence(false);
       closeReceiptInspector(false);
     }
@@ -3027,6 +4895,8 @@
   function updateLocalizedAttributes() {
     var current = lang();
     if (ui.search) ui.search.placeholder = ui.search.getAttribute('data-placeholder-' + current) || '';
+    var savedNameNode = byId('ff-saved-name');
+    if (savedNameNode) savedNameNode.placeholder = savedNameNode.getAttribute('data-placeholder-' + current) || '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-label-en][data-label-zh]'), function (node) {
       var label = node.getAttribute('data-label-' + current);
       if (label) node.setAttribute('aria-label', label);
@@ -3040,10 +4910,13 @@
       renderCompareControls(company());
       renderCompare(company());
       renderRunMeta();
+      renderRevisions();
+      renderPeers();
       renderCurrentEvidence();
       renderReceipt();
       renderReceiptInspector();
     }
+    renderSavedUI();
   }
 
   function bindEvents() {
@@ -3062,12 +4935,22 @@
       var destination = event.target.closest('[data-go-tab]');
       if (destination) {
         setTab(destination.getAttribute('data-go-tab'), false);
+        writeUrl(true);
         var activeTab = document.querySelector('.ff-tab.is-active');
         if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         return;
       }
       var primary = event.target.closest('[data-open-primary-finding]');
-      if (!primary || !state.payload) return;
+      if (!primary || !state.payload) {
+        // §2.5 — a real source-control button (statement cell, compare cell,
+        // drawer value) opens the cell evidence view on its occurrence. The
+        // span variants inside card buttons fall through to the card handlers.
+        var sourceControl = event.target.closest('.ff-source-control');
+        if (sourceControl && sourceControl.tagName === 'BUTTON' && !sourceControl.disabled) {
+          activateSourceControl(sourceControl);
+        }
+        return;
+      }
       var findings = orderedFindings(company());
       if (!findings.length) {
         setTab('trace', false);
@@ -3085,7 +4968,10 @@
     });
 
     ui.tabs.forEach(function (button, index) {
-      button.addEventListener('click', function () { setTab(button.getAttribute('data-tab'), false); });
+      button.addEventListener('click', function () {
+        setTab(button.getAttribute('data-tab'), false);
+        writeUrl(true);
+      });
       button.addEventListener('keydown', function (event) {
         var next = index;
         if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % ui.tabs.length;
@@ -3096,6 +4982,7 @@
         event.preventDefault();
         ui.tabs[next].focus();
         setTab(ui.tabs[next].getAttribute('data-tab'), false);
+        writeUrl(true);
       });
     });
 
@@ -3103,6 +4990,7 @@
       button.addEventListener('click', function () {
         setSourceMode(button.getAttribute('data-source-mode'), false);
         updateViewStatus();
+        writeUrl(true);
       });
       button.addEventListener('keydown', function (event) {
         var next = index;
@@ -3115,6 +5003,7 @@
         ui.sourceTabs[next].focus();
         setSourceMode(ui.sourceTabs[next].getAttribute('data-source-mode'), false);
         updateViewStatus();
+        writeUrl(true);
       });
     });
 
@@ -3138,6 +5027,7 @@
       state.evidenceKind = 'finding';
       renderFindings();
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3155,6 +5045,7 @@
       state.evidenceKind = 'disclosure-finding';
       renderDisclosureFeed(company());
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3165,6 +5056,7 @@
       state.evidenceKind = 'redline';
       renderRedlines(company());
       renderCurrentEvidence();
+      writeUrl(true);
       openEvidence();
     });
 
@@ -3179,6 +5071,7 @@
       renderTopicOptions(orderedFindings(company()));
       renderFindings();
       renderCurrentEvidence();
+      writeUrl(true);
       if (desktopMedia.matches) {
         var target = selectedFindingButton();
         if (target) target.focus({ preventScroll: false });
@@ -3205,6 +5098,113 @@
     ui.receiptInspectorBody.addEventListener('click', function (event) {
       if (!event.target.closest('[data-receipt-detail-retry]') || !state.receipt.rootCellId) return;
       requestReceiptRoot(state.receipt.rootCellId, state.receipt.lastFocus);
+    });
+
+    // §3.1 — Latest clears as_of; a picked day rewrites both clocks to that
+    // day's 23:59:59Z. Nothing queries per keystroke, only on change.
+    if (ui.asofLatest) {
+      ui.asofLatest.addEventListener('click', function () {
+        state.asOfDate = '';
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
+        setAsofControlsFromState();
+        writeUrl(true);
+        renderRunMeta();
+        ensureFinancialData();
+      });
+    }
+    if (ui.asofInput) {
+      ui.asofInput.addEventListener('change', function () {
+        var value = String(ui.asofInput.value || '');
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+        state.asOfDate = value;
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
+        setAsofControlsFromState();
+        writeUrl(true);
+        renderRunMeta();
+        ensureFinancialData();
+      });
+    }
+    if (ui.exportBtn) {
+      ui.exportBtn.addEventListener('click', runExport);
+    }
+
+    // X2-s saved views: restore via the list, save/rename/delete in the desk
+    // band, one save entry on the peers panel, one action on the notice chip.
+    var savedSelect = byId('ff-saved-select');
+    if (savedSelect) {
+      savedSelect.addEventListener('change', function () {
+        if (!savedSelect.value) {
+          state.savedActiveId = '';
+          state.savedRefusal = '';
+          state.savedStoreError = false;
+          state.pinnedRequest = null;
+          renderSavedUI();
+          return;
+        }
+        restoreSavedView(savedSelect.value);
+      });
+    }
+    var savedName = byId('ff-saved-name');
+    var savedSaveBtn = byId('ff-saved-save');
+    function savedNameValue() {
+      return savedName ? String(savedName.value || '').trim() : '';
+    }
+    if (savedSaveBtn) {
+      savedSaveBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (!name) return;
+        performSavedSave(name);
+      });
+    }
+    if (savedName) {
+      savedName.addEventListener('input', renderSavedUI);
+      savedName.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedRenameBtn = byId('ff-saved-rename');
+    if (savedRenameBtn) {
+      savedRenameBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (name) savedRenameActive(name);
+      });
+    }
+    var savedDeleteBtn = byId('ff-saved-delete');
+    if (savedDeleteBtn) {
+      savedDeleteBtn.addEventListener('click', savedDeleteActive);
+    }
+    var peerSaveBtn = byId('ff-peer-save');
+    if (peerSaveBtn) {
+      peerSaveBtn.addEventListener('click', function () {
+        if (!savedName) return;
+        if (!savedNameValue()) {
+          // A generated, editable default — the user's text stays verbatim
+          // once they touch it; nothing here is bilingual storage.
+          savedName.value = String(state.symbol || '') + ' peers';
+        }
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedNotice = byId('ff-saved-notice');
+    if (savedNotice) {
+      savedNotice.addEventListener('click', function (event) {
+        if (event.target.closest('[data-saved-reresolve]')) reResolveSavedView();
+      });
+    }
+    ui.workspace.addEventListener('click', function (event) {
+      if (!event.target.closest('[data-financial-retry]')) return;
+      state.financial = { phase: 'idle' };
+      ensureFinancialData();
     });
 
     ui.currentPeriod.addEventListener('change', function () {
@@ -3260,11 +5260,11 @@
     ui.notice.addEventListener('click', function (event) {
       if (event.target.closest('#ff-retry')) loadData();
     });
-    ui.evidenceClose.addEventListener('click', function () { closeEvidence(true); });
+    ui.evidenceClose.addEventListener('click', function () { closeDrawerAndSync(); });
     ui.receiptInspectorClose.addEventListener('click', function () { closeReceiptInspector(true); });
     ui.scrim.addEventListener('click', function () {
       if (ui.receiptInspector.classList.contains('is-open')) closeReceiptInspector(true);
-      else closeEvidence(true);
+      else closeDrawerAndSync();
     });
     ui.evidence.addEventListener('keydown', handleEvidenceKeydown);
     ui.receiptInspector.addEventListener('keydown', handleReceiptInspectorKeydown);
@@ -3272,16 +5272,46 @@
     if (desktopMedia.addEventListener) desktopMedia.addEventListener('change', handleViewportChange);
     else desktopMedia.addListener(handleViewportChange);
 
+    // Back/forward drives the whole desk: the URL frame is applied, a drawer
+    // frame closes the drawer WITHOUT another history.back (the pop itself is
+    // the back), and a drawer=1 frame re-opens the occurrence it names.
     window.addEventListener('popstate', function () {
       if (!state.payload) return;
-      var next = resolveSymbol(requestedSymbol());
-      if (next) setCompany(next, false);
+      var url = readUrlParams();
+      if (!url.drawer && ui.evidence.classList.contains('is-open')) {
+        closeEvidence(true);
+      }
+      // A history move re-addresses the desk from the URL alone: the restored
+      // saved view (and its pinned bytes) no longer describes this frame.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
+      if (url.symbol) {
+        var next = resolveSymbol(url.symbol);
+        if (next && next !== state.symbol) setCompany(next, false);
+      }
+      state.asOfDate = url.asOfDate;
+      state.policy = url.policy;
+      state.sourceMode = url.src;
+      state.cohortId = url.cohort;
+      state.peerMetric = url.peerMetric;
+      state.peerAlign = url.align;
+      state.peerN = url.peerN;
+      state.peerTol = url.peerTol;
+      if (url.finding) state.findingId = url.finding;
+      if (url.disc) state.disclosureFindingId = url.disc;
+      if (url.redline) state.redlineId = url.redline;
+      setTab(url.peers ? 'peers' : url.tab, false);
+      if (url.drawer) openDrawerFromUrl(url);
+      renderSavedUI();
     });
   }
 
   function init() {
     cacheUi();
     bindEvents();
+    initSavedBriefcase();
     updateLocalizedAttributes();
     // tier_preview.js resolves the visitor's tier from the session cookie before
     // any network call and stamps it on <html>; both scripts are deferred, so it
@@ -3325,7 +5355,31 @@
       freshnessCopy: freshnessCopy,
       state: state,
       ui: ui,
-      cacheUi: cacheUi
+      cacheUi: cacheUi,
+      // P2 URL-state + exact-value seams for the dependency-free Node
+      // contract suite; production never sets this sentinel.
+      writeUrl: writeUrl,
+      readUrlParams: readUrlParams,
+      applyUrlState: applyUrlState,
+      setTab: setTab,
+      closeDrawerAndSync: closeDrawerAndSync,
+      renderCellEvidence: renderCellEvidence,
+      cellEvidenceFromControl: cellEvidenceFromControl,
+      bindEvents: bindEvents,
+      // X2-s saved-views seams (same opt-in contract as above).
+      initSavedBriefcase: initSavedBriefcase,
+      renderSavedUI: renderSavedUI,
+      restoreSavedView: restoreSavedView,
+      performSavedSave: performSavedSave,
+      savedRenameActive: savedRenameActive,
+      savedDeleteActive: savedDeleteActive,
+      reResolveSavedView: reResolveSavedView,
+      buildSavedViewInput: buildSavedViewInput,
+      backfillSavedAgainst: backfillSavedAgainst,
+      activePinnedRequest: activePinnedRequest,
+      savedSavePhase: savedSavePhase,
+      savedGenerationStale: savedGenerationStale,
+      exportQueryBody: exportQueryBody
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

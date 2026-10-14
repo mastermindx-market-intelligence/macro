@@ -3591,17 +3591,14 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
-#: The #7958 footprint as a records-only pull request. As filed (2026-09-24) it
-#: also carried two `mockups/evidence/` captures; since #8287 (2026-10-02) ci.yml
-#: owns `mockups/evidence/**` ON PURPOSE — an evidence-only diff must run the
-#: receipt-corpus gate (#8278 landed a malformed receipt through that gap) — so
-#: those captures no longer model "owned by no path-filtered gate". The exemplar
-#: keeps only the handoff records, which no workflow path filter owns;
-#: `test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green`
-#: asserts exactly that and is what demanded this change.
+#: #7958 originally changed only records, without owning a tested surface.
+#: Both historical locations are now intentionally gated: mockups/evidence/**
+#: since #8287, and agentos/** with the R2 knowledge contracts. Preserve the
+#: incident's unowned-record shape with notes/ instead of exempting Agent OS.
+#: The end-to-end test checks this exemplar against the actual workflow gates.
 INCIDENT_7958_FILES = [
-    "agentos/handoffs/WS-F04-X1-2026-09-24.md",
-    "agentos/handoffs/WS-F04-X1-2026-09-24-R2.md",
+    "notes/WS-F04-X1-2026-09-24.md",
+    "notes/WS-F04-X1-2026-09-24-R2.md",
 ]
 
 
@@ -4198,8 +4195,8 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
 ):
     """#7958 (2026-09-24), against the REAL workflow gates.
 
-    Files only under `agentos/handoffs/` (the `mockups/evidence/` captures the
-    real #7958 carried are a gated surface since #8287, 2026-10-02 — see
+    An unowned records-only exemplar under `notes/` (both historical
+    `agentos/handoffs/` and `mockups/evidence/` are now gated — see
     INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
     `scripts/` after the head's proof concluded green. The sweeper refreshed
     this shape three times
@@ -4228,7 +4225,7 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
     assert freshness.surface_of(4242) == set(), (
         "the #7958 shape must own no entry of any real path-filtered gate; if a "
-        "workflow now owns agentos/ or mockups/evidence/, this incident shape has "
+        "workflow now owns notes/, this incident shape has "
         "changed and the test — not the sweeper — needs a new exemplar"
     )
 
@@ -4245,6 +4242,18 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     assert any(call[0] == "PUT" and call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
     assert "own no path-filtered gate entry" in out, out
+
+
+def test_agentos_records_have_a_real_workflow_gate(monkeypatch):
+    """R2 handoffs can no longer use the historical unowned-record shortcut."""
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 0, "check_runs": []}},
+        main_commits=[],
+        pr_files=["agentos/handoffs/WS-F04-X1-2026-09-24.md"],
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert "agentos/**" in freshness.surface_of(4242)
 
 
 def test_incident_7958_shape_with_unreadable_files_still_re_proves(monkeypatch):
@@ -5444,6 +5453,272 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     ) == "refresh-deferred"
     assert not [call for call in calls if call[0] == "PUT"]
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
+    """A live unmergeable head is declined before any lease claim, budget, or PUT.
+
+    Regression for the measured 2026-10-12 starvation: at 7 active/cap 8 an
+    earlier conflicting pull claimed the durable refresh lease, update-branch
+    confirmed the conflict, the workload slot refunded — but `claim_attempted`
+    stayed True, so the clean eligible pull behind it was denied for the rest of
+    the sweep at 0/1 used. The fresh authorized read that admission already
+    performs carries GitHub's own computed verdict, so the gateway can decline
+    on affirmative evidence (mergeable=false AND mergeable_state=dirty) before
+    anything is consumed, and the one high-load slot goes to the clean head.
+    """
+    calls: list[tuple[str, str]] = []
+    claimed = [False]
+    owner_number: list[int | None] = [None]
+    generation_description = [MOG.REFRESH_LEASE_DESCRIPTION]
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            fields = (
+                {"mergeable": False, "mergeable_state": "dirty"}
+                if number == 1
+                else {}
+            )
+            labels = ["merge-on-green"]
+            if number == owner_number[0]:
+                labels.append(MOG.REFRESH_LEASE_LABEL)
+            return 200, {**_pull(number, labels=tuple(labels)), **fields}
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": generation_description[0],
+            }
+        if method == "PATCH" and "/labels/" in url:
+            generation_description[0] = payload["description"]
+            owner_number[0] = MOG.parse_refresh_lease_record(
+                payload["description"]
+            )[0]
+            claimed[0] = True
+            return 200, payload
+        if method == "POST" and url.endswith("/labels"):
+            return 200, [{"name": MOG.REFRESH_LEASE_LABEL}]
+        if method == "GET" and "/issues/" in url and "?" not in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            labels = [{"name": "merge-on-green"}]
+            if number == owner_number[0]:
+                labels.append({"name": MOG.REFRESH_LEASE_LABEL})
+            return 200, {"number": number, "labels": labels}
+        if method == "GET" and "/issues?" in url:
+            if owner_number[0] is None:
+                return 200, []
+            return 200, [
+                {
+                    "number": owner_number[0],
+                    "pull_request": {"url": "pr"},
+                    "labels": [
+                        {"name": "merge-on-green"},
+                        {"name": MOG.REFRESH_LEASE_LABEL},
+                    ],
+                }
+            ]
+        if method == "PUT" and url.endswith("/update-branch"):
+            number = int(url.split("/pulls/")[1].split("/")[0])
+            return (422 if number == 1 else 202), {
+                "message": (
+                    "merge conflict between base and head"
+                    if number == 1
+                    else "Updating"
+                )
+            }
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    first = _pull(1)
+    second = _pull(2)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", first, "write", budget, "stale"
+    ) == "declined"
+    assert not [call for call in calls if call[0] == "PUT"], (
+        "a known conflict must never reach the update-branch write"
+    )
+    assert not [call for call in calls if call[0] == "PATCH"], (
+        "the durable lease must stay unclaimed for a known conflict"
+    )
+    assert not [call for call in calls if call[0] == "POST"], (
+        "no issue label write either"
+    )
+    assert budget.refreshes_used == 0 and budget.refresh_attempts_used == 0, (
+        "an affirmative conflict consumes no slot and no attempt"
+    )
+    assert lease.claim_attempted is False and lease.owner_number is None
+    # The clean eligible head behind it still gets the one slot, via the
+    # existing normal claim path.
+    assert MOG.attempt_update_branch(
+        "acme/widgets", second, "write", budget, "stale"
+    ) == "updated"
+    assert lease.owns(second)
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    puts = [call for call in calls if call[0] == "PUT"]
+    assert len(puts) == 1 and puts[0][1].endswith("/pulls/2/update-branch")
+
+
+def test_more_conflicts_than_attempt_slots_leave_the_budget_for_a_clean_head(
+    monkeypatch,
+):
+    """Every affirmatively conflicted head declines without touching the budget.
+
+    A backlog of known conflicts must not drain the 8 bounded update-branch
+    attempts before an eligible clean head is ever admitted.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            if number <= 10:
+                return 200, {
+                    **_pull(number),
+                    "mergeable": False,
+                    "mergeable_state": "dirty",
+                }
+            return 200, _pull(number)
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget()
+    for number in range(1, 11):
+        assert MOG.attempt_update_branch(
+            "acme/widgets", _pull(number), "write", budget, "stale"
+        ) == "declined"
+    assert budget.refresh_attempts_used == 0, (
+        "affirmative conflicts never reach the bounded attempt budget"
+    )
+    assert budget.refreshes_used == 0
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(11), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+        {"mergeable": True, "mergeable_state": "clean"},
+    ),
+    ids=("unknown", "missing", "clean"),
+)
+def test_unaffirmative_mergeability_keeps_the_existing_admission_path(
+    monkeypatch, fresh_fields
+):
+    """Only the affirmative pair classifies; unknown stays write-then-classify.
+
+    GitHub answers mergeable=null while it computes and omits fields on odd
+    shapes, so those pulls keep the ordinary admission path and its caps.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    assert any(call[0] == "PUT" for call in calls)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred", "the real cap still binds a spent slot"
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": True, "mergeable_state": "clean"},
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+    ),
+    ids=("fresh-clean", "fresh-unknown", "fresh-missing"),
+)
+def test_a_stale_dirty_listing_never_overrides_a_fresh_read(
+    monkeypatch, fresh_fields
+):
+    """An old listing's dirty state is not evidence; the live read decides."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == "updated"
+    assert any(call[0] == "PUT" for call in calls)
+
+
+@pytest.mark.parametrize(
+    ("fresh_status", "fresh_payload", "expected"),
+    (
+        (
+            200,
+            {
+                **_pull(1),
+                "head": {
+                    "sha": "b" * 40,
+                    "ref": "claude/feature",
+                    "repo": {"full_name": "acme/widgets"},
+                },
+            },
+            "head-moved",
+        ),
+        (200, {**_pull(1), "draft": True}, "draft"),
+        (200, {**_pull(1), "base": {"ref": "release"}}, "wrong-base"),
+        (200, {**_pull(1), "labels": []}, "disarmed"),
+        (500, None, "authorization-unreadable"),
+    ),
+    ids=("head-moved", "draft", "wrong-base", "disarmed", "unreadable"),
+)
+def test_lost_authorization_still_wins_over_a_dirty_listing(
+    monkeypatch, fresh_status, fresh_payload, expected
+):
+    """Authorization changes keep their original disposition, never a conflict."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            return fresh_status, fresh_payload
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == expected
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert not [call for call in calls if call[0] == "PATCH"]
 
 
 def test_lease_owner_outside_pull_page_is_fetched_and_promoted(monkeypatch):
