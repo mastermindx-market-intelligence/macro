@@ -643,3 +643,30 @@ def test_15_static_placement_and_hygiene():
         assert bad not in js, bad
     assert src.index(START) < src.index('<script src="si_workspace.js">'), \
         "the panel must run before the workspace router"
+
+
+def test_16_panel_script_is_closed_and_the_router_still_parses():
+    """LR-T18-EV1R finding (2026-10-14): the mr-panel ``<script>`` was opened
+    and never closed, so an HTML parser swallowed ``<script src="si_workspace.js">``
+    as script text. In a browser that is a SyntaxError at parse: the panel never
+    runs and the workspace router is never fetched. The node harness above
+    extracts the IIFE between the markers, so only a parser-level check sees it.
+    """
+    from html.parser import HTMLParser
+
+    src = PAGE.read_text(encoding="utf-8")
+    end = src.index(END)
+    nxt = src.index("<script", end)
+    assert "</script>" in src[end:nxt], \
+        "the mr-panel <script> must close before the next <script>"
+
+    seen: list = []
+
+    class _P(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            if tag == "script":
+                seen.append(dict(attrs).get("src"))
+
+    _P(convert_charrefs=True).feed(src)
+    assert "si_workspace.js" in seen, \
+        "si_workspace.js must parse as a <script> element, not as script text"
