@@ -60,7 +60,9 @@ def test_fabric_lane_default_off_preserves_full(checkouts):
     assert not ws.is_session_worktree(lane)
     assert ws.auto_profile(lane) == 0
     assert (lane / "data" / "tracked.txt").exists()
-    assert (_git(lane, "config", "--get", "core.sparseCheckout") != "true")
+    result = subprocess.run(["git", "-C", str(lane), "config", "--get", "core.sparseCheckout"],
+                            capture_output=True, text=True, timeout=10)
+    assert result.stdout.strip() != "true"
 
 
 def test_qualified_new_fabric_lane_uses_existing_profile(checkouts, monkeypatch):
