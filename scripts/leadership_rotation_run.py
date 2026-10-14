@@ -68,10 +68,12 @@ SIZE_GATE_RULE = "V2_SEC3_TWO_PART"
 SIZE_GATE_REQUIRED_CELLS: Tuple[int, ...] = (0, 1, 2, 3, 4, 48)
 SIZE_GATE_MIN_M = 400
 SIZE_GATE_H1_NULL_METHOD = "V2_OPTION_A"
+SIZE_GATE_MIN_NULL_K = 1000  # prereg V2 §2: K >= 1,000 null paths per H1 read
 HARNESS_MODULES: Tuple[str, ...] = (
     "engine/leadership_rotation_context.py",
     "scripts/leadership_rotation_episodes.py",
     "scripts/leadership_rotation_inference.py",
+    "scripts/leadership_rotation_null.py",
     "scripts/leadership_rotation_p0.py",
     "scripts/leadership_rotation_run.py",
     "scripts/leadership_rotation_study.py",
@@ -871,7 +873,15 @@ def evaluate_group(
     end: int,
     partition: str,
     W: Optional[np.ndarray] = None,
+    h1_null: Optional[Callable[..., dict]] = None,
 ) -> dict:
+    """Evaluate one group.
+
+    ``h1_null`` (prereg V2 §2 Option A) replaces H1's bootstrap p-values with the
+    δ = 0 parametric surrogate null (``leadership_rotation_null``); the bootstrap
+    p-values are kept under ``H1.p_bootstrap_superseded`` for the record only.
+    ``None`` keeps the V1 bootstrap p-values (development only — evaluate_family
+    refuses a P1 read without the Option A null)."""
     if partition in ("P2", "P3"):
         raise st.PartitionSealed(partition)
     if partition not in ("P0", "P1"):
@@ -952,6 +962,22 @@ def evaluate_group(
     rep_bur_cut = 1.0 - (bur1 / bur0)
     p_a, _ = inf.one_sided_p(rep_delay_red)
     p_b, _ = inf.one_sided_p(rep_bur_cut)
+    h1_null_out: Optional[dict] = None
+    p_boot = {"p_a": p_a, "p_b": p_b}
+    if h1_null is not None:
+        h1_null_out = h1_null(
+            partition=partition,
+            group=group,
+            pairs=pairs,
+            cores=cores,
+            start=start,
+            end=end,
+            t_a=float(delay_reduction),
+            t_b=float(burden_cut_b),
+            honest_n=_cluster_n(onset_items),
+        )
+        p_a = float(h1_null_out["p_a"])
+        p_b = float(h1_null_out["p_b"])
     decision = inf.h1_decision(
         delay_reduction,
         burden_diff_a,
@@ -1153,6 +1179,14 @@ def evaluate_group(
                 "p_a": p_a,
                 "p_b": p_b,
                 "p": max(p_a, p_b),
+                "p_method": (
+                    SIZE_GATE_H1_NULL_METHOD if h1_null is not None else "V1_BOOTSTRAP"
+                ),
+                **(
+                    {"null": h1_null_out, "p_bootstrap_superseded": p_boot}
+                    if h1_null is not None
+                    else {}
+                ),
                 "decision": decision,
                 "interval_90": {
                     "delay_reduction": inf.interval_90(rep_delay_red),
@@ -1203,59 +1237,76 @@ def _as_float(x: Any) -> float:
     return float(x)
 
 
-def _group_verdicts(gr: dict, partition: str, holm_adj: List[float], order) -> dict:
+def _margin_met(point: float, margin: float) -> Optional[bool]:
+    """``None`` when the point estimate is undefined (V2.1 §2 row 9a)."""
+    if math.isnan(point):
+        return None
+    return bool(point >= margin)
+
+
+def _group_verdicts(
+    gr: dict,
+    partition: str,
+    holm_adj: List[float],
+    order,
+    powered: Optional[Dict[str, bool]] = None,
+) -> dict:
+    """Per-hypothesis outcome classes via the V2.1 §2 first-match table.
+
+    ``powered`` maps "H2"/"H3" to the V2 §4.3 POWERED_IN_PRINCIPLE disposition from
+    a landed power record; absent → P2/P3 H2/H3 are NOT_EXECUTABLE (row 4). H1's
+    P2/P3 executability is governed by the size gate, so it passes True here.
+    """
     executable = gr.get("executable", False)
     cov = _as_float(gr.get("coverage", 0.0))
     if math.isnan(cov):
         cov = 0.0
     gname = gr.get("group", "")
+    pw = dict(powered or {})
     out: Dict[str, str] = {}
     for h in ("H1", "H2", "H3"):
         p_holm = _holm_p_for(gname, h, order, holm_adj)
+        common = dict(
+            executable=executable,
+            source_limited=False,
+            immature=_immature(gr, h),
+            honest_n=gr["honest_n"][h],
+            p_holm=p_holm,
+            coverage=cov,
+        )
         if h == "H1":
-            clause = inf.clause1(
-                1.0 if gr["H1"]["decision"]["margins_met"] else 0.0,
-                1.0,
-                p_holm,
-            )
             stable = (
                 gr["H1"]["stability"]["delay_reduction"]["holds"]
                 and gr["H1"]["stability"]["burden_cut_b"]["holds"]
             )
+            # margins_met already folds in H1's non-inferiority clauses (V1 §7).
+            # An Option A null that could not be matched (V2.1 §6 item 2) means
+            # the registered H1 p cannot be computed: row 2, NOT_EXECUTABLE.
+            h1_null_out = gr["H1"].get("null")
+            null_ok = not isinstance(h1_null_out, dict) or h1_null_out.get("status") == "OK"
             out[h] = inf.verdict(
                 partition,
-                executable=executable,
-                source_limited=False,
-                immature=_immature(gr, h),
-                honest_n=gr["honest_n"]["H1"],
-                clause1_ok=clause,
+                margin_met=bool(gr["H1"]["decision"]["margins_met"]),
                 stable=stable,
-                coverage=cov,
+                powered_in_principle=True,
+                **{**common, "executable": bool(executable and null_ok)},
             )
         elif h == "H2":
-            clause = inf.clause1(_as_float(gr["H2"]["point"]), inf.MARGIN_H2, p_holm)
             out[h] = inf.verdict(
                 partition,
-                executable=executable,
-                source_limited=False,
-                immature=_immature(gr, h),
-                honest_n=gr["honest_n"]["H2"],
-                clause1_ok=clause,
+                margin_met=_margin_met(_as_float(gr["H2"]["point"]), inf.MARGIN_H2),
                 stable=gr["H2"]["stability"]["holds"],
-                coverage=cov,
-                h2_safety_ok=gr["H2"]["safety"]["ok"],
+                ni_ok=gr["H2"]["safety"]["ok"],
+                powered_in_principle=pw.get("H2"),
+                **common,
             )
         else:
-            clause = inf.clause1(_as_float(gr["H3"]["point"]), inf.MARGIN_H3, p_holm)
             out[h] = inf.verdict(
                 partition,
-                executable=executable,
-                source_limited=False,
-                immature=_immature(gr, h),
-                honest_n=gr["honest_n"]["H3"],
-                clause1_ok=clause,
+                margin_met=_margin_met(_as_float(gr["H3"]["point"]), inf.MARGIN_H3),
                 stable=gr["H3"]["stability"]["holds"],
-                coverage=cov,
+                powered_in_principle=pw.get("H3"),
+                **common,
             )
     out["C3"] = inf.verdict(
         partition,
@@ -1263,7 +1314,8 @@ def _group_verdicts(gr: dict, partition: str, holm_adj: List[float], order) -> d
         source_limited=True,
         immature=False,
         honest_n=0,
-        clause1_ok=False,
+        margin_met=None,
+        p_holm=1.0,
         stable=False,
         coverage=0.0,
     )
@@ -1277,8 +1329,13 @@ def evaluate_family(
     end: int,
     partition: str,
     look_count: int = 0,
+    h1_null: Optional[Callable[..., dict]] = None,
+    powered: Optional[Dict[str, bool]] = None,
 ) -> dict:
     """Evaluate the six-hypothesis family.
+
+    ``powered`` carries the V2 §4.3 POWERED_IN_PRINCIPLE dispositions for H2/H3
+    from a landed power record; it only matters for P2/P3 (V2.1 §2 row 4).
 
     ``look_count`` is the number of counted development looks this evaluation
     is (V1 §2: "P1 = counted development looks"). The default 0 is the P0
@@ -1287,12 +1344,15 @@ def evaluate_family(
     """
     if isinstance(look_count, bool) or not isinstance(look_count, int) or look_count < 0:
         raise ValueError(f"look_count must be a non-negative int, got {look_count!r}")
+    if partition == "P1" and h1_null is None and any(groups.values()):
+        # Prereg V2 §2: the V1 bootstrap null is superseded for every read.
+        raise ValueError("a P1 read requires the V2 Option A H1 null (h1_null)")
     n_calendar = max((len(ps.spy) for plist in groups.values() for ps in plist), default=0)
     W = inf.stationary_bootstrap_weights(n_calendar) if n_calendar else np.zeros((0, 0))
     group_results: Dict[str, dict] = {}
     for gname, plist in groups.items():
         group_results[gname] = evaluate_group(
-            plist, start=start, end=end, partition=partition, W=W
+            plist, start=start, end=end, partition=partition, W=W, h1_null=h1_null
         )
 
     raw_ps: List[float] = []
@@ -1320,7 +1380,7 @@ def evaluate_family(
             }
             verdicts[gname]["C3"] = "SOURCE_LIMITED"
         else:
-            verdicts[gname] = _group_verdicts(gr, partition, adjusted, order)
+            verdicts[gname] = _group_verdicts(gr, partition, adjusted, order, powered)
 
     return _json_sanitize(
         {
@@ -1375,6 +1435,7 @@ SIZE_GATE_REASONS: Tuple[str, ...] = (
     "SIZE_GATE_M_BELOW_MIN",
     "SIZE_GATE_ROW_NOT_SIZED",
     "SIZE_GATE_NULL_METHOD_MISMATCH",
+    "SIZE_GATE_NULL_K_TOO_SMALL",
     "SIZE_GATE_PREREG_PIN_MISMATCH",
     "SIZE_GATE_HARNESS_DRIFT",
 )
@@ -1596,6 +1657,12 @@ def assert_size_gate_passed(
             f"{path}: h1_null_method={obj.get('h1_null_method')!r}, "
             f"expected {SIZE_GATE_H1_NULL_METHOD!r}",
         )
+    null_k = obj.get("h1_null_k")
+    if isinstance(null_k, bool) or not isinstance(null_k, int) or null_k < SIZE_GATE_MIN_NULL_K:
+        raise SizeGateNotPassed(
+            "SIZE_GATE_NULL_K_TOO_SMALL",
+            f"{path}: h1_null_k={null_k!r}, prereg V2 §2 requires K >= {SIZE_GATE_MIN_NULL_K}",
+        )
 
     expected_prereg = {
         "v1_blob": st.PREREG_BLOB_SHA,
@@ -1744,8 +1811,15 @@ def run_p1(
     aligned = {sym: st.align(closes[sym], calendar) for sym in symbols}
     spy = aligned["SPY"]
     groups = build_groups(aligned, spy, "P1")
+    from scripts.leadership_rotation_null import NULL_K_DEFAULT, make_h1_null_provider
+
     result = evaluate_family(
-        groups, start=start, end=end, partition="P1", look_count=look_count
+        groups,
+        start=start,
+        end=end,
+        partition="P1",
+        look_count=look_count,
+        h1_null=make_h1_null_provider(NULL_K_DEFAULT),
     )
     result["inputs"] = identity
     result["size_gate"] = gate

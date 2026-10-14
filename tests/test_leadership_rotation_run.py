@@ -978,6 +978,7 @@ def _gate_artifact(**overrides) -> dict:
         "not_executable": [],
         "missing_cells": [],
         "h1_null_method": "V2_OPTION_A",
+        "h1_null_k": 1000,
         "prereg": {
             "v1_blob": st.PREREG_BLOB_SHA,
             "v2_blob": st.PREREG_V2_BLOB_SHA,
@@ -1156,6 +1157,16 @@ def test_size_gate_refuses_null_method_mismatch(tmp_path):
     assert "V2_OPTION_A" in err.detail
 
 
+# MUTATION: scripts/leadership_rotation_run.py:assert_size_gate_passed skip the h1_null_k >= SIZE_GATE_MIN_NULL_K check
+def test_size_gate_refuses_null_k_below_1000(tmp_path):
+    """Prereg V2 §2: an Option A gate built on fewer than 1,000 null paths per
+    H1 read is not the gate V2 registered, so the P1 reader refuses it."""
+    for name, k in (("k999", 999), ("knone", None), ("kbool", True)):
+        repo = _gate_repo(tmp_path, _gate_artifact(h1_null_k=k), name=name)
+        err = _refusal(repo, "SIZE_GATE_NULL_K_TOO_SMALL")
+        assert repr(k) in err.detail and "1000" in err.detail
+
+
 # MUTATION: scripts/leadership_rotation_run.py:1607 compare only the V1 prereg blob
 def test_size_gate_refuses_prereg_pin_mismatch(tmp_path):
     prereg = dict(_gate_artifact()["prereg"])
@@ -1211,6 +1222,7 @@ def test_size_gate_reasons_are_a_closed_vocabulary():
         "SIZE_GATE_M_BELOW_MIN",
         "SIZE_GATE_ROW_NOT_SIZED",
         "SIZE_GATE_NULL_METHOD_MISMATCH",
+        "SIZE_GATE_NULL_K_TOO_SMALL",
         "SIZE_GATE_PREREG_PIN_MISMATCH",
         "SIZE_GATE_HARNESS_DRIFT",
     )
@@ -1330,3 +1342,65 @@ def test_count_prior_looks_reads_committed_ledger(tmp_path):
     with pytest.raises(ValueError) as excinfo:
         count_prior_looks(non_dict, partition="P1")
     assert "LOOK_LEDGER_UNPARSEABLE line 1" in str(excinfo.value)
+
+
+# MUTATION: scripts/leadership_rotation_run.py:_group_verdicts pass powered_in_principle=True for H2/H3
+def test_p2_p3_h2_h3_need_a_landed_power_disposition():
+    """V2.1 §2 row 4 / V2 §4.3: without a POWERED_IN_PRINCIPLE disposition the
+    binding partitions cannot issue an H2/H3 class at all."""
+    from scripts.leadership_rotation_run import _group_verdicts
+
+    gr = {
+        "group": "defensive_sector",
+        "executable": True,
+        "coverage": 0.95,
+        "honest_n": {"H1": 30, "H2": 30, "H3": 30},
+        "test_n": {"H1": 30, "H2": 30, "H3": 30},
+        "H1": {
+            "decision": {"margins_met": True},
+            "stability": {"delay_reduction": {"holds": True}, "burden_cut_b": {"holds": True}},
+        },
+        "H2": {"point": 0.02, "safety": {"ok": True}, "stability": {"holds": True}},
+        "H3": {"point": None, "stability": {"holds": True}},
+    }
+    holm = [0.001 if g == "defensive_sector" else 1.0 for g, _h in FAMILY_ORDER]
+    for part in ("P2", "P3"):
+        v = _group_verdicts(gr, part, holm, FAMILY_ORDER)
+        assert v["H2"] == v["H3"] == "NOT_EXECUTABLE"
+        assert v["H1"] == ("CONSISTENT" if part == "P2" else "SUPPORTED")
+    v = _group_verdicts(gr, "P3", holm, FAMILY_ORDER, {"H2": True, "H3": True})
+    assert v["H2"] == "SUPPORTED"
+    assert v["H3"] == "NOT_EXECUTABLE"  # undefined point estimate, row 9a
+    gr["H2"]["safety"]["ok"] = False
+    assert _group_verdicts(gr, "P3", holm, FAMILY_ORDER, {"H2": True})["H2"] == "NOT_SUPPORTED"
+    gr["H2"]["safety"]["ok"] = True
+    gr["H2"]["stability"]["holds"] = False
+    assert _group_verdicts(gr, "P2", holm, FAMILY_ORDER, {"H2": True})["H2"] == "INSUFFICIENT"
+    # P0/P1 ignore the power disposition entirely
+    assert _group_verdicts(gr, "P1", holm, FAMILY_ORDER)["H2"] == "DEVELOPMENT_FAIL"
+
+
+def test_unmatched_option_a_null_makes_h1_not_executable():
+    """V2.1 §6 item 2 / §2 row 2: an Option A null that could not be matched
+    (status != OK, p forced to 1) is NOT_EXECUTABLE, never a scored H1 fail."""
+    from scripts.leadership_rotation_run import _group_verdicts
+
+    gr = {
+        "group": "defensive_sector",
+        "executable": True,
+        "coverage": 0.95,
+        "honest_n": {"H1": 30, "H2": 30, "H3": 30},
+        "test_n": {"H1": 30, "H2": 30, "H3": 30},
+        "H1": {
+            "decision": {"margins_met": True},
+            "stability": {"delay_reduction": {"holds": True}, "burden_cut_b": {"holds": True}},
+            "null": {"status": "OK", "p_a": 0.001, "p_b": 0.001},
+        },
+        "H2": {"point": 0.02, "safety": {"ok": True}, "stability": {"holds": True}},
+        "H3": {"point": 0.01, "stability": {"holds": True}},
+    }
+    holm = [0.001 if g == "defensive_sector" else 1.0 for g, _h in FAMILY_ORDER]
+    assert _group_verdicts(gr, "P1", holm, FAMILY_ORDER)["H1"] == "DEVELOPMENT_PASS"
+    gr["H1"]["null"] = {"status": "NOT_EXECUTABLE", "p_a": 1.0, "p_b": 1.0}
+    for part in ("P1", "P2", "P3"):
+        assert _group_verdicts(gr, part, holm, FAMILY_ORDER)["H1"] == "NOT_EXECUTABLE"
