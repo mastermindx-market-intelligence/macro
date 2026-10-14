@@ -121,6 +121,19 @@ def relation_key(a: str, b: str) -> tuple[str, str]:
     return (a, b) if a <= b else (b, a)
 
 
+def _text_present(value: object) -> bool:
+    """True iff ``value`` is a non-empty ``str`` with no leading or trailing
+    Unicode whitespace character (``str.isspace()``); equivalent to the
+    standard leading / trailing whitespace predicate without hand-rolling
+    an ASCII whitespace set."""
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -251,10 +264,10 @@ def check_counter_relation(
         reasons.append("RELATION_NOT_AVAILABLE_AS_OF")
 
     relation_id = relation.get("relation_id")
-    if not isinstance(relation_id, str) or _blank(relation_id):
+    if not _text_present(relation_id):
         reasons.append("RELATION_ID_MISSING")
     source_ref = relation.get("source_ref")
-    if not isinstance(source_ref, str) or _blank(source_ref):
+    if not _text_present(source_ref):
         reasons.append("RELATION_UNSOURCED")
     if relation.get("issuer_id") != request.get("issuer_id"):
         reasons.append("ISSUER_MISMATCH")
@@ -269,12 +282,12 @@ def check_counter_relation(
         if member.get("counter_kind") not in _COUNTER_KIND_SET:
             reasons.append("COUNTER_KIND_UNKNOWN")
         currency = member.get("currency")
-        if not isinstance(currency, str) or _blank(currency):
+        if not _text_present(currency):
             reasons.append("CURRENCY_UNDECLARED")
 
     frozen = _freeze_reasons(reasons)
     echo: str | None
-    if isinstance(relation_id, str) and not _blank(relation_id):
+    if _text_present(relation_id):
         echo = relation_id
     else:
         echo = None

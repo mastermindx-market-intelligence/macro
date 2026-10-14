@@ -114,6 +114,19 @@ class AccessVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """True iff ``value`` is a non-empty ``str`` with no leading or trailing
+    Unicode whitespace character (``str.isspace()``); equivalent to the
+    standard leading / trailing whitespace predicate without hand-rolling
+    an ASCII whitespace set."""
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -241,14 +254,15 @@ def gate_access(
         if entitlement is None:
             reasons.append("ENTITLEMENT_MISSING")
         else:
-            if not _present(entitlement, "entitlement_ref"):
+            if not _text_present(entitlement.get("entitlement_ref")):
                 reasons.append("ENTITLEMENT_REF_MISSING")
             entitlement_account_id = entitlement.get("account_id")
-            if (
-                not isinstance(account_id, str)
-                or not isinstance(entitlement_account_id, str)
-                or account_id != entitlement_account_id
-            ):
+            account_match = (
+                _text_present(account_id)
+                and _text_present(entitlement_account_id)
+                and account_id == entitlement_account_id
+            )
+            if not account_match:
                 reasons.append("ACCOUNT_MISMATCH")
             if not _document_entitled(document_id, entitlement.get("document_ids")):
                 reasons.append("DOCUMENT_NOT_ENTITLED")
