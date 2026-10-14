@@ -20,23 +20,45 @@ from __future__ import annotations
 from copy import deepcopy
 from decimal import Decimal
 import hashlib
+import inspect
 import json
 from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
+from engine.capital_structure import authorized_shares
 from engine.capital_structure import share_count_materializer as materializer
 from engine.capital_structure import share_count_truth as sct
+from engine.capital_structure.authorized_shares import (
+    AUTHORIZED_KIND,
+    COMPILER_VERSION as AUTHORIZED_COMPILER_VERSION,
+    HEADROOM_STATUSES,
+    IMPLEMENTATION as AUTHORIZED_IMPLEMENTATION,
+    ISSUED_KIND,
+    RESERVED_KIND,
+    AuthorizedHeadroom,
+    AuthorizedSharesInputError,
+    headroom_from_records,
+    select_authorized_headroom,
+)
+from engine.capital_structure.issuer_state_contracts import (
+    CorporateActionInputs,
+    GenerationBinding,
+)
 from engine.capital_structure.share_basis import (
     AUTHORIZED_CAPITAL_KINDS,
+    MAX_BASIS_AGE_DAYS,
     select_share_basis,
 )
 from engine.capital_structure.share_count_truth import compile_share_count_observations
 from tests.test_capital_structure_share_basis import (
     AS_OF,
+    CA_SCHEMA,
+    GEN,
     ISSUER,
     SECURITY,
+    _four,
     _no_actions,
     _obs,
     _shares,
@@ -356,3 +378,499 @@ def test_compiler_versions_bumped() -> None:
     assert sct.COMPILER_VERSION == "capital-structure-share-count-truth/1.4.0"
     assert materializer.COMPILER_VERSION == "capital-structure-share-count-materializer/2.2.0"
     assert _compile_fixture(SYNTHETIC_FIXTURE)["compiler_version"] == sct.COMPILER_VERSION
+
+
+# ---------------------------------------------------------------------------
+# §6 / §0.4-§0.6 — the authorized-unreserved headroom selector
+# ---------------------------------------------------------------------------
+
+INSTANT = "2026-02-27"
+NUMERIC_FIELDS = ("authorized", "issued", "reserved", "headroom", "ceiling")
+
+
+def _cap(instant: str, *, authorized=None, issued=None, reserved=None, label="cap", **overrides) -> list[dict]:
+    """Clean authorized-capital records at one instant, one per named side."""
+
+    records = []
+    for kind, value in ((AUTHORIZED_KIND, authorized), (ISSUED_KIND, issued), (RESERVED_KIND, reserved)):
+        if value is None:
+            continue
+        records.append(_authorized_obs(f"{label}-{kind}-{instant}", instant, value, kind=kind, **overrides))
+    return records
+
+
+def _headroom(records, actions=None, *, issuer_id=ISSUER, as_of=AS_OF) -> AuthorizedHeadroom:
+    return headroom_from_records(records, actions, issuer_id=issuer_id, as_of=as_of)
+
+
+def _corporate_actions() -> CorporateActionInputs:
+    return CorporateActionInputs(
+        GenerationBinding("corporate_actions", CA_SCHEMA, "partial", generation_id=GEN), tuple(_four()),
+    )
+
+
+def _wrong_family_actions() -> CorporateActionInputs:
+    schema = "capital_structure.document_term_observation.v1"
+    return CorporateActionInputs(
+        GenerationBinding("document_terms", schema, "partial", generation_id=GEN),
+        ({"schema": schema, "issuer_id": ISSUER},),
+    )
+
+
+def _assert_exact_decimal_text(result: AuthorizedHeadroom) -> None:
+    """Every numeric field is exact decimal text or ``None`` — never a float."""
+
+    for label in NUMERIC_FIELDS:
+        raw = getattr(result, label)
+        assert not isinstance(raw, float)
+        if raw is None:
+            continue
+        assert isinstance(raw, str)
+        parsed = Decimal(raw)
+        assert parsed.is_finite()
+        assert str(parsed) == raw
+
+
+def test_headroom_known_exact() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    result = _headroom(records)
+    assert result.status == "known"
+    assert result.instant == INSTANT
+    assert Decimal(result.authorized) == Decimal(500000000)
+    assert Decimal(result.issued) == Decimal(120000000)
+    assert Decimal(result.reserved) == Decimal(8000000)
+    assert Decimal(result.headroom) == Decimal(500000000) - Decimal(120000000) - Decimal(8000000)
+    assert Decimal(result.headroom) == Decimal(372000000)
+    assert result.ceiling is None
+    assert result.issuer_id == ISSUER and result.security_class_id == SECURITY
+    assert result.as_of == "2026-04-15T00:00:00Z"
+    assert sorted(result.observation_ids) == sorted(
+        record["observation_id"] for record in records
+    )
+    assert result.notes == ()
+    assert result.conditions == (
+        f"corporate_actions_unobserved_since:{INSTANT}",
+        f"issuance_since_instant_not_reconciled:{INSTANT}",
+    )
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_shortfall_when_reserved_exceeds_unissued() -> None:
+    result = _headroom(_cap(INSTANT, authorized="100000000", issued="99000000", reserved="5000000"))
+    assert result.status == "shortfall"
+    assert Decimal(result.headroom) == Decimal(100000000) - Decimal(99000000) - Decimal(5000000)
+    assert Decimal(result.headroom) == Decimal(-4000000)
+    assert Decimal(result.headroom) < Decimal(0)
+    assert result.ceiling is None
+    assert result.conditions == (
+        f"corporate_actions_unobserved_since:{INSTANT}",
+        f"issuance_since_instant_not_reconciled:{INSTANT}",
+        f"reservation_exceeds_unissued_authorized:{INSTANT}",
+    )
+    assert result.notes == ()
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_ceiling_only_when_reserved_missing_at_instant() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000")
+    result = _headroom(records)
+    assert result.status == "ceiling_only"
+    assert Decimal(result.ceiling) == Decimal(500000000) - Decimal(120000000)
+    assert Decimal(result.ceiling) == Decimal(380000000)
+    assert result.reserved is None and result.headroom is None
+    assert result.conditions == (
+        f"corporate_actions_unobserved_since:{INSTANT}",
+        f"issuance_since_instant_not_reconciled:{INSTANT}",
+        f"reserved_unobserved_at_instant:{INSTANT}",
+    )
+    assert result.notes == ()
+    assert sorted(result.observation_ids) == sorted(record["observation_id"] for record in records)
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_never_borrows_reserved_from_other_instant() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000")
+    borrowed = _cap(
+        "2025-11-01", reserved="8000000", label="old",
+        filed="2025-11-10", available_at="2025-11-10T21:00:00Z",
+    )
+    result = _headroom([*records, *borrowed])
+    assert result.instant == INSTANT
+    assert result.status == "ceiling_only"
+    assert result.reserved is None
+    assert Decimal(result.ceiling) == Decimal(380000000)
+    assert f"reserved_unobserved_at_instant:{INSTANT}" in result.conditions
+    assert sorted(result.observation_ids) == sorted(record["observation_id"] for record in records)
+    # The earlier reserve is neither reported nor used: it is not even a used record.
+    assert result.reserved is None
+    assert all(item["observation_id"] not in result.observation_ids for item in borrowed)
+    assert Decimal(result.ceiling) == Decimal(result.authorized) - Decimal(result.issued)
+
+
+def test_headroom_unknown_when_authorized_missing() -> None:
+    result = _headroom(_cap(INSTANT, issued="120000000", reserved="8000000"))
+    assert result.status == "unknown"
+    assert result.notes == ("authorized_unobserved",)
+    assert result.instant is None
+    assert all(getattr(result, label) is None for label in NUMERIC_FIELDS)
+    assert result.observation_ids == ()
+
+
+def test_headroom_unknown_when_issued_missing() -> None:
+    result = _headroom(_cap(INSTANT, authorized="500000000", reserved="8000000"))
+    assert result.status == "unknown"
+    assert result.notes == ("issued_unobserved",)
+    assert result.instant is None
+    assert all(getattr(result, label) is None for label in NUMERIC_FIELDS)
+
+
+def test_headroom_unknown_when_never_observed_at_one_instant() -> None:
+    authorized = _cap(INSTANT, authorized="500000000")
+    issued = _cap(
+        "2026-03-31", issued="125000000", label="later",
+        filed="2026-04-10", available_at="2026-04-10T21:00:00Z",
+    )
+    result = _headroom([*authorized, *issued])
+    assert result.status == "unknown"
+    # Values from different instants are never combined into one answer.
+    assert result.notes == ("authorized_unobserved", "issued_unobserved")
+    assert result.instant is None
+    assert all(getattr(result, label) is None for label in NUMERIC_FIELDS)
+
+
+def test_headroom_unknown_when_stale() -> None:
+    stale = "2025-06-30"
+    result = _headroom(
+        _cap(stale, authorized="500000000", issued="120000000", reserved="8000000",
+             filed="2025-07-10", available_at="2025-07-10T21:00:00Z"),
+    )
+    assert result.status == "unknown"
+    assert result.notes == (f"stale_instant:{stale}",)
+    assert result.instant == stale
+    assert result.headroom is None and result.ceiling is None
+    # The observed state quantities are still reported, exactly and unscaled.
+    assert Decimal(result.authorized) == Decimal(500000000)
+    assert Decimal(result.issued) == Decimal(120000000)
+    assert Decimal(result.reserved) == Decimal(8000000)
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_is_not_stale_at_exactly_the_age_bound() -> None:
+    from datetime import date, timedelta
+
+    edge = (date.fromisoformat("2026-04-15") - timedelta(days=MAX_BASIS_AGE_DAYS)).isoformat()
+    filed = edge
+    result = _headroom(
+        _cap(edge, authorized="500000000", issued="120000000", reserved="8000000",
+             filed=filed, available_at=f"{filed}T21:00:00Z"),
+    )
+    assert result.status == "known"
+    assert Decimal(result.headroom) == Decimal(372000000)
+    assert not any(note.startswith("stale_instant:") for note in result.notes)
+
+
+def test_headroom_unknown_when_split_after_instant() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    result = _headroom(records, _four())
+    assert result.status == "unknown"
+    assert result.headroom is None and result.ceiling is None
+    assert result.notes == ("split_since_instant_unscaled:ca:0000000001:rs-2026-03",)
+    # A19: the split ratio is never applied to authorized, issued or reserved.
+    assert Decimal(result.authorized) == Decimal(500000000)
+    assert Decimal(result.issued) == Decimal(120000000)
+    assert Decimal(result.reserved) == Decimal(8000000)
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_unknown_when_split_is_only_partly_evidenced() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    partial = _four()[:2]
+    result = _headroom(records, partial)
+    assert result.status == "unknown"
+    assert result.headroom is None
+    assert any(note.startswith("split_since_instant_unscaled:unconfirmed:") for note in result.notes)
+
+
+def test_headroom_condition_when_actions_unobserved() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    unobserved = _headroom(records, None)
+    assert unobserved.status == "known"
+    assert f"corporate_actions_unobserved_since:{INSTANT}" in unobserved.conditions
+    assert not any(note.startswith("split_since_instant_unscaled:") for note in unobserved.notes)
+
+    # An empty-but-observed action family is a different fact from an unobserved one.
+    observed_empty = _headroom(records, ())
+    assert observed_empty.status == "known"
+    assert f"corporate_actions_unobserved_since:{INSTANT}" not in observed_empty.conditions
+    assert observed_empty.notes == ()
+
+
+def test_headroom_contradicted_on_conflicting_duplicates() -> None:
+    first = _authorized_obs("auth-x", INSTANT, "500000000", kind=AUTHORIZED_KIND)
+    second = _authorized_obs("auth-y", INSTANT, "600000000", kind=AUTHORIZED_KIND)
+    others = _cap(INSTANT, issued="120000000", reserved="8000000")
+    result = _headroom([first, second, *others])
+    assert result.status == "contradicted"
+    assert result.authorized is None
+    assert result.headroom is None and result.ceiling is None
+    ids = "+".join(sorted([first["observation_id"], second["observation_id"]]))
+    assert result.notes == (f"conflict:{AUTHORIZED_KIND}:{ids}",)
+    assert Decimal(result.issued) == Decimal(120000000)
+    assert Decimal(result.reserved) == Decimal(8000000)
+    _assert_exact_decimal_text(result)
+
+
+def test_headroom_equal_duplicate_values_are_not_a_conflict() -> None:
+    first = _authorized_obs("auth-x", INSTANT, "500000000", kind=AUTHORIZED_KIND)
+    second = _authorized_obs("auth-y", INSTANT, "500000000", kind=AUTHORIZED_KIND)
+    result = _headroom([first, second, *_cap(INSTANT, issued="120000000", reserved="8000000")])
+    assert result.status == "known"
+    assert result.notes == ()
+    assert Decimal(result.authorized) == Decimal(500000000)
+    assert Decimal(result.headroom) == Decimal(372000000)
+
+
+def test_headroom_contradicted_when_issued_exceeds_authorized() -> None:
+    for extra in ({}, {"reserved": "8000000"}):
+        result = _headroom(_cap(INSTANT, authorized="100000000", issued="150000000", **extra))
+        assert result.status == "contradicted"
+        assert result.notes == (f"issued_exceeds_authorized:{INSTANT}",)
+        assert result.headroom is None and result.ceiling is None
+        assert Decimal(result.authorized) == Decimal(100000000)
+        assert Decimal(result.issued) == Decimal(150000000)
+        _assert_exact_decimal_text(result)
+
+
+def test_headroom_unclean_record_is_noted_and_unused() -> None:
+    clean = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    dollars = _authorized_obs("auth-usd", INSTANT, "500000000", kind=AUTHORIZED_KIND)
+    dollars["normalized"]["unit"] = "USD"
+    ambiguous = _authorized_obs(
+        "issued-ambiguous", INSTANT, None, kind=ISSUED_KIND,
+        disposition="ambiguous", reason="multiple_distinct_values_for_fact_slot",
+    )
+    result = _headroom([*clean, dollars, ambiguous])
+    assert result.status == "known"
+    assert Decimal(result.headroom) == Decimal(372000000)
+    assert f"unclean:{AUTHORIZED_KIND}:unit_mismatch:USD" in result.notes
+    assert (
+        f"unclean:{ISSUED_KIND}:ambiguous:multiple_distinct_values_for_fact_slot" in result.notes
+    )
+    assert dollars["observation_id"] not in result.observation_ids
+    assert ambiguous["observation_id"] not in result.observation_ids
+    assert sorted(result.observation_ids) == sorted(record["observation_id"] for record in clean)
+
+
+def test_headroom_issuance_since_instant_condition() -> None:
+    same_day = "2026-03-10"
+    at_as_of = _headroom(
+        _cap(same_day, authorized="500000000", issued="120000000", reserved="8000000"),
+        as_of="2026-03-10T23:00:00Z",
+    )
+    assert at_as_of.instant == same_day
+    assert at_as_of.status == "known"
+    assert "issuance_since_instant_not_reconciled" not in json.dumps(at_as_of.as_record())
+    assert f"issuance_since_instant_not_reconciled:{same_day}" not in at_as_of.conditions
+
+    before = _headroom(_cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000"))
+    assert before.instant == INSTANT
+    assert f"issuance_since_instant_not_reconciled:{INSTANT}" in before.conditions
+
+
+def test_headroom_uses_decimal_only_and_never_scales_by_split() -> None:
+    # §0.6: the selector source never converts an exact count to a binary float.
+    float_call = "float" + "("
+    source = inspect.getsource(authorized_shares)
+    assert float_call not in source
+    assert "import math" not in source
+
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    plain = _headroom(records)
+    split = _headroom(records, _four())
+
+    assert plain.status == "known" and Decimal(plain.headroom) == Decimal(372000000)
+    assert split.status == "unknown" and split.headroom is None and split.ceiling is None
+    # The 1-for-10 reverse split changed the status, never the numbers.
+    for label in ("authorized", "issued", "reserved"):
+        assert getattr(split, label) == getattr(plain, label)
+        assert Decimal(getattr(split, label)) == Decimal(getattr(plain, label))
+    assert Decimal(split.authorized) == Decimal(500000000)
+    assert Decimal(split.issued) == Decimal(120000000)
+    assert Decimal(split.reserved) == Decimal(8000000)
+
+    for result in (plain, split):
+        _assert_exact_decimal_text(result)
+        for value in result.as_record().values():
+            assert not isinstance(value, float)
+
+
+def test_headroom_ignores_other_metric_kinds_without_a_note() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    noise = (
+        _obs("outstanding", INSTANT, "118000000"),
+        _obs("float", INSTANT, "2500000000", kind="public_float", name="EntityPublicFloat", unit="USD"),
+        _obs("weighted", INSTANT, "119000000", kind="weighted_average_shares_outstanding"),
+    )
+    plain = _headroom(records)
+    with_noise = _headroom([*records, *noise])
+    assert with_noise.as_record() == plain.as_record()
+    assert with_noise.status == "known"
+    assert with_noise.notes == ()
+    # Outstanding shares are never substituted for issued shares.
+    assert Decimal(with_noise.issued) == Decimal(120000000)
+
+
+def test_headroom_records_not_yet_available_are_invisible() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000")
+    future = _cap(
+        "2026-03-31", reserved="9000000", label="future",
+        filed="2026-04-20", available_at="2026-04-20T21:00:00Z",
+    )
+    result = _headroom([*records, *future])
+    assert result.status == "ceiling_only"
+    assert result.notes == (f"not_yet_available:{RESERVED_KIND}",)
+    assert f"reserved_unobserved_at_instant:{INSTANT}" in result.conditions
+
+
+def test_headroom_instant_after_as_of_is_excluded() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000")
+    after = _cap(
+        "2026-06-30", authorized="900000000", issued="130000000", label="after",
+        filed="2026-03-01", available_at="2026-03-01T21:00:00Z",
+    )
+    result = _headroom([*records, *after])
+    assert result.instant == INSTANT
+    assert result.status == "ceiling_only"
+    assert Decimal(result.ceiling) == Decimal(380000000)
+    assert f"instant_after_as_of:{AUTHORIZED_KIND}" in result.notes
+    assert f"instant_after_as_of:{ISSUED_KIND}" in result.notes
+
+
+def test_headroom_superseded_correction_replaces_its_predecessor() -> None:
+    original = _authorized_obs("reserved-v1", INSTANT, "8000000", kind=RESERVED_KIND)
+    corrected = _authorized_obs(
+        "reserved-v2", INSTANT, "9000000", kind=RESERVED_KIND,
+        supersedes=(original["observation_id"],), correction_of=original["observation_id"],
+    )
+    records = [*_cap(INSTANT, authorized="500000000", issued="120000000"), original, corrected]
+    result = _headroom(records)
+    assert result.status == "known"
+    assert Decimal(result.reserved) == Decimal(9000000)
+    assert Decimal(result.headroom) == Decimal(500000000) - Decimal(120000000) - Decimal(9000000)
+    assert Decimal(result.headroom) == Decimal(371000000)
+    assert original["observation_id"] not in result.observation_ids
+    assert corrected["observation_id"] in result.observation_ids
+
+
+def test_headroom_rejects_bad_as_of_and_a_foreign_issuer() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    for bad_as_of in ("2026-04-15", "2026-04-15T00:00:00", "", None, "not-a-timestamp"):
+        with pytest.raises(AuthorizedSharesInputError):
+            _headroom(records, as_of=bad_as_of)
+
+    foreign = _authorized_obs("foreign", INSTANT, "1", kind=AUTHORIZED_KIND, issuer="issuer:0000000002")
+    with pytest.raises(AuthorizedSharesInputError):
+        _headroom([*records, foreign])
+
+
+def test_select_authorized_headroom_wrapper_matches_core() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    observations = _shares(*records)
+
+    assert select_authorized_headroom(observations, _no_actions(), AS_OF).as_record() == (
+        headroom_from_records(records, None, issuer_id=ISSUER, as_of=AS_OF).as_record()
+    )
+    wrapper = select_authorized_headroom(observations, _no_actions(), AS_OF)
+    assert wrapper.status == "known" and Decimal(wrapper.headroom) == Decimal(372000000)
+    assert wrapper.issuer_id == ISSUER and wrapper.security_class_id == SECURITY
+
+    actions = _corporate_actions()
+    split_wrapper = select_authorized_headroom(observations, actions, AS_OF)
+    split_core = headroom_from_records(records, tuple(_four()), issuer_id=ISSUER, as_of=AS_OF)
+    assert split_wrapper.as_record() == split_core.as_record()
+    assert split_wrapper.status == "unknown"
+
+    # An empty action family maps to actions=None in the core.
+    empty = select_authorized_headroom(observations, _no_actions(), AS_OF)
+    assert f"corporate_actions_unobserved_since:{INSTANT}" in empty.conditions
+
+
+def test_select_authorized_headroom_rejects_wrong_types() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    observations = _shares(*records)
+
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(records, _no_actions(), AS_OF)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(tuple(records), _no_actions(), AS_OF)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(observations, tuple(_four()), AS_OF)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(observations, records, AS_OF)
+    for bad_as_of in ("2026-04-15", "2026-04-15T00:00:00", ""):
+        with pytest.raises(AuthorizedSharesInputError):
+            select_authorized_headroom(observations, _no_actions(), bad_as_of)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(observations, _wrong_family_actions(), AS_OF)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(_shares(), _no_actions(), AS_OF)
+    with pytest.raises(AuthorizedSharesInputError):
+        select_authorized_headroom(
+            _shares(
+                *records,
+                _authorized_obs("foreign", INSTANT, "1", kind=AUTHORIZED_KIND, issuer="issuer:0000000002"),
+            ),
+            _no_actions(),
+            AS_OF,
+        )
+
+
+def test_headroom_result_is_deterministic_and_json_safe() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    first = _headroom(records)
+    second = _headroom(list(reversed(records)))
+    assert first.as_record() == second.as_record()
+
+    record = first.as_record()
+    encoded = json.dumps(record, sort_keys=True)
+    assert json.loads(encoded) == record
+    for value in record.values():
+        assert value is None or isinstance(value, (str, list))
+    assert record["status"] in HEADROOM_STATUSES
+    assert AUTHORIZED_IMPLEMENTATION.endswith("select_authorized_headroom/1")
+    assert AUTHORIZED_COMPILER_VERSION == "capital_structure.authorized_shares/1"
+
+
+def test_headroom_post_init_refuses_an_incoherent_result() -> None:
+    base = dict(
+        issuer_id=ISSUER, security_class_id=SECURITY, as_of=AS_OF, instant=INSTANT,
+        observation_ids=(), conditions=(), notes=(),
+    )
+
+    def _build(**overrides) -> AuthorizedHeadroom:
+        payload = {
+            "status": "known", "authorized": "500000000", "issued": "120000000",
+            "reserved": "8000000", "headroom": "372000000", "ceiling": None,
+        }
+        payload.update(overrides)
+        return AuthorizedHeadroom(**base, **payload)
+
+    assert _build().status == "known"
+    for bad in (
+        {"status": "invented"},
+        {"status": "known", "headroom": None},
+        {"status": "known", "reserved": None},
+        {"status": "known", "headroom": "-1"},
+        {"status": "known", "ceiling": "380000000"},
+        {"status": "shortfall", "headroom": "1"},
+        {"status": "shortfall", "headroom": "-1", "ceiling": "2"},
+        {"status": "ceiling_only", "ceiling": None},
+        {"status": "ceiling_only", "reserved": "8000000"},
+        {"status": "ceiling_only", "headroom": "372000000"},
+        {"status": "unknown", "headroom": "372000000"},
+        {"status": "contradicted", "ceiling": "380000000"},
+        {"authorized": "not-a-number"},
+        {"authorized": 500000000},
+    ):
+        with pytest.raises(AuthorizedSharesInputError):
+            _build(**bad)
