@@ -271,8 +271,13 @@ def read_basket(
     for ticker in ordered:
         try:
             resolved = resolve(ticker, day)
-        except IdentityError:
-            resolved = None
+        except IdentityError as exc:
+            # D00.D2: a resolver that cannot even parse the ticker is a malformed
+            # identity, never a quietly unresolved member (U04 repair r1).
+            raise BasketReadRefusal(
+                BasketRefusalCode.MALFORMED_IDENTITY,
+                f"ticker {ticker!r} raised an identity error while resolving on "
+                f"{day.isoformat()}: {exc}") from exc
         if resolved is not None:
             try:
                 lawful = (isinstance(resolved, str)

@@ -57,7 +57,9 @@ account over the basket population plus a `basket` evidence block.
    dated after the day, then evidence mode, population kind and its match
    against `expected_population`.
 6. Identity — one listing id per ticker for that day; `None` is unresolved,
-   anything else must round-trip through `listing_id(parse_listing_key(v))`.
+   anything else must round-trip through `listing_id(parse_listing_key(v))`,
+   and a resolver that raises `IdentityError` is refused as `MALFORMED_IDENTITY`
+   (repair r1: never a quiet `NEVER_INSPECTED`).
 7. Dispositions — rows grouped by `listing_id`; unresolved `NEVER_INSPECTED`,
    unpriced `MISSING`/`NO_COVERAGE`, primary-only `SERVED`, declared-fallback
    `FALLBACK` (fallback segments only, so C02 never misreads the primary rows as

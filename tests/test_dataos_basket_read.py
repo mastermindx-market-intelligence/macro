@@ -26,6 +26,7 @@ from lib.dataos.basket_read import (
     population_delta,
     read_basket,
 )
+from lib.dataos.identity import IdentityError
 from lib.dataos.nulls import MissingReason
 from lib.dataos.read_contract import (
     CurrentEvidence,
@@ -364,6 +365,22 @@ def test_u04_malformed_resolved_identity_is_refused(resolved) -> None:
         _read(resolver=resolver)
     assert exc.value.code is BasketRefusalCode.MALFORMED_IDENTITY
     assert "600519" in str(exc.value)
+
+
+def test_u04_resolver_identity_error_is_refused_not_unresolved() -> None:
+    """A resolver that RAISES is MALFORMED_IDENTITY (chained), never a quiet NEVER_INSPECTED."""
+
+    class _Raising(_Resolver):
+        def __call__(self, ticker, day):
+            if ticker == "600519":
+                raise IdentityError("ticker '600519' is not a lawful identity")
+            return super().__call__(ticker, day)
+
+    with pytest.raises(BasketReadRefusal) as exc:
+        _read(resolver=_Raising())
+    assert exc.value.code is BasketRefusalCode.MALFORMED_IDENTITY
+    assert "600519" in str(exc.value)
+    assert isinstance(exc.value.__cause__, IdentityError)
 
 
 def test_u04_member_without_price_rows_is_missing_no_coverage() -> None:
