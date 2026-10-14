@@ -205,3 +205,39 @@ is TERMINAL_FAILURE, signal prelaunch_failure, no result_available. Root may per
 this distinct interface change directly; no resubmission, carrier switch or
 unknown-worker replacement. Final F11 indexed trigger closure reached all2555
 path-filtered suites with zero gaps.
+
+
+## October 14 04:55 UTC selected-reader and live producer delta
+
+F11 source through the I03/generation/public-projection union is published at
+6989b333902e on the same draft #9177. Root then added an opt-in qualified reader
+and same-sweep selection interface. The interface retains exact immutable catalog
+bytes/version and SQLite bytes only after the existing complete validator and
+final catalog fence. The Boolean API preserves its refusal contract and default
+false gate. The dedicated reader explicitly prepares once, reuses only while the
+real writer policy and exact catalog fence remain current, binds the existing
+service's catalog and SQLite collaborators inside an operation-local context,
+and verifies raw image parity after real queries. It never calls the incumbent
+mutable corpus cache, rebuilds an index, or edits the frozen original E04/E05
+implementations. Shared runtime defaults remain unchanged.
+
+Final affected source qualification:93 tests and five subtests passed, zero skips.
+Two causal root-review tests failed before repairs: a store ignoring the stricter
+image limit, and writer policy withdrawal during the final fence read. Both are
+now refused. All2557 indexed trigger closures are reachable. The reader exposes a
+final delivery guard, but actual MM authenticated-app composition is still pending;
+image admission limits are not a claim about total process RSS. No installed or
+private-corpus proof follows from this local source result.
+
+Ordinary producer run38511157921 on c699e92784ebb379026b51b2d3dd8a863828118d
+completedSUCCESS at04:34:50. It published150 additional fulltext derivatives with
+zero materialization failures, reported2061remaining, and its authoritative
+source-content grader returnedSOURCE_FRESH at04:34:39 against2861reports and
+latest publication02:40:43. Following run38512459197 was already active; root did
+not dispatch another producer. These are current producer/freshness observations,
+not a qualified common-generation95percent census.
+
+The final selected-reader CI curation/packing contracts passed2/2 in172.73s.
+The initial invocation named a nonexistent test file and ran no tests; the corrected
+actual test_ci_pack.py invocation is the accepted result. All affected checks are
+bound to the staged reader/selection source, with no broader CI success claim.

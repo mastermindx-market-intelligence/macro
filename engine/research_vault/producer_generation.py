@@ -44,7 +44,7 @@ import hashlib
 from datetime import datetime, timezone
 import json
 import re
-from typing import Any
+from typing import Any, NamedTuple
 
 __all__ = [
     "GENERATION_SCHEMA",
@@ -64,6 +64,8 @@ __all__ = [
     "COMPLETE_KEYS",
     "MEMBER_KEYS",
     "InvalidGeneration",
+    "QualifiedSelection",
+    "explained_selection",
     "canonical_json_bytes",
     "compute_catalog_members_digest",
     "compute_catalog_payload_digest",
@@ -148,6 +150,24 @@ MEMBER_KEYS = frozenset(
 
 _SHA256_RE = re.compile(r"\A[0-9a-f]{64}\Z")
 _COMMIT_RE = re.compile(r"\A[0-9a-f]{40}\Z")
+
+
+class QualifiedSelection(NamedTuple):
+    """Immutable bytes retained from one successful qualification sweep.
+
+    An internal consumer value, never a caller-supplied readiness assertion.
+    Runtime reuse still requires the current writer policy and catalog fence.
+    """
+
+    epoch: str
+    producer_source_commit: str
+    catalog_version: str
+    catalog_sha256: str
+    catalog_bytes: bytes
+    corpus_sha256: str
+    corpus_bytes: bytes
+    completed_at: int
+    qualified_at: int
 
 
 class InvalidGeneration(ValueError):
@@ -543,7 +563,7 @@ def _qualify(
     expected_producer_commit: str,
     now: int,
     max_age_seconds: int,
-) -> None:
+) -> QualifiedSelection:
     _require_store_protocol(store)
     blob1, token1 = _read_catalog(store)
     try:
@@ -622,22 +642,30 @@ def _qualify(
             "catalog bytes or version changed during qualification",
         )
 
+    return QualifiedSelection(
+        epoch=generation["epoch"],
+        producer_source_commit=generation["producer_source_commit"],
+        catalog_version=token1,
+        catalog_sha256=hashlib.sha256(blob1).hexdigest(),
+        catalog_bytes=blob1,
+        corpus_sha256=generation["corpus_sha256"],
+        corpus_bytes=corpus_blob,
+        completed_at=completed_at,
+        qualified_at=now,
+    )
 
-def explained_qualification(
+
+def explained_selection(
     store: Any,
     *,
     expected_producer_commit: str,
     now: int,
     max_age_seconds: int,
     writer_protocol_qualified: bool = False,
-) -> tuple[bool, dict | None]:
-    """Run the full consumer qualification; return ``(ok, structured_reason)``.
-
-    ``ok`` is ``True`` only when every check passed; otherwise the second item
-    is ``{"code", "detail", "context"}`` naming the first failed check.
-    """
+) -> tuple[QualifiedSelection | None, dict | None]:
+    """Return the exact selected bytes only after one complete fenced sweep."""
     if writer_protocol_qualified is not True:
-        return False, {
+        return None, {
             "code": "writer_protocol_qualified_required",
             "detail": (
                 "consumer gate requires a literal True writer-adoption "
@@ -649,19 +677,19 @@ def explained_qualification(
         not isinstance(expected_producer_commit, str)
         or _COMMIT_RE.fullmatch(expected_producer_commit) is None
     ):
-        return False, {
+        return None, {
             "code": "expected_producer_commit_invalid",
             "detail": "must be 40 lowercase hex",
             "context": {},
         }
     if type(now) is not int or now < 0:
-        return False, {
+        return None, {
             "code": "now_invalid",
             "detail": "must be integer UTC seconds",
             "context": {},
         }
     if type(max_age_seconds) is not int or max_age_seconds < 0:
-        return False, {
+        return None, {
             "code": "max_age_seconds_invalid",
             "detail": "must be a nonnegative int",
             "context": {},
@@ -669,7 +697,7 @@ def explained_qualification(
 
     sources = _load_source_modules()
     if sources is None:
-        return False, {
+        return None, {
             "code": "source_identity_unavailable",
             "detail": "engine.research_vault fulltext/fulltext_store/corpus not importable",
             "context": {},
@@ -677,7 +705,7 @@ def explained_qualification(
     catalog_mod, corpus_mod, fulltext_mod, store_mod = sources
 
     try:
-        _qualify(
+        selected = _qualify(
             store,
             catalog_mod,
             corpus_mod,
@@ -688,16 +716,35 @@ def explained_qualification(
             max_age_seconds=max_age_seconds,
         )
     except _Fail as exc:
-        return False, exc.reason
+        return None, exc.reason
     except InvalidGeneration as exc:
-        return False, exc.reason
+        return None, exc.reason
     except Exception as exc:  # operational/unknown: fail closed, never True
-        return False, {
+        return None, {
             "code": "unexpected_error",
             "detail": type(exc).__name__,
             "context": {},
         }
-    return True, None
+    return selected, None
+
+
+def explained_qualification(
+    store: Any,
+    *,
+    expected_producer_commit: str,
+    now: int,
+    max_age_seconds: int,
+    writer_protocol_qualified: bool = False,
+) -> tuple[bool, dict | None]:
+    """Boolean compatibility view of the same single qualification sweep."""
+    selected, reason = explained_selection(
+        store,
+        expected_producer_commit=expected_producer_commit,
+        now=now,
+        max_age_seconds=max_age_seconds,
+        writer_protocol_qualified=writer_protocol_qualified,
+    )
+    return selected is not None, reason
 
 
 def qualify_current_generation(

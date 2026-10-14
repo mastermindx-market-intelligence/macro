@@ -93,3 +93,18 @@ def brain_adapter() -> BrainResearchAdapter:
     if _adapter is None:
         _adapter = BrainResearchAdapter(get_read_service())
     return _adapter
+
+
+def build_qualified_read_service(provider, **overrides: Any) -> ResearchReadService:
+    """Explicit dedicated-runtime composition; callers must use provider.run.
+
+    Preparation, current writer policy and final HTTP delivery guards remain
+    the runtime owner's obligations. The ordinary shared factory is unchanged.
+    """
+    reserved = {"catalog_store", "corpus_connection", "full_text_inventory"}
+    if reserved.intersection(overrides):
+        raise ValueError("qualified reader owns catalog, corpus and inventory")
+    return build_read_service(catalog_store=provider.catalog_store,
+                              corpus_connection=provider.connection,
+                              full_text_inventory=provider.full_text_inventory,
+                              **overrides)
