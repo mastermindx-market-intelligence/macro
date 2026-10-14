@@ -11624,7 +11624,7 @@ jobs:
     if: ${{ false }}
     gate: code
     # LR T11-T14 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the pre-registered study harness for
-    # research/LEADERSHIP_ROTATION_PREREG_V1.md — loader/arms/outcomes, zig-zag episodes,
+    # research/LEADERSHIP_ROTATION_PREREG_V1.md (+ the V2 amendment pinned since #9327) — loader/arms/outcomes, zig-zag episodes,
     # clustered paired bootstrap + Holm, group/family composer, P0 synthetic grid + size audit.
     # DEVELOPMENT HARNESS: synthetic arrays and tmp git fixtures only; no data/ read in CI.
     # scope: exclusive — paths = the union of scripts.ci_scope_dependencies.suite_dependency_closure
@@ -11671,6 +11671,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
       - "scripts/__init__.py"
       - "scripts/leadership_rotation_episodes.py"
       - "scripts/leadership_rotation_inference.py"
