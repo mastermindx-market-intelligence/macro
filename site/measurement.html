@@ -3175,8 +3175,8 @@
         <span class="l-zh"><strong>拟合日期：</strong>2026-07-03</span>
       </div>
       <div class="pl-meta-chip">
-        <span class="l-en"><strong>Days since fit:</strong> 103</span>
-        <span class="l-zh"><strong>距拟合天数：</strong>103</span>
+        <span class="l-en"><strong>Days since fit:</strong> 104</span>
+        <span class="l-zh"><strong>距拟合天数：</strong>104</span>
       </div>
       <div class="pl-meta-chip">
         <span class="l-en"><strong>Refit cadence:</strong> quarterly (per D5)</span>
@@ -3937,6 +3937,143 @@
       <h2><span class="l-en">Evidence-Gap Panel</span><span class="l-zh">证据缺口面板</span></h2>
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
+
+    
+    
+    
+    
+    <div class="eg-subpanel" id="eg-thesis-broken">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Broken theses</span><span class="l-zh">已失效论点</span></h3>
+        <span class="eg-subhd-meta">
+          <span class="l-en">8 broken · 0 weakening ·
+            as of 2026-10-14</span>
+          <span class="l-zh">8 个已失效 · 0 个走弱 ·
+            截至 2026-10-14</span>
+        </span>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">Kill criterion fired</span>
+            <span class="l-zh">触发的失效条件</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td class="eg-mono">ag_fertilizer</td>
+            <td class="eg-mono">2026-08-08</td>
+            <td class="eg-mono">PRECIPICE (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">data_center_power</td>
+            <td class="eg-mono">2026-08-02</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">rare_earth_critical_min</td>
+            <td class="eg-mono">2026-08-08</td>
+            <td class="eg-mono">PRECIPICE (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">copper_steel_electrify</td>
+            <td class="eg-mono">2026-07-25</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">defense_aerospace</td>
+            <td class="eg-mono">2026-07-04</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">ai_semiconductors</td>
+            <td class="eg-mono">2026-07-06</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">memory_storage</td>
+            <td class="eg-mono">2026-09-04</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>
+              
+              stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
+                
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">medical_devices</td>
+            <td class="eg-mono">2026-08-20</td>
+            <td class="eg-mono">—</td>
+            <td>
+              
+              llm_inputs — heat 0.196 → 0.157 · 1 surface(s) now · physical now: no
+                
+              
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+      </div>
+      <div class="eg-footnote">
+        <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
+        Deterministic kill criteria; an llm_inputs row lists the inputs an AI-judged
+        thesis was broken on, not which one fired. Display only, not a sizing input.</span>
+        <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
+        确定性失效条件；llm_inputs 行列出 AI 评判论点所依据的输入，不指明具体触发哪一项。
+        仅供展示，不用于仓位决策。</span>
+      </div>
+    </div>
+    
 
     
     
@@ -7639,11 +7776,11 @@
     <div class="mh-prov-grid">
       <dl class="mh-prov-cell">
         <dt><span class="l-en">Build date</span><span class="l-zh">构建日期</span></dt>
-        <dd>2026-10-14</dd>
+        <dd>2026-10-15</dd>
       </dl>
       <dl class="mh-prov-cell">
         <dt><span class="l-en">Generated at (UTC)</span><span class="l-zh">生成时间（UTC）</span></dt>
-        <dd>2026-10-15T05:10:44.157147Z</dd>
+        <dd>2026-10-15T08:26:12.359086Z</dd>
       </dl>
       
       <dl class="mh-prov-cell">
@@ -7674,7 +7811,7 @@
 
 </div>
 
-<script src="measurementdata/measurement_data.js?v=2742ad66" defer></script>
+<script src="measurementdata/measurement_data.js?v=3389b50b" defer></script>
 <script>
 (function(){
   "use strict";
