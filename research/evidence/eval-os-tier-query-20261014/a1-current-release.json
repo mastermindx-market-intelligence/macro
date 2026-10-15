@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T16:02:46.232395+00:00",
+  "updated_at": "2026-10-15T16:26:04.533060+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "old": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
@@ -187,6 +187,33 @@
       "qualified_evaluator_unchanged": true,
       "new_options_observer_and_test_match_a1": true,
       "scope": "Read-only clean newer-base composition with source preservation checks. Existing qualification remains bound0add; no claim of final landing qualification or hosted checks, no carrier integration."
+    },
+    "release_probe": {
+      "qualified_source": "2edbb42d5e8c4ca69bfd9569e80b58fcb4931dd6",
+      "direct_source_file_count": 12,
+      "added_path": "app/deploy/update.sh",
+      "reason": "Follow-on updater9cb changes native API restart semantics; previous11-file source binding omitted it.",
+      "red_regressions": 2,
+      "affected_tests_passed": 16,
+      "subtests_passed": 20,
+      "junit_entries": 36,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "old_eleven_file_binding_refused": true,
+      "stale_updater_refused_before_any_child": true,
+      "evidence": [
+        {
+          "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/followon-updater-binding-red.xml",
+          "sha256": "667a3d8be63c3d139a2d7902ec48f8253239f88c714c534c1ae3c17fbaef61dd"
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/followon-updater-binding-green.xml",
+          "sha256": "a2aaf6d5d00539a96f9e6453e607e558d43de873501844af92ef71a54399f2e2"
+        }
+      ],
+      "unchanged": "Product/runtime/updater bytes, CI manifest/execution and CLI command definitions are unchanged; reuse their accepted checks.",
+      "limit": "Local fake-consumer proof only. Bind final follow-on source after qualification; separately verify actual installed updater copy and API/admin processes. No production execution or acceptance."
     }
   },
   "preserved_boundaries": [
@@ -279,7 +306,7 @@
     ]
   },
   "latest_ci_observation": {
-    "observed_at": "2026-10-15T16:01:31.125692+00:00",
+    "observed_at": "2026-10-15T16:20:58.761915+00:00",
     "pr_state": "open",
     "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
     "workflow_run_id": 38764340141,
@@ -287,21 +314,22 @@
     "status": "in_progress",
     "conclusion": null,
     "ci_plan": "success",
-    "contract_delta": "in_progress",
-    "packs_passed": [],
-    "packs_in_progress": [
-      0,
+    "contract_delta": "success",
+    "packs_passed": [
       1,
       2,
-      3,
       4,
-      5,
       6,
-      7,
       8,
       9,
-      10,
       11
+    ],
+    "packs_in_progress": [
+      0,
+      3,
+      5,
+      7,
+      10
     ]
   },
   "original_plan": {
