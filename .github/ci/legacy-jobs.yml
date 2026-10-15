@@ -29281,6 +29281,14 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - engine/research_codegen/__init__.py
+      - engine/research_codegen/accounting_contract.py
+      - engine/research_codegen/admission.py
+      - engine/research_codegen/bridge.py
+      - engine/research_codegen/contracts.py
+      - engine/research_codegen/evaluation.py
+      - engine/research_codegen/input_contract.py
+      - engine/research_codegen/output_contract.py
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
