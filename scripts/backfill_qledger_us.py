@@ -69,6 +69,9 @@ sys.path.insert(0, str(_ROOT))
 # Engine imports — must NOT import from the nightly runner or render layers.
 from engine.qledger import (
     HORIZON_UNIT_TRADING,
+    STATUS_GRADED,
+    STATUS_OPEN,
+    STATUS_REJECTED,
     TIMESTAMP_QUALITY,
     make_claim,
     register_batch,
@@ -89,7 +92,11 @@ def _require_complete_batch(rows: list[dict], expected: int, desk: str) -> None:
     if (
         not isinstance(rows, list)
         or len(rows) != expected
-        or any(not isinstance(row, dict) or row.get("status") == "error" for row in rows)
+        or any(
+            not isinstance(row, dict)
+            or row.get("status") not in (STATUS_OPEN, STATUS_GRADED, STATUS_REJECTED)
+            for row in rows
+        )
     ):
         raise RuntimeError(f"qledger {desk} batch registration incomplete")
 
