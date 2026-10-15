@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T11:13:09.276650+00:00",
-  "count": 2953,
+  "generated_at": "2026-10-15T12:16:14.477055+00:00",
+  "count": 2956,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -189,6 +189,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ol1vfmcdtmp-c713bc",
+      "title": "Americas Retail Supermarkets Food at home inflation decelerated to +1.8 in September",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:51Z",
+      "summary_points": [
+        "FAH CPI Deceleration: Food-at-Home CPI slowed to +1.8% (vs +2.2% in August), driven by protein deceleration, with fruits/vegetables and non-alcoholic beverages accelerating.",
+        "Grocery-Restaurant Spending Shift: Grocery inflation outpaced restaurants (gap at -1.7% in September), but PCE data shows a shift toward restaurants (-70 bps y/y vs historical -35 bps), signaling spending reallocation risk.",
+        "FAH CPI Reacceleration Indicators: Leading indicators (S&P GSCI Ag & Livestock Index, GS Food COGS Index) suggest slight FAH CPI reacceleration over next six months, supporting grocery sector outperformance.",
+        "CPI-PPI Spread Widening: CPI-PPI spread widened to +2.6% in September (vs +0.5% in August), supporting retailer margins and signaling heightened inflationary pressures on retail supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kgnykp6nskn-b06237",
+      "title": "Ulta Beauty Inc. (ULTA) Takeaways from our meeting with management and store tour",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:39Z",
+      "summary_points": [
+        "Beauty Demand & Loyalty Strength: 95% of sales driven by 47m loyalty members (47m), with 80% experiential store sales and K-beauty (52% exclusive brands) fueling category demand (80-85% basket new items).",
+        "Margin Strategy Shift: Management prioritizes operating profit growth over gross margin/SG&A targets, leveraging distribution centers to offset freight costs and balancing merchandising margin with promotional investments.",
+        "Wellness Category Expansion: Dedicated wellness sections with enhanced signage capitalize on health-focused demand, positioning ULTA for margin expansion in higher-value categories.",
+        "Critical Downside Risks: Market share deterioration, moderating loyalty growth, supply chain disruptions (freight/port), and distribution pressure from prestige beauty threaten near-term performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -865,6 +905,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-til0rufiiqu-13767f",
+      "title": "Equity outlook parallel worlds",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:06:42Z",
+      "summary_points": [
+        "EM AI Momentum: MSCI Korea (+95.53%) and Taiwan (+69.31%) lead EM equities driven by AI adoption, USD returns, and sector strength (energy/tech), with EM 2027e earnings growth at 64.8% vs DM’s 23.9% (IT/energy/healthcare).",
+        "Circular Economy Fundamentals: Business-driven circularity (scarcity, supply chain resilience) fuels efficiency across sectors/regions, distinct from regulation; mid/small-cap focus and buybacks (e.g., SK Hynix $30B) reduce dilution and offset net issuance drag.",
+        "EM Earnings Structural Shift: EM earnings growth momentum (20% CAGR USD EPS since April 2024) supported by broad sector strength (energy, healthcare), buybacks, and domestic demand (China innovation), outpacing DM fundamentals.",
+        "Critical Risk Divergence: Omnicrisis risks (US-China trade, energy wars, debt inflation) contrast with positive drivers (AI, manufacturing spend, EM recovery); geopolitical tensions and liquidity constraints are top portfolio risks.",
+        "EM vs DM Valuation Gap: EM outperformance sustained by structural catalysts (circular economy, buybacks) and earnings growth (64.8% vs DM 23.9%), while DM faces headwinds from monetary tightening and political gridlock."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
