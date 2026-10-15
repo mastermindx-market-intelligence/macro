@@ -531,7 +531,8 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
             assert "请查看每张卡片的入场判读及日期" in heading
             assert "Buy and Near" in heading and "Near requires confirmation" in heading
             assert "买入与临近" in heading and "临近仍需确认" in heading
-            assert "not more likely to win" in heading and "并不代表更容易获胜" in heading
+            assert "not entry permission or a win probability" in heading
+            assert "并非入场许可或胜率" in heading
             assert "entry window is open" not in heading
             assert "入场窗口" not in heading and "现在可操作" not in heading
         if surface != "public" or preview_rows:

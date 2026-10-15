@@ -16765,8 +16765,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <script type="application/json" id="us-stocktable-data">
       {
         "rows": [{% for _n in _su.buy %}{% if not loop.first %},{% endif %}{
+          {% set _table_ticker = (_n.get('ticker') or '')|string|trim|upper %}
+          {% set _table_plans = (plan_rel_by_ticker or {}).get(_table_ticker, []) if plan_rel_by_ticker is defined else [] %}
+          {% set _table_relation = {'state': 'unknown', 'plans': []} if plan_rel is defined and plan_rel is mapping and plan_rel.get('state') == 'unknown' else {'state': 'related_security' if _table_plans else 'none', 'plans': _table_plans} %}
           "ticker":        {{ _n.ticker | tojson }},
-          "setup_detail":  {{ psd_table.table_action(_n, _su.get("as_of")) | string | tojson }},
+          "setup_detail":  {{ psd_table.opportunity_table_action(_n, _su.get("as_of"), _table_relation) | string | tojson }},
           "name":          {{ _n.name | tojson }},
           "sector":        {{ (_n.sector or '') | tojson }},
           "lane":          {{ (_n.get('lane') or '') | tojson }},

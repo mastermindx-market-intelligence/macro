@@ -5678,7 +5678,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     def _table_row(n):
         flat = _us_board_row_flat(n)
         try:
-            presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
+            presenter = env.get_template("_prophet_setup_detail.html.j2").module.opportunity_table_action
             flat["setup_detail"] = str(presenter(
                 n, (us_standouts or {}).get("as_of"),
                 plan_rel=_plan_relation_for_row(plan_relations, n)))

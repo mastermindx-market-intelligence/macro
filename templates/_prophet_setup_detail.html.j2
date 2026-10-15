@@ -136,11 +136,21 @@
 
 {# Same one-row presenter, serialized only with an already-entitled table row.
    Chart text remains inert until the bounded display guard validates its geometry. #}
-{% macro table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% macro table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}, display=none) -%}
 <details class="pv-setup-inline pv-setup-table" data-setup-ticker="{{ row.ticker|e }}" data-setup-asof="{{ as_of|e if as_of else '' }}">
 <summary>{{ t('Setup detail','形态详情') }}</summary>
-<template class="pvs-body-source">{{ body(row, 'board', as_of, plan_rel) }}</template>
+<template class="pvs-body-source">{{ body(row, 'board', as_of, plan_rel, display=display) }}</template>
 <p class="pvs-fallback-note">{{ t('If detail is unavailable, use the stock link in this row.','若详情不可用，请使用本行的个股链接。') }}</p>
 <template class="pvs-chart-source">{{ row.get('spark_svg')|e if row.get('spark_svg') is string else '' }}</template>
 </details>
+{%- endmacro %}
+
+{# Production table uses the same row presenter and caution fold as its card.
+   The legacy action remains usable by read-only callers without a rich display. #}
+{% macro opportunity_table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% import "_prophet_board_cautions.html.j2" as board_cautions %}
+{% set folded = namespace(rows=[]) %}
+{% set ignored = board_cautions.fold(row, folded) %}
+{% set display = present_us_candidate(row, occurrence_id='table-detail', board_asof=as_of, folded_cautions=folded.rows) %}
+{{ table_action(row, as_of, plan_rel, display=display) }}
 {%- endmacro %}
