@@ -1,0 +1,178 @@
+{
+  "schema": "ror1.regional_native_radar_forward_lineage.v1",
+  "macro_main_pin": "9b255a5377385a6b0dab23850e6a6ff67714a5f1",
+  "record_class": "COMMITTED_FORWARD_LEDGER_NOT_USER_NOTIFICATION",
+  "authority": "read_only_descriptive_no_trading_forecast_or_publish_permission",
+  "markets": {
+    "cn": {
+      "path": "data/risk_radar_intl/cn_forward_log.jsonl",
+      "git_blob": "facaaeb830b2e7fb4139e10a2e998408f72de44a",
+      "rows": 42,
+      "first_asof": "2026-06-26",
+      "last_asof": "2026-10-15",
+      "graded_nonnull": 24,
+      "recent_source_records": [
+        {
+          "source_session": "2026-10-09",
+          "recorded_at": "2026-10-09T15:34:53+00:00",
+          "market": "cn",
+          "state": "risk-off",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 97,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-13",
+          "recorded_at": "2026-10-13T15:53:13+00:00",
+          "market": "cn",
+          "state": "risk-off",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 98,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-14",
+          "recorded_at": "2026-10-14T15:17:16+00:00",
+          "market": "cn",
+          "state": "risk-off",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 97,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-15",
+          "recorded_at": "2026-10-15T11:55:52+00:00",
+          "market": "cn",
+          "state": "risk-off",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 97,
+          "graded": false
+        }
+      ]
+    },
+    "hk": {
+      "path": "data/risk_radar_intl/hk_forward_log.jsonl",
+      "git_blob": "6ce8ea457097265b5f559cdf38aa0562a128a427",
+      "rows": 47,
+      "first_asof": "2026-06-26",
+      "last_asof": "2026-10-15",
+      "graded_nonnull": 29,
+      "recent_source_records": [
+        {
+          "source_session": "2026-10-09",
+          "recorded_at": "2026-10-09T16:11:18+00:00",
+          "market": "hk",
+          "state": "elevated",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 88,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-13",
+          "recorded_at": "2026-10-13T16:23:07+00:00",
+          "market": "hk",
+          "state": "elevated",
+          "ungated_state": null,
+          "alert": true,
+          "top_score": 90,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-14",
+          "recorded_at": "2026-10-14T15:50:01+00:00",
+          "market": "hk",
+          "state": "caution",
+          "ungated_state": null,
+          "alert": false,
+          "top_score": 83,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-15",
+          "recorded_at": "2026-10-15T12:28:08+00:00",
+          "market": "hk",
+          "state": "caution",
+          "ungated_state": null,
+          "alert": false,
+          "top_score": 81,
+          "graded": false
+        }
+      ]
+    },
+    "ca": {
+      "path": "data/risk_radar_intl/ca_forward_log.jsonl",
+      "git_blob": "045a9b352ccc4cc35c9d9c21299771ec4926de31",
+      "rows": 51,
+      "first_asof": "2026-06-26",
+      "last_asof": "2026-10-08",
+      "graded_nonnull": 37,
+      "recent_source_records": []
+    },
+    "us": {
+      "path": "data/risk_radar/forward_log.jsonl",
+      "git_blob": "67332ea3cf70841f0e8398fa8da2054587a2f029",
+      "rows": 67,
+      "first_asof": "2026-06-23",
+      "last_asof": "2026-10-14",
+      "graded_nonnull": 49,
+      "recent_source_records": [
+        {
+          "source_session": "2026-10-09",
+          "recorded_at": "2026-10-10T03:48:18+00:00",
+          "market": "us",
+          "state": "caution",
+          "ungated_state": "risk-off",
+          "alert": false,
+          "top_score": 70.2,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-12",
+          "recorded_at": "2026-10-13T06:38:33+00:00",
+          "market": "us",
+          "state": "caution",
+          "ungated_state": "risk-off",
+          "alert": false,
+          "top_score": 70.3,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-13",
+          "recorded_at": "2026-10-14T06:02:59+00:00",
+          "market": "us",
+          "state": "caution",
+          "ungated_state": "risk-off",
+          "alert": false,
+          "top_score": 73.9,
+          "graded": false
+        },
+        {
+          "source_session": "2026-10-14",
+          "recorded_at": "2026-10-15T05:02:39+00:00",
+          "market": "us",
+          "state": "caution",
+          "ungated_state": "risk-off",
+          "alert": false,
+          "top_score": 87.9,
+          "graded": false
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "These records are first-writer issued source evidence, not an installed country warning publisher or an authenticated consumer receipt.",
+    "Latest pending graded=null values establish no realized future outcome and no validated crash probability.",
+    "Log issue times do not certify earliest input availability, broad market contagion or user delivery."
+  ],
+  "cross_market_observation": {
+    "china_native_risk_off_oct13_to_oct15": true,
+    "hk_oct13_native_elevated_then_caution": true,
+    "us_oct14_native_caution_with_ungated_risk_off": true,
+    "interpretation": "independent in-source observations only: stronger early Asia attention was in source ledgers, but existing #8132 adapter's declared files do not expose the native states"
+  }
+}
