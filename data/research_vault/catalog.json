@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T06:42:25.393565+00:00",
-  "count": 2940,
+  "generated_at": "2026-10-15T07:12:26.888182+00:00",
+  "count": 2941,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1114,6 +1114,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 36,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2jcu78jbc5x-fbe594",
+      "title": "Jefferies European Equity Daily",
+      "institution": "Jefferies",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:52:46Z",
+      "summary_points": [
+        "Unilever Q3 Fundamentals & Risks: Q3e LFL 4.3% (vs 4.6%), rising input costs, SE Asia consumer challenges, Food exit complexity; EPS revised down (44→40), HOLD rating, 4000p target.",
+        "Galp Energia Refining Margin Surge: Q3 refining margins hit $33.8/bbl (vs $23.3/bbl Q2), driving EBITDA upside; hedge impact offsetting midstream drag.",
+        "EU Steel Safeguards Policy Shift: Council debating \"systemic reaction\" trade instrument (15-16 Oct); historical 63% equity price rise for producers signals sector-wide policy risk/re-rating.",
+        "Nordex SE Order Beat & Momentum: Q3 orders 2.810GW (+29.5% YoY, 13% ahead of consensus), strong European/Germany demand; offsets share weakness, €2.529bn orders.",
+        "US-Russia Diesel Deal & China NEV Policy: US signs Russia diesel deal (fuel shock risk), China cuts NEV export VAT rebate early (HDTs marginally affected); immediate profitability impacts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
