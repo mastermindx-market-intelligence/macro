@@ -76,5 +76,19 @@ class InstructionLazyLoadingTests(unittest.TestCase):
         self.assertIn('Account-local memory is optional task context', text)
 
 
+    def test_relocated_case_law_quotes_keep_resolvable_source_paths(self):
+        import yaml
+        graph = yaml.safe_load((ROOT / 'config/ruling_graph.yml').read_text())
+        selected = [r for r in graph['rulings'] if r['ruling_id'] in
+                    {'HOUSE-U1', 'HOUSE-U2', 'HOUSE-U3', 'HOUSE-U4', 'HOUSE-U5'}]
+        self.assertEqual(len(selected), 5)
+        for row in selected:
+            with self.subTest(ruling=row['ruling_id']):
+                source = ' '.join((ROOT / row['source_doc']).read_text().split())
+                quote = ' '.join(row['source_quote'].split())
+                self.assertTrue(quote in source,
+                                row['ruling_id'] + ' source_doc must follow its unchanged quote')
+
+
 if __name__ == '__main__':
     unittest.main()
