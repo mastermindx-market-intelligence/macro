@@ -177,8 +177,28 @@ def test_agency_source_id_and_parser_contracts_fail_closed(event_type: str) -> N
     assert normalize_publication(bad) == []
 
     bad = _publication(event_type)
-    bad["parser"]["version"] = 2
+    bad["parser"]["version"] = 3 if event_type == "CPI" else 2
     assert normalize_publication(bad) == []
+
+
+
+def test_cpi_v2_current_receipts_accept_without_invalidating_v1_history() -> None:
+    """The repaired watcher may emit v2; keep-first CPI v1 truth stays readable."""
+    historical = normalize_publication(_publication("CPI"))
+    assert len(historical) == 2
+    assert all(row["parser_version"] == 1 for row in historical)
+
+    current = _publication("CPI")
+    current["parser"]["version"] = 2
+    repaired = normalize_publication(current)
+    assert len(repaired) == 2
+    assert all(row["parser_version"] == 2 for row in repaired)
+    assert all(receipt_integrity_errors(row) == [] for row in repaired)
+    # The metric identity and source digest, not parser generation, determine
+    # keep-first receipt identity; a parser upgrade cannot create a duplicate.
+    assert [row["receipt_id"] for row in repaired] == [
+        row["receipt_id"] for row in historical
+    ]
 
 
 def test_unofficial_domain_or_missing_hash_fails_closed() -> None:

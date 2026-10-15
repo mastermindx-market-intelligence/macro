@@ -194,6 +194,11 @@ def test_release_watcher_seeds_before_release_then_detects_change():
     assert publication["source_released_at"] == "2026-07-14T12:30:00+00:00"
     assert publication["source_time_basis"] == "scheduled_embargo_floor"
     assert publication["is_context_only"] is True
+    # The faster display path must remain admissible to the existing
+    # downstream canonical first-print reconciliation, not die on a parser bump.
+    cpi_receipts = [row for row in receipts_from_payload(payload) if row["release"].startswith("cpi_")]
+    assert {row["release"] for row in cpi_receipts} == {"cpi_headline", "cpi_core"}
+    assert all(row["parser_version"] == 2 for row in cpi_receipts)
 
 
 def test_release_watcher_cold_start_recovers_from_official_date():
