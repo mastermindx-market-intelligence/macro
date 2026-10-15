@@ -643,30 +643,60 @@ if (scene.previous_error && status()) {
 const before = {today: snapshot(document.getElementById('us-today')),
   candidates: snapshot(document.getElementById('us-candidates')),
   date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)};
-const window = {MDXAuth: {user: () => ({id: 'member'}), hasSession: () => true,
+let currentUser = scene.initial_user_null ? null : {id: 'member'};
+const authListeners = [];
+function emitAuth(user, event) {
+  currentUser = user;
+  authListeners.forEach(fn => fn({detail: {user, event}}));
+}
+function changeAuth(stage) {
+  if (scene.auth_change_at !== stage) return;
+  if (scene.auth_change === 'roundtrip') {
+    emitAuth(null, 'SIGNED_OUT'); emitAuth({id: 'member'}, 'SIGNED_IN');
+  } else if (scene.auth_change === 'switch') emitAuth({id: 'other'}, 'SIGNED_IN');
+  else if (scene.auth_change === 'silent-switch') currentUser = {id: 'other'};
+  else if (scene.auth_change === 'logout') emitAuth(null, 'SIGNED_OUT');
+  else emitAuth({id: 'member'}, scene.auth_change || 'TOKEN_REFRESHED');
+}
+const window = {addEventListener: (name, fn) => {
+  if (name === 'mdx-auth') authListeners.push(fn);
+}, MDXAuth: {user: () => currentUser, hasSession: () => true,
   client: () => Promise.resolve({auth: {getSession: () => {
     sessionRefreshes++;
     if (scene.session_mode === 'rejected') return Promise.reject(new Error('fixture rejected'));
     const session = scene.session_mode === 'missing' ? null :
-      {access_token: scene.session_mode === 'blank' ? ' ' : 'explicit-test-session'};
-    return Promise.resolve({data: {session}, error: scene.session_mode === 'error' ? {} : null});
+      {access_token: scene.session_mode === 'blank' ? ' ' : 'explicit-test-session',
+       user: scene.session_user === 'missing' ? null :
+         {id: scene.session_user === 'mismatch' ? 'other' : 'member'}};
+    return Promise.resolve().then(() => {
+      if (scene.initial_user_null) emitAuth({id: 'member'}, 'INITIAL_SESSION');
+      changeAuth('session');
+      return {data: {session}, error: scene.session_mode === 'error' ? {} : null};
+    });
   }}})},
   USStockTable: {_mergeRows: rows => merges.push(rows)}};
 const fetch = (url, options) => {
   requests.push({url, options});
   const isApi = String(url).indexOf('/api/prophet/daily-brief/v1') === 0;
   const failure = isApi ? ((scene.api || {}).failure || '200') : scene.failure;
-  if (failure === 'network') return Promise.reject(new TypeError('offline'));
   const code = failure === 'http500' ? 500 : Number(failure) || 200;
-  return Promise.resolve({ok: code >= 200 && code < 300, status: code,
-    json: () => failure === 'bad_json' ? Promise.reject(new SyntaxError('bad JSON')) :
-      Promise.resolve(scene.failure === 'invalid_envelope' && !isApi
-        ? {schema: 'wrong', page: 'us_stocks'}
-        : (isApi ? (scene.api || {}).envelope : scene.payload))});
+  return Promise.resolve().then(() => {
+    changeAuth(isApi ? 'response' : 'payload');
+    if (failure === 'network') throw new TypeError('offline');
+    return {ok: code >= 200 && code < 300, status: code,
+      json: () => Promise.resolve().then(() => {
+        if (isApi) changeAuth('json');
+        if (failure === 'bad_json') throw new SyntaxError('bad JSON');
+        return scene.failure === 'invalid_envelope' && !isApi
+          ? {schema: 'wrong', page: 'us_stocks'}
+          : (isApi ? (scene.api || {}).envelope : scene.payload);
+      })};
+  });
 };
 vm.runInNewContext(scene.loader, {window, document, fetch, Promise, console, Event: function(){},
   setTimeout: fn => { fn(); return 1; }, location: {href: 'us_stocks.html'}});
 setImmediate(() => {
+  changeAuth('after');
   const s = status();
   let visible = !!s && !s.hidden;
   for (let n = s && s.parentNode; n; n = n.parentNode) {
@@ -999,3 +1029,50 @@ def test_genuinely_empty_served_shelf_makes_no_native_query_and_no_mutation(
     assert out["todayTickers"] == []
     assert out["after"] == out["before"], (
         "an empty shelf must not mutate the shell, its empty note or any other warning")
+
+
+# Account lifetime is distinct from source/roster admission. Execute the real
+# rendered loader and delay the native response across canonical auth events.
+@pytest.mark.parametrize("at", ["session", "payload", "response", "json", "after"])
+@pytest.mark.parametrize("change", ["logout", "switch", "roundtrip"])
+def test_native_context_cannot_outlive_requesting_account(tmp_path, loader_scene, at, change):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at=at, auth_change=change)
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert "Additional context is available" not in out["nativeNote"]
+    assert len(out["requests"]) == (1 if at in {"session", "payload"} else 2)
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+@pytest.mark.parametrize("change", ["TOKEN_REFRESHED", "SIGNED_IN", "PREFS_SAVED", "USER_UPDATED"])
+def test_native_same_account_events_preserve_request(tmp_path, loader_scene, change):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at="json", auth_change=change)
+    assert out["nativeState"] == "partial" and len(out["requests"]) == 2
+
+
+def test_native_initial_session_binds_before_query(tmp_path, loader_scene):
+    out = _run(tmp_path, loader_scene, mode="today", initial_user_null=True)
+    assert out["nativeState"] == "partial" and len(out["requests"]) == 2
+
+
+@pytest.mark.parametrize("user", ["missing", "mismatch"])
+def test_native_token_requires_same_account_identity(tmp_path, loader_scene, user):
+    out = _run(tmp_path, loader_scene, mode="today", session_user=user)
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "NATIVE_SESSION_UNAVAILABLE"
+    assert len(out["requests"]) == 1
+
+
+@pytest.mark.parametrize("failure,at", [("401", "response"), ("403", "response"),
+                                        ("network", "response"), ("bad_json", "json")])
+def test_native_late_error_does_not_overwrite_session_change(tmp_path, loader_scene, failure, at):
+    out = _run(tmp_path, {**loader_scene, "api": {"failure": failure}}, mode="today",
+               auth_change_at=at, auth_change="logout")
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert len(out["requests"]) == 2
+
+
+def test_native_rechecks_owner_even_without_event(tmp_path, loader_scene):
+    out = _run(tmp_path, loader_scene, mode="today", auth_change_at="json", auth_change="silent-switch")
+    assert out["nativeReasons"] == "NATIVE_SESSION_CHANGED"
+    assert out["nativeState"] == "unavailable" and len(out["requests"]) == 2

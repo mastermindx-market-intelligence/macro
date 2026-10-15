@@ -20701,16 +20701,54 @@ if (document.readyState === 'loading') {
      long-idle member can be signed in with a token the server will reject.
      getSession() refreshes and rewrites the cookie before we ask (same fix as
      the onboarding wall, PR #3454). No-op when signed out. */
-  var todayAccessToken = null;
+  var todayAccessToken = null, todaySessionUser = null;
+  var todayAuthEpoch = 0, todaySessionEpoch = 0, todayNativeAdmission = null;
+  function todayAccountId(){
+    try {
+      var user = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user();
+      return user && typeof user.id === 'string' && user.id.trim() ? user.id : null;
+    } catch(e) { return null; }
+  }
+  var todayObservedUser = todayAccountId();
+  function invalidateTodayAccount(){
+    todayAuthEpoch++;
+    todayAccessToken = null;
+    todaySessionUser = null;
+    if (todayNativeAdmission) applyTodayNative(todayNativeAdmission,
+      { state: 'unavailable', reasons: ['NATIVE_SESSION_CHANGED'] });
+  }
+  /* This only withholds stale display context; server authorization is unchanged.
+     A generation also rejects logout/relogin to the same account. Same-account
+     refresh/preference events and the first INITIAL_SESSION do not cancel work. */
+  window.addEventListener('mdx-auth', function(event){
+    var user = todayAccountId();
+    if ((event && event.detail && event.detail.event === 'SIGNED_OUT') ||
+        (todayObservedUser && user !== todayObservedUser)) invalidateTodayAccount();
+    todayObservedUser = user;
+  });
+  function todayRequestCurrent(epoch, user){
+    if (epoch === todayAuthEpoch && user && user === todayAccountId()) return true;
+    if (epoch === todayAuthEpoch) invalidateTodayAccount();
+    return false;
+  }
   function freshSession(){
     todayAccessToken = null;
+    todaySessionUser = null;
+    todaySessionEpoch = todayAuthEpoch;
+    var epoch = todaySessionEpoch;
+    todayObservedUser = todayAccountId();
     try{
       if (window.MDXAuth && window.MDXAuth.client && window.MDXAuth.hasSession && window.MDXAuth.hasSession()){
         return window.MDXAuth.client().then(function(sb){ return sb.auth.getSession(); })
           .then(function(result){
             var session = result && !result.error && result.data && result.data.session;
-            if (session && typeof session.access_token === 'string' && session.access_token.trim()){
+            var user = session && session.user && session.user.id;
+            if (epoch === todayAuthEpoch && typeof user === 'string' && user.trim() &&
+                user === todayAccountId() && typeof session.access_token === 'string' &&
+                session.access_token.trim()){
               todayAccessToken = session.access_token;
+              todaySessionUser = user;
+              todayObservedUser = user;
             }
             return result;
           }).catch(function(){});
@@ -21102,10 +21140,17 @@ if (document.readyState === 'loading') {
      disclose typed unavailable WITHOUT retry; the incumbent shell and its
      hydrated cards are never dropped either way. */
   function queryDailyBrief(admission){
+    todayNativeAdmission = admission;
+    var epoch = todaySessionEpoch, user = todaySessionUser;
+    if (epoch !== todayAuthEpoch){
+      applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_SESSION_CHANGED'] });
+      return Promise.resolve();
+    }
     if (!todayAccessToken){
       applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_SESSION_UNAVAILABLE'] });
       return Promise.resolve();
     }
+    if (!todayRequestCurrent(epoch, user)) return Promise.resolve();
     /* Withhold any prior native context while this exact full roster is checked.
        Ordinary cards and their selection/order remain untouched. */
     applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'] });
@@ -21117,6 +21162,7 @@ if (document.readyState === 'loading') {
     return fetch(url, { credentials: 'same-origin', cache: 'no-store',
                         headers: { Authorization: 'Bearer ' + todayAccessToken } })
       .then(function(r){
+        if (!todayRequestCurrent(epoch, user)) return null;
         if (r && (r.status === 401 || r.status === 403)){
           applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_AUTH_UNAVAILABLE'] });
           return null;
@@ -21125,7 +21171,7 @@ if (document.readyState === 'loading') {
         return r.json().then(function(data){ return { http: r.status, data: data }; });
       })
       .then(function(result){
-        if (!result) return;
+        if (!result || !todayRequestCurrent(epoch, user)) return;
         var outcome;
         if (result.http === 200){
           outcome = todayNativeOutcome(result.data, admission);
@@ -21147,6 +21193,7 @@ if (document.readyState === 'loading') {
         applyTodayNative(admission, outcome);
       })
       .catch(function(){
+        if (!todayRequestCurrent(epoch, user)) return;
         applyTodayNative(admission,
                          { state: 'unavailable', reasons: ['DAILY_BRIEF_UNAVAILABLE'] });
       });
