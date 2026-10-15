@@ -379,6 +379,63 @@ class _StreamResponse:
         self.closed = True
 
 
+def test_aggregate_ticker_coverage_is_case_safe_and_no_raw_content_is_reported():
+    universe = {"MU": {}, "TPC": {}, "TpC": {}, "AAPL": {}}
+    rows = [
+        article(id=91101, tickers=["mu"]),
+        article(id=91102, tickers=["tpc"]),
+        article(id=91103, tickers=["AAPL"]),
+        article(id=91104, tickers=["UNKNOWN-CANDIDATE"]),
+        article(id=91105, tickers=[]),
+        article(id=91106, tickers=["mu", "tpc", "UNKNOWN-CANDIDATE"]),
+        article(id=91107, tickers=["AAPL", "mu"]),
+        article(id=False, tickers=["MU"]),
+    ]
+    audit = tn.audit_ticker_coverage(rows, universe, received_at=NOW)
+    assert audit == {
+        "sample_rows": 8,
+        "valid_rows": 7,
+        "ticker_tagged_rows": 6,
+        "unique_canonical_match_rows": 4,
+        "ambiguous_ticker_rows": 2,
+        "unresolved_ticker_rows": 2,
+        "matched_canonical_symbol_count": 2,
+        "case_stranded_matched_rows": 3,
+        "no_unique_match_rows": 2,
+        "diagnostic_basis": "caller_universe_display_candidate_not_identity_grant",
+    }
+    assert "UNKNOWN-CANDIDATE" not in json.dumps(audit)
+    assert "Chipmaker" not in json.dumps(audit)
+    assert "reuters" not in json.dumps(audit)
+
+
+def test_ticker_audit_builds_one_universe_index_per_sample(monkeypatch):
+    build = tn._ticker_lookup_index
+    calls = []
+
+    def indexed_once(universe):
+        calls.append(1)
+        return build(universe)
+
+    monkeypatch.setattr(tn, "_ticker_lookup_index", indexed_once)
+    rows = [article(id=92000 + i, tickers=["mu"]) for i in range(20)]
+    stats = tn.audit_ticker_coverage(rows, {"MU": {}}, received_at=NOW)
+    assert stats["unique_canonical_match_rows"] == 20
+    assert stats["case_stranded_matched_rows"] == 20
+    assert calls == [1]
+
+
+def test_empty_ticker_universe_does_not_invent_security_identities():
+    report = tn.audit_ticker_coverage(
+        [article(id=91201, tickers=["mu"])], {}, received_at=NOW
+    )
+    assert report["unique_canonical_match_rows"] == 0
+    assert report["unresolved_ticker_rows"] == 1
+    assert report["no_unique_match_rows"] == 1
+    with pytest.raises(ValueError, match="ticker_universe_invalid"):
+        tn.audit_ticker_coverage([], None, received_at=NOW)
+
+
 @pytest.mark.parametrize("status", [301, 302, 401, 403, 429, 500])
 def test_http_errors_and_redirects_make_one_request_and_close(status):
     response = _StreamResponse(status=status)

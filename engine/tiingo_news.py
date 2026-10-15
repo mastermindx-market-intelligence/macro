@@ -123,17 +123,16 @@ def normalize_article(raw: Mapping[str, object], *, received_at: datetime) -> di
     }
 
 
-def resolve_ticker_candidates(tags: list[str], universe: Mapping[str, object]) -> dict:
-    """Route unique matches to the incumbent entity-map's exact ticker keys.
-
-    Lower-case Tiingo tags are not Massive case-sensitive identities. Do not
-    upper-case a tag into a new security or choose between TPC and TpC. This is
-    display routing, not a dated Data OS identity grant.
-    """
+def _ticker_lookup_index(universe: Mapping[str, object]) -> dict[str, set[str]]:
+    """Pure candidate lookup; duplicate folded spellings remain ambiguous."""
     index: dict[str, set[str]] = {}
     for key in universe:
         if isinstance(key, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9.-]{0,15}", key):
             index.setdefault(key.replace(".", "-").casefold(), set()).add(key)
+    return index
+
+
+def _resolve_ticker_tags(tags: list[str], index: Mapping[str, set[str]]) -> dict:
     resolved: set[str] = set()
     unknown, ambiguous = [], []
     for tag in tags:
@@ -145,6 +144,72 @@ def resolve_ticker_candidates(tags: list[str], universe: Mapping[str, object]) -
         else:
             unknown.append(tag)
     return {"tickers": sorted(resolved), "unresolved": unknown, "ambiguous": ambiguous}
+
+
+def resolve_ticker_candidates(tags: list[str], universe: Mapping[str, object]) -> dict:
+    """Route unique matches to the incumbent entity-map's exact ticker keys.
+
+    Lower-case Tiingo tags are not Massive case-sensitive identities. Do not
+    upper-case a tag into a new security or choose between TPC and TpC. This is
+    display routing, not a dated Data OS identity grant.
+    """
+    return _resolve_ticker_tags(tags, _ticker_lookup_index(universe))
+
+
+def audit_ticker_coverage(
+    rows: list[object], universe: Mapping[str, object], *, received_at: datetime
+) -> dict:
+    """Aggregate-only QA against caller-supplied existing ticker keys.
+
+    The result documents potential *display routing*, not security-identity
+    admission, event entry, tag precision or an authorized publisher decision.
+    No provider title, raw ticker value, source URL or identifier is returned.
+    """
+    when = _received(received_at)
+    if not isinstance(universe, Mapping):
+        raise ValueError("ticker_universe_invalid")
+    # One index per sample, not one regex/folding pass across the universe
+    # for every article (large research universes can contain 10k+ keys).
+    index = _ticker_lookup_index(universe)
+    valid = tagged = matched = ambiguous = unresolved = stranded_case = 0
+    all_matched: set[str] = set()
+    for row in rows:
+        try:
+            item = normalize_article(row, received_at=when)
+        except TiingoArticleError:
+            continue
+        valid += 1
+        tokens = item["tickers"]
+        if not tokens:
+            continue
+        tagged += 1
+        resolved = _resolve_ticker_tags(tokens, index)
+        unique = resolved["tickers"]
+        if unique:
+            matched += 1
+            all_matched.update(unique)
+            # A headline with both exact-case AAPL and lower-case mu still
+            # strands MU in today's per-ticker index. Count any unmatched
+            # canonical symbol, not just rows with zero exact tags.
+            vendor_index_keys = {token.replace(".", "-") for token in tokens}
+            if any(symbol not in vendor_index_keys for symbol in unique):
+                stranded_case += 1
+        if resolved["ambiguous"]:
+            ambiguous += 1
+        if resolved["unresolved"]:
+            unresolved += 1
+    return {
+        "sample_rows": len(rows),
+        "valid_rows": valid,
+        "ticker_tagged_rows": tagged,
+        "unique_canonical_match_rows": matched,
+        "ambiguous_ticker_rows": ambiguous,
+        "unresolved_ticker_rows": unresolved,
+        "matched_canonical_symbol_count": len(all_matched),
+        "case_stranded_matched_rows": stranded_case,
+        "no_unique_match_rows": tagged - matched,
+        "diagnostic_basis": "caller_universe_display_candidate_not_identity_grant",
+    }
 
 
 def fetch_articles(token: str, *, limit: int = 250,
