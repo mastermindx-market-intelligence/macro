@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T11:13:09.276650+00:00",
-  "count": 2953,
+  "generated_at": "2026-10-15T11:28:02.462252+00:00",
+  "count": 2954,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -865,6 +865,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-til0rufiiqu-13767f",
+      "title": "Equity outlook parallel worlds",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:06:42Z",
+      "summary_points": [
+        "EM AI Momentum: MSCI Korea (+95.53%) and Taiwan (+69.31%) lead EM equities driven by AI adoption, USD returns, and sector strength (energy/tech), with EM 2027e earnings growth at 64.8% vs DM’s 23.9% (IT/energy/healthcare).",
+        "Circular Economy Fundamentals: Business-driven circularity (scarcity, supply chain resilience) fuels efficiency across sectors/regions, distinct from regulation; mid/small-cap focus and buybacks (e.g., SK Hynix $30B) reduce dilution and offset net issuance drag.",
+        "EM Earnings Structural Shift: EM earnings growth momentum (20% CAGR USD EPS since April 2024) supported by broad sector strength (energy, healthcare), buybacks, and domestic demand (China innovation), outpacing DM fundamentals.",
+        "Critical Risk Divergence: Omnicrisis risks (US-China trade, energy wars, debt inflation) contrast with positive drivers (AI, manufacturing spend, EM recovery); geopolitical tensions and liquidity constraints are top portfolio risks.",
+        "EM vs DM Valuation Gap: EM outperformance sustained by structural catalysts (circular economy, buybacks) and earnings growth (64.8% vs DM 23.9%), while DM faces headwinds from monetary tightening and political gridlock."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
