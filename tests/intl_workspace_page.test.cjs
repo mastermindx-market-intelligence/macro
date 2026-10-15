@@ -80,8 +80,8 @@ from tests.test_intl_workspace_integration import render_fixture
 from engine.intl_inputs import countries
 from scripts import build_intl
 with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
-    frame, _ = _setup(Path(tmp))
-    if ${isolated ? 'True' : 'False'}:
+    frame, _ = _setup(Path(tmp), omit=${isolated === 'missing-fx' ? "'USDJPY=X'" : 'None'})
+    if ${isolated && isolated !== 'missing-fx' ? 'True' : 'False'}:
         for market in ('AU', 'KR'):
             symbol = countries()[market]['fx']
             frame.loc[frame.index[${isolated === 'edges' ? '[-21, -2]' : '[-12, -10]'}], symbol] = float('nan')
@@ -167,6 +167,54 @@ for (const lang of ['en','zh']) {
       await page.goBack();await matches('1m','usd_unhedged');
       assert.equal(page.url(),origin);assert.equal(await panel.locator('[data-im-chart-model]').innerHTML(),first);
     },{htmlOverride:sourceChartFixture(),width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
+for (const lang of ['en','zh']) {
+  test(`Native Compare missing FX retains selections across basis and Back ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const initialUrl=page.url(),chart=panel.locator('[data-im-chart-model]');
+      const initialChart=await chart.innerHTML();
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'comparable');
+      assert.deepEqual(await chart.locator('[data-im-chart-table-market]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort()),['AU','KR']);
+      await picker.selectOption('0');
+      // The native owner gives Japan's local-only leg a distinct calendar
+      // policy. An available price is not a matching comparison window.
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'unequal_windows');
+      assert.equal(await panel.locator('[data-im-chart-cohort]:visible').count(),0);
+      const japan=panel.locator('[data-im-compare-slot="0"]');
+      const localValue=await japan.locator('[data-im-compare-metric="local"] [data-im-compare-value]').innerText();
+      await page.selectOption('[data-im-action="set_basis"]','usd_unhedged');
+      assert.equal(new URL(page.url()).searchParams.get('pins'),'KR,AU,JP');
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'incomparable');
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'selection_unqualified');
+      assert.deepEqual(await panel.locator('[data-im-compare-slot]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imCompareSlot)),['1','4','0']);
+      assert.equal(await panel.locator('[data-im-chart-cohort]:visible').count(),0);
+      assert.equal(await panel.locator('[data-im-chart-series]:visible').count(),0);
+      assert.equal(await japan.locator('[data-im-compare-metric="local"] [data-im-compare-value]').innerText(),localValue);
+      for(const leg of ['usd','fx_contribution']) assert.equal(await japan.locator(`[data-im-compare-metric="${leg}"] [data-im-compare-value]`).innerText(),lang==='zh'?'不可用':'Unavailable');
+      const reading=await panel.locator('[data-im-compare-status]').innerText();
+      assert.match(reading,lang==='zh'?/全部选择已保留/:/All selections are retained/);
+      const client=await page.context().newCDPSession(page);
+      const tree=(await client.send('Accessibility.getFullAXTree')).nodes;
+      assert.equal(tree.filter(n=>!n.ignored&&n.role?.value==='image'&&/Same starting point|相同起点/.test(n.name?.value||'')).length,0,'a hidden comparison must not remain exposed as a chart');
+      await page.goBack();
+      assert.equal(await panel.getAttribute('data-basis'),'local');
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'unequal_windows');
+      assert.equal(await panel.locator('[data-im-chart-cohort]:visible').count(),0);
+      await page.goBack();await page.waitForURL(initialUrl);
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'comparable');
+      assert.equal(await chart.innerHTML(),initialChart);
+      await page.goForward();
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'unequal_windows');
+      await page.goForward();
+      assert.equal(new URL(page.url()).searchParams.get('pins'),'KR,AU,JP');
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'selection_unqualified');
+      assert.equal(await panel.locator('[data-im-chart-cohort]:visible').count(),0);
+    },{htmlOverride:sourceChartFixture('missing-fx'),width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare&basis=local'});
   });
 }
 
