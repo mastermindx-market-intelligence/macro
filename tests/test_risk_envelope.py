@@ -841,3 +841,17 @@ class TestRadarOwnSessionContinuity:
         read = _risk_radar_read({"state": "caution"}, "2026-10-14", "2026-10-14")
         assert read.as_of == "2026-10-14"
         assert read.usable is True
+
+
+def test_fresh_native_radar_is_not_made_stale_by_an_older_measured_container():
+    """Source clocks are independent in both directions, not only for rejection."""
+    from scripts.build_risk_envelope import _risk_radar_read
+    current = _risk_radar_read({"state": "elevated", "asof": "2026-10-14"},
+                               "2026-10-14", "2026-10-08")
+    assert current.as_of == "2026-10-14"
+    assert current.usable is True
+    legacy = _risk_radar_read({"state": "elevated"}, "2026-10-14", "2026-10-08")
+    assert legacy.usable is False
+    explicitly_stale = _risk_radar_read({"state": "elevated", "asof": "2026-10-14"},
+                                        "2026-10-14", "2026-10-08", stale_override=True)
+    assert explicitly_stale.usable is False

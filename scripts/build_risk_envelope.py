@@ -452,7 +452,10 @@ def _risk_radar_read(radar: Mapping[str, Any] | None, session: str | None,
     if "asof" in radar:
         native_asof = radar.get("asof")
         as_of = native_asof if isinstance(native_asof, str) else None
-        stale = bool(stale or _day(as_of) is None or _day(session) is None or as_of != session)
+        # A current native source also must not inherit an older measured
+        # container's date. Retain an explicit source/live refusal, not that
+        # unrelated container-age comparison.
+        stale = bool(stale_override or _day(as_of) is None or _day(session) is None or as_of != session)
     return SourceRead(
         source_id=_RADAR_SOURCE,
         role="hazard_evidence",
