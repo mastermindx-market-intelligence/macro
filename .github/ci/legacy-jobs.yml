@@ -25354,6 +25354,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_history_filings.py
+      - tests/test_market_memory_history_filings.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py
@@ -27556,6 +27558,10 @@ jobs:
       - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
       # Existing guarded Data & Lab historical-dossier read projection.
       - tests/test_dataos_web_history.py
+      - engine/neuralweb/market_memory_history_filings.py
+      - tests/test_market_memory_history_filings.py
+      - engine/earnings_release/filing_key.py
+      - engine/earnings_release/__init__.py
       - tests/test_market_memory_history_workflow.py
       - plugins/mastermind-data-lab/skills/data-workspace/SKILL.md
       - plugins/mastermind-data-lab/skills/data-workspace/references/requests.md
@@ -27599,7 +27605,7 @@ jobs:
       - name: web data access, source clocks, reader limits and canonical Lab isolation
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
@@ -27632,6 +27638,9 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/neuralweb/market_memory_history_filings.py
+      - engine/earnings_release/filing_key.py
+      - engine/earnings_release/__init__.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/__init__.py

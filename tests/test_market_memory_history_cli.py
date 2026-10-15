@@ -487,6 +487,21 @@ def test_cli_normalizes_accepted_hex_case():
     assert cli._sha256_argument('ABCDEF01' * 8) == 'abcdef01' * 8
 
 
+
+def test_cli_dossier_and_export_forward_explicit_filing_bindings(monkeypatch,tmp_path,capsys):
+    dossier=Recorder(result={'filings':{'events':[]}});export=Recorder(result={'filing_events':0})
+    monkeypatch.setattr(cli,'build_daily_dossier',dossier);monkeypatch.setattr(cli,'export_browser',export)
+    common=['--archive',str(tmp_path/'history'),'--manifest-sha256',SHA256,
+            '--filings',str(tmp_path/'earnings_8k_dates.parquet'),'--filings-sha256',SHA256]
+    assert cli.main(['dossier',*common,'--date','2020-03-16','--filings-offset','50'])==0
+    assert dossier.last[1]['filings_path']==tmp_path/'earnings_8k_dates.parquet'
+    assert dossier.last[1]['expected_filings_sha256']==SHA256 and dossier.last[1]['filings_offset']==50
+    assert cli.main(['export',*common,'--output',str(tmp_path/'out.html')])==0
+    assert export.last[1]['filings_path']==tmp_path/'earnings_8k_dates.parquet'
+    assert export.last[1]['expected_filings_sha256']==SHA256
+    assert 'filings_offset' not in export.last[1]
+
+
 class TestExtend:
     def test_forwards_exact_parent_new_request_and_new_destination(self,monkeypatch,tmp_path,capsys):
         box=Recorder(result={'status':'EXTENDED','added_state_rows':5})
