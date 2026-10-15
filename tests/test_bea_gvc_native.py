@@ -397,5 +397,44 @@ class CandidateHardeningTests(unittest.TestCase):
             bind((encoded(lineage),sources,receipts))
 
 
+class ProducerIdentityTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.parts = fixture()
+        cls.candidate = bind(cls.parts)
+
+    def test_materializer_refuses_self_consistent_foreign_producer_hash(self):
+        current = self.candidate.manifest
+        foreign = bea._manifest(self.candidate.sources, current["source_lineage_sha256"],
+                                "1" * 64, (2017,), current["candidate_ingested_at"], 0, None)
+        candidate = replace(self.candidate, manifest_bytes=encoded(foreign))
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "producer"):
+            bea.materialize_industry_inputs(candidate)
+
+    def test_producer_change_requires_explicit_linked_rebind(self):
+        with patch("pathlib.Path.read_bytes", return_value=b"earlier producer source"):
+            earlier = bind(self.parts)
+        old_generation = earlier.generation_id
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "producer"):
+            bea.materialize_industry_inputs(earlier)
+        rebound = bind(self.parts, predecessor=earlier)
+        self.assertEqual(rebound.manifest["candidate_revision_seq"], 1)
+        self.assertEqual(rebound.manifest["supersedes_candidate_generation"], old_generation)
+        self.assertEqual(earlier.generation_id, old_generation)
+        first = next(bea.materialize_industry_inputs(rebound))
+        self.assertEqual(first["producer_code_sha256"], self.candidate.manifest["producer_code_sha256"])
+        self.assertEqual(first["source_generation_id"], rebound.generation_id)
+        self.assertFalse(first["dataos_native_admitted"])
+        self.assertFalse(first["may_publish"])
+        self.assertIs(bind(self.parts, predecessor=rebound), rebound)
+
+    def test_unreadable_producer_source_is_an_explicit_refusal(self):
+        with patch("pathlib.Path.read_bytes", side_effect=OSError("source unavailable")):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "producer"):
+                bea.materialize_industry_inputs(self.candidate)
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "producer"):
+                bind(self.parts)
+
+
 if __name__ == "__main__":
     unittest.main()

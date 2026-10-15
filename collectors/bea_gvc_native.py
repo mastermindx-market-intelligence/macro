@@ -59,6 +59,14 @@ def _sha(blob: bytes) -> str:
     return hashlib.sha256(blob).hexdigest()
 
 
+def _producer_sha256() -> str:
+    """Observe this producer's source identity; never trust a candidate's claim."""
+    try:
+        return _sha(Path(__file__).read_bytes())
+    except OSError as exc:
+        raise BEAGVCRefused("producer source identity unavailable") from exc
+
+
 def _encoded(value: Any) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=False, allow_nan=False).encode("utf-8")
@@ -435,7 +443,7 @@ def bind_retained_responses(
     bound = _prepare_sources(lineage_bytes, source_bytes, capture_receipt_bytes,
                              pin, years, observed)
     # Hash this exact implementation, not a caller's claimed code version.
-    producer_sha = _sha(Path(__file__).read_bytes())
+    producer_sha = _producer_sha256()
     ingested = datetime.now(timezone.utc).isoformat()
     proposal = _manifest(bound, pin, producer_sha, years, ingested, 0, None)
     if predecessor is not None:
@@ -461,6 +469,8 @@ def materialize_industry_inputs(candidate: BEAGVCCandidate) -> Iterator[dict[str
     Installation and native ingestion clocks are intentionally still absent.
     """
     manifest, checked_sources = _audit_candidate(candidate)
+    if manifest["producer_code_sha256"] != _producer_sha256():
+        raise BEAGVCRefused("candidate producer differs; explicitly rebind before materialization")
     generation = candidate.generation_id
     by_year = {year:{s.table_id:s for s in checked_sources if s.year == year}
                for year in manifest["accounting_years"]}

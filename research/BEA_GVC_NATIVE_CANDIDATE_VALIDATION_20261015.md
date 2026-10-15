@@ -86,6 +86,34 @@ The previously refused direct local Data OS registry-validation action was not
 replayed. Its validation result remains unclaimed; the parent PR's exact-head
 hosted CI and independent review are separate requirements.
 
+## Continuation: CI-scope and producer-identity repair
+
+Recovered candidate head `3a21f0955e3e28b26f3155da90c774ada7c3088e` had a failed
+hosted CI run `38690614995`. The failing CI contract checks identified the new
+job's unregistered exclusive scope, uncheckable exclusive import closure, and
+missing `tests/__init__.py` ancestor coverage. The repair uses ordinary additive
+scope and explicitly includes both `lib/__init__.py` and `tests/__init__.py`.
+No curated allowlist, census ceiling, gate, or existing job was weakened.
+
+A separate source audit found that materialization accepted a self-consistent
+candidate manifest naming an arbitrary or earlier producer hash. The materializer
+now compares that hash with the observed current producer source file before
+returning its iterator. An unreadable producer file raises `BEAGVCRefused`.
+An older candidate can still be explicitly rebound to the current producer as a
+new linked revision; it cannot directly emit rows under the old producer label.
+This is source-file identity checking, not a deployment or runtime attestation.
+
+Three new producer-identity regressions failed before the code repair. Afterwards,
+`tests/test_bea_gvc_native.py` passed **33 tests / 59 subtests** (18.03 seconds).
+The three exact previously failing `tests/test_ci_pack.py` contracts also passed
+(169.66 seconds), and `scripts/ci_pack_fragments.py --check` passed with 320 jobs /
+322 fragments. `git diff --check` passed. Exact-head hosted CI and independent
+review of this correction remain separate requirements.
+
+No real-source transform, denied source-axis inspection, private research-view
+read, local registry-validation action, collection, or source admission was
+replayed. The original-source proof below remains HELD.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files

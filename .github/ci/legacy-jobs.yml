@@ -30,13 +30,16 @@ jobs:
   bea-gvc-native-candidate:
     if: ${{ false }}
     gate: code
-    scope: exclusive
+    # Use the ordinary additive scope; this job is not a curated exclusive owner.
+    # Keep package initializers explicit so dependency changes cannot go dark.
     paths:
       - "collectors/bea_gvc_native.py"
       - "collectors/__init__.py"
+      - "lib/__init__.py"
       - "lib/dataos/temporal.py"
       - "lib/dataos/__init__.py"
       - "tests/test_bea_gvc_native.py"
+      - "tests/__init__.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
