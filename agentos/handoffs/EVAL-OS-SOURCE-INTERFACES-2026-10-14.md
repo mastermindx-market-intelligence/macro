@@ -3,8 +3,8 @@ workstream: WS:EVAL-OS-EVIDENCE-VIEW
 session: claude/eval-os-required-tier-20261014
 model: fable
 ended_because: ci_handoff
-mission: Deliver the accepted T12, T5, T6 and bounded T11 source interfaces through existing protected source, CI and actual
-  consumer adoption. This is a continuity checkpoint; the active root continues.
+mission: Deliver the accepted T12, T5, T6 and bounded T11 source interfaces through existing protected source,
+  CI and actual consumer adoption. This is a continuity checkpoint; the active root continues.
 state_before: A1 source05a was blocked by shared CI-list conflicts; follow-on f573 had nine analogous conflicts
   against observed main. Capacity then admitted the ordinary source correction.
 changed:
@@ -15,8 +15,8 @@ changed:
 - path: engine/postmortem.py
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit twenty bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
-    bear. Add explicit same-request native numeric verification to the scorer; no persisted-row source admission,
+  what: Admit twenty bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy bear.
+    Add explicit same-request native numeric verification to the scorer; no persisted-row source admission,
     independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
@@ -137,24 +137,27 @@ unverified:
   what_would_verify: Normal deployment followed by installed identity, authenticated actual consumers, natural
     update receipts and the real operator response.
 unresolved:
-- T11 operator ingestion is host-local. Metadata-only VPS observation on 2026-10-15 at10:39Z
-  found an active admin process but response_log.jsonl last modified 2026-09-13; no matching
-  systemd/cron configuration names were found in the bounded scan. The list API does not
-  ingest, and the weekly Mac Studio workflow does not update the VPS ledger. Use the existing
-  operator ingestion path for postrelease consumption and label any manual ingestion truthfully;
-  it does not prove natural QLedger owner progression. No row contents or outcomes were read.
+- T11 operator ingestion is host-local. Metadata-only VPS observation on 2026-10-15 at10:39Z found an active
+  admin process but response_log.jsonl last modified 2026-09-13; no matching systemd/cron configuration names
+  were found in the bounded scan. The list API does not ingest, and the weekly Mac Studio workflow does not
+  update the VPS ledger. Use the existing operator ingestion path for postrelease consumption and label any
+  manual ingestion truthfully; it does not prove natural QLedger owner progression. No row contents or outcomes
+  were read.
 - Original historical20/15 objective and historical source availability remain open.
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own
-  CI38757206381 is running. Terminal binding checks, protected merge and production proof remain owed.
+- Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own CI38757206381 is running.
+  Terminal binding checks, protected merge and production proof remain owed.
 next_actions:
-- "A1 PR6651/headb2c44 original CI38757206381/attempt1: plan+contract+11packsPASS15:49:46, onlypack5running; A1pack10PASS. Consume terminal original artifact and all binding checks, then incumbent-only merge. No duplicate observer/controller/producer."
-- "Follow-on34077489ec62 adds15exact incoming QLedger dependencies with314definitions/runtime/limits unchanged;2controlsPASS and prior closure/strict probes reused after parity. Prospective actual-b2c44/main4574 composition0add resolves six conflicts/removes9duplicate copies and passes corrected QLedger920-path closure plus ancestor check; other full closure and packing proof reused. Reconcile actual qualified A1 landing before same-carrier integration and its singlePR."
-- "After qualified A1merge bind17fileprobe andassetprojector; prove deployment/assets/authAPI-DOM/8visualstates/naturalowner/comprehension, then release follow-on and prove installed updater/API-adminprocesses/numeric-log/CLI/rights-qualifiedDiscovery. Preserve original effects/refusals and false completion flags."
+- Consume successor624465 exact-head CI/plan/final artifact and binding checks after the300-second cadence;
+  incumbent alone refreshes and merges A1.
+- After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
+  natural owner progression.
+- Reconcile actual qualified landing with locally qualified0add and clean newer-base preview2c2a9; integrate
+  the same follow-on, open its single PR and prove real consumer adoption.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -168,31 +171,15 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T15:51:27.545553+00:00
+## Current checkpoint — 2026-10-15T16:00:46.468495+00:00
 
-A1 remainsOPENb2c44. Original CI38757206381/attempt1 has plan, contract-delta and11packsPASS
-at15:49:46; onlypack5running, including passed A1pack10. The source/plan/17file identities
-are already verified. Terminal original evidence and allbindingchecks remain owed.
+A1 original PR6651 is OPEN at incumbent-refreshed624465a40a80. Exact ordinary merge of b2c44 plus main76c386 verified, treee7bfd743; all17production files and7asset inputs unchanged. Owned local A1 fast-forwarded only. No second manual base integration. Original current-head CI38764340141/attempt1:16:01:31 planPASS, contract+12packsRUNNING. Plan11986114129 ZIPdigest/canonicalhash verified:127jobs/A1pack10, tested75ca769/base76c386/treee7bfd743 matches source preview;17files and A1execution unchanged. Terminal proof remains owed; nexteligible16:06:38 at usefulboundary/existingwake.
 
-Follow-on34077489ec627188041d3b062d12f44ceed9c0cd adds15 exact QLedger scope paths:
-one incoming main command's test and14 imports discovered in the real composed closure.
-All314 current-branch definitions/commands/priorpaths/limits/runtime are unchanged. Two
-existing controlsPASS; accepted full closure and134/134/128strict probes are reused after
-proving only an exclusive-scope widening and unchanged selection at all three probes.
-A mistakenly selected newer ancestor test is absent on this historical branch (exit4
-retained, never called a pass); that control passes on the newer prospective composition.
+Original b2c44 CI38757206381/attempt1 completedPASS. Original finalartifact11987181156 ZIPdigest/canonical gate consumed:127jobs/351semantic commandstepsPASS,0blocked/0inherited; all execution and step identities match its original plan. This is b2c44 proof, not successor624465 or unit-test/zero-skip proof.
 
-Prospective composition0add301edcf8d435b751a92ffe75be780fc67ac2 on actual b2c44/main4574
-resolves all six conflicts and removes9merge-created duplicate copies without removing any
-parent membership. It retains all320 A1/main definitions, newer options source and exact
-qualified evaluator3528080. Three initial controlsPASS; the newly discovered QLedger scope
-failure was repaired, canonical target closure920paths/zero misses and ancestor recheckPASS.
-Other jobs' full closure and135/134/128 strict packing are reused after exact source and
-selection parity; no broader retest. Source, RED/GREEN and limits are recorded in the single
-current record research/evidence/eval-os-tier-query-20261014/a1-current-release.json.
-Actual qualified A1 landing still must be reconciled before carrier integration and one
-follow-onPR. No base integration, deployment, model/PIT or adoption acceptance is claimed.
-Original Fabric effects/refusals and all false final flags remain.
+Follow-on source34077489ec62 containing7a2a2de5bd03 published clean; noPR. Exact15QLedger inputs repair the real prospective integration failure; all314branch execution definitions and priorpaths/limits/runtime preserved,2affectedcontrolsPASS and accepted closure/strict134-134-128 reused after source/selection parity. Prospective0add has320definitions,920QLedger closure paths/0misses and ancestorPASS; the newer main76c386 read-only preview2c2a9 is clean and preserves current320definitions, priorpathmultisets, incoming options code and qualified evaluator. Actual qualified landing reconciliation still required; no carrier base integration.
+
+Canonical current record: research/evidence/eval-os-tier-query-20261014/a1-current-release.json. Reuse20textcases+bear/T11/T5/T12/QLedger and169updater proof. Production, model/PIT and consumer adoption remain unproved. OriginalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals and all release controls remain. SESSION END: DURABLE_EXECUTION_RUNNING.
 
 ## 2026-10-15 A1 repair published
 

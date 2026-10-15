@@ -1,62 +1,25 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T15:51:27.545553+00:00",
+  "updated_at": "2026-10-15T16:02:46.232395+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
-    "old": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
-    "head": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+    "old": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
     "parents": [
-      "3f34040de3a5e9cce0f7798185835e6dda360a7a",
-      "4574d083b0398dd4ac75e283eabff041c561c369"
+      "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+      "76c38638fac3ac23463a1d27110fe98bfd6e8cd5"
     ],
-    "tree": "02a0189e05111e084342b57dc0a06e2a9aa67a96",
+    "tree": "e7bfd7430bb8542905fefd678faacbdf65a0197d",
     "merge_tree_equals_incumbent_tree": true,
     "production_paths_compared": 17,
     "changed_production_paths": [],
     "all_7_asset_source_paths_covered_by_17_unchanged_files": true
   },
-  "original_plan": {
-    "verified_at": "2026-10-15T15:17:26.806643+00:00",
-    "observation_at": "2026-10-15T15:15:54.553314+00:00",
-    "workflow_run_id": 38757206381,
-    "subject_head_sha": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
-    "artifact_id": 11984037247,
-    "zip_sha256": "b8025397092354f48e6f97536125cd760cc8a39189eec29a231dd7624e2334f3",
-    "plan_sha256": "398d34be1a2342ca027d6f1479e7ba1387670c6778c506013dbcec7411b7c084",
-    "tested_commit": "1846b408a449fbad52206edd1a466fd8bb3a9bc9",
-    "base_sha": "4574d083b0398dd4ac75e283eabff041c561c369",
-    "tested_parents": [
-      "4574d083b0398dd4ac75e283eabff041c561c369",
-      "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0"
-    ],
-    "tested_git_tree": "02a0189e05111e084342b57dc0a06e2a9aa67a96",
-    "preview_matches": true,
-    "production_paths_match": 17,
-    "eligible_job_count": 127,
-    "a1_job": {
-      "logical_job_id": "eval-os-a1",
-      "pack_index": 10,
-      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
-      "steps": [
-        {
-          "proof_id": "require Node for actual renderer contracts",
-          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
-        },
-        {
-          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
-          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
-        }
-      ]
-    },
-    "a1_execution_identity_unchanged": true,
-    "binding_checks_pending": true,
-    "scope": "Original plan/source identity only; terminal original semantic evidence and all binding checks still owed."
-  },
   "source_and_plan_only": true,
   "terminal_binding_checks_pending": true,
   "production_verified": false,
   "programme_complete": false,
-  "next": "Consume original run38757206381/attempt1 terminal evidence and all binding checks; repair a real failure or continue incumbent-only merge. Stop polling former lease owner9441.",
+  "next": "Consume original current-head CI38764340141/attempt1 terminal evidence and all binding checks at the next eligible useful boundary; repair actual failure or incumbent-only merge. Do not replay prior run38757206381.",
   "followon": {
     "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
@@ -207,7 +170,24 @@
         "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-focused.xml",
         "sha256": "b2666b0f4be75d5dfba46a029c1ec086a1eb6843eef119f52bd77cdc7b64e65f"
       }
-    ]
+    ],
+    "published_containing_head": "7a2a2de5bd031d3fa38fca8783367b07aa8d2f6f",
+    "newer_base_preview": {
+      "observed_at": "2026-10-15T15:59:31.511929+00:00",
+      "prior_qualified_prospective_source": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "new_a1_source": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+      "new_base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+      "preview_tree": "2c2a9a9fc4757aec64f971837a40a57f5f263ac0",
+      "clean": true,
+      "current_a1_execution_definitions_preserved": 320,
+      "changed_jobs": [
+        "options-matrix-code"
+      ],
+      "prior_path_multisets_preserved": true,
+      "qualified_evaluator_unchanged": true,
+      "new_options_observer_and_test_match_a1": true,
+      "scope": "Read-only clean newer-base composition with source preservation checks. Existing qualification remains bound0add; no claim of final landing qualification or hosted checks, no carrier integration."
+    }
   },
   "preserved_boundaries": [
     "incumbent-only A1 refresh/final merge",
@@ -215,7 +195,66 @@
     "original Fabric effects and refusals",
     "all production, model, PIT and consumer adoption obligations"
   ],
-  "latest_ci_observation": {
+  "qualified_previous_revision": {
+    "terminal_semantic_ci": {
+      "consumed_at": "2026-10-15T15:57:05.006327+00:00",
+      "workflow_run_id": 38757206381,
+      "attempt": 1,
+      "head": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+      "artifact_id": 11987181156,
+      "zip_sha256": "21f6a43ca17d97dbfccaf46bab85debc68afb6ee1bf2070c5e8c395b4f33d45e",
+      "canonical_mode": "semantic",
+      "plan_sha256": "398d34be1a2342ca027d6f1479e7ba1387670c6778c506013dbcec7411b7c084",
+      "base_sha": "4574d083b0398dd4ac75e283eabff041c561c369",
+      "tested_tree_sha": "1846b408a449fbad52206edd1a466fd8bb3a9bc9",
+      "jobs": 127,
+      "semantic_command_steps_passed": 351,
+      "blocked": 0,
+      "inherited": 0,
+      "infrastructure_blocking": false,
+      "clear": true,
+      "plan_execution_and_step_identities_match": true,
+      "scope": "Original b2c44 terminal semantic CI proof only; current PR head advanced624465 and requires its own binding checks. Not unit-test count or zero-skip proof."
+    },
+    "original_plan": {
+      "verified_at": "2026-10-15T15:17:26.806643+00:00",
+      "observation_at": "2026-10-15T15:15:54.553314+00:00",
+      "workflow_run_id": 38757206381,
+      "subject_head_sha": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+      "artifact_id": 11984037247,
+      "zip_sha256": "b8025397092354f48e6f97536125cd760cc8a39189eec29a231dd7624e2334f3",
+      "plan_sha256": "398d34be1a2342ca027d6f1479e7ba1387670c6778c506013dbcec7411b7c084",
+      "tested_commit": "1846b408a449fbad52206edd1a466fd8bb3a9bc9",
+      "base_sha": "4574d083b0398dd4ac75e283eabff041c561c369",
+      "tested_parents": [
+        "4574d083b0398dd4ac75e283eabff041c561c369",
+        "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0"
+      ],
+      "tested_git_tree": "02a0189e05111e084342b57dc0a06e2a9aa67a96",
+      "preview_matches": true,
+      "production_paths_match": 17,
+      "eligible_job_count": 127,
+      "a1_job": {
+        "logical_job_id": "eval-os-a1",
+        "pack_index": 10,
+        "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+        "steps": [
+          {
+            "proof_id": "require Node for actual renderer contracts",
+            "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+          },
+          {
+            "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+            "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+          }
+        ]
+      },
+      "a1_execution_identity_unchanged": true,
+      "binding_checks_pending": false,
+      "scope": "Original b2c44 plan bound to consumed terminal semantic proof. No qualification of successor624465."
+    }
+  },
+  "last_previous_run_observation": {
     "at": "2026-10-15T15:49:46.068583+00:00",
     "run": 38757206381,
     "head": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
@@ -238,5 +277,68 @@
     "pending": [
       "ci-pack-5"
     ]
+  },
+  "latest_ci_observation": {
+    "observed_at": "2026-10-15T16:01:31.125692+00:00",
+    "pr_state": "open",
+    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+    "workflow_run_id": 38764340141,
+    "attempt": 1,
+    "status": "in_progress",
+    "conclusion": null,
+    "ci_plan": "success",
+    "contract_delta": "in_progress",
+    "packs_passed": [],
+    "packs_in_progress": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "original_plan": {
+    "verified_at": "2026-10-15T16:02:07.433839+00:00",
+    "observation_at": "2026-10-15T16:01:31.125692+00:00",
+    "workflow_run_id": 38764340141,
+    "subject_head_sha": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+    "artifact_id": 11986114129,
+    "zip_sha256": "10c577de828b9cea92c0f2307afdb01ecacfe8f96dcedc142558157c50aa90e7",
+    "plan_sha256": "0f6decce7d529033d114c473738abe48f6c527cbd55f8a9e7b49055236fdaf8c",
+    "tested_commit": "75ca7699a5658c28319347d81457478d79a7a20f",
+    "base_sha": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+    "tested_parents": [
+      "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+      "624465a40a80cb2e34ff26c4a058d2de4244b26d"
+    ],
+    "tested_git_tree": "e7bfd7430bb8542905fefd678faacbdf65a0197d",
+    "preview_matches": true,
+    "production_paths_match": 17,
+    "eligible_job_count": 127,
+    "a1_job": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 10,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+        }
+      ]
+    },
+    "a1_execution_identity_unchanged": true,
+    "binding_checks_pending": true,
+    "scope": "Original current-head plan/source identity only; terminal original semantic evidence and binding checks remain owed."
   }
 }
