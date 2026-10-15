@@ -6048,7 +6048,18 @@
       });
     });
   }
-  function clearStudy() { study = null; renderStudy(); }
+  function clearStudy(restoreFocus) {
+    var previous = study;
+    study = null; renderStudy();
+    // Only the reader's Clear action returns them to the original selected card.
+    // Source/access invalidation must never restore an obsolete browsing context.
+    if (!restoreFocus || !previous || previous.entries.some(function (entry) { return !studyUsable(entry, false); })) return;
+    var entry = previous.entries.find(function (candidate) { return studyUsable(candidate, true); });
+    var button = entry && entry.row.querySelector('.pvs-study-pick');
+    if (!button || button.disabled || !button.isConnected || !button.getClientRects().length) return;
+    button.focus({preventScroll:true});
+    if (previous.viewing) window.scrollTo({left:previous.x, top:previous.y, behavior:'instant'});
+  }
   function checkStudy() {
     if (study && study.entries.some(function (entry) { return !studyUsable(entry, false); })) {
       if (active && (studyChosen(active.row) || (journey && active.row === journey.planCard))) dismiss(true);
@@ -6103,7 +6114,7 @@
           study.viewing = false; renderStudy();
           window.scrollTo({left:study.x, top:study.y, behavior:'instant'}); start.focus({preventScroll:true});
         });
-        clear.addEventListener('click', function () { clearStudy(); });
+        clear.addEventListener('click', function () { clearStudy(true); });
       }
       ui.cards = ui.cards.filter(function (card) { return grid.contains(card.row) && card.row.contains(card.button); });
       rows.forEach(function (row) {

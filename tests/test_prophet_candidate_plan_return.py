@@ -1154,3 +1154,40 @@ const footer = document.createElement('footer');
 footer.className = 'po-footer';
 origins.board.row.append(footer);
 """)
+
+
+@pytest.mark.parametrize("viewing", [False, True])
+def test_clear_study_restores_visible_card_focus_and_origin_scroll(viewing):
+    _run(_CMP_START + """
+fire(pick(second.row)); fire(pick(origin.row)); await flush();
+const before = {x: window.scrollX, y: window.scrollY};
+""" + ("fire(go); await flush(); window.scrollTo({left: 12, top: 4200});" if viewing else "") + """
+clear.focus();
+assert.equal(document.activeElement, clear);
+fire(clear); await flush();
+assert.equal(bar.hidden, true);
+assert.ok(document.activeElement === pick(second.row), 'Clear must not strand keyboard focus in the hidden toolbar');
+assert.ok(document.activeElement.getClientRects().length, 'focus returns to a visible original card');
+assert.equal(pick(second.row).getAttribute('aria-pressed'), 'false');
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(scrollState.y, before.y, 'Clear restores the pre-comparison reading position');
+assert.equal(scrollState.x, before.x);
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize("mutation", [
+    "panel.setAttribute('data-board-asof', '2026-10-15');",
+    "origin.row.classList.add('mx-tier-hidden'); second.row.classList.add('mx-tier-hidden');",
+    "origin.row.remove(); second.row.remove();",
+])
+def test_clear_study_does_not_restore_replaced_or_withheld_sources(mutation):
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+window.scrollTo({left: 12, top: 4200});
+const elsewhere = document.createElement('button'); body.append(elsewhere); elsewhere.focus();
+""" + mutation + """
+fire(clear); await flush();
+assert.ok(document.activeElement === elsewhere, 'stale selection must not steal focus');
+assert.equal(scrollState.y, 4200, 'stale selection must not restore an old scroll position');
+assert.equal(bar.hidden, true);
+""", _CMP_PRE)
