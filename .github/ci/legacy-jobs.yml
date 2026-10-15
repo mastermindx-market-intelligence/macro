@@ -29723,6 +29723,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/economic_context.py
+      - tests/test_gmi_native_economic_context.py
       - collectors/__init__.py
       - collectors/edgar_forensics.py
       - collectors/fundamental_forensics_acquisition.py
@@ -29830,7 +29833,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
