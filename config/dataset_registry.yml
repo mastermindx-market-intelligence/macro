@@ -1792,3 +1792,86 @@ datasets:
       bound on how PIT it is. PRODUCED evidence: committed blob at HEAD (last
       advanced by "engine: asia dashboards 2026-10-04", 63df61aa9a; re-scrape
       d337c379a3 the day before).
+
+  # ── BEA Global Value Chains — CEO-scoped data-purpose decision (2026-10-14) ───
+  # DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014 authorizes BEA first-party
+  # current descriptive use and assigns the existing macro-dashboard Data OS role.
+  # Both rows are PROPOSED. Neither ID represents a live native source producer,
+  # installed storage, original L0 source-byte custody, or valid historical PIT.
+  - dataset_id: bea.gvc.may2026.original_responses
+    layer: L0
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::bind_retained_responses"
+    storage: "data/bea/gvc/may2026/original_responses/{table_id}/{source_sha256}.json"
+    format: json
+    grain: [publisher_edition_date, source_table_id, original_response_sha256]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, completeness, temporal_integrity, source_revision]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    notes: >
+      PROPOSED ONLY, producer and storage path not installed. This is a stable
+      proposed source identity, not a claim that canonical original response bytes
+      have been authenticated or moved. Reuse the 64 previously retained BEA
+      research captures; do not reacquire them. Original response digest,
+      actual native ingested_at, original publication clock and correction chain
+      still require byte-evidenced admission. Publisher release is 2026-05-21
+      with DAY precision; do not invent an instant or backdate a 2017-2024
+      known_at. The CEO rights decision applies only to official BEA first-party
+      GVC statistics, with source attribution and no government endorsement.
+      The decision does not install a source producer or grant third-party rights.
+
+  - dataset_id: bea.gvc.may2026.industry_import_inputs
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: "PLANNED_NOT_INSTALLED:collectors/bea_gvc_native.py::materialize_industry_inputs"
+    storage: "data/bea/gvc/may2026/industry_inputs/industry_{industry_code_exact}.jsonl"
+    format: jsonl
+    grain: [publisher_edition_date, accounting_year, industry_code_exact, commodity_code_exact]
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    frequency: annual
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [checksum, uniqueness, source_lineage, signed_accounting_reconciliation, temporal_integrity]
+    inputs: [bea.gvc.may2026.original_responses]
+    version: "0.1.0"
+    licensing: bea_public_domain_current_descriptive_scope_20261014
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+        redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
+    code_consumers:
+      - engine/market_ontology/bea_industry_context.py::read_private_bea_accounting_brief
+      - engine/market_ontology/bea_industry_context.py::compare_private_bea_using_industries
+    notes: >
+      PROPOSED ONLY, not native produced or publicly served. The existing
+      separately retained 138 industry research JSONL views (eight annual years,
+      139 commodities each) have independently accepted research builder/lineage
+      receipts, but are not this proposed native L1 store. The GMI research
+      consumer is private and does not constitute an admitted Data OS product
+      reader. Source amounts are signed USD millions and geographic allocations
+      are imputed industry inputs, not observed bilateral supply transactions.
+      The May-21-2026 GVC edition revises 2017-2023; historical first-known
+      2017-2024 clocks are NULL. Native UTC ingest/revisions, exact 5241X vs
+      5241XX dated mapping and upstream response-byte/correction chain must be
+      verified before PRODUCED status. Rights approval covers first-party BEA
+      current-vintage descriptive industry display only, with attribution and
+      no endorsement. Public UI/browser/machine proof and independent source
+      review remain separate acceptance gates.
