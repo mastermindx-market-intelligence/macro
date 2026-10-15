@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T04:57:07.619466+00:00",
-  "count": 2935,
+  "generated_at": "2026-10-15T05:43:48.775999+00:00",
+  "count": 2937,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -552,6 +552,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-xxjud4mu10p-f43e85",
+      "title": "GS Mello GS BRAZIL POSITIONING The Week After 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:42:55Z",
+      "summary_points": [
+        "Brazil Election Volatility & Foreign Flows: Record trading volume ($8.7bn/day) and foreign inflows ($2bn Monday) drove EWZ’s 12.5% single-day surge (5-sigma), with BZ 10YR-US 10YR spread at 7.2% (vs 6.5% pre-2020), signaling election-driven market compression.",
+        "EWZ Valuation Discount: Trading at 11-12x P/E (below pre-2020 14x) with EPS at ~$4.4/shr, offering significant valuation compression amid 150bps rate compression over two weeks.",
+        "Critical Political Checkpoint: Flavio must win Oct-25 runoff, appoint economic team, and enact fiscal plan with new congress to sustain market momentum; failure risks rate expansion.",
+        "Foreign Capital Divergence: Foreign inflows ($2.51bn 5-day) contrast sharply with net foreign outflow (-$0.126M USD) and institutional outflows (-$0.77bn), creating capital flow risk amid IBOV’s 13.98% surge.",
+        "ETF vs Index Disparity: IShares MSCI Brazil ETF (EWZ) outperformed Bovespa Index (IBOV) due to foreign capital inflows, highlighting ETF-specific dynamics critical for portfolio allocation timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-wqbnhz2cytv-8f0b4b",
       "title": "Goldman Sachs Prime Services Hedge Fund Performance Report September 2026",
       "institution": "Prime",
@@ -671,6 +692,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0l6mwmsetec-3714f5",
+      "title": "EW summary Oct 2026 (002)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:05:56Z",
+      "summary_points": [
+        "Divided Government Impact: Midterms likely to create divided government (50% Dem sweep, 40% split), delaying major legislation, prioritizing spending bills/debt-limit negotiations, and amplifying policy uncertainty.",
+        "Geopolitical Fiscal Risks: Regional vulnerabilities intensify (Asia-Pacific: tariffs/defense; Europe: US-China tensions; Canada: USMCA), with state-level elections driving Medicaid cuts and data center policies amid declining federal transfers to states.",
+        "State Fiscal Pressure: Federal transfers to state/local governments steady but expected to decline, heightening Medicaid and infrastructure funding risks at subnational levels.",
+        "Policy Uncertainty Amplification: Divided government and regional tensions converge to elevate near-term policy volatility, impacting sector allocations and risk positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
