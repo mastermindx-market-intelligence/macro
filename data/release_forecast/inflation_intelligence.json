@@ -729,29 +729,29 @@
     "pressure_direction": "upward_price_pressure",
     "underlying_proxy_mix": {
       "flexible": {
-        "acceleration_3m_minus_6m_pp": -13.191848,
-        "annualized_3m_pct": -5.818312,
-        "annualized_6m_pct": 7.373536,
+        "acceleration_3m_minus_6m_pp": 2.772202,
+        "annualized_3m_pct": 8.171584,
+        "annualized_6m_pct": 5.399382,
         "available": true,
         "freshness_status": "current_with_publication_lag",
         "label": "Flexible-price CPI proxy",
-        "monthly_pct": 0.810515,
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
+        "monthly_pct": 1.686175,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
         "revision_basis": "latest_local_fred_proxy_series",
         "series_id": "FLEXCPIM157SFRBATL"
       },
-      "read": "sticky_led",
+      "read": "flexible_led",
       "sticky": {
-        "acceleration_3m_minus_6m_pp": -0.428647,
-        "annualized_3m_pct": 2.456696,
-        "annualized_6m_pct": 2.885343,
+        "acceleration_3m_minus_6m_pp": 0.280132,
+        "annualized_3m_pct": 3.325499,
+        "annualized_6m_pct": 3.045367,
         "available": true,
         "freshness_status": "current_with_publication_lag",
         "label": "Sticky-price CPI proxy",
-        "monthly_pct": 0.253932,
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
+        "monthly_pct": 0.279114,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
         "revision_basis": "latest_local_fred_proxy_series",
         "series_id": "STICKCPIM157SFRBATL"
       }
@@ -1165,7 +1165,7 @@
           "first_public_evidence_unknown"
         ],
         "measure": "market_price",
-        "observation_date": "2026-10-08",
+        "observation_date": "2026-10-09",
         "qualified": {
           "admitted_at": null,
           "authority": "display_only",
@@ -1182,13 +1182,13 @@
             "first_public_evidence_unknown"
           ],
           "model_id": null,
-          "obs_id": "0ec1a1966218836e",
+          "obs_id": "ce5aa29ff5af450c",
           "observation_precision": "day",
-          "observation_time": "2026-10-08",
+          "observation_time": "2026-10-09",
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2036-10-08",
-          "reference_start": "2026-10-08",
+          "reference_end": "2036-10-09",
+          "reference_start": "2026-10-09",
           "rights": "public_official",
           "seasonal_treatment": "n/a",
           "source": "fred:T10YIE",
@@ -1198,13 +1198,13 @@
           "target_epoch": null,
           "tenor": "10y",
           "unit": "pct_ann_rate",
-          "value": 2.35,
+          "value": 2.33,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2036-10-08",
-          "start": "2026-10-08"
+          "end": "2036-10-09",
+          "start": "2026-10-09"
         },
         "scope": "all_items_compensation",
         "series_id": "T10YIE",
@@ -1212,7 +1212,7 @@
         "source_class": "market_price",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.35,
+        "value": 2.33,
         "value_state": "present"
       },
       "market_cpi_core_next_mom": {
@@ -1345,7 +1345,7 @@
           "first_public_evidence_unknown"
         ],
         "measure": "market_price",
-        "observation_date": "2026-10-08",
+        "observation_date": "2026-10-09",
         "qualified": {
           "admitted_at": null,
           "authority": "display_only",
@@ -1362,13 +1362,13 @@
             "first_public_evidence_unknown"
           ],
           "model_id": null,
-          "obs_id": "0a21a659f86f8851",
+          "obs_id": "1beb0abe44ea26c3",
           "observation_precision": "day",
-          "observation_time": "2026-10-08",
+          "observation_time": "2026-10-09",
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2036-10-08",
-          "reference_start": "2031-10-08",
+          "reference_end": "2036-10-09",
+          "reference_start": "2031-10-09",
           "rights": "public_official",
           "seasonal_treatment": "n/a",
           "source": "fred:T5YIFR",
@@ -1378,13 +1378,13 @@
           "target_epoch": null,
           "tenor": "5y5y",
           "unit": "pct_ann_rate",
-          "value": 2.33,
+          "value": 2.32,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2036-10-08",
-          "start": "2031-10-08"
+          "end": "2036-10-09",
+          "start": "2031-10-09"
         },
         "scope": "all_items_compensation",
         "series_id": "T5YIFR",
@@ -1392,7 +1392,7 @@
         "source_class": "market_price",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.33,
+        "value": 2.32,
         "value_state": "present"
       },
       "model_cleveland_expected_inflation_10y": {
@@ -1424,13 +1424,13 @@
             "evidence_time_unknown"
           ],
           "model_id": "cleveland_expinf",
-          "obs_id": "63ed07d3ddae1670",
+          "obs_id": "4fd33659272bc0c8",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2036-09-01",
-          "reference_start": "2026-09-01",
+          "reference_end": "2036-10-01",
+          "reference_start": "2026-10-01",
           "rights": "unknown",
           "seasonal_treatment": "n/a",
           "source": "fred:EXPINF10YR",
@@ -1440,13 +1440,13 @@
           "target_epoch": null,
           "tenor": "10y",
           "unit": "pct_ann_rate",
-          "value": 2.572644,
+          "value": 2.725514,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2036-09-01",
-          "start": "2026-09-01"
+          "end": "2036-10-01",
+          "start": "2026-10-01"
         },
         "scope": "expected_inflation",
         "series_id": "EXPINF10YR",
@@ -1454,7 +1454,7 @@
         "source_class": "external_model_estimate",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.572644,
+        "value": 2.725514,
         "value_state": "present"
       },
       "model_cleveland_expected_inflation_1y": {
@@ -1486,13 +1486,13 @@
             "evidence_time_unknown"
           ],
           "model_id": "cleveland_expinf",
-          "obs_id": "c62db173f65f0c22",
+          "obs_id": "702bbb82fc4a7112",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2027-09-01",
-          "reference_start": "2026-09-01",
+          "reference_end": "2027-10-01",
+          "reference_start": "2026-10-01",
           "rights": "unknown",
           "seasonal_treatment": "n/a",
           "source": "fred:EXPINF1YR",
@@ -1502,13 +1502,13 @@
           "target_epoch": null,
           "tenor": "1y",
           "unit": "pct_ann_rate",
-          "value": 2.643824,
+          "value": 2.975441,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2027-09-01",
-          "start": "2026-09-01"
+          "end": "2027-10-01",
+          "start": "2026-10-01"
         },
         "scope": "expected_inflation",
         "series_id": "EXPINF1YR",
@@ -1516,7 +1516,7 @@
         "source_class": "external_model_estimate",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.643824,
+        "value": 2.975441,
         "value_state": "present"
       },
       "model_cleveland_expected_inflation_5y": {
@@ -1548,13 +1548,13 @@
             "evidence_time_unknown"
           ],
           "model_id": "cleveland_expinf",
-          "obs_id": "afcc4e1a4c148a50",
+          "obs_id": "f6ecfef221892928",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2031-09-01",
-          "reference_start": "2026-09-01",
+          "reference_end": "2031-10-01",
+          "reference_start": "2026-10-01",
           "rights": "unknown",
           "seasonal_treatment": "n/a",
           "source": "fred:EXPINF5YR",
@@ -1564,13 +1564,13 @@
           "target_epoch": null,
           "tenor": "5y",
           "unit": "pct_ann_rate",
-          "value": 2.583585,
+          "value": 2.770313,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2031-09-01",
-          "start": "2026-09-01"
+          "end": "2031-10-01",
+          "start": "2026-10-01"
         },
         "scope": "expected_inflation",
         "series_id": "EXPINF5YR",
@@ -1578,7 +1578,7 @@
         "source_class": "external_model_estimate",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.583585,
+        "value": 2.770313,
         "value_state": "present"
       },
       "official_cpi_core_mom": {
@@ -1612,13 +1612,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "608bbd624d4815ae",
+          "obs_id": "6a81ed03ecc5fa6a",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2026-08-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2026-09-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:CPILFESL",
@@ -1628,13 +1628,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_mom",
-          "value": 0.289796,
+          "value": 0.334848,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2026-08-01"
+          "end": "2026-09-30",
+          "start": "2026-09-01"
         },
         "scope": "core",
         "series_id": "CPILFESL",
@@ -1642,7 +1642,7 @@
         "source_class": "official_measurement",
         "transform": "pct_mom",
         "unit": "pct_mom",
-        "value": 0.289796,
+        "value": 0.334848,
         "value_state": "present"
       },
       "official_cpi_core_yoy": {
@@ -1678,13 +1678,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "328c430142bde9de",
+          "obs_id": "9e57058753425231",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2025-09-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2025-10-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:CPILFESL",
@@ -1694,13 +1694,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_yoy",
-          "value": 2.446163,
+          "value": 2.565841,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2025-09-01"
+          "end": "2026-09-30",
+          "start": "2025-10-01"
         },
         "scope": "core",
         "series_id": "CPILFESL",
@@ -1708,7 +1708,7 @@
         "source_class": "official_measurement",
         "transform": "pct_yoy",
         "unit": "pct_yoy",
-        "value": 2.446163,
+        "value": 2.565841,
         "value_state": "present"
       },
       "official_cpi_headline_mom": {
@@ -1742,13 +1742,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "2eebd7845a350cce",
+          "obs_id": "dc4ccb103dd988c9",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2026-08-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2026-09-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:CPIAUCSL",
@@ -1758,13 +1758,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_mom",
-          "value": 0.396018,
+          "value": 0.648548,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2026-08-01"
+          "end": "2026-09-30",
+          "start": "2026-09-01"
         },
         "scope": "headline",
         "series_id": "CPIAUCSL",
@@ -1772,7 +1772,7 @@
         "source_class": "official_measurement",
         "transform": "pct_mom",
         "unit": "pct_mom",
-        "value": 0.396018,
+        "value": 0.648548,
         "value_state": "present"
       },
       "official_cpi_headline_yoy": {
@@ -1808,13 +1808,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "7dfd47d4533c4816",
+          "obs_id": "41c8390d82ca97f5",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2025-09-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2025-10-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:CPIAUCSL",
@@ -1824,13 +1824,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_yoy",
-          "value": 3.353016,
+          "value": 3.717251,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2025-09-01"
+          "end": "2026-09-30",
+          "start": "2025-10-01"
         },
         "scope": "headline",
         "series_id": "CPIAUCSL",
@@ -1838,7 +1838,7 @@
         "source_class": "official_measurement",
         "transform": "pct_yoy",
         "unit": "pct_yoy",
-        "value": 3.353016,
+        "value": 3.717251,
         "value_state": "present"
       },
       "official_pce_core_mom": {
@@ -3451,59 +3451,59 @@
     "available": true,
     "basis": "latest_local_fred_official_index_levels_not_original_release_vintage",
     "core": {
-      "acceleration_3m_minus_6m_pp": -0.595856,
-      "annualized_3m_pct": 1.970839,
-      "annualized_6m_pct": 2.566695,
+      "acceleration_3m_minus_6m_pp": 0.560825,
+      "annualized_3m_pct": 3.412404,
+      "annualized_6m_pct": 2.851579,
       "available": true,
       "freshness_status": "current_with_publication_lag",
-      "index_level": 337.765,
+      "index_level": 338.896,
       "label": "Core CPI-U",
-      "mom_pct": 0.289796,
-      "observation_age_months": 2,
-      "observation_period": "2026-08",
+      "mom_pct": 0.334848,
+      "observation_age_months": 1,
+      "observation_period": "2026-09",
       "revision_basis": "latest_local_fred_not_original_release_vintage",
       "series_id": "CPILFESL",
-      "yoy_pct": 2.446163
+      "yoy_pct": 2.565841
     },
     "headline": {
-      "acceleration_3m_minus_6m_pp": -3.93372,
-      "annualized_3m_pct": 0.182172,
-      "annualized_6m_pct": 4.115892,
+      "acceleration_3m_minus_6m_pp": 0.893122,
+      "annualized_3m_pct": 4.562342,
+      "annualized_6m_pct": 3.66922,
       "available": true,
       "freshness_status": "current_with_publication_lag",
-      "index_level": 334.131,
+      "index_level": 336.298,
       "label": "Headline CPI-U",
-      "mom_pct": 0.396018,
-      "observation_age_months": 2,
-      "observation_period": "2026-08",
+      "mom_pct": 0.648548,
+      "observation_age_months": 1,
+      "observation_period": "2026-09",
       "revision_basis": "latest_local_fred_not_original_release_vintage",
       "series_id": "CPIAUCSL",
-      "yoy_pct": 3.353016
+      "yoy_pct": 3.717251
     },
     "underlying_proxies": {
       "flexible": {
-        "acceleration_3m_minus_6m_pp": -13.191848,
-        "annualized_3m_pct": -5.818312,
-        "annualized_6m_pct": 7.373536,
+        "acceleration_3m_minus_6m_pp": 2.772202,
+        "annualized_3m_pct": 8.171584,
+        "annualized_6m_pct": 5.399382,
         "available": true,
         "freshness_status": "current_with_publication_lag",
         "label": "Flexible-price CPI proxy",
-        "monthly_pct": 0.810515,
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
+        "monthly_pct": 1.686175,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
         "revision_basis": "latest_local_fred_proxy_series",
         "series_id": "FLEXCPIM157SFRBATL"
       },
       "sticky": {
-        "acceleration_3m_minus_6m_pp": -0.428647,
-        "annualized_3m_pct": 2.456696,
-        "annualized_6m_pct": 2.885343,
+        "acceleration_3m_minus_6m_pp": 0.280132,
+        "annualized_3m_pct": 3.325499,
+        "annualized_6m_pct": 3.045367,
         "available": true,
         "freshness_status": "current_with_publication_lag",
         "label": "Sticky-price CPI proxy",
-        "monthly_pct": 0.253932,
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
+        "monthly_pct": 0.279114,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
         "revision_basis": "latest_local_fred_proxy_series",
         "series_id": "STICKCPIM157SFRBATL"
       }
@@ -3516,9 +3516,9 @@
         "available": true,
         "column": "core_cpi",
         "freshness_status": "current_with_publication_lag",
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
-        "observations": 835,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
+        "observations": 836,
         "path": "data/fred/CPILFESL.parquet",
         "series_id": "CPILFESL"
       },
@@ -3526,9 +3526,9 @@
         "available": true,
         "column": "flex_cpi",
         "freshness_status": "current_with_publication_lag",
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
-        "observations": 715,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
+        "observations": 716,
         "path": "data/fred/FLEXCPIM157SFRBATL.parquet",
         "series_id": "FLEXCPIM157SFRBATL"
       },
@@ -3536,9 +3536,9 @@
         "available": true,
         "column": "headline_cpi",
         "freshness_status": "current_with_publication_lag",
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
-        "observations": 955,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
+        "observations": 956,
         "path": "data/fred/CPIAUCSL.parquet",
         "series_id": "CPIAUCSL"
       },
@@ -3546,9 +3546,9 @@
         "available": true,
         "column": "sticky_cpi",
         "freshness_status": "current_with_publication_lag",
-        "observation_age_months": 2,
-        "observation_period": "2026-08",
-        "observations": 715,
+        "observation_age_months": 1,
+        "observation_period": "2026-09",
+        "observations": 716,
         "path": "data/fred/STICKCPIM157SFRBATL.parquet",
         "series_id": "STICKCPIM157SFRBATL"
       }
