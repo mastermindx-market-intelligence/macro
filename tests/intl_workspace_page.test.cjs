@@ -128,6 +128,39 @@ for (const bootLanguage of ['en','zh']) {
 }
 
 
+for (const lang of ['en','zh']) {
+  test(`Native Compare refused additions preserve chart and recover ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      const chart=panel.locator('[data-im-chart-model]');
+      for(const slot of ['1','4','0','2']) await picker.selectOption(slot);
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'comparable');
+      async function snapshot() {
+        return {url:page.url(),history:await page.evaluate(()=>history.length),chart:await chart.innerHTML(),rows:await panel.locator('[data-im-compare-rows]').innerHTML()};
+      }
+      let before=await snapshot();
+      await picker.focus();await picker.selectOption('3');
+      assert.deepEqual(await snapshot(),before);
+      assert.equal(await picker.inputValue(),'');
+      assert.equal(await picker.evaluate(n=>n===document.activeElement),true);
+      assert.match(await page.locator('[data-im-issues]').textContent(),lang==='zh'?/已达固定上限/:/Pin limit reached/);
+      await panel.locator('[data-im-compare-remove="2"]').click();
+      before=await snapshot();
+      await page.evaluate(()=>{window.originalPush=history.pushState;history.pushState=()=>{throw Error('synthetic history failure')};});
+      try { await picker.selectOption('3'); }
+      finally { await page.evaluate(()=>history.pushState=originalPush); }
+      assert.deepEqual(await snapshot(),before);
+      assert.equal(await picker.inputValue(),'');
+      assert.equal(await picker.evaluate(n=>n===document.activeElement),true);
+      await picker.selectOption('3');
+      assert.equal(await picker.inputValue(),'');
+      assert.deepEqual(await chart.locator('[data-im-chart-table-market]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort()),['AU','IN','JP','KR']);
+      assert.equal(await chart.locator('[data-im-chart-cohort]:not([hidden]) [data-im-chart-market-count]').textContent(),'4');
+    },{htmlOverride:sourceChartFixture(),width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
 for (const lang of ['en','zh']) for (const width of [320,1440]) {
   test(`Native Compare chart survives Overview evidence round trip ${lang} ${width}`,async()=>{
     await pageFixture(async page=>{

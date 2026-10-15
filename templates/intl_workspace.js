@@ -1246,6 +1246,9 @@
     if (!plan.rows.has(slot) || (button ? !plan.selected.includes(slot) : !plan.options.some(function (o) { return o.value === value && !o.disabled; }))) return true;
     event.preventDefault();
     var result = dispatch(controller,{type:button ? 'unpin' : 'pin',market_id:controller.config.markets[slot]});
+    // The picker is an add command, not committed state. Native change already
+    // selected the attempted option before a reducer or history refusal.
+    if (picker && !result.ok) picker.value = '';
     if (result.ok && button) plan.picker.focus();
     return true;
   }
