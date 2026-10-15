@@ -144,6 +144,37 @@ the per-industry exporter and confirmed 1,112 exact rows across all eight years
 source-axis inspection or a real installed L1 view. Hosted CI and independent
 source review must be repeated on the eventual published exact head.
 
+## Single-audit, bounded-memory batch candidate packaging — October 15 continuation
+
+`iter_candidate_industry_views(candidate)` now streams **all 138 exact publisher
+industry views** in a single deterministic industry-first pass over the existing
+row transformer. The original `materialize_industry_inputs(candidate)` API keeps
+its prior year-first order by default; only the explicit `by_industry=True`
+variant groups rows for batch packaging. Both modes reuse the same one source-byte,
+receipt, producer and signed-accounting audit. Each industry view is checked for
+all selected accounting years × 139 commodity rows, SHA-256 and the existing
+16 MiB output bound. The iterator holds only one industry JSONL byte buffer at
+a time; it does not install, persist or publish anything.
+
+The stream itself is **not atomic native generation admission**: a caller can
+stop after any number of industry outputs. The existing Data OS storage owner must
+verify the entire 138-view population, exact complete year/commodity axes,
+candidate-generation and producer/source/receipt digests, and true UTC native
+ingestion/correction evidence **before** its own atomic native installation.
+No output may be marked `PRODUCED` or used for GMI publication merely because
+an iterator yielded a digest-bound candidate view.
+
+Hermetic verification: 43 native tests and 65 subtests passed after the
+batch-order change. The eight-year, 72-response synthetic case exercised the
+entire 138 × 1,112 = 153,456-row batch, requiring exact per-industry SHA-256,
+generation and row completeness, and byte equality with the prior per-industry
+serializer on a representative industry. The one-year test compares first,
+middle and last industry bytes, preserves default ordering and verifies
+single-audit behavior; tampering, oversized outputs and network/store-write
+attempts are refused. This is **not** an observation of the previously denied
+real original-source axes, a production installation, or hosted CI acceptance
+for the new change.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files

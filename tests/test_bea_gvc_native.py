@@ -332,6 +332,15 @@ class TestCandidateHardening(unittest.TestCase):
         self.assertEqual(len(view.jsonl_bytes.splitlines()), 1112)
         self.assertEqual({json.loads(row)["accounting_year"]
                           for row in view.jsonl_bytes.splitlines()}, set(bea.YEARS))
+        seen_views = 0
+        for candidate_view in bea.iter_candidate_industry_views(candidate):
+            seen_views += 1
+            self.assertEqual(candidate_view.row_count, 1112)
+            self.assertEqual(candidate_view.sha256, digest(candidate_view.jsonl_bytes))
+            self.assertEqual(candidate_view.source_generation_id, candidate.generation_id)
+            if candidate_view.industry_code_exact == "5241X":
+                self.assertEqual(candidate_view.jsonl_bytes, view.jsonl_bytes)
+        self.assertEqual(seen_views, 138)
 
     def test_source_tokens_preserve_case_without_aliasing(self):
         blob = change_table(original("ImMatCan"),
@@ -505,6 +514,60 @@ class TestCandidateIndustryView(unittest.TestCase):
              patch("urllib.request.urlopen", side_effect=AssertionError("network")):
             view = bea.candidate_industry_jsonl(self.candidate, "5241X")
             self.assertEqual(view.row_count, 139)
+
+
+class TestBatchCandidateIndustryViews(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.candidate = bind(fixture())
+
+    def test_all_138_views_once_with_stable_exact_digests(self):
+        with patch.object(bea, "_audit_candidate", wraps=bea._audit_candidate) as audit:
+            views = list(bea.iter_candidate_industry_views(self.candidate))
+            self.assertEqual(audit.call_count, 1)
+        self.assertEqual(len(views), 138)
+        self.assertEqual(len({view.industry_code_exact for view in views}), 138)
+        self.assertEqual({view.row_count for view in views}, {139})
+        self.assertEqual(views[0].industry_code_exact, "5241X")
+        self.assertEqual(views[-1].industry_code_exact, "I137")
+        self.assertEqual(sum(view.row_count for view in views), 19182)
+        self.assertTrue(all(view.sha256 == digest(view.jsonl_bytes)
+                            and view.source_generation_id == self.candidate.generation_id
+                            for view in views))
+        for view in (views[0], views[69], views[-1]):
+            self.assertEqual(
+                view, bea.candidate_industry_jsonl(self.candidate, view.industry_code_exact))
+        rows = [json.loads(raw) for raw in views[0].jsonl_bytes.splitlines()]
+        self.assertTrue(all(row["candidate_state"] == "BYTE_VERIFIED_NOT_INSTALLED"
+                            and row["may_publish"] is False
+                            and row["dataos_native_admitted"] is False for row in rows))
+
+    def test_default_row_order_unchanged_industry_order_is_explicit(self):
+        default = bea.materialize_industry_inputs(self.candidate)
+        grouped = bea.materialize_industry_inputs(self.candidate, by_industry=True)
+        self.assertEqual([next(default)["commodity_code_exact"] for _ in range(2)],
+                         ["C000", "C001"])
+        self.assertEqual([next(grouped)["commodity_code_exact"] for _ in range(2)],
+                         ["C000", "C001"])
+        with self.assertRaises(bea.BEAGVCRefused):
+            bea.materialize_industry_inputs(self.candidate, by_industry="yes")
+
+    def test_batch_refuses_forged_claim_and_byte_overflow(self):
+        manifest = self.candidate.manifest
+        manifest["may_publish"] = True
+        with self.assertRaises(bea.BEAGVCRefused):
+            next(bea.iter_candidate_industry_views(
+                replace(self.candidate, manifest_bytes=encoded(manifest))))
+        with patch.object(bea, "MAX_INDUSTRY_VIEW_BYTES", 64):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "byte bound"):
+                next(bea.iter_candidate_industry_views(self.candidate))
+
+    def test_batch_is_offline_with_no_source_store_writes(self):
+        with patch("pathlib.Path.write_bytes", side_effect=AssertionError("write")), \
+             patch("pathlib.Path.write_text", side_effect=AssertionError("write")), \
+             patch("urllib.request.urlopen", side_effect=AssertionError("network")):
+            first = next(bea.iter_candidate_industry_views(self.candidate))
+            self.assertEqual(first.row_count, 139)
 
 
 if __name__ == "__main__":

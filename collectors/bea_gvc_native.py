@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
+from itertools import groupby
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -461,7 +462,9 @@ def bind_retained_responses(
                           tuple(sorted(capture_receipt_bytes.items())))
 
 
-def materialize_industry_inputs(candidate: BEAGVCCandidate) -> Iterator[dict[str, Any]]:
+def materialize_industry_inputs(
+    candidate: BEAGVCCandidate, *, by_industry: bool = False,
+) -> Iterator[dict[str, Any]]:
     """Return one coherent candidate generation; verify all inputs before any row.
 
     This is a candidate L1 transform, not a registered read service. Every row
@@ -469,6 +472,8 @@ def materialize_industry_inputs(candidate: BEAGVCCandidate) -> Iterator[dict[str
     is no company mapping, historical PIT, ranking, sizing or publication grant.
     Installation and native ingestion clocks are intentionally still absent.
     """
+    if type(by_industry) is not bool:
+        raise BEAGVCRefused("candidate row order must be an explicit bool")
     manifest, checked_sources = _audit_candidate(candidate)
     if manifest["producer_code_sha256"] != _producer_sha256():
         raise BEAGVCRefused("candidate producer differs; explicitly rebind before materialization")
@@ -477,60 +482,68 @@ def materialize_industry_inputs(candidate: BEAGVCCandidate) -> Iterator[dict[str
                for year in manifest["accounting_years"]}
 
     def rows() -> Iterator[dict[str, Any]]:
-        for year, annual in by_year.items():
+        # Default remains year/industry/commodity for all existing callers.
+        # Industry-first is only for bounded one-pass offline L1 packaging.
+        if by_industry:
+            ordered = ((year, annual, j) for j in range(138)
+                       for year, annual in by_year.items())
+        else:
+            ordered = ((year, annual, j) for year, annual in by_year.items()
+                       for j in range(138))
+        for year, annual, j in ordered:
             use = annual["Use"].table
             source_ids = {key:annual[key].sha256 for key in TABLES}
             receipt_ids = {key:annual[key].capture_receipt_sha256 for key in TABLES}
             latest_capture = max((s.captured_at for s in annual.values()), key=utc)
-            for j, industry in enumerate(use.industry_codes):
-                for i, commodity in enumerate(use.commodity_codes):
-                    world = annual["ImMatAll"].table.amounts[i][j]
-                    regional = {name:annual[key].table.amounts[i][j] for key, name, _ in REGIONS}
-                    delta = world - sum(regional.values())
-                    flags = []
-                    if world <= 0:
-                        flags.append("WORLD_IMPORT_NONPOSITIVE")
-                    if any(value < 0 for value in regional.values()):
-                        flags.append("SOURCE_NEGATIVE_REGION_ADJUSTMENT")
-                    if delta:
-                        flags.append("PUBLISHER_ROUNDING_RESIDUAL")
-                    yield {
-                        "schema":"mastermind.bea_gvc_industry_input_candidate/v1",
-                        "dataset_id":L1_DATASET, "source_generation_id":generation,
-                        "candidate_state":"BYTE_VERIFIED_NOT_INSTALLED",
-                        "publisher_edition_date":EDITION_DATE, "publication_precision":"DAY",
-                        "published_at":None, "published_at_null_reason":"PUBLISHER_DAY_PRECISION_ONLY",
-                        "accounting_year":year, "period_start":f"{year}-01-01",
-                        "period_end":f"{year}-12-31", "period_end_is_availability":False,
-                        "code_namespace":CODE_NAMESPACE, "industry_code_exact":industry,
-                        "commodity_code_exact":commodity, "industry_name":use.industry_names[j],
-                        "commodity_name":use.commodity_names[i],
-                        "canonical_industry_id":None, "canonical_security_id":None,
-                        "canonical_identity_null_reason":"CANONICAL_IDENTITY_NOT_ADOPTED",
-                        "legacy_industry_mapping_state":(
-                            "UNRESOLVED_5241X_VS_5241XX" if industry == "5241X" else "NOT_APPLIED"),
-                        "source_kind":"imputed_industry_commodity_accounting",
-                        "source_units":"million USD", "total_use_million_USD":use.amounts[i][j],
-                        "world_import_million_USD":world,
-                        **{f"{key}_import_million_USD":value for key, value in regional.items()},
-                        "region_rounding_difference_million_USD":delta, "quality_flags":flags,
-                        "source_lineage_sha256":manifest["source_lineage_sha256"],
-                        "source_response_sha256_by_table":dict(source_ids),
-                        "capture_receipt_sha256_by_table":dict(receipt_ids),
-                        "research_source_capture_completed_at":latest_capture,
-                        "capture_clock_semantics":"LATEST_COMPLETION_OF_NINE_BOUND_SOURCE_CAPTURES",
-                        "producer_code_sha256":manifest["producer_code_sha256"],
-                        "candidate_ingested_at":manifest["candidate_ingested_at"],
-                        "candidate_revision_seq":manifest["candidate_revision_seq"],
-                        "supersedes_candidate_generation":manifest["supersedes_candidate_generation"],
-                        "native_ingested_at":None, "native_known_at":None, "native_revision_seq":None,
-                        "original_historical_available_at":None,
-                        "historical_availability_null_reason":"HISTORICAL_AVAILABILITY_UNVERIFIED",
-                        "dataos_native_admitted":False, "historical_pit_eligible":False,
-                        "named_company_relationship":False, "may_publish":False,
-                        "may_rank":False, "may_train":False, "may_trade":False,
-                        "attribution":"Source: U.S. Bureau of Economic Analysis",
-                    }
+            industry = use.industry_codes[j]
+            for i, commodity in enumerate(use.commodity_codes):
+                world = annual["ImMatAll"].table.amounts[i][j]
+                regional = {name:annual[key].table.amounts[i][j] for key, name, _ in REGIONS}
+                delta = world - sum(regional.values())
+                flags = []
+                if world <= 0:
+                    flags.append("WORLD_IMPORT_NONPOSITIVE")
+                if any(value < 0 for value in regional.values()):
+                    flags.append("SOURCE_NEGATIVE_REGION_ADJUSTMENT")
+                if delta:
+                    flags.append("PUBLISHER_ROUNDING_RESIDUAL")
+                yield {
+                    "schema":"mastermind.bea_gvc_industry_input_candidate/v1",
+                    "dataset_id":L1_DATASET, "source_generation_id":generation,
+                    "candidate_state":"BYTE_VERIFIED_NOT_INSTALLED",
+                    "publisher_edition_date":EDITION_DATE, "publication_precision":"DAY",
+                    "published_at":None, "published_at_null_reason":"PUBLISHER_DAY_PRECISION_ONLY",
+                    "accounting_year":year, "period_start":f"{year}-01-01",
+                    "period_end":f"{year}-12-31", "period_end_is_availability":False,
+                    "code_namespace":CODE_NAMESPACE, "industry_code_exact":industry,
+                    "commodity_code_exact":commodity, "industry_name":use.industry_names[j],
+                    "commodity_name":use.commodity_names[i],
+                    "canonical_industry_id":None, "canonical_security_id":None,
+                    "canonical_identity_null_reason":"CANONICAL_IDENTITY_NOT_ADOPTED",
+                    "legacy_industry_mapping_state":(
+                        "UNRESOLVED_5241X_VS_5241XX" if industry == "5241X" else "NOT_APPLIED"),
+                    "source_kind":"imputed_industry_commodity_accounting",
+                    "source_units":"million USD", "total_use_million_USD":use.amounts[i][j],
+                    "world_import_million_USD":world,
+                    **{f"{key}_import_million_USD":value for key, value in regional.items()},
+                    "region_rounding_difference_million_USD":delta, "quality_flags":flags,
+                    "source_lineage_sha256":manifest["source_lineage_sha256"],
+                    "source_response_sha256_by_table":dict(source_ids),
+                    "capture_receipt_sha256_by_table":dict(receipt_ids),
+                    "research_source_capture_completed_at":latest_capture,
+                    "capture_clock_semantics":"LATEST_COMPLETION_OF_NINE_BOUND_SOURCE_CAPTURES",
+                    "producer_code_sha256":manifest["producer_code_sha256"],
+                    "candidate_ingested_at":manifest["candidate_ingested_at"],
+                    "candidate_revision_seq":manifest["candidate_revision_seq"],
+                    "supersedes_candidate_generation":manifest["supersedes_candidate_generation"],
+                    "native_ingested_at":None, "native_known_at":None, "native_revision_seq":None,
+                    "original_historical_available_at":None,
+                    "historical_availability_null_reason":"HISTORICAL_AVAILABILITY_UNVERIFIED",
+                    "dataos_native_admitted":False, "historical_pit_eligible":False,
+                    "named_company_relationship":False, "may_publish":False,
+                    "may_rank":False, "may_train":False, "may_trade":False,
+                    "attribution":"Source: U.S. Bureau of Economic Analysis",
+                }
     return rows()
 
 
@@ -559,15 +572,26 @@ def candidate_industry_jsonl(
     if type(industry_code_exact) is not str or not _CODE.fullmatch(industry_code_exact):
         raise BEAGVCRefused("exact safe source industry code required")
     all_rows = materialize_industry_inputs(candidate)
+    return _pack_candidate_industry_rows(
+        candidate, industry_code_exact,
+        (row for row in all_rows if row["industry_code_exact"] == industry_code_exact),
+    )
+
+
+def _pack_candidate_industry_rows(
+    candidate: BEAGVCCandidate, industry_code_exact: str, rows: Iterator[dict[str, Any]],
+) -> BEAGVCCandidateIndustryView:
+    """Bounded, exact-code packer; does not write or admit any data."""
     payload_rows: list[bytes] = []
     total_bytes = 0
-    for row in all_rows:
-        if row["industry_code_exact"] == industry_code_exact:
-            encoded = _encoded(row) + b"\n"
-            total_bytes += len(encoded)
-            if total_bytes > MAX_INDUSTRY_VIEW_BYTES:
-                raise BEAGVCRefused("candidate industry view exceeds byte bound")
-            payload_rows.append(encoded)
+    for row in rows:
+        if row["industry_code_exact"] != industry_code_exact:
+            raise BEAGVCRefused("mixed source industry in candidate view")
+        encoded = _encoded(row) + b"\n"
+        total_bytes += len(encoded)
+        if total_bytes > MAX_INDUSTRY_VIEW_BYTES:
+            raise BEAGVCRefused("candidate industry view exceeds byte bound")
+        payload_rows.append(encoded)
     expected = 139 * len(candidate.manifest["accounting_years"])
     if len(payload_rows) != expected:
         raise BEAGVCRefused("industry absent or incomplete in candidate source axes")
@@ -583,3 +607,25 @@ def candidate_industry_jsonl(
         sha256=_sha(payload),
         row_count=len(payload_rows),
     )
+
+
+def iter_candidate_industry_views(
+    candidate: BEAGVCCandidate,
+) -> Iterator[BEAGVCCandidateIndustryView]:
+    """Yield 138 bounded L1 candidate views after ONE complete source audit.
+
+    The generator reorders the same deterministic row transform by exact industry.
+    It holds only one industry JSONL buffer at a time, never writes a store, and
+    never promotes source evidence or dataset status. The consuming Data OS owner
+    must verify the full 138-view population and atomically accept/install it:
+    stopping iteration early is not a completed generation.
+    """
+    rows = materialize_industry_inputs(candidate, by_industry=True)
+    view_count = 0
+    for code, grouped in groupby(rows, key=lambda row: row["industry_code_exact"]):
+        if view_count >= 138:
+            raise BEAGVCRefused("more than 138 candidate industries")
+        yield _pack_candidate_industry_rows(candidate, code, grouped)
+        view_count += 1
+    if view_count != 138:
+        raise BEAGVCRefused("incomplete candidate industry population")
