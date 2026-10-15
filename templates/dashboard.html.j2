@@ -13347,6 +13347,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if (_dlgr_iov_n > 0) or (_dlgr_iov_det != 'STEADY') or (_dlgr_iov_spill in ('watching','transmitting')) %}
         <details class="riskdlg-fold" id="riskdlg-overseas-more">
         <summary>{{ t('Tracked overseas markets','追踪中的海外市场') }}</summary>
+        {# Baked overseas evidence stays inert until this native disclosure opens. #}
+        <template data-overseas-fold>
         <div class="mx5-dlg-eyebrow">
           {{ t('Overseas','海外') }}
           {{ help('Context only — does not move the US score. Tiles link to the full International page. Ring = each market\'s pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today\'s trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.','仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。') }}
@@ -13550,7 +13552,25 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
         {# Task 8: footer removed — honesty now lives in the eyebrow help() tip above #}
+        </template>
         </details>
+        <script>
+        (function () {
+          var fold = document.getElementById('riskdlg-overseas-more');
+          if (!fold) return;
+          function hydrateOverseas() {
+            if (!fold.open) return;
+            var inert = fold.querySelector(':scope > template[data-overseas-fold]');
+            if (!inert) return;
+            fold.appendChild(inert.content);
+            inert.remove();
+            fold.removeEventListener('toggle', hydrateOverseas);
+          }
+          fold.addEventListener('toggle', hydrateOverseas);
+          if (fold.open) hydrateOverseas();
+        })();
+        </script>
+
         {% endif %}
 
         </section>
