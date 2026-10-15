@@ -786,3 +786,36 @@ def test_exact_real_external_cwd_open_fd_holds_checkout(
         except subprocess.TimeoutExpired:
             worker.kill()
             worker.wait(timeout=3)
+
+
+def test_only_worktree_absolute_root_does_not_confuse_lane_with_host(
+    repo, tmp_path, monkeypatch,
+):
+    target = _add_worktree(repo, "exact", branch="lane/exact")
+    sibling = _add_worktree(repo, "sibling", branch="lane/sibling")
+    _age(repo, target)
+    _age(repo, sibling)
+    cfg = _write_config(
+        tmp_path, armed=True, min_age_days=0, roots=[str(repo["root"])])
+    rc, row = _run_main(
+        repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc == 0, row["apply"]
+    assert row["apply"]["deleted"] == [str(target)]
+    assert not target.exists()
+    assert sibling.is_dir()
+    assert _git(repo["primary"], "rev-parse", "refs/heads/lane/exact")
+
+
+def test_only_worktree_non_fabric_branch_is_never_released(
+    repo, tmp_path, monkeypatch,
+):
+    other = _add_worktree(repo, "human", branch="claude/human")
+    _age(repo, other)
+    cfg = _write_config(
+        tmp_path, armed=True, min_age_days=0, roots=[str(repo["root"])])
+    with pytest.raises(SystemExit, match="original Fabric lane branch"):
+        _run_main(
+            repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+            extra=["--only-worktree", str(other), "--no-fetch"])
+    assert other.is_dir()

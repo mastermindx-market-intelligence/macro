@@ -1126,6 +1126,13 @@ def main(argv: list[str] | None = None) -> int:
         in_scope = [w for w in in_scope if w.path.resolve() == only]
         if len(in_scope) != 1:
             raise SystemExit("only-worktree refused: exact Git registration missing")
+        if in_scope[0].branch != "lane/" + only.name or in_scope[0].detached:
+            raise SystemExit("only-worktree refused: original Fabric lane branch required")
+        # Absolute, one-run GC roots have no repo-relative session-root
+        # suffixes. The generic host census then classifies EVERY registered
+        # worktree as a host. Exclude ONLY the exact lane we just checked;
+        # preserve every other host, including the primary checkout.
+        hosts = [host for host in hosts if host.resolve() != only]
     orphans = [] if only is not None else scan_orphans(hosts, roots, registered)
 
     fetch_ok = False if args.no_fetch else fetch_origin(primary)
