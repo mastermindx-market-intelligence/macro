@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from dataclasses import replace as _replace
 
+import pytest
+
 from engine.market_ontology import mining_theme_research as composition
 from tests.mining_casebook import (
     expectations_packets_from_event_facts,
@@ -127,3 +129,74 @@ def test_equal_estimate_and_actual_withholds():
     assert result["expectations"] == []
     assert "omitted:expectations" in result["limitations"]
     composition.validate_mining_research(result)
+
+
+def test_mismatched_periods_withhold():
+    """W15-B mC pin: the mapper carries each leg's OWN row period, so a
+    mismatched pair reaches the composer's COMPARABILITY_FIELDS check and the
+    row withholds with ``omitted:expectations``. Mutant mC forced the estimate
+    leg's period to the actual's, silencing that check and publishing a
+    fabricated cross-period comparison.
+    """
+    rows = [
+        {**_estimate_fact_row(value=100), "period": "Quarter ended 2026-03-31"},
+        _actual_fact_row(value=111),
+    ]
+    result, packets = _compose_with_rows(rows)
+    assert len(packets) == 1
+    assert (
+        packets[0]["earlier_point_estimate"]["period"] == "Quarter ended 2026-03-31"
+    )
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+    composition.validate_mining_research(result)
+
+
+@pytest.mark.parametrize("perimeter", ["", "   "])
+def test_empty_or_whitespace_perimeter_raises(perimeter):
+    """W15-B mD pin: an empty or whitespace-only caller perimeter raises
+    ValueError at the mapper gate before any packet is built. Mutant mD
+    deleted that gate, letting an unqualified perimeter flow into both legs.
+    """
+    rows = [_estimate_fact_row(value=100), _actual_fact_row(value=111)]
+    with pytest.raises(ValueError, match="perimeter is required"):
+        expectations_packets_from_event_facts(
+            rows, stable_subject_id=_SUBJECT, perimeter=perimeter
+        )
+
+
+def test_typed_absence_row_with_value_is_skipped():
+    """W15-B mE pin: a row carrying ``typed_absence`` is skipped even when it
+    also carries a ``value`` -- the estimate leg never pairs, the mapper
+    returns zero packets, and the composer withholds with
+    ``omitted:expectations``. Mutant mE dropped the typed-absence half of the
+    gate and let the disqualified row emit a packet.
+    """
+    rows = [
+        {**_estimate_fact_row(value=100), "typed_absence": "not_disclosed"},
+        _actual_fact_row(value=111),
+    ]
+    packets = expectations_packets_from_event_facts(
+        rows, stable_subject_id=_SUBJECT, perimeter=_PERIMETER
+    )
+    assert packets == ()
+    result, _ = _compose_with_rows(rows)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_missing_period_raises_in_mapper():
+    """W15-B item 4 (fail-open guard): at HEAD a pair of rows without
+    ``period`` mapped to blank-period legs and the composer still published
+    ``above_estimate`` with no limitation. The guard mirrors the sibling
+    mapper's gate: a paired row whose period is not a non-blank string
+    raises before any packet exists.
+    """
+    rows = [
+        {k: v for k, v in _estimate_fact_row(value=100).items() if k != "period"},
+        {k: v for k, v in _actual_fact_row(value=111).items() if k != "period"},
+    ]
+    with pytest.raises(ValueError, match="event_fact.v1 period must be carried"):
+        expectations_packets_from_event_facts(
+            rows, stable_subject_id=_SUBJECT, perimeter=_PERIMETER
+        )
