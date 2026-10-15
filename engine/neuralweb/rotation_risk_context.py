@@ -85,6 +85,10 @@ def _source_warnings(payload: dict) -> list[dict]:
     provenance = payload.get("provenance")
     sources = provenance.get("sources") if isinstance(provenance, dict) else None
     summary = payload.get("hazard_summary") or {}
+    # The owner schema requires an explicit stage. Missing is malformed, not
+    # the same evidence contract as a deliberately published unknown (null).
+    if "stage" not in summary:
+        return []
     if summary.get("stage") is None:
         if summary.get("stage_reason") not in ("required_coverage_unavailable", "required_source_state_unmapped"):
             return []

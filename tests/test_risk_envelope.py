@@ -796,3 +796,48 @@ class TestNativeProducerVocabulary:
         lead = dict(gd1["leadership_crack"], state="UNRECOGNISED_FUTURE_STATE")
         env = _compose(build_sources(gd1["market_state"], lead, gd1["session"]), session=gd1["session"])
         assert env["hazard_summary"]["stage"] is None
+
+
+class TestRadarOwnSessionContinuity:
+    """Preserve the producer clock instead of borrowing the parent's session.
+
+    Legacy records without this additive field retain their prior representation;
+    a current producer's explicit null or older date must never be laundered.
+    """
+
+    def test_market_state_transport_retains_native_radar_session(self, monkeypatch):
+        from copy import deepcopy
+        from engine import market_state
+        monkeypatch.setattr(market_state, "_rr_scorecard_track", lambda market: None)
+        native = {"state": "elevated", "top_score": 85, "asof": "2026-10-08", "can_force": False}
+        before = deepcopy(native)
+        transported = market_state._radar_to_rd(native)
+        assert transported.get("asof") == "2026-10-08"
+        assert transported["state"] == "elevated"
+        assert transported["top_score"] == 85
+        assert transported["can_force"] is False
+        assert native == before
+
+    @pytest.mark.parametrize("native_date,usable", [("2026-10-14", True), ("2026-10-08", False), (None, False), (True, False)])
+    def test_declared_radar_clock_not_container_clock_controls_current_qualification(self, native_date, usable):
+        from scripts.build_risk_envelope import _risk_radar_read
+        radar = {"state": "elevated", "top_score": 85, "asof": native_date}
+        read = _risk_radar_read(radar, "2026-10-14", "2026-10-14")
+        assert read.usable is usable
+        assert read.as_of == (native_date if isinstance(native_date, str) else None)
+        assert read.state == "elevated"
+        assert read.score == 85
+        assert read.admitted_stage == "FRAGILE"
+
+    def test_fresh_live_container_cannot_refresh_older_declared_radar_session(self):
+        from scripts.build_risk_envelope import _risk_radar_read
+        read = _risk_radar_read({"state": "risk-off", "asof": "2026-10-08"},
+                                "2026-10-14", "2026-10-14", stale_override=False)
+        assert read.as_of == "2026-10-08"
+        assert read.usable is False
+
+    def test_legacy_absent_field_keeps_its_prior_container_basis(self):
+        from scripts.build_risk_envelope import _risk_radar_read
+        read = _risk_radar_read({"state": "caution"}, "2026-10-14", "2026-10-14")
+        assert read.as_of == "2026-10-14"
+        assert read.usable is True

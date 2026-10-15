@@ -806,3 +806,19 @@ def test_native_warning_names_are_bounded_in_model_context():
     assert context.get("source_warnings")
     assert len(context["source_warnings"][0]["label_en"]) <= 96
     assert len(rc.render_context(context)) <= 1800
+
+
+@pytest.mark.parametrize("mutation", ["missing_stage", "string_contributors", "mapping_contributors"])
+def test_chat_native_warning_requires_explicit_owner_stage_and_array_contributors(mutation):
+    native = _native_warning_envelope()
+    if mutation == "missing_stage":
+        del native["hazard_summary"]["stage"]
+    elif mutation == "string_contributors":
+        native["hazard_summary"]["contributing_sources"] = "risk-radar-us"
+    else:
+        native["hazard_summary"]["contributing_sources"] = {"risk-radar-us": True}
+    before = deepcopy(native)
+    context = rc.compact_context(native, now=NOW)
+    assert not context.get("source_warnings")
+    assert "Credit stress" not in rc.render_context(context)
+    assert native == before

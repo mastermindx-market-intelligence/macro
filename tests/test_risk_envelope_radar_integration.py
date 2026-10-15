@@ -620,3 +620,49 @@ def test_restore_ignores_malformed_settled_hint_and_uses_existing_enum(bad_hint)
     command = _LIVE_DOM + 'var config=JSON.parse(nodes["gde-context-copy"].textContent);config.settled_hint=' + json.dumps(bad_hint) + ';nodes["gde-context-copy"].textContent=JSON.stringify(config);applyFeed(FEED);unpaint(true);console.log(JSON.stringify(result()));'
     out = _js_value(command)
     assert out["hint"] == "Fragile internals"
+
+
+@pytest.mark.parametrize("mutation", ["missing_stage", "string_contributors", "mapping_contributors"])
+def test_partial_warning_rejects_malformed_owner_contract_in_all_web_lanes(mutation):
+    """An omitted required stage is malformed, not an explicit unknown read.
+
+    The owner schema requires stage and an array of contributor identities. Do
+    not repair a cross-lane discrepancy by making the live lane more permissive.
+    """
+    import re
+    e = _partial_live_warning()
+    if mutation == "missing_stage":
+        del e["hazard_summary"]["stage"]
+    elif mutation == "string_contributors":
+        e["hazard_summary"]["contributing_sources"] = "risk-radar-us,leadership-crack-latest"
+    else:
+        e["hazard_summary"]["contributing_sources"] = {"risk-radar-us": True}
+    live = _js_value('console.log(JSON.stringify(contextView(FEED,COPY)));', e)
+    assert live["causes"] == ["", ""]
+    assert live["hint"] == ["Partial read", "读数不全"]
+    button = re.search(r'<button[^>]*id="mx5BtnRisk".*?</button>', render(e), re.S)[0]
+    assert "Warning · partial read" not in button
+    assert "Partial read" in button
+
+
+@pytest.mark.parametrize("mutation", ["missing_stage", "string_contributors", "duplicate_source", "older_source", "unknown_state"])
+def test_partial_settled_cause_line_uses_the_same_qualification_as_its_button(mutation):
+    e = _partial_live_warning()
+    radar = e["provenance"]["sources"][2]
+    if mutation == "missing_stage": del e["hazard_summary"]["stage"]
+    elif mutation == "string_contributors": e["hazard_summary"]["contributing_sources"] = "risk-radar-us"
+    elif mutation == "duplicate_source": e["provenance"]["sources"].append(deepcopy(radar))
+    elif mutation == "older_source": radar["as_of"] = "2026-09-18"
+    else: radar["state"] = "UNRECOGNISED"
+    assert 'class="gde-causes"' not in _dlg(render(e))
+
+
+def test_one_unqualified_partial_source_does_not_hide_a_different_qualified_warning():
+    e = _partial_live_warning()
+    lead = e["provenance"]["sources"][1]
+    lead.update(coverage="FRESH", state="CRACKING", hazard_stage="FRAGILE", as_of="2026-09-18")
+    html = _dlg(render(e))
+    import re
+    causes = re.search(r'<p class="gde-causes">(.*?)</p>', html, re.S)[1]
+    assert "Credit stress: building" in causes
+    assert "AI-hardware leaders" not in causes

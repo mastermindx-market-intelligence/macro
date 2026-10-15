@@ -16,14 +16,16 @@
    combined stage is null for a recognized coverage/mapping gap may a source-native
    warning stand on its own — fresh this session, attributed, and carrying its own
    known state copy. The aggregate stage is never promoted from it. #}
-{% macro _risk_partial_warning_sources(envelope) -%}
+{% macro _risk_partial_warning_sources(envelope, only_source_id=none) -%}
 {%- set _hz = (envelope.get('hazard_summary') or {}) if envelope else {} -%}
-{%- if _hz.get('stage') is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') -%}
+{%- if 'stage' in _hz and _hz.get('stage') is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') -%}
 {%- set _contributing = _hz.get('contributing_sources') or [] -%}
 {%- set _sources = (envelope.get('provenance') or {}).get('sources') or [] -%}
-{%- for s in _sources if s is mapping and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contributing and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and s.get('as_of') and s.get('as_of') == envelope.get('source_session') -%}
+{%- if _contributing is sequence and _contributing is not string and _contributing is not mapping and _sources is sequence and _sources is not string and _sources is not mapping -%}
+{%- for s in _sources if s is mapping and s.get('source_id') is string and (only_source_id is none or s.get('source_id') == only_source_id) and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contributing and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and s.get('as_of') and s.get('as_of') == envelope.get('source_session') -%}
 {%- if (_sources | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', s.get('source_id')) | list | length) == 1 -%}1{%- endif -%}
 {%- endfor -%}
+{%- endif -%}
 {%- endif -%}
 {%- endmacro %}
 {% macro risk_button_context(envelope) -%}
@@ -111,7 +113,9 @@
   {% endif %}
   {# Source-native causes only: no forecast, action, score blending or inferred rank. #}
   {% set _causes = namespace(rows=[]) %}
-  {% for s in _prov if s.role == 'hazard_evidence' and s.coverage == 'FRESH' and s.source_id in (_hz.get('contributing_sources') or []) and s.hazard_stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') %}
+  {% set _cause_contributors = _hz.get('contributing_sources') or [] %}
+  {% if _cause_contributors is not sequence or _cause_contributors is string or _cause_contributors is mapping %}{% set _cause_contributors = [] %}{% endif %}
+  {% for s in _prov if s.role == 'hazard_evidence' and s.coverage == 'FRESH' and s.source_id is string and s.source_id in _cause_contributors and s.hazard_stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and (_stage in _GDE_COPY.hazard or _risk_partial_warning_sources(_re, s.source_id)) %}
     {% set detail = s.detail or {} %}
     {% set name = _GDE_COPY.ai_leaders if detail.get('cohort_role') == 'tracked_ai_hardware_damage_monitor' else ([detail.get('label_en') or s.label_en or _GDE_COPY.source[0], detail.get('label_zh') or s.label_zh or _GDE_COPY.source[1]] if s.source_id == 'risk-radar-us' else [s.label_en or _GDE_COPY.source[0], s.label_zh or _GDE_COPY.source[1]]) %}
     {% set word = _GDE_COPY.source_states.get(s.state, _GDE_COPY.source_missing) %}

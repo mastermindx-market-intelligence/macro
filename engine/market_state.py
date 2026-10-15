@@ -785,6 +785,9 @@ def _radar_to_rd(rr: dict) -> dict:
     # Forward-monitor freshness remains visible in `track`, but it is display provenance. The
     # optional, wall-clock scorecard must not silently rewrite an identical producer payload.
     return {
+        # Preserve the Radar producer's own session. A newer Market State container
+        # cannot establish a newer Radar observation; explicit unknown stays null.
+        "asof": rr.get("asof"),
         "state": state,
         "top_score": round(top) if top is not None else None,
         "label_en": rr.get("dominant_label_en") or "calm",
