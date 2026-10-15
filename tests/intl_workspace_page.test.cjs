@@ -84,7 +84,7 @@ with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
     if ${isolated ? 'True' : 'False'}:
         for market in ('AU', 'KR'):
             symbol = countries()[market]['fx']
-            frame.loc[frame.index[[-12, -10]], symbol] = float('nan')
+            frame.loc[frame.index[${isolated === 'edges' ? '[-21, -2]' : '[-12, -10]'}], symbol] = float('nan')
             filename = symbol.replace('^', '_').replace('=', '_').replace('/', '_') + '.parquet'
             frame[[symbol]].rename(columns={symbol:'close'}).to_parquet(Path(tmp)/'intl'/filename)
     sink = {}
@@ -93,6 +93,29 @@ with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
 `],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
   return sourceChartHtml.get(isolated);
 }
+
+test('Source chart endpoint symbols remain unclipped',async()=>{
+  await pageFixture(async page=>{
+    await page.emulateMedia({reducedMotion:'reduce'});
+    const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+    const picker=panel.locator('[data-im-compare-pin]');
+    await picker.selectOption('1');await picker.selectOption('4');
+    const chart=panel.locator('[data-im-chart-model]');
+    for(const width of [320,1440]) {
+      await page.setViewportSize({width,height:900});
+      const marks=await chart.locator('[data-im-chart-point]:not([hidden])').evaluateAll(ns=>ns.map(n=>{
+        const s=n.ownerSVGElement, box=s.getBoundingClientRect(), point=n.getBoundingClientRect();
+        const outside=point.left<box.left||point.right>box.right||point.top<box.top||point.bottom>box.bottom;
+        return {market:n.dataset.imChartSeries,position:n.getAttribute('transform'),clipped:outside&&getComputedStyle(s).overflow!=='visible'};
+      }));
+      assert.equal(marks.length,4,'each selected series has two isolated endpoints');
+      assert.ok(marks.some(m=>m.position.startsWith('translate(0.0 ')));
+      assert.ok(marks.some(m=>m.position.startsWith('translate(640.0 ')));
+      assert.ok(marks.every(m=>!m.clipped),'the SVG viewport must not cut endpoint symbols in half: '+JSON.stringify(marks));
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    }
+  },{htmlOverride:sourceChartFixture('edges'),width:320,initialSearch:'?view=compare'});
+});
 
 for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   test(`Source chart isolated observations retain market identity ${theme} ${lang}`,async()=>{
