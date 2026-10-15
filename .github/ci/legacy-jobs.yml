@@ -3524,6 +3524,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/test_observe_options_matrix_identity.py"
       - "tests/test_options_selection_composition.py"
+      - "tests/test_observe_options_matrix_selection.py"
       - "tests/fixtures/options_matrix_selection_vectors_v1.json"
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
@@ -3628,7 +3629,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py -q
 
   flow-surface:
     if: ${{ false }}
