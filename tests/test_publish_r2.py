@@ -1254,3 +1254,100 @@ def test_massive_publisher_refuses_a_boolean_configuration_budget(tmp_path, monk
     assert pr2.publish(["massive_stock_day"]) == 1
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+# R2 source revision parity: advancing a calendar date alone is not enough.
+# Reprocessing an already-covered NYSE session can produce a newer corrected
+# source revision; an older local snapshot must never replace it on R2.
+def test_massive_publisher_refuses_older_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"),
+             "updated_at": "2026-10-14T21:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_unverifiable_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    remote = _remote_tip("2026-10-14")
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_UNVERIFIED" in reason
+    local["updated_at"] = "2026-10-14T21:00:00"  # no UTC offset
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REVISION_UNVERIFIED" in reason
+
+
+def test_massive_publisher_allows_newer_same_session_revision():
+    now = datetime(2026, 10, 15, 4, 52, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"),
+             "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_blocks_older_same_session_before_any_data_upload(
+    tmp_path, monkeypatch,
+):
+    # A same-session historical correction in R2 must not be replaced by an
+    # earlier collector run, even if the source latest_date is unchanged.
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now).isoformat()
+    local_update = (now - timedelta(hours=2)).isoformat()
+    remote_update = (now - timedelta(hours=1)).isoformat()
+    remote = _remote_tip(session)
+    remote["store"]["updated_at"] = remote_update
+    s3 = _FakeS3(objects={
+        "massive_stock_day/_manifest.json": json.dumps(remote).encode(),
+    })
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local.update(latest_date=session, updated_at=local_update)
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_blocks_same_session_remote_revision_race_before_put(
+    tmp_path, monkeypatch,
+):
+    # Remote advances to a later revision of the SAME NYSE day during file
+    # uploads. The manifest PUT must be withheld, even though the byte upload
+    # itself cannot be atomically rolled back by this existing publisher.
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now)
+    prior = last_session_on_or_before(session - timedelta(days=1))
+    local_update = (now - timedelta(hours=2)).isoformat()
+    newer_remote_update = (now - timedelta(hours=1)).isoformat()
+    key = "massive_stock_day/_manifest.json"
+    newer = _remote_tip(session.isoformat())
+    newer["store"]["updated_at"] = newer_remote_update
+
+    class CorrectedMidUpload(_FakeS3):
+        def upload_file(self, *args, **kwargs):
+            super().upload_file(*args, **kwargs)
+            self.objects[key] = json.dumps(newer).encode()
+
+    s3 = CorrectedMidUpload(objects={
+        key: json.dumps(_remote_tip(prior.isoformat())).encode(),
+    })
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local.update(latest_date=session.isoformat(), updated_at=local_update)
+    (base / "_manifest.json").write_text(json.dumps(local))
+
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded  # a non-atomic file PUT was attempted
+    assert s3.manifest_puts == []  # newer revision descriptor is preserved

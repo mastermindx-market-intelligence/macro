@@ -594,6 +594,31 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
         if latest < older:
             return False, (f"SOURCE_REGRESSION: local latest {latest} predates "
                            f"remote source latest {older}")
+        if latest == older:
+            # The daily session alone is NOT a revision identifier. A prior
+            # collector revision can overwrite a corrected remote file while
+            # claiming the same latest session; the original updated_at clocks
+            # must be comparable before a same-session replacement is allowed.
+            def _collector_update(record: dict) -> datetime | None:
+                value = record.get("updated_at")
+                if not isinstance(value, str):
+                    return None
+                try:
+                    stamp = datetime.fromisoformat(value)
+                except ValueError:
+                    return None
+                if stamp.tzinfo is None or stamp.utcoffset() is None:
+                    return None
+                return stamp.astimezone(timezone.utc)
+
+            local_update = _collector_update(local)
+            remote_update = _collector_update(recorded)
+            if local_update is None or remote_update is None:
+                return False, ("SOURCE_REVISION_UNVERIFIED: same-session source "
+                               "revisions lack comparable UTC collector clocks")
+            if local_update < remote_update:
+                return False, ("SOURCE_REVISION_REGRESSION: local collector "
+                               "revision predates the remote source revision")
     return True, "source tip admitted"
 
 
