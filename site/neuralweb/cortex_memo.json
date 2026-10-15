@@ -1,14 +1,34 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-13T13:26:22+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-10-14T19:55:17+00:00",
+  "summary": "Context-only committee read: the US backdrop is MIXED, with trend and calm volatility offset by exceptionally weak breadth, contracting liquidity, widening credit, and zero bonds/FX agreement. The confirmed Q2 label is one session from a possible Q1 transition because its current growth/inflation signs no longer support Q2. Risk Radar remains an advisory early-warning state, not a measured edge: its exact caution cell shows a 16.0% 21-day pullback rate versus a 17.8% base rate, and several underlying inputs are stale. No ranking, sizing, escalation, or trade inference is made.",
+  "what_fired": [
+    "Market-state breadth score is 0; only 48.3% of members are above the 200-day average and breadth divergence is present.",
+    "Liquidity quality is contracting with stress confirmation; the RRP buffer is exhausted and HY spreads have widened.",
+    "Rates and term-premium pressure remain elevated: real 10-year yield 2.92%, restrictive/rising, with a bear steepener.",
+    "Cross-asset confirmation diverges: bonds and FX have 0% agreement with the equity regime.",
+    "Factor weather is mixed; profitability leads, growth/technology ratios are positive, and small caps lag. Pair G is dormant because the panel has only seven dates.",
+    "Systematic positioning is split: volatility-control is adding while CTAs are cutting."
+  ],
+  "contradictions_review": "Six display-only contradictions are active. The important macro tensions are Q2 versus the caution/rates backdrop, FX and rates-credit versus Q2, and bonds/FX versus equities. These do not establish a trade direction. Pair G has no records because the factor panel has not reached 60 dates. The open-thesis review adds three operator-level conflicts: semiconductor underweights are stale against intact leadership and positive recent growth/technology relative performance; China overweight conflicts with grinding-bear/risk-off context; and long-Treasury overweights conflict with real yields above 2.5%, rising term premium, and bear steepening. The thesis ledger also reuses id mb-2026-07-01-1 for different subjects.",
+  "decaying_families": [
+    "Altdata remains unarmed and has negative shrunken IC across pooled 5/21/63-day horizons.",
+    "Policy and policy-intent families remain unarmed, negative on signed excess, or too thin for a decision.",
+    "AI, narrative, radar, stock, and thematic desk 63-day families show negative signed excess and remain unarmed or vacuous under held-out testing.",
+    "CA/HK board positive MFE summaries are not directional evidence: their outcome basis is unsigned MFE and their held-out test is vacuous.",
+    "Factor composite is non-tradeable; investment, low-volatility, low-beta, and composite scorecard legs have negative IC."
+  ],
+  "deserves_operator": [
+    "Resolve the Q2-to-Q1 transition after the next confirmation session; do not treat the pending label as complete early.",
+    "Refresh HY OAS, OFR FSI, and US10Y before relying on the risk-radar/rates conjunction.",
+    "Review and close, score, or explicitly renew open theses whose check-by dates have passed\u2014especially semiconductors, China equities, long Treasuries, growth/value, Bitcoin, high yield, and US equities.",
+    "Resolve duplicate thesis id mb-2026-07-01-1, which currently refers to both Long Treasuries and China equities.",
+    "Treat the current caution banner as advisory only unless refreshed evidence moves its calibrated state above base rate with a confirmed validated leg.",
+    "Do not infer absence of factor contradiction from the empty Pair G ledger; coverage is insufficient, not clean."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,72 +40,66 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 122,
-      "total_rows": 130
+      "ungradeable": 127,
+      "total_rows": 135
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CfzK5n1UcswXYidGQf4SU'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfzK5wVyhFE5hAGqSkLxx'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfzK7CUB5vcaiQDFFETf3'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfzKBkyt1dfbNi1Yuew8S'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfzKRBrDAtCpGqK6PFFwW'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CfzKRCg584f5ukLaZtJZP'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 3,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-13T08:31:25Z"
+    "context_as_of": "2026-10-14T19:32:19Z"
   }
 }

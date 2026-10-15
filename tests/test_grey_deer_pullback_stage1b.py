@@ -127,6 +127,22 @@ def _run(panel_dir: Path, out_dir: Path, extra: list[str] | None = None) -> int:
     return s1b.main(argv)
 
 
+def _default_out_state() -> dict[str, str]:
+    """Bytes under the repository's default out dir, keyed by relative path.
+
+    The frozen real-data results are committed there, so a synthetic run must
+    leave that directory byte-identical rather than assume it is absent.
+    """
+    root = s1b.ROOT / s1b.DEFAULT_OUT_DIR
+    if not root.exists():
+        return {}
+    return {
+        str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
 def _blocked(out_dir: Path) -> dict:
     payload = json.loads((out_dir / s1b.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
     assert payload["schema"] == s1b.SCHEMA
@@ -204,6 +220,7 @@ def _paths(panel: Path) -> dict[str, Path]:
 
 
 def test_missing_ticker_is_panel_coverage(tmp_path, capsys):
+    default_out_before = _default_out_state()
     panel = tmp_path / "panel"
     for ticker in s1b.PANEL_TICKERS:
         if ticker == "QQQ":
@@ -216,7 +233,7 @@ def test_missing_ticker_is_panel_coverage(tmp_path, capsys):
     row = _blocked(out)
     assert row["type"] == "PANEL_COVERAGE"
     assert "QQQ" in row["tickers"]
-    assert not (s1b.ROOT / s1b.DEFAULT_OUT_DIR).exists()
+    assert _default_out_state() == default_out_before
     payload = json.loads((out / s1b.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
     assert payload["manifest_path"] == s1b.MANIFEST_PATH
     assert payload["manifest_version"] == s1b.MANIFEST_VERSION
@@ -657,6 +674,7 @@ def _plant_crash(close: np.ndarray, index: int, ratio: float = 0.90) -> None:
 
 
 def test_synthetic_panel_claims_are_byte_identical(tmp_path, monkeypatch):
+    default_out_before = _default_out_state()
     n = 340
     dates = pd.bdate_range("2021-07-06", periods=n)
     date_str = [day.strftime("%Y-%m-%d") for day in dates]
@@ -744,7 +762,7 @@ def test_synthetic_panel_claims_are_byte_identical(tmp_path, monkeypatch):
     assert payload["inc"]["status"] == "NOT_APPLICABLE"
     assert payload["inc"]["id"] == "INC"
     assert payload["blocked"] == []
-    assert not (s1b.ROOT / s1b.DEFAULT_OUT_DIR).exists()
+    assert _default_out_state() == default_out_before
     # The two artifact files live only under the directories this test passed.
     assert {path.name for path in out1.iterdir()} == {
         s1b.RESULTS_JSON_NAME,

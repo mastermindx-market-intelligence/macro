@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HOOD-BULL-20260821",
-  "asof": "2026-10-09",
+  "asof": "2026-10-15",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.0,
@@ -10,23 +10,23 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 96.2,
+    "validity": 76.5,
     "progress": 0.0,
-    "pace": 24.7,
+    "pace": 16.7,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.972,
+    "dist_to_stop_r": 0.82,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 108.9,
-    "p1": -0.0186,
-    "p2": -0.0093,
+    "horizon_pct_used": 122.2,
+    "p1": -0.1199,
+    "p2": -0.0599,
     "p3": null,
-    "move_r": -0.028,
+    "move_r": -0.18,
     "mfe_r": 0.45,
-    "mae_r": -0.115
+    "mae_r": -0.18
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 17.550001525878912,
-  "_mae": -4.479997253417963,
+  "_mae": -7.019998168945307,
   "_max_p1": 0.2996926490074951,
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 55,
+  "tau": 1.2222
 }

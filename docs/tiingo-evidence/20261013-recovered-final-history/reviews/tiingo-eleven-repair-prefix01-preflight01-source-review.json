@@ -1,0 +1,76 @@
+{
+  "schema": "tiingo.exact_source_and_finite_preflight_launch_review/v1",
+  "reviewed_at_utc": "2026-10-14T02:42:30.311179+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer_role": "existing bounded control adjudicator /root/tiingo_restart_control_adjudication",
+  "verdict": "PASS",
+  "scope": "One foreground preflight01 invocation only; source qualification of inherited later stages is conditional on their separately bound actual preflight and qualifier returns.",
+  "source_file": "tiingo-eleven-strict-timeout-later-repair-disposition-bound01.py",
+  "source_sha256": "58b408064550e95966618e8f482761cf8dbae115e0c4a13b46b64dd86e438a61",
+  "launch_packet_file": "tiingo-eleven-repair-prefix01-preflight01-launch-packet.json",
+  "launch_packet_sha256": "b52098d568c246fe83d9ff6d7c583d6d8d9ec7fa7003c7497f92258e5ca78afd",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "accepted_baseline_method_sha256": "7e734c3bfb9c6b4f79468eb1516a8d86d39361e427cb0dfa8227833acb4e93af",
+  "actual_capture_parent_sha256": "43ed640cca4aab2f4745b032ffc48d22cd28f83b952dd94fec990c7cd5021cf9",
+  "verification": {
+    "ast_compile_only": true,
+    "candidate_module_executed": false,
+    "unchanged_function_asts": [
+      "key",
+      "prior_coverage",
+      "save",
+      "keep_hash",
+      "selector_state",
+      "freeze",
+      "scalar_check",
+      "artifacts",
+      "qualify",
+      "coverage"
+    ],
+    "all_34_packet_frozen_hashes_verified": true,
+    "wrapper_exact_hash_verified": true,
+    "seven_output_and_wrapper_slots_lstat_absent_and_distinct": true,
+    "all_129_accepted_predecessor_qualification_hashes_verified": true,
+    "selected_11_exactly_equal_actual_successes_and_predecessor_missing_windows": true,
+    "selected_11_disjoint_from_all_accepted_valid_and_quality_pairs": true,
+    "isolated_capture_gate_baseline_accepted": true,
+    "isolated_capture_gate_negatives_rejected": [
+      "foreign_root",
+      "unconsumed_terminal",
+      "nonzero_terminal",
+      "wrong_scope",
+      "unsettled",
+      "automatic_successor",
+      "duplicate_success"
+    ]
+  },
+  "findings": [],
+  "control_judgment": [
+    "New context binds actual settled 54071 exit0 consumed capture, exact scope and plan, all eleven distinct successful repair requests and their observation time window.",
+    "Predecessor QA05 c155 and census 02daf are bound; original QA04 lost native returns remain preserved by the reused accepted recovery context, not restamped.",
+    "Preflight retains whole-response narrow negative JSON-int volume policy, immutable producer normalization, receipt/raw checksums, date disjointness, strict four-selector state and ancestor checks, foreign accepted-owner protection, and fail-closed unexpected current projection handling.",
+    "Preflight dispatch contains no materialize_one, provider or credential invocation. Its new effects are limited to exclusive local control outputs and wrapper evidence.",
+    "Original failed request histories remain historical facts; eleven later successful captures do not establish reader acceptance until actual preflight, qualification and census returns are consumed."
+  ],
+  "remaining_gates": [
+    "Parent must launch exactly this packet once with reviewed wrapper02 on the same carrier and consume native return plus durable child wait and postvalidation.",
+    "Accept completed preflight semantics and exact snapshot/preflight hashes before preparing the separately frozen qualification packet.",
+    "Any occupied output, source/input drift, selector collision, partial result, lost return or materialization effect uncertainty requires same-carrier reconciliation; no automatic replay.",
+    "Qualification and coverage need separate actual bindings and parent semantic acceptance; this review does not claim either ran."
+  ],
+  "preserved_exclusions": [
+    "provider requests and credential reads by this review",
+    "archive/source mutations by this review",
+    "HTTP403/404, fundamentals400, split403, whole-quality retries",
+    "CI approval, Fabric and persistent publisher refusals",
+    "canonical identity, PIT and programme acceptance"
+  ],
+  "review_effects": {
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "archive_writes": 0,
+    "candidate_stage_executions": 0,
+    "delegations": 0,
+    "accepted_raw_or_parquet_reader_rescans": 0
+  }
+}

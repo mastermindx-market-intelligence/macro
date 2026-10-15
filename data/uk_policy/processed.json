@@ -35,7 +35,19 @@
     },
     "uk-2026-10-13-chancellor-call-with-vice-premier-he-lifeng-of-china-8-october-2026": {
       "at": "2026-10-13T15:59:05.155862+00:00"
+    },
+    "uk-2026-10-13-exchequer-secretary-to-the-treasury-speech-at-the-west-midlands-growth-summit": {
+      "at": "2026-10-13T21:15:09.568207+00:00"
+    },
+    "uk-2026-10-14-a-new-chief-executive-at-the-government-internal-audit-agency": {
+      "at": "2026-10-14T18:37:06.024072+00:00"
+    },
+    "uk-2026-10-14-britain-funds-critical-repairs-to-chornobyl-nuclear-power-plant-damaged-by-russi": {
+      "at": "2026-10-15T07:25:41.902576+00:00",
+      "model_attempts": 1
     }
   },
-  "attempts": {}
+  "attempts": {
+    "uk-2026-10-14-britain-funds-critical-repairs-to-chornobyl-nuclear-power-plant-damaged-by-russi": 1
+  }
 }

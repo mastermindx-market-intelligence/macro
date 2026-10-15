@@ -25,6 +25,7 @@ on:
       # non-code artifacts and special cross-root contracts.
       - "app/**"
       - "admin/**"
+      - "agentos/**"
       - "collectors/**"
       - "config/**"
       - "content/**"
@@ -3937,6 +3938,11 @@ on:
       - "tests/test_russell_breadth.py"
       # unrun-brain-gateway
       - "tests/test_brain_gateway.py"
+      - "tests/test_market_memory_brain_citations.py"
+      - "tests/test_market_memory_brain_citation_validation.py"
+      - "tests/js/market_memory_brain_citations.test.cjs"
+      - "tests/fixtures/market_memory_retained_owner_wire.json"
+      - "engine/neuralweb/market_memory_brain_citations.py"
       - "tests/test_brain_gateway_quota_safety.py"
       # unrun-macro-panels
       # engine/equity_factors.py was STRICTLY DARK (2026-08-06): named by no `run:` step
