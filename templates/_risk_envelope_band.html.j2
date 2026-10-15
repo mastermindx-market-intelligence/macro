@@ -4,6 +4,7 @@
   'source_states': {'BROKEN': ['damaged', '受损'], 'CRACKING': ['weakening', '转弱'], 'WATCH': ['under watch', '需关注'], 'HEALTHY': ['holding up', '维持稳定'], 'calm': ['quiet', '平稳'], 'watch': ['under watch', '需关注'], 'caution': ['building', '积聚中'], 'elevated': ['elevated', '偏高'], 'risk-off': ['stressed', '承压']},
   'ai_leaders': ['AI-hardware leaders', 'AI硬件龙头'], 'source': ['Tracked source', '追踪来源'],
   'unknown': ['Incomplete read', '数据不全'], 'partial_hint': ['Partial read', '读数不全'],
+  'partial_warning': ['Warning · partial read', '警告 · 信息不全'],
   'checking': ['Checking stress', '压力待确认'], 'live': ['Live stress', '实时压力'],
   'live_pending': ['Live candidate', '实时待确认'],
   'older_trend': ['Trend includes older inputs.', '趋势读数含较早数据。'],
@@ -11,10 +12,25 @@
   'source_missing': ['read unavailable', '暂无读数'],
   'coverage': {'FRESH': ['current session', '本交易日'], 'STALE': ['older read', '较早读数'], 'MISSING': ['not available', '暂无数据']}
 } %}
+{# Same partial-read eligibility the live consumer applies: only when the settled
+   combined stage is null for a recognized coverage/mapping gap may a source-native
+   warning stand on its own — fresh this session, attributed, and carrying its own
+   known state copy. The aggregate stage is never promoted from it. #}
+{% macro _risk_partial_warning_sources(envelope) -%}
+{%- set _hz = (envelope.get('hazard_summary') or {}) if envelope else {} -%}
+{%- if _hz.get('stage') is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') -%}
+{%- set _contributing = _hz.get('contributing_sources') or [] -%}
+{%- set _sources = (envelope.get('provenance') or {}).get('sources') or [] -%}
+{%- for s in _sources if s is mapping and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contributing and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and s.get('as_of') and s.get('as_of') == envelope.get('source_session') -%}
+{%- if (_sources | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', s.get('source_id')) | list | length) == 1 -%}1{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- endmacro %}
 {% macro risk_button_context(envelope) -%}
   {%- if envelope and envelope.get('schema') == 'mastermind.risk_envelope/v1' -%}
   {%- set stage = (envelope.get('hazard_summary') or {}).get('stage') -%}
   {%- set hint = _GDE_COPY.hint.get(stage, _GDE_COPY.partial_hint) -%}
+  {%- if stage is none and _risk_partial_warning_sources(envelope) %}{% set hint = _GDE_COPY.partial_warning %}{% endif -%}
   <span class="gde-button-context" id="gde-button-context" data-gde-stage="{{ stage or 'UNKNOWN' }}"{% if stage == 'NONE' %} hidden{% endif %}><span class="l-en">{{ hint[0] }}</span><span class="l-zh">{{ hint[1] }}</span></span>
   {%- endif -%}
 {%- endmacro %}
@@ -103,7 +119,11 @@
   {% endfor %}
   {% if _causes.rows %}<p class="gde-causes"><span class="l-en">{% for row in _causes.rows %}{{ row[0] }}{% if not loop.last %} · {% endif %}{% endfor %}</span><span class="l-zh">{% for row in _causes.rows %}{{ row[1] }}{% if not loop.last %} · {% endif %}{% endfor %}</span></p>{% endif %}
   {% if _ms_detail.get('any_input_stale') or (_ns.ms and _ns.ms.coverage != 'FRESH') %}<p class="gde-input-caveat"><span class="l-en">{{ _GDE_COPY.older_trend[0] }}</span><span class="l-zh">{{ _GDE_COPY.older_trend[1] }}</span></p>{% endif %}
-  <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage}|tojson }}</script>
+  {# The settled hint the button actually ships is preserved so restoreContext can
+     return to this qualified warning (not the generic partial hint) after a live
+     failure; restoreContext falls back to the enum when the key is absent. #}
+  {% set _settled_hint = _GDE_COPY.partial_warning if (_stage is none and _risk_partial_warning_sources(_re)) else _GDE_COPY.hint.get(_stage, _GDE_COPY.partial_hint) %}
+  <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage, 'settled_hint': _settled_hint}|tojson }}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> {{ _re.get('source_session') or '—' }}</span>
     {% if _rr_detail.get('issued_warning_persistent') and (_rr_detail.get('issued_warning_sessions') or 0) >= (_rr_detail.get('issued_warning_floor') or 5) %}

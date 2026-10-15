@@ -64,6 +64,63 @@ def _unavailable(reason: str, payload: dict | None = None) -> dict:
             "display_only": True, "derived_from": "risk-envelope-settled"}
 
 
+_SOURCE_WARNING_WORDS = {
+    "leadership-crack-latest": {
+        "CRACKING": ("weakening", "转弱"), "BROKEN": ("damaged", "受损"),
+    },
+    "risk-radar-us": {
+        "caution": ("building", "积聚中"), "elevated": ("elevated", "偏高"),
+        "risk-off": ("stressed", "承压"),
+    },
+}
+
+
+def _source_warnings(payload: dict) -> list[dict]:
+    """Bounded projection of existing same-session native warnings, not new votes.
+
+    Aggregate unknown does not erase a qualified source observation. Conversely,
+    a carried/old/duplicate/unmapped source cannot borrow the envelope's date.
+    Raw provenance stays with its owner instead of entering model context wholesale.
+    """
+    provenance = payload.get("provenance")
+    sources = provenance.get("sources") if isinstance(provenance, dict) else None
+    summary = payload.get("hazard_summary") or {}
+    if summary.get("stage") is None:
+        if summary.get("stage_reason") not in ("required_coverage_unavailable", "required_source_state_unmapped"):
+            return []
+    elif summary.get("stage") not in STAGE_VOCABULARY:
+        return []
+    contributing = summary.get("contributing_sources")
+    if not isinstance(sources, list) or len(sources) > 64 or not isinstance(contributing, list):
+        return []
+    warnings = []
+    for source_id, vocabulary in _SOURCE_WARNING_WORDS.items():
+        matches = [s for s in sources if isinstance(s, dict) and s.get("source_id") == source_id]
+        if len(matches) != 1 or source_id not in contributing:
+            continue
+        source = matches[0]
+        state = source.get("state")
+        if (source.get("role") != "hazard_evidence" or source.get("coverage") != "FRESH"
+                or source.get("as_of") != payload.get("source_session")
+                or not isinstance(state, str) or state not in vocabulary
+                or source.get("hazard_stage") not in ("FRAGILE", "TRANSMITTING", "BREAKDOWN")):
+            continue
+        detail = source.get("detail") if isinstance(source.get("detail"), dict) else {}
+        fallback = (("Leadership cohort", "龙头股群体") if source_id == "leadership-crack-latest"
+                    else ("Risk Radar", "风险雷达"))
+        if source_id == "leadership-crack-latest" and detail.get("cohort_role") == "tracked_ai_hardware_damage_monitor":
+            fallback = ("AI-hardware leaders", "AI硬件龙头")
+        labels = []
+        for index, key in enumerate(("label_en", "label_zh")):
+            value = detail.get(key) if source_id == "risk-radar-us" else fallback[index]
+            value = " ".join(value.split())[:96] if isinstance(value, str) else ""
+            labels.append(value or fallback[index])
+        warnings.append({"source_id": source_id, "as_of": source["as_of"], "state": state,
+                         "label_en": labels[0], "label_zh": labels[1],
+                         "state_en": vocabulary[state][0], "state_zh": vocabulary[state][1]})
+    return warnings
+
+
 def compact_context(payload: Any, *, now: datetime,
                     expected_session: str | None = None) -> dict:
     """Qualify source clocks and carry native fields without recomputing them.
@@ -117,6 +174,7 @@ def compact_context(payload: Any, *, now: datetime,
     if rotation.get("usable") is True and rotation.get("as_of") != payload["source_session"]:
         return _unavailable("rotation_source_session_mismatch", payload)
     out = {key: copy.deepcopy(payload.get(key)) for key in _CONTEXT_FIELDS}
+    out["source_warnings"] = _source_warnings(payload)
     out.update(usable=True, reason=None, display_only=True,
                derived_from="risk-envelope-settled",
                evidence_note="Repeated source context; no additional evidence vote or authority.")
@@ -388,7 +446,7 @@ def redact_new_context(payload: Any) -> Any:
             continue
         if key == "early_context" and isinstance(value, dict) and value.get("schema") == "rotation_early_context/v1":
             continue
-        if envelope and key in ("rotation_context", "confluence", "market_transition"):
+        if envelope and key in ("rotation_context", "confluence", "market_transition", "source_warnings"):
             continue
         out[key] = redact_new_context(value)
     return out
@@ -428,6 +486,20 @@ def render_context(context: dict, *, lang: str = "en", char_budget: int = 1800) 
               "These are complementary descriptions. Shared price/breadth inputs are not extra votes. Capital policy is separate."),
              ("相对跑赢不等于资金净流入、机构换手、成分股广度改善或未来抛售预测。" if zh else
               "Relative outperformance does not establish net inflows, institutional ownership transfers, constituent breadth, or a predicted selloff.")]
+    warnings = context.get("source_warnings")
+    if isinstance(warnings, list) and warnings:
+        # Quoted source data, never instructions or an extra evidence vote.
+        records = [{"source": item.get("source_id"), "as_of": item.get("as_of"),
+                    "label": item.get("label_zh" if zh else "label_en"),
+                    "state": item.get("state_zh" if zh else "state_en")}
+                   for item in warnings[:2] if isinstance(item, dict)]
+        if records:
+            line = ("已归因的来源警告（数据）：" if zh else "Attributed source warnings (data): ")
+            line += json.dumps(records, ensure_ascii=False, separators=(",", ":"))
+            if hazard.get("stage") is None:
+                line += (" 整体读数仍未知；数据不完整，不代表风险解除。" if zh else
+                         " Joint stage remains unknown; partial coverage is not an all-clear.")
+            lines.insert(2, line)
     if live:
         dwell = context.get("live_transition") or {}
         pending = dwell.get("pending")

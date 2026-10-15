@@ -742,3 +742,67 @@ def test_nonfuture_event_retains_native_precision_without_invented_cross_clock_o
     out = rc.qualify_live_context(current, settled=anchor, now=_LIVE_NOW)
     assert out["usable"] is True and out["clocks"] == current["clocks"]
     assert out["rotation_at_turn"]["current_at_turn"] is False
+
+
+def _native_warning_envelope():
+    native = envelope()
+    native["hazard_summary"].update(stage=None, stage_reason="required_coverage_unavailable",
+                                     contributing_sources=["risk-radar-us"])
+    native["data_state"] = "DEGRADED"
+    native["provenance"] = {"sources": [{
+        "source_id": "risk-radar-us", "role": "hazard_evidence", "coverage": "FRESH",
+        "state": "caution", "hazard_stage": "FRAGILE", "as_of": native["source_session"],
+        "label_en": "Cross-asset scares", "label_zh": "跨资产风险",
+        "detail": {"label_en": "Credit stress", "label_zh": "信用压力"},
+    }]}
+    return native
+
+
+def test_chat_keeps_qualified_native_warning_when_joint_stage_is_unknown():
+    native = _native_warning_envelope()
+    before = deepcopy(native)
+    context = rc.compact_context(native, now=NOW)
+    text = rc.render_context(context)
+    assert context["usable"]
+    assert context["hazard_summary"]["stage"] is None
+    assert "Credit stress" in text and "building" in text
+    assert "partial coverage" in text.lower()
+    assert "2026-10-06" in text
+    assert "信用压力" in rc.render_context(context, lang="zh")
+    assert "FRAGILE" not in context["source_warnings"][0]["state_en"]
+    assert native == before
+    assert context["authority"]["envelope_may_size"] is False
+    assert len(text) <= 1800
+
+
+@pytest.mark.parametrize("mutation", ["stale", "not_contributing", "unknown_state", "duplicate_source", "different_session", "unknown_null_reason"])
+def test_chat_does_not_invent_or_repeat_an_unqualified_source_warning(mutation):
+    native = _native_warning_envelope()
+    source = native["provenance"]["sources"][0]
+    if mutation == "stale": source["coverage"] = "STALE"
+    elif mutation == "not_contributing": native["hazard_summary"]["contributing_sources"] = []
+    elif mutation == "unknown_state": source["state"] = "UNRECOGNISED"
+    elif mutation == "duplicate_source": native["provenance"]["sources"].append(deepcopy(source))
+    elif mutation == "unknown_null_reason": native["hazard_summary"]["stage_reason"] = "UNRECOGNISED"
+    else: source["as_of"] = "2026-10-05"
+    context = rc.compact_context(native, now=NOW)
+    assert not context.get("source_warnings")
+    assert "Credit stress" not in rc.render_context(context)
+
+
+def test_new_warning_context_is_removed_at_the_existing_unentitled_boundary():
+    context = rc.compact_context(_native_warning_envelope(), now=NOW)
+    before = deepcopy(context)
+    assert context.get("source_warnings")
+    redacted = rc.redact_new_context(context)
+    assert "source_warnings" not in redacted
+    assert context == before
+
+
+def test_native_warning_names_are_bounded_in_model_context():
+    native = _native_warning_envelope()
+    native["provenance"]["sources"][0]["detail"]["label_en"] = "A" * 20000
+    context = rc.compact_context(native, now=NOW)
+    assert context.get("source_warnings")
+    assert len(context["source_warnings"][0]["label_en"]) <= 96
+    assert len(rc.render_context(context)) <= 1800

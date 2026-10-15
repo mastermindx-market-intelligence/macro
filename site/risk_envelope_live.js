@@ -56,6 +56,7 @@
   // Present source-owned states; never compute a score, action or dwell threshold.
   function contextView(d, copy) {
     var hz = d.hazard_summary || {}, trans = d.live_transition || {};
+    var originalStage = hz.stage;
     var stage = Object.prototype.hasOwnProperty.call(copy.hazard, hz.stage) ? hz.stage : null;
     var pending = trans.pending != null, p = trans.pending || {};
     if (stage !== null && (trans.candidate_stage !== stage ||
@@ -78,6 +79,28 @@
       var word = copy.source_states[source.state] || copy.source_missing;
       causes[0].push(name[0] + ": " + word[0]); causes[1].push(name[1] + "：" + word[1]);
     });
+    /* Partial read: the engine already preserved contributing_sources when the combined
+       stage is null for a recognized coverage/mapping gap. A source-native cause may
+       stand in only when it is complete on its own — fresh this session (as_of equals
+       d.source_session), attributed, and carrying its own known state copy. A stage
+       nulled out of a NON-null summary by malformed live-transition metadata never
+       qualifies, and the aggregate is never promoted from these causes. */
+    if (originalStage === null && (hz.stage_reason === "required_coverage_unavailable" ||
+        hz.stage_reason === "required_source_state_unmapped") && Array.isArray(sources))
+      sources.forEach(function (source) {
+        if (!source || source.role !== "hazard_evidence" || source.coverage !== "FRESH" ||
+            contributing.indexOf(source.source_id) < 0 ||
+            ["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(source.hazard_stage) < 0 ||
+            !Object.prototype.hasOwnProperty.call(copy.source_states, source.state) ||
+            typeof source.as_of !== "string" || !source.as_of || source.as_of !== d.source_session ||
+            sources.filter(function (other) { return other && other.source_id === source.source_id; }).length !== 1) return;
+        var detail = source.detail || {};
+        var name = [source.label_en || copy.source[0], source.label_zh || copy.source[1]];
+        if (detail.cohort_role === "tracked_ai_hardware_damage_monitor") name = copy.ai_leaders;
+        else if (source.source_id === "risk-radar-us") name = [detail.label_en || name[0], detail.label_zh || name[1]];
+        var word = copy.source_states[source.state];
+        causes[0].push(name[0] + ": " + word[0]); causes[1].push(name[1] + "：" + word[1]);
+      });
     if (Array.isArray(sources)) sources.forEach(function (source) {
       if (!source) return;
       var label = [source.label_en || copy.source[0], source.label_zh || copy.source[1]];
@@ -87,7 +110,8 @@
       sourceLines[1].push(label[1] + "：" + word[1] + " · " + (source.as_of || "—") + " · " + coverage[1]);
     });
     return {stage: stage, pending: pending, label: copy.hazard[stage] || copy.unknown,
-      hint: pending ? copy.checking : (copy.hint[stage] || copy.partial_hint),
+      hint: pending ? copy.checking : (copy.hint[stage] ||
+        (causes[0].length ? (copy.partial_warning || copy.partial_hint) : copy.partial_hint)),
       causes: [causes[0].join(" · "), causes[1].join(" · ")],
       sourceLines: [sourceLines[0].join("\n"), sourceLines[1].join("\n")]};
   }
@@ -124,7 +148,13 @@
     if (fallback) fallback.hidden = !(hadLive && showFallback);
     var config = contextCopy(), hint = document.getElementById("gde-button-context");
     if (config && config.copy && hint) {
-      textPair(hint, config.copy.hint[config.settled_stage] || config.copy.partial_hint);
+      /* The settled render bakes the hint the button actually shipped (possibly the
+         qualified partial warning); older pages without the key fall back to the
+         stage enum exactly as before. */
+      var settled = config.settled_hint;
+      if (!Array.isArray(settled) || settled.length !== 2 || typeof settled[0] !== "string" || typeof settled[1] !== "string")
+        settled = config.copy.hint[config.settled_stage] || config.copy.partial_hint;
+      textPair(hint, settled);
       hint.setAttribute("data-gde-stage", config.settled_stage || "UNKNOWN");
       hint.hidden = config.settled_stage === "NONE";
     }

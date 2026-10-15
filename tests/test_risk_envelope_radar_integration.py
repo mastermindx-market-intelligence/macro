@@ -307,7 +307,12 @@ def test_embedded_copy_does_not_publish_a_second_envelope_payload():
     e=source_envelope();e['private_policy_receipt']='not-for-html-fixture'
     html=render(e)
     config=json.loads(re.search(r'id="gde-context-copy">(.*?)</script>',html,re.S)[1])
-    assert set(config)=={'copy','settled_stage'}
+    assert set(config)=={'copy','settled_stage','settled_hint'}
+    # The one added field is the actual bilingual UI hint, not another data
+    # envelope, source payload, forecast or private policy receipt.
+    assert config['settled_hint'] == config['copy']['hint'][config['settled_stage']]
+    assert isinstance(config['settled_hint'], list) and len(config['settled_hint']) == 2
+    assert all(isinstance(word, str) for word in config['settled_hint'])
     assert 'not-for-html-fixture' not in html
     assert 'innerHTML' not in (ROOT/'templates/risk_envelope_live.js').read_text()
 
@@ -456,3 +461,162 @@ def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
     assert "Risk pressure" in html and "5 issued sessions" in html
     assert "Odds evidence" in html and "n=300" in html
     assert e == before
+
+
+@pytest.mark.parametrize("lead_state,radar_state,expected_en,expected_zh", [
+    ("CRACKING", "calm", "AI-hardware leaders: weakening", "AI硬件龙头：转弱"),
+    ("INTACT", "elevated", "Rates / inflation shock: elevated", "利率／通胀冲击：偏高"),
+    ("INTACT", "risk-off", "Rates / inflation shock: stressed", "利率／通胀冲击：承压"),
+])
+def test_native_producer_warning_reaches_existing_radar_and_foreground_context(
+    monkeypatch, lead_state, radar_state, expected_en, expected_zh,
+):
+    """Real transport -> shared source adapter -> composer -> existing Jinja UI.
+
+    Do not hand-author the expected hazard stage in the fixture: that would hide
+    the producer-vocabulary defect this test is meant to catch.
+    """
+    from engine import market_state as ms_owner
+    from engine.risk_envelope import compose_envelope
+    from scripts.build_risk_envelope import build_sources
+
+    monkeypatch.setattr(ms_owner, "_rr_scorecard_track", lambda market: None)
+    session = "2026-09-18"
+    radar = ms_owner._radar_to_rd({
+        "schema": "risk_radar.v2", "asof": session, "state": radar_state,
+        "top_score": 85, "can_force": False,
+        "dominant_label_en": "Rates / inflation shock", "dominant_label_zh": "利率／通胀冲击",
+    })
+    measured = {"asof": session, "verdict": "MIXED", "score": 50, "radar": radar}
+    leadership = {"asof": session, "state": lead_state,
+                  "cohort_role": "tracked_ai_hardware_damage_monitor"}
+    e = compose_envelope(
+        sources=build_sources(measured, leadership, session), market="US",
+        source_session=session, observed_at="2026-09-18T21:00:00Z",
+        produced_at="2026-09-18T21:00:00Z", as_of=session,
+    )
+    html = render(e)
+    visible = _default_visible(_dlg(html))
+    assert expected_en in visible
+    assert expected_zh in visible
+    assert 'id="gde-button-context"' in html
+    assert 'data-gde-stage="FRAGILE"' in html
+    assert "Fragile internals" in html
+    assert e["measured_state"]["score"] == 50
+    assert e["authority"]["envelope_may_gate"] is False
+    assert e["authority"]["envelope_may_size"] is False
+
+
+def _partial_live_warning(reason="required_coverage_unavailable"):
+    e = _live_fixture()
+    e["hazard_summary"].update(stage=None, stage_reason=reason)
+    e["live_transition"].update(candidate_stage=None, stable_stage=None, pending=None)
+    for source in e["provenance"]["sources"]:
+        source["as_of"] = e["source_session"]
+    e["provenance"]["sources"][1]["coverage"] = "MISSING"
+    return e
+
+
+@pytest.mark.parametrize("reason", ["required_coverage_unavailable", "required_source_state_unmapped"])
+def test_partial_live_read_keeps_independently_qualified_warning_without_promoting_stage(reason):
+    e = _partial_live_warning(reason)
+    out = _js_value('var before=JSON.stringify(FEED);var view=contextView(FEED,COPY);console.log(JSON.stringify({view,unchanged:before===JSON.stringify(FEED)}));', e)
+    assert out["unchanged"]
+    assert out["view"]["stage"] is None
+    assert not out["view"]["pending"]
+    assert out["view"]["label"] == ["Incomplete read", "数据不全"]
+    assert out["view"]["causes"] == ["Credit stress: building", "信用压力：积聚中"]
+    assert out["view"]["hint"] == ["Warning · partial read", "警告 · 信息不全"]
+
+
+def test_partial_source_warning_is_visible_at_the_existing_live_button():
+    out = _js_value(_LIVE_DOM + 'applyFeed(FEED);console.log(JSON.stringify(result()));', _partial_live_warning())
+    assert out["cause"] == "Credit stress: building"
+    assert out["hint"] == "Live: Warning · partial read"
+    assert "Incomplete read" in out["stage"]
+    assert not out["live"]
+
+
+def test_partial_settled_warning_reaches_existing_button_without_new_stage():
+    import re
+    e = source_envelope()
+    e["hazard_summary"].update(stage=None, stage_reason="required_coverage_unavailable")
+    e["provenance"]["sources"][1]["coverage"] = "MISSING"
+    html = render(e)
+    button = re.search(r'<button[^>]*id="mx5BtnRisk".*?</button>', html, re.S)[0]
+    assert "Warning · partial read" in button
+    assert "警告 · 信息不全" in button
+    assert 'data-gde-stage="UNKNOWN"' in button
+    assert "Credit stress: building" in _default_visible(_dlg(html))
+
+
+@pytest.mark.parametrize("mutation", ["stale", "off_session", "missing_clock", "not_contributing", "unknown_reason", "malformed_transition"])
+def test_partial_warning_never_uses_stale_unattributed_or_malformed_evidence(mutation):
+    e = _partial_live_warning()
+    radar = e["provenance"]["sources"][2]
+    if mutation == "stale": radar["coverage"] = "STALE"
+    elif mutation == "off_session": radar["as_of"] = "2026-09-18"
+    elif mutation == "missing_clock": radar["as_of"] = None
+    elif mutation == "not_contributing": e["hazard_summary"]["contributing_sources"] = []
+    elif mutation == "unknown_reason": e["hazard_summary"]["stage_reason"] = "UNRECOGNISED"
+    else:
+        e["hazard_summary"]["stage"] = "FRAGILE"
+        e["live_transition"]["candidate_stage"] = "NONE"
+    out = _js_value('console.log(JSON.stringify(contextView(FEED,COPY)));', e)
+    assert out["stage"] is None
+    assert out["causes"] == ["", ""]
+    assert out["hint"] == ["Partial read", "读数不全"]
+
+
+def test_live_failure_restores_the_actual_settled_partial_warning_not_generic_copy():
+    import re
+    e = source_envelope()
+    e["hazard_summary"].update(stage=None, stage_reason="required_coverage_unavailable")
+    e["provenance"]["sources"][1]["coverage"] = "MISSING"
+    config = json.loads(re.search(r'id="gde-context-copy">(.*?)</script>', render(e), re.S)[1])
+    command = _LIVE_DOM + 'nodes["gde-context-copy"].textContent=JSON.stringify(' + json.dumps(config) + ');applyFeed(FEED);unpaint(true);console.log(JSON.stringify(result()));'
+    out = _js_value(command)
+    assert out["hint"] == "Warning · partial read"
+    assert out["live"]
+    assert not out["fallback"]
+
+
+@pytest.mark.parametrize("state", ["__proto__", "constructor", "toString"])
+def test_partial_live_warning_requires_own_native_vocabulary_entry(state):
+    e = _partial_live_warning()
+    e["provenance"]["sources"][2]["state"] = state
+    out = _js_value('console.log(JSON.stringify(contextView(FEED,COPY)));', e)
+    assert out["stage"] is None
+    assert out["causes"] == ["", ""]
+    assert out["hint"] == ["Partial read", "读数不全"]
+
+
+def test_partial_warning_does_not_repeat_or_resolve_duplicate_source_identity():
+    e = _partial_live_warning()
+    e["provenance"]["sources"].append(deepcopy(e["provenance"]["sources"][2]))
+    out = _js_value('console.log(JSON.stringify(contextView(FEED,COPY)));', e)
+    assert out["causes"] == ["", ""]
+    assert out["hint"] == ["Partial read", "读数不全"]
+
+
+@pytest.mark.parametrize("mutation", ["duplicate", "non_string_clock"])
+def test_partial_settled_warning_requires_unique_source_and_string_clock(mutation):
+    import re
+    e = source_envelope()
+    e["hazard_summary"].update(stage=None, stage_reason="required_coverage_unavailable")
+    e["provenance"]["sources"][1]["coverage"] = "MISSING"
+    radar = e["provenance"]["sources"][2]
+    if mutation == "duplicate":
+        e["provenance"]["sources"].append(deepcopy(radar))
+    else:
+        radar["as_of"] = e["source_session"] = 20260918
+    button = re.search(r'<button[^>]*id="mx5BtnRisk".*?</button>', render(e), re.S)[0]
+    assert "Warning · partial read" not in button
+    assert "Partial read" in button
+
+
+@pytest.mark.parametrize("bad_hint", ["ab", {"0": "not", "1": "a pair"}, ["one"], ["one", "two", "three"]])
+def test_restore_ignores_malformed_settled_hint_and_uses_existing_enum(bad_hint):
+    command = _LIVE_DOM + 'var config=JSON.parse(nodes["gde-context-copy"].textContent);config.settled_hint=' + json.dumps(bad_hint) + ';nodes["gde-context-copy"].textContent=JSON.stringify(config);applyFeed(FEED);unpaint(true);console.log(JSON.stringify(result()));'
+    out = _js_value(command)
+    assert out["hint"] == "Fragile internals"

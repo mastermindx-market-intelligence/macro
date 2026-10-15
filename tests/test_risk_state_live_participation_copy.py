@@ -68,8 +68,10 @@ def test_display_copy_uses_debounced_display_verdict_not_source_verdict():
 
     copy = brs._display_participation_copy("MIXED", source)
 
-    assert copy["participation_scope"] is None
-    assert copy["headline_en"].startswith("Mixed / transition")
+    assert copy["participation_scope"]["participation"] == "weak"
+    assert copy["headline_en"].startswith("Mixed backdrop")
+    assert "participation is weak" in copy["headline_en"]
+    assert "Risk-on" not in copy["headline_en"]
 
 
 def test_verdict_transport_preserves_canonical_scope_for_closed_live_fallback():
@@ -129,3 +131,31 @@ def test_display_projection_selects_full_live_snapshot_when_active():
     assert copy["participation_scope"]["state"] == "broad"
     assert copy["participation_scope"]["participation"] == "supportive"
     assert copy["headline_en"].startswith("Broad risk-on")
+
+
+def test_mixed_live_projection_keeps_source_clock_and_never_refreshes_stale_breadth():
+    nightly = _snapshot(0)
+    live = _snapshot(0, asof="2026-09-19", vintage_asof=ASOF)
+    copy = brs._display_participation_copy_for_sources(
+        "MIXED", live_active=True, live_snapshot=live, nightly_snapshot=nightly,
+    )
+    assert copy["participation_scope"]["participation"] == "unverified"
+    assert copy["participation_scope"]["breadth_asof"] == ASOF
+    assert "participation is unverified" in copy["headline_en"]
+    assert "participation is weak" not in copy["headline_en"]
+
+
+def test_mixed_nightly_transport_and_live_copy_share_the_same_warning():
+    from copy import deepcopy
+
+    source = _snapshot(0)
+    before = deepcopy(source)
+    copy = brs._display_participation_copy_for_sources(
+        "MIXED", live_active=False, live_snapshot=_snapshot(75), nightly_snapshot=source,
+    )
+    block = brs._verdict_block({**source, **copy, "verdict": "MIXED", "score": 50})
+    assert block["score"] == 50
+    assert block["participation_scope"]["action_en"] == "Review exposure. Respect existing stops."
+    assert block["headline_en"] == copy["headline_en"]
+    assert block["participation_scope"]["breadth_asof"] == ASOF
+    assert source == before

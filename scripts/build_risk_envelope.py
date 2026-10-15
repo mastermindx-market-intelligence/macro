@@ -350,6 +350,9 @@ _LEADERSHIP_STAGE = {
     "REPAIRING": "NONE",
     "STRAINED": "FRAGILE",
     "CRACKED": "FRAGILE",
+    # Native engine.leadership_crack state: weakening is already observed,
+    # even before the cohort reaches BROKEN. It does not prove market spread.
+    "CRACKING": "FRAGILE",
     "BROKEN": "FRAGILE",
 }
 
@@ -407,6 +410,11 @@ _RADAR_STAGE = {
     "calm": "NONE",
     "watch": "NONE",
     "caution": "FRAGILE",
+    # _radar_to_rd preserves these native US Radar states verbatim. Carry
+    # their warning without promoting this source beyond its FRAGILE competence;
+    # the original severity remains available in SourceRead.state and detail.
+    "elevated": "FRAGILE",
+    "risk-off": "FRAGILE",
     "warning": "FRAGILE",
     "alert": "TRANSMITTING",
     "loud": "TRANSMITTING",

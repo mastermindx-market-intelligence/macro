@@ -481,6 +481,37 @@ _US_SCOPE_GUIDANCE = {
 }
 
 
+# Participation qualifies the existing measured backdrop; it never changes its
+# score, forecast odds, or sizing authority. A downgrade to Mixed must not erase
+# the warning that was visible in Risk-on (Oct 14, 2026 incident).
+_US_MIXED_SCOPE_GUIDANCE = {
+    "weak": {
+        "subline_en": "CAUTION — Weak market participation",
+        "subline_zh": "谨慎 — 市场参与度偏弱",
+        "action_en": "Review exposure. Respect existing stops.",
+        "action_zh": "检查风险敞口，遵守既定止损。",
+    },
+    "unverified": {
+        "subline_en": "PARTIAL READ — Participation unverified",
+        "subline_zh": "信息不完整 — 市场参与度未验证",
+        "action_en": "Verify participation before adding risk.",
+        "action_zh": "增加风险前，先核实市场参与度。",
+    },
+}
+_US_MIXED_SCOPE_HEADLINES = {
+    "weak": (
+        "Mixed backdrop — participation is weak. Review exposure and respect existing stops; "
+        "the broader score is not an all-clear.",
+        "混合环境 — 市场参与度偏弱。检查风险敞口并遵守既定止损；综合分数并非安全确认。",
+    ),
+    "unverified": (
+        "Mixed backdrop — participation is unverified. The available signals disagree; "
+        "incomplete participation data is not an all-clear.",
+        "混合环境 — 市场参与度尚未验证。现有信号分歧；参与度数据不完整并非安全确认。",
+    ),
+}
+
+
 def _participation_scope(
     verdict: str,
     comps: list,
@@ -489,15 +520,16 @@ def _participation_scope(
     asof: str | None = None,
     input_vintages: dict | None = None,
 ) -> dict | None:
-    """Display-only breadth qualifier for the US Risk-on band.
+    """Display-only breadth qualifier for US Risk-on and adverse Mixed reads.
 
     The score/verdict keep their existing authority. A numeric breadth value may
-    qualify Risk-on only when it is a single non-degraded leg whose canonical
+    qualify the backdrop only when it is a single non-degraded leg whose canonical
     pct_above_200 vintage is fresh and bound to the same settled session. Missing,
     duplicated, malformed, stale, or cross-session breadth fails closed to
-    unverified; intraday clocks never re-date the settled observation.
+    unverified; intraday clocks never re-date the settled observation. Supportive
+    or uneven breadth does not upgrade Mixed or weaken a Risk-off warning.
     """
-    if market != "us" or verdict != "RISK_ON":
+    if market != "us" or verdict not in ("RISK_ON", "MIXED"):
         return None
 
     breadth_rows = [
@@ -546,7 +578,13 @@ def _participation_scope(
         "breadth_score": score_out,
         "breadth_asof": breadth_asof,
     }
-    out.update(_US_SCOPE_GUIDANCE[(state, participation)])
+    if verdict == "MIXED":
+        guidance = _US_MIXED_SCOPE_GUIDANCE.get(participation)
+        if guidance is None:
+            return None
+        out.update(guidance)
+    else:
+        out.update(_US_SCOPE_GUIDANCE[(state, participation)])
     return out
 
 
@@ -591,6 +629,8 @@ def _headline_for(
     )
     if scope is None:
         return _HEADLINES[verdict]
+    if verdict == "MIXED":
+        return _US_MIXED_SCOPE_HEADLINES[scope["participation"]]
     return _US_SCOPE_HEADLINES[(scope["state"], scope["participation"])]
 
 

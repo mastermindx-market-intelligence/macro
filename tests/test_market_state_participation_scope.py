@@ -138,11 +138,13 @@ def test_base_risk_on_fallback_never_claims_breadth_confirmation():
     assert "市场参与度" in zh
 
 
-def test_non_risk_on_and_non_us_keep_existing_headline_contract():
+def test_risk_off_and_non_us_keep_existing_headline_contract():
     comps = _risk_on_components(0)
 
-    assert ms._participation_scope("MIXED", comps, **_fresh()) is None
-    assert ms._headline_for("MIXED", comps, **_fresh()) == ms._HEADLINES["MIXED"]
+    assert ms._participation_scope("RISK_OFF", comps, **_fresh()) is None
+    assert ms._headline_for("RISK_OFF", comps, **_fresh()) == ms._HEADLINES["RISK_OFF"]
+    assert ms._participation_scope("MIXED", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) is None
+    assert ms._headline_for("MIXED", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) == ms._HEADLINES["MIXED"]
     assert ms._participation_scope("RISK_ON", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) is None
     assert ms._headline_for("RISK_ON", comps, market="cn", asof=ASOF, input_vintages=_fresh()["input_vintages"]) == ms._HEADLINES["RISK_ON"]
 
@@ -203,3 +205,68 @@ def test_snapshot_keeps_score_and_verdict_while_exposing_selective_scope():
     assert snap["participation_scope"]["state"] == "selective"
     assert snap["participation_scope"]["breadth_score"] == 0
     assert snap["headline_en"].startswith("Selective risk-on")
+
+
+# Oct 14 incident: a Mixed blend must not erase a verified weak-participation
+# warning. These are presentation tests, not a new score or trading-policy gate.
+def test_mixed_retains_verified_weak_participation_without_risk_on_language():
+    from copy import deepcopy
+
+    comps = _risk_on_components(0)
+    before = deepcopy(comps)
+    scope = ms._participation_scope("MIXED", comps, **_fresh())
+    headline = ms._headline_for("MIXED", comps, **_fresh())
+
+    assert scope is not None
+    assert scope["participation"] == "weak"
+    assert scope["breadth_score"] == 0
+    assert scope["breadth_asof"] == ASOF
+    assert scope["action_en"] == "Review exposure. Respect existing stops."
+    assert "participation is weak" in headline[0]
+    assert "Risk-on" not in headline[0]
+    assert "GREEN" not in scope["subline_en"]
+    assert "参与度偏弱" in headline[1]
+    assert comps == before
+
+
+def test_mixed_unverified_breadth_is_unverified_not_inferred_weak_or_calm():
+    for comps, kwargs in (
+        (_risk_on_components(0), _fresh(stale=True)),
+        (_risk_on_components(0), _fresh(vintage_asof="2026-09-17")),
+        (_risk_on_components(0) + [_leg("breadth", 0)], _fresh()),
+        ([], _fresh()),
+    ):
+        scope = ms._participation_scope("MIXED", comps, **kwargs)
+        headline = ms._headline_for("MIXED", comps, **kwargs)
+        assert scope is not None
+        assert scope["participation"] == "unverified"
+        assert "participation is unverified" in headline[0]
+        assert "participation is weak" not in headline[0]
+        assert "not an all-clear" in headline[0]
+        assert "GREEN" not in scope["subline_en"]
+
+
+def test_mixed_supportive_or_uneven_breadth_preserves_generic_mixed_copy():
+    for value in (42, 50, 60, 100):
+        comps = _risk_on_components(value)
+        assert ms._participation_scope("MIXED", comps, **_fresh()) is None
+        assert ms._headline_for("MIXED", comps, **_fresh()) == ms._HEADLINES["MIXED"]
+
+
+def test_oct14_screenshot_components_remain_50_but_warn_about_weak_participation():
+    scores = {"trend": 68, "risk": 27, "vol": 84, "breadth": 0,
+              "liquidity": 38, "stress": 80}
+    comps = [_leg(key, score) for key, score in scores.items()]
+    profile = ms.MarketProfile(
+        key="us", indices=(), tape_noun_en="US indices", tape_noun_zh="美股指数",
+        component_readers=tuple((lambda _latest, c=c: c) for c in comps),
+        radar_override=None, overrides=frozenset(),
+    )
+    latest = {"date": ASOF, "conditions": {"vintages": _fresh()["input_vintages"]}}
+    snap = ms.market_state_snapshot(latest, None, [], profile=profile)
+    assert snap is not None
+    assert snap["score"] == snap["raw_score"] == 50
+    assert snap["verdict"] == "MIXED"
+    assert snap["score_source"] == "blend"
+    assert snap["participation_scope"]["participation"] == "weak"
+    assert "participation is weak" in snap["headline_en"]
