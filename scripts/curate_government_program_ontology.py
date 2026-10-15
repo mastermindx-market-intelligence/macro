@@ -411,6 +411,7 @@ def curate_worksheet(
     events_truncated: int = 0,
     parquet_dir: Path | None = None,
     check_only: bool = False,
+    schema_version: str | None = None,
 ) -> dict[str, Any]:
     """Admit a worksheet pass. Returns a report: admitted / rejected /
     coverage rows minted, and whether the artifact was written."""
@@ -452,6 +453,10 @@ def curate_worksheet(
     working = _load_base_graph(
         target_path, graph_id=graph_id, graph_known_at=graph_known_at, graph_effective_at=graph_effective_at,
     )
+    if schema_version is not None:
+        if schema_version not in {"1.0.0", "1.1.0"}:
+            raise CurateError("unsupported ontology schema migration")
+        working["schema_version"] = schema_version
     # freeze SS3.0: curate re-mints the graph_id's status segment to
     # `reviewed` on every admission -- a `candidate`-status graph_id must
     # never reach the canonical artifact.
@@ -721,6 +726,7 @@ def main() -> int:
     parser.add_argument("--worksheet", type=Path, required=True)
     parser.add_argument("--target", type=Path, default=DEFAULT_TARGET)
     parser.add_argument("--graph-id")
+    parser.add_argument("--schema-version", choices=("1.0.0", "1.1.0"))
     parser.add_argument("--graph-known-at")
     parser.add_argument("--graph-effective-at")
     parser.add_argument("--workspace", type=Path, help="Path to workspace.json for event verification")
@@ -753,6 +759,7 @@ def main() -> int:
         events_truncated=events_truncated,
         parquet_dir=args.parquet_dir or (_ROOT / "data" / "government_revenue"),
         check_only=args.check,
+        schema_version=args.schema_version,
     )
     action = "validated" if args.check else "published"
     print(

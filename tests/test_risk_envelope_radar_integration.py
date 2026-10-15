@@ -404,3 +404,55 @@ def test_market_state_view_model_carries_probability_evidence_without_interpreti
     })
     assert rd["dd21"] == 0.16
     assert rd["dd_evidence"] == evidence
+
+
+def _duration_envelope(sessions=5, since="2026-09-14"):
+    e = source_envelope()
+    rr = next(
+        row for row in e["provenance"]["sources"]
+        if row["source_id"] == "risk-radar-us"
+    )
+    rr["detail"].update({
+        "issued_warning_sessions": sessions,
+        "issued_warning_since": since,
+        "issued_warning_persistent": sessions >= 5,
+        "issued_warning_floor": 5,
+        "issued_warning_basis": "risk_radar_forward_log_first_writer_sessions",
+    })
+    return e
+
+
+def test_persistent_issued_warning_is_quiet_duration_context_inside_radar():
+    html = _dlg(render(_duration_envelope(7, "2026-09-10")))
+    visible = _default_visible(html)
+    assert "Risk pressure" in visible
+    assert "7 issued sessions" in visible
+    assert "since 2026-09-10" in visible
+    assert "风险压力" in html and "7 个已发布交易日" in html and "始于" in html
+    # The research ceiling is explicit: duration is not a new alert/probability claim.
+    duration = html[html.index('class="gde-stamp gde-duration"'):]
+    duration = duration[:duration.index("</span>", duration.index("</span>") + 7) + 7]
+    for forbidden in ("more likely", "higher odds", "validated", "Buy", "de-risk"):
+        assert forbidden not in duration
+
+
+def test_short_or_absent_warning_streak_does_not_render_duration_badge():
+    short = _dlg(render(_duration_envelope(4, "2026-09-15")))
+    assert 'class="gde-stamp gde-duration"' not in short
+    base = _dlg(render(source_envelope()))
+    assert 'class="gde-stamp gde-duration"' not in base
+
+
+def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
+    e = _duration_envelope(5, "2026-09-14")
+    before = deepcopy(e)
+    vm = _vm(risk_envelope=e)
+    vm["market_state"]["radar"]["dd_evidence"] = {
+        "horizons": {"h21": {
+            "matched": True, "thin": False, "n": 300, "observed_rate": .01
+        }}
+    }
+    html = _dlg(_render(vm))
+    assert "Risk pressure" in html and "5 issued sessions" in html
+    assert "Odds evidence" in html and "n=300" in html
+    assert e == before

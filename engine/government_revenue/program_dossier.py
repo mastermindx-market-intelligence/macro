@@ -492,3 +492,9 @@ __all__ = [
     "compose_program_dossier_bundle",
     "is_valid_program_dossier_payload",
 ]
+
+
+# Derived theme sibling: the v1 dossier shape and composer remain unchanged.
+def compose_program_theme_context_bundle(*args, **kwargs):
+    from .program_theme_context import compose_program_theme_context
+    return compose_program_theme_context(*args, **kwargs)

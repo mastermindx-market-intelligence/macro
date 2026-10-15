@@ -1,0 +1,633 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "cases": [
+  {
+   "arm": "gated_in",
+   "case_id": "02f08a53b09dc6c1",
+   "class": "NO_EVENT",
+   "gate_status": "gated_in",
+   "kind": "template_family_mismatch",
+   "note": "Routed to the capital family on a product-line word; the headline event is an acquisition, outside the routed family, which an attached merger filing reports."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "04d382c0d79ec6cd",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Preliminary revenue and guidance update reported in the attached filing."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "0a432aa229e38b57",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The investor-day release carries the capital-return targets."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "0ca9ea6161cf1661",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "commentary",
+   "note": "Commentary; no issuer event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "1611aa784e5000ca",
+   "class": "MATCH",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "",
+   "note": "Forecast given at the results event; the attached filing reports the same results event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "18e637ed6fa015bc",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Joint-venture expansion reported under Item 8.01."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "19b3170d334484c4",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Guidance raise reported under Item 8.01."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "2031bedf66a62497",
+   "class": "WRONG_ISSUER",
+   "gate_status": "gated_out:g2_ambiguous_ticker",
+   "kind": "single_letter_ticker",
+   "note": "A one-letter ticker resolved to an issuer the headline is not about."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "28cb1cec972537a2",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Quarterly dividend declaration reported under Item 8.01."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "2f759e6bba95116c",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Reverse share split reported in the attached filing."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "3681a682eb3a378f",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g2_issuer_absent",
+   "kind": "template_family_mismatch",
+   "note": "Routed to the strategic family on a non-product use of a launch word; the headline concerns a board-seat dispute and the attached filing reports a notes underwriting."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "389a49089309246c",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Commentary on an outlook given at the results event; the attached results materials carry the next-quarter and preliminary next-year outlook."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "3b87bd00aeec4a14",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached results release carries the quarterly dividend declaration."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "3bca18c5a1f0259a",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g2_issuer_absent",
+   "kind": "event_filing_absent",
+   "note": "Partnership by a subsidiary of the resolved issuer; the attached filing reports an at-the-market equity program."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "46c277e39819a37d",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_in",
+   "kind": "event_filing_absent",
+   "note": "Buyback-plan headline; the attached filing reports a preferred dividend declaration."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "4ae628affba0f83d",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Commentary on a raised revenue outlook; the attached conference slides carry the raise."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "4d19bce6bd210c8f",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Subordinated notes offering reported under Item 8.01."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "55b37987ef67d29c",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "event_filing_absent",
+   "note": "Product-launch headline; the attached filing reports an acquisition agreement."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "5b6fcf728fb48e27",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Commentary on backlog reported in the attached results release."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "5f6f26ed0d48a166",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached filing reports the headline event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "6594f06e4e1d82ac",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The results release raises guidance and carries the buyback target."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "6f9b0a1c8e415252",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached filing reports the headline event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "6fd13d02869ea197",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The results filing revises the outlook down, matching the weak-guidance headline."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "7206d81f706c8f7c",
+   "class": "WRONG_ISSUER",
+   "gate_status": "gated_out:g2_issuer_absent",
+   "kind": "other_company_subject",
+   "note": "The headline is about another company."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "745af6c4f844e9ba",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g2_issuer_not_subject",
+   "kind": "commentary",
+   "note": "Commentary; no issuer event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "7598875dbe7dc6da",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "event_filing_absent",
+   "note": "Guidance-raise headline; the attached filing reports an acquisition and carries no guidance or outlook language."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "7a182a9002a62ec0",
+   "class": "WRONG_ISSUER",
+   "gate_status": "gated_out:g2_ambiguous_ticker",
+   "kind": "other_company_subject",
+   "note": "The headline is about a broker's product list; the resolved issuer is not its subject."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "7bc4e41efcbbc5ce",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Third-party commentary on reported quarterly results and outlook; the attached release reports them."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "7f26327260668986",
+   "class": "WRONG_ISSUER",
+   "gate_status": "gated_out:g2_ambiguous_ticker",
+   "kind": "single_letter_ticker",
+   "note": "The headline is about another company; a one-letter ticker resolved elsewhere."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "831e2e1f25e9953a",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g1_commentary",
+   "kind": "commentary",
+   "note": "Earnings commentary that uses a dividend descriptor; the headline reports no capital-return event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "849c2c6409a18ed4",
+   "class": "MATCH",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "",
+   "note": "Forecast given at the results event; the attached filing reports the same results event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "853f5d2f9f43c3a6",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Contract awards and backlog conversion reported under Item 7.01."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "8fd998e2283fbaa9",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g2_issuer_not_subject",
+   "kind": "commentary",
+   "note": "Price-target commentary; no issuer event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "915dc3b5b8c7df87",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_in",
+   "kind": "event_filing_absent",
+   "note": "Commentary listing several events including a dividend increase; the attached filing reports an acquisition and a collaboration, not the dividend."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "92a9d607f42bd853",
+   "class": "MATCH",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "",
+   "note": "Financing and credit-support partnership reported under Item 1.01."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "92ba67b07d29ec81",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "event_filing_absent",
+   "note": "Guidance-raise headline; the attached filing reports board changes."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "9f792531cea5c8a8",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached filing reports the headline event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "a2325b6dec993f73",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Raised forecast carried in the attached results release."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "add57ab031c0e17b",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached results release carries the share-repurchase target and the reiterated outlook."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "af1ad2dd2003943c",
+   "class": "NO_EVENT",
+   "gate_status": "gated_in",
+   "kind": "template_family_mismatch",
+   "note": "Monthly operating-metrics update routed to the strategic family; the attached filing reports that update, a demand-type item, not a strategic or product event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "b95b96a82ece71f8",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The forecast the headline reacts to is the next-quarter outlook in the attached results release."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "b9688f8e04a7f4e3",
+   "class": "NO_EVENT",
+   "gate_status": "gated_in",
+   "kind": "solicitation",
+   "note": "Investor solicitation notice; no issuer event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "b997fcbce648842f",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Market reaction to a soft next-quarter outlook; the attached results release carries that outlook."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c0d771dbaa34d2e4",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Senior-note redemption and capital-allocation actions reported under Item 8.01."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c0ff044726d839b7",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_in",
+   "kind": "event_filing_absent",
+   "note": "The headline event is real; no attached filing reports it."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c10d748fb16821ae",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached results release raises full-year guidance."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c1628374d4a7d317",
+   "class": "NO_EVENT",
+   "gate_status": "gated_in",
+   "kind": "market_report",
+   "note": "Market report; no issuer event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "c26af56a8339a20c",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g2_issuer_absent",
+   "kind": "event_filing_absent",
+   "note": "Multi-company initiative; the attached filing reports results, not the initiative."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c4f40755d13a4130",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached results release reaffirms full-year guidance."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "c59ee2adb5d3a32b",
+   "class": "WRONG_ISSUER",
+   "gate_status": "gated_out:g2_issuer_not_subject",
+   "kind": "partner_named",
+   "note": "The resolved issuer is a named partner, not the subject."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "c6690b067520bdfc",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Same forecast event as case e941b72e7dd568ea."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "ca518ecc1c18a4c6",
+   "class": "NO_EVENT",
+   "gate_status": "gated_in",
+   "kind": "quote_page",
+   "note": "Quote page; no issuer event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "dad3258dfdc27aa6",
+   "class": "NO_EVENT",
+   "gate_status": "gated_out:g3_no_family_language",
+   "kind": "commentary",
+   "note": "Macro research view from the resolved issuer's analysts; no issuer event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "e50497c035a03dc1",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Commentary on a reported guidance raise; the attached filing reports the raise."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "e8ce11c9babbb52c",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Item 8.01 reports an insider share-sale plan cancellation; the capital family pattern covers share sales, though the family assignment is borderline."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "e941b72e7dd568ea",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Year-ahead forecast given with results; the attached release carries it."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "eb04bf2b50d41467",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached filing reports the headline event."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "f0c2c5b9114d0b31",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "The attached filing reports the headline event."
+  },
+  {
+   "arm": "gated_out",
+   "case_id": "f4077d9f3f105c84",
+   "class": "OTHER_EVENT",
+   "gate_status": "gated_out:g2_issuer_not_subject",
+   "kind": "event_filing_absent",
+   "note": "Commentary on a multi-year growth guide and a customer order; the attached filing reports an acquisition agreement."
+  },
+  {
+   "arm": "gated_in",
+   "case_id": "f7fe9e7e2db3456d",
+   "class": "MATCH",
+   "gate_status": "gated_in",
+   "kind": "",
+   "note": "Investor-day strategy reported in the attached filing."
+  }
+ ],
+ "class_definitions": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "gated_in": {
+  "bar": "MATCH >= 34 of 40",
+  "class_counts": {
+   "MATCH": 32,
+   "NO_EVENT": 5,
+   "OTHER_EVENT": 3
+  },
+  "class_rate_wilson95": {
+   "MATCH": {
+    "ci": [
+     0.652,
+     0.895
+    ],
+    "rate": 0.8
+   },
+   "NO_EVENT": {
+    "ci": [
+     0.055,
+     0.261
+    ],
+    "rate": 0.125
+   },
+   "OTHER_EVENT": {
+    "ci": [
+     0.026,
+     0.199
+    ],
+    "rate": 0.075
+   }
+  },
+  "match": 32,
+  "n": 40,
+  "non_match_kinds": {
+   "NO_EVENT/market_report": 1,
+   "NO_EVENT/quote_page": 1,
+   "NO_EVENT/solicitation": 1,
+   "NO_EVENT/template_family_mismatch": 2,
+   "OTHER_EVENT/event_filing_absent": 3
+  },
+  "verdict": "MISS"
+ },
+ "gated_out": {
+  "bar": "share <= 0.2",
+  "class_counts": {
+   "MATCH": 3,
+   "NO_EVENT": 6,
+   "OTHER_EVENT": 6,
+   "WRONG_ISSUER": 5
+  },
+  "class_rate_wilson95": {
+   "MATCH": {
+    "ci": [
+     0.052,
+     0.36
+    ],
+    "rate": 0.15
+   },
+   "NO_EVENT": {
+    "ci": [
+     0.145,
+     0.519
+    ],
+    "rate": 0.3
+   },
+   "OTHER_EVENT": {
+    "ci": [
+     0.145,
+     0.519
+    ],
+    "rate": 0.3
+   },
+   "WRONG_ISSUER": {
+    "ci": [
+     0.112,
+     0.469
+    ],
+    "rate": 0.25
+   }
+  },
+  "classes_by_gate_code": {
+   "gated_out:g1_commentary": {
+    "NO_EVENT": 1
+   },
+   "gated_out:g2_ambiguous_ticker": {
+    "WRONG_ISSUER": 3
+   },
+   "gated_out:g2_issuer_absent": {
+    "NO_EVENT": 1,
+    "OTHER_EVENT": 2,
+    "WRONG_ISSUER": 1
+   },
+   "gated_out:g2_issuer_not_subject": {
+    "NO_EVENT": 2,
+    "OTHER_EVENT": 1,
+    "WRONG_ISSUER": 1
+   },
+   "gated_out:g3_no_family_language": {
+    "MATCH": 3,
+    "NO_EVENT": 2,
+    "OTHER_EVENT": 3
+   }
+  },
+  "n": 20,
+  "non_match_kinds": {
+   "NO_EVENT/commentary": 5,
+   "NO_EVENT/template_family_mismatch": 1,
+   "OTHER_EVENT/event_filing_absent": 6,
+   "WRONG_ISSUER/other_company_subject": 2,
+   "WRONG_ISSUER/partner_named": 1,
+   "WRONG_ISSUER/single_letter_ticker": 2
+  },
+  "real_events_dropped": {
+   "bound_interval": [
+    0.054,
+    0.351
+   ],
+   "dropped_real_est": 14.2,
+   "kept_real_est": 77.6,
+   "share": 0.155
+  },
+  "verdict": "PASS"
+ },
+ "gates_freeze_commit": "a8f98d21e873",
+ "gates_version": "ni-routing-gates-1",
+ "pool": {
+  "n_body_available": 235,
+  "n_pool": 192,
+  "n_pool_gated_in": 97,
+  "n_pool_gated_out": 95,
+  "n_training_excluded": 43,
+  "pool_gated_out_codes": {
+   "gated_out:g1_commentary": 6,
+   "gated_out:g1_market_report": 2,
+   "gated_out:g1_solicitation": 2,
+   "gated_out:g2_ambiguous_ticker": 8,
+   "gated_out:g2_issuer_absent": 33,
+   "gated_out:g2_issuer_not_subject": 22,
+   "gated_out:g3_no_family_language": 20,
+   "gated_out:g3_results_without_202": 2
+  }
+ },
+ "seed": 20261017
+}

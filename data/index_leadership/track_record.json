@@ -1,98 +1,103 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-23",
-  "generated_at": "2026-09-24T07:38:27.506245+00:00",
+  "as_of": "2026-10-13",
+  "generated_at": "2026-10-15T07:11:04.347595+00:00",
   "is_context_only": true,
-  "n_snapshots": 922,
-  "n_days": 31,
+  "n_snapshots": 1215,
+  "n_days": 41,
   "horizons": {
     "5": {
-      "n_matured": 848,
+      "n_matured": 1191,
       "by_stage": {
         "running": {
-          "n": 774,
-          "mean_fwd_rel": -0.0062,
-          "hit_rate": 0.422
+          "n": 1114,
+          "mean_fwd_rel": -0.0063,
+          "hit_rate": 0.408
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0009,
-          "hit_rate": 0.5
+          "mean_fwd_rel": -0.0013,
+          "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0114,
-          "hit_rate": 0.579
+          "n": 41,
+          "mean_fwd_rel": 0.011,
+          "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0371,
-      "running_ic_t_hac": -0.5,
+      "running_ic": -0.0252,
+      "running_ic_t_hac": -0.364,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 714,
+      "n_matured": 1084,
       "by_stage": {
         "running": {
-          "n": 640,
-          "mean_fwd_rel": -0.0094,
-          "hit_rate": 0.391
+          "n": 1010,
+          "mean_fwd_rel": -0.0118,
+          "hit_rate": 0.365
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0063,
+          "mean_fwd_rel": -0.0068,
           "hit_rate": 0.417
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0143,
+          "mean_fwd_rel": 0.0146,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0698,
-      "running_ic_t_hac": -1.087,
+      "running_ic": -0.0425,
+      "running_ic_t_hac": -0.757,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 551,
+      "n_matured": 891,
       "by_stage": {
         "running": {
-          "n": 486,
-          "mean_fwd_rel": -0.0188,
-          "hit_rate": 0.364
+          "n": 817,
+          "mean_fwd_rel": -0.0264,
+          "hit_rate": 0.31
         },
         "coiling": {
-          "n": 33,
-          "mean_fwd_rel": -0.0136,
-          "hit_rate": 0.333
+          "n": 36,
+          "mean_fwd_rel": -0.0184,
+          "hit_rate": 0.306
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0257,
-          "hit_rate": 0.656
+          "n": 38,
+          "mean_fwd_rel": 0.0195,
+          "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0325,
-      "running_ic_t_hac": -0.714,
+      "running_ic": 0.0275,
+      "running_ic_t_hac": 0.67,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 33,
+      "n_matured": 223,
       "by_stage": {
         "running": {
-          "n": 26,
-          "mean_fwd_rel": -0.0458,
-          "hit_rate": 0.346
+          "n": 204,
+          "mean_fwd_rel": -0.0457,
+          "hit_rate": 0.304
         },
         "coiling": {
-          "n": 7,
-          "mean_fwd_rel": -0.0806,
-          "hit_rate": 0.286
+          "n": 10,
+          "mean_fwd_rel": -0.0699,
+          "hit_rate": 0.2
+        },
+        "coiling_primed": {
+          "n": 9,
+          "mean_fwd_rel": 0.0233,
+          "hit_rate": 0.556
         }
       },
-      "running_ic": null,
+      "running_ic": 0.0587,
       "running_ic_t_hac": null,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
@@ -111,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-31",
-      "id": "russell:waste-management",
-      "name": "Waste Management",
+      "date": "2026-09-22",
+      "id": "baskets:ai-neoclouds",
+      "name": "AI Neoclouds & HPC Hosting",
       "stage": "running",
-      "fwd_rel": -0.1298,
+      "fwd_rel": -0.245,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "subsectors:oil-gas-equipment-services",
-      "name": "Oil & Gas Equipment & Services",
+      "date": "2026-09-22",
+      "id": "baskets:crypto",
+      "name": "Crypto & Digital Assets",
       "stage": "running",
-      "fwd_rel": -0.1156,
+      "fwd_rel": -0.1947,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "baskets:non-ai-software",
-      "name": "Non-AI Software",
+      "date": "2026-09-22",
+      "id": "baskets:memory-storage",
+      "name": "Memory, HBM & Storage",
       "stage": "running",
-      "fwd_rel": -0.0823,
+      "fwd_rel": -0.1841,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "russell:farm-heavy-construction-machinery",
+      "date": "2026-09-22",
+      "id": "russell:gold",
+      "name": "Gold",
+      "stage": "running",
+      "fwd_rel": -0.1525,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-22",
+      "id": "subsectors:capital-markets",
+      "name": "Capital Markets",
+      "stage": "running",
+      "fwd_rel": -0.0771,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-22",
+      "id": "baskets:ai-semiconductors",
+      "name": "AI Semiconductors",
+      "stage": "running",
+      "fwd_rel": -0.0765,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-22",
+      "id": "subsectors:farm-heavy-construction-machinery",
       "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0615,
+      "fwd_rel": -0.0623,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "russell:oil-gas-e-p",
-      "name": "Oil & Gas E&P",
+      "date": "2026-09-22",
+      "id": "nasdaq:semiconductors",
+      "name": "Semiconductors",
       "stage": "running",
-      "fwd_rel": -0.0484,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-31",
-      "id": "subsectors:agricultural-inputs",
-      "name": "Agricultural Inputs",
-      "stage": "running",
-      "fwd_rel": -0.0472,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-31",
-      "id": "baskets:ai-agents",
-      "name": "AI Agents & Applications",
-      "stage": "running",
-      "fwd_rel": -0.0453,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-31",
-      "id": "subsectors:oil-gas-midstream",
-      "name": "Oil & Gas Midstream",
-      "stage": "running",
-      "fwd_rel": -0.0392,
+      "fwd_rel": -0.0604,
       "horizon_d": 21
     }
   ],

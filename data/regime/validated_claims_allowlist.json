@@ -319,12 +319,13 @@
   },
   {
    "match": "validated a-share",
-   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge.",
+   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge. The sleeve's builder (scripts/build_cn_reversal_sleeve.py) stamps that same edge into the note of its published artifact site/factordata/cn_reversal_sleeve.json.",
    "surfaces": [
     "china",
     "china_lookup",
     "subsectors_china",
-    "cn_reversal_sleeve"
+    "cn_reversal_sleeve",
+    "build_cn_reversal_sleeve"
    ]
   },
   {
@@ -1286,6 +1287,13 @@
    "surfaces": [
     "intelligence_hub",
     "alt_data"
+   ]
+  },
+  {
+   "match": "WHEN validated confluence",
+   "backing": "signal_gate.is_buyable — the T1–T3 MACD-2D × StochRSI-3D confluence buy-GATE (research/SECTOR_CONFLUENCE.md; #736), the same gate the 'validated entry confluence (T1–T3)' us_stocks and 'validated-confluence buy-gate' sig_badge entries cite. Buy Board 2.0's WHEN gate is that gate verbatim, as HARD admission (scripts/build_stock_board_v2.py BUYABLE_TIERS = signal_gate.BUYABLE_TIERS; _when_gate → signal_gate.is_buyable). Covers the SHADOW note of site/factordata/us_standouts_v2.json only; it claims no edge for the WHAT trajectory half, which is graded in parallel until precision@k beats the live board.",
+   "surfaces": [
+    "build_stock_board_v2"
    ]
   },
   {

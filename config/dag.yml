@@ -606,6 +606,21 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: build_leader_pullback_coverage
+        module: scripts.build_leader_pullback_coverage
+        note: >
+          LEADER-PULLBACK coverage publisher (ANTICIPATION §6.9 R4) — runs the
+          engine.us_leader_pullback organ over the graded US universe on a run-wide PIT
+          cross-sectional RS percentile and writes site/anticipationdata/us_leader_pullback.json.
+          MUST PRECEDE build_site AND build_prophet: build_site projects the observation shelf
+          from this file and engine.us_early_turn resolves the EARLY-TURN starter licence from it.
+          #5007 shipped the organ and
+          #5105 the intake, but nothing published the artifact, so the leader half resolved {}
+          on every production run while the washout half (us_basket_turn) admitted normally.
+          Reads data/yahoo/*.parquet only. Advances NO ledger and writes no data/ path.
+          DISPLAY TIER, ZERO AUTHORITY. A run-wide data failure publishes nothing and keeps the
+          previous artifact rather than overwriting real coverage with a board of nulls.
+          Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
       - id: engine_run
         module: engine.run
       - id: build_shock_deescalation
@@ -779,20 +794,6 @@ lanes:
       - id: build_flip_confirmation
         module: scripts.build_flip_confirmation
         note: "Policy-Shock W1-C — T+1 sector-flip confirmation lens; detects violent defensive/offense spread flips, appends keep-first ledger, registers qledger claims, emits site/flip_confirmation_data.json (display-only, non-fatal)"
-      - id: build_leader_pullback_coverage
-        module: scripts.build_leader_pullback_coverage
-        note: >
-          LEADER-PULLBACK coverage publisher (ANTICIPATION §6.9 R4) — runs the
-          engine.us_leader_pullback organ over the graded US universe on a run-wide PIT
-          cross-sectional RS percentile and writes site/anticipationdata/us_leader_pullback.json.
-          MUST PRECEDE build_prophet: engine.us_early_turn resolves the EARLY-TURN starter
-          tier's LEADER licence from that file at origination time. #5007 shipped the organ and
-          #5105 the intake, but nothing published the artifact, so the leader half resolved {}
-          on every production run while the washout half (us_basket_turn) admitted normally.
-          Reads data/yahoo/*.parquet only. Advances NO ledger and writes no data/ path.
-          DISPLAY TIER, ZERO AUTHORITY. A run-wide data failure publishes nothing and keeps the
-          previous artifact rather than overwriting real coverage with a board of nulls.
-          Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
       - id: build_prophet
         module: scripts.build_prophet
         note: >
@@ -881,6 +882,10 @@ lanes:
           cl_gex:
             - scripts.build_gex_board
             - scripts.build_vol_regime
+            # Grey Deer pullback prospective lane: SPY issue + grade over the restored
+            # Massive store. NIGHTLY ONLY (forward-ledger advancer; not in the render
+            # lanes' cl_gex). Writer/grader refuse off COLLECT_LANE=nightly.
+            - scripts.grey_deer_pullback_nightly
             # MSP W1 (scripts.build_market_structure) MOVED OUT of this band to the serial
             # spine before build_site — OEU M-FIX. It used to sit here, i.e. AFTER build_site
             # had already rendered market_structure.html, so the page always described the
@@ -1130,6 +1135,17 @@ lanes:
           catalysts, and writes site/options_catalyst_links/ (envelope + JSONL) with
           the binding-state histogram. Context-only: every authority field false,
           no rank/size/gate, no data/ writes. Non-fatal (continue-on-error).
+      - id: build_options_alpha_candidate_feed
+        module: scripts.build_options_alpha_candidate_feed
+        note: >
+          Serial after the canonical episode and campaign builders and their
+          exact-path publications. Inactive, with no R2 access and no publication
+          journal, when a valid activation receipt is absent. When activated, this
+          step reuses the existing scripts.publish_options_alpha_candidate_r2, the
+          sole publisher of options_alpha/candidate_feed.json and receipt.json.
+          It writes no Git output, adds no second writer, no new ledger, and no
+          new lane. The daily workflow four-success gate is the actual runtime
+          order. This row is only the ordered module inventory.
       - id: build_us_sector_rotation
         module: scripts.build_us_sector_rotation
         note: >
@@ -1401,6 +1417,24 @@ lanes:
                    data/treasury/tga.parquet,
                    data/treasury_auctions/auctions.parquet]
           outputs: [data/neuralweb/liquidity_plumbing.json]
+      - id: build_global_liquidity_transmission
+        module: scripts.build_global_liquidity_transmission
+        note: >
+          non-fatal; W-LIQ.1 global liquidity transmission producer
+          (global_liquidity_transmission.v1, frozen #6296) — pure local reads, no
+          network calls, display tier, validated=False. Wired 2026-10-13 (GLT T06):
+          before this no workflow invoked the producer (its only .github reference
+          was a CI test lane's paths filter), so the published state never
+          advanced. Runs AFTER the plumbing step so
+          data/regime/latest.json is present.
+          inputs: [data/fred/BUSLOANS.parquet,
+                   data/china_credit/tsf.parquet,
+                   data/regime/latest.json,
+                   config/global_liquidity_transmission_v1.yml]
+          outputs: [site/liquiditydata/global_liquidity_transmission.json,
+                    data/global_liquidity_transmission/state_history.parquet,
+                    data/global_liquidity_transmission/state_history_meta.json,
+                    data/global_liquidity_transmission/factor_comparison_btc_4w.json]
       - id: build_price_pressure
         module: scripts.build_price_pressure
         note: >
@@ -1747,6 +1781,18 @@ lanes:
           step via a shell loop ('for mod in scripts.build_canada_library ...; do python -m
           $mod; done') which the conformance parser cannot extract (variable expansion).
           They are intentionally omitted from declared steps.
+      - id: fif_saved_research_notifications
+        module: scripts.run_fif_saved_research_notifications
+        note: >
+          X2-n FIF saved-research notifications — enqueue-only producer over
+          the designated "Filing Forensics" watchlist (R2) and LOCAL trigger
+          inputs (FIF private state; the broad-sec receipt and production
+          pointer mirrors are R2-only today and read as no-event, R5).
+          Fail-soft (absent creds/tables/inputs -> typed unavailable,
+          0 rows, exit 0). Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1
+          and ALERT_DRAIN_ENABLE=1. Delivery is F08's drain, never this
+          step. Last step of the engine lane: after every render-critical
+          step (census C5).
 
   # ── daily.yml / factor_panel ───────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -2143,6 +2189,21 @@ lanes:
         note: >
           Publish oracle panels to R2 (refreshes render-path sponsorship inputs).
           Non-fatal (::warning:: on failure).
+      - id: build_graph_shadow_theme_state
+        module: scripts.build_thematic_state
+        note: >
+          Gate #8 (seat ruling G1-RC1) — `--mode GRAPH_SHADOW_STATE`: capture the
+          owner bundle, state-only compose, validate, atomic write of
+          data/theme_graph/shadow_theme_state.v1.json ONLY (the file
+          engine/theme_graph/selection_cohort_reads.py reads). Never in the engine
+          job; oracle_offrender runs after engine whatever its result (RC1-R1: the
+          engine job ends red on the post-commit OIP PIT fail-closed marker after
+          its data commit, so an engine.result gate never opened). Shadow +
+          research-internal; six-false authority unchanged. Fail-open: one
+          ::warning title=gmi-shadow-graph-state:: and the prior shadow stands;
+          step timeout 12 min, continue-on-error; committed by the oracle Time
+          Machine commit step.
+          outputs: [data/theme_graph/shadow_theme_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -3403,6 +3464,25 @@ lanes:
           collect byproducts remain unstaged. Every complete source receipt is
           published to keep current-state health live; a normalized semantic
           fingerprint separates quiet heartbeat folds from alert-worthy evidence.
+      - id: restore_defense_market_owner
+        module: scripts.restore_defense_market_owner
+        args: [--root, .]
+        note: >
+          Restore the pinned existing market owner before projection; missing or
+          inconsistent owner bytes refuse the generation.
+      - id: restore_event_workspace_owner
+        module: scripts.restore_event_workspace_owner
+        args: [--root, .]
+        note: >
+          Restore the existing financial-owner generation and require the reviewed
+          defense issuer set. This reads the owner; it does not create a financial
+          publication or grant new acquisition authority.
+      - id: build_government_revenue_research_state
+        module: scripts.build_government_revenue_research_state
+        args: [--root, .]
+        note: >
+          Compose the existing registered research state with the projection clock;
+          no retrospective forecast issuance or outcome backfill is permitted.
       - id: build_government_revenue
         module: scripts.build_government_revenue
         args: [--live-materialization]
@@ -3424,21 +3504,20 @@ lanes:
           projection but cannot append, retime, or backfill its ledger. No trade-signal
           scoring, ranking, sizing, gating, or escalation is permitted.
 
+      - id: install_proof_dependencies
+        module: pip
+        args: [install, "fastapi>=0.115,<1.0", httpx]
+        note: Install the API dependencies required by the complete candidate proof.
       - id: prove_government_revenue_candidates
-        module: pytest
-        args:
-          - -p
-          - no:cacheprovider
-          - tests/test_government_revenue_candidates.py
-          - tests/test_government_revenue_candidate_projection.py
-          - tests/test_government_revenue_candidate_fixture.py
-          - -q
+        module: scripts.ci.govrev_candidate_proof
+        args: [prove, --root, .]
         note: >
-          Conditional, read-only proof over candidate artifacts changed by this run.
-          The workflow may add xdist flags when available, but falls back to the same
-          serial pytest suite when that optional runner dependency is absent. This
-          declaration records the executable module without granting the prover any
-          writer, ranking, sizing, gating, or escalation authority.
+          The mandatory sealed helper runs the three complete candidate suites,
+          records collection and JUnit evidence, and binds immutable pre/post
+          source, runtime and output bytes. Missing pytest refuses; missing xdist
+          uses serial proof. Rebuilds after rebase must match the accepted receipt
+          exactly or run a new proof. Publication verifies committed generation
+          identity; no direct pytest exit can substitute for this gate.
 
   # ── filing-forensics-sec.yml / acquire_project_sync ──────────────────────
   - workflow: .github/workflows/filing-forensics-sec.yml
@@ -3481,6 +3560,57 @@ lanes:
           scratch root through the exact code path tonight's engine gate runs and
           byte-compares every ticker against this lane's own projection output. A green
           publish with an unreadable bundle would otherwise surface only as a red render.
+      - id: fif_contract_targets_derive
+        module: scripts.publish_fif_production_datasets
+        args: [targets, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --targets-file, config/fundamental_forensics/wave2_targets.v1.json, --max-tickers, 15]
+        note: >
+          Derives the contract lane's universe from the SAME pinned target file: the
+          targets subcommand prints one --target TICKER=CIK per five-issuer coverage
+          entry that is not already an incumbent ticker, refusing any union wider
+          than --max-tickers 15. Lives inside the continue-on-error contract step,
+          so a derivation refusal is crash-class, never an incumbent gate.
+      - id: fif_contract_acquire
+        module: scripts.run_fundamental_forensics_wave2
+        args: [--acquire, --reuse-local-archive, --sync, --incremental-sync, --max-tickers, 12]
+        note: >
+          Third wave-2 invocation: the isolated contract acquire over the derived
+          $CONTRACT_TARGETS list into the same warm roots (no --restore, no
+          --require-complete-acquisition, no --build-projections). The step is
+          continue-on-error and non-gating; a crash or step timeout fails the job
+          only after every incumbent step has completed.
+      - id: fif_contract_acquire_summary
+        module: scripts.publish_fif_production_datasets
+        args: [contract-acquire-summary, --result, --report-path]
+        note: >
+          Reads the contract acquire's redirected outcome JSON and writes the run's
+          summary report: a typed partial becomes a line-start ::warning plus the
+          recorded shortfall that the capture and publish reports carry onward; a
+          missing or malformed result is a typed refusal, i.e. crash class.
+      - id: fif_capture_members
+        module: scripts.publish_fif_production_datasets
+        args: [capture-members, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --contract-acquire-report, --report-path]
+        note: >
+          Member capture for the contract issuers, run only when the contract acquire
+          outcome is success (typed partial included). For each contract accession
+          whose primary document the lane retained, fetches the archive index and the
+          five XBRL role members, then writes the package subtree under the
+          fif-packages/ prefix in the warm archive root. No object-store credentials.
+      - id: fif_production_publish
+        module: scripts.publish_fif_production_datasets
+        args: [publish, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --capture-report, --report-path]
+        note: >
+          Publishes one immutable generation per published contract issuer with the
+          CLOCK RULE admitted_at and lineage evidence through the S2-p seam; every
+          other contract issuer gets exactly one typed exclusion row. This is the
+          hard gate: a red publish stops the lane with rc != 0 and a line-start
+          ::error. Runs only when the contract acquire outcome is success.
+      - id: fif_production_verify
+        module: scripts.publish_fif_production_datasets
+        args: [verify, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --report-path]
+        note: >
+          Reads back the publish report and proves latest.json NAMES every generation
+          the publish minted; a missing generation fails the lane right after the
+          hard-gated publish.
   # ── filing-forensics-broad-sec.yml / poll_broad_sec ─────────────────────
   - workflow: .github/workflows/filing-forensics-broad-sec.yml
     job: poll_broad_sec
@@ -4579,6 +4709,30 @@ modules:
       Step cost: reads options_surface parquets (small, ~single-digit MB committed);
       opex_risk.snapshot() is a cheap read-only join on committed data — no network,
       no heavy compute. Measured added cost on main: <2s (deterministic composer).
+
+  - module: scripts.grey_deer_pullback_nightly
+    reads:
+      - data/massive_stock_day/*.parquet
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+    writes:
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+      - data/grey_deer_pullback/forward_log_refusals.jsonl
+    impure: false
+    needs_secrets: false
+    event_driven: false
+    note: >
+      Grey Deer pullback prospective lane (WS:GREY-DEER-RISK-INTELLIGENCE O7/W5).
+      Issues tonight's SPY rows with the frozen writer
+      (engine/grey_deer_pullback_forward.py), then grades matured rows with the
+      frozen grader (engine/grey_deer_pullback_forward_grade.py). Both are
+      append-only and refuse unless COLLECT_LANE=nightly and their
+      GREY_DEER_PULLBACK_{WRITER,GRADER}_IDENTITY pins equal daily.yml:engine, so
+      the nightly is the sole advancer. Never fatal (every problem is a
+      line-start ::warning, rc 0). Display/research tier only; no trial_ledger
+      append, no rank/size/gate authority. Cost: one ticker read from the
+      already-restored store plus the frozen writer and grader.
 
   - module: scripts.build_gex_board
     reads:

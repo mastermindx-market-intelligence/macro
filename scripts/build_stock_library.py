@@ -926,6 +926,66 @@ def _apply_delisting(rec: dict, disclosure: dict) -> None:
 # module. This monolith consumes that seam through its private module namespace
 # and intentionally re-exports none of its helpers.
 
+def _bind_price_clock(tech: dict, close: pd.Series) -> dict:
+    """Bind only tech.price to its actual source bar; never borrow analysis asof.
+
+    The rich snapshot coerces numeric closes and drops NaNs before choosing its
+    last price. Require the same rounded value and an unambiguous calendar index.
+    Invalid metadata is omitted, preserving the existing price and rounding.
+    This establishes no native currency or cross-field snapshot authority.
+    """
+    import math
+    from numbers import Real
+
+    result = dict(tech)
+    result.pop("price_asof", None)
+    try:
+        price = result.get("price")
+        if isinstance(price, bool) or not isinstance(price, Real):
+            return result
+        if not math.isfinite(price) or price <= 0:
+            return result
+        observed = pd.to_numeric(close, errors="coerce").astype(float).dropna()
+        if (observed.empty or not isinstance(observed.index, pd.DatetimeIndex)
+                or not observed.index.is_monotonic_increasing or not observed.index.is_unique):
+            return result
+        last = float(observed.iloc[-1])
+        day = observed.index[-1]
+        if not math.isfinite(last) or pd.isna(day) or round(last, 2) != price:
+            return result
+        result["price_asof"] = day.date().isoformat()
+    except (TypeError, ValueError, OverflowError):
+        pass  # A missing price clock is honest; no default/current/build date.
+    return result
+
+
+def _enrich_stock_technicals(rec: dict, close: pd.Series,
+                            ohlcv: pd.DataFrame | None, bench: pd.Series | None) -> None:
+    """Commit the richer price and its clock together after both reads succeed.
+
+    A snapshot/squeeze failure leaves the prior thin pair untouched. The record's
+    analysis/valuation date is independent and remains on its original universe.
+    """
+    if ohlcv is not None and {"high", "low", "volume"} <= set(ohlcv.columns):
+        source_close = ohlcv["close"]
+        rich = stock_technicals.snapshot(source_close, ohlcv["high"],
+                                        ohlcv["low"], ohlcv["volume"], bench=bench)
+        sq = vol_squeeze.assess(source_close, ohlcv["high"], ohlcv["low"], ohlcv["volume"])
+    else:
+        source_close = close
+        rich = stock_technicals.snapshot(close, bench=bench)
+        sq = vol_squeeze.assess(close)
+    prior = dict(rec.get("tech") or {})
+    # If the new price has no valid date it cannot inherit the previous price's date.
+    prior.pop("price_asof", None)
+    # The thin price's native unit cannot qualify a price from another observation.
+    # Only a unit actually returned by the richer source could survive this merge.
+    prior.pop("currency", None)
+    rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)
+    if sq:
+        rec["vol_squeeze"] = sq
+
+
 def _one(ticker: str, close: pd.Series, high: pd.Series | None,
          name: str, sector: str, liquidity: str | None = None,
          macro_drag: float | None = None, macro_beta: float = 0.0,
@@ -966,7 +1026,7 @@ def _one(ticker: str, close: pd.Series, high: pd.Series | None,
         "ticker": ticker, "name": name, "sector": sector,
         "asof": asof,
         "history_days": int(len(c)),
-        "tech": snapshot(c),
+        "tech": _bind_price_clock(snapshot(c), c),
         "season_this": season_line(seas, month),
         "season_next": season_line(seas, month % 12 + 1),
         "season_this_zh": season_line(seas, month, zh=True),
@@ -1486,6 +1546,481 @@ def _json_safe(o):
     return o
 
 
+def _today_source_instant(value):
+    if not isinstance(value, str):
+        raise ValueError("Today source clock is unavailable")
+    instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if instant.tzinfo is None or instant.utcoffset().total_seconds() != 0:
+        raise ValueError("Today source clock must be UTC")
+    return instant
+
+
+def today_selection_source_binding(source_bytes):
+    """Bind exact displayed source bytes; this is not W3C capture acceptance."""
+    from hashlib import sha256
+    import re
+    from datetime import date
+    from engine.us_candidate_episode import canonical_json
+
+    doc = json.loads(source_bytes)
+    if not isinstance(doc, dict) or not isinstance(doc.get("buy"), list):
+        raise ValueError("Today source buy roster is unavailable")
+    emit = doc.get("emit")
+    if not isinstance(emit, dict) or not re.fullmatch(r"[0-9a-f]{32}", str(emit.get("pair_id") or "")):
+        raise ValueError("Today source pair is unavailable")
+    _today_source_instant(emit.get("at_utc"))
+    if not isinstance(doc.get("board_definition"), str) or not doc["board_definition"]:
+        raise ValueError("Today source definition is unavailable")
+    session = doc.get("as_of")
+    if not isinstance(session, str) or date.fromisoformat(session).isoformat() != session:
+        raise ValueError("Today source session is unavailable")
+    rows = []
+    for index, row in enumerate(doc["buy"]):
+        if not isinstance(row, dict):
+            raise ValueError("Today source row is unavailable")
+        rows.append({"selection_index": index, "row_receipt": "sha256:" + sha256(canonical_json(row).encode()).hexdigest()})
+    source_sha256 = "sha256:" + sha256(source_bytes).hexdigest()
+    material = {"source_sha256": source_sha256, "pair_id": emit["pair_id"], "market_session": session, "ordered_rows": rows}
+    return {**material, "selection_receipt": "sha256:" + sha256(canonical_json(material).encode()).hexdigest(),
+            "schema": "prophet.today_selection_source_binding/v1", "receipt_kind": "EXACT_DISPLAYED_SOURCE"}
+
+
+def today_selection_row_receipts(source_bytes):
+    """Optional original-producer handoff; ambiguous same-ticker rows emit nothing."""
+    doc = json.loads(source_bytes)
+    binding = today_selection_source_binding(source_bytes)
+    grouped = {}
+    for row, receipt in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        ticker = row.get("ticker")
+        if isinstance(ticker, str) and ticker:
+            grouped.setdefault(ticker, set()).add(receipt["row_receipt"])
+    return {ticker: next(iter(values)) for ticker, values in grouped.items() if len(values) == 1}
+
+
+class _NativeAssessmentBindingRefused(ValueError):
+    """A genuine owner read result did not bind the producer's own candidate."""
+
+
+# Owner reads this assembly still owes before a brief could ever be fully
+# available. The native factual assessment is no longer on this list once one
+# genuine owner read is bound; plan/evidence/quote/B4 stay unread here.
+_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES = (
+    "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+    "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "B4_NATIVE_OWNER_READ_UNAVAILABLE",
+)
+
+
+def _verify_native_assessment_pair(assessment, projection, *, candidate, source_key, source_receipt):
+    """Bind one genuine owner read result to this producer's candidate resolution.
+
+    ``assessment``/``projection`` are the detached ``verified_pair()`` of the ONE
+    ``build_native_factual_assessment_result`` read for this exact candidate.
+    The consumer re-checks, from its own side, that the displayed envelope
+    restates this candidate's four identity fields, asserts this exact source
+    key/receipt pair, and receipts this same read's native projection id and
+    bytes. The projection stays an internal owner capability for later B4 work:
+    it is verified here and never surfaced on the response.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import ASSESSMENT_OWNER_REF
+    from engine.us_candidate_episode import canonical_json
+
+    def refuse(detail):
+        raise _NativeAssessmentBindingRefused(f"native assessment binding refused: {detail}")
+
+    if assessment.get("schema") != "prophet.daily_brief_assessment_input/v1":
+        refuse("envelope is not the Daily Brief assessment input schema")
+    if assessment.get("owner_ref") != ASSESSMENT_OWNER_REF:
+        refuse("envelope is not issued by the fixed native assessment owner")
+    summary = assessment.get("summary")
+    if (assessment.get("state") != "REVIEW_REQUIRED"
+            or not isinstance(summary, dict)
+            or summary.get("assessment_state") != "REVIEW_REQUIRED"):
+        refuse("assessment state is not the literal REVIEW_REQUIRED observation")
+    for field in ("security_id", "episode_id", "candidate_generation_id", "market_session"):
+        if assessment.get(field) != candidate.get(field):
+            refuse(f"{field} disagrees with the producer candidate binding")
+    provenance = assessment.get("provenance")
+    if not isinstance(provenance, dict):
+        refuse("assessment provenance is missing")
+    if provenance.get("input_binding") != {
+        "candidate_source_event_id": source_key, "candidate_source_receipt": source_receipt,
+    }:
+        refuse("assessed input binding is not this candidate source key/receipt")
+    matched = provenance.get("matched_relation")
+    if (not isinstance(matched, dict)
+            or matched.get("relation_source_event_id") != source_key
+            or matched.get("relation_source_receipt") != source_receipt):
+        refuse("matched native relation is not this candidate source key/receipt")
+    if provenance.get("b3_projection_id") != projection.get("projection_id"):
+        refuse("receipted projection id is not this read's native projection")
+    if provenance.get("b3_projection_sha256") != (
+        "sha256:" + sha256(canonical_json(projection).encode()).hexdigest()
+    ):
+        refuse("receipted projection digest is not this read's native projection bytes")
+    for field in ("candidate_generation_id", "market_session"):
+        if projection.get(field) != candidate.get(field):
+            refuse(f"native projection {field} disagrees with the producer candidate binding")
+    if projection.get("generated_at") != assessment.get("asof"):
+        refuse("native projection generated_at is not this read's assembly asof")
+    rows = [row for row in projection.get("rows") or []
+            if isinstance(row, dict) and row.get("episode_id") == candidate.get("episode_id")]
+    if len(rows) != 1 or rows[0].get("security_id") != candidate.get("security_id"):
+        refuse("native projection does not carry exactly this candidate's episode row")
+
+
+def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
+                                    source_rows, generated_at, relation_details=None):
+    """Private byte-captured original-producer native source resolver.
+
+    The one shared resolution core behind the Today projection read and the
+    fixed Plan source read. It receives the CAPTURED raw board bytes — never a
+    live re-read or a reconstructed board — plus the complete captured UCV byte
+    inventory and the actual validated B1 snapshot, and resolves every displayed
+    buy row by its full-buy original ordinal and row receipt against the
+    original source key and canonical row digest, the native candidate
+    relation, suppressions and episode lifecycle, and the one genuine B3 owner
+    read per available candidate. It is a resolver only: no normalization, no
+    receipt minting, no caller attestation and no new selector ever enter
+    here, and ``relation_details`` (used only by callers that need the original
+    relation facts beside the Today-shaped result) never alters the returned
+    resolution.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_result,
+    )
+    from engine.us_candidate_episode import canonical_json
+
+    if "sha256:" + sha256(raw).hexdigest() != binding["source_sha256"]:
+        raise ValueError("resolver inputs are not the captured source bytes")
+    withdrawn = {event.get("correction_of") for event in generation.events if event.get("event_type") == "RETRACTED"}
+    candidates = []
+    # Aligned with `candidates`: the candidate input plus the assessment of the
+    # ONE genuine owner read bound to it, composed only after the final guards.
+    native_reads = []
+    for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
+                "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
+        native_facts = None
+        matching = [record for record in source_rows
+                    if record.get("stamp_date") == binding["market_session"]
+                    and record.get("ticker") == row.get("ticker")
+                    and record.get("board_definition") == doc.get("board_definition")]
+        reason = None
+        if len(matching) != 1:
+            reason = "CANDIDATE_SOURCE_UNAVAILABLE" if not matching else "CANDIDATE_SOURCE_AMBIGUOUS"
+        elif matching[0].get("today_selection_row_receipt") != selected["row_receipt"]:
+            reason = "ROW_PROVENANCE_UNAVAILABLE" if not matching[0].get("today_selection_row_receipt") else "ROW_PROVENANCE_MISMATCH"
+        if reason is None:
+            native_row = matching[0]
+            source_key = "candidate:{stamp_date}:{ticker}:{board_definition}".format(**native_row)
+            source_receipt = "sha256:" + sha256(canonical_json(native_row).encode()).hexdigest()
+            related = [event for event in generation.events
+                       if event.get("source_system") == "candidate"
+                       and event.get("source_schema") == "us_prophet_rank.candidates/v1"
+                       and event.get("source_event_id") == source_key
+                       and event.get("source_receipt") == source_receipt
+                       and event.get("event_type") in {"OPENED", "OBSERVED"}]
+            active_relations = [event for event in related if event.get("event_id") not in withdrawn]
+            suppressed = [record for record in generation.suppressions
+                          if record.get("source_system") == "candidate"
+                          and record.get("source_event_id") == source_key
+                          and record.get("source_receipt") == source_receipt]
+            episode_ids = {event.get("episode_id") for event in active_relations}
+            episodes = [episode for episode in generation.episodes if episode.get("episode_id") in episode_ids]
+            if suppressed:
+                reason = "CANDIDATE_SOURCE_SUPPRESSED"
+            elif related and not active_relations:
+                reason = "CANDIDATE_SOURCE_RETRACTED"
+            elif not active_relations:
+                reason = "CANDIDATE_RECONCILIATION_PENDING"
+            elif len(episode_ids) != 1 or len(episodes) != 1:
+                reason = "CANDIDATE_EPISODE_AMBIGUOUS"
+            elif episodes[0].get("episode_state") != "ACTIVE" or episodes[0].get("superseded_by") is not None:
+                reason = "CANDIDATE_EPISODE_TERMINAL"
+            else:
+                episode = episodes[0]
+                candidate = {"schema": "prophet.daily_brief_candidate_input/v1", "security_id": episode["security_id"],
+                             "episode_id": episode["episode_id"], "candidate_generation_id": snapshot.generation_id,
+                             "market_session": binding["market_session"], "state": "SELECTED",
+                             "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
+                             "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
+                             "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
+                # One genuine native owner read for this exact binding. The owner
+                # revalidates the snapshot against native disk and derives the
+                # original identity/session itself; the consumer only ever takes
+                # its verified_pair(), never a reprojection or caller-supplied
+                # JSON. Owner refusal leaves the candidate binding available and
+                # the assessment typed unavailable — no receipt is fabricated.
+                assessment = None
+                assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                try:
+                    owner_result = build_native_factual_assessment_result(
+                        snapshot, candidate_source_event_id=source_key,
+                        candidate_source_receipt=source_receipt)
+                    assessment, projection = owner_result.verified_pair()
+                    _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                                   source_key=source_key, source_receipt=source_receipt)
+                    assessment_codes = ()
+                except _NativeAssessmentBindingRefused:
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
+                except (CandidateStateContractError, OSError, ValueError, TypeError):
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
+                              "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
+                              "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                            for event in active_relations]}
+                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
+                            reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                native_reads.append((candidate, assessment))
+            if relation_details is not None:
+                episode_row = episodes[0] if len(episodes) == 1 else None
+                native_facts = {
+                    "source_event_id": source_key,
+                    "source_receipt": source_receipt,
+                    "relation": dict(related[0]) if related else None,
+                    "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                  for event in active_relations],
+                    "suppressed": bool(suppressed),
+                    "episode": None if episode_row is None else {
+                        key: episode_row.get(key)
+                        for key in ("episode_id", "security_id", "episode_state", "terminal_reason",
+                                    "superseded_by", "opened_at", "opened_session")},
+                }
+        if reason is not None:
+            item["reason_codes"] = [reason]
+            native_reads.append(None)
+        candidates.append(item)
+        if relation_details is not None:
+            relation_details.append(native_facts)
+    return candidates, native_reads
+
+
+class _OriginalSelectionNativeRefused(ValueError):
+    """The native owner could not preserve one captured source relation."""
+
+
+def _read_original_selection_native_relation(raw, *, selection_index, started_at,
+                                             expected_candidate_generation_id=None):
+    """Read original-source facts under the native owner's own byte guard.
+
+    The installation root is fixed here. Callers supply only captured immutable
+    source bytes, an original ordinal, a UTC request cut and an equality pin;
+    they cannot choose a store or supply native objects. No Plan is read here.
+    The context yields frozen facts, never a snapshot, token or assessment.
+    Normal context exit performs the final complete UCV and native HEAD check,
+    allowing the consumer's own file guards to bracket that check precisely.
+    Refused consumer reads need no subsequent native check and cannot succeed.
+    """
+    from contextlib import contextmanager
+    from types import MappingProxyType
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+
+    def refuse(code):
+        return _OriginalSelectionNativeRefused(code)
+
+    def freeze(value):
+        if isinstance(value, dict):
+            return MappingProxyType({key: freeze(item) for key, item in value.items()})
+        if isinstance(value, (list, tuple)):
+            return tuple(freeze(item) for item in value)
+        return value
+
+    @contextmanager
+    def captured_read():
+        try:
+            if not isinstance(raw, bytes):
+                raise ValueError("source must be captured immutable bytes")
+            binding = today_selection_source_binding(raw)
+            doc = json.loads(raw)
+            if (isinstance(selection_index, bool) or not isinstance(selection_index, int)
+                    or not 0 <= selection_index < len(doc["buy"])):
+                raise ValueError("original ordinal unavailable")
+            if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(started_at):
+                raise ValueError("source is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+
+        root = Path(__file__).resolve().parent.parent
+        episode_root = root / "data/us_prophet_rank/episodes"
+        try:
+            source_rows, source_receipts = read_today_candidate_source_rows(root)
+            token = attest_candidate_episode_store_bytes(episode_root)
+            snapshot = load_candidate_episode_store_snapshot(episode_root)
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("CANDIDATE_SNAPSHOT_UNAVAILABLE") from exc
+        if token.generation_id != snapshot.generation_id:
+            raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        if (expected_candidate_generation_id is not None
+                and expected_candidate_generation_id != snapshot.generation_id):
+            raise refuse("CANDIDATE_GENERATION_MISMATCH")
+        try:
+            if (_today_source_instant(snapshot.generation.receipt["recorded_at"])
+                    > _today_source_instant(started_at)):
+                raise ValueError("generation is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("CANDIDATE_CLOCK_UNAVAILABLE") from exc
+        details = []
+        try:
+            candidates, native_reads = _today_native_source_candidates(
+                raw, binding=binding, doc=doc, generation=snapshot.generation,
+                snapshot=snapshot, source_rows=source_rows, generated_at=started_at,
+                relation_details=details)
+            if not (len(candidates) == len(native_reads) == len(details) == len(doc["buy"])):
+                raise ValueError("unaligned native source rows")
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+        item = candidates[selection_index]
+        facts = details[selection_index] or {}
+        candidate = item.get("candidate_input")
+        identity = ({key: candidate.get(key) for key in (
+            "security_id", "episode_id", "candidate_generation_id", "market_session")}
+            if isinstance(candidate, dict) else None)
+        native_read = native_reads[selection_index]
+        assessment = native_read[1] if native_read is not None else None
+        assessment_codes = [code for code in item.get("reason_codes", []) if code in {
+            "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "ASSESSMENT_NATIVE_BINDING_UNAVAILABLE"}]
+        if assessment_codes:
+            identity = None
+        relation = facts.get("relation") or {}
+        yield freeze({
+            "status": item.get("status"), "reason_codes": item.get("reason_codes", []),
+            "native_identity": identity, "episode_lifecycle": facts.get("episode"),
+            "native_clocks": {
+                "native_known_at": relation.get("known_at"),
+                "native_recorded_at": relation.get("recorded_at"),
+                "generation_recorded_at": snapshot.generation.receipt.get("recorded_at"),
+            },
+            "source_event_id": facts.get("source_event_id"),
+            "source_receipt": facts.get("source_receipt"),
+            "has_assessment": isinstance(assessment, dict),
+            "assessment_asof": assessment.get("asof") if isinstance(assessment, dict) else None,
+            "assessment_codes": assessment_codes,
+        })
+        # This check runs at the original interleaving point. Nothing yielded
+        # above can mutate these captured native inputs or redirect this read.
+        try:
+            _, after_receipts = read_today_candidate_source_rows(root)
+            if (after_receipts != source_receipts
+                    or attest_candidate_episode_store_bytes(episode_root) != token):
+                raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        except _OriginalSelectionNativeRefused:
+            raise
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+    return captured_read()
+
+
+def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
+                                    expected_selection_receipt, expected_candidate_generation_id=None):
+    """Read exact finalized selection plus native B1; never mutate publication."""
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+    from engine.prophet_daily_brief import compose_daily_brief
+
+    root = Path(repo_root)
+    source_path = root / "site/factordata/us_standouts.json"
+    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result = {"schema": "prophet.daily_brief_read/v1", "status": "UNAVAILABLE",
+              "source_binding": None, "candidate_generation_id": None,
+              "generated_at": generated_at, "candidates": [], "reason_codes": []}
+
+    def unavailable(reason):
+        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason],
+                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
+
+    try:
+        raw = source_path.read_bytes()
+        binding = today_selection_source_binding(raw)
+        doc = json.loads(raw)
+        if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(generated_at):
+            raise ValueError("Today source clock is future")
+    except (OSError, ValueError, TypeError):
+        return unavailable("SELECTION_SOURCE_UNAVAILABLE")
+    result["source_binding"] = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt", "market_session", "schema", "receipt_kind")}
+    if (expected_source_sha256 != binding["source_sha256"] or expected_pair_id != binding["pair_id"]):
+        return unavailable("SOURCE_BINDING_MISMATCH")
+    if expected_selection_receipt != binding["selection_receipt"]:
+        return unavailable("SELECTION_BINDING_MISMATCH")
+    try:
+        # Emission and native reconciliation remain their existing owners' work.
+        source_rows, source_receipts = read_today_candidate_source_rows(root)
+        episode_root = root / "data/us_prophet_rank/episodes"
+        token = attest_candidate_episode_store_bytes(episode_root)
+        snapshot = load_candidate_episode_store_snapshot(episode_root)
+        if token.generation_id != snapshot.generation_id:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    result["candidate_generation_id"] = snapshot.generation_id
+    if expected_candidate_generation_id is not None and expected_candidate_generation_id != snapshot.generation_id:
+        return unavailable("CANDIDATE_GENERATION_MISMATCH")
+
+    generation = snapshot.generation
+    try:
+        if _today_source_instant(generation.receipt["recorded_at"]) > _today_source_instant(generated_at):
+            return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    except (ValueError, TypeError, KeyError):
+        return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    candidates, native_reads = _today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at=generated_at)
+    try:
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+        _, after_receipts = read_today_candidate_source_rows(root)
+        if after_receipts != source_receipts or attest_candidate_episode_store_bytes(episode_root) != token:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    # Read completion is observed once, after every owner input above is gathered
+    # and every final raw/part/HEAD guard has held. Daily Brief views compose
+    # against this instant, so a genuine native read assembled after this request
+    # started is no longer a future clock — while the original request-start cut
+    # checks above stay exactly as they are, and a native read assembled after
+    # completion itself is still refused rather than consumed.
+    read_completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result["generated_at"] = read_completed_at
+    for item, native_read in zip(candidates, native_reads, strict=True):
+        if native_read is None:
+            continue
+        candidate, assessment = native_read
+        completion_codes = ()
+        if assessment is not None:
+            try:
+                after_completion = (_today_source_instant(assessment["asof"])
+                                    > _today_source_instant(read_completed_at))
+            except (KeyError, TypeError, ValueError):
+                after_completion = True
+            if after_completion:
+                assessment = None
+                completion_codes = ("ASSESSMENT_AFTER_READ_COMPLETION_UNAVAILABLE",)
+        item["daily_brief"] = compose_daily_brief(
+            candidate=candidate, entry_availability=None, plan=None, assessment=assessment,
+            evidence=None, assembly=None, recovery=None, previous=None,
+            now=read_completed_at, quote=None)
+        if completion_codes:
+            item["reason_codes"] = [*completion_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
+    # Native candidate availability is narrower than a fully available brief.
+    return {**result, "status": "PARTIAL", "candidates": candidates,
+            "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}
+
+
 # Urgency values that read as actionable on the board. A blocked signal must never
 # carry any of these (check_board_contradictions.py invariant (b) asserts the
 # artifact side; this is the builder side).
@@ -1784,6 +2319,14 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
     from datetime import datetime as _dt, timezone as _tz
     from lib import nyse_calendar as _nyse
 
+    _observed = now or _dt.now(_tz.utc)
+    if _observed.tzinfo is None:
+        _observed = _observed.replace(tzinfo=_tz.utc)
+    else:
+        _observed = _observed.astimezone(_tz.utc)
+    _observed_iso = _observed.isoformat()
+    _expected = None
+
     def _unknown(reason: str, extra: "dict | None" = None) -> dict:
         # FAIL CLOSED.  "We could not date this board" is a delayed board, not a fresh
         # one — the reader gets the plain-word "updating" disclosure instead of a badge
@@ -1791,6 +2334,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         out = {"price_through": None, "age_days": None, "sessions_behind": None,
                "delayed": True, "unknown": True, "basis": "unknown",
                "unknown_reason": reason, "max_through": None,
+               "observed_at_utc": _observed_iso,
+               "expected_session": (_expected.isoformat() if _expected else None),
                "inputs": {"baskets_ohlcv_through": None, "panel": panel_reach or None,
                           "board_asof": (str(board_asof) if board_asof else None)}}
         if extra:
@@ -1798,6 +2343,7 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         return out
 
     try:
+        _expected = _nyse.expected_last_session(_observed)
         _root = ohlcv_dir or (config.data_dir() / "baskets" / "ohlcv")
         _root = _root if isinstance(_root, Path) else Path(_root)
         _ohlcv_through: "date | None" = None
@@ -1849,9 +2395,6 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             )
         _basis_date, _basis_tag = min(_known, key=lambda kv: kv[0])
 
-        _now = now or _dt.now(_tz.utc)
-        _expected = _nyse.expected_last_session(_now)
-
         # age_days: calendar days between price_through and expected session
         _age_days = (_expected - _basis_date).days
 
@@ -1880,6 +2423,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             "unknown": False,
             "basis": _basis_tag,
             "max_through": (str(_max_through) if _max_through else None),
+            "observed_at_utc": _observed_iso,
+            "expected_session": _expected.isoformat(),
             "inputs": {
                 "baskets_ohlcv_through": (str(_ohlcv_through) if _ohlcv_through else None),
                 "panel": panel_reach or None,
@@ -1997,6 +2542,61 @@ def _panel_price_reach(uni: "list | None",
         "mixed_vintage": _majority_d != _max_d,
         "off_majority_tickers": _off_majority[:10],
     }
+
+
+def _clip_daily_to_completed_session(values, completed_session: date):
+    """Return a daily Series/DataFrame capped at one completed NYSE session."""
+    if values is None:
+        return None
+    idx = pd.DatetimeIndex(pd.to_datetime(values.index, errors="raise"))
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)
+    mask = idx.normalize() <= pd.Timestamp(completed_session)
+    return values.loc[mask]
+
+
+def _normalise_us_equity_universe(
+    uni: "list | None", now: "datetime | None" = None,
+) -> tuple[list, dict | None, dict]:
+    """Cap every US-equity input at one immutable completed-session clock."""
+    from lib import nyse_calendar as _nyse
+
+    observed = now or datetime.now(timezone.utc)
+    if observed.tzinfo is None:
+        observed = observed.replace(tzinfo=timezone.utc)
+    else:
+        observed = observed.astimezone(timezone.utc)
+    completed = _nyse.expected_last_session(observed)
+    crypto = _crypto_tickers()
+    raw_reach = _panel_price_reach(uni)
+    clipped: list = []
+    provisional: list[str] = []
+    for item in (uni or []):
+        ticker, close, high, *rest = item
+        if str(ticker) in crypto:
+            clipped.append(item)
+            continue
+        last = close.last_valid_index() if close is not None else None
+        if last is not None and pd.Timestamp(last).date() > completed:
+            provisional.append(str(ticker))
+        clipped.append((
+            ticker,
+            _clip_daily_to_completed_session(close, completed),
+            _clip_daily_to_completed_session(high, completed),
+            *rest,
+        ))
+    reach = _panel_price_reach(clipped)
+    raw_through = (raw_reach or {}).get("through_raw")
+    if reach is not None and raw_through:
+        reach["through_raw"] = raw_through
+    clock = {
+        "observed_at_utc": observed.isoformat(),
+        "completed_session": completed.isoformat(),
+        "raw_through": raw_through,
+        "provisional_member_count": len(provisional),
+        "provisional_tickers": sorted(provisional)[:10],
+    }
+    return clipped, reach, clock
 
 
 # Two consecutive builds claiming the SAME as_of are re-renders of the same
@@ -2840,8 +3440,16 @@ def _eb_chip_payload(ticker: str,
         return {}
 
 
-def main() -> int:
+def main(now: datetime | None = None) -> int:
     _main_t0 = time.time()
+    from lib import nyse_calendar as _board_nyse_calendar  # noqa: PLC0415
+
+    _board_observed_at = now or datetime.now(timezone.utc)
+    if _board_observed_at.tzinfo is None:
+        _board_observed_at = _board_observed_at.replace(tzinfo=timezone.utc)
+    else:
+        _board_observed_at = _board_observed_at.astimezone(timezone.utc)
+    _completed_session = _board_nyse_calendar.expected_last_session(_board_observed_at)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "stockdata"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -2864,9 +3472,14 @@ def main() -> int:
     log.info("net-liquidity regime for library: %s · macro-risk: %s · VIX: %s · vol-regime: %s",
              liq or "unknown", "—" if drag is None else f"{drag:.2f}", vctx or "n/a",
              (vreg or {}).get("regime") or "n/a")
-    # benchmark for per-ticker relative-strength alerts + the feed window/caps
+    # benchmark for per-ticker relative-strength alerts + the feed window/caps.
+    # The entire US score plane shares the one completed-session clock captured above;
+    # a provisional same-day SPY bar must not leak into relative-strength context.
     spy = store.read("yahoo", "SPY")
-    bench = spy["close"] if spy is not None else None
+    bench = (
+        _clip_daily_to_completed_session(spy["close"], _completed_session)
+        if spy is not None and "close" in spy.columns else None
+    )
     # live calm/risk-on regime score (validated price tape) — scales the Conviction EDGE
     # axis's residual-momentum leg up in calm tape, back toward zero in stress.
     calm = current_calm(bench)
@@ -3439,7 +4052,11 @@ def main() -> int:
     disp_map: dict[str, dict] = {}              # price / off-high / sparkline per name
     _liq_map: dict[str, dict] = {}              # P0.3 liquidity/capacity hygiene (display-only, R10)
     to_write: list[tuple[str, dict]] = []
-    uni = universe()
+    _raw_uni = universe()
+    uni, _panel_reach, _session_clock = _normalise_us_equity_universe(
+        _raw_uni, now=_board_observed_at,
+    )
+    _continuous_tickers = _crypto_tickers()
     latest_volumes = latest_volume_map("us")
     # Bare print, NOT a logger call: GitHub only parses a workflow command when
     # "::" STARTS the line, and this module's logging format prefixes every
@@ -3741,18 +4358,13 @@ def main() -> int:
         # Graceful: any failure leaves the thin snapshot in place.
         _ohlcv = None
         try:
-            _ohlcv = store.read("stocks", ticker)
-            if _ohlcv is not None and {"high", "low", "volume"} <= set(_ohlcv.columns):
-                rich = stock_technicals.snapshot(_ohlcv["close"], _ohlcv["high"],
-                                                 _ohlcv["low"], _ohlcv["volume"], bench=bench)
-                sq = vol_squeeze.assess(_ohlcv["close"], _ohlcv["high"],
-                                        _ohlcv["low"], _ohlcv["volume"])
-            else:
-                rich = stock_technicals.snapshot(close, bench=bench)
-                sq = vol_squeeze.assess(close)
-            rec["tech"] = {**(rec.get("tech") or {}), **rich}
-            if sq:
-                rec["vol_squeeze"] = sq
+            _raw_ohlcv = store.read("stocks", ticker)
+            _ohlcv = (
+                _raw_ohlcv
+                if ticker in _continuous_tickers
+                else _clip_daily_to_completed_session(_raw_ohlcv, _completed_session)
+            )
+            _enrich_stock_technicals(rec, close, _ohlcv, bench)
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
         # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the
@@ -6275,8 +6887,14 @@ def main() -> int:
         #     unconfirmed from buy to watch.  Demotion-only: adds nothing to the buy side.
         # Both are fail-soft: any exception leaves the artifact unchanged.
         try:
-            _staleness = _compute_board_staleness(panel_reach=_panel_price_reach(uni),
-                                                  board_asof=wide.get("as_of"))
+            _staleness = _compute_board_staleness(
+                panel_reach=_panel_reach,
+                board_asof=wide.get("as_of"),
+                now=_board_observed_at,
+            )
+            _staleness.setdefault("inputs", {})[
+                "completed_session_normalization"
+            ] = _session_clock
             wide["staleness"] = _staleness
             _st_panel = ((_staleness.get("inputs") or {}).get("panel") or {})
             log.info(
@@ -6519,8 +7137,32 @@ def main() -> int:
         # Same lineage stamp the gate write carries: one pair_id per writer process, so a
         # skew between the two files is readable off the artifacts themselves.
         wide["emit"] = _PAIR_EMIT_STAMP
-        (site / "factordata" / "us_standouts.json").write_text(
-            json.dumps(_json_safe(wide), separators=(",", ":"), default=str, allow_nan=False))
+        # Stable source-availability handoff, not a selection cutoff or new identity.
+        # Its native generation is the incumbent pair_id. Retry/render keeps bytes.
+        try:
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_PAIR_EMIT_STAMP["pair_id"], availability="VALID",
+                available_at=datetime.now(timezone.utc).isoformat())
+        except Exception as _us_source_e:  # noqa: BLE001 — original board publication survives
+            log.warning("W3C US source provenance unavailable (%s)", _us_source_e)
+        _us_final_payload = json.dumps(
+            _json_safe(wide), separators=(",", ":"), default=str, allow_nan=False)
+        (site / "factordata" / "us_standouts.json").write_text(_us_final_payload)
+        # W3C freezes the exact complete serialized Featured shelf, before any
+        # display/preview split. The import pair stamp is lineage, not this event.
+        # Missing per-use capture capability refuses without a mixed-vendor archive.
+        try:
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_us_source)
+            _us_w3c = publish_us_source(
+                _us_final_payload.encode(), data_dir=config.data_dir(),
+                finalized_at=datetime.now(timezone.utc).isoformat(),
+                authorize_capture=default_capture_capability())
+            if _us_w3c["status"] != "AVAILABLE":
+                log.info("W3C source unavailable: %s", _us_w3c["reason_codes"])
+        except Exception as _us_w3c_e:  # noqa: BLE001 — provenance cannot alter board publication
+            log.warning("W3C finalization unavailable (%s)", _us_w3c_e)
         log.info("wrote us_standouts.json (%d buy · rank_by=%s · %d eligible / %d universe)",
                  len(wide["buy"]), wide["rank_by"], eligible, len(cand))
         # Render-lane self-check: the board-invariants CI job only fires on PRs that

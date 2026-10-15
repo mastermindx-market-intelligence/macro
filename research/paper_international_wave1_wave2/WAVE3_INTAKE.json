@@ -1,0 +1,74 @@
+{
+  "scope": "Wave3 intake and reference readiness, not product acceptance",
+  "archive_sha256": "6442237dcdf11f224af08c4bdf5f2e01a75206065e75c49694348008e740a1a9",
+  "validation": {
+    "internal_payload_hashes": 29,
+    "portable_packet_checks": 62,
+    "specification_examples": 64,
+    "product_tests": false
+  },
+  "programme": "WS:PAPER-INTERNATIONAL-WAVES",
+  "same_pr": 8527,
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "native_ceo": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+  "concurrency": {
+    "ceos": 1,
+    "fabric_leaves_at_once": 1,
+    "native_grandchildren": 0,
+    "increase": false
+  },
+  "terminal_dependency": {
+    "merged_pr": 777,
+    "merge_commit": "d9128b500fb434e3548574e89b25a2a85053f3d7",
+    "kernel_pr": 804,
+    "kernel_head": "0654cf7ad2fb6c5242fe1fc4ffaae3d48b912a7b",
+    "state": "OPEN_DRAFT",
+    "observed_date": "2026-10-06",
+    "no_shared_kernel_grant": true
+  },
+  "native_reference_subset": {
+    "artifact_on_m2": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/international-r10-wave3-library-bounded-v1.zip",
+    "sha256": "2f427223e5fba562f31414d25c7964211b1a1185b9e1283219f8410aa6ff9033",
+    "nodes": [
+      {
+        "node_id": "35T-0",
+        "hashes": {
+          "35T-0.jpeg": "9383af9262c8c7ebb425542192137962d9a3aaf4cedaa9b340429abbc5b66dc8",
+          "35T-0.jsx": "880372d8d15369927ea00d1d54af8adb6934e8610157fea7df2646c8ab72e47e"
+        },
+        "jsx_before_after_equal": true
+      },
+      {
+        "node_id": "3MN-0",
+        "hashes": {
+          "3MN-0.jpeg": "f42c7360baf12641419ed7c46e3f3fb5e61dbce6b72b7bb37884c418542c83fc",
+          "3MN-0.jsx": "99dbc4356241e21dcdaa5f90ef221403d779c7b50380f7e48ecd750e2917f2e1"
+        },
+        "jsx_before_after_equal": true
+      },
+      {
+        "node_id": "RU-0",
+        "hashes": {
+          "RU-0.jpeg": "f39d7f659af7d43f89b15a3aabe3cba81c2e24f3ac3355d8a0ef6ddf443ef35f",
+          "RU-0.jsx": "8a2d8c507ba9430e845c51032d6cf851f8c6e044f001fc522733c1106457ae24"
+        },
+        "jsx_before_after_equal": true
+      }
+    ],
+    "whole_file_revision_proven": false,
+    "light_design_proven": false,
+    "browser_proven": false,
+    "transferred_to_worker": false,
+    "excluded_held_targets": [
+      "3C4-0",
+      "3WS-0",
+      "3YE-0",
+      "400-0"
+    ]
+  },
+  "source_gates": {
+    "IM00_shared_performance": "Preserve open Macro7202 changed paths pending owner reconciliation",
+    "IM08_09_shared_saved": "Incumbent Investigation owner; no duplicate store or held-kernel takeover"
+  },
+  "mission_complete": false
+}

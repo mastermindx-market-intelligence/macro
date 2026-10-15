@@ -1,0 +1,1305 @@
+"""Pin the specialist pack result envelope, catalogues, and validator."""
+from __future__ import annotations
+
+from copy import deepcopy
+import inspect
+from pathlib import Path
+
+import pytest
+import warnings
+
+from engine.fundamental_forensics import specialist_pack_contract as pack_contract
+from engine.fundamental_forensics.specialist_pack_contract import (
+    PACK_IDS,
+    catalogue_errors,
+    load_catalogue_schema,
+    load_envelope_schema,
+    load_pack_schema,
+    pack_content_digest,
+    pack_schema_digest,
+    validate_pack_result,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+ENVELOPE_PATH = ROOT / "contracts" / "specialist_pack_result.v1.schema.json"
+PACK_DIR = ROOT / "contracts" / "specialist_packs"
+
+_ZERO_SHA = "0" * 64
+_ENTITY = {
+    "entity_id": "ISS:US-TEST-SP01",
+    "cik": "0000000001",
+    "ticker": "SP01",
+    "name": "SPECIALIST PACK FIXTURE CORP",
+    "identity_basis": "specialist_pack_contract_fixture",
+    "source_entity_id": "0000000001",
+}
+_QUERY = {
+    "policy": "as_reported",
+    "source_event_cutoff": "2025-12-31T23:59:59Z",
+    "system_recorded_cutoff": "2026-08-05T12:00:02Z",
+    "requested_metrics": ["total_assets"],
+    "requested_periods": ["FY2025"],
+    "evaluation_mode": "historical_replay",
+}
+_QUALITY_COVERAGE = {
+    "valued": "valued_fields",
+    "missing": "missing_fields",
+    "unsupported": "unsupported_fields",
+    "not_evaluable": "not_evaluable_fields",
+    "not_applicable": "not_applicable_fields",
+}
+
+
+def _minimal_result(pack_id: str) -> dict:
+    slug = pack_id.lower()
+    obj = {
+        "schema": "specialist_pack_result.v1",
+        "pack_id": pack_id,
+        "pack_schema_id": f"pack.{slug}/v1",
+        "pack_schema_digest": pack_schema_digest(pack_id),
+        "packet_id": "fip_" + "a" * 24,
+        "entity": deepcopy(_ENTITY),
+        "query": deepcopy(_QUERY),
+        "applicability": {
+            "state": "not_evaluable",
+            "reason": "catalogue unspecified; pack not evaluated",
+            "rule_id": "specialist_pack.catalogue_unspecified",
+            "sic": None,
+            "sic_source": None,
+        },
+        "fields": [],
+        "checks": [],
+        "coverage": {
+            "valued_fields": 0,
+            "missing_fields": 0,
+            "unsupported_fields": 0,
+            "not_applicable_fields": 0,
+            "not_evaluable_fields": 0,
+            "disclosure_coverage_state": "not_supplied",
+        },
+        "limitations": [
+            "Pack catalogue is unspecified; this envelope is a contract pin, not an evaluation."
+        ],
+        "receipts": [],
+        "authority": {"class": "context_only", "display_only": True},
+    }
+    obj["pack_content_sha256"] = pack_content_digest(obj)
+    return obj
+
+
+def _field_row(**overrides) -> dict:
+    row = {
+        "field_id": "probe_field",
+        "name": "probe",
+        "type": "decimal",
+        "unit": "USD",
+        "period": {"kind": "instant", "end": "2025-09-27"},
+        "value": None,
+        "text_value": None,
+        "non_value_state": "missing",
+        "evidence_kind": "xbrl_fact",
+        "required_evidence_kind": "xbrl_fact",
+        "source_occurrence_ids": [],
+        "source_span": None,
+        "table_cell": None,
+        "concept": None,
+        "taxonomy": None,
+        "dimensions": [],
+        "mapping_rule_id": None,
+        "mapping_rule_digest": None,
+        "formula_rule_id": None,
+        "dependency_field_ids": [],
+        "quality_state": "missing",
+        "coverage_state": "unmapped",
+        "reason": "missing_standard_fact:us-gaap:Assets",
+    }
+    row.update(overrides)
+    return row
+
+
+def _valued_row(**overrides) -> dict:
+    row = _field_row(
+        quality_state="valued",
+        value="1.0",
+        text_value=None,
+        non_value_state=None,
+        evidence_kind="xbrl_fact",
+        required_evidence_kind="xbrl_fact",
+        source_occurrence_ids=["occ-1"],
+        concept="us-gaap:Assets",
+        coverage_state="source_trace_complete",
+        reason=None,
+    )
+    row.update(overrides)
+    return row
+
+
+def _set_applicable(obj: dict) -> dict:
+    obj["applicability"] = {
+        "state": "applicable",
+        "reason": "applicability_rule_satisfied",
+        "rule_id": "specialist_pack.fixture_applicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    return obj
+
+
+def _sync_coverage(obj: dict) -> dict:
+    counts = {
+        "valued_fields": 0,
+        "missing_fields": 0,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+    }
+    for row in obj.get("fields") or []:
+        key = _QUALITY_COVERAGE.get(row.get("quality_state"))
+        if key is not None:
+            counts[key] += 1
+    obj["coverage"].update(counts)
+    return obj
+
+
+def _finish(obj: dict) -> dict:
+    _sync_coverage(obj)
+    obj["pack_content_sha256"] = pack_content_digest(obj)
+    return obj
+
+
+def _catalogue_field(**overrides) -> dict:
+    row = {
+        "field_id": "probe_field",
+        "name": "probe",
+        "type": "decimal",
+        "unit": "USD",
+        "period_kind": "instant",
+        "allowed_evidence_kinds": ["xbrl_fact"],
+        "required": True,
+    }
+    row.update(overrides)
+    return row
+
+
+def _reason_code(code: str, parameter, meaning: str) -> dict:
+    return {"code": code, "parameter": parameter, "meaning": meaning}
+
+
+_SPECIFIED_REASON_CODES = [
+    _reason_code(
+        "applicability_rule_satisfied",
+        None,
+        "the pack's versioned applicability rule evaluated true",
+    ),
+    _reason_code("missing_dependency", None, "a formula/check operand is not valued"),
+    _reason_code(
+        "missing_standard_fact",
+        "concept",
+        "the standard concept named by the parameter has no admitted fact for the period",
+    ),
+    _reason_code(
+        "extension_concept_unaliased",
+        "prefix",
+        "the value exists only under an extension prefix with no frozen alias",
+    ),
+]
+
+
+def _specified_catalogue() -> dict:
+    schema = load_pack_schema("PK01")
+    schema["catalogue_state"] = "specified"
+    schema["fields"] = [_catalogue_field()]
+    schema["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "operands": ["probe_field"],
+        }
+    ]
+    schema["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES)
+    return schema
+
+
+def _object_nodes(node: object, path: str = "$"):
+    if isinstance(node, dict):
+        types = node.get("type")
+        type_list = types if isinstance(types, list) else ([types] if types is not None else [])
+        if "object" in type_list:
+            yield path, node
+        for key, value in node.items():
+            yield from _object_nodes(value, f"{path}.{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _object_nodes(value, f"{path}[{index}]")
+
+
+@pytest.mark.parametrize("pack_id", PACK_IDS)
+def test_minimal_valid_result_per_pack(pack_id: str) -> None:
+    assert validate_pack_result(_minimal_result(pack_id)) == []
+
+
+def test_unknown_pack_id_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["pack_id"] = "PK99"
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("pack_id" in item for item in errors)
+
+
+def test_extra_top_level_property_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["unexpected"] = True
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("unexpected" in item or "Additional properties" in item for item in errors)
+
+
+def test_field_row_missing_quality_state_rejected() -> None:
+    obj = _minimal_result("PK01")
+    row = _field_row()
+    del row["quality_state"]
+    obj["fields"] = [row]
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("quality_state" in item for item in errors)
+
+
+def test_authority_display_only_false_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["authority"] = {"class": "context_only", "display_only": False}
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("display_only" in item or "False" in item or "false" in item for item in errors)
+
+
+def test_empty_limitations_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["limitations"] = []
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("limitations" in item for item in errors)
+
+
+def test_wrong_pack_schema_digest_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["pack_schema_digest"] = _ZERO_SHA
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("pack_schema_digest" in item for item in errors)
+
+
+def test_pack_schema_digest_is_deterministic() -> None:
+    first = pack_schema_digest("PK01")
+    second = pack_schema_digest("PK01")
+    assert first == second
+    assert len(first) == 64
+    assert first != pack_schema_digest("PK02")
+
+
+def test_pack_schema_id_pattern_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["pack_schema_id"] = "PACK.pk01/v1"
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("pack_schema_id" in item for item in errors)
+
+
+def test_checks_kind_enum_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["checks"] = [
+        {
+            "check_id": "probe.check",
+            "kind": "not_a_declared_kind",
+            "status": "pass",
+            "operands": [],
+            "tolerance": None,
+            "evidence_field_ids": [],
+            "reason": None,
+        }
+    ]
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("kind" in item for item in errors)
+
+
+@pytest.mark.parametrize("pack_id", PACK_IDS)
+def test_pack_file_parses_and_pack_schema_id_matches(pack_id: str) -> None:
+    schema = load_pack_schema(pack_id)
+    slug = pack_id.lower()
+    assert schema["pack_schema_id"] == f"pack.{slug}/v1"
+    assert schema["pack_id"] == pack_id
+    assert schema["catalogue_state"] == "unspecified"
+    assert schema["fields"] == []
+    assert schema["checks"] == []
+    path = PACK_DIR / f"pack.{slug}.v1.schema.json"
+    assert path.is_file()
+
+
+def test_envelope_additional_properties_false_everywhere() -> None:
+    schema = load_envelope_schema()
+    missing = [
+        path
+        for path, node in _object_nodes(schema)
+        if node.get("additionalProperties") is not False
+    ]
+    assert missing == []
+
+
+def test_pack_ids_match_envelope_enum() -> None:
+    schema = load_envelope_schema()
+    assert list(PACK_IDS) == schema["properties"]["pack_id"]["enum"]
+    assert schema["$id"] == "https://mastermind-x.com/contracts/specialist_pack_result.v1.schema.json"
+    assert schema["properties"]["schema"]["const"] == "specialist_pack_result.v1"
+    assert ENVELOPE_PATH.is_file()
+
+
+def test_valid_field_row_and_check_row_accepted() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe.sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": "catalogue unspecified",
+        }
+    ]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_unknown_pack_schema_load_raises() -> None:
+    with pytest.raises(KeyError):
+        load_pack_schema("PK99")
+
+
+def test_referencing_registry_validates_minimal_result() -> None:
+    assert validate_pack_result(_minimal_result("PK01")) == []
+
+
+def test_bad_evidence_kind_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(evidence_kind="none")]
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("evidence_kind" in item for item in errors)
+
+
+def test_bad_type_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(type="string")]
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(".type" in item or item.startswith("type") or "type" in item for item in errors)
+
+
+def test_valued_row_with_null_value_rejected() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(value=None)]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.value" in item for item in errors)
+
+
+def test_typed_absence_row_with_value_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(value="1.0")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.value" in item for item in errors)
+
+
+def test_absence_mismatched_non_value_state_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(non_value_state="not_evaluable")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.non_value_state" in item for item in errors)
+
+
+def test_numeric_row_with_text_value_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(text_value="not-numeric")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.text_value" in item for item in errors)
+
+
+def test_text_row_valued_via_text_value_accepted() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            type="text",
+            unit=None,
+            value=None,
+            text_value="going concern language",
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 8},
+        )
+    ]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_valued_xbrl_fact_without_occurrence_ids_rejected() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(source_occurrence_ids=[])]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.source_occurrence_ids" in item for item in errors)
+
+
+def test_valued_text_span_without_source_span_rejected() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            type="text",
+            unit=None,
+            value=None,
+            text_value="span",
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span=None,
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.source_span" in item for item in errors)
+
+
+def test_valued_table_cell_without_table_id_rejected() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="table_cell",
+            required_evidence_kind="table_cell",
+            source_occurrence_ids=[],
+            concept=None,
+            table_cell={"table_id": None, "row": 0, "column": 1},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.table_cell" in item for item in errors)
+
+
+def test_valued_formula_without_rule_id_rejected() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    operand = _field_row(field_id="operand_field")
+    formula = _valued_row(
+        field_id="formula_field",
+        evidence_kind="formula",
+        required_evidence_kind="formula",
+        source_occurrence_ids=[],
+        concept=None,
+        formula_rule_id=None,
+        dependency_field_ids=["operand_field"],
+    )
+    obj["fields"] = [operand, formula]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("formula_rule_id" in item for item in errors)
+
+
+def test_dangling_dependency_field_id_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(dependency_field_ids=["ghost_field"])]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("dependency_field_ids" in item and "ghost_field" in item for item in errors)
+
+
+def test_dangling_check_evidence_field_id_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["ghost_field"],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("evidence_field_ids" in item and "ghost_field" in item for item in errors)
+
+
+def test_duplicate_check_id_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row()]
+    check = {
+        "check_id": "probe_sum",
+        "kind": "sum_identity",
+        "status": "not_evaluable",
+        "operands": ["probe_field"],
+        "tolerance": None,
+        "evidence_field_ids": ["probe_field"],
+        "reason": None,
+    }
+    obj["checks"] = [deepcopy(check), deepcopy(check)]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("duplicate check_id" in item for item in errors)
+
+
+def test_coverage_mismatch_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row()]
+    obj["pack_content_sha256"] = pack_content_digest(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("coverage.missing_fields: declared 0, rows 1" in item for item in errors)
+
+
+def test_valued_row_under_not_applicable_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["applicability"] = {
+        "state": "not_applicable",
+        "reason": "fixture not applicable",
+        "rule_id": "specialist_pack.fixture_not_applicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    obj["fields"] = [_valued_row()]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("quality_state" in item and "not_applicable" in item for item in errors)
+
+
+def test_tampered_content_digest_rejected() -> None:
+    obj = _minimal_result("PK01")
+    obj["limitations"] = ["tampered limitation text"]
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("pack_content_sha256" in item for item in errors)
+
+
+def test_pack_content_digest_deterministic_under_key_reordering() -> None:
+    obj = _minimal_result("PK01")
+    first = pack_content_digest(obj)
+    reordered = {key: obj[key] for key in reversed(list(obj))}
+    nested = deepcopy(obj)
+    nested["entity"] = {key: nested["entity"][key] for key in reversed(list(nested["entity"]))}
+    assert pack_content_digest(reordered) == first
+    assert pack_content_digest(nested) == first
+    assert first == obj["pack_content_sha256"]
+
+
+@pytest.mark.parametrize("pack_id", PACK_IDS)
+def test_catalogue_errors_empty_for_pack_files(pack_id: str) -> None:
+    assert catalogue_errors(pack_id) == []
+
+
+def test_specified_catalogue_with_zero_fields_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = load_pack_schema("PK01")
+    fake["catalogue_state"] = "specified"
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any("fields" in item for item in errors)
+
+
+def test_unspecified_catalogue_with_a_field_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = load_pack_schema("PK01")
+    fake["fields"] = [_catalogue_field()]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any("fields" in item for item in errors)
+
+
+def test_duplicate_catalogue_field_id_reported(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    fake["fields"] = [_catalogue_field(), _catalogue_field()]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any("duplicate field_id" in item for item in errors)
+
+
+def test_specified_catalogue_unknown_field_id_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(field_id="unknown_field")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("unknown_field" in item and "catalogue" in item for item in errors)
+
+
+def test_specified_catalogue_type_mismatch_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(type="integer")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.type" in item for item in errors)
+
+
+def test_specified_catalogue_unit_mismatch_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(unit="shares")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.unit" in item for item in errors)
+
+
+def test_specified_catalogue_disallowed_evidence_kind_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 4},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.evidence_kind" in item for item in errors)
+    assert any("is not in allowed_evidence_kinds" in item for item in errors)
+
+
+def test_specified_catalogue_required_field_absent_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("required field_id" in item and "probe_field" in item for item in errors)
+
+
+def test_specified_catalogue_required_field_typed_absence_accepted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_specified_catalogue_unknown_check_id_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["checks"] = [
+        {
+            "check_id": "unknown_check",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": [],
+            "tolerance": None,
+            "evidence_field_ids": [],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("unknown_check" in item and "catalogue" in item for item in errors)
+
+
+def test_catalogue_schema_additional_properties_false_everywhere() -> None:
+    schema = load_catalogue_schema()
+    missing = [
+        path
+        for path, node in _object_nodes(schema)
+        if node.get("additionalProperties") is not False
+    ]
+    assert missing == []
+    assert schema["$id"] == "https://mastermind-x.com/contracts/specialist_pack_catalogue.v1.schema.json"
+
+
+def test_module_source_has_no_refresolver_or_fallback_flag() -> None:
+    source = inspect.getsource(pack_contract)
+    assert "RefResolver" not in source
+    assert "_HAS_REFERENCING" not in source
+
+
+def test_envelope_validator_and_validate_pack_result_raise_no_deprecation_warning() -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        assert pack_contract._envelope_validator(load_envelope_schema()) is not None
+        assert validate_pack_result(_minimal_result("PK01")) == []
+
+
+def test_cross_document_packet_ref_resolves_through_registry() -> None:
+    # Construction reused from test_absence_mismatched_non_value_state_rejected.
+    # The violated enum lives in financial_intelligence_packet.schema.json and is
+    # reached only through the envelope's cross-document $ref, so the schema-level
+    # error string proves the referencing.Registry resolves it unchanged.
+    obj = _minimal_result("PK01")
+    obj["fields"] = [_field_row(non_value_state="bogus")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("fields.0.non_value_state" in item for item in errors)
+    assert any(
+        item == "fields.0.non_value_state: 'bogus' is not valid under any of the given schemas"
+        for item in errors
+    )
+
+
+def test_reason_code_unknown_code_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="totally_unknown_code")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_bad_concept_grammar_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="missing_standard_fact:Goodwill")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_bad_prefix_grammar_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="extension_concept_unaliased:Bad_Prefix")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_parameter_on_null_parameter_code_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="missing_dependency:extra")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_non_valued_field_row_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason=None)]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_not_evaluable_check_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+def test_reason_code_applicable_with_other_member_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["applicability"]["reason"] = "missing_dependency"
+    obj["fields"] = [_field_row()]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("applicability.reason:") for item in errors)
+
+
+def test_reason_code_well_formed_specified_result_accepted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(reason="extension_concept_unaliased:bac")]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": "missing_standard_fact:us-gaap:Goodwill",
+        }
+    ]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_rk4_numeric_text_span_valued_row_rejected_on_unspecified_catalogue() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 4},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.evidence_kind:") for item in errors)
+
+
+@pytest.mark.parametrize("null_key", ["row", "column"])
+def test_rk4_valued_table_cell_without_row_or_column_rejected(null_key: str) -> None:
+    cell = {"table_id": "tbl-1", "row": 0, "column": 1}
+    cell[null_key] = None
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="table_cell",
+            required_evidence_kind="table_cell",
+            source_occurrence_ids=[],
+            concept=None,
+            table_cell=cell,
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.table_cell:") for item in errors)
+
+
+def test_reason_code_catalogue_duplicate_code_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["reason_codes"] = [
+        _reason_code("missing_dependency", None, "a formula/check operand is not valued"),
+        _reason_code("missing_dependency", None, "duplicate entry"),
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes.1.code:") for item in errors)
+
+
+def test_reason_code_catalogue_numeric_field_allowing_text_span_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["fields"] = [_catalogue_field(allowed_evidence_kinds=["xbrl_fact", "text_span"])]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("fields.0.allowed_evidence_kinds:") for item in errors)
+
+
+def test_reason_code_meta_schema_unspecified_with_reason_codes_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = load_pack_schema("PK01")
+    fake["reason_codes"] = [
+        _reason_code("missing_dependency", None, "a formula/check operand is not valued")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes:") for item in errors)
+
+
+def test_reason_code_meta_schema_specified_with_empty_reason_codes_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["reason_codes"] = []
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes:") for item in errors)
+
+
+def test_reason_code_cross_catalogue_consistency() -> None:
+    seen: dict[str, tuple] = {}
+    for pack_id in PACK_IDS:
+        schema = load_pack_schema(pack_id)
+        assert "reason_codes" in schema, (
+            f"{pack_id} catalogue is missing the reason_codes key"
+        )
+        for row in schema["reason_codes"]:
+            code = row.get("code")
+            signature = (row.get("parameter"), row.get("meaning"))
+            if code in seen:
+                assert seen[code] == signature, (
+                    f"{pack_id} reason code {code!r} disagrees with an earlier catalogue"
+                )
+            else:
+                seen[code] = signature
+
+
+@pytest.mark.parametrize("pack_id", PACK_IDS)
+def test_reason_code_all_pack_files_pass_catalogue_errors_with_empty_reason_codes(
+    pack_id: str,
+) -> None:
+    schema = load_pack_schema(pack_id)
+    assert "reason_codes" in schema
+    assert schema["reason_codes"] == []
+    assert catalogue_errors(pack_id) == []
+
+
+# --- r2 additions: discriminating tests, fail-closed reason codes, catalogue state ---
+
+
+def test_specified_catalogue_disallowed_non_text_span_evidence_kind_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-1b: a disallowed NON-text_span kind must trip the allowed_evidence_kinds
+    # membership check itself, not a collateral numeric/text_span refusal.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="formula",
+            required_evidence_kind="formula",
+            source_occurrence_ids=[],
+            concept=None,
+            formula_rule_id="probe_formula_rule",
+            dependency_field_ids=["probe_field"],
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any("is not in allowed_evidence_kinds" in item for item in errors)
+
+
+def test_reason_code_valued_field_row_with_non_member_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-a: a VALUED row may still carry a non-null reason, and that reason must
+    # be a catalogue member.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(reason="totally_unknown_code")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_not_applicable_check_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-b: not_applicable checks need a non-null reason, like not_evaluable.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_applicable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("state", ["not_evaluable", "not_applicable"])
+def test_reason_code_applicability_membership_checked_in_every_state(
+    state: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-c: applicability.reason membership holds in every state, not only when
+    # applicable.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["applicability"] = {
+        "state": state,
+        "reason": "totally_unknown_code",
+        "rule_id": "specialist_pack.fixture_unapplicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    obj["fields"] = [_field_row()]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("applicability.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("status", ["pass", "fail"])
+def test_reason_code_pass_fail_check_with_non_member_reason_rejected(
+    status: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-d: a pass/fail check with a non-null reason still owes catalogue
+    # membership.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": status,
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": "totally_unknown_code",
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+@pytest.mark.parametrize("row_type", ["integer", "ratio", "shares"])
+def test_r5_numeric_text_span_valued_row_rejected_for_every_numeric_type(
+    row_type: str,
+) -> None:
+    # M-e, result side (R-5): the numeric/text_span refusal is not decimal-only.
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            type=row_type,
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 4},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.evidence_kind:") for item in errors)
+
+
+@pytest.mark.parametrize("row_type", ["integer", "ratio", "shares"])
+def test_r3_catalogue_numeric_field_allowing_text_span_rejected_for_every_numeric_type(
+    row_type: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # M-e, catalogue side (R-3): numeric fields may not admit text_span for any
+    # numeric type, not only decimal.
+    fake = _specified_catalogue()
+    fake["fields"] = [
+        _catalogue_field(
+            type=row_type, allowed_evidence_kinds=["xbrl_fact", "text_span"]
+        )
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("fields.0.allowed_evidence_kinds:") for item in errors)
+
+
+def test_reason_code_concept_grammar_enforced_exactly(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # M-f: pinned with re.fullmatch on ^[a-z][a-z0-9-]*:[A-Za-z_][A-Za-z0-9_.-]*$
+    # before writing: us-gaap:Revenues matches; x:, :Revenues,
+    # "us-gaap:Rev enues", US-GAAP:Revenues, a:b:c and a trailing newline do not.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    accepted = "missing_standard_fact:us-gaap:Revenues"
+    rejected = [
+        "missing_standard_fact:x:",
+        "missing_standard_fact::Revenues",
+        "missing_standard_fact:us-gaap:Rev enues",
+        "missing_standard_fact:US-GAAP:Revenues",
+        "missing_standard_fact:a:b:c",
+        "missing_standard_fact:us-gaap:Revenues\n",
+    ]
+    for reason in rejected:
+        obj = _set_applicable(_minimal_result("PK01"))
+        obj["fields"] = [_field_row(reason=reason)]
+        _finish(obj)
+        errors = validate_pack_result(obj)
+        assert errors, reason
+        assert any(item.startswith("fields.0.reason:") for item in errors), reason
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason=accepted)]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_catalogue_reason_code_trailing_newline_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-3, catalogue side: the meta-schema pattern uses re.search, so "evil\n"
+    # slips past it; the code-side fullmatch must refuse it.
+    fake = _specified_catalogue()
+    fake["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES) + [
+        _reason_code("evil\n", None, "trailing newline escapes the meta-schema pattern")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(
+        item.startswith("reason_codes.4.code:")
+        and "does not fully match ^[a-z][a-z0-9_]*$" in item
+        for item in errors
+    )
+
+
+def test_result_reason_control_character_rejected_even_for_member(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # F-3, result side: "probe_missing\n" is refused even though
+    # "probe_missing" is a member, and the control-character message is the
+    # one that fires.
+    fake = _specified_catalogue()
+    fake["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES) + [
+        _reason_code("probe_missing", None, "probe member for the control-character test")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="probe_missing\n")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item.startswith("fields.0.reason:")
+        and "contains a control or non-ASCII character" in item
+        for item in errors
+    )
+
+
+@pytest.mark.parametrize("state", ["not_evaluable", "not_applicable"])
+def test_r7_applicability_rule_satisfied_refused_for_non_applicable_state(
+    state: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # RULING R-7: applicability_rule_satisfied is only valid for an applicable
+    # result.
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    obj["applicability"] = {
+        "state": state,
+        "reason": "applicability_rule_satisfied",
+        "rule_id": "specialist_pack.fixture_unapplicable",
+        "sic": None,
+        "sic_source": None,
+    }
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "applicability.reason: applicability_rule_satisfied is only valid for an applicable result"
+        for item in errors
+    )
+
+
+def test_r8_pack_schema_unknown_catalogue_state_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # RULING R-8: validate_pack_result fails closed on an unknown catalogue
+    # state instead of silently skipping the specified-catalogue gates.
+    fake = load_pack_schema("PK01")
+    fake["catalogue_state"] = "Specified"
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "catalogue_state: 'Specified' is not a known catalogue state; result refused"
+        for item in errors
+    )
+
+
+def test_r8_pack_schema_missing_catalogue_state_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # RULING R-8, missing key: absent is not unspecified.
+    fake = load_pack_schema("PK01")
+    del fake["catalogue_state"]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _minimal_result("PK01")
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(
+        item
+        == "catalogue_state: None is not a known catalogue state; result refused"
+        for item in errors
+    )

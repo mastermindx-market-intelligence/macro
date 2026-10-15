@@ -211,3 +211,70 @@ def test_without_the_legacy_record_the_live_product_would_be_duplicated(products
     assert pid == "prod_new" and fake.created, (
         "with no legacy record the bootstrap orphans the live product — which is exactly "
         "why config/plans.yml must carry it")
+
+
+@pytest.mark.parametrize("dry", [False, True])
+def test_catalog_bootstrap_reconciles_private_feature_only_on_existing_pro(monkeypatch, dry):
+    """Exercise real catalog wiring, feature resolution and attachment with offline transports."""
+    import sys
+
+    feature_rows = {}
+    created = []
+    attached = []
+    existing = {}
+
+    def list_features(**kwargs):
+        assert kwargs["limit"] == 1
+        key = kwargs["lookup_key"]
+        return types.SimpleNamespace(data=[feature_rows[key]] if key in feature_rows else [])
+
+    def create_feature(**kwargs):
+        created.append(kwargs)
+        row = types.SimpleNamespace(id="feat_" + kwargs["lookup_key"])
+        feature_rows[kwargs["lookup_key"]] = row
+        return row
+
+    fake_products = _FakeProducts([
+        _product("prod_existing_essential", "essential"),
+        _product("prod_existing_pro", "pro"),
+    ])
+
+    def product_features(pid, **kwargs):
+        return types.SimpleNamespace(auto_paging_iter=lambda: iter(
+            types.SimpleNamespace(entitlement_feature=fid) for fid in existing.get(pid, set())
+        ))
+
+    def attach(pid, **kwargs):
+        fid = kwargs["entitlement_feature"]
+        attached.append((pid, fid))
+        existing.setdefault(pid, set()).add(fid)
+
+    fake_products.list_features = product_features
+    fake_products.create_feature = attach
+    monkeypatch.setattr(bootstrap, "stripe", types.SimpleNamespace(
+        Product=fake_products,
+        entitlements=types.SimpleNamespace(Feature=types.SimpleNamespace(
+            list=list_features, create=create_feature,
+        )),
+    ))
+    # Price/offer/portal effects are unrelated to this feature adoption and stay offline.
+    for function in ("_ensure_price", "_ensure_offer", "_retire_promotion_codes",
+                     "_ensure_portal_configuration"):
+        monkeypatch.setattr(bootstrap, function, lambda *a, **kw: None)
+    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_offline")
+    monkeypatch.setattr(sys, "argv", ["stripe_bootstrap"] + (["--dry-run"] if dry else []))
+    assert bootstrap.main() == 0
+    key = "company_intelligence_private_read"
+    if dry:
+        assert created == attached == []
+    else:
+        assert [row for row in created if row["lookup_key"] == key] == [
+            {"name": "Private Company Intelligence access", "lookup_key": key},
+        ]
+        assert [(pid, fid) for pid, fid in attached if fid == "feat_" + key] == [
+            ("prod_existing_pro", "feat_" + key),
+        ]
+        previous = (list(created), list(attached))
+        assert bootstrap.main() == 0  # reuses Feature and ProductFeature, with no duplicate writes
+        assert (created, attached) == previous
+    assert fake_products.created == fake_products.modified == []
