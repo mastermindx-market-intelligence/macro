@@ -9102,12 +9102,13 @@ jobs:
     if: ${{ false }}
     gate: code
     # These hermetic suites exercise the fixed runtime helpers and read the
-    # canonical transport source. Keep all 33 suites on their own owner so
+    # canonical transport source. Keep the fixed-runtime suites on their own owner so
     # unrelated UI changes do not inherit their weight through the broader
     # research-factory-authority job. Physical qualification is a separate act.
     scope: exclusive
     paths:
       - "scripts/research_codegen_qualification/runtime/**"
+      - "scripts/research_codegen_qualification/w*.py"
       - "engine/research_codegen/transport.py"
     runs-on: ubuntu-latest
     steps:
@@ -9127,6 +9128,8 @@ jobs:
           scripts/research_codegen_qualification/runtime/tests/test_canary_integration.py
           scripts/research_codegen_qualification/runtime/tests/test_cgroup_observer.py
           scripts/research_codegen_qualification/runtime/tests/test_cgroup_review_guards.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_workload_plans.py
+          scripts/research_codegen_qualification/runtime/tests/test_fixed_workload_engine.py
           scripts/research_codegen_qualification/runtime/tests/test_cli29_source_guards.py
           scripts/research_codegen_qualification/runtime/tests/test_cli_join.py
           scripts/research_codegen_qualification/runtime/tests/test_cli_version.py

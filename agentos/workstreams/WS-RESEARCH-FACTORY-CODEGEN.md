@@ -23,9 +23,9 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Follow PR9463 CI after the runtime-job packing repair and the existing
-  fence/capture merge controller. Preserve the refused original review reads.
-  The fixed-plan two-file source-release decision is pending Chris; no replay.
+  Integrate the fresh fixed-plan factory and frontend, consume their existing
+  Fabric source review, and resolve the combined draft against current main.
+  Preserve original quarantined runs and refused reads; no physical admission.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
@@ -50,43 +50,39 @@ landmines:
 
 Current checkpoint — 2026-10-15 (Vancouver).
 
-Strict transport #9190 and structural validation #9100 are merged. Fence #9077
-at ed5e9d44fde3 and capture #9099 at 0c5a06c0c4f2 have concluded selected checks
-and remain armed under the normal merge controller. Neither is yet merged.
+Strict transport #9190, structural validation #9100 and fence #9077 are merged.
+Fence merged as be18b1428a5d252227f0628c342b9b67b9f04052. Capture #9099 remains
+open under its original merge controller, last observed head a773e3c03e68.
+Draft #9463 at df27dcccbe03 passed CI38756282141: all 12 packs, contract-delta,
+ci-gate and selected authority checks succeeded. The inactive codex authority
+complement is not the selected authority. The observer's retained log records
+completion; its process has ended. Current main has advanced and conflicts
+must be resolved before the next source revision is published.
 
-Draft PR9463 integrates their source and the strict transport. Combined source
-checks passed 1,183 tests and 128 subtests with four platform-specific skips. Its
-b98d93974a24 CI run 38736474156 fixed the earlier import-closure and test-discovery
-failures but exposed one packing regression: the landing-page probe selected
-5,808 weight-seconds against its unchanged 5,803 ceiling. This revision separates the
-33 fixed-runtime suites into a dedicated code-gate job, scoped to their helpers
-and canonical transport. The authority job's weight falls from 131 to 60; the new
-runtime job retains 71. The three affected curation/closure/packing checks pass.
-The exact new manifest command passes 616 tests and 67 subtests, with four platform
-skips. This is source qualification; no Docker or host qualification was run.
-The frozen v4 capsule remains unchanged and undispatched.
+Chris explicitly authorized quarantine of any eventual result from
+rf-fixed-workload-plans-01a1333c-v1 and released its two source outputs for
+fresh local implementation. Its run, lease, unknown termination and refused read
+remain unchanged, with no retry or replacement remote run. The new pure factory
+accepts only exact bytes from the seven pinned workload sources and returns
+fixed transport plans. The connected frontend keeps the existing single-attempt,
+exact-container cleanup and refusal semantics. All 42 affected source checks
+pass with inert payloads and fake Docker. The general engine remains dormant;
+the frozen v4 capsule remains unchanged and undispatched.
 
-The actual local admin server, existing login/session flow, API and browser
-were previously exercised using synthetic data: anonymous diagnostics return 401,
-authenticated good/refused rows preserve coverage and values, theme/language
-controls work and logout closes access. Production proof remains outstanding.
-Evidence: /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
+Scoped independent review rf-fixed-workload-source-review-01a1333c-v1 is running
+through the existing Fabric adapter (Qwen on ubuntu2), assigned directly by this
+root. Review scope is only the new factory/frontend; original archive/mountinfo
+review collections remain refused and unconsumed. Physical qualification has
+not been authorized or claimed by source tests or this review.
 
-Fabric PR1524 is merged and installed. Its guard fixes Codex CI-watch recognition;
-its collector reports the initial binding refusal accurately. Both original Qwen
-review collections remain refused before destination creation because the shared
-external-volume ancestor is group-writable. No retry, rehome or permission change
-was made; review content remains unconsumed. The old refused watch stays closed;
-only a new CI operation can receive a fresh observer binding.
+The actual local authenticated admin API/browser previously passed using
+synthetic good/refused diagnostics, including anonymous401, theme/language and
+logout. Production proof is outstanding. Retained evidence:
+/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
 
-The original rf-fixed-workload-plans-01a1333c-v1 still reserves its factory and
-test outputs after a refused remote collection with unknown termination. Chris's
-two-file quarantine/source-release decision remains pending. The separate root
-frontend's 14 fixture-based component checks are retained outside the committed
-build. Trusted host/resource mapping, helper census, cleanup qualification and
-candidate admission remain unfinished. The general engine has no qualification
-issuer; enrollment alone cannot enable it. The original contracts operation stays
-EFFECT_UNKNOWN under Chris's earlier quarantine decision.
-
-Reuse accepted unchanged checks. The programme remains incomplete; actual
-candidate execution, scientific inference and prospective evidence are unqualified.
+Installed Fabric PR1524 fixed Codex CI-watch recognition, now verified on the
+completed run above. It does not release any original collection refusal.
+Trusted host/resource mapping, complete helper census, cleanup qualification,
+candidate admission, real pilot and scientific/prospective evidence remain
+unfinished. Enrollment alone cannot activate the dormant general engine.
+Reuse accepted unchanged checks; source publication is not programme completion.
