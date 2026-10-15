@@ -179,3 +179,86 @@ for (const language of ['en','zh']) test(`fullscreen exit keeps its truthful nam
   assert.equal(await page.locator('.bchart-fsbtn').getAttribute('aria-label'),language==='zh'?'全屏':'Full screen');
   assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),false);
 });
+
+for (const language of ['en','zh']) test(`fullscreen keyboard navigation stays on visible chart controls ${language}`,async t=>{
+  const {page,mount}=await setup(t);
+  await page.setViewportSize({width:language==='zh'?320:1440,height:800});
+  await page.evaluate(language=>{
+    document.documentElement.setAttribute('data-lang',language);
+    document.getElementById('host').style.width='100%';
+    document.body.insertAdjacentHTML('afterbegin','<button id="before">Before chart</button>');
+    document.body.insertAdjacentHTML('beforeend','<button id="after">After chart</button>');
+  },language);
+  await mount('CURRENT');
+  const full=page.locator('.bchart-fsbtn'),first=page.locator('[data-tf="4H"]');
+  await full.focus();await page.keyboard.press('Enter');
+  await page.keyboard.press('Tab');
+  assert.equal(await first.evaluate(n=>n===document.activeElement),true,'Tab from the final control must not reach the covered page');
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await full.evaluate(n=>n===document.activeElement),true,'reverse traversal stays in the visible overlay');
+  const controlCount=await page.locator('.bchart button').count();
+  for(let i=0;i<controlCount*2;i++) {
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(()=>CURRENT.wrap.contains(document.activeElement)),true);
+  }
+  await page.locator('[data-tf="1W"]').focus();await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(()=>CURRENT.tf),'1W','visible controls remain operable');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.bchart-full').count(),0);
+  assert.equal(await full.evaluate(n=>n===document.activeElement),true,'Escape returns to the inline fullscreen launcher');
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#after').evaluate(n=>n===document.activeElement),true,'normal document traversal resumes after exit');
+  await first.focus();await page.keyboard.press('Shift+Tab');
+  assert.equal(await page.locator('#before').evaluate(n=>n===document.activeElement),true,'inline chart does not trap reverse navigation');
+});
+
+for (const language of ['en','zh']) test(`fullscreen language rebuild retains the focused chart action ${language}`,async t=>{
+  const {page,mount}=await setup(t);await mount('CURRENT');
+  await page.locator('.bchart-fsbtn').focus();await page.keyboard.press('Enter');
+  const weekly=page.locator('[data-tf="1W"]');
+  await weekly.focus();await page.keyboard.press('Enter');
+  await page.evaluate(language=>{
+    document.documentElement.setAttribute('data-lang',language);
+    document.dispatchEvent(new Event('langchange'));
+  },language);
+  assert.equal(await weekly.evaluate(n=>n===document.activeElement),true,'replacing localized controls must not strand focus on the covered document');
+  assert.equal(await weekly.getAttribute('aria-pressed'),'true');
+  assert.equal(await weekly.innerText(),language==='zh'?'周':'1W');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.bchart-fsbtn').evaluate(n=>n===document.activeElement),true);
+  assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),false);
+});
+
+test('fullscreen traversal includes late signals and respects composition and handled keys',async t=>{
+  const {page,mount,reply,waitRequest}=await setup(t,true);
+  await waitRequest('/signals/CURRENT.json',()=>mount('CURRENT'));
+  await page.locator('.bchart-fsbtn').focus();await page.keyboard.press('Enter');
+  await reply('/signals/CURRENT.json',{markers:[{date:'2026-01-20',type:'buy',quality:'take'}]});
+  await page.keyboard.press('Tab');
+  const summary=page.locator('.bchart-sig summary');
+  assert.equal(await summary.evaluate(n=>n===document.activeElement),true,'the newly available disclosure remains reachable');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('.bchart-sig').getAttribute('open'),'');
+  await page.evaluate(()=>{
+    document.documentElement.setAttribute('data-lang','zh');
+    document.dispatchEvent(new Event('langchange'));
+  });
+  assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('[data-tf="4H"]').evaluate(n=>n===document.activeElement),true);
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+  for(const event of [{key:'Escape',isComposing:true},{key:'Escape',keyCode:229},{key:'Escape',handled:true},{key:'Tab',ctrlKey:true}]) {
+    const prevented=await page.evaluate(event=>{
+      const e=new KeyboardEvent('keydown',{bubbles:true,cancelable:true,...event});
+      if(event.handled)e.preventDefault();
+      document.activeElement.dispatchEvent(e);return e.defaultPrevented;
+    },event);
+    assert.equal(prevented,!!event.handled,'composition and browser shortcuts keep their original handling');
+    assert.equal(await page.locator('.bchart-full').count(),1);
+    assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+  }
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.bchart-full').count(),0);
+  assert.equal(await page.locator('.bchart-fsbtn').evaluate(n=>n===document.activeElement),true);
+});

@@ -295,7 +295,22 @@
     this._onTheme = this.rerender.bind(this);
     this._onLang = this.rebuildUI.bind(this);
     var self = this;
-    this._onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) self.exitFull(); };
+    this._onKey = function (e) {
+      if (!self.wrap || !self.wrap.classList.contains('bchart-full') || e.defaultPrevented || e.isComposing || e.keyCode === 229) return;
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        e.preventDefault(); self.exitFull();
+      } else if (e.key === 'Tab' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        // The fixed overlay covers the rest of the page. Keep sequential focus on
+        // its visible controls, including a signals disclosure that arrives later.
+        var stops = Array.prototype.filter.call(self.wrap.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]'), function (n) {
+          return !n.disabled && n.tabIndex >= 0 && n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+        });
+        var first = stops[0], last = stops[stops.length - 1], active = document.activeElement;
+        if (first && (!self.wrap.contains(active) || (e.shiftKey ? active === first : active === last))) {
+          e.preventDefault(); (e.shiftKey ? last : first).focus();
+        }
+      }
+    };
   }
 
   Instance.prototype.mount = function () {
@@ -395,6 +410,7 @@
     if (this.fsbtn) {
       this.fsbtn.innerHTML = full ? FS_COLLAPSE : FS_EXPAND;
       this.fsbtn.setAttribute('aria-label', full ? tt('Exit full screen', '退出全屏') : tt('Full screen', '全屏'));
+      this.fsbtn.focus();
     }
     var self = this;
     requestAnimationFrame(function () {
@@ -407,7 +423,21 @@
   Instance.prototype.exitFull = function () {
     if (this.wrap && this.wrap.classList.contains('bchart-full')) this.toggleFull();
   };
-  Instance.prototype.rebuildUI = function () { if (this.rows) { this.buildUI(); this.rerender(); } };
+  Instance.prototype.rebuildUI = function () {
+    if (!this.rows) return;
+    var active = document.activeElement;
+    var restore = this.wrap.classList.contains('bchart-full') && this.wrap.contains(active);
+    var focusAttr = ['data-tf', 'data-k', 'data-sig'].find(function (name) { return active.hasAttribute(name); });
+    var focusValue = focusAttr && active.getAttribute(focusAttr);
+    var wasSummary = active.tagName === 'SUMMARY';
+    this.buildUI(); this.rerender();
+    if (restore) {
+      var target = focusAttr ? Array.prototype.find.call(this.wrap.querySelectorAll('[' + focusAttr + ']'), function (n) {
+        return n.getAttribute(focusAttr) === focusValue;
+      }) : wasSummary ? this.wrap.querySelector('summary') : null;
+      (target || this.fsbtn).focus();
+    }
+  };
   // Timeframe switch. 4H lazy-loads its hourly intraday file once; daily-derived
   // frames (1D/3D/1W/1M) just re-render. A failed/empty 4H fetch leaves the current
   // frame in place (syncBar un-highlights 4H) — the button only shows for names we
