@@ -16,6 +16,9 @@
     {{ words('Chart unavailable for these selected markets because source evidence or calculation windows do not align.', '由于数据来源依据或计算区间不一致，所选市场的图表暂不可用。') }}
   </p>
   {% set palette = ['var(--info)', 'var(--warn)', 'var(--down)', 'var(--up)'] %}
+  {# Keep each source series recognizable when a cohort reuses a hue. The same
+     stable pattern belongs to its path and named legend at every viewport. #}
+  {% set patterns = ['none', '8 4', '2 4', '8 3 2 3', '12 4', '4 3', '12 3 2 3 2 3'] %}
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
     <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
@@ -36,10 +39,12 @@
           <text x="4" y="{{ ([cohort.baseline_y - 8, 14]|max)|e }}" fill="var(--muted)" font-size="11">100</text>
           {% for line in cohort.paths %}
             {% set stroke = palette[(loop.index0) % (palette|length)] %}
+            {% set pattern = patterns[(loop.index0) % (patterns|length)] %}
             {% for segment in line.segments %}
               {% if segment.count > 1 %}
                 <path data-im-chart-series="{{ line.market_id|e }}"
                       d="{{ segment.d|e }}" fill="none" stroke="{{ stroke|e }}"
+                      stroke-dasharray="{{ pattern|e }}" vector-effect="non-scaling-stroke"
                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
               {% else %}
                 <circle data-im-chart-series="{{ line.market_id|e }}"
@@ -50,7 +55,7 @@
           {% endfor %}
         </svg>
         <figcaption>
-          {{ words('An interrupted path means data was not observed; no missing price or FX value was filled.', '曲线断开表示该日期未观测到数据；未填补缺失的价格或汇率。') }}
+          {{ words('Line styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
         </figcaption>
       </figure>
       <table class="intl-compare__table" data-im-chart-data-table>
@@ -65,9 +70,11 @@
             {% set name = market_names.get(line.market_id, {}) %}
             <tr data-im-chart-table-market="{{ line.market_id|e }}">
               <th scope="row">
-                <svg aria-hidden="true" width="18" height="12" viewBox="0 0 18 12">
-                  <line x1="0" y1="6" x2="17" y2="6"
-                        stroke="{{ palette[(loop.index0) % (palette|length)]|e }}" stroke-width="2.5" />
+                <svg aria-hidden="true" width="32" height="12" viewBox="0 0 32 12">
+                  <line x1="0" y1="6" x2="31" y2="6"
+                        stroke="{{ palette[(loop.index0) % (palette|length)]|e }}" stroke-width="2.5"
+                        stroke-dasharray="{{ patterns[(loop.index0) % (patterns|length)]|e }}"
+                        stroke-linecap="round" vector-effect="non-scaling-stroke" />
                 </svg>
                 {{ words(name.get('en', line.market_id), name.get('zh', line.market_id)) }}
               </th>

@@ -88,6 +88,35 @@ with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
 }
 
 for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Source chart reused colors retain distinct line keys ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang)},{theme,lang});
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      // The full publisher cohort gives Australia and Korea the same hue.
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      assert.match(await chart.locator('figcaption').first().innerText(),lang==='zh'?/线型用于区分市场。未观测日期中断曲线/:/Line styles identify markets\. Unobserved dates break the series/);
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const keys=await chart.evaluate(c=>Array.from(c.querySelectorAll('[data-im-chart-series]:not([hidden])')).map(n=>{
+          const style=getComputedStyle(n);
+          const legend=c.querySelector('[data-im-chart-table-market="'+n.dataset.imChartSeries+'"] svg line');
+          const label=getComputedStyle(legend);
+          return {market:n.dataset.imChartSeries,key:[style.stroke,style.strokeDasharray],legend:[label.stroke,label.strokeDasharray],vector:style.vectorEffect,legendWidth:legend.ownerSVGElement.getBoundingClientRect().width};
+        }));
+        assert.deepEqual(keys.map(k=>k.market).sort(),['AU','KR']);
+        assert.notDeepEqual(keys[0].key,keys[1].key,'selected series must not share the same line key');
+        for(const k of keys) {
+          assert.deepEqual(k.key,k.legend,'the named legend must match its actual series');
+          assert.equal(k.vector,'non-scaling-stroke','phone scaling must preserve the distinguishing pattern');
+          assert.ok(k.legendWidth>=30,'legend must show the complete distinguishing pattern');
+        }
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
   test(`Source chart heading counts committed visible markets ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{
       await page.emulateMedia({reducedMotion:'reduce'});
