@@ -152,14 +152,13 @@ unresolved:
 - Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
   Protected merge and all production proof remain owed.
 next_actions:
-- A1 originalPR6651 remoteff791 has terminalCI38716442763PASS; finalartifact11967297948 consumed,
-  127jobs/350semantic commandstepsPASS, zero inherited/blocked/infrastructurefailure. Currentmaind93b
-  introduced one real manifest conflict. LOCALCLEAN1bb4b0c394aa is UNPUBLISHED source-only relocation
-  of3existingpaths in research-price-panel,319definitions/pathmultisets preserved,2controlsPASS and
-  cleanpreviewe3e4ed againstd93b. No base integration.11:29 canonicaladmission10active/cap8/0reservations
-  refused publication. Consume real owner/capacity event, fresh canonical admission/currentmain preview,
-  then ordinarysamecarrierpush and freshchecks. Incumbent alone refreshes/merges; original387266 sweep
-  completed11:23 but PRremainsOPENdirty. No timer-onlycensus or duplicatecontroller.
+- A1 originalPR6651 sourcecorrection1bb4b0c394aa is PUBLISHED after12:12:53Oct15 canonical
+  admission7active/cap8/0reservations and cleanpreview3810d367 with currentmain24e858. It relocates
+  3existingpaths only, preserving319branchdefinitions/pathmultisets/limits and all current-main
+  commands with the accepted A1 suite addition.2controlsPASS; prior semantic proof retained.
+  Consume the actual new head/run/plan and terminal artifact; ff791CI38716442763PASS remains
+  bound to its original source. Incumbent alone refreshes/finalmerges; no newmanualbaseintegration,
+  duplicateproducer or adminmerge. After qualifiedmerge proceed through normal production proof.
 
 - Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
   eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
