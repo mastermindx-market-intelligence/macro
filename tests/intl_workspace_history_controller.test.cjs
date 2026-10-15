@@ -112,6 +112,28 @@ test('Escape cancels staged context and restores focus to the initiating control
  assert.equal((await p.evaluate(()=>handle.getState())).horizon,'1m');
  assert.equal(await p.evaluate(()=>document.activeElement.getAttribute('data-im-action')),'set_horizon');
 });
+for(const lang of ['en','zh']) test(`IME Escape preserves the staged Scenario inputs ${lang}`,async t=>{
+ const p=await setup(t);await p.evaluate(lang=>document.documentElement.lang=lang,lang);
+ await calculate(p);await p.locator('[data-im-action="set_horizon"]').selectOption('3m');
+ const field=p.locator('#im-scenario-local');await field.fill('12');
+ const state=await p.evaluate(()=>handle.getState()),url=p.url();
+ for(const composing of [{isComposing:true},{keyCode:229}]) {
+  const prevented=await field.evaluate((input,composing)=>{
+   const event=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true,...composing});
+   input.dispatchEvent(event);return event.defaultPrevented;
+  },composing);
+  assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),true,'IME cancellation must not cancel context review');
+  assert.equal(await field.inputValue(),'12','candidate assumptions must survive IME cancellation');
+  assert.equal(await field.evaluate(input=>input===document.activeElement),true);
+  assert.equal(prevented,false,'leave the composition keystroke to the input method');
+  assert.deepEqual(await p.evaluate(()=>handle.getState()),state);assert.equal(p.url(),url);
+ }
+ await field.press('Escape');
+ assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),false);
+ assert.equal(await field.inputValue(),'5','ordinary Escape still restores the original assumptions');
+ assert.equal(await p.evaluate(()=>document.activeElement.getAttribute('data-im-action')),'set_horizon');
+ assert.deepEqual(await p.evaluate(()=>handle.getState()),state);assert.equal(p.url(),url);
+});
 test('Escape cancels reset without clearing assumptions',async t=>{
  const p=await setup(t);await calculate(p);await p.locator('[data-im-scenario-action="request_reset"]').click();
  await p.keyboard.press('Escape');assert.equal(await p.locator('[data-im-scenario-confirm-reset]').isVisible(),false);

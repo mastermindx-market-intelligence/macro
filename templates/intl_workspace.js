@@ -1493,7 +1493,9 @@
   }
 
   function scenarioKeydown(controller,event) {
-    if (event.defaultPrevented || !['Escape','Esc'].includes(event.key) ||
+    // Escape belongs to the input method while it is cancelling a candidate.
+    // Do not discard the staged Scenario assumptions or move focus underneath it.
+    if (event.defaultPrevented || event.isComposing || event.keyCode===229 || !['Escape','Esc'].includes(event.key) ||
         !event.target || event.target.closest('[data-im-workspace]')!==controller.root) return;
     var plan=controller.state&&historyPlan(controller,controller.state);
     if(!plan||plan.panel.hidden||!controller.scenarioDraft)return;
