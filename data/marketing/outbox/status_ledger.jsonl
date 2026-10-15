@@ -10553,3 +10553,7 @@
 {"id":"ob-2026-10-15-d7a14d56b5","from":"approved","to":"posting","at":"2026-10-15T18:13:28Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-15-d7a14d56b5","from":"posting","to":"posted","at":"2026-10-15T18:13:38Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad117d134fadf59c5cfb25e","external_url":null,"at":"2026-10-15T18:13:23Z","booked_at":"2026-10-15T18:13:23Z"}}
 {"id":"ob-2026-10-15-2748edd1ca","from":"approved","to":"quarantined","at":"2026-10-15T18:13:38Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
+{"id":"ob-2026-10-15-79b48489bd","from":"queued","to":"approved","at":"2026-10-15T18:19:13Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-15-9dfd8df508","from":"queued","to":"approved","at":"2026-10-15T18:19:13Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-15-79b48489bd","from":"approved","to":"quarantined","at":"2026-10-15T18:19:15Z","actor":"publisher","note":"voice laws (queue vintage): number soup (6 numbers: 6, 7, 7.1%, 6.49%, 5.51%, budget 4 for this shape and kind): every number after the first has to be what the one before it is measured against, not a new claim","receipt":null}
+{"id":"ob-2026-10-15-9dfd8df508","from":"approved","to":"quarantined","at":"2026-10-15T18:19:15Z","actor":"publisher","note":"reads too technical / banned language: banned vocab: 'rsi'","receipt":null}
