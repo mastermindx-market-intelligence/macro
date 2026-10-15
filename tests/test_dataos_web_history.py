@@ -166,3 +166,84 @@ def test_large_admitted_source_provenance_has_bounded_day_projection(monkeypatch
     q = {'action': 'history_dossier', 'ref': 'fixture:large/manifest.json',
          'manifest_sha256': receipt['manifest_sha256'], 'date': '2010-01-01'}
     assert dispatch(ws, q, config_path=tmp_path / 'host.json')['result']['market']['rows'] == []
+
+
+class TestHistoricalFilings:
+    def source(self, case, rows=None):
+        from tests.test_market_memory_history_filings import payload
+        raw=payload(rows);path=case.base/'earnings_8k_dates.parquet';path.write_bytes(raw)
+        return {'filings_ref':'fixture:earnings_8k_dates.parquet','filings_sha256':hashlib.sha256(raw).hexdigest()}
+
+    def test_existing_daily_action_includes_only_explicitly_bound_filing_context(self,case):
+        binding=self.source(case)
+        result=dispatch(case.ws,query(case,date='2020-03-16',**binding),config_path=case.config)
+        assert result['result']['filings']['total_events']==1
+        assert result['result']['market']['status']=='NO_OBSERVATION'
+        assert result['result']['coverage']['issuer_filings_and_earnings_context']=='SELECTED_ITEM_202_FILING_METADATA_ONLY'
+        assert any(r['ref']==binding['filings_ref'] and r['content_sha256']==binding['filings_sha256'] for r in result['source_files'])
+        assert not result['result']['outcomes_revealed']
+
+    def test_unselected_filing_source_is_not_opened(self,case,monkeypatch):
+        binding=self.source(case);original=case.ws._file;opened=[]
+        @contextmanager
+        def observe(ref,*a,**kw):
+            opened.append(ref)
+            with original(ref,*a,**kw) as value:yield value
+        monkeypatch.setattr(case.ws,'_file',observe)
+        result=dispatch(case.ws,query(case),config_path=case.config)
+        assert binding['filings_ref'] not in opened and 'filings' not in result['result']
+
+    @pytest.mark.parametrize('change',[{'filings_ref':'fixture:earnings_8k_dates.parquet'},
+        {'filings_sha256':'a'*64},{'filings_offset':-1},{'filings_offset':True},{'filings_offset':100}])
+    def test_unpaired_or_unbound_filing_fields_refuse(self,case,change):
+        with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**change),config_path=case.config)
+
+    def test_outcome_partition_cannot_masquerade_as_filing_source(self,case,monkeypatch):
+        binding=self.source(case);binding['filings_ref']='fixture:history/outcomes-2020.parquet'
+        def forbidden(*a,**k):pytest.fail('invalid filing source must refuse before any file opens')
+        monkeypatch.setattr(case.ws,'_file',forbidden)
+        with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**binding),config_path=case.config)
+
+    def test_wrong_filing_digest_is_typed_and_no_partial_result(self,case):
+        binding=self.source(case);binding['filings_sha256']='0'*64
+        with pytest.raises(WorkspaceError,match='HISTORY_SOURCE_OR_CONTRACT_INVALID'):
+            dispatch(case.ws,query(case,**binding),config_path=case.config)
+
+    def test_filing_date_pagination_uses_explicit_matched_offset(self,case):
+        from tests.test_market_memory_history_filings import row
+        binding=self.source(case,[row(accession=f'0000320193-20-{i:06}') for i in range(51)])
+        first=dispatch(case.ws,query(case,date='2020-03-16',**binding),config_path=case.config)
+        second=dispatch(case.ws,query(case,date='2020-03-16',filings_offset=50,**binding),config_path=case.config)
+        assert len(first['result']['filings']['events'])==50 and len(second['result']['filings']['events'])==1
+        assert first['query_receipt_sha256']!=second['query_receipt_sha256']
+
+    def test_filing_capability_preserves_scientific_limits(self,case):
+        capabilities=dispatch(case.ws,{'action':'capabilities'},config_path=case.config)
+        assert capabilities['history']['filings']['source_kind']=='retained_item_202_filing_metadata'
+        assert capabilities['history']['filings']['max_records_per_date_page']==50
+        assert capabilities['history']['filings']['intraday_publication_time_verified'] is False
+
+
+def test_filing_source_keeps_original_descriptor_change_guard(case,monkeypatch):
+    from tests.test_market_memory_history_filings import payload
+    raw=payload();file=case.base/'earnings_8k_dates.parquet';file.write_bytes(raw)
+    original=case.ws._file
+    @contextmanager
+    def changed(ref,*a,**k):
+        with original(ref,*a,**k) as opened:
+            yield opened
+            if ref.endswith('earnings_8k_dates.parquet'):
+                file.write_bytes(raw+b'changed')
+    monkeypatch.setattr(case.ws,'_file',changed)
+    with pytest.raises(WorkspaceError,match='SOURCE_CHANGED'):
+        dispatch(case.ws,query(case,date='2020-03-16',filings_ref='fixture:earnings_8k_dates.parquet',filings_sha256=hashlib.sha256(raw).hexdigest()),config_path=case.config)
+
+
+def test_filing_source_symlink_and_hardlink_are_refused(case):
+    from tests.test_market_memory_history_filings import payload
+    raw=payload();source=case.base/'other.parquet';source.write_bytes(raw)
+    file=case.base/'earnings_8k_dates.parquet';file.symlink_to(source)
+    q=query(case,filings_ref='fixture:earnings_8k_dates.parquet',filings_sha256=hashlib.sha256(raw).hexdigest())
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+    file.unlink();os.link(source,file)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
