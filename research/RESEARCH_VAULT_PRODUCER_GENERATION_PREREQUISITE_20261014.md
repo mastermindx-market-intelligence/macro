@@ -77,3 +77,32 @@ Activation requires this source to pass protected CI/merge, reconciliation of th
 original producer owner, and one dispatch through the existing workflow group.
 Do not add another schedule, parallel publication writer, larger cap or timeout.
 A retained result must report derivative counts and mutable publications separately.
+
+
+## Selecting an installed pinned producer
+
+The existing workflow accepts the optional repository variable
+`RESEARCH_VAULT_PRODUCER_RELEASE`. Empty retains the legacy path. A nonempty value
+must be exactly 64 lowercase hexadecimal characters and identify the SHA-256 of
+`/Volumes/Mastermind/runtime/research-producer/releases/<digest>/manifest.json`.
+Malformed values and a selected release combined with `materialize_only` refuse
+in the first admission step. A selected but missing or mismatched installation,
+or a failed launcher, records failure without falling back to the legacy writer.
+
+The bundle contains `producer.json` and the staged `mastermind/` and `macro/`
+source trees. The workflow invokes `mastermind/ops/research_producer/launch.py`
+with the separately prepared, fixed dependency interpreter, isolated Python
+flags and the original GitHub run ID and attempt. The secure producer config
+binds the exact source commits, trees and manifest, the actual runner checkout
+for public-safe snapshots, and private retention outside the runner cleanup
+root. The installed entry path must be trusted before import; the manifest check
+and subsequent launcher checks are not a general defense against a hostile local
+administrator changing files between checks.
+
+This wiring remains default off. Install protected source and verify the actual
+runner paths and dependency environment before selecting it. All-writer and
+delayed-effect settlement, conditional publication, original-run recovery and
+runtime budget qualification above still govern activation. Setting a digest
+would select executable producer code; neither a passing shell fixture nor a
+manifest digest grants writer admission or proves publication completed. No
+additional schedule, retry, process cancellation or recovery operation is added.

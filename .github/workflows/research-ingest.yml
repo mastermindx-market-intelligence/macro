@@ -85,16 +85,38 @@ jobs:
       R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
       R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
       R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+      # Optional pinned-producer selector (RV). When the repo variable is set to
+      # the 64-lowercase-hex SHA-256 of an installed release manifest, the ingest
+      # step routes ONLY through that pinned offline producer; empty/absent keeps
+      # the unchanged legacy mode. The admission step refuses any malformed value
+      # before checkout/pip/ingest, and a pinned release can never be combined
+      # with materialize_only.
+      RESEARCH_VAULT_PRODUCER_RELEASE: ${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}
     steps:
       - name: admit one explicit producer mode
         env:
           MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
           PUBLISH_FORENSICS: ${{ inputs.publish_forensics }}
           BOOTSTRAP_FORENSICS: ${{ inputs.bootstrap_forensics_sources }}
+          PRODUCER_RELEASE: ${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}
         run: |
           if [ "$MATERIALIZE_ONLY" = "true" ] && { [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ]; }; then
             echo "::error::materialize_only cannot be combined with forensics publication or bootstrap"
             exit 1
+          fi
+          # Pinned-producer selector admission (RV). This is the first step, so a
+          # malformed selector refuses BEFORE checkout/pip/ingest can touch any
+          # store. The value is matched without eval/source: grep reads it on
+          # stdin, so no expansion ever re-parses as shell.
+          if [ -n "${PRODUCER_RELEASE:-}" ]; then
+            if [ "${#PRODUCER_RELEASE}" -ne 64 ] || ! printf '%s' "$PRODUCER_RELEASE" | grep -Eq '^[0-9a-f]{64}$'; then
+              echo "::error title=research-ingest::RESEARCH_VAULT_PRODUCER_RELEASE must be exactly 64 lowercase hex characters (the SHA-256 of the pinned release manifest) — refusing before checkout/ingest"
+              exit 1
+            fi
+            if [ "$MATERIALIZE_ONLY" = "true" ]; then
+              echo "::error title=research-ingest::RESEARCH_VAULT_PRODUCER_RELEASE (pinned producer) cannot be combined with materialize_only — refusing"
+              exit 1
+            fi
           fi
       - uses: actions/checkout@v4
         id: checkout
@@ -187,8 +209,48 @@ jobs:
         # secrets did not reach the runner, not "nothing to do".
         env:
           MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
+          PRODUCER_RELEASE: ${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}
         run: |
           set +e
+          # Pinned-producer mode (RV). When the repo variable selects a release,
+          # the ingest runs ONLY through that pinned offline bundle. Preparation
+          # is verified here against the fixed installation prefix (release
+          # bundle present, manifest.json SHA-256 equal to the selector, fixed
+          # interpreter present) before anything is launched, and every refusal
+          # or nonzero launch records a nonzero rc in GITHUB_OUTPUT. There is
+          # deliberately NO legacy fallback: silently falling forward to the
+          # legacy CLI would republish from an unverified producer. The launcher
+          # itself verifies secure config and release bytes and retains the
+          # private evidence; this workflow adds no recovery authority and prints
+          # no private config or log body — refusal messages are fixed strings.
+          if [ -n "${PRODUCER_RELEASE:-}" ]; then
+            pinned_rc=1
+            bundle="/Volumes/Mastermind/runtime/research-producer/releases/$PRODUCER_RELEASE"
+            pinned_python="/Volumes/Mastermind/runtime/research-producer/dependencies/0c43d2132a6afaba75e5b5720c234d1b565679b650d7c04c024a1a12d711206a/venv/bin/python"
+            if [ -f "$bundle/manifest.json" ] && [ -f "$bundle/producer.json" ] \
+               && [ -f "$bundle/mastermind/ops/research_producer/launch.py" ] && [ -x "$pinned_python" ]; then
+              if command -v shasum >/dev/null 2>&1; then
+                manifest_digest="$(shasum -a 256 "$bundle/manifest.json" 2>/dev/null | awk '{print $1}')"
+              elif command -v sha256sum >/dev/null 2>&1; then
+                manifest_digest="$(sha256sum "$bundle/manifest.json" 2>/dev/null | awk '{print $1}')"
+              else
+                manifest_digest=""
+              fi
+              if [ "$manifest_digest" = "$PRODUCER_RELEASE" ]; then
+                "$pinned_python" -I -B "$bundle/mastermind/ops/research_producer/launch.py" --config "$bundle/producer.json" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" --execute
+                pinned_rc=$?
+                if [ "$pinned_rc" != "0" ]; then
+                  echo "::error title=research-ingest::pinned producer launch FAILED (rc=$pinned_rc); legacy fallback is not permitted"
+                fi
+              else
+                echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
+              fi
+            else
+              echo "::error title=research-ingest::pinned producer release preparation refused; nothing was ingested and legacy mode is not permitted"
+            fi
+            echo "rc=$pinned_rc" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [ "$MATERIALIZE_ONLY" = "true" ]; then
             python -m scripts.ingest_research --require-store --materialize-only
           else
