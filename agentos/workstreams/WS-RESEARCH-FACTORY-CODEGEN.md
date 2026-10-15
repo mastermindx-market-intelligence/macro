@@ -23,9 +23,9 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Consume the new combined-source CI and the original capture merge result.
-  Fabric Integration is diagnosing the new review account-cooldown refusal.
-  Preserve original quarantined runs and refused reads; no physical admission.
+  Finish protected product delivery on PR9463 after separating unchanged runtime
+  source onto its held draft carrier; verify actual authenticated publication.
+  Preserve all original review/refusal identities and the pending Chris decision.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
@@ -51,47 +51,46 @@ landmines:
 
 Current checkpoint — 2026-10-15 (Vancouver).
 
-Strict transport #9190, structural validation #9100 and fence #9077 are merged.
-Fence merged as be18b1428a5d252227f0628c342b9b67b9f04052. Capture #9099 remains
-open under its original merge controller, last observed head a773e3c03e68.
-Draft #9463 at df27dcccbe03 passed CI38756282141: all 12 packs, contract-delta,
-ci-gate and selected authority checks succeeded. The inactive codex authority
-complement is not the selected authority. The observer's retained log records
-completion; its process has ended. Main9b255a537738 is now integrated; the sole
-workstream-record conflict preserves this current programme checkpoint and
-the existing fence acceptance reference.
+Fence9077, capture9099, strict transport9190 and structural validation9100 are
+merged. Capture9099 merged as1c35abcd198df30366fe08b4dd714d9ec2b359ef. Its four
+implementation/test files match current main exactly. Product carrier9463 now
+integrates main86db1b0487ec. The former combined headbfd14315a594 passed all
+selected CI checks in38780929145; the original observer completed and its log
+was consumed. No live/idle observer is claimed for that completed run.
 
-Chris explicitly authorized quarantine of any eventual result from
-rf-fixed-workload-plans-01a1333c-v1 and released its two source outputs for
-fresh local implementation. Its run, lease, unknown termination and refused read
-remain unchanged, with no retry or replacement remote run. The new pure factory
-accepts only exact bytes from the seven pinned workload sources and returns
-fixed transport plans. The connected frontend keeps the existing single-attempt,
-exact-container cleanup and refusal semantics. All 42 affected source checks
-pass with inert payloads and fake Docker. The joined runtime suite passes658
-tests and67subtests with four platform skips. The general engine remains dormant;
-the frozen v4 capsule remains unchanged and undispatched. The new CI import
-closure needed one additional package-initializer path; after that correction,
-the exact affected closure check passes. Curation and packing checks already pass.
+Release scopes are being separated without replacing workers or reviews.
+PR9463 owns the reviewed dormant contracts, causal captured-input bridge,
+Trial Ledger/Vault changes, read-only synthetic diagnostics, existing admin UI
+and deployment closure. The accepted accounting source hashes are unchanged.
+Runtime installer, canary, host observers and fixed-workload plans/frontend
+are preserved byte-for-byte in the admitted rf-runtime-review-01a1333c SSD
+worktree with their own draft release carrier. The runtime-only review gate
+therefore no longer freezes independent product publication. No runtime source
+is admitted or installed by this separation; general transport remains dormant.
 
-Scoped independent review rf-fixed-workload-source-review-01a1333c-v1 returned remote_admission_refused (rc75)
-through the existing Fabric adapter (Qwen route on ubuntu2), assigned directly
-by this root. Its exact484-byte result was consumed: broker-assigned account
-Chris was in host-local cooldown before provider execution (key=none,thread=none).
-Fabric Integration confirmed the central/host cooldown-view mismatch is possible
-and owns diagnosis; no marker reset, account switch or retry was made. No
-independent quality verdict has been established. Review scope is only the new factory/frontend; original archive/mountinfo
-review collections remain refused and unconsumed. Physical qualification has
-not been authorized or claimed by source tests or this review.
-
-The actual local authenticated admin API/browser previously passed using
-synthetic good/refused diagnostics, including anonymous401, theme/language and
-logout. Production proof is outstanding. Retained evidence:
+The new factory/frontend42checks and runtime658tests/67subtests (four platform
+skips) remain valid. The isolated source test commands retain the previous
+process separation for smoke-module loading and payload unit tests. Product
+integration after removal passes19connected/admin/token checks. Required CI
+and exact source-scope checks qualify the narrowed release before arming.
+The actual local authenticated admin browser already passed synthetic good and
+refused diagnostics, unsigned401, theme/language and logout; production proof
+is still owed after normal deployment. Evidence:
 /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
 
-Installed Fabric PR1524 fixed Codex CI-watch recognition, now verified on the
-completed run above. It does not release any original collection refusal.
-Trusted host/resource mapping, complete helper census, cleanup qualification,
-candidate admission, real pilot and scientific/prospective evidence remain
-unfinished. Enrollment alone cannot activate the dormant general engine.
-Reuse accepted unchanged checks; source publication is not programme completion.
+Chris authorized quarantine and two-file source release for
+rf-fixed-workload-plans-01a1333c-v1; its run/lease/unknown termination/refused
+read remain unchanged. Fresh source is implemented and preserved on the runtime
+carrier. Its separate reviewrf-fixed-workload-source-review-01a1333c-v1 ended
+rc75 before provider execution on the broker-assigned account's host-local
+cooldown. Exact484-byte result consumed; no quality verdict, retry or account
+switch. Fabric Integration owns the already-requested source diagnosis.
+
+The original archive-order and mountinfo reviews remain unknown/refused. Their
+specific quarantine/review-release question is pending Chris, not inferred from
+the source-file grant. The concrete proposal is in the existing evidence folder:
+runtime-release/physical-qualification/ORIGINAL_REVIEW_QUARANTINE_PROPOSAL.md.
+Frozen v4 remains undispatched. Trusted host/resource mapping, complete helper
+census, cleanup, candidate admission, real pilot and scientific/prospective
+acceptance remain unfinished. Reuse accepted evidence; green CI or source
+publication does not complete the programme.
