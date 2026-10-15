@@ -826,6 +826,35 @@ def test_c2ca_ceiling_substitute_deducts_applied_action_once() -> None:
     assert evaluation.kernel["evidence"]["value"] is None
 
 
+def test_c2ca_overrun_of_ceiling_substitute_is_infeasible() -> None:
+    """An applied action above the authorized ceiling is infeasible, never clamped to zero."""
+    shares = capital(authorized="2000000", issued="1000000")
+    evaluation = evaluate_actions(
+        [cash(TAKE_A, "shelf_takedown", "5000000")], **base_kwargs(extra_shares=shares)
+    )
+    envelope = evaluation.envelope
+    # 5,000,000 at $2 needs 2,500,000 shares; authorized minus issued is 1,000,000.
+    assert Fraction(1, 2) * Fraction(5_000_000) > Fraction(1_000_000)
+    assert f"asserted_actions_infeasible:{AUTH_POOL}" in envelope.blockers
+    assert envelope.aggregate_bound.status != "known"
+    assert "5000000.00" not in (envelope.aggregate_bound.note or "")
+    assert "under stated unknowns" not in (envelope.aggregate_bound.note or "")
+
+
+def test_c2ca_action_exactly_at_ceiling_substitute_is_feasible() -> None:
+    """Using the whole ceiling is not an overrun: the residual ceiling is zero, not infeasible."""
+    shares = capital(authorized="2000000", issued="1000000")
+    evaluation = evaluate_actions(
+        [cash(TAKE_A, "shelf_takedown", "2000000")], **base_kwargs(extra_shares=shares)
+    )
+    envelope = evaluation.envelope
+    assert not any(b.startswith("asserted_actions_infeasible") for b in envelope.blockers)
+    assert Fraction(evaluation.kernel["ceiling"]["value"]) == 0
+    assert envelope.aggregate_bound.note == (
+        "floor 2000000.00 / ceiling 2000000.00 under stated unknowns"
+    )
+
+
 @pytest.mark.parametrize(
     ("mutate", "note"),
     [

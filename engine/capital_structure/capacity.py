@@ -2832,6 +2832,7 @@ class _Builder:
                 route_limits[route_id] = current - view.usd[branch]
         pool_bounds: dict[str, Fraction | None] = {}
         deductions: dict[str, Fraction] = {}
+        over_ceiling: set[str] = set()
         for pool in sorted(self.pools, key=lambda item: item.pool_id):
             bound = self._branch_pool_bound(pool, branch)
             deduction = Fraction(0)
@@ -2842,6 +2843,10 @@ class _Builder:
                 deduction += pool.coefficient_for(route_id, branch) * view.usd[branch]
             if bound is not None and deduction:
                 bound = bound - deduction
+            elif bound is None and pool.substitute is not None and deduction > pool.substitute:
+                # The substitute is a ceiling on the unknown bound, so applied
+                # actions above it are provably infeasible, never clamped to zero.
+                over_ceiling.add(pool.pool_id)
             pool_bounds[pool.pool_id] = bound
             deductions[pool.pool_id] = deduction
         self.residual_routes[branch] = route_limits
@@ -2859,7 +2864,7 @@ class _Builder:
             identifier
             for identifier, value in (*route_limits.items(), *pool_bounds.items())
             if value is not None and value < 0
-        }
+        } | over_ceiling
 
     def _branch_route_limit(self, plan: _RoutePlan, branch: str) -> Fraction | None:
         """The route's own limit in ``branch``; ``None`` when it is not known."""
