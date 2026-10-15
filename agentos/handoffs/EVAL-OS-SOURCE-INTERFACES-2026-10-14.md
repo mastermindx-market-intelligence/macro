@@ -152,17 +152,20 @@ unresolved:
 - Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
   Protected merge and all production proof remain owed.
 next_actions:
-- A1 PR6651/headff7912003742 remains open. OriginalCI38716442763/attempt1 completedSUCCESS
-  11:13:45Oct15; original finalartifact11967297948 ZIPdigest verified and canonical loader/gate consumed
-  127jobs/350semantic commandstepsPASS,0inherited/blocked/infrastructurefailure. Not unit-test or zero-skip
-  counts. Exact tested1ac926/basefb596/sourceff identity retained; incumbent controller38726698591 was
-  running11:23. Consume its decision and preserve any admitted refresh/fresh checks before final merge.
+- A1 originalPR6651 remoteff791 has terminalCI38716442763PASS; finalartifact11967297948 consumed,
+  127jobs/350semantic commandstepsPASS, zero inherited/blocked/infrastructurefailure. Currentmaind93b
+  introduced one real manifest conflict. LOCALCLEAN1bb4b0c394aa is UNPUBLISHED source-only relocation
+  of3existingpaths in research-price-panel,319definitions/pathmultisets preserved,2controlsPASS and
+  cleanpreviewe3e4ed againstd93b. No base integration.11:29 canonicaladmission10active/cap8/0reservations
+  refused publication. Consume real owner/capacity event, fresh canonical admission/currentmain preview,
+  then ordinarysamecarrierpush and freshchecks. Incumbent alone refreshes/merges; original387266 sweep
+  completed11:23 but PRremainsOPENdirty. No timer-onlycensus or duplicatecontroller.
 
 - Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
   eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
   reviewer accepted without content correction, not independent/blind model review.8newcase+2CIcontrolsPASS,
   zero fullclosure misses and strict134/134/128jobs within unchanged limits.314execution definitions and
-  evaluator functions preserved. See policy-contracts-20261015.json. Published669debca88fb on the same follow-on branch;
+  evaluator functions preserved. See policy-contracts-20261015.json. Published511f6d4b294f on the same follow-on branch;
   open its single PR only after A1 landing and final-base/capacity reconciliation. Reuse prior proof.
 - After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
   authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
