@@ -4432,6 +4432,8 @@ on:
       # a regenerated artifact that could not START ci.yml would be the darkness the
       # closure guard exists to end. data/** is NOT a catch-all in this filter.
       - "tests/test_dataos_security_master.py"
+      - "tests/test_dataos_options_root.py"
+      - "tests/test_dataos_options_underlying.py"
       - "scripts/build_security_master.py"
       - "data/reference/**"
       # Job: dislocation-p0-a1-blind-harvest (.github/ci/legacy-jobs.yml).
