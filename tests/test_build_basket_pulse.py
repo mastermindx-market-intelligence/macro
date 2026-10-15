@@ -1374,3 +1374,19 @@ def test_lastgood_replace_failure_keeps_complete_prior_baseline(tmp_path, monkey
                      observation_baseline={"marker":"new"})
     assert path.read_bytes() == before
     assert sorted(p.name for p in tmp_path.iterdir()) == [bp.LASTGOOD_FILENAME]
+
+
+
+def test_atomic_lastgood_preserves_existing_reader_mode(tmp_path):
+    path = tmp_path / bp.LASTGOOD_FILENAME
+    path.write_text('{}')
+    path.chmod(0o640)
+    bp._save_lastgood({"baskets":[]}, tmp_path, observation_baseline={})
+    assert path.stat().st_mode & 0o777 == 0o640
+
+
+def test_atomic_lastgood_new_file_respects_normal_creation_umask(tmp_path):
+    control = tmp_path / 'control.json'
+    control.write_text('{}')
+    bp._save_lastgood({"baskets":[]}, tmp_path, observation_baseline={})
+    assert (tmp_path / bp.LASTGOOD_FILENAME).stat().st_mode & 0o777 == control.stat().st_mode & 0o777

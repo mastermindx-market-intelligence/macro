@@ -60,7 +60,7 @@ import math
 import os
 import statistics
 import sys
-import tempfile
+import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -847,9 +847,18 @@ def _save_lastgood(result: dict[str, Any], out_dir: Path,
         encoded = json.dumps(retained, separators=(",", ":"), allow_nan=False) + "\n"
         # The sole existing sidecar is replaced atomically: readers must see
         # either the old complete baseline or the new one, never partial JSON.
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=out_dir,
-                                         prefix=f".{name}.", suffix=".tmp", delete=False) as handle:
-            temporary = Path(handle.name)
+        candidate = out_dir / f".{name}.{uuid.uuid4().hex}.tmp"
+        # O_EXCL owns this temporary file; 0666 preserves normal process-umask
+        # behavior on first creation. Existing read permissions survive replace.
+        descriptor = os.open(candidate, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+        temporary = candidate
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            try:
+                old_mode = p.stat().st_mode & 0o777
+            except FileNotFoundError:
+                old_mode = None
+            if old_mode is not None:
+                os.fchmod(handle.fileno(), old_mode)
             handle.write(encoded)
             handle.flush()
             os.fsync(handle.fileno())
