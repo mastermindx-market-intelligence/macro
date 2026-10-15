@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-15",
-  "generated_utc": "2026-10-15T06:35:02.204601+00:00",
-  "n_tickers": 2899,
+  "generated_utc": "2026-10-15T09:43:16.985995+00:00",
+  "n_tickers": 2898,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -531,19 +531,21 @@
       "ticker": "MU",
       "channels": [
         "affiliation",
+        "analyst_upgrade_cluster",
         "gov_grant",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
       ],
-      "weighted_score": 2.1,
+      "weighted_score": 2.45,
       "gov_grant_usd": 7751282.0,
       "gov_grant_accel": 1.6,
       "patents": 454,
+      "analyst_bull_ratio": 0.95,
       "insider_mspr": 100.0,
       "stocktwits_bull_ratio": 1.0,
       "stocktwits_watchers": 213009,
-      "convergence_score": 5,
+      "convergence_score": 6,
       "trump_linked": false,
       "affiliated": true
     },
@@ -1174,13 +1176,12 @@
       "ticker": "NVDA",
       "channels": [
         "affiliation",
-        "analyst_upgrade_cluster",
         "github_momentum",
         "patent_cluster",
         "retail_buzz",
         "trump"
       ],
-      "weighted_score": 2.2,
+      "weighted_score": 1.85,
       "dpi": 0.482,
       "dpi_z": 1.36,
       "dpi_basis": "z_score",
@@ -1188,10 +1189,9 @@
       "patents": 296,
       "wsb_mentions": 207,
       "hf_downloads_30d": 27020636.0,
-      "analyst_bull_ratio": 1.0,
       "github_stars": 18580,
       "congress_position_usd": 312201000.0,
-      "convergence_score": 6,
+      "convergence_score": 5,
       "trump_linked": true,
       "affiliated": true
     },
@@ -3141,12 +3141,14 @@
       "ticker": "HPE",
       "channels": [
         "activist_13d",
+        "analyst_upgrade_cluster",
         "unusual_options"
       ],
-      "weighted_score": 0.85,
+      "weighted_score": 1.2,
       "opt_vol_oi": 0.286,
       "opt_put_call": 0.47,
-      "convergence_score": 2,
+      "analyst_bull_ratio": 0.95,
+      "convergence_score": 3,
       "trump_linked": false,
       "affiliated": false
     },
@@ -3230,17 +3232,6 @@
       "analyst_bull_ratio": 1.0,
       "news_bull_ratio": 0.84,
       "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "MRVL": {
-      "ticker": "MRVL",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.97,
-      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
