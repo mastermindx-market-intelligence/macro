@@ -652,7 +652,15 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     Unknown git identity fails closed. This is admission, not completion: the
     existing Stop chain still owns every delivery/CI/merge/live proof after a
     session has been admitted.
+
+    A minted Fabric lane is never a delivery root, whatever branch it is on: the
+    lane identity comes from the launcher's env and the lane path, so a worker
+    that renames its branch to claude/* falls back to quarantine instead of
+    acquiring the ship loop its parent run owns.
     """
+    lane_run_id = _fabric_lane_session_root(root)
+    if lane_run_id:
+        return False, f"Fabric lane checkout for run {lane_run_id} is never a delivery root"
     try:
         branch = _run(root, "git", "branch", "--show-current")
         git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
@@ -670,6 +678,74 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     if reasons:
         return False, "; ".join(reasons)
     return True, ""
+
+
+# A Mastermind Fabric worker launched with `--new-macro-worktree` runs in a
+# dedicated sparse checkout the launcher minted for that one run:
+# `~/lanes/wt/<run-id>` on `lane/<run-id>`, with FABRIC_WORKSPACE_READY=1 and
+# FABRIC_WORKSPACE_RUN_ID=<run-id> exported only after the mint was verified.
+# That tree is not a shared checkout, so the root quarantine has nothing to
+# protect there -- but it is not a delivery session either: the parent run owns
+# commit/PR/merge/acceptance. Measured 2026-10-15 (run opus-sparse-w1-20261015,
+# glm via Claude CLI): every Bash call in a correctly minted lane was denied with
+# SESSION ROOT QUARANTINE. Admit exactly that shape for tool use only; the
+# session stays `root_admitted=False`, so Stop never runs the delivery chain.
+_FABRIC_LANE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")
+
+
+def _fabric_lane_session_root(root: Path) -> str:
+    """Return the run id when the launcher's env names ``root`` as its lane path.
+
+    Path identity only (no git): the readiness env names a safe run id and
+    ``root`` is ``~/lanes/wt/<run-id>``. Never raises.
+    """
+    if os.environ.get("FABRIC_WORKSPACE_READY") != "1":
+        return ""
+    run_id = os.environ.get("FABRIC_WORKSPACE_RUN_ID") or ""
+    if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
+        return ""
+    try:
+        if root.resolve() != (Path.home() / "lanes" / "wt" / run_id).resolve():
+            return ""
+    except Exception:
+        return ""
+    return run_id
+
+
+def _fabric_lane_admission(root: Path) -> str:
+    """Return the run id when ``root`` is this process's minted Fabric lane, else "".
+
+    Every condition must hold: the launcher's readiness env names a safe run id,
+    ``root`` is exactly ``~/lanes/wt/<run-id>`` (a real directory, not a symlink,
+    with a regular ``.git`` file) and the worktree's top level, it is a linked
+    worktree (never the primary), and its branch is ``lane/<run-id>``. This
+    mirrors the launcher's own mint postconditions. Never raises; anything
+    unknown is not a lane.
+    """
+    run_id = _fabric_lane_session_root(root)
+    if not run_id:
+        return ""
+    try:
+        lane = Path.home() / "lanes" / "wt" / run_id
+        if lane.is_symlink() or (lane / ".git").is_symlink():
+            return ""
+        if not (lane / ".git").is_file():
+            return ""
+        root = root.resolve()
+        toplevel = _run(root, "git", "rev-parse", "--show-toplevel")
+        if not toplevel or Path(toplevel).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _run(root, "git", "branch", "--show-current") != "lane/" + run_id:
+            return ""
+    except Exception:
+        return ""
+    return run_id
 
 
 # Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
@@ -4694,7 +4770,31 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
     state["root_admitted"] = admitted
     state["root_admission_reason"] = admission_reason
+    lane_run_id = "" if admitted else _fabric_lane_admission(root)
+    if lane_run_id:
+        state["fabric_lane_run_id"] = lane_run_id
+    else:
+        state.pop("fabric_lane_run_id", None)
     _save(path, state)
+
+    if lane_run_id:
+        _emit(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": (
+                        "FABRIC LANE WORKER: this session runs in the dedicated Fabric "
+                        "checkout for run " + lane_run_id + " (branch lane/"
+                        + lane_run_id + "), minted by its parent run. Tools are "
+                        "admitted for the bounded packet only. The repository ship "
+                        "loop does not apply here: do exactly what the packet asks, "
+                        "return its result, and leave commit, push, pull request, "
+                        "merge and acceptance to the parent run."
+                    ),
+                }
+            }
+        )
+        return
 
     ship_loop_context = (
         "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
@@ -4763,6 +4863,10 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
+    if not admitted and _fabric_lane_admission(root):
+        # A minted Fabric lane: allow the tool, but seed no completion record --
+        # the parent run, not this session, owns delivery.
+        return
     if not admitted:
         # Recompute even when this call adopted nothing: a concurrent hook process
         # may have won the rename between the two probes, and its loser must not
