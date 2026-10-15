@@ -148,12 +148,24 @@ def resolve_ticker_candidates(tags: list[str], universe: Mapping[str, object]) -
 
 
 def fetch_articles(token: str, *, limit: int = 250,
+                   only_with_tickers: bool = True,
                    get: Callable | None = None) -> tuple[list[dict], str]:
-    """One fixed-origin bounded snapshot. No redirects, retries or completeness claim."""
+    """One fixed-origin bounded snapshot, tagged-only by default.
+
+    The published consumer already discards untagged articles. Server-side
+    filtering prevents untagged publisher concentration from exhausting the
+    250-row window. Explicit False remains available for quality sampling.
+    This is not a completeness, editorial-accuracy or ticker-identity claim.
+    """
     if not isinstance(token, str) or not token.strip():
         return [], "no_key"
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= MAX_LIMIT:
         return [], "invalid_limit"
+    if type(only_with_tickers) is not bool:
+        return [], "invalid_ticker_filter"
+    params = {"sortBy": "crawlDate", "limit": limit}
+    if only_with_tickers:
+        params["onlyWithTickers"] = "true"
     response = None
     started = monotonic()
     try:
@@ -161,7 +173,7 @@ def fetch_articles(token: str, *, limit: int = 250,
             import requests
             get = requests.get
         response = get(
-            ENDPOINT, params={"sortBy": "crawlDate", "limit": limit},
+            ENDPOINT, params=params,
             headers={"Accept": "application/json", "Authorization": "Token " + token.strip()},
             timeout=(5, 15), allow_redirects=False, stream=True,
         )

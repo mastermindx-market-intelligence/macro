@@ -123,10 +123,48 @@ def test_fetch_uses_header_auth_and_sorted_bounded_payload():
     assert captured["url"] == tn.ENDPOINT
     assert "fake-token" not in captured["url"]
     assert captured["headers"]["Authorization"] == "Token fake-token-test-only"
-    assert captured["params"] == {"sortBy": "crawlDate", "limit": 1}
+    assert captured["params"] == {
+        "sortBy": "crawlDate", "limit": 1, "onlyWithTickers": "true"
+    }
     assert captured["timeout"] == (5, 15)
     assert captured["allow_redirects"] is False
     assert captured["stream"] is True
+
+
+def test_explicit_unfiltered_quality_sample_preserves_one_bounded_request():
+    calls = []
+    class Response:
+        status_code = 200
+        headers = {"Content-Type": "application/json"}
+        closed = False
+        def iter_content(self, chunk_size):
+            yield b"[]"
+        def close(self):
+            self.closed = True
+
+    def fake_get(url, **kwargs):
+        calls.append((url, kwargs))
+        return Response()
+
+    rows, state = tn.fetch_articles(
+        "stub-test-only", limit=7, only_with_tickers=False, get=fake_get
+    )
+    assert rows == [] and state == "no_rows"
+    assert len(calls) == 1
+    assert calls[0][0] == tn.ENDPOINT
+    assert calls[0][1]["params"] == {"sortBy": "crawlDate", "limit": 7}
+    assert calls[0][1]["allow_redirects"] is False
+    assert calls[0][1]["stream"] is True
+
+
+def test_non_boolean_news_ticker_filter_is_refused_before_network():
+    def unexpected_request(*args, **kwargs):
+        pytest.fail("invalid flag must not contact vendor")
+    for invalid in ("true", 1, None, [], {}):
+        rows, state = tn.fetch_articles(
+            "stub-test-only", only_with_tickers=invalid, get=unexpected_request
+        )
+        assert rows == [] and state == "invalid_ticker_filter"
 
 
 def test_fetch_unavailable_and_bad_response_fail_closed():
