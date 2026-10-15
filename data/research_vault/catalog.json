@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T12:43:19.273007+00:00",
-  "count": 2957,
+  "generated_at": "2026-10-15T12:58:12.960141+00:00",
+  "count": 2958,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zarzrnqfgu6-29437b",
+      "title": "GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T12:35:21Z",
+      "summary_points": [
+        "CPI & Core PCE Surprises: Core CPI +0.33% (vs. 20% est.), driven by shelter (OER +0.35% MoM); Core PCE +0.32% (vs. 20% est.), YoY +3.09%—upward revisions signal persistent inflation, delaying Fed rate cuts and triggering sector sell-offs.",
+        "Quality Factor Overbought Risk: GSP1QUAL at 12m high (up 20% in 3mo), RSI 83 (stretched)—reversal risk if CPI softens or rates peak, critical for portfolio positioning amid inflation data.",
+        "Sector-Specific Fundamentals: RPM (consumer weakness/supply chain), DAL (RASM acceleration vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-ly1qlac333k-67980a",
       "title": "Strategy Daily 2026 10 15",
