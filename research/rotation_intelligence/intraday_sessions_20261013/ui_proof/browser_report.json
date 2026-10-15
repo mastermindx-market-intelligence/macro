@@ -17,8 +17,10 @@
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 3,
+      "pulse_requests": 4,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -37,8 +39,10 @@
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 3,
+      "pulse_requests": 4,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -57,8 +61,10 @@
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 3,
+      "pulse_requests": 4,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -77,8 +83,10 @@
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 3,
+      "pulse_requests": 4,
       "denied_text": "请使用有权限的账户登录查看。",
       "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
     }

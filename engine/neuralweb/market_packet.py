@@ -759,8 +759,14 @@ def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> d
             return None
     except (KeyError, TypeError, ValueError, OverflowError):
         return None
+    delivery = {}
+    if "delivery_state" in raw or "is_new_observation" in raw:
+        state, fresh = raw.get("delivery_state"), raw.get("is_new_observation")
+        if state not in ("new", "retained") or type(fresh) is not bool or fresh != (state == "new"):
+            return None
+        delivery = {"delivery_state": state, "is_new_observation": fresh}
     # Explicit allowlist: scores, trade directions, confidence and targets never ride.
-    return {**values, "matched_members": count, "total_members": total,
+    return {**values, **delivery, "matched_members": count, "total_members": total,
             "observation_kind": kind, "max_clock_skew_seconds": skew,
             "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
 
@@ -1936,6 +1942,8 @@ def _render_leaders(p: dict) -> str:
         absolute = _signed(row.get("absolute_change_pct"), 2, "%")
         benchmark = _signed(row.get("benchmark_change_pct"), 2, "%")
         closing_note = "regular-session close; " if row.get("observation_kind") == "settled_regular" else ""
+        if row.get("is_new_observation") is False:
+            closing_note += "retained observation; "
         # A matched member may differ from the SPY clock within the producer's
         # disclosed tolerance at EACH endpoint; never imply exact synchrony.
         tolerance = f"member clocks within {row['max_clock_skew_seconds']:g}s/endpoint"

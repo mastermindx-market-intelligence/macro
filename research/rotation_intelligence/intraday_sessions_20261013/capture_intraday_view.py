@@ -54,11 +54,24 @@ with sync_playwright() as pw:
   assert bounds['scroll']<=bounds['panel']+1
   state['status']=403;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===0")
   denied=page.locator('#si-intraday-body').inner_text()
+  page.locator('a.si-view-btn[data-view="overview"]').click()
+  assert not page.locator('#ftr-tape-strip').is_visible(), 'Denied refresh left the previous overview tape visible'
+  page.locator('a.si-view-btn[data-view="moving"]').click()
   state['status']=200;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===2")
   page.evaluate("Date.now=()=>Date.parse('2026-10-13T16:15:00Z');window.__ftrTapeNamesReady()")
   assert page.locator('#si-intraday .si-intra-row').count()==0
   stale=page.locator('#si-intraday-body').inner_text()
-  reports.append({'viewport':width,'theme':theme,'language':lang,'geometry':bounds,'new_view_ready':True,'keyboard_details':True,'focus_and_open_preserved':True,'denied_hides_numbers':True,'stale_hides_numbers':True,'page_errors':errors,'pulse_requests':state['reads'],'denied_text':denied,'stale_text':stale})
+  page.evaluate("Date.now=()=>Date.parse('2026-10-13T15:30:00Z')")
+  expanded=json.loads(json.dumps(pulse));expanded['baskets']=[dict(pulse['baskets'][i%2],id='test_group_'+str(i)) for i in range(9)]
+  state['pulse']=expanded;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===6")
+  before=state['reads'];page.locator('#si-intraday-more').click()
+  assert page.locator('#si-intraday .si-intra-row').count()==9
+  assert state['reads']==before, 'Expanding the view must not issue another source request'
+  page.evaluate('window.__ftrTapeNamesReady()')
+  assert page.locator('#si-intraday .si-intra-row').count()==9
+  page.locator('#si-intraday-more').click();assert page.locator('#si-intraday .si-intra-row').count()==6
+
+  reports.append({'viewport':width,'theme':theme,'language':lang,'geometry':bounds,'new_view_ready':True,'keyboard_details':True,'focus_and_open_preserved':True,'denied_hides_numbers':True,'stale_hides_numbers':True,'show_all_without_refetch':True,'expansion_survives_repaint':True,'page_errors':errors,'pulse_requests':state['reads'],'denied_text':denied,'stale_text':stale})
   context.close()
  browser.close()
 (OUT/'browser-preview-report.json').write_text(json.dumps({'proof_kind':'actual_candidate_jinja_page_synthetic_pulse_no_production','template_sha256':hashlib.sha256(source.encode()).hexdigest(),'cases':reports},indent=2,ensure_ascii=False))

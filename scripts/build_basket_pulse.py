@@ -777,7 +777,34 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
                 corrected = True
         if corrected:
             return unavailable("baseline_corrected"), baseline
-        return unavailable("benchmark_nonadvancing"), prior
+        result = unavailable("benchmark_nonadvancing")
+        if settled_close and prior_kind == "settled_regular" and bench == prior_bench:
+            # A measurement is not an event delivery. Keep the already-measured
+            # closing interval visible while its unchanged source remains fresh;
+            # explicitly mark this delivery as retained, never a new observation.
+            rows_raw = previous.get("baskets")
+            old_rows = {row.get("id"): row for row in (rows_raw if isinstance(rows_raw, list) else [])
+                        if isinstance(row, dict) and isinstance(row.get("id"), str)}
+            endpoint = datetime.fromtimestamp(bench["ts"] / 1000, timezone.utc).isoformat()
+            for key, members in memberships.items():
+                old_members = prior_members.get(key)
+                if (not isinstance(old_members, list)
+                        or not all(isinstance(member, str) for member in old_members)
+                        or len(members) != len(set(members))
+                        or len(old_members) != len(set(old_members))
+                        or set(members) != set(old_members)):
+                    continue
+                if any(points.get(ticker) != prior_point(ticker) for ticker in members):
+                    continue
+                old = old_rows.get(key, {}).get("intraday_comparison")
+                if (not isinstance(old, dict) or old.get("schema") != _COMPARISON_SCHEMA
+                        or old.get("status") != "observed"
+                        or old.get("observation_kind") != "settled_regular"
+                        or old.get("session_date") != session_date.isoformat()
+                        or old.get("source_asof") != endpoint):
+                    continue
+                result[key] = {**old, "delivery_state": "retained", "is_new_observation": False}
+        return result, prior
     if _comparison_signature(bench) != _comparison_signature(prior_bench):
         return unavailable("benchmark_basis_changed"), baseline
     bench_return = bench["price"] / prior_bench["price"] - 1
@@ -836,7 +863,7 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
             result[key] = {**row, "status": "invalid_return"}
             continue
         result[key] = {
-            **row, "status": "observed",
+            **row, "status": "observed", "delivery_state": "new", "is_new_observation": True,
             "absolute_change_pct": round(100 * absolute, 6),
             "benchmark_change_pct": round(100 * bench_return, 6),
             "relative_change_pct": round(100 * relative, 6),
@@ -1287,6 +1314,8 @@ def build(
     """
     if now is None:
         now = datetime.now(timezone.utc)
+    if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+        raise ValueError("basket pulse evaluation clock must be timezone-aware")
     now_ms = int(now.timestamp() * 1000)
 
     mcfg = MARKETS[market]

@@ -1426,7 +1426,8 @@ class TestClosingComparison:
         assert "regular-session close" in mp._render_leaders({"leaders":block})
         _, repeated = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100},
                                      delivered+timedelta(minutes=5), alter=closing)
-        assert all(r["intraday_comparison"]["status"] != "observed" for r in repeated.values())
+        assert all(r["intraday_comparison"]["status"] == "observed" for r in repeated.values())
+        assert all(r["intraday_comparison"]["is_new_observation"] is False for r in repeated.values())
 
     @pytest.mark.parametrize("basis,seconds,accepted", [
         ("regular",1,True), ("regular",90,True), ("regular",91,False),
@@ -1476,3 +1477,64 @@ def test_closing_source_transition_is_not_silently_stitched(tmp_path, monkeypatc
         for q in qs.values(): q.update(source="yahoo",basis="regular",ts=_now_ms(close)+1000)
     _, rows = helper.build(tmp_path,monkeypatch,{"A":100,"B":100,"SPY":100},close+timedelta(minutes=16),alter=after)
     assert all(row["intraday_comparison"]["status"] == "benchmark_basis_changed" for row in rows.values())
+
+
+def test_unchanged_close_retains_measurement_but_is_not_new_and_still_expires(tmp_path, monkeypatch):
+    from datetime import timedelta
+    from engine.neuralweb import market_packet as mp
+    helper = TestMatchedIntradayComparison()
+    close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+    helper.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, close-timedelta(minutes=15))
+    def at_close(quotes):
+        for q in quotes.values(): q['ts'] = _now_ms(close)+1000
+    _, first = helper.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, close+timedelta(minutes=16), alter=at_close)
+    original = first['ai_semiconductors']['intraday_comparison']
+    assert original['is_new_observation'] is True
+    for minute in (21,26,46):
+        result, again = helper.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, close+timedelta(minutes=minute), alter=at_close)
+        retained = again['ai_semiconductors']['intraday_comparison']
+        assert retained['status'] == 'observed'
+        assert retained['is_new_observation'] is False and retained['delivery_state'] == 'retained'
+        assert retained['reference_asof'] == original['reference_asof']
+        assert retained['source_asof'] == original['source_asof']
+        assert retained['relative_change_pct'] == original['relative_change_pct']
+        assert 'observation_baseline' not in result
+        block = mp._intraday_comparison_block(retained, now=close+timedelta(minutes=minute))
+        assert (block is not None) is (minute <= 45)
+        if block is not None:
+            assert block['is_new_observation'] is False
+            text = mp._render_leaders({'leaders': {'intraday':[dict(block,id='A',label='A')]}})
+            assert 'retained observation' in text
+
+
+@pytest.mark.parametrize('change',['correction','membership','older_benchmark','missing_member'])
+def test_closing_retention_never_reuses_changed_observation(tmp_path, monkeypatch, change):
+    from datetime import timedelta
+    helper = TestMatchedIntradayComparison()
+    close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+    helper.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, close-timedelta(minutes=15))
+    def at_close(quotes):
+        for q in quotes.values(): q['ts'] = _now_ms(close)+1000
+    helper.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, close+timedelta(minutes=16), alter=at_close)
+    values={'A':100,'B':100,'SPY':100}
+    groups=None
+    if change=='correction': values['A']=101
+    if change=='membership': groups={'ai_semiconductors':['A','B'],'us_sector_health':['B']}
+    if change=='missing_member': values.pop('A')
+    def altered(quotes):
+        at_close(quotes)
+        if change=='older_benchmark': quotes['SPY']['ts']-=1000
+    _, rows=helper.build(tmp_path,monkeypatch,values,close+timedelta(minutes=21),groups=groups,alter=altered)
+    assert rows['ai_semiconductors']['intraday_comparison']['status'] != 'observed'
+
+
+def test_invalid_evaluation_clock_cannot_read_or_erase_a_retained_baseline(tmp_path,monkeypatch):
+    p=tmp_path/bp.LASTGOOD_FILENAME
+    original=b'{"observation_baseline":{"sentinel":"preserve"}}'
+    p.write_bytes(original)
+    def forbidden(*args,**kwargs):
+        pytest.fail('Source read attempted before evaluation-clock validation')
+    monkeypatch.setattr(bp,'_load_quotes',forbidden)
+    with pytest.raises(ValueError,match='timezone-aware'):
+        bp.build(now=datetime(2026,10,13,15,59),out_dir=tmp_path)
+    assert p.read_bytes()==original

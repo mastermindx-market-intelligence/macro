@@ -1907,3 +1907,9 @@ def test_intraday_render_discloses_benchmark_window_and_member_tolerance():
     assert "SPY +1%" in rendered
     assert "member clocks within" in rendered and "30s/endpoint" in rendered
     assert "300s" in rendered and "4/4 matched" in rendered
+
+
+@pytest.mark.parametrize("state,fresh", [("retained",True),("new",False),("retained",0),("other",False)])
+def test_intraday_delivery_metadata_cannot_claim_a_contradictory_new_observation(state,fresh):
+    raw=_observation_comparison(delivery_state=state,is_new_observation=fresh)
+    assert mp._intraday_comparison_block(raw,now=datetime(2026,10,13,15,30,tzinfo=timezone.utc)) is None

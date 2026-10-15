@@ -58,13 +58,15 @@ def main() -> None:
         repeat = observe({"A": 100, "B": 100, "SPY": 100}, close+timedelta(seconds=1),
                          delivered_at+timedelta(minutes=5))
         statuses = [row["intraday_comparison"]["status"] for row in repeat["baskets"]]
-        assert all(state != "observed" for state in statuses)
+        assert all(state == "observed" for state in statuses)
+        repeat_new = [row["intraday_comparison"]["is_new_observation"] for row in repeat["baskets"]]
+        assert not any(repeat_new)
     source_paths = ["scripts/build_basket_pulse.py", "engine/neuralweb/market_packet.py"]
     evidence = {"proof_kind": "synthetic_actual_closing_delivery_path_not_production",
                 "source_hashes": {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in source_paths},
                 "delivered_at": delivered_at.isoformat(), "mode": result["mode"],
                 "settled_close": result["settled_close"], "rows": points,
-                "grounding_digest": digest, "repeat_statuses": statuses,
+                "grounding_digest": digest, "repeat_statuses": statuses, "repeat_is_new_observation": repeat_new,
                 "production_verified": False, "financial_edge_tested": False}
     print(json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False))
 
