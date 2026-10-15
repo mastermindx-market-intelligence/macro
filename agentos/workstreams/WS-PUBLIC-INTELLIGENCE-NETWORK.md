@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume9209 exact66df70f0 CI38716037896/protected installation using actual squashSHA. Then SAME follow-oncb54d3e9 with517checks/45portable groups/26sources; native corrected-plan parameters now locally bound with original dates/display-only limits, not publication approval. CAT firstunheld/44refs still needs installed pool repair. Servingguardd5ad51d0 awaits capacity (8/cap8,9209lease). Preserve five held drafts,publication0of10 and all unknown effects.
+next_action: Consume9209 exact66df70f0 CI38716037896/protected installation using actual squashSHA. Then SAME follow-oncb54d3e9 with517checks/45portable groups/26sources; native corrected-plan parameters now locally bound with original dates/display-only limits, not publication approval. CAT firstunheld/44refs still needs installed pool repair. Servingguarda6ec4beb (unchanged appf334cf4a) adds eight locally passing portable installed controls; awaits capacity (8/cap8,9209lease). Require running-process health commit after normal updater, not only disk parity. Preserve five held drafts,publication0of10 and all unknown effects.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
