@@ -45,8 +45,8 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert 'data-im-chart-table-market="JP"' in html
     assert 'data-im-chart-table-market="GB"' in html
     assert 'no missing price or FX value was filled' in html
-    assert 'Line styles identify markets. Unobserved dates break the series' in html
-    assert '线型用于区分市场。未观测日期中断曲线' in html
+    assert 'Line and point styles identify markets. Unobserved dates break the series' in html
+    assert '线型和点形用于区分市场。未观测日期中断曲线' in html
     assert 'data-im-chart-benchmark-unavailable' in html
     assert 'data-im-chart-selection-unavailable hidden' in html
     assert '<text x="4" y="' in html
@@ -109,7 +109,9 @@ def test_discontinuous_isolated_observation_is_drawn_as_a_point(inputs):
     geom = build_chart_geometry(admitted)
     japan = next(p for p in geom["cohorts"][0]["paths"] if p["market_id"] == "JP")
     assert any(part["count"] == 1 for part in japan["segments"])
-    assert '<circle data-im-chart-series="JP"' in _render(geom)
+    html = _render(geom)
+    assert '<g data-im-chart-series="JP" data-im-chart-point' in html
+    assert 'data-im-chart-point-key' in html
 
 def test_chart_responsive_intrinsic_aspect_has_no_mobile_letterbox(inputs):
     """The same viewBox must retain geometry without a forced 220px phone box."""

@@ -68,26 +68,65 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
-let sourceChartHtml;
-function sourceChartFixture() {
+const sourceChartHtml = new Map();
+function sourceChartFixture(isolated=false) {
   // Actual publisher/renderer with existing synthetic parquet inputs. This is
   // source composition evidence, never live data or a new disclosure grant.
-  if (!sourceChartHtml) sourceChartHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+  if (!sourceChartHtml.has(isolated)) sourceChartHtml.set(isolated,execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from tests.test_intl_eod_publication import _setup, EVALUATED
 from tests.test_intl_workspace_integration import render_fixture
+from engine.intl_inputs import countries
 from scripts import build_intl
 with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
     frame, _ = _setup(Path(tmp))
+    if ${isolated ? 'True' : 'False'}:
+        for market in ('AU', 'KR'):
+            symbol = countries()[market]['fx']
+            frame.loc[frame.index[[-12, -10]], symbol] = float('nan')
+            filename = symbol.replace('^', '_').replace('=', '_').replace('/', '_') + '.parquet'
+            frame[[symbol]].rename(columns={symbol:'close'}).to_parquet(Path(tmp)/'intl'/filename)
     sink = {}
     workspace = build_intl._publication_workspace(frame, data_root=Path(tmp), evaluated_at=EVALUATED, chart_source_sink=sink)
     print(render_fixture(workspace_payload=workspace, chart_sources=sink['sources']))
-`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024});
-  return sourceChartHtml;
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return sourceChartHtml.get(isolated);
 }
 
 for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Source chart isolated observations retain market identity ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang)},{theme,lang});
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const marks=await chart.evaluate(c=>Array.from(c.querySelectorAll('[data-im-chart-series]:not([hidden])')).filter(n=>!n.getAttribute('d')).map(n=>{
+          const shape=n.querySelector('path')||n;
+          const legend=c.querySelector('[data-im-chart-table-market="'+n.dataset.imChartSeries+'"] [data-im-chart-point-key]');
+          return {market:n.dataset.imChartSeries,shape:shape.getAttribute('d')||shape.tagName,legend:legend?.getAttribute('d'),position:n.getAttribute('transform'),bounds:shape.getBoundingClientRect().toJSON()};
+        }));
+        assert.deepEqual(marks.map(m=>m.market).sort(),['AU','KR']);
+        assert.notEqual(marks[0].shape,marks[1].shape,'isolated points must identify the market without color alone');
+        for(const m of marks) {
+          assert.equal(m.shape,m.legend,'the named key must identify the isolated observation');
+          assert.ok(m.bounds.width>=5&&m.bounds.height>=5,'phone symbols must remain visible');
+        }
+        assert.deepEqual(marks.map(m=>[m.market,m.position]).sort(),[['AU','translate(331.03 107.05)'],['KR','translate(331.03 176.41)']]);
+        const rows=await chart.locator('[data-im-chart-table-market]:not([hidden])').allTextContents();
+        assert.ok(rows.every(r=>/20\s+2/.test(r)),rows.join('|'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+      await panel.locator('[data-im-compare-remove="4"]').click();
+      await page.goBack();
+      assert.equal(await chart.locator('[data-im-chart-series="KR"]:not([hidden])').count(),3);
+      assert.equal(await chart.locator('[data-im-chart-benchmark-unavailable]').isVisible(),true);
+    },{htmlOverride:sourceChartFixture(true),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
   test(`Source chart reused colors retain distinct line keys ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{
       await page.emulateMedia({reducedMotion:'reduce'});
@@ -97,7 +136,7 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
       // The full publisher cohort gives Australia and Korea the same hue.
       await picker.selectOption('1');await picker.selectOption('4');
       const chart=panel.locator('[data-im-chart-model]');
-      assert.match(await chart.locator('figcaption').first().innerText(),lang==='zh'?/线型用于区分市场。未观测日期中断曲线/:/Line styles identify markets\. Unobserved dates break the series/);
+      assert.match(await chart.locator('figcaption').first().innerText(),lang==='zh'?/线型和点形用于区分市场。未观测日期中断曲线/:/Line and point styles identify markets\. Unobserved dates break the series/);
       for(const width of [320,1440]) {
         await page.setViewportSize({width,height:900});
         const keys=await chart.evaluate(c=>Array.from(c.querySelectorAll('[data-im-chart-series]:not([hidden])')).map(n=>{

@@ -19,6 +19,17 @@
   {# Keep each source series recognizable when a cohort reuses a hue. The same
      stable pattern belongs to its path and named legend at every viewport. #}
   {% set patterns = ['none', '8 4', '2 4', '8 3 2 3', '12 4', '4 3', '12 3 2 3 2 3'] %}
+  {# Isolated observations have no line to carry a dash pattern. Use a stable
+     point symbol at the exact observation, with the same symbol in its key. #}
+  {% set symbols = [
+    'M -9 0 A 9 9 0 1 0 9 0 A 9 9 0 1 0 -9 0 Z',
+    'M -9 -9 H 9 V 9 H -9 Z',
+    'M 0 -9 L 9 9 H -9 Z',
+    'M 0 -9 L 9 0 L 0 9 L -9 0 Z',
+    'M -9 0 H 9 M 0 -9 V 9',
+    'M -9 -9 L 9 9 M 9 -9 L -9 9',
+    'M -9 0 L -4.5 -9 H 4.5 L 9 0 L 4.5 9 H -4.5 Z'
+  ] %}
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
     <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
@@ -40,6 +51,7 @@
           {% for line in cohort.paths %}
             {% set stroke = palette[(loop.index0) % (palette|length)] %}
             {% set pattern = patterns[(loop.index0) % (patterns|length)] %}
+            {% set symbol = symbols[(loop.index0) % (symbols|length)] %}
             {% for segment in line.segments %}
               {% if segment.count > 1 %}
                 <path data-im-chart-series="{{ line.market_id|e }}"
@@ -47,15 +59,17 @@
                       stroke-dasharray="{{ pattern|e }}" vector-effect="non-scaling-stroke"
                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
               {% else %}
-                <circle data-im-chart-series="{{ line.market_id|e }}"
-                        cx="{{ segment.first_x|e }}" cy="{{ segment.first_y|e }}"
-                        r="3" fill="{{ stroke|e }}" />
+                <g data-im-chart-series="{{ line.market_id|e }}" data-im-chart-point
+                   transform="translate({{ segment.first_x|e }} {{ segment.first_y|e }})">
+                  <path d="{{ symbol|e }}" fill="none" stroke="{{ stroke|e }}"
+                        stroke-width="1.5" vector-effect="non-scaling-stroke" />
+                </g>
               {% endif %}
             {% endfor %}
           {% endfor %}
         </svg>
         <figcaption>
-          {{ words('Line styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
+          {{ words('Line and point styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型和点形用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
         </figcaption>
       </figure>
       <table class="intl-compare__table" data-im-chart-data-table>
@@ -76,6 +90,13 @@
                         stroke-dasharray="{{ patterns[(loop.index0) % (patterns|length)]|e }}"
                         stroke-linecap="round" vector-effect="non-scaling-stroke" />
                 </svg>
+                {% if line.segments|selectattr('count', 'equalto', 1)|list|length %}
+                  <svg aria-hidden="true" width="20" height="20" viewBox="-10 -10 20 20">
+                    <path data-im-chart-point-key d="{{ symbols[(loop.index0) % (symbols|length)]|e }}"
+                          fill="none" stroke="{{ palette[(loop.index0) % (palette|length)]|e }}"
+                          stroke-width="1.5" vector-effect="non-scaling-stroke" />
+                  </svg>
+                {% endif %}
                 {{ words(name.get('en', line.market_id), name.get('zh', line.market_id)) }}
               </th>
               <td>{{ line.observations|e }}</td>
