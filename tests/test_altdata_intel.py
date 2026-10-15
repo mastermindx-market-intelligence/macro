@@ -4,9 +4,13 @@ emit. No network, no LLM (the brain call is injected)."""
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
 import pandas as pd
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import altdata_models as M
 from engine import altdata_brain as B
@@ -389,3 +393,131 @@ def test_emit_brain_usable_flag(tmp_path):
     # No brain at all
     out_none = EM.build_mastermind(by_ticker, {}, {}, {}, {}, root=tmp_path, top=10)
     assert out_none["brain_usable"] is False, "absent brain → brain_usable should be False"
+# ===================================================================== W16-B-FOA: federal pipeline
+# counts (scripts.build_alt_data.theme_pipeline_counts + the alt_data.html.j2 card).
+# Display-only per-theme SAM/FOA notice counts, 90d recent vs the prior 90d.
+# Synthetic frames under tmp_path ONLY — the committed data/ parquets are never read.
+
+
+def _write_velocity_parquet(path: Path, triples):
+    """Producer-shaped frame: index basket_id, columns recent_count/prior_count/
+    n_members/covered (collectors/sam_gov.py:142, collectors/grants_gov.py:76)."""
+    df = pd.DataFrame(
+        [{"basket_id": b, "recent_count": rc, "prior_count": pc,
+          "n_members": 1, "covered": ""} for b, rc, pc in triples]
+    ).set_index("basket_id")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path)
+
+
+def _render_alt_data(overrides: dict) -> str:
+    """Render the real page through the builder's Environment shape
+    (scripts/build_alt_data.py:117 — FileSystemLoader(templates), autoescape=True)
+    with the minimal context the page needs: the ungridged signal feeds as empty
+    lists, an honest no-history track, everything else empty."""
+    from jinja2 import Environment, FileSystemLoader
+
+    root = Path(__file__).resolve().parent.parent
+    env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
+    feed = {"as_of": "2026-01-01", "source": "fixture", "datasets": {}, "signals": {
+        "gov_contracts": [], "political": {"buys": []}, "insiders": {"buys": []},
+        "app_ratings": [], "patents": [], "lobbying": [], "inst_13f": {"adds": []},
+        "bills": []}}
+    ctx = dict(
+        feed=feed, alerts=[],
+        track={"overall": {"hit_rate": None}, "scored_total": None},
+        influence={}, picks={}, brain={},
+        mastermind={"signals": [], "broken_signals": []},
+        generated_utc="2026-01-01 00:00 UTC",
+        qledger_chips={}, desk_grader={},
+        active_section="research", active_page="alt_data",
+    )
+    ctx.update(overrides)
+    return env.get_template("alt_data.html.j2").render(**ctx)
+
+
+def test_pipeline_counts_reads_both_frames(tmp_path):
+    from scripts.build_alt_data import theme_pipeline_counts
+
+    _write_velocity_parquet(tmp_path / "data" / "sam_gov" / "opp_velocity.parquet",
+                            [("fixture_robot", 12, 5), ("fixture_space", 3, 1)])
+    _write_velocity_parquet(tmp_path / "data" / "grants_gov" / "foa_velocity.parquet",
+                            [("fixture_robot", 7, 2), ("fixture_bio", 40, 9)])
+    (tmp_path / "data" / "sam_gov" / "opp_velocity_meta.json").write_text(
+        json.dumps({"as_of": {"fixture_robot": "2026-01-02"}}))
+
+    out = theme_pipeline_counts(tmp_path)
+    assert out["window_days"] == 90
+    # exact rows, exact order: recent-max desc (40, 12, 3), then basket_id asc
+    assert out["rows"] == [
+        {"basket_id": "fixture_bio", "sam_recent": None, "sam_prior": None,
+         "foa_recent": 40, "foa_prior": 9, "sam_as_of": None},
+        {"basket_id": "fixture_robot", "sam_recent": 12, "sam_prior": 5,
+         "foa_recent": 7, "foa_prior": 2, "sam_as_of": "2026-01-02"},
+        {"basket_id": "fixture_space", "sam_recent": 3, "sam_prior": 1,
+         "foa_recent": None, "foa_prior": None, "sam_as_of": None},
+    ]
+    for row in out["rows"]:        # plain int (never numpy); absent stays None
+        for key in ("sam_recent", "sam_prior", "foa_recent", "foa_prior"):
+            assert row[key] is None or type(row[key]) is int, (row["basket_id"], key)
+
+
+def test_pipeline_counts_missing_files_is_empty(tmp_path):
+    from scripts.build_alt_data import theme_pipeline_counts
+
+    out = theme_pipeline_counts(tmp_path)   # no files at all — must not raise
+    assert out["rows"] == []
+
+
+def test_alt_data_template_renders_pipeline_counts():
+    html = _render_alt_data({"pipeline_counts": {"rows": [
+        {"basket_id": "fixture_robot", "sam_recent": 12, "sam_prior": 5,
+         "foa_recent": None, "foa_prior": None, "sam_as_of": "2026-01-02"},
+        {"basket_id": "<b>x</b>", "sam_recent": 1, "sam_prior": 0,
+         "foa_recent": None, "foa_prior": None, "sam_as_of": None}],
+        "window_days": 90}})
+    assert "Federal pipeline counts" in html
+    assert "fixture_robot" in html
+    assert ">12<" in html                     # count lands in its own cell
+    assert "2026-01-02" in html               # sam_as_of; page clock dates are 2026-01-01
+    assert "&lt;b&gt;x&lt;/b&gt;" in html     # producer basket_id is escaped...
+    assert "<b>x</b>" not in html             # ...never raw-marked-up
+    assert "联邦项目管线数量" in html             # zh half of the fixed card title
+
+
+def test_alt_data_template_hides_pipeline_counts_when_empty():
+    # control first: the card DOES show when rows exist, so the negatives below
+    # prove the guard (empty rows / absent key), not merely an absent feature.
+    one_row = [{"basket_id": "fixture_robot", "sam_recent": 12, "sam_prior": 5,
+                "foa_recent": None, "foa_prior": None, "sam_as_of": None}]
+    assert "Federal pipeline counts" in _render_alt_data(
+        {"pipeline_counts": {"rows": one_row}})
+    assert "Federal pipeline counts" not in _render_alt_data(
+        {"pipeline_counts": {"rows": []}})
+    assert "Federal pipeline counts" not in _render_alt_data({})   # key absent entirely
+
+
+def test_alt_data_main_passes_pipeline_counts():
+    """main() must hand the card its data. Chosen: AST source assertion (commission
+    fallback) — stubbing every main() collaborator to capture render kwargs is far
+    beyond ~40 lines and write_page would land on the real site/ from a test."""
+    import ast
+
+    root = Path(__file__).resolve().parent.parent
+    tree = ast.parse((root / "scripts" / "build_alt_data.py").read_text())
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, ast.FunctionDef) and n.name == "main")
+    renders = []
+    for node in ast.walk(main_fn):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "render"
+                and isinstance(node.func.value, ast.Call)
+                and isinstance(node.func.value.func, ast.Attribute)
+                and node.func.value.func.attr == "get_template"
+                and node.func.value.args
+                and isinstance(node.func.value.args[0], ast.Constant)
+                and node.func.value.args[0].value == "alt_data.html.j2"):
+            renders.append(node)
+    assert len(renders) == 1, f"expected exactly one alt_data render in main()"
+    assert "pipeline_counts" in {kw.arg for kw in renders[0].keywords}, (
+        "main() must pass pipeline_counts= into the alt_data.html.j2 render call")

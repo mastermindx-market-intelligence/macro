@@ -32,6 +32,18 @@ MMX_DATA_REQUEST
 
 Report the actual stored coverage, source alias, evidence kind, missingness and material caveats. Filesystem modification time is not data freshness. A source version token identifies a local observation; it is not a full content hash or a permanent snapshot guarantee. Date filtering does not reconstruct point-in-time availability. Preserve raw/adjusted price basis and timezone; do not silently rescale, backfill, or convert clocks.
 
+## Inspect a historical market day
+
+Use `history_dossier` only when the installed capabilities advertise it. This composes one exact historical date from an existing Market Memory archive and an optional macro chronology through the same descriptor-confined roots. Do not silently fall back to feature-worktree code, a latest-data read, or a different date when installation or data is absent.
+
+Discover the retained archive and its producer receipt with `browse` and `read`. Select the exact `manifest.json` reference and the receipt's `manifest_sha256`; a filesystem version is not a manifest digest. Never guess a digest or hash a reconstructed JSON object in place of the retained bytes. Pair an optional `macro_ref` with its exact `macro_sha256`. The request reference contains examples.
+
+Daily dossiers carry the stored feature version and code hashes separately from the reading implementation. Source provenance is a compact digest projection; the exact retained manifest holds full capture details. Macro date views omit later revision-end metadata and distinguish the declared archive window from complete market-calendar coverage.
+
+Default requests never open outcome files. Reveal future outcomes only for an explicit educational/evaluation request using `reveal_outcomes:true`; do not allow those outcomes into the historical decision input. An offline browser deliberately exported with outcomes is educational, not an evaluation security boundary.
+
+Report the selected-proxy denominator, exact date, source receipts and missing coverage. The macro panel holds initial release records, not full revision history, consensus forecasts or verified intraday release times. A price move and a same-date macro record do not prove a causal explanation. These dossiers are `RETROSPECTIVE_EXPLORATORY`, not strict point-in-time replay, actual historical Mastermind alerts, whole-market breadth or trading approval. Null observations and absent dates must remain explicit.
+
 ## Test with the existing Lab
 
 Use `lab_signals` to discover recipes and their support status, then `lab_plan` to make the intended test concrete. The installed adapter admits only reviewed OHLCV-only recipe modules. Other catalog entries remain discoverable with a refusal reason.
