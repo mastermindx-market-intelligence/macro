@@ -12,6 +12,7 @@ from datetime import date
 from math import isfinite
 import re
 from xml.etree import ElementTree
+from urllib.parse import urlencode
 
 
 _ENTRY = {
@@ -97,6 +98,15 @@ def _theme_context(row):
     return {"href": f"/baskets.html#theme-{theme_id}",
             "en": f"{name} · Explore context",
             "zh": f"{_text(theme.get('name_zh')) or name} · 探索背景"}
+
+
+def _memory_href(ticker):
+    """Open the existing symbol tool, without claiming a retained-episode match."""
+    if not ticker or not re.fullmatch(r"[A-Z0-9^][A-Z0-9.^=_-]{0,19}", ticker):
+        return None
+    # Explicit issuer intent prevents the receiver's cached/default AAPL fallback.
+    # No candidate, generation, assessment, or private evidence is transferred.
+    return "/market_memory.html?" + urlencode({"mm_issuer_input": ticker})
 
 
 def _evidence_profile(prophet):
@@ -257,6 +267,7 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
         "marks": supplied_marks, "added_date": _session_date(row.get("added_date")),
         "context": {"href": link, "label": _words(context.get("en"), context.get("zh"))} if link else None,
         "terms": terms, "setup_href": _href(setup_href),
+        "memory_href": _memory_href(ticker),
         "compare_enabled": compare_enabled is True and bool(ticker),
         "source_fields": {"stance": "entry_signal.status", "assessment_asof": None, "signal_asof": "signal_asof",
                           "quote.price": "price", "quote.asof": "price_as_of", "chart.points": "spark_svg numeric geometry",

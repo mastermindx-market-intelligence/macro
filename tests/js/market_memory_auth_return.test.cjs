@@ -4,8 +4,8 @@ const root=path.resolve(__dirname,'../..');
 const script=n=>fs.readFileSync(path.join(root,'templates',n),'utf8');
 const tick=()=>new Promise(r=>setImmediate(r));
 function setup(query, capsule) {
- const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list'];
- const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',events:{},addEventListener(t,f){this.events[t]=f;}}]));
+ const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list','mmr-legacy'];
+ const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',open:false,tagName:id==='mmr-legacy'?'DETAILS':'DIV',events:{},addEventListener(t,f){this.events[t]=f;}}]));
  const events={},windowEvents={},pending=[],stored={market_memory_ticker:'AAPL'};
  let lang='en',authChanged,opened=0,capsuleWrites=0;
  const location=new URL('https://mastermind-x.com/market_memory.html'+query);
@@ -216,4 +216,21 @@ test('macro sign-in retry renders pending in both languages until the current re
  replyLegacy(x.pending.filter(p=>p.url.includes('/macro?')).at(-1),503);await tick();
  assert.equal(x.elements['mm-macro-note'].textContent,'');
  assert.match(x.elements['mm-macro-state'].textContent,/Memory unavailable/);
+});
+
+// Prophet's explicit symbol handoff reveals the existing recomputed tool only.
+test('explicit issuer opens its own research disclosure without a cached-symbol substitution',async()=>{
+ const x=setup('?mm_issuer_input=BRK.B&mm_lang=zh');await tick();
+ assert.equal(x.elements['mmr-legacy'].open,true);
+ assert.equal(x.elements['mm-symbol-input'].value,'BRK.B');
+ assert.equal(x.pending.filter(p=>p.url.includes('/symbol/')).length,1);
+ assert.ok(x.pending.some(p=>p.url.endsWith('/symbol/BRK.B')));
+ const intent=x.window.MarketMemoryIntent.read().intent;
+ assert.equal(intent.issuerInput,'BRK.B');assert.equal(intent.language,'zh');
+ assert.equal(Object.hasOwn(intent,'query'),false);assert.equal(Object.hasOwn(intent,'gen'),false);
+});
+test('ordinary saved-output navigation keeps recomputed history collapsed',async()=>{
+ const x=setup('?mm_mode=saved&mm_query=exact-original');await tick();
+ assert.equal(x.elements['mmr-legacy'].open,false);
+ assert.equal(x.window.MarketMemoryIntent.read().intent.query,'exact-original');
 });

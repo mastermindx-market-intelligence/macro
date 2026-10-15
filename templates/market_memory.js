@@ -490,6 +490,12 @@
       initial = normalizeTicker(initial) || 'AAPL';
     }
     ui.symbolInput.value = initial;
+    // An explicit issuer handoff opens its existing research surface. Ordinary
+    // saved-output browsing stays collapsed; neither path changes the read API.
+    if (explicitInput) {
+      var symbolDisclosure = document.getElementById('mmr-legacy');
+      if (symbolDisclosure && symbolDisclosure.tagName === 'DETAILS') symbolDisclosure.open = true;
+    }
     window.addEventListener('popstate', function () {
       if (!window.MarketMemoryIntent) return;
       var restored = window.MarketMemoryIntent.read();
