@@ -23,9 +23,8 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Repair PR9463's concrete CI scope/test-discovery failures, then follow its
-  original run and fence/capture releases. Existing Fabric owner diagnoses the
-  two refused original review collections and native watch envelope mismatch.
+  Follow PR9463 CI after the runtime-job packing repair and the existing
+  fence/capture merge controller. Preserve the refused original review reads.
   The fixed-plan two-file source-release decision is pending Chris; no replay.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
@@ -52,46 +51,42 @@ landmines:
 Current checkpoint — 2026-10-15 (Vancouver).
 
 Strict transport #9190 and structural validation #9100 are merged. Fence #9077
-was refreshed by its controller to a2be6964461f. Capture #9099 now includes
-main at 12da71edd753: the import-closure check passes and all118committed asset
-pairs agree. Its initial local sync test refused the sparse checkout; full-tree
-CI remains required. The carrier is rearmed after the push. The fence contract-delta
-check has passed. No new runner was requested for the previous infrastructure
-failure. Normal merge controls remain in force.
+at ed5e9d44fde3 and capture #9099 at 0c5a06c0c4f2 have concluded selected checks
+and remain armed under the normal merge controller. Neither is yet merged.
 
-Draft PR9463 at b736dcfc80d2 integrates the current fence and capture branches,
-including their landed-base repairs and the strict transport. Combined source
-checks passed1183tests and128subtests with four platform-specific skips. Its
-contract-delta failure identified missing dependency paths and unnamed runtime
-suites; the source repair extends six job scopes and explicitly names33suites. The changed deploy composition passed 270 checks; its capsule bytes
-remain unchanged. The actual local admin server, existing login/session flow,
-API and browser display were exercised with the retained synthetic fixture:
-unsigned diagnostics return401, authenticated good/refused rows preserve their
-values and coverage, language/theme controls work, and logout closes the view.
-This is local authenticated integration, not installed production proof. Evidence:
-/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
+Draft PR9463 integrates their source and the strict transport. Combined source
+checks passed 1,183 tests and 128 subtests with four platform-specific skips. Its
+b98d93974a24 CI run 38736474156 fixed the earlier import-closure and test-discovery
+failures but exposed one packing regression: the landing-page probe selected
+5,808 weight-seconds against its unchanged 5,803 ceiling. This revision separates the
+33 fixed-runtime suites into a dedicated code-gate job, scoped to their helpers
+and canonical transport. The authority job's weight falls from 131 to 60; the new
+runtime job retains 71. The three affected curation/closure/packing checks pass.
+The exact new manifest command passes 616 tests and 67 subtests, with four platform
+skips. This is source qualification; no Docker or host qualification was run.
+The frozen v4 capsule remains unchanged and undispatched.
 
-V4 remains prepared and undispatched. The existing Fabric owner has reviewed the
-missing same-operation plaintext collector in Mastermind PR1520; it is merged
-and installed. Both original-parent collection attempts then refused local
-binding validation before destination creation. The owner diagnosed the shared
-0775external-volume ancestor; no retry, rehome or permission change was made.
-The actual review content remains unconsumed. The existing owner also has the
-Codex watch-envelope defect; no local CI observer was launched.
+The actual local admin server, existing login/session flow, API and browser
+were previously exercised using synthetic data: anonymous diagnostics return 401,
+authenticated good/refused rows preserve coverage and values, theme/language
+controls work and logout closes access. Production proof remains outstanding.
+Evidence: /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
 
-The original Fabric leaf rf-fixed-workload-plans-01a1333c-v1 still owns the
-seven-workload factory and its tests. Its single collection refused the remote
-directory ownership/mode; the local controller has no current process handle.
-Fabric Integration confirmed the refusal remains closed, with no termination
-proof or replacement authority. Root's separate frontend passed14component
-checks using an explicit plan fixture and fake Docker responses. It is preserved
-under containment-acceptance/workloads/root-frontend-prototype-v1 in programme
-evidence, outside the committed build and frozen v4 capsule. Factory integration
-and scoped review remain outstanding. Trusted host/resource mapping, helper
-census, cleanup qualification and candidate admission remain unfinished. The
-general engine still has no qualification issuer; enrollment alone cannot enable it.
+Fabric PR1524 is merged and installed. Its guard fixes Codex CI-watch recognition;
+its collector reports the initial binding refusal accurately. Both original Qwen
+review collections remain refused before destination creation because the shared
+external-volume ancestor is group-writable. No retry, rehome or permission change
+was made; review content remains unconsumed. The old refused watch stays closed;
+only a new CI operation can receive a fresh observer binding.
 
-Reuse prior accepted source, visual and scientific-mechanics checks until their
-relevant inputs change. Original contracts EFFECT_UNKNOWN remains quarantined
-under Chris's decision. The new two-file source-release decision is pending;
-independent release and recovery work remains ready. The programme is incomplete.
+The original rf-fixed-workload-plans-01a1333c-v1 still reserves its factory and
+test outputs after a refused remote collection with unknown termination. Chris's
+two-file quarantine/source-release decision remains pending. The separate root
+frontend's 14 fixture-based component checks are retained outside the committed
+build. Trusted host/resource mapping, helper census, cleanup qualification and
+candidate admission remain unfinished. The general engine has no qualification
+issuer; enrollment alone cannot enable it. The original contracts operation stays
+EFFECT_UNKNOWN under Chris's earlier quarantine decision.
+
+Reuse accepted unchanged checks. The programme remains incomplete; actual
+candidate execution, scientific inference and prospective evidence are unqualified.
