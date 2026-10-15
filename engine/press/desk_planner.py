@@ -886,6 +886,76 @@ def chronicle_context(as_of: date, *, tickers=None, topics=None,
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, str]]:
+    """Bind paper-plan limits to the incumbent corrected, non-quarantined event.
+
+    Chronicle intentionally carries a compact outcome. Its consumer must retain
+    the signal clock and provisional status before that outcome reaches prose.
+    The native adapter owns the event/return calculation; no producer is rewritten.
+    """
+    from engine.chronicle.adapters import adapt_prophet_ledger  # noqa: PLC0415
+    from engine.prophet_integrity import load_effective_ledger  # noqa: PLC0415
+
+    root = repo_root(root)
+    paths = [root / 'data/prophet' / name for name in (
+        'ledger.jsonl', 'ledger_corrections.jsonl', 'ledger_quarantine.json')]
+    def snapshot():
+        return [hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None
+                for p in paths]
+    try:
+        before = snapshot()
+        projection = load_effective_ledger(root)
+        events, _ = adapt_prophet_ledger(root)
+        if before != snapshot():
+            return {}
+    except Exception as exc:  # noqa: BLE001 — one unavailable source costs its slots
+        log.warning("press: Prophet scope unavailable (%s)", type(exc).__name__)
+        return {}
+    by_id: dict[str, list[dict]] = {}
+    for row in projection.rows:
+        by_id.setdefault(str(row.get("id") or ""), []).append(row)
+    result = {}
+    for event in events:
+        ref = event["source_ref"]
+        if ref not in refs:
+            continue
+        rows = by_id.get(ref, [])
+        if len(rows) != 1 or ref in projection.quarantined_ids:
+            continue
+        row = rows[0]
+        if row.get('schema') != 'prophet.ledger/v1':
+            continue
+        dates = {key: row.get(key) for key in (
+            'asof', 'signal_date', 'source_marker_date', 'entry_date',
+            'confirmed_date', 'close_date')}
+        if not dates['asof'] or any(
+            value is not None and (not isinstance(value, str)
+                or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value)
+                or _as_date(value) is None or _as_date(value) > as_of)
+            for value in dates.values()
+        ):
+            continue
+        provisional = row.get('signal_provisional')
+        if provisional is not None and type(provisional) is not bool:
+            continue
+        basis = row.get('signal_date_basis') or 'not_recorded'
+        if not isinstance(basis, str) or not re.fullmatch(r'[a-z_]{1,40}', basis):
+            continue
+        status = 'unknown' if provisional is None else str(provisional).lower()
+        def clock(key):
+            return dates[key] or "not recorded"
+        scope = (
+            'Simulated paper-plan outcome, not executed trades or investor returns. '
+            f'provisional={status}; confirmation={clock("confirmed_date")}; '
+            f'signal_date_basis={basis}; signal={clock("signal_date")}; '
+            f'source_marker={clock("source_marker_date")}; '
+            f'entry={clock("entry_date")}; closed={clock("close_date")}. '
+            'A legacy alias is not a fresh signal. No company-event causality is evidenced.'
+        )
+        result[ref] = (event, scope)
+    return result
+
+
 def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
                 blocked_refs: set[str], *, name: str = "brief") -> list[dict]:
     from lib.pages import rendered_ticker_pages  # noqa: PLC0415
@@ -902,6 +972,9 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
         if str(e.get("source") or "") not in excluded
     ][: int(desk_cfg.get("candidate_pool") or 12)]
 
+    prophet_refs = {str(e.get("source_ref") or "") for e in cands
+                    if e.get("source") == "prophet_ledger"}
+    prophet_scopes = _prophet_scopes(root, as_of, prophet_refs) if prophet_refs else {}
     stats = engine_stat_facts(root, as_of=as_of)
     movers = mover_facts(root, as_of=as_of)
     publication = str(desk_cfg.get("publication") or "flagship")
@@ -920,6 +993,13 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
             continue
 
         lead = _event_fact(ev)
+        if ev.get("source") == "prophet_ledger":
+            bound = prophet_scopes.get(str(ev.get("source_ref") or ""))
+            if bound is None or any(ev.get(key) != bound[0].get(key) for key in (
+                "id", "date", "kind", "source", "source_ref", "title", "facts", "tickers"
+            )):
+                continue
+            lead["context_relevance"] = bound[1]
         revision_receipt = str(lead.get("receipt") or "").lower()
         if ev.get("source") == "earnings_call" and not _SHA256_RECEIPT_RE.fullmatch(
             revision_receipt

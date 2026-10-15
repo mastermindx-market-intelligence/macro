@@ -618,3 +618,80 @@ def test_planner_never_seeds_banned_vocabulary_into_the_prompt_context():
 def test_slugify_matches_the_estate_slug_shape():
     assert P.slugify("Risk Radar: Watch → Caution!") == "risk-radar-watch-caution"
     assert P.slugify("x" * 200) == "x" * 70
+
+
+def _prophet_scope_fixture(tmp_path, **overrides):
+    from engine.chronicle.adapters import adapt_prophet_ledger
+
+    root = F.fixture_root(tmp_path)
+    row = {
+        'schema': 'prophet.ledger/v1', 'id': 'POWI-BULL-20260930',
+        'asset': 'POWI', 'direction': 'BULL', 'outcome': 'INVALIDATED',
+        'stock_result_pct': -13.5521, 'days_held': 14,
+        'close_date': '2026-10-14', 'asof': '2026-10-15',
+        'signal_date': '2026-09-30', 'signal_date_basis': 'tier_event_date',
+        'source_marker_date': '2026-09-30', 'entry_date': '2026-09-30',
+        'signal_tier': 'T1', 'signal_provisional': True, 'confirmed_date': None,
+    }
+    row.update(overrides)
+    ledger = root / 'data/prophet/ledger.jsonl'
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text(json.dumps(row) + '\n')
+    events, gap = adapt_prophet_ledger(root)
+    assert not gap and len(events) == 1
+    (root / 'data/chronicle/events.jsonl').write_text(json.dumps(events[0]) + '\n')
+    return root, row, ledger
+
+
+def test_prophet_scope_reaches_writer_without_creating_receipts(tmp_path):
+    from engine.press import writer, validators
+
+    root, row, ledger = _prophet_scope_fixture(tmp_path)
+    before = ledger.read_bytes()
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    lead = slot['facts'][0]
+    scope = lead.get('context_relevance', '')
+    assert 'paper-plan' in scope and 'not executed trades' in scope
+    assert 'provisional=true' in scope and 'confirmation=not recorded' in scope
+    assert 'signal_date_basis=tier_event_date' in scope
+    assert 'signal=2026-09-30' in scope and 'closed=2026-10-14' in scope
+    assert len(scope) <= 500
+    assert lead['values'] == []
+    plain = copy.deepcopy(slot)
+    plain['facts'][0].pop('context_relevance')
+    assert validators.fact_tier_index(slot) == validators.fact_tier_index(plain)
+    _, prompt = writer.build_prompt(slot, P.load_config(root))
+    assert scope in prompt and ledger.read_bytes() == before
+
+
+def test_prophet_legacy_alias_does_not_become_fresh_confirmation(tmp_path):
+    root, _, _ = _prophet_scope_fixture(
+        tmp_path, signal_date_basis='legacy_formation_alias',
+        source_marker_date='2026-06-17', signal_provisional=False, signal_tier=None,
+    )
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    scope = slot['facts'][0]['context_relevance']
+    assert 'source_marker=2026-06-17' in scope
+    assert 'legacy alias is not a fresh signal' in scope
+    assert 'confirmation=not recorded' in scope
+
+
+@pytest.mark.parametrize('change', ['missing', 'corrupt', 'quarantined', 'changed_outcome', 'future'])
+def test_prophet_scope_refuses_unbound_or_unusable_ledger(tmp_path, change):
+    from engine.prophet_integrity import LEDGER_QUARANTINE_SCHEMA
+
+    root, row, ledger = _prophet_scope_fixture(tmp_path)
+    if change == 'missing':
+        ledger.unlink()
+    elif change == 'corrupt':
+        ledger.write_text('{broken\n')
+    elif change == 'quarantined':
+        (ledger.parent / 'ledger_quarantine.json').write_text(json.dumps({
+            'schema': LEDGER_QUARANTINE_SCHEMA, 'count': 1,
+            'quarantined': [{'id': row['id'], 'reason': 'unqualified outcome'}],
+        }))
+    else:
+        row['outcome' if change == 'changed_outcome' else 'asof'] = (
+            'T1_HIT' if change == 'changed_outcome' else '2026-10-16')
+        ledger.write_text(json.dumps(row) + '\n')
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []

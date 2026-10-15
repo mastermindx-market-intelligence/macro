@@ -2,7 +2,7 @@
   "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
   "scripts/run_press.py": "6d8d4a566d44ad3f7bb6c42763b0d1d951f6d3d850594525e85f10e84afed1fb",
   "engine/press/validators.py": "cac4c0c2a41a659247c44ad99ac1d21affab1ec8e5124e3e8365a29d9d10f817",
-  "engine/press/desk_planner.py": "c527ee752b25de96485d8ac9396f6637d95a92faaf9ea114afc06cf6ff406bfa",
+  "engine/press/desk_planner.py": "93bed297a32ea5c890ecc002c26f3c23b06c37f452d642252789b695b8a8550a",
   "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
   "engine/press/earnings_adapter.py": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
   "engine/earnings_narrative/story_packets.py": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",
@@ -22,5 +22,7 @@
   "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
   "engine/press/official_feed_candidate.py": "af349f5784bdd0c6484617803e0e221d8fd1d865ceedbe8c9334867b5dcc9e1e",
   "engine/marketing/breaking_feed.py": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6",
-  "scripts/stage_official_feed_press.py": "8c3b19d7186e15efc3eb6205ffed24b322b5ae1215801bf394f3a1c98425990a"
+  "scripts/stage_official_feed_press.py": "8c3b19d7186e15efc3eb6205ffed24b322b5ae1215801bf394f3a1c98425990a",
+  "engine/chronicle/adapters.py": "45057afffa29873cc59d2518cba11a36dd4e2979d922768d1ca601d9654c7166",
+  "engine/prophet_integrity.py": "992a0589ef005696159536148b3a0ef11604663bb29d318194050920abd99ab3"
 }

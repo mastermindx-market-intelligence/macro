@@ -166,6 +166,54 @@ with tempfile.TemporaryDirectory(prefix="mmx-research-pool-") as directory:
         cfg["desks"]["research_desk"]["cadence_per_day"] = 0
         assert plan(path, cfg) == []
         controls.append("zero-cadence-and-dark-note-preserved")
+        # The Brief consumes the original corrected Prophet ledger and clocks.
+        from engine.chronicle.adapters import adapt_prophet_ledger
+        from engine.press.validators import fact_tier_index
+        from engine.prophet_integrity import LEDGER_QUARANTINE_SCHEMA
+        path, cfg = fixture("prophet-scope")
+        ledger = path / "data/prophet/ledger.jsonl"
+        ledger.parent.mkdir(parents=True)
+        chronicle = path / "data/chronicle/events.jsonl"
+        chronicle.parent.mkdir(parents=True)
+        row = {"schema": "prophet.ledger/v1", "id": "TEST-BULL-20260712",
+               "asset": "TEST", "direction": "BULL", "outcome": "INVALIDATED",
+               "stock_result_pct": -13.5521, "days_held": 14,
+               "close_date": "2026-07-26", "asof": "2026-07-26",
+               "signal_date": "2026-07-12", "signal_date_basis": "tier_event_date",
+               "source_marker_date": "2026-07-12", "entry_date": "2026-07-12",
+               "signal_provisional": True, "confirmed_date": None}
+        ledger.write_text(json.dumps(row) + "\n")
+        events, gap = adapt_prophet_ledger(path)
+        assert not gap and len(events) == 1
+        chronicle.write_text(json.dumps(events[0]) + "\n")
+        def brief():
+            return P.plan(["brief"], root=path, cfg=cfg, as_of=clock)
+        slot, = brief()
+        scope = slot["facts"][0]["context_relevance"]
+        assert "provisional=true" in scope and "not executed trades" in scope
+        assert "confirmation=not recorded" in scope and "closed=2026-07-26" in scope
+        plain = copy.deepcopy(slot)
+        plain["facts"][0].pop("context_relevance")
+        assert fact_tier_index(slot) == fact_tier_index(plain)
+        assert scope in W.build_prompt(slot, cfg)[1]
+        controls.append("prophet-paper-plan-scope-without-new-receipt-credit")
+        row.update(signal_date_basis="legacy_formation_alias", source_marker_date="2026-04-12")
+        ledger.write_text(json.dumps(row) + "\n")
+        slot, = brief()
+        scope = slot["facts"][0]["context_relevance"]
+        assert "source_marker=2026-04-12" in scope and "legacy alias is not a fresh signal" in scope
+        controls.append("prophet-legacy-marker-clock-preserved")
+        original = ledger.read_bytes()
+        for field, value in (("outcome", "T1_HIT"), ("asof", "2026-07-27")):
+            changed = dict(row, **{field: value})
+            ledger.write_text(json.dumps(changed) + "\n")
+            assert brief() == []
+        ledger.write_bytes(original)
+        (ledger.parent / "ledger_quarantine.json").write_text(json.dumps({
+            "schema": LEDGER_QUARANTINE_SCHEMA, "count": 1,
+            "quarantined": [{"id": row["id"], "reason": "fixture refusal"}]}))
+        assert brief() == []
+        controls.append("prophet-stale-future-quarantined-refused")
         assert writer.call_count == 0
 
 assert before == snapshot() and before_head == head()
