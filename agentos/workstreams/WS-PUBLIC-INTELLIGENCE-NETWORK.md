@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: CAT and Crop report files installed; CAT rank19/unheld16/pool8 NOT_SELECTED. Public524 traced to API stalls with concurrent full candidate normalization; existing9369 does not change captures. Preserve stack/holds; restore actual page/viewer acceptance through existing serving controls. 9209head1c7e58a6 CIgreen butstale/cap10of8; admitted refresh/protected install then SAME follow-on33groups. Publication0of10.
+next_action: CAT and Crop report files installed; CAT rank19/unheld16/pool8 NOT_SELECTED. Public524 traced to API stalls with concurrent full candidate normalization; existing9369 does not change captures. Preserve stack/holds; restore actual page/viewer acceptance through existing serving controls. 9209head99cc8729 admitted CI38695059724 running; admitted refresh/protected install then SAME follow-on33groups. Publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
@@ -1472,3 +1472,15 @@ permitted source qualification without forcing CAT selection. Consume admitted
 follow-on PR/install33groups. Application61b2cd38 remains434tests/1skip locally,
 not installed. Publication/cutoverfalse,D140/10; five held drafts,3dirty histories,
 Commission19,Catalyst8678,Oct11EFFECT_UNKNOWN and all refusals preserved.
+
+## 2026-10-15 07:12 — controller-admitted original refresh
+
+PR9209 is now99cc87295b22f0aad3734b83511e2d32aade1709, parents1c7e58a6 and
+protectedmain3f62e878. CI38695059724 has5packs/contract/planPASS and7packsrunning
+at the single wake read. Fullcontroller38696630760 waits for those checks; this
+supersedes the06:43capacity wait. All24Presssource and3reviewed page hashes remain
+identical. Portable postlanding-9209/99cc87295b22f0aad3734b83511e2d32aade1709/
+was copied from the verified bundle, all13filehashes and9Python syntaxchecksPASS.
+Prepared only, no production execution or protected merge. Original source
+worktrees untouched; no manualrefresh, newCI or observer. Current CAT/source/
+serving evidence is pushedcf602cf499594edcbcb45ae9c1a68a1ad3124954.

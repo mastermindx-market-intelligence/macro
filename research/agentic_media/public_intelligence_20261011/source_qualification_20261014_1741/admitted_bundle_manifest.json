@@ -1,0 +1,25 @@
+{
+  "prepared_at": "2026-10-15T07:12:40.627130+00:00",
+  "source_head": "99cc87295b22f0aad3734b83511e2d32aade1709",
+  "source_files_bound": 24,
+  "pages_bound": 3,
+  "portable_files": {
+    "postlanding/README.md": "afe7c3e4b7531db9228fc998482f039e6105f55aee088299433d3d107e5ba9b3",
+    "postlanding/install_bundle_coverage_repair.json": "c384dc9acc2411532ad4f92a32c155f444f6f3a7215dc99df9d4d9295b6b6fe4",
+    "postlanding/mmx-current-expected-hashes.json": "5ce9789d27e91c846609c41b942f6ad9a85a72ce0b5005d62be67d7cfee768ca",
+    "postlanding/mmx-current-expected-pages.json": "926ee9550b8191e8e27a1c7a9eae20a0571a75cbab6499c1931c49b14e04552d",
+    "postlanding/mmx-current-http-check.py": "cddd909b0a94047137861b027a8bc898e4aa77e4e36a25796b6ec2c8df8dece6",
+    "postlanding/mmx-current-install-check.py": "4fcc2b5305d3119118601e177c8b85663875ef75044ed27947f262174e2c395d",
+    "postlanding/mmx-current-runtime-inspect.py": "a89fd571ea7f52f7a17d20484370d9273e9b0c893d5b2b5cad9d88570ef89499",
+    "postlanding/mmx_ancestry.py": "d46fdaffec73c22d5e48dd5c061d920a0bbb852d27ce6c0f21e452f5d1317021",
+    "postlanding/prepare-ancestry.py": "cd538df10851d5c7df09007049a20ca16572ed469348d88d36cc5a63af1fbb7d",
+    "installed_context_probe.py": "a9eb5a96bd42262e2ea979edc9f5c7911e67745ac7d8f16193b3a00270c43487",
+    "installed_official_writer_probe.py": "8462c2b3705e65356dd739446fe71cc4163eb633aad0f46ef11f81bc40126b3f",
+    "installed_publication_safety_probe.py": "e284bc09dfac33703f520bd6e0aa5c2f3c0d673b5d0b3c567c2b8e87977e858b",
+    "installed_official_staging_probe.py": "55949efc3700afb52b119f33c73689aa98dc7fb7f9c9704588469f746b974acf"
+  },
+  "production_executed": false,
+  "protected_merge_sha": null,
+  "scope": "Controller-admitted refresh;24sources/3pages unchanged from reviewed1c7 bundle. Current binding CI is running. Not merged or production executed; actual protected squash SHA required.",
+  "shared_page_review": "source_qualification_20261014_1219/shared_dependency_review.json; accepted shared hashes unchanged; fresh browser still required"
+}

@@ -1,3 +1,15 @@
+## 2026-10-15 07:12 — controller-admitted original refresh
+
+PR9209 is now99cc87295b22f0aad3734b83511e2d32aade1709, parents1c7e58a6 and
+protectedmain3f62e878. CI38695059724 has5packs/contract/planPASS and7packsrunning
+at the single wake read. Fullcontroller38696630760 waits for those checks; this
+supersedes the06:43capacity wait. All24Presssource and3reviewed page hashes remain
+identical. Portable postlanding-9209/99cc87295b22f0aad3734b83511e2d32aade1709/
+was copied from the verified bundle, all13filehashes and9Python syntaxchecksPASS.
+Prepared only, no production execution or protected merge. Original source
+worktrees untouched; no manualrefresh, newCI or observer. Current CAT/source/
+serving evidence is pushedcf602cf499594edcbcb45ae9c1a68a1ad3124954.
+
 ## 2026-10-15 07:07 continuation — CAT canonical source installed; public serving fault isolated
 
 Normal ingest38608708361 SUCCESS17:44:14Z October14 consumed the existing CAT
