@@ -1295,7 +1295,10 @@ def test_f4_a_contained_window_exceeding_its_container_is_contradicted():
     exact(record, "usage", None)
     assert record["usage"]["value"] is None
     assert "contained_window_exceeds_container:tx:f4-inception-to-0630" in record["usage"]["note"]
-    exact(record, "evidenced_floor", "4000000")
+    # A contradicted usage states no floor: 4,000,000 is not a bound once the
+    # windows disagree, and neither is 5,000,000.
+    exact(record, "evidenced_floor", None)
+    assert record["evidenced_floor"]["status"] == "contradicted"
     assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
         "tx:f4-inception-to-0630": "dominated",
         "tx:f4-inception-to-0930": "window",
@@ -1328,7 +1331,8 @@ def test_f6_covered_individuals_exceeding_their_window_are_contradicted():
     assert record["status"] == "contradicted"
     exact(record, "usage", None)
     assert "individual_exceeds_cumulative:tx:f6-inception-to-date" in record["usage"]["note"]
-    exact(record, "evidenced_floor", "1000000")
+    exact(record, "evidenced_floor", None)
+    assert record["evidenced_floor"]["status"] == "contradicted"
     assert {row["transaction_id"]: row["role"] for row in record["contributors"]} == {
         "tx:f6-inception-to-date": "window",
         "tx:f6-2026-05-01": "covered",
@@ -1746,6 +1750,174 @@ def test_apply_outstanding_evaluate_supply_end_to_end():
     assert SS.component(after_envelope, "existing_outstanding").value == "10000000"
     assert SS.cash_by_route(after_envelope)[instrument_id].gross.value == "900000"
     assert cash_of(ledger, "tx:exercise-2026-05-01")["realized_cash_kind"] == "proceeds"
+
+
+# ---------------------------------------------------------------------------
+# Audit repair — one shared window cover; a contradiction never yields a number
+# ---------------------------------------------------------------------------
+
+
+def warrant_balance(day: str = "2026-03-31", value: str = "1000000", **over) -> TransactionObservation:
+    over.setdefault("accepted", day)
+    over.setdefault("form", "10-Q")
+    return observation(kind="outstanding_balance", basis="point_in_time", event_date=day,
+                       instruments=value, security_class_id=WARRANT_CLASS, **over)
+
+
+def exercise_window(start: str, end: str = "2026-06-30") -> TransactionObservation:
+    return observation(kind="warrant_exercise", basis="cumulative", period_start=start, period_end=end,
+                       shares="100000", instruments="100000", settlement="cash", gross="100000",
+                       form="10-Q", accepted=end, accession="0001-26-000012")
+
+
+def test_a_contradicted_exercise_leaves_the_balance_contradicted_never_partly_decremented():
+    """Two filings disagreeing on one exercise: no version is the anchor less either of them."""
+    instrument_id, instruments = warrant_set()
+    balance = warrant_balance()
+    first = observation(kind="warrant_exercise", event_date="2026-05-01", shares="100000",
+                        instruments="100000", settlement="cash", price="1.00", gross="100000",
+                        form="8-K", accepted="2026-05-01", accession="0001-26-000010")
+    second = observation(kind="warrant_exercise", event_date="2026-05-01", shares="150000",
+                         instruments="150000", settlement="cash", price="1.00", gross="150000",
+                         form="10-Q", accepted="2026-06-15", accession="0001-26-000011")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(balance, first, second),
+                       bindings=(instrument_binding(balance, "tx:bal", instrument_id),
+                                 instrument_binding(first, "tx:ex", instrument_id),
+                                 instrument_binding(second, "tx:ex", instrument_id)),
+                       instruments=instruments)
+    assert by_id(ledger)["tx:ex"]["status"] == "contradicted"
+    latest = versions_of(ledger, instrument_id)[-1]
+    assert latest["effective_date"] == "2026-05-01"
+    assert latest["outstanding"] is None and latest["status"] == "contradicted"
+    assert any(flag.endswith(":tx:ex") for flag in latest["flags"]), latest["flags"]
+    assert all(item["outstanding"] in (None, "1000000") for item in versions_of(ledger, instrument_id))
+
+    applied = apply_outstanding(instruments, ledger)
+    IE.check_instrument_set(applied)
+    replaced = next(item for item in applied.instruments if item.instrument_id == instrument_id)
+    terms = {term.name: term for term in replaced.economic_terms}
+    assert terms["instruments_outstanding"].value.status == "contradicted"
+    assert terms["instruments_outstanding"].value.value is None
+
+
+def test_an_individual_sale_inside_a_counted_window_is_listed_but_never_added_twice():
+    """Usage and §6 share the §4 cover: the May sale is inside the Q2 window total."""
+    window = observation(kind="atm_sales", basis="cumulative", period_start="2026-04-01",
+                         period_end="2026-06-30", shares="500000", gross="5000000",
+                         form="10-Q", accepted="2026-06-30")
+    sale = observation(kind="atm_sales", event_date="2026-05-01", shares="100000", gross="1000000",
+                       form="8-K", accepted="2026-05-02", accession="0001-26-000002")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(window, sale),
+                       bindings=(binding(window, "tx:q2-window", programme_inception_date="2026-04-01"),
+                                 binding(sale, "tx:may-sale")),
+                       registration_paths=(shelf_path_record(),),
+                       share_observations=(share_ref("2026-03-31", "10000000"),
+                                           share_ref("2026-06-30", "10500000")))
+    exact(usage_of(ledger), "usage", "5000000")
+    reconciliation = ledger.share_reconciliations[0]
+    assert reconciliation["status"] == "known"
+    assert reconciliation["observed_delta"] == "500000"
+    assert reconciliation["evidenced_net_issuance"] == "500000"
+    assert reconciliation["unexplained_delta"] == "0"
+    assert reconciliation["transaction_ids"] == ["tx:may-sale", "tx:q2-window"]
+
+
+def test_two_inception_to_date_totals_for_one_period_end_are_a_contradiction_with_no_floor():
+    first = observation(basis="cumulative", period_end="2026-06-30", gross="5000000", accepted="2026-06-30")
+    second = observation(basis="cumulative", period_end="2026-06-30", gross="5200000",
+                         accepted="2026-07-02", form="10-Q", accession="0001-26-000003")
+    ledger = reconcile(observations=(first, second),
+                       bindings=(binding(first, "tx:itd-a"), binding(second, "tx:itd-b")),
+                       registration_paths=(shelf_path_record(),))
+    record = usage_of(ledger)
+    assert record["usage"]["status"] == "contradicted"
+    exact(record, "usage", None)
+    exact(record, "evidenced_floor", None)
+    assert record["evidenced_floor"]["status"] == "contradicted"
+
+
+def test_a_cumulative_exercise_window_wholly_after_the_balance_is_counted_when_it_closes():
+    """SPEC_X0 §5 step 2: only the window total is known, so no version is stated mid-window."""
+    instrument_id, instruments = warrant_set()
+    balance = warrant_balance()
+    window = exercise_window("2026-04-01")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(balance, window),
+                       bindings=(instrument_binding(balance, "tx:bal", instrument_id),
+                                 instrument_binding(window, "tx:q2-exercises", instrument_id)),
+                       instruments=instruments)
+    versions = versions_of(ledger, instrument_id)
+    assert [item["effective_date"] for item in versions] == ["2026-03-31", "2026-06-30"]
+    assert (versions[-1]["outstanding"], versions[-1]["status"]) == ("900000", "known")
+
+
+def test_an_exercise_window_straddling_the_balance_date_is_unknown_never_apportioned():
+    instrument_id, instruments = warrant_set()
+    balance = warrant_balance()
+    window = exercise_window("2026-03-01")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(balance, window),
+                       bindings=(instrument_binding(balance, "tx:bal", instrument_id),
+                                 instrument_binding(window, "tx:q2-exercises", instrument_id)),
+                       instruments=instruments)
+    latest = versions_of(ledger, instrument_id)[-1]
+    assert latest["effective_date"] == "2026-04-01"
+    assert (latest["outstanding"], latest["status"]) == (None, "unknown")
+    assert latest["flags"] == ["window_straddles_interval:tx:q2-exercises"]
+    assert "instrument_flow_window_not_apportioned:tx:q2-exercises" in unknown_ids(ledger)
+
+
+def test_a_programme_key_stated_by_one_filing_only_is_a_contradiction_not_a_crash():
+    first = observation(kind="atm_sales", event_date="2026-05-01", gross="1000000", form="8-K",
+                        accepted="2026-05-02")
+    second = observation(kind="atm_sales", event_date="2026-05-01", gross="1000000", form="10-Q",
+                         accepted="2026-06-15", accession="0001-26-000004")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(first, second),
+                       bindings=(binding(first, "tx:may", programme_key="atm1"), binding(second, "tx:may")),
+                       registration_paths=(shelf_path_record(),))
+    assert by_id(ledger)["tx:may"]["status"] == "contradicted"
+
+
+def test_one_amount_written_two_ways_is_one_value_not_a_contradiction():
+    first = observation(kind="atm_sales", event_date="2026-05-01", gross="1000000", form="8-K",
+                        accepted="2026-05-02")
+    second = observation(kind="atm_sales", event_date="2026-05-01", gross="1000000.00", form="10-Q",
+                         accepted="2026-06-15", accession="0001-26-000004")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(first, second),
+                       bindings=(binding(first, "tx:may"), binding(second, "tx:may")),
+                       registration_paths=(shelf_path_record(),))
+    record = by_id(ledger)["tx:may"]
+    assert record["status"] == "observed"
+    assert Decimal(record["gross_proceeds_usd"]) == Decimal("1000000")
+
+
+def test_two_balances_for_one_day_that_disagree_are_contradicted_never_chosen_between():
+    instrument_id, instruments = warrant_set()
+    first = warrant_balance()
+    second = warrant_balance(value="900000", form="8-K", accession="0001-26-000020")
+    ledger = reconcile(as_of=ts("2026-06-30"), observations=(first, second),
+                       bindings=(instrument_binding(first, "tx:bal-a", instrument_id),
+                                 instrument_binding(second, "tx:bal-b", instrument_id)),
+                       instruments=instruments)
+    versions = versions_of(ledger, instrument_id)
+    assert len(versions) == 1
+    assert versions[0]["effective_date"] == "2026-03-31"
+    assert (versions[0]["outstanding"], versions[0]["status"]) == (None, "contradicted")
+    assert versions[0]["flags"] == [f"conflicting_balances:{instrument_id}"]
+
+
+def test_apply_outstanding_refuses_a_ledger_dated_after_the_instrument_set():
+    instrument_id, instruments = warrant_set()
+    balance = warrant_balance()
+    ledger = reconcile(as_of=ts("2026-12-31"), observations=(balance,),
+                       bindings=(instrument_binding(balance, "tx:bal", instrument_id),),
+                       instruments=instruments)
+    with pytest.raises(c.ContractViolation, match="is after instrument set as_of"):
+        apply_outstanding(instruments, ledger)
+
+
+@pytest.mark.parametrize("text", ["1E+6", "1_000", "+5", " 5", "5.", ".5", "05"])
+def test_only_plain_decimal_text_is_an_exact_amount(text):
+    with pytest.raises(c.ContractViolation, match="is not a plain exact decimal"):
+        observation(event_date="2026-05-01", gross=text)
 
 
 def test_no_float_literal_in_this_test_file_outside_the_refusal_tests():

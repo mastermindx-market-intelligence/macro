@@ -58,7 +58,7 @@
         "usage_key": "shelf_usage:path:shelf:2025",
         "status": "contradicted",
         "usage": null,
-        "evidenced_floor": "4000000",
+        "evidenced_floor": null,
         "complete_through": "2026-09-30",
         "note_contains": "contained_window_exceeds_container:tx:f4-inception-to-0630",
         "roles": {

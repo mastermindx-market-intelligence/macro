@@ -47,7 +47,7 @@ from __future__ import annotations
 import dataclasses
 from datetime import date, datetime, timedelta
 from decimal import Decimal, localcontext
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, NamedTuple, Sequence
 
 from engine.capital_structure.issuer_state_contracts import (
     BINDING_ORIGINS,
@@ -72,6 +72,7 @@ from engine.capital_structure.issuer_state_contracts import (
     Quantity,
     ShareObservationRef,
     Unknown,
+    _DECIMAL,
     _assert_safe_keys,
     _date,
     _identifier,
@@ -352,6 +353,8 @@ def _exact(value: Any, label: str, *, signed: bool = False) -> str | None:
     if not isinstance(value, str):
         raise TypeError(f"{label}: an exact decimal string is required, got {type(value).__name__}")
     _require(bool(value), f"{label}: an empty string is not a decimal")
+    # Plain text only: exponents, underscores and a leading '+' are refused (S4).
+    _require(bool(_DECIMAL.match(value)), f"{label}: {value!r} is not a plain exact decimal")
     try:
         number = Decimal(value)
     except Exception as exc:  # InvalidOperation / ArithmeticError
@@ -837,17 +840,22 @@ def _usage_record(
     maximal: list[_Window] = []
     dominated: list[_Window] = []
     for index, candidate in enumerate(ordered):
-        containers = [item for item in ordered[:index] if item.contains(candidate)]
-        if not containers:
+        if any(item.contains(candidate) for item in ordered[:index]):
+            dominated.append(candidate)
+        else:
             maximal.append(candidate)
-            continue
-        dominated.append(candidate)
-        if any(
-            candidate.value is not None and item.value is not None and candidate.value > item.value
-            for item in containers
-        ):
-            contradicted = True
-            reasons.append(f"contained_window_exceeds_container:{candidate.transaction_id}")
+    # A contained window can never exceed its container.  Every ordered pair is
+    # checked, not only the sort order's containers: two identical windows
+    # contain each other, so two different amounts for one window contradict.
+    exceeding = sorted({
+        inner.transaction_id
+        for outer in ordered for inner in ordered
+        if inner is not outer and outer.contains(inner)
+        and inner.value is not None and outer.value is not None and inner.value > outer.value
+    })
+    for transaction_id in exceeding:
+        contradicted = True
+        reasons.append(f"contained_window_exceeds_container:{transaction_id}")
 
     maximal = sorted(maximal, key=lambda item: (item.start_key.toordinal(), item.end.toordinal(), item.transaction_id))
     roles: dict[str, str] = {item.transaction_id: "window" for item in maximal}
@@ -979,7 +987,10 @@ def _usage_record(
             (usage_key,),
         )
 
-    if not floor_known:
+    if contradicted:
+        # Contradicting documents leave no bound C2 may rely on (S2).
+        floor_quantity = Quantity(unit="usd", status="contradicted", note="; ".join(sorted(set(reasons))) or None)
+    elif not floor_known:
         floor_quantity = Quantity.unknown("usd", note="; ".join(sorted(set(reasons))) or None)
     else:
         floor_quantity = Quantity.known(_decimal_text(floor or Decimal(0)), "usd")
@@ -1029,18 +1040,6 @@ def _usage_record(
     }
 
 
-def _group_by_date(items: Sequence[Mapping[str, Any]]) -> list[tuple[date, list[Mapping[str, Any]]]]:
-    """Group date-sorted flows by their event date, keeping the order."""
-    grouped: list[tuple[date, list[Mapping[str, Any]]]] = []
-    for item in items:
-        day = _day(item["event_date"], "event_date")
-        if grouped and grouped[-1][0] == day:
-            grouped[-1][1].append(item)
-        else:
-            grouped.append((day, [item]))
-    return grouped
-
-
 def _instrument_unit(
     transactions: Sequence[Mapping[str, Any]], instrument: Instrument | None
 ) -> tuple[str, bool]:
@@ -1054,6 +1053,128 @@ def _instrument_unit(
     return ("principal_usd", False) if principal else ("instruments", False)
 
 
+class _Cover(NamedTuple):
+    """How the flows of one interval count, by the §4 window-coverage rules."""
+
+    counted: list[Mapping[str, Any]]
+    covered: list[Mapping[str, Any]]
+    unknown: list[tuple[str, Mapping[str, Any]]]
+    contradicted: list[tuple[str, Mapping[str, Any]]]
+
+
+def _cover_group(row: Mapping[str, Any]) -> tuple[Any, ...]:
+    """Windows and events cover each other only within one kind, target and programme."""
+    return (row["kind"], row["target_kind"], row["target_id"], row["programme_key"])
+
+
+def _effective(row: Mapping[str, Any]) -> date:
+    """The day a flow or balance takes effect: its event date, or a window's end."""
+    return _day(row["event_date"] or row["period_end"], "event_date")
+
+
+def _interval_cover(
+    rows: Sequence[Mapping[str, Any]],
+    lo: date,
+    hi: date,
+    quantity: Callable[[Mapping[str, Any]], Decimal | None],
+) -> _Cover:
+    """Window coverage of the flows in the interval ``(lo, hi]``.
+
+    A cumulative window counts only when it lies wholly inside the interval;
+    one that straddles either end is unknown and never apportioned.  Inside
+    the interval the §4 rules apply per cover group: a contained window is
+    dominated, an individual event inside a maximal window is covered, a
+    contained window larger than its container is contradicted, and
+    partially overlapping maximal windows are unknown.  A contradicted flow
+    never counts.
+    """
+    counted: list[Mapping[str, Any]] = []
+    covered: list[Mapping[str, Any]] = []
+    unknown: list[tuple[str, Mapping[str, Any]]] = []
+    contradicted: list[tuple[str, Mapping[str, Any]]] = []
+    inside: dict[tuple[Any, ...], list[_Window]] = {}
+    dated: list[tuple[date, Mapping[str, Any]]] = []
+    by_id: dict[str, Mapping[str, Any]] = {}
+    ordered = sorted(rows, key=lambda row: (row["event_date"] or row["period_end"] or "", row["transaction_id"]))
+    for row in ordered:
+        if row["reporting_basis"] == "cumulative":
+            end = _day(row["period_end"], "period_end")
+            start = _day(row["period_start"], "period_start") if row["period_start"] else None
+            if end <= lo or (start is not None and start > hi):
+                continue
+            if start is None or start <= lo or end > hi:
+                unknown.append(("window_straddles_interval", row))
+            elif row["status"] == "contradicted":
+                contradicted.append(("contradicted_flow", row))
+            else:
+                by_id[row["transaction_id"]] = row
+                inside.setdefault(_cover_group(row), []).append(
+                    _Window(row["transaction_id"], start, end, quantity(row)))
+            continue
+        day = _day(row["event_date"], "event_date")
+        if not lo < day <= hi:
+            continue
+        if row["status"] == "contradicted":
+            contradicted.append(("contradicted_flow", row))
+        else:
+            dated.append((day, row))
+
+    maximal: dict[tuple[Any, ...], list[_Window]] = {}
+    for group, members in inside.items():
+        windows = sorted(members, key=_Window.sort_key)
+        tops: list[_Window] = []
+        for index, window in enumerate(windows):
+            if any(earlier.contains(window) for earlier in windows[:index]):
+                covered.append(by_id[window.transaction_id])
+            else:
+                tops.append(window)
+        # Every pair, not only the dominating one: a nested window larger than
+        # any window containing it is a contradiction, never a dominated row.
+        for outer in windows:
+            for inner in windows:
+                if (inner is not outer and outer.contains(inner)
+                        and inner.value is not None and outer.value is not None and inner.value > outer.value):
+                    contradicted.append(("contained_window_exceeds_container", by_id[inner.transaction_id]))
+        maximal[group] = tops
+        for window in tops:
+            if any(other is not window and other.overlaps(window) for other in tops):
+                unknown.append(("overlapping_cumulative_windows_not_apportionable", by_id[window.transaction_id]))
+            else:
+                counted.append(by_id[window.transaction_id])
+
+    covered_totals: dict[str, Decimal] = {}
+    for day, row in dated:
+        holders = [window for window in maximal.get(_cover_group(row), ()) if window.start_key <= day <= window.end]
+        if not holders:
+            counted.append(row)
+            continue
+        covered.append(row)
+        value = quantity(row)
+        if value is not None:
+            covered_totals[holders[0].transaction_id] = covered_totals.get(holders[0].transaction_id, Decimal(0)) + value
+    for windows in maximal.values():
+        for window in windows:
+            total = covered_totals.get(window.transaction_id)
+            if total is not None and window.value is not None and total > window.value:
+                contradicted.append(("individual_exceeds_cumulative", by_id[window.transaction_id]))
+
+    def unique(problems: list[tuple[str, Mapping[str, Any]]]) -> list[tuple[str, Mapping[str, Any]]]:
+        seen: dict[tuple[str, str], tuple[str, Mapping[str, Any]]] = {}
+        for reason, row in problems:
+            seen.setdefault((reason, row["transaction_id"]), (reason, row))
+        return [seen[key] for key in sorted(seen)]
+
+    return _Cover(counted, covered, unique(unknown), unique(contradicted))
+
+
+def _first_day(row: Mapping[str, Any], floor: date) -> date:
+    """The first day a coverage problem reaches, never before ``floor``."""
+    if row["reporting_basis"] == "cumulative":
+        start = _day(row["period_start"], "period_start") if row["period_start"] else None
+        return floor if start is None else max(floor, start)
+    return max(floor, _day(row["event_date"], "event_date"))
+
+
 def _instrument_versions(
     *,
     instrument_id: str,
@@ -1065,6 +1186,7 @@ def _instrument_versions(
     """§5 instrument versions: anchor, post-anchor flows and every prior version."""
     unit, ambiguous = _instrument_unit(transactions, instrument)
     retired = instrument is not None and instrument.status == "retired"
+    affects = (f"instrument:{instrument_id}",)
 
     def quantity_of(item: Mapping[str, Any]) -> Decimal | None:
         return _dec(item["instruments"] if unit == "instruments" else item["principal_usd"])
@@ -1074,17 +1196,14 @@ def _instrument_versions(
             f"instrument_unit_ambiguous:{instrument_id}",
             f"transactions bound to {instrument_id} state both an instrument count and a principal amount",
             "the I0 instrument kind for this instrument, which fixes its unit",
-            (f"instrument:{instrument_id}",),
+            affects,
         )
 
     balances = sorted(
         (item for item in transactions if item["kind"] == STOCK_KIND),
-        key=lambda item: (item["event_date"], item["transaction_id"]),
+        key=lambda item: (_effective(item), item["transaction_id"]),
     )
-    flows = sorted(
-        (item for item in transactions if item["kind"] in FLOW_KINDS),
-        key=lambda item: (item["event_date"], item["transaction_id"]),
-    )
+    flows = [item for item in transactions if item["kind"] in FLOW_KINDS]
     entries: list[dict[str, Any]] = []
 
     def emit(*, effective_date: date, outstanding: Decimal | None, status: str,
@@ -1103,92 +1222,152 @@ def _instrument_versions(
             "flags": sorted(set(flags)),
         })
 
+    def note_amount(row: Mapping[str, Any]) -> None:
+        unknowns.note(
+            f"instrument_flow_amount_unknown:{row['transaction_id']}",
+            f"a {row['kind']} flow on {_effective(row).isoformat()} states no {unit} amount",
+            f"a filing stating the {unit} amount of that {row['kind']}",
+            affects,
+        )
+
+    def note_window(reason: str, row: Mapping[str, Any]) -> None:
+        span = f"{row['period_start'] or 'inception'} to {row['period_end']}"
+        if reason == "window_straddles_interval":
+            description = (f"the cumulative {row['kind']} window of {row['transaction_id']} ({span}) "
+                           f"straddles a balance date of {instrument_id} and is not apportioned")
+        else:
+            description = (f"the cumulative {row['kind']} window of {row['transaction_id']} ({span}) "
+                           "partially overlaps another window and is not apportioned")
+        unknowns.note(
+            f"instrument_flow_window_not_apportioned:{row['transaction_id']}",
+            description,
+            f"{row['kind']} figures whose windows nest, or fall wholly between two balance dates of this instrument",
+            affects,
+        )
+
     if not balances:
         unknowns.note(
             f"instrument_balance_missing:{instrument_id}",
             f"no outstanding_balance observation for {instrument_id} is visible at as_of",
             "a point-in-time outstanding balance disclosure for this instrument on or before as_of",
-            (f"instrument:{instrument_id}",),
+            affects,
         )
         emit(effective_date=as_of_date, outstanding=None, status="unknown", basis=())
         return _mint_versions(instrument_id, entries)
 
-    previous_date: date | None = None
-    previous_value: Decimal | None = None
+    by_day: dict[date, list[Mapping[str, Any]]] = {}
     for item in balances:
-        day = _day(item["event_date"], "event_date")
-        value = None if item["status"] == "contradicted" else quantity_of(item)
-        status = "known"
-        if item["status"] == "contradicted":
-            status = "contradicted"
-        elif value is None:
-            status = "unknown"
-            unknowns.note(
-                f"instrument_balance_unknown:{item['transaction_id']}",
-                f"the outstanding_balance of {instrument_id} on {day.isoformat()} states no {unit} amount",
-                f"a balance disclosure stating the {unit} amount outstanding",
-                (f"instrument:{instrument_id}",),
-            )
-        decrease = increase = unexplained = None
-        if previous_date is not None and previous_value is not None and value is not None:
-            interval = [row for row in flows if previous_date < _day(row["event_date"], "event_date") <= day]
-            missing = [row for row in interval if quantity_of(row) is None]
-            for row in missing:
-                unknowns.note(
-                    f"instrument_flow_amount_unknown:{row['transaction_id']}",
-                    f"a {row['kind']} flow on {row['event_date']} states no {unit} amount",
-                    f"a filing stating the {unit} amount of that {row['kind']}",
-                    (f"instrument:{instrument_id}",),
-                )
-            if not missing:
-                decrease = sum((quantity_of(row) for row in interval if row["kind"] in DECREMENT_KINDS), Decimal(0))
-                increase = sum((quantity_of(row) for row in interval if row["kind"] in INCREMENT_KINDS), Decimal(0))
-                # Never plugged: the residual is reported exactly, whatever it is.
-                unexplained = value - (previous_value - decrease + increase)
-        emit(effective_date=day, outstanding=value, status=status, basis=[item["transaction_id"]],
-             decrease=decrease, increase=increase, unexplained=unexplained)
-        previous_date, previous_value = day, value
+        by_day.setdefault(_effective(item), []).append(item)
 
-    anchor = balances[-1]
-    anchor_date = _day(anchor["event_date"], "event_date")
-    anchor_value = None if anchor["status"] == "contradicted" else quantity_of(anchor)
-    post = [row for row in flows if _day(row["event_date"], "event_date") > anchor_date]
+    previous: tuple[date, Decimal | None] | None = None
+    anchor_date = as_of_date
+    anchor_value: Decimal | None = None
+    anchor_ids: list[str] = []
+    for day, rows in by_day.items():
+        ids = [row["transaction_id"] for row in rows]
+        flags: list[str] = []
+        values = {quantity_of(row) for row in rows if row["status"] != "contradicted"} - {None}
+        value: Decimal | None
+        if any(row["status"] == "contradicted" for row in rows) or len(values) > 1:
+            # Two balances for one day that disagree are a contradiction, never a choice.
+            status, value = "contradicted", None
+            if len(rows) > 1:
+                flags.append(f"conflicting_balances:{instrument_id}")
+        elif values:
+            status, value = "known", next(iter(values))
+        else:
+            status, value = "unknown", None
+            for row in rows:
+                unknowns.note(
+                    f"instrument_balance_unknown:{row['transaction_id']}",
+                    f"the outstanding_balance of {instrument_id} on {day.isoformat()} states no {unit} amount",
+                    f"a balance disclosure stating the {unit} amount outstanding",
+                    affects,
+                )
+        decrease = increase = unexplained = None
+        if previous is not None and previous[1] is not None and value is not None:
+            cover = _interval_cover(flows, previous[0], day, quantity_of)
+            if cover.contradicted:
+                flags.extend(f"{reason}:{row['transaction_id']}" for reason, row in cover.contradicted)
+            elif cover.unknown:
+                for reason, row in cover.unknown:
+                    note_window(reason, row)
+            else:
+                missing = [row for row in cover.counted if quantity_of(row) is None]
+                for row in missing:
+                    note_amount(row)
+                if not missing:
+                    decrease = sum((quantity_of(row) for row in cover.counted if row["kind"] in DECREMENT_KINDS), Decimal(0))
+                    increase = sum((quantity_of(row) for row in cover.counted if row["kind"] in INCREMENT_KINDS), Decimal(0))
+                    # Never plugged: the residual is reported exactly, whatever it is.
+                    unexplained = value - (previous[1] - decrease + increase)
+        emit(effective_date=day, outstanding=value, status=status, basis=ids, flags=flags,
+             decrease=decrease, increase=increase, unexplained=unexplained)
+        previous = (day, value)
+        anchor_date, anchor_value, anchor_ids = day, value, ids
+
+    post = [row for row in flows if _effective(row) > anchor_date]
+    post_ids = [row["transaction_id"] for row in post]
 
     if retired:
         # §5.6: an I0-retired instrument is never decremented a second time.
         if post:
-            emit(effective_date=_day(post[-1]["event_date"], "event_date"),
+            emit(effective_date=max(_effective(row) for row in post),
                  outstanding=anchor_value,
                  status="known" if anchor_value is not None else "unknown",
-                 basis=[anchor["transaction_id"]] + [row["transaction_id"] for row in post],
+                 basis=anchor_ids + post_ids,
                  flags=["already_retired"])
     elif anchor_value is None:
         if post:
-            emit(effective_date=_day(post[-1]["event_date"], "event_date"), outstanding=None,
-                 status="unknown", basis=[anchor["transaction_id"]] + [row["transaction_id"] for row in post])
+            emit(effective_date=max(_effective(row) for row in post), outstanding=None,
+                 status="unknown", basis=anchor_ids + post_ids)
     else:
+        cover = _interval_cover(post, anchor_date, date.max, quantity_of)
+        floor = anchor_date + timedelta(days=1)
+        problems = [(reason, row, _first_day(row, floor), False) for reason, row in cover.unknown]
+        problems += [(reason, row, _first_day(row, floor), True) for reason, row in cover.contradicted]
+        applied: dict[date, list[Mapping[str, Any]]] = {}
+        for row in cover.counted:
+            applied.setdefault(_effective(row), []).append(row)
+        windows = [
+            (_day(row["period_start"], "period_start"), _day(row["period_end"], "period_end"))
+            for row in cover.counted if row["reporting_basis"] == "cumulative"
+        ]
         running = anchor_value
-        basis = [anchor["transaction_id"]]
-        halted = False
-        for day, group in _group_by_date(post):
-            for row in group:
+        basis = list(anchor_ids)
+        for day in sorted(set(applied) | {problem[2] for problem in problems}):
+            reached = [problem for problem in problems if problem[2] <= day]
+            if reached:
+                # From the first day a window cannot be apportioned, or a flow is
+                # contradicted, the balance is not known at all; it is never the
+                # anchor less only the flows that happen to be usable.
+                for reason, row, _first, is_contradiction in reached:
+                    if not is_contradiction:
+                        note_window(reason, row)
+                emit(effective_date=day, outstanding=None,
+                     status="contradicted" if any(problem[3] for problem in reached) else "unknown",
+                     basis=basis + [problem[1]["transaction_id"] for problem in reached],
+                     flags=[f"{problem[0]}:{problem[1]['transaction_id']}" for problem in reached])
+                break
+            halted = False
+            for row in sorted(applied.get(day, ()), key=lambda item: item["transaction_id"]):
                 basis.append(row["transaction_id"])
                 value = quantity_of(row)
                 if value is None:
-                    unknowns.note(
-                        f"instrument_flow_amount_unknown:{row['transaction_id']}",
-                        f"a {row['kind']} flow on {row['event_date']} states no {unit} amount",
-                        f"a filing stating the {unit} amount of that {row['kind']}",
-                        (f"instrument:{instrument_id}",),
-                    )
+                    note_amount(row)
                     emit(effective_date=day, outstanding=None, status="unknown", basis=basis)
                     halted = True
                     break
                 running = running - value if row["kind"] in DECREMENT_KINDS else running + value
             if halted:
                 break
-            flags: list[str] = []
+            basis.extend(row["transaction_id"] for row in cover.covered if _effective(row) <= day)
+            if any(start <= day < end for start, end in windows):
+                # Inside a counted window only its total is known, not its path,
+                # so no version is stated until the window closes.
+                continue
             status = "known"
+            flags = []
             if running < 0:
                 # Never clamped: a negative balance is a contradiction, not a zero.
                 status = "contradicted"
@@ -1251,45 +1430,40 @@ def _share_reconciliation(
     else:
         observed = Decimal(later.value) - Decimal(earlier.value)
 
+    def in_class(item: Mapping[str, Any]) -> bool:
+        return item["security_class_id"] is None or item["security_class_id"] == security_class_id
+
+    # The same §4 window coverage as usage and instrument versions: a covered
+    # event is already inside a counted window and never adds a second time.
+    rows = [item for item in transactions if item["kind"] in SHARE_FLOW_KINDS and in_class(item)]
+    cover = _interval_cover(rows, from_date, to_date, lambda row: _dec(row["shares"]))
     evidenced = Decimal(0)
     evidenced_unknown = False
-    contradicted = False
+    contradicted = bool(cover.contradicted)
     transaction_ids: list[str] = []
     unknown_ids: list[str] = []
-    for item in sorted(transactions, key=lambda row: (row["event_date"] or row["period_end"] or "", row["transaction_id"])):
-        if item["kind"] == "resale":
-            # A23: a resale of already outstanding shares issues nothing.
-            transaction_ids.append(item["transaction_id"])
-            continue
-        if item["kind"] not in SHARE_FLOW_KINDS:
-            continue
-        if item["security_class_id"] is not None and item["security_class_id"] != security_class_id:
-            continue
-        if item["reporting_basis"] == "cumulative":
-            end = _day(item["period_end"], "period_end")
-            start = _day(item["period_start"], "period_start") if item["period_start"] else None
-            if end <= from_date:
-                continue
-            if start is not None and start > to_date:
-                continue
-            if start is None or start <= from_date or end > to_date:
-                evidenced_unknown = True
-                unknown_ids.append(unknowns.note(
-                    f"window_straddles_observation:{item['transaction_id']}",
-                    f"a cumulative window of {item['transaction_id']} straddles an observation date and is not apportioned",
-                    "cumulative windows whose period_start and period_end fall between the two observation dates",
-                    affects,
-                ))
-                transaction_ids.append(item["transaction_id"])
-                continue
-        else:
-            day = _day(item["event_date"], "event_date")
-            if not from_date < day <= to_date:
-                continue
+    for reason, item in cover.unknown:
+        evidenced_unknown = True
         transaction_ids.append(item["transaction_id"])
-        if item["status"] == "contradicted":
-            contradicted = True
-            continue
+        if reason == "window_straddles_interval":
+            unknown_ids.append(unknowns.note(
+                f"window_straddles_observation:{item['transaction_id']}",
+                f"a cumulative window of {item['transaction_id']} straddles an observation date and is not apportioned",
+                "cumulative windows whose period_start and period_end fall between the two observation dates",
+                affects,
+            ))
+        else:
+            unknown_ids.append(unknowns.note(
+                f"overlapping_cumulative_windows_not_apportionable:{item['transaction_id']}",
+                f"a cumulative window of {item['transaction_id']} partially overlaps another window "
+                "of the same kind and is not apportioned",
+                "cumulative share figures whose windows nest or do not overlap",
+                affects,
+            ))
+    transaction_ids.extend(item["transaction_id"] for _reason, item in cover.contradicted)
+    transaction_ids.extend(item["transaction_id"] for item in cover.covered)
+    for item in cover.counted:
+        transaction_ids.append(item["transaction_id"])
         if item["security_class_id"] is None:
             evidenced_unknown = True
             unknown_ids.append(unknowns.note(
@@ -1299,7 +1473,8 @@ def _share_reconciliation(
                 affects,
             ))
             continue
-        if item["shares"] is None:
+        amount = _dec(item["shares"])
+        if amount is None:
             evidenced_unknown = True
             unknown_ids.append(unknowns.note(
                 f"share_amount_unknown:{item['transaction_id']}",
@@ -1308,8 +1483,20 @@ def _share_reconciliation(
                 affects,
             ))
             continue
-        amount = Decimal(item["shares"])
         evidenced += -amount if item["kind"] in RETIRED_SHARE_KINDS else amount
+
+    for item in transactions:
+        if item["kind"] != "resale" or not in_class(item):
+            continue
+        # A23: a resale of already outstanding shares issues nothing; it is
+        # listed in the interval it falls in and never adds.
+        if item["reporting_basis"] == "cumulative":
+            end = _day(item["period_end"], "period_end")
+            start = _day(item["period_start"], "period_start") if item["period_start"] else None
+            if end > from_date and (start is None or start <= to_date):
+                transaction_ids.append(item["transaction_id"])
+        elif from_date < _day(item["event_date"], "event_date") <= to_date:
+            transaction_ids.append(item["transaction_id"])
 
     if contradicted:
         status = "contradicted"
@@ -1317,7 +1504,10 @@ def _share_reconciliation(
         status = "unknown"
     else:
         status = "known"
-    unexplained = None if (observed is None or evidenced_unknown) else observed - evidenced
+    # A contradicted or incomplete flow set states no evidenced figure, so the
+    # observed change is never compared against a partial sum.
+    stated = not (evidenced_unknown or contradicted)
+    unexplained = observed - evidenced if (observed is not None and stated) else None
     return {
         "schema": SHARE_RECONCILIATION_SCHEMA,
         "security_class_id": security_class_id,
@@ -1326,7 +1516,7 @@ def _share_reconciliation(
         "from_date": from_date.isoformat(),
         "to_date": to_date.isoformat(),
         "observed_delta": None if observed is None else _decimal_text(observed),
-        "evidenced_net_issuance": None if evidenced_unknown else _decimal_text(evidenced),
+        "evidenced_net_issuance": _decimal_text(evidenced) if stated else None,
         "unexplained_delta": None if unexplained is None else _decimal_text(unexplained),
         "status": status,
         "transaction_ids": sorted(set(transaction_ids)),
@@ -1611,7 +1801,11 @@ def _transaction_record(
             contradictions.append(f"transaction_observations_disagree:{transaction_id}")
             break
     for name in _NUMERIC_FIELDS + ("settlement", "security_class_id"):
-        stated = {getattr(item, name) for item in observations if getattr(item, name) is not None}
+        # Numbers compare by value, so "1000" and "1000.00" are one amount (S5).
+        stated = {
+            Decimal(getattr(item, name)) if name in _NUMERIC_FIELDS else getattr(item, name)
+            for item in observations if getattr(item, name) is not None
+        }
         if len(stated) > 1:
             contradictions.append(f"transaction_observations_disagree:{transaction_id}")
             break
@@ -1643,7 +1837,10 @@ def _transaction_record(
                 contradictions.append(f"gross_proceeds_disagree:{transaction_id}")
     merged["gross_proceeds_usd"] = gross
 
-    target_kind, target_id, usage_class, programme_key, programme_inception_date = sorted(targets)[0]
+    # A None programme key sorts first instead of raising against a string (S1).
+    target_kind, target_id, usage_class, programme_key, programme_inception_date = sorted(
+        targets, key=lambda target: tuple((part is not None, "" if part is None else str(part)) for part in target)
+    )[0]
     origin = GOLD_ORIGIN if all(item.origin == GOLD_ORIGIN for item in observations) else CANONICAL_EXTRACTION
     available_at = max(item.available_at for item in observations)
     evidence = _evidence_union(
@@ -1941,6 +2138,11 @@ def apply_outstanding(instruments: InstrumentSet, ledger: TransactionLedger) -> 
     _require(isinstance(ledger, TransactionLedger), "apply_outstanding.ledger: a TransactionLedger is required")
     _require(instruments.issuer_id == ledger.issuer_id,
              f"apply_outstanding: instrument set issuer {instruments.issuer_id!r} differs from ledger {ledger.issuer_id!r}")
+    # A ledger reconciled after the instrument set would feed it flows it could
+    # not have known (N2).
+    _require(_instant(ledger.as_of, "apply_outstanding.ledger.as_of")
+             <= _instant(instruments.as_of, "apply_outstanding.instruments.as_of"),
+             f"apply_outstanding: ledger as_of {ledger.as_of!r} is after instrument set as_of {instruments.as_of!r}")
 
     latest: dict[str, dict[str, Any]] = {}
     for version in ledger.instrument_versions:

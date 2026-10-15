@@ -465,6 +465,16 @@ def test_schema_record_inline_enums_mirror_the_module_vocabularies(path, values)
     assert set(schema["$defs"][record]["properties"][field]["enum"]) == set(values), path
 
 
+def test_schema_realized_cash_kind_is_the_realized_cash_vocabulary():
+    """``realized_cash_kind`` is nullable, so its enum sits in an ``anyOf`` branch."""
+    schema = c.load_state_schema()
+    branches = [item["enum"] for item in
+                schema["$defs"]["realized_cash"]["properties"]["realized_cash_kind"]["anyOf"]
+                if "enum" in item]
+    assert len(branches) == 1
+    assert set(branches[0]) == set(c.REALIZED_CASH_KINDS)
+
+
 def test_schema_warrant_exercise_settlement_is_the_settlement_vocabulary():
     schema = c.load_state_schema()
     branches = [item["then"]["properties"]["settlement"]

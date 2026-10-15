@@ -46,7 +46,18 @@ answer: >
   reads 424B final pricing supplements, 10-Q and 10-K ATM paragraphs and
   outstanding-balance tables from retained filing bytes; everything else,
   including 8-Ks, is deferred and enters only as adjudicated gold. It never
-  reads a Rule 457 fee-table maximum as a sale.
+  reads a Rule 457 fee-table maximum as a sale. (4) Audit repair: usage,
+  instrument versions and share reconciliation share one §4 interval window
+  cover, so an event inside a counted window is listed but never added twice
+  anywhere. A contradicted flow or contradicted usage yields no evidenced
+  floor and no number, and the instrument balance it touches becomes
+  contradicted rather than partly decremented. A cumulative window that
+  straddles a balance or observation date, or partially overlaps another
+  window, is unknown and never apportioned; a window wholly inside the
+  interval after a balance is counted when it closes. Two balances for one
+  instrument on one day that disagree are contradicted, never chosen between.
+  Only plain decimal text is an exact amount, and apply_outstanding refuses a
+  ledger dated after the instrument set it updates.
 rationale: >
   The two failure modes the masterplan names for this task are additive.
   Deducting a cumulative usage figure and the individual sales it already
