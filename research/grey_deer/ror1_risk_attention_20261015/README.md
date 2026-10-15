@@ -37,6 +37,21 @@ passed. The portable native test variant also passed 5/5 against the exact
 read-only imported source. This evidence establishes functional semantics,
 not forecast precision or deployed behavior.
 
+## Metric-name discrepancy in existing tuning research
+
+`METRIC_DEFINITION_FINDING_20261015.md` reproduces a historical report
+mismatch: `research/RISK_RADAR_TUNING.md` labels four values
+0.915/0.751/0.901/0.741 as false-positive rates despite their exact
+identity with `1 − precision` (false-discovery rates). Using the
+full-history report's rounded 17% fire-rate, precision .249, and
+its H21/5%-event upper bound .1890 for H21/8%-events, ordinary
+false-positive rate is bounded approximately .12767–.15742 **if**
+those figures have matching eligible populations. Recover original
+TP/FP/TN/FN and episode counts before using any derived cost budget.
+
+Pure `metric_definition_audit.py` and `test_metric_definition_audit.py`
+were RED-then-GREEN 4/4 locally. No historical numerical model was rerun.
+
 ## Related true owners and release constraints
 
 Grey Deer #8132 owns a different held candidate for warning projection and
