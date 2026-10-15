@@ -1,7 +1,7 @@
 {
   "schema": "us_track_history/v1",
-  "as_of": "2026-10-12",
-  "generated": "2026-10-12T21:33:13.059139+00:00",
+  "as_of": "2026-10-14",
+  "generated": "2026-10-14T20:15:45.997081+00:00",
   "cohort_rollup": {
     "horizons": {
       "h5": {
