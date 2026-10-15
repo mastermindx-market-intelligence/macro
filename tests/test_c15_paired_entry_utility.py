@@ -1,6 +1,5 @@
 """Fixed, source-free C15 timing-utility falsifiers, never market-data proof."""
-from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -25,6 +24,11 @@ def setup(*, direction=1):
         "horizon_trading_minutes":30,"calendar_receipt_sha256":SHA("b"),
         "direction":direction,"research_quantity":"10",
         "initial_midpoint_usd":"100","max_quote_age_ns":5*D,
+        "anchor_quote_event_ns":T-D,
+        "anchor_quote_available_ns":T-D//2,
+        "anchor_quote_receipt_sha256":SHA("8"),
+        "anchor_bid_usd":"99.9","anchor_ask_usd":"100.1",
+        "anchor_bid_size_shares":"25","anchor_ask_size_shares":"25",
     }
     def policy(role,entry_bid,entry_ask,exit_bid="102",exit_ask="102.1"):
         start=T+D if role=="baseline" else T+MIN
@@ -41,7 +45,7 @@ def setup(*, direction=1):
             "entry_bid_usd":entry_bid, "entry_ask_usd":entry_ask,
             "entry_bid_size_shares":"15","entry_ask_size_shares":"15",
             "exit_quote_event_ns":T+30*MIN-D,
-            "exit_quote_available_ns":T+30*MIN+D//3,
+            "exit_quote_available_ns":T+30*MIN-D//3,
             "exit_quote_receipt_sha256":SHA("f"),
             "exit_bid_usd":exit_bid,"exit_ask_usd":exit_ask,
             "exit_bid_size_shares":"15","exit_ask_size_shares":"15",
@@ -406,12 +410,15 @@ def test_single_nanosecond_entry_quote_arrival_after_decision_fails():
 
 
 
-def test_component_arrival_lower_bound_changes_with_later_valid_exit_receipt():
+def test_component_arrival_lower_bound_is_not_fake_consumer_receipt():
     a=setup()
-    a["challenger"]["exit_quote_available_ns"]=T+30*MIN+3*D//2
+    # Every eligible exit quote must have arrived BEFORE H, while the
+    # evaluation watermark arrives after H. It bounds first knowability.
+    a["challenger"]["exit_quote_available_ns"]=T+30*MIN-D//2
+    a["baseline"]["exit_quote_available_ns"]=T+30*MIN-D//2
     result=run(a)
     assert result["state"]=="PAIRED_RESEARCH_UTILITY"
-    assert result["supplied_input_first_knowable_ns"]==T+30*MIN+3*D//2
+    assert result["supplied_input_first_knowable_ns"]==T+30*MIN+D
     assert result["actual_consumer_delivery_proven"] is False
 
 
@@ -459,3 +466,92 @@ def test_quote_arriving_at_cutoff_nano_is_not_a_previous_eligible_receipt():
     r=run(a)
     assert r["state"]=="UNOBSERVABLE"
     assert r["reason"]["challenger"]=="EXIT_QUOTE_NOT_KNOWABLE_OR_STALE"
+
+
+
+# Adversarial source-grain falsifiers added after published source review.
+# The existing v0 candidate returned apparent simulated fills from post-horizon
+# quotes and admitted different terminal quote snapshots for the same candidate.
+def test_exit_quote_received_after_horizon_is_not_a_horizon_fill():
+    a=setup()
+    a["baseline"]["exit_quote_available_ns"]=T+30*MIN+1
+    result=run(a)
+    assert result["state"]=="UNOBSERVABLE"
+    assert result["reason"]["baseline"]=="EXIT_QUOTE_NOT_KNOWABLE_OR_STALE"
+
+
+def test_two_policy_arms_cannot_choose_different_terminal_quotes():
+    a=setup()
+    a["challenger"]["exit_bid_usd"]="107"
+    a["challenger"]["exit_ask_usd"]="107.1"
+    with pytest.raises(ValueError,match="terminal quote"):
+        run(a)
+
+
+def test_initial_notional_anchor_cannot_be_arbitrarily_rescaled():
+    a=setup()
+    a["candidate"]["initial_midpoint_usd"]="1000000"
+    with pytest.raises(ValueError,match="anchor midpoint"):
+        run(a)
+
+
+@pytest.mark.parametrize(("field", "value", "expected"), [
+    ("anchor_quote_event_ns", T-6*D, "anchor quote not knowable"),
+    ("anchor_quote_available_ns", T, "anchor quote not knowable"),
+    ("anchor_quote_available_ns", T-2*D, "anchor quote not knowable"),
+    ("anchor_quote_receipt_sha256", "A"*64, "digest missing"),
+])
+def test_original_notional_anchor_rejects_unknown_or_stale_source(field, value, expected):
+    a=setup()
+    a["candidate"][field]=value
+    with pytest.raises(ValueError, match=expected):
+        run(a)
+
+
+@pytest.mark.parametrize(("bid", "ask"), [
+    ("100.1", "100.1"), ("100.2", "100.1"),
+    ("0", "100.1"), ("99.9", "1e30"),
+])
+def test_original_anchor_bid_ask_must_be_real_bounded_positive_pair(bid, ask):
+    a=setup()
+    a["candidate"]["anchor_bid_usd"]=bid
+    a["candidate"]["anchor_ask_usd"]=ask
+    with pytest.raises(ValueError):
+        run(a)
+
+
+@pytest.mark.parametrize(("field","value"), [
+    ("exit_quote_event_ns", T+30*MIN-D//2),
+    ("exit_quote_available_ns", T+30*MIN-D//2),
+    ("exit_quote_receipt_sha256", SHA("9")),
+    ("exit_bid_usd", "102.05"),
+    ("exit_ask_usd", "102.2"),
+    ("exit_bid_size_shares", "14"),
+    ("exit_ask_size_shares", "14"),
+])
+def test_same_candidate_terminal_quote_is_one_source_vintage(field, value):
+    a=setup()
+    a["challenger"][field]=value
+    with pytest.raises(ValueError, match="terminal quote"):
+        run(a)
+
+
+def test_quote_arriving_at_exact_horizon_cannot_simulate_exit_at_that_time():
+    a=setup()
+    a["baseline"]["exit_quote_available_ns"]=T+30*MIN
+    result=run(a)
+    assert result["state"]=="UNOBSERVABLE"
+    assert result["reason"]["baseline"]=="EXIT_QUOTE_NOT_KNOWABLE_OR_STALE"
+
+
+def test_valid_two_policy_shared_terminal_quote_is_reproducible():
+    a=setup()
+    b=a["baseline"]
+    h=a["challenger"]
+    fields=("exit_quote_event_ns","exit_quote_available_ns","exit_quote_receipt_sha256",
+            "exit_bid_usd","exit_ask_usd","exit_bid_size_shares","exit_ask_size_shares")
+    assert all(b[key]==h[key] for key in fields)
+    result=run(a)
+    assert bps(result,"delta")==(100,1)
+    assert result["supplied_input_first_knowable_ns"]==a["watermark_received_ns"]
+    assert result["actual_consumer_delivery_proven"] is False

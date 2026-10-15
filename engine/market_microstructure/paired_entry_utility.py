@@ -164,7 +164,8 @@ def _policy(row, *, role, candidate, cutoff_ns, max_quote_age_ns, anchor, size):
             0 <= start - event <= max_quote_age_ns):
         return None, "ENTRY_QUOTE_NOT_KNOWABLE_OR_STALE"
     if not (exit_event < candidate["horizon_end_ns"]
-            and exit_event <= exit_avail < cutoff_ns
+            and exit_event <= exit_avail < candidate["horizon_end_ns"]
+            and exit_avail < cutoff_ns
             and 0 <= candidate["horizon_end_ns"] - exit_event <= max_quote_age_ns):
         return None, "EXIT_QUOTE_NOT_KNOWABLE_OR_STALE"
     eb,ea,ebsize,easize = _best_quote(p,"entry",role+".entry")
@@ -200,6 +201,9 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         "decision_ns", "deadline_ns", "horizon_end_ns",
         "horizon_trading_minutes", "calendar_receipt_sha256",
         "direction", "research_quantity", "initial_midpoint_usd",
+        "anchor_quote_event_ns", "anchor_quote_available_ns",
+        "anchor_quote_receipt_sha256", "anchor_bid_usd", "anchor_ask_usd",
+        "anchor_bid_size_shares", "anchor_ask_size_shares",
         "max_quote_age_ns",
     }
     c = _dict(candidate, keys, "candidate")
@@ -245,6 +249,18 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         raise ValueError("candidate: quote freshness exceeds five seconds")
     size = _money(c["research_quantity"], "research_quantity", positive=True)
     anchor = _money(c["initial_midpoint_usd"], "initial_midpoint", positive=True)
+    # The initial *notional denominator* must be grounded to a single
+    # source-identified quote at the ORIGINAL candidate cutoff. A caller
+    # cannot change M0 independently to alter the reported utility bps.
+    anchor_event = _clock(c["anchor_quote_event_ns"], "candidate.anchor_event")
+    anchor_available = _clock(c["anchor_quote_available_ns"], "candidate.anchor_available")
+    _sha(c["anchor_quote_receipt_sha256"], "candidate.anchor_receipt")
+    if not (anchor_event < decision and anchor_event <= anchor_available < decision
+            and decision - anchor_event <= maxage):
+        raise ValueError("candidate: anchor quote not knowable at original decision")
+    anchor_bid, anchor_ask, _, _ = _best_quote(c, "anchor", "candidate.anchor")
+    if anchor != (anchor_bid + anchor_ask) / 2:
+        raise ValueError("candidate: anchor midpoint differs from source quote")
     cutoff = _clock(evaluation_cutoff_ns, "evaluation_cutoff")
     through = _clock(source_watermark_ns, "source_watermark")
     arrived = _clock(watermark_received_ns, "watermark_received")
@@ -278,6 +294,16 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
     if br or hr:
         return {**identity,"state":"UNOBSERVABLE", "reason":{"baseline":br,"challenger":hr},
                 "baseline_bps":None,"challenger_bps":None,"delta_bps":None}
+    if baseline["state"] == "SIMULATED_FULL" and challenger["state"] == "SIMULATED_FULL":
+        # Both arms liquidate at the SAME H, same source generation and market.
+        # Different terminal quotes create a fake policy delta.
+        terminal_fields = (
+            "exit_quote_event_ns", "exit_quote_available_ns",
+            "exit_quote_receipt_sha256", "exit_bid_usd", "exit_ask_usd",
+            "exit_bid_size_shares", "exit_ask_size_shares",
+        )
+        if any(baseline[k] != challenger[k] for k in terminal_fields):
+            raise ValueError("policy arms contradict common terminal quote")
     assert b is not None and h is not None
     # Only the supplied input-component arrival lower bound; never pretend
     # a real Terminal consumer received the result at this clock.
