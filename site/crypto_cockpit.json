@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-14",
-  "generated_at": "2026-10-14T18:01:42+00:00",
+  "as_of": "2026-10-15",
+  "generated_at": "2026-10-15T13:27:18+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 83489.65,
-    "change_24h_pct": -0.0,
-    "stance_en": "RISK-ON",
-    "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and the pace of the move. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与涨跌节奏。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 12,
-    "exposure_pct": 41,
+    "price": 81597.68,
+    "change_24h_pct": 0.04,
+    "stance_en": "NEUTRAL",
+    "stance_zh": "中性",
+    "summary_en": "The big picture reads neutral. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向中性。支撑来自基本面与动量；拖累来自宏观环境与期货持仓。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 11,
+    "exposure_pct": 39,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-15",
     "integrity_ok": true,
-    "final_exposure_pct": 41,
+    "final_exposure_pct": 39,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -143,9 +143,9 @@
           "label_en": "Coinbase premium",
           "label_zh": "Coinbase 溢价",
           "source": "master.board.premium",
-          "state_en": "Overheated or absent",
-          "state_zh": "过热或缺位",
-          "tone": "bear",
+          "state_en": "Healthy demand",
+          "state_zh": "健康需求",
+          "tone": "bull",
           "grade": "EXTREMES"
         }
       ]
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-14"
+        "as_of": "2026-10-15"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -178,13 +178,13 @@
         },
         {
           "key": "cot",
-          "label_en": "Cot",
-          "label_zh": "cot",
+          "label_en": "CME positioning",
+          "label_zh": "CME 持仓",
           "source": "master.board.cot",
-          "state_en": "Unavailable",
-          "state_zh": "暂无",
-          "tone": "neutral",
-          "grade": null
+          "state_en": "Crowded long",
+          "state_zh": "多头拥挤",
+          "tone": "bear",
+          "grade": "EXTREMES"
         }
       ]
     },
@@ -257,9 +257,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Amplifies sell-offs",
+          "state_zh": "放大下跌",
+          "tone": "bear",
           "grade": "CONFIRMED"
         }
       ]

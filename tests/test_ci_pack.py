@@ -4663,6 +4663,8 @@ CURATED_EXCLUSIVE = {
     # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "entry-radar-rs-pullback-calendar",
+    # PR #9199: actual-file identity reader; keep equality and closure gates intact.
+    "entry-radar-identity-snapshot",
     # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
@@ -7131,6 +7133,9 @@ def test_ancestor_init_census_honours_gate_flag(
         pytest.param("--expect-plan-sha", "0" * 40, id="--expect-plan-sha"),
         pytest.param("--emit-semantic-fragment", "x", id="--emit-semantic-fragment"),
         pytest.param("--emit-timing-observations", "x", id="--emit-timing-observations"),
+        pytest.param("--github-output", "/nonexistent/out", id="--github-output"),
+        pytest.param("--changed-from", "0" * 40, id="--changed-from"),
+        pytest.param("--changed-from", "", id="--changed-from-empty"),
     ],
 )
 def test_ancestor_init_census_refuses_ambiguous_modes(
@@ -7147,9 +7152,9 @@ def test_ancestor_init_census_refuses_ambiguous_modes(
     (``default=None``) are the remaining silent-win class: they are NOT
     ``store_true``, so a plain truthiness loop misses them and the valueless
     tokens cannot be passed bare — the pair is (flag, value) and the refusal
-    keys on ``is not None``. Five more ``default=None`` flags join that class.
+    keys on ``is not None``. Seven more ``default=None`` flags join that class.
     The empty-value pins kill a truthiness mutant (``""`` is falsy); an empty
-    ``--plan-json`` could not, because ``Path("")`` is ``PosixPath('.')``.
+    ``--plan-json``/``--github-output`` could not — both are ``type=Path``.
 
     rc 2 alone does not say WHICH refusal fired — any later ``parser.error``
     would do. The exact message is part of the contract (a renamed string is
@@ -7212,22 +7217,89 @@ _ANCESTOR_INIT_CENSUS_CLI = (
 )
 
 
-def _aic_tracked_paths() -> frozenset[str]:
+def _aic_tracked_paths(root: Path = ROOT) -> frozenset[str]:
     """Paths tracked at HEAD — stable under any sparse/partial checkout.
 
     The owning job ``ci-control-plane-contracts`` runs a bare
     ``actions/checkout@v4`` (.github/ci/legacy-jobs.yml:8142) with no
     ``sparse-checkout`` or ``filter`` option, so HEAD's tree and blobs are
     fetched whole and these git reads need no network in CI either.
+    ``-z`` is used because it gives NUL-terminated, unquoted names
+    regardless of ``core.quotePath``: with plain ``--name-only`` a
+    non-ASCII or control-character path is emitted octal-escaped inside
+    double quotes, so such an init would silently drop out of the
+    inventory and the ratchet would fail open.
     """
     result = subprocess.run(
-        ["git", "ls-tree", "-r", "--name-only", "HEAD"],
-        cwd=ROOT,
+        ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"],
+        cwd=root,
         capture_output=True,
         text=True,
         check=True,
     )
-    return frozenset(result.stdout.splitlines())
+    return frozenset(p for p in result.stdout.split("\0") if p)
+
+
+def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
+    """A non-ASCII or control-character tracked path survives ``core.quotePath`` escaping.
+
+    Git's default ``core.quotePath=true`` makes a plain
+    ``ls-tree -r --name-only`` print such paths octal-escaped inside
+    double quotes (non-ASCII bytes become ``\\NNN`` octal sequences; a
+    TAB becomes the C-style ``\\t``); the
+    escaped line then never equals the real init row, so the census
+    inventory would silently lose it (fail open). The quoting is pinned
+    repo-locally so this test discriminates on every host regardless of
+    any global git config.
+    """
+    target = tmp_path / "pkg" / "na\u00efve"
+    target.mkdir(parents=True)
+    (target / "__init__.py").write_text("", encoding="utf-8")
+    tab_target = tmp_path / "tab\there"
+    tab_target.mkdir(parents=True)
+    (tab_target / "y.py").write_text("", encoding="utf-8")
+
+    def git(*args: str) -> None:
+        subprocess.run(
+            # -c core.hooksPath= isolates the scratch repo from any
+            # global hook configuration; a hostile global hook that
+            # exit(1)s on commit would otherwise fail this test
+            # without involving _aic_tracked_paths.
+            ["git", "-c", "core.hooksPath=", *args],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+    git("init", "-q")
+    git("add", "pkg/na\u00efve/__init__.py", "tab\there/y.py")
+    git("config", "core.quotePath", "true")
+    git(
+        "-c", "user.name=t",
+        "-c", "user.email=t@example.invalid",
+        "-c", "commit.gpgsign=false",
+        "commit", "-qm", "x",
+    )
+    tracked = _aic_tracked_paths(tmp_path)
+    assert "pkg/na\u00efve/__init__.py" in tracked
+    assert "tab\there/y.py" in tracked
+
+    # Pin the precondition the test discriminates on: a plain (non -z)
+    # ls-tree with the repo-local `core.quotePath true` setting must
+    # emit the escaped, double-quoted form, never the raw path;
+    # otherwise the test would silently stop discriminating.
+    plain = subprocess.run(
+        ["git", "-c", "core.hooksPath=", "ls-tree", "-r", "--name-only", "HEAD"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    plain_lines = plain.stdout.splitlines()
+    assert '"pkg/na\\303\\257ve/__init__.py"' in plain_lines
+    assert '"tab\\there/y.py"' in plain_lines
+    assert "pkg/na\u00efve/__init__.py" not in plain_lines
 
 
 def _aic_rows_from_tracked_inventory(
@@ -7327,6 +7399,10 @@ def test_ancestor_init_census_does_not_grow() -> None:
     census = PACK.ancestor_init_census(jobs, repo_root=ROOT)
     tracked_keys = {(job, init) for job, _declared, init in rows}
     census_keys = {(f.job, f.init_path) for f in census}
+    assert census_keys, (
+        "ancestor_init_census returned no rows — the cross-check "
+        "would be vacuous"
+    )
     assert census_keys <= tracked_keys, (
         "ancestor_init_census emitted working-tree rows absent from the "
         f"tracked mapping: {sorted(census_keys - tracked_keys)}"

@@ -1,21 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-14",
-  "generated_at_utc": "2026-10-14T15:55:47.685238+00:00",
+  "asof": "2026-10-15",
+  "generated_at_utc": "2026-10-15T12:33:33.835099+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-10-14",
-      "window_end": null,
-      "etype": "US_CPI",
-      "label_en": "US CPI",
-      "label_zh": "美国 CPI",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
     {
       "date": "2026-10-15",
       "window_end": null,

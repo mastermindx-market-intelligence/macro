@@ -15052,6 +15052,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Native template: the baked metrics remain inert until an authorized open. #}
+        <template data-sentiment-fold>
         {% set _dlg_fg = fear_greed if (fear_greed is defined and fear_greed) else {} %}
         {% set _dlg_fg_dial = (_dlg_fg.get('dial') or 50) | float %}
         {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or 'Neutral' %}
@@ -15184,6 +15186,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
         </div>
         {% endif %}
+        </template>
       </div>
     </div>
   </div>
@@ -15359,6 +15362,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* One-time hydration happens ONLY after the existing registration gate.
+         This keeps the sentiment panel out of the cold DOM; it preserves
+         server-rendered metrics and delegated [data-rpop] handlers. */
+      if(id === 'dlg-sentiment'){
+        var sentimentBody = dlg.querySelector('.mx5-dlg-body');
+        var sentimentFold = sentimentBody && sentimentBody.querySelector(':scope > template[data-sentiment-fold]');
+        if(sentimentFold){
+          sentimentBody.appendChild(sentimentFold.content);
+          sentimentFold.remove();
+        }
+      }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){
@@ -18286,6 +18300,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <span class="fold-stat">{% if _health_unknown %}{{ t('health unavailable', '健康状态不可用') }}{% elif _bad %}{{ _bad|length }} {{ t('need attention', '需关注') }}{% elif _health_all_ok %}{{ t('all observed sources OK', '已观测数据源全部正常') }}{% else %}{{ t('no active failures', '无活动故障') }}{% endif %} · {{ health|length }} {{ t('sources', '数据源') }}</span>
       <span class="fold-caret">▾</span>
     </summary>
+    {# Closed health detail is the largest inert static table on this page.
+       Keep it outside the active document until expanded to avoid doing layout
+       and table enhancement for 190+ rows during mobile dashboard launch. #}
+    <template data-health-fold>
+      <div class="tbl-scroll">
     <table>
       <tr><th class="l">{{ t('source', '数据源') }}</th><th class="l">{{ t('status', '状态') }}</th><th>{{ t('rows', '行数') }}</th><th>{{ t('last data', '最新数据') }}</th><th class="l">{{ t('note', '备注') }}</th></tr>
       {%- if _health_unknown %}
@@ -18302,12 +18321,34 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </tr>
       {% endfor %}
     </table>
+      </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
        Generated {{ generated_utc }} UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
        生成于 {{ generated_utc }} UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
+    </template>
   </details>
+  <script>
+  // Expand the settled health table exactly once, on first genuine disclosure.
+  // The original theme.js wraps ordinary tables in .tbl-scroll at DOM ready;
+  // a template is inert at that time, so its wrapper is baked above instead.
+  (function () {
+    var panel = document.getElementById('health');
+    var contents = panel && panel.querySelector(':scope > template[data-health-fold]');
+    if (!contents) return;
+    function hydrate() {
+      if (!panel.open) return;
+      panel.appendChild(contents.content);
+      contents.remove();
+      panel.removeEventListener('toggle', hydrate);
+      // tablesort.js uses the same enhancement path as a normal page load.
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', { detail: { root: panel } }));
+    }
+    panel.addEventListener('toggle', hydrate);
+    if (panel.open) hydrate();
+  })();
+  </script>
   {% endif %}{# /mode != stocks — data health #}
 
 </div>

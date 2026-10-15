@@ -338,6 +338,21 @@ def _health_panel(html: str) -> str:
     return match.group(0)
 
 
+def test_macro_health_detail_is_lazy_but_complete_on_disclosure():
+    """The large static health table must not inflate Macro's initial active DOM."""
+    html = _render("macro")
+    panel = _health_panel(html)
+    assert re.search(r"</summary>\s*<template data-health-fold>\s*<div class=\"tbl-scroll\">\s*<table>", panel)
+    assert panel.index("</summary>") < panel.index("<template data-health-fold>")
+    assert panel.count("<table>") == 1
+    assert "Source health data is unavailable for this build." in panel
+    assert "panel.appendChild(contents.content);" in html
+    assert "panel.addEventListener('toggle', hydrate);" in html
+    assert "panel.removeEventListener('toggle', hydrate);" in html
+    assert "document.dispatchEvent(new CustomEvent('mmx-tables-ready'" in html
+    assert "data-health-fold" not in _render("stocks")
+
+
 def test_macro_health_empty_is_unknown_not_green():
     panel = _health_panel(_render("macro"))
     opening = panel.split(">", 1)[0]
@@ -1569,3 +1584,22 @@ def test_inflation_read_block_carries_no_retired_vocabulary():
         assert word not in block, word
     for token in ("'above target'", "'at target'", "'below target'", "'anchored'", "'drifting up'", "'drifting down'"):
         assert token in block, token
+
+def test_macro_sentiment_dialog_hydrates_after_registration_gate() -> None:
+    vm = _base_vm()
+    vm["fear_greed"] = {"dial": 62, "label_en": "Greed", "label_zh": "贪婪"}
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    start = html.index('id="dlg-sentiment"')
+    end = html.index('id="dlg-sector"', start)
+    dialog = html[start:end]
+    assert dialog.count('template data-sentiment-fold') == 1
+    assert dialog.count('</template>') == 1
+    assert 'Composite of 11 market gauges' in dialog
+    assert dialog.index('template data-sentiment-fold') < dialog.index('Composite of 11 market gauges')
+    assert dialog.index('</template>') < dialog.rindex('</div>')
+    open_at = html.index('window.mx5OpenDlg = function(id)')
+    authorized = html.index('window.MMXAccessPreview.isAnon()', open_at)
+    hydration = html.index('sentimentBody.appendChild(sentimentFold.content)', open_at)
+    visible = html.index("dlg.classList.add('open')", open_at)
+    assert authorized < hydration < visible
+    assert 'sentimentFold.remove()' in html[hydration:visible]
