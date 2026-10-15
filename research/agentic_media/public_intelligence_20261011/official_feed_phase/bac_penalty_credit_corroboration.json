@@ -1,0 +1,42 @@
+{
+  "schema": "mastermind.press.editorial_source_corroboration.v1",
+  "sources": [
+    {
+      "name": "fincen-consent-order.pdf",
+      "url": "https://www.fincen.gov/system/files/2026-10/BoA-Consent-Order-Execution-Final.pdf",
+      "response_url": "https://www.fincen.gov/system/files/2026-10/BoA-Consent-Order-Execution-Final.pdf",
+      "observed_at": "2026-10-14T01:00:22.956693+00:00",
+      "bytes": 1062673,
+      "sha256": "fafad48328f8b899e01a2ebf21b741f9a9901d5f7288d494cfab3b72bd97671d"
+    },
+    {
+      "name": "ofac-enforcement-release.pdf",
+      "url": "https://ofac.treasury.gov/media/937231/download?inline=",
+      "response_url": "https://ofac.treasury.gov/media/937231/download?inline=",
+      "observed_at": "2026-10-14T01:00:32.396438+00:00",
+      "bytes": 239775,
+      "sha256": "4350da2698cf9bebb238cd563c6f149d71f73d56bb696f035911f5a9465dcc99"
+    }
+  ],
+  "verified_pages": {
+    "fincen": [
+      5,
+      66,
+      67,
+      87
+    ],
+    "ofac": [
+      1
+    ]
+  },
+  "calculation": {
+    "fincen_assessed": 1200000000,
+    "occ_credit": 750000000,
+    "fincen_remaining": 450000000,
+    "ofac_separate_settlement": 11662930,
+    "combined_penalties_after_credit": 1211662930
+  },
+  "source_scope": "Editorial corroboration only; not part of the current OCC RSS validation_context or admitted generation facts.",
+  "publication_approved": false,
+  "provider_calls": 0
+}

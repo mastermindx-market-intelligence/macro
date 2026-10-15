@@ -1,0 +1,533 @@
+{
+  "id": "press-official-cd2747adeed2",
+  "desk": "brief",
+  "publication": "mastermind_news",
+  "as_of": "2026-10-14",
+  "staged_at": "2026-10-14T02:10:44Z",
+  "sources": [
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2"
+  ],
+  "source_revisions": {
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000": "sha256:16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+    "artifact:data/market_state/latest.json": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+    "artifact:site/basketdata/fear_greed.json": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+    "artifact:data/risk_radar/forward_log.jsonl": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+  },
+  "seed_refs": [
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/fear_greed.json",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000"
+  ],
+  "slot": {
+    "publication": "mastermind_news",
+    "byline": "The Brief — Mastermind News desk",
+    "min_words": 300,
+    "max_words": 600,
+    "min_anchored_receipts": 5,
+    "desk": "brief",
+    "as_of": "2026-10-14",
+    "facts": [
+      {
+        "text": "$750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations",
+        "values": [
+          "750"
+        ],
+        "tier": "third_party",
+        "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+        "dated": "2026-10-13",
+        "source_name": "Office of the Comptroller of the Currency"
+      },
+      {
+        "id": "market_state_score",
+        "text": "Mastermind's market-state composite reads 50 of 100 (MIXED) as of 2026-10-12.",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "50"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated pre-enforcement broad-market composite distinguishes the existing backdrop from the newly announced bank-specific action. It cannot explain BAC price changes."
+      },
+      {
+        "id": "market_state_risk",
+        "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "27",
+          "0.18"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated broad risk-appetite measurement, used only to describe conditions preceding the agency action, never a bank-specific solvency or credit measure."
+      },
+      {
+        "id": "market_state_vol",
+        "text": "Market-state component volatility backdrop scores 84 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "84",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated normalized volatility component, not a volatility percentage or a prediction of BAC moves; separates broad conditions from the enforcement event."
+      },
+      {
+        "id": "fear_greed",
+        "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-12, built from 11 qualifying legs.",
+        "ref": "artifact:site/basketdata/fear_greed.json",
+        "tier": "first_party",
+        "values": [
+          "52",
+          "11"
+        ],
+        "url": null,
+        "source_name": "Mastermind sentiment engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+        "context_relevance": "Dated broad sentiment measurement provides a separately computed pre-event baseline. It is not investor reaction to this announcement."
+      },
+      {
+        "id": "risk_radar",
+        "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+        "ref": "artifact:data/risk_radar/forward_log.jsonl",
+        "tier": "first_party",
+        "values": [
+          "70.3",
+          "0.19",
+          "0.1",
+          "0.042"
+        ],
+        "url": null,
+        "source_name": "Mastermind risk radar",
+        "dated": "2026-10-12",
+        "receipt": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+        "context_relevance": "Dated broad risk model identifies rates as the existing macro pressure. It does not quantify BAC regulatory exposure or attribute any price change to the fine."
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+        "text": "The Office of the Comptroller of the Currency (OCC) today announced a $750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations, including 12 CFR 21.21 and 12 CFR 21.11. This amount is the largest in OCC history."
+      }
+    ],
+    "primary_source": {
+      "kind": "external",
+      "name": "Office of the Comptroller of the Currency",
+      "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html"
+    },
+    "allowed_links": [
+      "https://www.mastermind-x.com/stocks/BAC.html"
+    ],
+    "id": "press-official-cd2747adeed2",
+    "cluster": "market-brief",
+    "model_key": "press_brief",
+    "story": {
+      "kind": "official_feed",
+      "event_date": "2026-10-13"
+    },
+    "sources": [
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+      "official_feed:url:cd2747adeed2"
+    ],
+    "source_revisions": {
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000": "sha256:16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+      "artifact:data/market_state/latest.json": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "artifact:site/basketdata/fear_greed.json": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+      "artifact:data/risk_radar/forward_log.jsonl": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+    },
+    "seed_refs": [
+      "artifact:data/market_state/latest.json",
+      "artifact:data/risk_radar/forward_log.jsonl",
+      "artifact:site/basketdata/fear_greed.json",
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000"
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "budget_used": 0,
+      "coverage": {
+        "start": null,
+        "end": null,
+        "note": "official candidate rail: no chronicle context injected"
+      }
+    },
+    "slug_hint": "official-38fd7e103e6f"
+  },
+  "attempts": [
+    {
+      "attempt": 0,
+      "ok": false,
+      "failed": [
+        "close_paraphrase",
+        "our_value",
+        "banned_lexicon"
+      ],
+      "our_value_share": 0.2074,
+      "max_block_jaccard": 0.2778,
+      "provider": "codex"
+    }
+  ],
+  "provenance": {
+    "admission_receipt": {
+      "rail": "private_official_feed",
+      "private_staging_only": true,
+      "public_article_approved": false,
+      "authorized_by": "calling_principal",
+      "planned_at": "2026-10-14T02:10:30.528527+00:00",
+      "published_at": "2026-10-13T20:15:00+00:00",
+      "item_url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+      "staged_at": "2026-10-14T02:10:30Z",
+      "candidate_id": "press-external-38fd7e103e6f",
+      "staged_slot_id": "press-official-cd2747adeed2",
+      "source_ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+      "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+      "qualification_sha256": "3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240",
+      "event_date": "2026-10-13"
+    }
+  },
+  "status": "quarantined",
+  "slug": "occ-hits-bank-of-america-with-750-million-penalty",
+  "draft": {
+    "title": "OCC Hits Bank of America With $750 Million Penalty",
+    "description": "The OCC fined Bank of America $750 million over Bank Secrecy Act violations as cautious markets weigh the bank-specific enforcement action.",
+    "slug": "occ-hits-bank-of-america-with-750-million-penalty",
+    "body_html": "<p class=\"press-byline\">The Brief — Mastermind News desk</p><p>On 2026-10-13, the <a href=\"https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html\">Office of the Comptroller of the Currency</a> announced a $750 million civil money penalty against Bank of America, N.A. for violations of the Bank Secrecy Act and its implementing regulations. The action puts compliance controls, rather than broad market mood, at the center of the story.</p><p>For investors tracking <a href=\"https://www.mastermind-x.com/stocks/BAC.html\">Bank of America</a>, the key question is what the penalty says about remediation and oversight. The announcement establishes the size and basis of the enforcement action, but the supplied evidence does not establish how the bank's shares reacted or quantify any future earnings effect.</p><h2>What the $750 million action changes</h2><p>The penalty is large enough to make regulatory execution a material item for review, even without assuming a specific balance-sheet outcome. The relevant follow-through is whether the OCC identifies continuing deficiencies, requires additional corrective work, or reports progress against existing obligations.</p><p>That distinction matters because a civil money penalty is an enforcement receipt, not a forecast. The source facts support the existence of the $750 million penalty and its Bank Secrecy Act basis; they do not support a claim about customer withdrawals, capital pressure, or a change in lending.</p><h2>The market backdrop before the announcement</h2><p>Mastermind's market-state composite was 50 of 100 on 2026-10-12, labelled MIXED. That was a pre-enforcement broad-market reading, so it describes the backdrop before the bank-specific action rather than a reaction to it.</p><p>Within that same 2026-10-12 snapshot, risk appetite scored 27 with a 0.18 weight, while the volatility backdrop scored 84 with a 0.16 weight. Those figures point to uneven conditions, but they cannot explain a move in Bank of America's shares or measure its regulatory exposure.</p><p>Mastermind's fear/greed dial stood at 52, Neutral, on 2026-10-12 and used 11 qualifying legs. Separately, the risk radar was in caution on that date, with rates the dominant scare at 70.3 and a modelled 21-session drawdown probability of 0.19. These are broad pre-event measures, not evidence of investor reaction to the OCC announcement.</p><h2>What to watch next</h2><p>Watch the OCC's subsequent disclosures, the bank's own discussion of the penalty, and any detail on remediation. The cleanest read will come from specific operational updates rather than from forcing a macro signal to explain a bank-specific enforcement event.</p><p class=\"press-footer\">Educational content — not investment advice. Markets involve risk.</p>"
+  },
+  "validator_report": {
+    "ok": false,
+    "failed": [
+      "close_paraphrase",
+      "our_value",
+      "banned_lexicon"
+    ],
+    "checks": [
+      {
+        "name": "markup_safety",
+        "ok": true,
+        "detail": "static article fragment with allowed tags and attributes",
+        "metrics": {}
+      },
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 13,
+          "unanchored": [],
+          "source_pool_size": 24,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": false,
+        "detail": "block overlaps a source at 0.278 > 0.18 (official_feed:99354c7bd7561bf9356a1193875243a72ff1d000): 'On 2026-10-13, the  Office of the Comptroller of the Currency  announced a $750 million civil money penalty against Bank'",
+        "metrics": {
+          "max_block_jaccard": 0.2778,
+          "doc_jaccard": 0.0499,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+          "worst_block": "On 2026-10-13, the  Office of the Comptroller of the Currency  announced a $750 million civil money penalty against Bank"
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": false,
+        "detail": "our-value share 20.7% (< floor 40%) over 20 sentence(s); 10 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.2074,
+          "floor": 0.4,
+          "our_words": 78,
+          "total_words": 376,
+          "granularity": "sentence",
+          "receipts": 10,
+          "receipt_values": [
+            50.0,
+            100.0,
+            27.0,
+            0.18,
+            84.0,
+            0.16,
+            52.0,
+            70.3,
+            21.0,
+            0.19
+          ],
+          "sentences": [
+            {
+              "words": 34,
+              "tier": "other"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 18,
+              "tier": "neutral"
+            },
+            {
+              "words": 29,
+              "tier": "neutral"
+            },
+            {
+              "words": 6,
+              "tier": "other"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 15,
+              "tier": "neutral"
+            },
+            {
+              "words": 33,
+              "tier": "other"
+            },
+            {
+              "words": 6,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "first_party"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            },
+            {
+              "words": 25,
+              "tier": "first_party"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 15,
+              "tier": "first_party"
+            },
+            {
+              "words": 27,
+              "tier": "first_party"
+            },
+            {
+              "words": 14,
+              "tier": "neutral"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": true,
+        "detail": "10 distinct anchored receipt(s) (>= minimum 5)",
+        "metrics": {
+          "receipts": 10,
+          "minimum": 5,
+          "values": [
+            50.0,
+            100.0,
+            27.0,
+            0.18,
+            84.0,
+            0.16,
+            52.0,
+            70.3,
+            21.0,
+            0.19
+          ]
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": false,
+        "detail": "banned vocabulary: ['substring:the backdrop']",
+        "metrics": {
+          "hits": [
+            "substring:the backdrop"
+          ]
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "external source named in full and linked above the fold",
+        "metrics": {
+          "kind": "external",
+          "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+          "named": true,
+          "linked": true,
+          "accepted_names": [
+            "Office of the Comptroller of the Currency"
+          ]
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "1 internal link(s), all public",
+        "metrics": {
+          "internal_links": 1,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/",
+            "/stocks/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": true,
+        "detail": "desk byline present",
+        "metrics": {
+          "byline": "The Brief — Mastermind News desk",
+          "block": true,
+          "text": true
+        }
+      },
+      {
+        "name": "footer",
+        "ok": true,
+        "detail": "standing footer present",
+        "metrics": {
+          "block": true,
+          "text": true,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": true,
+        "detail": "frontmatter matches the free-estate contract",
+        "metrics": {
+          "title_len": 50,
+          "description_len": 139,
+          "slug": "occ-hits-bank-of-america-with-750-million-penalty",
+          "problems": [],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "376 words (budget 300–600)",
+        "metrics": {
+          "words": 376,
+          "min_words": 300,
+          "max_words": 600
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "max overlap with our last 30 days + staged siblings is 0.165 <= 0.18",
+        "metrics": {
+          "max_jaccard": 0.1646,
+          "threshold": 0.18,
+          "peers": 1,
+          "worst_slug": "staged:european-express-meets-a-mixed-market"
+        }
+      }
+    ],
+    "our_value_share": 0.2074,
+    "our_value_granularity": "sentence",
+    "receipts": 10,
+    "max_block_jaccard": 0.2778,
+    "doc_jaccard": 0.0499,
+    "words": 376,
+    "slug": "occ-hits-bank-of-america-with-750-million-penalty",
+    "desk": "brief",
+    "publication": "mastermind_news"
+  },
+  "quarantine_reason": "validators: close_paraphrase, our_value, banned_lexicon",
+  "provider": "codex",
+  "model": "claude-haiku-4-5",
+  "writer_state": {
+    "calls": 1,
+    "failures": 0,
+    "consecutive_failures": 0,
+    "circuit_open": false,
+    "tokens_used": 2739,
+    "token_budget": 24000
+  },
+  "retained_draft_attempt": 0
+}
