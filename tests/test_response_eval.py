@@ -1100,6 +1100,7 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_fomc_qt_clock_2024-05-01.json",
     "benchmark_snb_floor_rate_2015-01-15.json",
     "benchmark_bls_survey_revision_2024-03-08.json",
+    "benchmark_gdp_growth_units_2024-04-25.json",
 ]
 
 
