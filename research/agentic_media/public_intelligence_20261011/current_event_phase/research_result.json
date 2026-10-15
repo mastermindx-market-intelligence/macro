@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-10-14T00:02:17.141970+00:00",
+  "ended_at": "2026-10-14T00:03:00.981885+00:00",
+  "pid": 17980,
+  "exit_code": 0,
+  "slot_id": "press-research_desk-2026-10-13-6baf3247f154",
+  "stage_exists": true,
+  "log_sha256": "629c78bdbec373fdcaecab146db3426d6227e8bfc9cbdf40c16f9d76b18d97b1",
+  "publication_approved": false,
+  "stage_sha256": "ec140345fab45fa876fceff6884577ebfead9740876d493afed2e477dfb2d971",
+  "status": "passed",
+  "progress": null,
+  "quarantine_reason": null
+}

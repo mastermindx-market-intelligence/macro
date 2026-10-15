@@ -182,3 +182,17 @@ OpenAI primary references:
 - https://developers.openai.com/api/docs/guides/secure-mcp-tunnels
 - https://developers.openai.com/plugins/build/auth
 - https://learn.chatgpt.com/docs/extend/mcp
+
+## Historical Market Memory projection
+
+The additive `history_dossier` action uses `lib/dataos/web_history.py` to compose the existing Market Memory archive and optional initial-release macro chronology. All files are opened through `DataWorkspace._file`; the adapter never uses an unrestricted filesystem reader or admits caller-supplied paths, SQL, providers, output destinations or runtime controls.
+
+The request requires a retained `manifest.json` reference, its exact SHA-256 and a calendar date. An optional macro reference requires its own digest. Each source descriptor must close its mutation/replacement guard before the result can return. The default never opens outcome files. A source-bound query receipt includes actual content hashes, source versions and the explicit request. No replay or source-eligibility authority is widened.
+
+Source tests and a real source-checkout dossier are not installation. The accepted runtime export must include the tracked Market Memory history modules, their existing Tiingo/Data OS dependencies and the unchanged host binding. Verify both historical requests and existing capabilities/reads from the immutable export before selecting the launcher. Workflow publication/installation on other accounts remains separately verified.
+
+## Historical SEC filing context
+
+An optional paired `filings_ref` / `filings_sha256` on `history_dossier` binds a retained `earnings_8k_dates.parquet`. `filings_offset` counts matched filing records (50 per page), not source row positions. All 8 source fields and canonical CIK/accession keys are validated using the existing Earnings filing-identity owner. Source ticker labels are not promoted to historical security identities. Filing date, report date and source-claimed acceptance time remain distinct; no earnings values, consensus, surprise or causal explanation is inferred.
+
+The same batched decoder serves CLI dossiers and an explicitly selected private offline browser timeline. Both declared Parquet sizes and observed logical Arrow bytes are bounded; this is not a peak-process-memory guarantee. Default readers never open outcome partitions, and the original DataWorkspace descriptor/mutation guards remain in charge of transport reads. Source capture and private export are distinct from public publication, complete historical coverage and strict point-in-time eligibility.

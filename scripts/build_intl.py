@@ -126,14 +126,47 @@ def _history_publication_sources(receipts):
 
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
-                           history_sources=None):
-    """Compose one normal publication without granting any equity evidence."""
+                           history_sources=None, chart_source_sink=None):
+    """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
+    if chart_source_sink is not None and (
+            type(chart_source_sink) is not dict or chart_source_sink):
+        raise ValueError("invalid_international_chart_sink")
     generation = "im-workspace-generation:" + str(uuid4())
-    workspace = _workspace_overviews(closes, workspace_generation=generation)
+    publication_inputs = None
+    try:
+        from lib.intl_eod_publication import build_eod_inputs
+        admitted = build_eod_inputs(
+            closes, data_root=Path(data_root), evaluated_at=evaluated_at,
+            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
+        )
+        if admitted is not None:
+            closes, publication_inputs = admitted
+            log.info("International EOD source evidence admitted for review")
+        else:
+            log.warning("International EOD evidence withheld; no current qualified returns")
+    except Exception as exc:
+        # A failed input binding cannot authorize financial values, nor may
+        # it suppress the remaining, independently mounted research views.
+        log.error("International EOD evidence unavailable (%s)", type(exc).__name__)
+    workspace = _workspace_overviews(
+        closes, production_inputs=publication_inputs,
+        workspace_generation=generation,
+    )
     if workspace is None:
         return None
+    if publication_inputs is not None:
+        # Publication owns the delayed-price notice. A content-hash prefix
+        # never implies a clock policy; keep it outside view-switching panels.
+        workspace["eod_snapshot"] = {
+            "as_of": closes.index[-1].date().isoformat(),
+            "policy": "intl-conservative-observed-eod-tplus2-v1",
+        }
+        if chart_source_sink is not None:
+            # Private, transient source-bound pair: templates never receive
+            # the dataframe, saved evidence or disclosure decisions.
+            chart_source_sink["sources"] = (closes, publication_inputs)
     registry = {
             "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
                         for cc, row in countries().items()],
@@ -1031,12 +1064,14 @@ def main() -> int:
             perf.pop("bench", None)
 
         workspace = None
+        chart_source_sink = {}
         try:
             workspace = _publication_workspace(
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
                 history_sources=_history_publication_sources(_intl_history_receipts),
+                chart_source_sink=chart_source_sink,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
@@ -1083,7 +1118,10 @@ def main() -> int:
                                     "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             log.error("International Library copy unavailable (%s)", type(exc).__name__)
-        macro_html, stocks_html = render_international_pages(tmpl, vm, catalogue=catalogue)
+        macro_html, stocks_html = render_international_pages(
+            tmpl, vm, catalogue=catalogue,
+            chart_sources=chart_source_sink.get("sources"),
+        )
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",

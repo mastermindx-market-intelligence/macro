@@ -7085,6 +7085,15 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
+  # This is a source-scoped publication decision, NOT a provider session-clock
+  # attestation, trading authorization, or blanket rights grant to other feeds.
+  # Missing current saved observations/collector receipts still fail closed.
+  eod_publication:
+    status: confirmed
+    scope: intl-index-fx-eod-user-facing-v1
+    decision_ref: chairman-user-facing-redistribution-confirmed-2026-10-09
+
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
     retries: 3

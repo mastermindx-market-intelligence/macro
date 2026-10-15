@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261015-mm-return-language'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -3591,6 +3591,13 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
@@ -3600,7 +3607,18 @@
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
-    var fallback = function () { location.href = pfx + 'index.html?' + fbQ; };
+    var fallbackTarget = pfx + 'index.html?' + fbQ;
+    try {
+      var returnParams = new URL(location.href).searchParams;
+      var returnPath = returnParams.get('ret');
+      var returnUrl = new URL(returnPath || '', location.origin);
+      if (returnParams.getAll('ret').length === 1 && returnPath && returnPath.length <= 4096
+          && returnPath.charAt(0) === '/' && returnPath.slice(0, 2) !== '//'
+          && returnUrl.origin === location.origin) {
+        fallbackTarget += '&ret=' + encodeURIComponent(returnUrl.pathname + returnUrl.search + returnUrl.hash);
+      }
+    } catch (e) { /* Invalid or ambiguous return state cannot choose a destination. */ }
+    var fallback = function () { location.href = fallbackTarget; };
     var t = setTimeout(function () { if (!window.MMOnboard) fallback(); }, 4000);
     s.onload = function () {
       clearTimeout(t); window.__mmOnboardLoading = false;
@@ -4030,7 +4048,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
@@ -5206,7 +5228,7 @@
      <script> tags, so this dynamic request and a page-authored one share ONE
      cache key. An unbaked build (local/custom, serving templates/ raw) leaves
      it '' and simply requests the unversioned URL. */
-  var MM_BRAIN_VER = "e3bc0580";
+  var MM_BRAIN_VER = "3c737978";
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;
@@ -6331,8 +6353,6 @@
   var SHELL_READY_FALLBACK_MS = 7000;
   var FRAME_LOAD_FALLBACK_MS = 6000;
   var REPEAT_FRAME_LOAD_FALLBACK_MS = 2500;
-  // Lifecycle v3: rotate the immutable bundle only after the live checkout advances.
-  var HARD_LAUNCH_FALLBACK_MS = 9000;
   var CLOSE_ANIMATION_MS = 300;
   var HISTORY_STATE_KEY = '__mdxTerminalOverlay';
 
@@ -6452,7 +6472,13 @@
         '.mmto-stage{clip-path:none!important;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-stage{clip-path:none!important;transform:none!important;opacity:1!important}',
         '#mm-terminal-overlay.is-closing .mmto-stage{clip-path:none!important;transform:none!important;opacity:0!important}',
-        '.mmto-frame{transform:none!important;transition:none!important}',
+        /* WebKit may grow a width:100% iframe to its horizontally scrollable chart contents,
+           giving the embedded Terminal a wider viewport than the phone. Constrain the
+           iframe with min/max width while keeping its own scrolling functional. */
+        /* EdgeOne immutable-cache rekey (2026-10-12): the first versioned URL
+           was fetched before its bundle reached origin. The browser-proven clamp
+           is unchanged; preserve a fresh content hash for correct delivery. */
+        '.mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}',
         '#mm-terminal-overlay.is-open .mmto-frame{opacity:1!important}',
         '.mmto-toast{top:max(8px,env(safe-area-inset-top));font-size:11.5px;padding-right:10px}',
         '.mmto-loader-title{font-size:13px}.mmto-loader-sub{max-width:290px;line-height:1.45}',
@@ -6810,7 +6836,7 @@
     }, SHELL_READY_FALLBACK_MS);
   }
 
-  function scheduleFrameLoadFallback(frame, delay) {
+  function scheduleFrameLoadFallback(frame) {
     clearTimeout(state.frameLoadFallbackTimer);
     state.frameLoadFallbackTimer = setTimeout(function () {
       state.frameLoadFallbackTimer = 0;
@@ -6819,9 +6845,7 @@
       // fail-open path for WebKit restores where the document paints but its
       // cross-origin ready message never reaches the parent.
       markReady({ path: state.path, symbol: state.symbol, state: 'frame-load-fallback' });
-    }, delay == null
-      ? (state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS)
-      : delay);
+    }, state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS);
   }
 
   function shouldRemountFrame() {
@@ -6880,10 +6904,10 @@
     if (!state.booted) {
       state.booted = true;
       beginLoading(root);
-      // The load handler shortens this guard once WebKit confirms a document
-      // load. Until then, never allow a failed iframe navigation to strand the
-      // user behind an infinite branded splash.
-      scheduleFrameLoadFallback(frame, HARD_LAUNCH_FALLBACK_MS);
+      // Until a document loads or Terminal signals readiness, keep the loader
+      // and its slow-load recovery actions visible. Elapsed time alone cannot
+      // prove that the frame painted; revealing it could hide both actions
+      // behind a blank frame. The load handler owns the post-load fallback.
       return;
     }
 

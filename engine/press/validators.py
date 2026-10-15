@@ -12,6 +12,8 @@ a source list that arrived empty) read as a pass.
 
 The suite, in report order:
 
+  markup_safety        static allowed HTML fragment; no executable, hidden,
+                       malformed or ambiguous markup
   fact_anchor          every number and every attributed quote in the draft
                        appears in the planner's source facts
   claim_scope          canonical earnings prose attributes each substantive
@@ -60,6 +62,7 @@ import html as _html
 import json
 import logging
 import re
+from html.parser import HTMLParser
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -429,6 +432,105 @@ def _v(cfg: dict) -> dict:
 
 def _body(draft: dict) -> str:
     return str(draft.get("body_html") or "")
+
+
+_ARTICLE_TAGS = frozenset({"p", "h2", "h3", "h4", "ul", "ol", "li",
+                           "a", "strong", "em", "blockquote", "br"})
+_ARTICLE_BLOCKS = frozenset({"p", "h2", "h3", "h4", "li", "blockquote"})
+_ARTICLE_START = re.compile(
+    r"""<[A-Za-z][A-Za-z0-9]*(?:\s+[A-Za-z][A-Za-z0-9_-]*\s*=\s*"""
+    r"""(?:"[^"]*"|'[^']*'|[^\s"'=<>\x60]+))*\s*/?>\Z"""
+)
+
+
+class _ArticleFragment(HTMLParser):
+    """Recognize a conservative static fragment; never repair or sanitize it.
+
+    HTMLParser is not a browser sanitizer. A closed grammar, allowed tags and
+    attributes, and balanced explicit endings avoid depending on browser error
+    recovery. Escaped text stays text, while raw malformed markup is refused.
+    """
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.stack: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in _ARTICLE_TAGS or not _ARTICLE_START.fullmatch(self.get_starttag_text()):
+            raise ValueError("unsupported or malformed article tag")
+        names = [name for name, _ in attrs]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate article attribute")
+        allowed = ({"href"} if tag == "a" else set())
+        if tag in _ARTICLE_BLOCKS:
+            allowed.add("data-claim-ids")
+        if tag == "p":
+            allowed.add("class")
+        for name, value in attrs:
+            if name not in allowed or value is None:
+                raise ValueError("unsupported article attribute")
+            if name == "class" and value not in {"press-byline", "press-footer"}:
+                raise ValueError("unsupported article class")
+            if name == "data-claim-ids" and not re.fullmatch(r"[A-Za-z0-9_.:\-]+(?: [A-Za-z0-9_.:\-]+)*", value):
+                raise ValueError("malformed claim identifiers")
+            if name == "href":
+                from urllib.parse import urlsplit
+                if any(c.isspace() or ord(c) < 32 or ord(c) == 127 or c == "\\" for c in value):
+                    raise ValueError("ambiguous article URL")
+                uri = urlsplit(value)
+                if not ((value.startswith("https://") and uri.netloc and not uri.username and not uri.password)
+                        or (value.startswith("/") and not value.startswith("//") and not uri.netloc)):
+                    raise ValueError("article URL must be HTTPS or a root-relative path")
+        if tag == "a" and ("href" not in names or "a" in self.stack):
+            raise ValueError("article anchor needs one URL and cannot nest")
+        if tag != "br":
+            self.stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        if tag != "br":
+            raise ValueError("only br may be self-closing")
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            raise ValueError("unbalanced article markup")
+        self.stack.pop()
+
+    def handle_data(self, data):
+        if "<" in data:
+            raise ValueError("unparsed article markup; escape literal angle brackets")
+
+    def handle_comment(self, data):
+        raise ValueError("article comments are not permitted")
+
+    def handle_decl(self, decl):
+        raise ValueError("article declarations are not permitted")
+
+    def unknown_decl(self, data):
+        raise ValueError("article declarations are not permitted")
+
+    def handle_pi(self, data):
+        raise ValueError("article processing instructions are not permitted")
+
+
+def check_markup_safety(draft: dict, slot: dict, cfg: dict) -> dict:
+    body = _body(draft)
+    try:
+        if any(ord(c) < 32 and c not in "\n\r\t" for c in body):
+            raise ValueError("article contains control characters")
+        for ending in re.findall(r"</[^>]*>", body):
+            if not re.fullmatch(r"</[A-Za-z][A-Za-z0-9]*\s*>", ending):
+                raise ValueError("malformed closing tag")
+        parser = _ArticleFragment()
+        parser.feed(body)
+        if parser.rawdata:
+            raise ValueError("incomplete article markup or character reference")
+        parser.close()
+        if parser.stack:
+            raise ValueError("unclosed article tag")
+    except (ValueError, AssertionError) as exc:
+        return _row("markup_safety", False, str(exc))
+    return _row("markup_safety", True, "static article fragment with allowed tags and attributes")
 
 
 def _prose_html(draft: dict, cfg: dict) -> str:
@@ -1021,8 +1123,6 @@ def check_ai_tells(draft: dict, slot: dict, cfg: dict) -> dict:
 
 
 _HREF_RE = re.compile(r'href="([^"]+)"', re.IGNORECASE)
-_SITE_HOSTS = ("https://www.mastermind-x.com", "https://mastermind-x.com",
-               "http://www.mastermind-x.com", "http://mastermind-x.com")
 
 
 def _norm_ws(text: str) -> str:
@@ -1031,14 +1131,36 @@ def _norm_ws(text: str) -> str:
 
 def _internal_path(href: str) -> str | None:
     """Root-relative path for an internal link; None for an external one."""
+    from urllib.parse import urlsplit  # noqa: PLC0415
+
     h = str(href or "").strip()
-    if h.startswith("#") or h.startswith("mailto:") or h.startswith("tel:"):
+    if "\\" in h:
+        # Browsers normalize backslashes as URL separators; urlsplit does not.
+        # Reject the ambiguous spelling before it can pose as an external host.
+        return "/" + h
+    if h.startswith("#") or h.lower().startswith(("mailto:", "tel:")):
         return None
-    for host in _SITE_HOSTS:
-        if h.startswith(host):
-            return "/" + h[len(host):].lstrip("/")
     if h.startswith("//") or "://" in h:
-        return None                      # genuinely external
+        try:
+            parsed = urlsplit(h)
+            host = (parsed.hostname or "").lower().rstrip(".")
+        except ValueError:
+            return "/" + h               # malformed URL fails the internal gate
+        if not host:
+            # HTTP(S) with extra slashes may gain an authority in a browser.
+            # A missing parsed authority must fail closed, never be external.
+            return "/" + h
+        if host not in ("www.mastermind-x.com", "mastermind-x.com"):
+            return None                  # genuinely external
+        # Classify by the parsed host, preserving the path's exact spelling.
+        # Protocol-relative, case variants and userinfo cannot pose as external
+        # URLs; the dossier gate below still rejects noncanonical stock forms.
+        path = parsed.path or "/"
+        if parsed.query:
+            path += "?" + parsed.query
+        if parsed.fragment:
+            path += "#" + parsed.fragment
+        return path
     if h.startswith("/"):
         return h
     return "/" + h
@@ -1110,29 +1232,60 @@ def check_link_allowlist(draft: dict, slot: dict, cfg: dict) -> dict:
     All three answer 302 to /?signin=1.  The validator was actively FORCING
     every public article to cite a login wall — the reader clicks the citation
     and lands on a signin form.  Only prefixes verified public logged-out are
-    allowed (config/press.yml `public_link_prefixes`; today /research/ and
-    /blog/, both confirmed 200).
+    allowed (config/press.yml `public_link_prefixes`). Stock dossiers also
+    require the planner's exact canonical path in `slot.allowed_links`: a
+    public route family does not prove that a named company page exists.
 
     External links are untouched: an external source is what the piece is
     citing, and the allowlist is about OUR estate.
     """
+    from urllib.parse import unquote  # noqa: PLC0415
+
     prefixes = [str(p) for p in (cfg.get("public_link_prefixes") or [])]
-    body = _prose_html(draft, cfg)
+    stock_paths = set()
+    for url in slot.get("allowed_links") or []:
+        match = re.fullmatch(
+            r"https://www\.mastermind-x\.com(/stocks/[A-Z0-9][A-Z0-9.-]*\.html)",
+            str(url),
+        )
+        if match:
+            stock_paths.add(match.group(1))
+    # Every anchor renders, including anchors inside byline/footer furniture.
+    body = _body(draft)
     offenders: list[str] = []
     checked = 0
-    for href in _HREF_RE.findall(body):
-        path = _internal_path(href)
+    # HTML permits all three quoting forms; none may bypass the dossier gate.
+    hrefs = re.findall(
+        r'''(?<![\w-])href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))''',
+        body, flags=re.IGNORECASE,
+    )
+    for parts in hrefs:
+        href = next((part for part in parts if part), "")
+        if not href:
+            continue
+        decoded_href = _html.unescape(href)
+        path = _internal_path(decoded_href)
         if path is None:
             continue                     # external link — not our estate
         checked += 1
-        if not any(path.startswith(p) for p in prefixes):
+        decoded_path = unquote(path).split("?", 1)[0].split("#", 1)[0]
+        malformed = (
+            "\\" in decoded_path
+            or any(part in (".", "..") for part in decoded_path.split("/"))
+            or any(ord(char) < 32 for char in decoded_path)
+        )
+        stock_unadmitted = path.startswith("/stocks/") and (
+            path not in stock_paths
+            or decoded_href not in (path, f"https://www.mastermind-x.com{path}")
+        )
+        if malformed or stock_unadmitted or not any(path.startswith(p) for p in prefixes):
             offenders.append(href)
 
     ok = not offenders
     return _row("link_allowlist", ok,
                 f"{checked} internal link(s), all public" if ok else
-                f"internal link(s) outside the public allowlist {prefixes} — "
-                f"these are regwall-gated and send the reader to a signin form: "
+                f"internal link(s) outside the public allowlist {prefixes}, "
+                f"unplanned stock dossiers, or malformed paths: "
                 f"{offenders}",
                 internal_links=checked, offenders=offenders, prefixes=prefixes)
 
@@ -1307,7 +1460,7 @@ def recent_own_posts(root=None, *, as_of=None, window_days: int = 30) -> list[di
 
 
 def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") -> list[dict]:
-    """[{slug, text}] for drafts sitting in staging (excluding `exclude_id`).
+    """Staged text and prose blocks, excluding `exclude_id`.
 
     WHY THIS EXISTS: the 10-article evidence gate accrues across staged drafts
     that have not been emitted yet.  A radar that only read content/seo/blog/
@@ -1335,7 +1488,8 @@ def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") ->
         if not isinstance(d, dict) or not d.get("body_html"):
             continue
         out.append({"slug": f"staged:{obj.get('slug') or obj.get('id')}",
-                    "text": strip_tags(d["body_html"])})
+                    "text": strip_tags(d["body_html"]),
+                    "prose_blocks": [b["text"] for b in blocks(_prose_html(d, cfg or {}))]})
     return out
 
 
@@ -1365,6 +1519,17 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
             if j > worst:
                 worst, worst_slug, worst_block = j, peer["slug"], blk["text"][:120]
 
+    # Windowing is asymmetric when the new block is much longer than an
+    # existing staged block. Check the reverse direction before accepting the
+    # new draft, so a later sibling cannot invalidate an earlier passing one.
+    # Use the same furniture/quotation exclusions as the peer's own replay.
+    candidate_tokens = words(strip_tags(_body(draft)))
+    for peer in peers:
+        for text in peer.get("prose_blocks", []):
+            j = window_jaccard(words(strip_quotes(text)), candidate_tokens, n)
+            if j > worst:
+                worst, worst_slug, worst_block = j, peer["slug"], text[:120]
+
     ok = worst <= threshold
     return _row("self_similarity", ok,
                 (f"max overlap with our last {window} days + staged siblings is "
@@ -1381,6 +1546,7 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
 
 # (name, callable, takes_root) — order is report order.
 _SUITE = (
+    ("markup_safety", check_markup_safety, False),
     ("fact_anchor", check_fact_anchor, False),
     ("claim_scope", check_claim_scope, False),
     ("close_paraphrase", check_close_paraphrase, False),

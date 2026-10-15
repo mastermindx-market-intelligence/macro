@@ -100,7 +100,7 @@ No protocol below is registered today.
 | **NOT SUPPORTED — BRIDGE REQUIRED** | No existing qledger primitive. The protocol may not register. The V0 row is named. |
 | **NOT SUPPORTED — PROCUREMENT-GATED** | A data-acquisition gate is named. A scoring bridge is also required where stated. |
 | **DIAGNOSTIC** | Never a hypothesis test and never registered. |
-| **RETIRED-CONTAMINATED** | Reachable only through SL §8. No row holds it today. |
+| **RETIRED-CONTAMINATED** | Reachable only through SL §8. Held today per §7: P01 v1, P03 v1, P04 v1. |
 | **RETIRED-SUPERSEDED** | Reachable only through a row's kill rule. No row holds it today. |
 
 **Fixed terms:**
@@ -112,10 +112,10 @@ No protocol below is registered today.
 
 | id | hypothesis family | unit of analysis | independence rule | split rule | grading primitive (qledger, per V0) | pre-registered null | retirement rule | Status |
 |---|---|---|---|---|---|---|---|---|
-| P01 | RESID-DIR-US: directional excess of the BABA US ADS (SEC:US-XNYS-BABA) vs a declared same-market US bench | one registered claim per horizon; honest-N = distinct non-overlapping units (IL §3 step 7) | Unit independence | Time-axis split | EXISTING: `grade_claim` (L2698) return/hit (`excess`, `hit`). REGISTERED-GATED on §2 (`register` L2026; `_cohort_prospective` L1722) | H0₁: hit rate = 0.50 per horizon. H0₂: median excess = 0. | Visible retirement | REGISTERED-GATED |
+| P01 | RESID-DIR-US: directional excess of the BABA US ADS (SEC:US-XNYS-BABA) vs a declared same-market US bench | one registered claim per horizon; honest-N = distinct non-overlapping units (IL §3 step 7) | Unit independence | Time-axis split | EXISTING: `grade_claim` (L2698) return/hit (`excess`, `hit`). REGISTERED-GATED on §2 (`register` L2026; `_cohort_prospective` L1722) | H0₁: hit rate = 0.50 per horizon. H0₂: median excess = 0. | Visible retirement | RETIRED-CONTAMINATED (v1 TUNE information_leak, SL §8 → §7); prior status: REGISTERED-GATED |
 | P02 | RESID-DIR-HK: the same design for 9988.HK (SEC:HK-XHKG-09988) and 0700.HK (SEC:HK-XHKG-00700) vs an explicit HK bench | one registered claim per horizon per HK counter (frozen for the bridged successor) | Unit independence | Time-axis split | NOT SUPPORTED — bridge required. V0 row 14 / X7: the grader price path `_close_series_uncached` (ai_desk L236) does not reach HK prices, so the leg grades `primary_leg_refused` (`COHORT_ROWLESS_PRIMARY_REFUSED` L2861). V0 row 13: `_DEFAULT_BENCH` (L1183) = "SPY" mixes markets and `resolve_claim_market` (L975) / `require_single_clock` (L1159) refuse it | H0: hit rate = 0.50 per horizon (frozen for the bridged successor) | Visible retirement | NOT SUPPORTED — BRIDGE REQUIRED (V0 rows 13, 14) |
-| P03 | RESID-SURFACE: normal-vs-abnormal residual surface (transparent rolling market/sector factor baseline plus historical-vol normalisation; IPCA challenger only with lawful point-in-time characteristics) | one unit per horizon (IL §3 step 7) | Unit independence | Time-axis split | NOT SUPPORTED — bridge required. V0 rows 4 and 6: qledger grades single-bench excess only (`grade_claim` L2698 emits `excess = subject_ret − bench_ret`), and there is no factor-residual outcome or scoring path | H0: the challenger's incremental explanation vs the transparent baseline = 0 (historical arm only, descriptive) | Visible retirement | NOT SUPPORTED — BRIDGE REQUIRED (V0 rows 4, 6) |
-| P04 | EVT-RESULTS: directional response to results events. Frozen hierarchy: broad event prior → neighborhood → issuer/instrument → bounded own-name. S0 freezes the own-name leg only | one `results`-opened episode per horizon (IL §1, §3 step 4) | Event independence | Time-axis split | US leg EXISTING: `grade_claim` (L2698) return/hit, REGISTERED-GATED on §2. HK legs NOT SUPPORTED — bridge required (V0 row 14) | H0: post-event hit rate = 0.50 per horizon | Visible retirement | REGISTERED-GATED (US leg); HK legs NOT SUPPORTED — BRIDGE REQUIRED (V0 row 14) |
+| P03 | RESID-SURFACE: normal-vs-abnormal residual surface (transparent rolling market/sector factor baseline plus historical-vol normalisation; IPCA challenger only with lawful point-in-time characteristics) | one unit per horizon (IL §3 step 7) | Unit independence | Time-axis split | NOT SUPPORTED — bridge required. V0 rows 4 and 6: qledger grades single-bench excess only (`grade_claim` L2698 emits `excess = subject_ret − bench_ret`), and there is no factor-residual outcome or scoring path | H0: the challenger's incremental explanation vs the transparent baseline = 0 (historical arm only, descriptive) | Visible retirement | RETIRED-CONTAMINATED (v1 TUNE information_leak, SL §8 → §7); prior status: NOT SUPPORTED — BRIDGE REQUIRED (V0 rows 4, 6) |
+| P04 | EVT-RESULTS: directional response to results events. Frozen hierarchy: broad event prior → neighborhood → issuer/instrument → bounded own-name. S0 freezes the own-name leg only | one `results`-opened episode per horizon (IL §1, §3 step 4) | Event independence | Time-axis split | US leg EXISTING: `grade_claim` (L2698) return/hit, REGISTERED-GATED on §2. HK legs NOT SUPPORTED — bridge required (V0 row 14) | H0: post-event hit rate = 0.50 per horizon | Visible retirement | RETIRED-CONTAMINATED (v1 TUNE information_leak, SL §8 → §7); prior status: REGISTERED-GATED (US leg); HK legs NOT SUPPORTED — BRIDGE REQUIRED (V0 row 14) |
 | P05 | EVT-CAPITAL: response to capital-action events (buyback programmes, placements, dividends, major-holder sales) | one `capital_action`-opened episode per horizon. One announced programme = ONE event; executions are evidence rows | Event independence | Time-axis split | As P04 | H0: post-event hit rate = 0.50 per horizon | Visible retirement | REGISTERED-GATED (US leg); HK legs NOT SUPPORTED — BRIDGE REQUIRED (V0 row 14) |
 | P06 | EVT-REGULATORY: response to regulatory and material events. Heavy in calendar clusters | one `regulatory_material`-opened episode per horizon | Event independence. Same-day shocks are clustered, never merged (IL §8) | Time-axis split | As P04. A `DISCLOSURE_DATE` anchor is embargoed +1 business day (`TIMESTAMP_QUALITY` L1185; `_entry_anchor` L2672) | H0: post-event hit rate = 0.50 per horizon | Visible retirement | REGISTERED-GATED (US leg); HK legs NOT SUPPORTED — BRIDGE REQUIRED (V0 row 14) |
 | P07 | EVT-RESPONSE-WINDOW: intraday response windows around announcements | one intraday window per event (frozen design intent) | Event independence | Time-axis split | NOT SUPPORTED — procurement-gated (M0 gap 7: HK intraday BLOCKED-procurement; BABA intraday 0 rows). No intraday horizon unit exists in qledger (`HORIZON_UNITS` L143 = trading or calendar), so it is also NOT SUPPORTED — bridge required: no V0 row covers an intraday unit (V0 row 3 "Clock" covers `resolve_horizon_window` L352 over those two units only), so the bridge needs a new V0-owned decision | Frozen form only: directional hit inside the window = 0.50 | Visible retirement | NOT SUPPORTED — PROCUREMENT-GATED (+ BRIDGE REQUIRED; no V0 row, new V0 decision needed) |
@@ -188,6 +188,8 @@ Every null result, prospective or historical-descriptive, is a first-class publi
 S1 appends one row per `(protocol_id, version, split)` **before any outcome of that version is computed** (SL §5). A TEST row seals the TEST rule: the prereg digest of the version. It does not seal a finite list.
 
 S1 v1 (P01–P03) sealed at the finer grain `(protocol_id, version, split, subject, h)`: 86 cells in `research/single_name_intelligence/runs/s1_residual/SEAL_AND_BUDGET.json`, committed in 52b4ed44de35 (2026-10-11T23:22:47Z) before any outcome of v1 was computed. The rows below are those cells verbatim, so the `subject` and `h` columns were added to this table for them; a `(protocol_id, version, split)` row without a finer grain leaves both as `—`. A §7 retirement row cites the split-level digest that `residual/run_s1.py::retirement_membership` assembles from that split's cells, so it does not equal any single cell digest. Non-TRAIN/TUNE splits (PURGED_*, QUARANTINE, ABSTAIN_RESOLVER_NONE) are sealed under the same rule.
+
+S2 v1 (P04–P06) sealed at the grain `(protocol_id, version, split, h)`: 27 cells in `research/single_name_intelligence/runs/s2_event_response/SEAL_AND_BUDGET.json`, committed in da02d9b2dfb2 (2026-10-11T23:10:33Z) before any outcome of v1 was computed. S2 cells carry no subject: every S2 cell is over the single graded leg adr_baba (SEC:US-XNYS-BABA, MARKET_US) (seal `graded_cohort`), so the `subject` column reads `—` for them; the Tencent issuer group and both HK legs are census-only in S2 and never graded. The S2 QUARANTINE cells are sealed under the same rule as the S1 non-TRAIN/TUNE splits.
 
 | protocol_id | version | split | subject | h | manifest_sha256 (or TEST-rule prereg digest) | sealed_at | sealing commit |
 |---|---|---|---|---|---|---|---|
@@ -280,6 +282,36 @@ S1 v1 (P01–P03) sealed at the finer grain `(protocol_id, version, split, subje
 | P01 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
 | P02 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
 | P03 | v1 | TEST | — | — | c26b09b68737ab86fa076b4a64c7e2d92459d4e8fd140e1e1b2f2e0c3439f7ab (prereg digest = the TEST rule) | 2026-10-11T23:22:47Z | 52b4ed44de35 |
+| P04 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 5 | 3987f51b24bc47ce9961206ffef580f810ea634964864f2f9659f5705dd24a0b | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 21 | f392d0c6efe30cc44af8406d72542a70ac4a559fc989ccdf287cbd71cdfbf298 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TUNE | — | 63 | 7fbe134bb1e72f6a5635a547cb6d562b1b5364f59168e67b12321ee64bf805c7 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TUNE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 5 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 21 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TRAIN | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TUNE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | QUARANTINE | — | 63 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P04 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P05 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
+| P06 | v1 | TEST | — | — | 38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943 (prereg digest = the TEST rule) | 2026-10-11T23:10:33Z | da02d9b2dfb2 |
 
 ## 7. Retirement Log table (typed; empty at S0)
 
@@ -287,8 +319,9 @@ A row is appended in the same PR that reports a contamination (SL §8 step 2). N
 
 | protocol_id | version | split | membership_sha256 | contamination_class | detected_at | evidence_pointer | trial_ledger_family | trial_ledger_config_hash | successor (protocol_id, version) |
 |---|---|---|---|---|---|---|---|---|---|
-| P01 | v1 | TUNE | dee29fd5e37fc743e4bfa37ccce4d381d7073929aa82d00f587c1098461fa1d4 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 1 | sni.s1_residual.P01 | 070a95a529ced2ad | — (none declared) |
-| P03 | v1 | TUNE | 5a890ce0d930127eeeaa79919b52db2bb933fe508bff6b8241f60d998d1bfa14 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 22 | sni.s1_residual.P03 | bcdca367a7f723f7 | — (none declared) |
+| P01 | v1 | TUNE | dee29fd5e37fc743e4bfa37ccce4d381d7073929aa82d00f587c1098461fa1d4 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 1 | sni.s1_residual.P01 | 070a95a529ced2ad | — (none registered); owner = seat/S0 |
+| P03 | v1 | TUNE | 5a890ce0d930127eeeaa79919b52db2bb933fe508bff6b8241f60d998d1bfa14 | information_leak | 2026-10-11T16:59:47-05:00 | research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl row 22 | sni.s1_residual.P03 | bcdca367a7f723f7 | — (none registered); owner = seat/S0 |
+| P04 | v1 | TUNE | a3b15693e32d9d2f44e5e4a78f90bdfb3ac2afece84b5691be12e03685804ed6 | information_leak | 2026-10-11T21:59:47+00:00 | research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl row 2 | sni.s2_event_response.P04 | a9c6e1dd48b31f34 | — (none registered); owner = seat/S0 |
 
 ## 8. Trial budgets (declared at S0)
 

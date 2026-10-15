@@ -1,0 +1,116 @@
+{
+  "schema": "observation_window.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "unsolicited_instruction_detected": false,
+  "observation_id": "obs_f7c6bb98eef2bc61332b6d99",
+  "mode": "at_origin",
+  "source_fact_id": "fact_678e8bf5a1906cc701210c40",
+  "target_company_id": "cik:0001046179",
+  "first_admissible_feed_receipt": "2026-09-28T13:32:14Z",
+  "delayed_entry_policy": "plus_900s",
+  "test_purpose": "research_time",
+  "entry_timestamp": "2026-09-28T13:47:14Z",
+  "information_cutoff": "2026-09-28T13:47:14Z",
+  "decision_timestamp": "2026-09-28T13:47:14Z",
+  "outcome_start": "2026-09-28T13:47:14Z",
+  "outcome_end": "2026-09-28T20:00:00Z",
+  "matched_window_start": "2026-09-25T13:47:14Z",
+  "matched_window_end": "2026-09-25T20:00:00Z",
+  "full_session_return_used": false,
+  "absolute_response": {
+    "form": "measured",
+    "unit": "simple_return",
+    "value": 0.018,
+    "window_start": "2026-09-28T13:47:14Z",
+    "window_end": "2026-09-28T20:00:00Z"
+  },
+  "residual_response": {
+    "form": "unmeasured",
+    "absence": {
+      "schema": "field_absence.v1",
+      "authority": "context_only",
+      "reason": "parse_failed",
+      "subject": "residual_response",
+      "detail": "two source facts share the window; residual is stored, attribution is not assigned to one fact",
+      "missing_fields": []
+    }
+  },
+  "residual_fit": {
+    "method": "ols_trailing_pre_cutoff",
+    "fit_start": "2026-07-01T20:00:00Z",
+    "fit_end": "2026-09-25T20:00:00Z",
+    "legs": [
+      {
+        "factor_id": "market",
+        "fitted_coefficient": 1.12,
+        "window_bars": 60
+      },
+      {
+        "factor_id": "documented_peer_residual",
+        "fitted_coefficient": 0.41,
+        "window_bars": 60
+      }
+    ],
+    "unused_collinear_factors": [
+      {
+        "factor_id": "sector",
+        "absence": {
+          "schema": "field_absence.v1",
+          "authority": "context_only",
+          "reason": "not_stated",
+          "subject": "residual_fit.sector",
+          "detail": "collinear with market plus documented-peer residual; not subtracted",
+          "missing_fields": []
+        }
+      },
+      {
+        "factor_id": "mag7",
+        "absence": {
+          "schema": "field_absence.v1",
+          "authority": "context_only",
+          "reason": "not_stated",
+          "subject": "residual_fit.mag7",
+          "detail": "collinear MAG7 term reserved unused",
+          "missing_fields": []
+        }
+      },
+      {
+        "factor_id": "gpu_theme",
+        "absence": {
+          "schema": "field_absence.v1",
+          "authority": "context_only",
+          "reason": "not_stated",
+          "subject": "residual_fit.gpu_theme",
+          "detail": "collinear GPU term reserved unused",
+          "missing_fields": []
+        }
+      }
+    ]
+  },
+  "peer_set": {
+    "selection": "documented_exposure",
+    "member_ids": [
+      "cik:0000937966",
+      "cik:0000723125"
+    ],
+    "excluded_target_id": "cik:0001046179",
+    "target_excluded": true
+  },
+  "coincident_events": [
+    {
+      "fact_id": "fact_592b59ae8da56136dbfd0608",
+      "company_id": "cik:0001046179",
+      "observed_at": "2026-09-28T13:40:00Z"
+    }
+  ],
+  "attribution_state": "ambiguous_coincident",
+  "observed_at": "2026-09-28T20:00:00Z",
+  "source_available_at": "2026-09-28T13:32:14Z",
+  "display_summary": "From 13:47:14Z to 16:00 America/New_York, TSMC's window return is stored. A second TSMC fact arrived at 13:40Z in the same window, so attribution stays ambiguous."
+}

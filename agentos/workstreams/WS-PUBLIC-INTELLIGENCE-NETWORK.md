@@ -1,0 +1,280 @@
+---
+key: PUBLIC-INTELLIGENCE-NETWORK
+title: Mastermind Intelligence Network public delivery
+objective: Deliver a rights-qualified public market-event story through the existing D14 Press pipeline, linked to its canonical stock dossier and the existing acquisition pathway, with verified publication and recoverable evidence.
+status: active
+program: marketing-intelligence
+repos: [macro, terminal, mastermind]
+owner: Chairman-commissioned local CEO
+class: build
+blast_radius: user_facing
+ambiguity: scoped
+waves:
+  - id: press-staging
+    title: Stage and validate the existing Press pipeline
+    status: in_progress
+  - id: qualified-story
+    title: Admit one rights-qualified event story and canonical dossier link
+    status: in_progress
+    depends_on: [press-staging]
+  - id: live-journey
+    title: Verify publication, signup and explicit follow continuation
+    status: in_progress
+    depends_on: [qualified-story]
+next_action: Deliver the real PR 9209 import-pinning repair through fresh exact-head CI and protected install, then integrate it into the accepted validator/writer follow-on and deliver that release. Continue literal source qualification without replaying held drafts.
+artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9209
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9041
+  - https://github.com/mastermindx-market-intelligence/macro/pull/8786
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
+  - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
+  - research/agentic_media/public_intelligence_20261011/CHECKPOINT.md
+  - research/agentic_media/public_intelligence_20261011/EARNINGS_DOSSIER_CONTRACT.md
+  - research/agentic_media/public_intelligence_20261011/STAGED_COHORT_REPAIR.md
+  - research/agentic_media/public_intelligence_20261011/STAGING_RECOVERY.md
+  - research/agentic_media/public_intelligence_20261011/SINGLE_ATTEMPT_QUALIFICATION.md
+  - research/agentic_media/public_intelligence_20261011/STORY_DISCOVERY.md
+  - research/agentic_media/public_intelligence_20261011/QUALIFIED_EVENT_CANDIDATE.md
+  - research/agentic_media/public_intelligence_20261011/whitehouse_event_validation.json
+  - research/agentic_media/public_intelligence_20261011/SOURCE_RETENTION.md
+  - research/agentic_media/public_intelligence_20261011/ADJUSTED_BASELINE_QUALIFICATION.md
+do_not_redo:
+  - Do not duplicate Commission 19 or claim its Fable-owned source.
+  - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.
+  - Do not interpret deterministic Press validation as rights or editorial approval.
+  - Do not enable Press publication or domain cutover from a local staging result.
+landmines:
+  - Canonical earnings articles remain non-emittable without the existing immutable approval ingress.
+  - A successful signup page response is not proof of account creation or persisted ticker follow.
+  - The D14 mixed-desk acceptance requires ten consecutive generated articles without manual edits.
+---
+
+Direct Chairman operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.
+This record extends D14 delivery under the existing marketing program. It is a
+knowledge record, not a new publication authority, runtime lease or dispatch system.
+
+The 2026-10-11 checkpoint contains the actual staging invocation and output, source
+identities, regression evidence, current live probes and unresolved dependencies.
+The named incoming handoff was not available at entry; the direct commission supplied
+the scope. No prior handoff or archived chat is treated as execution evidence.
+
+
+Event-clock correction, October12: the follow-on planner now keeps the reviewed
+event date separate from a later page-publication date, validates chronology,
+and applies Brief freshness to the event. A real White House Oct9 page expressly
+dates its prepared speech Oct8; it is not a fresh NVDA event. Red2failed/33passed;
+affected planner/validator suites161passed in30.41seconds. Independent existing
+Fabric review `mmx-press-event-clock-review-20261012-001` accepted source SHA256
+f109055b0638d34193a50fe296bb2e545ee073184329e793dc1a5d98b1266675 with no blocker;
+root consumed the same result and accepted it after source/test adjudication.
+Evidence and exact commands are in SOURCE_RETENTION.md and event_clock_review.txt.
+No new Press writer or staging-provider attempt, source admission, staging or publication occurred.
+Original PR8786 is nowcc5d31160dd3584b067453bc3b11d78440133000 after main7cb33d3a
+and Tiingo-record conflict resolution;29local refresh checks passed, all13source
+and3page hashes remain unchanged. CI38191946377 completed SUCCESS with all21binding checks passed; protected landing
+remains armed and is not yet observed. Terminal956 remains installed/browser accepted.
+
+
+Integration of original cc5d3116 into accepted follow-on44866cbe79ec preserves
+all sibling main changes, including the exact landed Tiingo workstream. Only the
+two root-owned Agent OS continuity records conflicted; root kept the fuller
+follow-on evidence and updated the current action. Runtime source had no conflict.
+Use this recovery branch in the existing SSD attempt-recovery worktree; the
+single-attempt worktree currently carries the original PR refresh branch. Both
+remain owned, preserved and separately recoverable; do not mutate the shared
+primary's dirty accounting. The live Terminal screenshot remains bound to8520e5d7.
+
+## Accepted release wave, October 13
+
+Bounded two-release outcome: **complete**. Parent publication mission: **incomplete**.
+PR #8786 remains protected-merged, installed and accepted for scoped functional
+browser behavior. Aggregate follow-on PR #9041 is now protected-merged as
+`242ac8d2ca62dbc4440278f35c50c95ee99638af` at 00:31:47Z. Its exact candidate
+`85625d64a73508d2a9ce94d29d32e76c5ad0701c` passed CI `38325360762` at
+00:31:16Z, including all 12 packs and binding gates. Controller `38327651605`
+verified current proof at 5 active proofs against cap 8 and performed the merge.
+
+The normal updater installed stable `/opt/macro` HEAD
+`604d4ec4a5608dafa0442edbb237d188d1a7d5eb`. All 21 source hashes and all 3
+reviewed pages matched in site/site.served; public HTTP returned identical bytes
+for Blog, Learn and the Position Size Calculator. The shallow production clone's
+direct merge-base remains false; seven complete canonical raw commit objects
+verify the actual merge ancestry, each object hash and parent edge, bound to the
+stable installed HEAD. No production Git mutation or manual deployment occurred.
+
+The prepared consumer executed with installed `/opt/macro/.venv/bin/python -B`:
+both historical aggregate routes (fact-sheets, research) passed; unknown route,
+expired event, unqualified rights, mismatched feed and changed body were rejected.
+Runtime inputs and HEAD stayed unchanged, with zero provider calls and zero staging
+writes. This is installed historical-fixture proof, not a newly admitted story.
+Read-only installed staging reports zero items, cutover false, publication false
+and source freshness unverified. The same three page hashes permit reuse of the
+actual #8786 Chrome acceptance; no additional browser or signup/follow write is
+claimed. Its language-toggle and stale Morning Edition limits remain visible.
+
+Exact commands, source drift comparison, raw ancestry, CI/controller readback and
+executed acceptance are retained in `pr9041_live_acceptance/`, also at the existing
+portable bundle under `/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding-9041/85625d64a73508d2a9ce94d29d32e76c5ad0701c/`.
+Current GitHub outcome belongs to existing comment 6107930181 on #8786. These
+post-landing records are a local continuity delta, not another deployed release.
+Preserve the merged carrier at 85625; do not reuse it for new implementation.
+
+Next parent action: qualify one current event packet through its permitted source
+path, bind source-specific public-article rights and relevant first-party receipts,
+then test the existing staging ingress and editorial gates. The historical fixture
+does not satisfy freshness or article acceptance. Dedicated earnings read-only R2
+secret names were absent at the last name-only observation (October 12 23:57);
+that lane requires provisioning before its non-promoting audit. D14 receipt floors,
+ten consecutive unedited mixed-desk drafts and editorial approval remain unmet.
+Preserve the original 12:07 provider EFFECT_UNKNOWN, Commission 19, Catalyst #8678,
+all worktrees and shared accounting. The bounded `complete-press-delivery` heartbeat is now **PAUSED**, verified by
+the app result and installed automation readback after GitHub evidence persistence.
+The parent workstream remains active.
+
+October 13 current-source continuation: two-file external consumer repair adds explicit no-share review and hash-bound selected engine context while retaining planning-only authority. `current_event_phase/READINESS.md` records source census, no ready Brief slot, exact validation and next executable release work. The original unknown provider effect remains unreplayed.
+
+## Current-source and writer repair accepted locally — October 14 00:44 UTC
+
+The non-earnings path now has a real OCC RSS candidate for the October 13 Bank of
+America assessment. `official_feed_phase/` retains exact source bytes, corporate
+mapping, bounded factual-reporting qualification, read-only plan and independent
+review. A parent UTF-16/DOCTYPE counterexample failed the initially reviewed code;
+the decoded XML parser now closes that gap. No writer/provider/publication effect
+occurred for this candidate. Its five dated first-party context facts are only a
+pre-event broad baseline; numerical sufficiency does not prove editorial relevance.
+Chrome verified the existing BAC dossier selects BAC in its live Terminal overlay,
+with no new signup or follow write.
+
+The Fabric writer-vintage patch is retrieved, applied and accepted after parent
+red/green verification: 14 failed/40 passed before repair; six integrated suites
+then passed 358 tests. It carries each fact's date into the prompt, sanitizes source
+labels, and requests story-specific headings. Rebuilding the real held Research
+prompt now shows the September 23 PCE date. The held draft remains byte-identical
+and earns no W1 credit. See `writer_vintage_phase/`. No regeneration of that slot.
+
+There is still no PR or binding CI for this phase. At 00:34 UTC, nine active PR
+proofs exceeded cap eight; the existing controller continues to own admission.
+To avoid three overlapping CI carriers, combine the reviewed context consumer,
+writer repair and offline OCC consumer in the existing unmerged branch before its
+first PR. All application changes remain non-promoting. Preserve three dirty local
+accounting files and every worktree. The original 12:07 EFFECT_UNKNOWN is unchanged.
+Next: integrated contract verification, one admitted protected PR, installed source
+and consumer checks; then explicit non-promoting current-source staging through the
+existing rail with duplicate/cadence guards and full mixed-desk editorial review.
+
+## Current official-source ingress — October 14 01:54 UTC
+
+The qualified OCC/BAC route has advanced into implemented private staging, with
+no dependency on earnings credentials. Source commit `78806af630d9` adds the
+existing-runner caller, permanent private emit refusal, and namespace-scoped
+revision reconciliation. Parent found and repaired nine failures in the worker
+return (corrupt accounting, changed-GUID/revision replay, timezone accounting and
+path confinement). Canonical release URL now owns the staging slot identity;
+all prior statuses block replay; malformed accounting refuses before a provider
+call. Reviewed context limits now survive the writer boundary, with normalized
+scores distinguished from percentages and no issuer causality inferred.
+
+The affected 14-suite run passed **618 tests in 76.04 seconds**. Protected main
+`1e9364f5ab8c4452820731e87da2c138e53b0571` merged without conflict as
+`55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec`. All 24 prepared source hashes and
+all 3 reviewed page hashes remain exact; every one of main's 304 CI jobs is
+preserved, with only the existing Press job's test list changed. The postmerge
+workflow checks pass 28 tests. All three dirty provider accounting files retain
+their premerge hashes. No source tree or shared worktree was cleaned or reset.
+
+The standalone private-ingress probe passes locally: one mocked fixture writer,
+zero real providers, preserved returned quarantine draft/report, changed-GUID
+replay refusal, and emit refusal after provenance stripping. It is prepared for
+installed verification, not executed on production. Actual current BAC preflight
+has six source facts and five preserved context limits, zero Brief attempts on
+the current UTC day, no coverage/replay, and stable slot
+`press-official-cd2747adeed2`. No actual BAC draft exists yet. The refreshed
+qualification is `bac_occ_current_qualification.json` (SHA256
+`3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240`). The only
+new context-file difference was Fear & Greed `generated_utc`; every measurement,
+observation date and source scope is unchanged. The original qualification is
+retained. PDF corroboration remains outside this RSS-only writer contract.
+
+Independent review `mmx-press-private-ingress-review-20261014-001` is running
+through the existing Fabric adapter on ubuntu3/Qwen; consume that exact return.
+The GLM implementation return `mmx-press-official-staging-20261013-001` has been
+retrieved and repaired, but its ledger acceptance awaits final adjudication.
+No duplicate worker or provider was launched. New contract-delta run is bound to
+55cf against protected main 1e9364; its base materialized successfully and both
+censuses are running. The previous attempt timed out before findings while
+materializing its base; that failed log is retained, not called a pass.
+
+**Capacity interpretation corrected:** the 19-active-proof census is pressure,
+not a new admission ban on authored PR creation. Protected
+`scripts/merge_on_green.py` lines 380–391 and `in_flight_pr_proofs` explicitly
+bound controller `update-branch` refreshes and reserve room for ordinary session
+work. This matches the earlier correction already recorded in the cumulative
+handoff. Do not repeat the mistaken wait-for-eight rule. After review and local
+gate, push this substantive implementation and open one ordinary protected PR;
+no duplicate CI, manual proof-only refresh, admin merge, or controller bypass.
+
+Next executable actions: consume the exact independent review and address real
+findings; finish the existing local contract gate; save/push the source and open
+its one PR. Once private-ingress safety is accepted, recheck source freshness,
+current writer state and accounting, then invoke one bounded private BAC attempt
+with no regeneration. Retain the exact returned draft and full report, apply
+editorial and mixed-cohort review, and preserve publication/cutover false until
+D14's ten consecutive unedited mixed-desk acceptance and real release gates are
+met. Original October 11 12:07 EFFECT_UNKNOWN remains unreplayed. Earlier
+#8786/#9041 installation and scoped browser acceptance remain historical accepted
+capabilities; this new source is not yet installed or publicly available.
+
+## Writer accepted and complete installation binding — October 14 03:33 UTC
+
+The isolated follow-on application frontier is 558ca0a6cdeddf48fbbedc9f0d7f178882ef68e8.
+The same Fabric writer-contract run mmx-press-writer-contract-followon-20261014-001
+settled and was retained, parent-tested, independently reviewed PASS and accepted
+by reviewer in the incumbent ledger. There is no pending writer or replacement.
+The trusted prompt now states the actual first-party share/receipt rules, configured
+floor, and existing validator-owned banned vocabulary. Provider routing, spend,
+regeneration and public permissions remain unchanged.
+
+Parent proof: six new tests failed on the pristine writer; final combined affected
+suite has 319 passed and one existing sparse-site skip in16.73s. Native independent
+review ran64 writer tests in7.32s. Trigger closure has0 gaps and the CI manifest
+validates305 jobs. Source and review receipts live in writer_contract_phase/.
+
+A separate real acceptance bug was reproduced: the original expected manifest
+contained24 files but its SSH payload checked23, omitting the private staging
+entrypoint. The checker now derives the inventory from the unchanged manifest.
+Positive, missing-entrypoint and changed-entrypoint controls pass locally; no
+production execution is claimed. Both carriers retain this correction. The new
+validator_integrity_phase/postlanding bundle binds all24 follow-on sources and
+three unchanged reviewed pages; its ten-control portable probe passes at source
+558ca with zero real-provider/public/runtime writes. Original9209 expected
+source hashes remain unchanged; the follow-on has its own manifest.
+
+Source discovery progressed through the actual installed Research producer:
+catalog718357ab... was generated02:30UTC and contains2848 reports, with the
+latest datedOctober11. This is fresher than local catalog6dd8f03a.... Read-only
+planning carried the ORIGINAL local held-source refs; the empty production
+staging directory is not a new budget or replay authority. The next public China
+Weekly Kickstart source excerpt states MXCN/CSI300 forward P/E9.8x/12.4x while its
+summary states25.7x/23.1x. This candidate is held before spend. Official MCT
+corroborates its tourism headline only; it does not qualify the contradictory
+valuation facts. See validator_integrity_phase/research_source_qualification/.
+No producer data, extracted report, held draft or attempt record was changed.
+
+PR9209's last lawful observation remains head5d06f81f, CI38499512292 in progress
+with packs0/6 pending and no binding failure at02:39UTC. This is historical,
+not a new CI or landing claim. The incumbent wait guard requires the existing
+heartbeat/controller event; no timed retry, alternate API or new observer was
+used. Keep9209 and this follow-on separate. On the admitted event, consume exact
+protected landing, verify original24-source/3-page installation and consumer
+checks, then merge landed main into this follow-on and deliver its own PR/install.
+
+Publication and cutover remain false; D14 credit remains zero. Preserve the
+original October11 12:07 EFFECT_UNKNOWN and the unchanged BAC/Research drafts.
+Continue current rights-qualified sources and literal source corroboration;
+missing earnings credentials are not the sole waiting condition.
+
+verified: writer_contract_phase/combined_green.txt, independent_review.md and
+validation.json; validator_integrity_phase/local_portable_probe.json,
+install_bundle_coverage_repair.json and research_source_qualification/review.json.
+
+October14 03:42 wake: CI38499512292 failed a real import-pinning regression in9209. A hostile-PYTHONPATH CLI control reproduced it; unconditional file-derived repository priority fixes it.106 affected tests pass. No baseline/waiver change; original installation manifest changes only the reviewed entrypoint hash. See current_event_phase/import_pin_repair/validation.json.

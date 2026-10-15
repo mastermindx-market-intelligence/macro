@@ -1,9 +1,22 @@
 """Contract checks for the Macro Dashboard → Terminal full-screen portal."""
 
 from pathlib import Path
+import shutil
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_overlay_runtime_readiness_and_recovery():
+    """Exercise the complete browser script with deterministic DOM/timer events."""
+    node = shutil.which("node")
+    assert node is not None, "node is required for the Terminal overlay lifecycle contract"
+    result = subprocess.run(
+        [node, "--test", str(ROOT / "tests/js/terminal_overlay_readiness.test.cjs")],
+        cwd=ROOT, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def _read(path: str) -> str:
@@ -107,13 +120,12 @@ def test_mobile_reopen_uses_a_fresh_document_and_defers_webkit_teardown():
     assert teardown < deferred_remove < remove
 
 
-def test_iframe_load_has_a_bounded_fail_open_path():
+def test_iframe_load_fallback_requires_a_load_before_revealing():
     code = _read("templates/terminal_overlay.js")
     assert "var FRAME_LOAD_FALLBACK_MS = 6000;" in code
     assert "var REPEAT_FRAME_LOAD_FALLBACK_MS = 2500;" in code
-    assert "var HARD_LAUNCH_FALLBACK_MS = 9000;" in code
     assert "scheduleFrameLoadFallback(frame);" in code
-    assert "scheduleFrameLoadFallback(frame, HARD_LAUNCH_FALLBACK_MS);" in code
+    assert "HARD_LAUNCH_FALLBACK_MS" not in code
     assert "state: 'frame-load-fallback'" in code
     assert "clearTimeout(state.frameLoadFallbackTimer)" in code
 
@@ -132,7 +144,9 @@ def test_mobile_animation_avoids_transformed_or_clipped_iframe_ancestors():
     code = _read("templates/terminal_overlay.js")
     assert "@media(max-width:700px)" in code
     assert "clip-path:none!important;transform:none!important" in code
-    assert ".mmto-frame{transform:none!important;transition:none!important}" in code
+    # Width is clamped on mobile for Safari's iframe content-autosizing bug,
+    # while the original no-transform compositor protection remains intact.
+    assert ".mmto-frame{width:1px;min-width:100%;max-width:100%;transform:none!important;transition:none!important}" in code
     # The `!important` opacity is scoped to the OPEN state on purpose: hoisting it
     # into the unconditional rule deletes the closed overlay's non-inheriting hide.
     # tests/test_terminal_overlay_closed_state.py evaluates that cascade for real.

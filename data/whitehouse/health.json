@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-12T00:31:45.035970+00:00",
-  "posts_seen": 9,
-  "seen_total": 282,
-  "evaluated": 0,
+  "as_of": "2026-10-15T22:16:44.549289+00:00",
+  "posts_seen": 10,
+  "seen_total": 293,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-15-its-not-a-socialist-revolution-its-misery-starvation-and-death",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
