@@ -69,6 +69,37 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 const sourceChartHtml = new Map();
+let cycleLabelHtml;
+for(const [lang,width,theme] of [['en',1440,'dark'],['zh',320,'light']]) {
+  test(`Macro admitted cycle names follow locale ${lang} ${width}`,async()=>{
+    cycleLabelHtml ||= execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+      'from tests.test_intl_workspace_macro_render import render_cycle_label_page; print(render_cycle_label_page())'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024});
+    await pageFixture(async page=>{
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.evaluate(theme=>setTheme(theme),theme);
+      const panel=page.locator('[data-im-panel][data-view="macro"]:visible');
+      const disclosure=panel.locator('.intl-macro__composite');
+      const summary=disclosure.locator(':scope > summary');
+      await summary.focus();await page.keyboard.press('Enter');
+      assert.equal(await disclosure.getAttribute('open'),'');
+      const headings=disclosure.locator(':scope > section > p:first-of-type');
+      const expected={en:['Goldilocks','Reflation','Stagflation','Growth-scare'],zh:['金发女孩','再通胀','滞胀','增长恐慌']};
+      const before=page.url();
+      for(const locale of [lang,lang==='en'?'zh':'en',lang]) {
+        await page.evaluate(locale=>setLang(locale),locale);
+        assert.deepEqual(await headings.allInnerTexts(),expected[locale]);
+        assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+        assert.equal(page.url(),before);
+        assert.equal(await headings.evaluateAll(nodes=>nodes.every(n=>n.scrollWidth<=n.clientWidth+1)),true);
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+      }
+      assert.match(await disclosure.innerText(),/owner\/economic-cycle@1/);
+      await page.keyboard.press('Space');
+      assert.equal(await disclosure.getAttribute('open'),null);
+    },{htmlOverride:cycleLabelHtml,bootLanguage:lang,width,initialSearch:'?view=macro'});
+  });
+}
 let historyEventFixture;
 function historyEventDisclosureFixture() {
   if(!historyEventFixture) historyEventFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`

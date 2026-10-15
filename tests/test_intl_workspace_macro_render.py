@@ -174,6 +174,92 @@ def collect(html):
     return collector
 
 
+CYCLE_LABELS = [
+    ("Q1", "goldilocks", "Goldilocks", "金发女孩"),
+    ("Q2", "reflation", "Reflation", "再通胀"),
+    ("Q3", "stagflation", "Stagflation", "滞胀"),
+    ("Q4", "growth_scare", "Growth-scare", "增长恐慌"),
+]
+
+
+def cycle_label_packet(quad, key):
+    packet = inputs()
+    evidence = packet["cycle_evidence"]["EZ"]
+    evidence.update(reported_quad=quad, raw_quad=quad)
+    evidence["economic_support"]["heading_key"] = key
+    return packet
+
+
+@pytest.mark.parametrize("quad,key,en,zh", CYCLE_LABELS)
+def test_supported_cycle_heading_has_bilingual_reading_and_selected_link(quad, key, en, zh):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = cycle_label_packet(quad, key)
+    section = build_macro_section(**packet)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    composite = soup.select_one(".intl-macro__composite section")
+    heading = composite.find("p")
+    link = soup.select_one(".intl-macro__reads > section:first-child a")
+    for node in (heading, link):
+        assert node.select_one(".l-en").get_text(strip=True) == en
+        assert node.select_one('.l-zh[lang="zh"]').get_text(strip=True) == zh
+    assert link["href"] == "/research/euro-area"
+    assert section == before
+    assert section["cycle_rows"][0]["supported_heading"] == key
+    assert "owner/economic-cycle@1" in composite.get_text()
+
+
+@pytest.mark.parametrize("kind", ["mixed", "stale", "disagreement"])
+def test_cycle_labels_do_not_promote_unqualified_source(kind):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = cycle_label_packet("Q1", "goldilocks")
+    evidence = packet["cycle_evidence"]["EZ"]
+    if kind == "mixed":
+        evidence.update(method_kind="mixed_composite", economic_support=None)
+    elif kind == "stale":
+        evidence.update(quality="stale", reason="source_stale")
+    else:
+        evidence["economic_support"]["disagreement"] = True
+    section = build_macro_section(**packet)
+    assert section["cycle_rows"][0]["supported_heading"] is None
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    assert not soup.select_one(".intl-macro__reads > section:first-child a")
+    assert "no economic-cycle diagnosis is claimed" in soup.get_text()
+    for _, _, en, zh in CYCLE_LABELS:
+        assert en not in soup.get_text()
+        assert zh not in soup.get_text()
+
+
+def render_cycle_label_page():
+    """Synthetic admitted headings through the native publisher, not live qualification."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(None, workspace_generation=f"im-workspace-generation:{uuid4()}")
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"], "bases": workspace["config"]["bases"],
+    }
+    measures, cycles = {}, {}
+    for market, (quad, key, _, _) in zip(countries(), CYCLE_LABELS):
+        packet = cycle_label_packet(quad, key)
+        evidence = packet["cycle_evidence"]["EZ"]
+        evidence["economic_support"]["dependency_keys"] = [f"{market}.gdp_yoy", f"{market}.cpi_yoy"]
+        cycles[market] = evidence
+        for field in ("gdp_yoy", "cpi_yoy"):
+            metric = packet["measures"][f"EZ.{field}"]
+            metric["value"] = 2
+            metric["instrument"]["market_id"] = market
+            measures[f"{market}.{field}"] = metric
+    workspace = attach_macros(workspace, registry=registry, measures=measures,
+                              cycle_evidence=cycles, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
+
+
 def stale_component_fixture(method_ref="owner/mixed@7"):
     from lib.intl_workspace_macro import build_macro_section
     packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
