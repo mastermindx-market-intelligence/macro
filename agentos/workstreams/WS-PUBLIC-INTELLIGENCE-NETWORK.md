@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Release serving guard d59cf5d6 when capacity admits (latest13proofs/cap8). Consume9209 admitted refresh/exact-head protected installation, then SAME Press follow-on c7ac2b9f with488affected checks/35portablegroups. Source screening holds15unqualified private reports, preserving29prior refs/five drafts. CAT is natural rank19 but now first unheld at installeddb596002; current planner still emits0slots because the already-repaired pool bug is not installed. Re-run current44-ref CAT inspector after protected follow-on installation, then qualify actual selected slot before one-shot staging. Preserve publication0of10 and producer38661819472 without replay.
+next_action: Release serving guard d5ad51d0 when capacity admits (latest10proofs/cap8); current-main integration preserves accepted two-file source and47tests. Consume9209 admitted refresh/exact-head protected installation, then SAME Press follow-on c7ac2b9f with488affected checks/35portablegroups. Source screening holds15unqualified private reports, preserving29prior refs/five drafts. CAT is natural rank19 but now first unheld at installeddb596002; current planner still emits0slots because the already-repaired pool bug is not installed. Re-run current44-ref CAT inspector after protected follow-on installation, then qualify actual selected slot before one-shot staging. Preserve publication0of10 and producer38661819472 without replay.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
