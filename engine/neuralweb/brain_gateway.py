@@ -9661,6 +9661,7 @@ def chat(
             _native_plan_hit,
             repo_root=root,
             route_decision_ms=_native_route_decision_ms,
+            request_id=_ctx_envelope["request_id"],
         )
         _nf_receipt = _nf_exec.receipt
         _nf_timing = _native_fact_latency(_nf_receipt, _instant_t0)
@@ -9690,6 +9691,8 @@ def chat(
             latency_ms=int(_nf_timing["total_ms"]),
             input_tokens=0, output_tokens=0, context=context, latency=_nf_timing,
             flags={"native_fact": True},
+            row_id=_ctx_envelope["request_id"],
+            native_numeric_verification=_nf_exec.numeric_verification,
         )
         return {
             "ok": True,
@@ -10164,6 +10167,7 @@ def chat_stream(
             _native_plan_hit,
             repo_root=root,
             route_decision_ms=_native_route_decision_ms,
+            request_id=_ctx_envelope["request_id"],
         )
         _nf_receipt = _nf_exec.receipt
         _nf_timing = _native_fact_latency(_nf_receipt, _instant_t0)
@@ -10205,6 +10209,8 @@ def chat_stream(
             latency_ms=int((time.time() - _t0) * 1000), input_tokens=0,
             output_tokens=0, context=context, latency=_nf_timing,
             flags={"native_fact": True},
+            row_id=_ctx_envelope["request_id"],
+            native_numeric_verification=_nf_exec.numeric_verification,
         )
         return
 

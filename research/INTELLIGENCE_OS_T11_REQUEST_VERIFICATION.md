@@ -29,10 +29,27 @@ cannot override a mismatch or missing source assessment. Calls without explicit
 source context retain their existing behavior; the numeric result is a separate
 field and does not change the judge's score or frozen rubric axes.
 
-This is a bounded source composition, not completion of T11. The normal production
-caller still needs to pass genuine same-request resolver output, and installed
-execution must be qualified after lawful release. General model narratives remain
-outside the exact native renderer subset. The earlier authenticated native browser
-observation demonstrates one real receipt/answer path; it does not independently
-bind installed source or supply historical values to this checker. A1 still has no
-admitted numeric input and must preserve that explicit gap.
+The native executor now consumes its actual subscriber resolver output while the
+request owns it. Both gateway modes supply the existing compiled-context request
+ID, then use that same ID for the existing internal response log. The verifier
+result stays on the internal execution object; it is absent from the public
+receipt, chat response, stream events and persisted assistant-message metadata.
+A verifier failure cannot change the already resolved answer or invoke a model.
+
+The existing response-log writer accepts only the closed internal verdict shape.
+It rejects a missing/false internal-only marker, malformed or unknown codes,
+non-integer counts, excess/duplicate/malformed references and inconsistent success
+claims. It does not normalize defective proof into success. Extra narrative,
+source values and keys are dropped by explicit projection. The existing operator
+log reader retains this field; no new persistence service or public badge is added.
+A recorded verdict does not self-admit source context to the offline scorer.
+
+This is a bounded source composition, not completion of T11. Installed execution
+and actual same-request log consumption must be qualified after lawful release.
+The eleven-file follow-on probe binds the direct caller/checker/log sources, but
+its two CLI observations do not establish live numeric-verifier execution.
+General model narratives remain outside the exact native renderer subset. The
+earlier authenticated native browser observation demonstrates one real receipt/
+answer path; it does not independently bind installed source or supply historical
+values to this checker. A1 still has no admitted numeric input and must preserve
+that explicit gap.

@@ -146,20 +146,19 @@ unresolved:
 - Current A1 publishedba848 has a known terminal closure failure; localff791 repair is qualified and awaits
   real capacity admission. Protected merge and all production proof remain owed.
 next_actions:
-- A1 PR6651 remote ba848 has terminal run38695328397 failure on the known nine-input closure defect;
-  eleven packs including A1pack9 passed. Clean local ff791 contains the qualified repair. Last canonical
-  census08:33 was14active/cap8. Existing capacity-owner run38705144154 is now terminal (observed09:04);
-  at the next eligible integration boundary obtain fresh canonical admission, current-source/main preview,
+- A1 PR6651 remote ba848 has terminal known-closure failure. Qualified clean local ff791 remains unpublished.
+  Last canonical census09:10 was8active/cap8. Actual lease-owner run38708601211/head27c876 remained running09:30;
+  consume its real completion at an eligible boundary, then fresh canonical admission/source/main preview,
   ordinary same-carrier push and fresh binding checks. Incumbent alone owns final merge and next refresh.
-- Publish bounded T11 follow-on source after252 affected tests and3CI controls pass, zero closure misses and
-  strict134/134/128jobs. Original eval-t11-request-verifier-01a1333d-c1 consumed and accepted with parent
-  corrections. Do not repeat accepted checks or describe worker construction as independent review.
-- Wire the normal caller to genuine admitted same-request resolver output and qualify installed behavior
-  after lawful release. Earlier request64992.109 proves one native API/DOM path only; it cannot establish
-  source deployment, general narrative verification or an admitted A1 numeric input.
+- Publish qualified T11 caller composition on the same follow-on branch. Original sanitizer worker consumed
+  and accepted with substantial strictness corrections; this is parent review, not independent review.
+  Source has416 caller regression passes across initial/identity-repair runs,36 sink tests and actual local
+  caller-to-operator-reader controls,14 probe selftests,3CIcontrols,zero closure misses and strict134/134/128jobs.
+  All314 execution definitions/prior paths/limits remain;27 actual dependencies added to one existing job.
 - After qualified A1 merge bind both installation and served-asset probes, verify normal deployment/API/DOM/
-  eight visual states/natural owner progression/comprehension. Release the same follow-on through its normal PR
-  and prove installed CLI and rights-qualified Discovery adoption. Preserve all unknown/refused original effects.
+  eight visual states/natural owner progression/comprehension. Release the same follow-on through its normal PR;
+  prove installed numeric execution plus same-request internal log, installed CLI and rights-qualified Discovery use.
+  Prior native request64992.109 proves one API/DOM path only. Preserve all unknown/refused original effects.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -175,7 +174,7 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-A1's original hosted run ended with the diagnosed nine-input failure; its qualified same-carrier repair remains capacity-gated. T11 now has a bounded pure verifier integrated into the existing response scorer:252 affected tests and3CI controls pass, dependency closure has zero misses, and strict packing remains within the existing limits. Original worker output is consumed and accepted with parent corrections, not labeled an independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. The normal production caller, protected release, installed execution, general narrative verification and real follow-on adoption remain open. All final completion flags remain false.
+T11's bounded verifier is now composed with the actual native executor, both gateway modes and existing internal response-log/operator-reader path. Same-request values remain ephemeral; strict verdict projection cannot normalize malformed evidence into success. Caller, sink, probe and affected CI checks pass; final closure has zero misses and packing stays within the existing limits. Original worker construction is accepted with corrections, not independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. A1's qualified repair still waits for real capacity; protected releases, installed execution, general narrative verification and real follow-on adoption remain open. Final completion flags remain false.
 
 ## 2026-10-15 A1 repair published
 

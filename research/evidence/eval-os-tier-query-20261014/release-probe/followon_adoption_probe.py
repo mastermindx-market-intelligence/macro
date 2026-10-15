@@ -23,11 +23,13 @@ FILES = (
     "engine/postmortem.py", "scripts/build_output_health.py",
     "engine/qledger_validity.py", "scripts/check_qledger_metric_validity.py",
     "scripts/agentos.py",
+    "engine/neuralweb/response_eval.py", "engine/neuralweb/native_facts.py",
+    "engine/neuralweb/brain_gateway.py", "lib/mastermind_response_log.py",
 )
 LIMIT = 16 * 1024 * 1024
-SCOPE = ("Observed CLI invocations and seven direct source files only. This does not "
+SCOPE = ("Observed CLI invocations and eleven direct source files only. This does not "
          "prove dependency closure, atomic data snapshots, production acceptance, "
-         "model performance, earned tiers, rights, Discovery adoption or natural "
+         "model performance, live numeric-verifier execution, earned tiers, rights, Discovery adoption or natural "
          "owner progression. Qualification and authorization belong to the caller.")
 
 

@@ -84,6 +84,16 @@ class ObservationTests(unittest.TestCase):
         with mock.patch.object(probe, "capture", side_effect=AssertionError("child called")):
             self.assertEqual(self.observe()["reason"], "source_binding_mismatch")
 
+    def test_native_numeric_source_changes_refuse_before_cli_execution(self):
+        for source in ("engine/neuralweb/response_eval.py", "engine/neuralweb/native_facts.py",
+                       "engine/neuralweb/brain_gateway.py", "lib/mastermind_response_log.py"):
+            with self.subTest(source=source):
+                original = (self.root / source).read_text()
+                (self.root / source).write_text(original + "# changed installed source\n")
+                with mock.patch.object(probe, "capture", side_effect=AssertionError("child called")):
+                    self.assertEqual(self.observe()["reason"], "source_binding_mismatch")
+                (self.root / source).write_text(original)
+
     def test_symlink_file_and_parent_stop_before_any_child(self):
         target = self.root / probe.FILES[0]
         original = self.root / "saved.py"
@@ -193,7 +203,7 @@ class ObservationTests(unittest.TestCase):
         self.assertLess(len(p.stdout), 8192)
 
     def test_offline_binding_uses_commit_bytes_not_working_tree(self):
-        subprocess.run(["git", "-C", str(self.root), "add", "engine", "scripts"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", *probe.FILES], check=True)
         subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
                         "-c", "user.email=test@example.invalid", "commit", "-qm", "bound bytes"], check=True)
         revision = subprocess.check_output(["git", "-C", str(self.root), "rev-parse", "HEAD"],
@@ -208,7 +218,7 @@ class ObservationTests(unittest.TestCase):
         target = self.root / probe.FILES[0]
         target.unlink()
         target.symlink_to("../scripts/agentos.py")
-        subprocess.run(["git", "-C", str(self.root), "add", "engine", "scripts"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", *probe.FILES], check=True)
         subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test",
                         "-c", "user.email=test@example.invalid", "commit", "-qm", "bad input"], check=True)
         revision = subprocess.check_output(["git", "-C", str(self.root), "rev-parse", "HEAD"],
