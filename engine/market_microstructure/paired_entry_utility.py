@@ -1,0 +1,293 @@
+"""C15 paired *hypothetical* entry utility, over independently frozen source receipts.
+
+This pure research leaf has no source ownership, clock oracle, trial ledger,
+policy selector, broker/execution path, or publication authority. Original
+candidate decisions, policy freezes, source/quote availability, qualified
+calendar, and actual consumer delivery must all be proved by their owners.
+
+For same-candidate comparison the 30-trading-minute endpoint comes from the
+original study/calendar owner. The asserted elapsed_minutes and receipt here
+ARE NOT calendar authentication. Simulated quote crossing is NOT an actual fill.
+No statistical promotion, alert, ranking, live execution, or sizing authority.
+"""
+from __future__ import annotations
+
+import re
+from datetime import datetime, timezone, time
+from zoneinfo import ZoneInfo
+from lib.nyse_calendar import is_session
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN, localcontext
+from fractions import Fraction
+
+from engine.market_microstructure.pressure_response import MODES, _bounded_decimal
+
+SCHEMA = "equity.c15_paired_entry_utility_research/v0"
+SHA = re.compile(r"^[a-f0-9]{64}$")
+SYMBOL = re.compile(r"^[A-Z][A-Z0-9.-]{0,19}$")
+FIXED = re.compile(r"^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")
+STATES = frozenset({"SIMULATED_FULL", "FROZEN_ABSTAIN", "UNOBSERVABLE"})
+REASONS = frozenset({"QUOTE_MISSING", "SOURCE_GAP", "UNQUALIFIED_MARKET", "CANCEL_UNRESOLVED"})
+MINUTE_NS = 60_000_000_000
+MAX_QUOTE_AGE_NS = 5_000_000_000
+
+
+def _dict(value, keys, label):
+    if type(value) is not dict or set(value) != set(keys):
+        raise ValueError(label + ": unexpected/missing fields")
+    return value
+
+
+def _sha(value, label):
+    if type(value) is not str or not SHA.fullmatch(value):
+        raise ValueError(label + ": digest missing")
+    return value
+
+
+def _clock(value, label):
+    if type(value) is not int or not 0 < value <= (1 << 63) - 1:
+        raise ValueError(label + ": native clock invalid")
+    return value
+
+
+def _money(value, label, *, positive=False):
+    # Accepted R0 input width and fixed-point resource policy; no float JSON.
+    if type(value) is not str or not FIXED.fullmatch(value) or len(value) > 128:
+        raise ValueError(label + ": expected bounded nonnegative fixed decimal")
+    try:
+        dec = Decimal(value)
+        _bounded_decimal(dec, label)
+    except (ValueError, InvalidOperation) as exc:
+        raise ValueError(label + ": invalid source decimal") from exc
+    if positive and dec <= 0:
+        raise ValueError(label + ": must be positive")
+    return Fraction(dec)
+
+
+def _exact_bp(value):
+    # Preserve exact rational for very small nonzero effects, rounded for UI ONLY.
+    with localcontext() as ctx:
+        ctx.prec = 700
+        ctx.rounding = ROUND_HALF_EVEN
+        rendered = Decimal(value.numerator) / Decimal(value.denominator)
+        rendered = rendered.quantize(Decimal("0.000000000001"))
+    return {
+        "numerator": str(value.numerator), "denominator": str(value.denominator),
+        "display_bps_12dp": format(rendered, "f"),
+        "display_only_rounded": True,
+    }
+
+
+def _best_quote(row, prefix, label):
+    bid = _money(row[prefix + "_bid_usd"], label+".bid", positive=True)
+    ask = _money(row[prefix + "_ask_usd"], label+".ask", positive=True)
+    bid_size = _money(row[prefix + "_bid_size_shares"], label+".bid_size", positive=True)
+    ask_size = _money(row[prefix + "_ask_size_shares"], label+".ask_size", positive=True)
+    if bid >= ask:
+        raise ValueError(label+": locked or crossed quote")
+    return bid, ask, bid_size, ask_size
+
+
+def _policy(row, *, role, candidate, cutoff_ns, max_quote_age_ns, anchor, size):
+    quote_fields = tuple(prefix + "_" + suffix for prefix in ("entry", "exit")
+        for suffix in ("bid_usd", "ask_usd", "bid_size_shares", "ask_size_shares"))
+    keys = {
+        "candidate_id", "role", "state", "policy_receipt_sha256", "policy_frozen_ns",
+        "consumer_available_ns", "consumer_receipt_sha256", "entry_decision_ns",
+        "entry_quote_event_ns", "entry_quote_available_ns",
+        "entry_quote_receipt_sha256", "exit_quote_event_ns",
+        "exit_quote_available_ns", "exit_quote_receipt_sha256",
+        "fees_usd", "abstain_receipt_sha256", "abstain_available_ns",
+        "unobservable_reason", *quote_fields,
+    }
+    p = _dict(row, keys, role)
+    if p["candidate_id"] != candidate["candidate_id"] or p["role"] != role:
+        raise ValueError(role + ": unrelated candidate or policy")
+    _sha(p["policy_receipt_sha256"], role + ".policy")
+    frozen = _clock(p["policy_frozen_ns"], role + ".freeze")
+    if frozen >= candidate["decision_ns"]:
+        raise ValueError(role + ": policy not frozen before candidate")
+    consumer = p["consumer_available_ns"]
+    if role == "challenger":
+        if consumer is None or p["consumer_receipt_sha256"] is None:
+            return None, "OVERLAY_CONSUMER_AVAILABILITY_NOT_PROVEN"
+        _sha(p["consumer_receipt_sha256"], role+".consumer_receipt")
+        _clock(consumer, role + ".consumer")
+        if consumer >= candidate["decision_ns"]:
+            return None, "OVERLAY_ARRIVED_AFTER_ORIGINAL_DECISION"
+    elif consumer is not None or p["consumer_receipt_sha256"] is not None:
+        raise ValueError("baseline: overlay claim forbidden")
+    status = p["state"]
+    if status not in STATES:
+        raise ValueError(role + ": invalid state")
+    forbidden_for_source_gap = (
+        "entry_decision_ns", "entry_quote_event_ns", "entry_quote_available_ns",
+        "entry_quote_receipt_sha256", "exit_quote_event_ns",
+        "exit_quote_available_ns", "exit_quote_receipt_sha256",
+        "fees_usd", "abstain_receipt_sha256", "abstain_available_ns",
+        *quote_fields,
+    )
+    if status == "UNOBSERVABLE":
+        if p["unobservable_reason"] not in REASONS:
+            raise ValueError(role + ": missing typed source failure")
+        if any(p[k] is not None for k in forbidden_for_source_gap):
+            raise ValueError(role + ": source-failure masquerades as fill/abstain")
+        return None, p["unobservable_reason"]
+    if status == "FROZEN_ABSTAIN":
+        _sha(p["abstain_receipt_sha256"], role + ".abstain")
+        when = _clock(p["entry_decision_ns"], role + ".abstain_decision")
+        available = _clock(p["abstain_available_ns"], role + ".abstain_available")
+        if not candidate["decision_ns"] <= when <= available < candidate["deadline_ns"]:
+            raise ValueError(role + ": abstention not knowable within frozen deadline")
+        if any(p[k] is not None for k in (
+            "entry_quote_event_ns", "entry_quote_available_ns", "entry_quote_receipt_sha256",
+            "exit_quote_event_ns", "exit_quote_available_ns", "exit_quote_receipt_sha256",
+            "fees_usd", "unobservable_reason", *quote_fields,
+        )):
+            raise ValueError(role + ": source unknown cannot be coded as abstention")
+        return Fraction(0), None
+    # Quote-crossing research simulation; no actual execution/order filled.
+    if (p["abstain_receipt_sha256"] is not None or
+            p["abstain_available_ns"] is not None or
+            p["unobservable_reason"] is not None):
+        raise ValueError(role + ": incompatible fill state")
+    start = _clock(p["entry_decision_ns"], role + ".entry")
+    event = _clock(p["entry_quote_event_ns"], role + ".entry_quote_event")
+    available = _clock(p["entry_quote_available_ns"], role + ".entry_quote_receipt_time")
+    exit_event = _clock(p["exit_quote_event_ns"], role + ".exit_quote_event")
+    exit_avail = _clock(p["exit_quote_available_ns"], role + ".exit_quote_receipt_time")
+    _sha(p["entry_quote_receipt_sha256"], role + ".entry_receipt")
+    _sha(p["exit_quote_receipt_sha256"], role + ".exit_receipt")
+    if not (candidate["decision_ns"] <= start <= candidate["deadline_ns"]
+            < candidate["horizon_end_ns"]):
+        raise ValueError(role + ": entry out of preregistered window")
+    if not (event < start and event <= available < start and
+            0 <= start - event <= max_quote_age_ns):
+        return None, "ENTRY_QUOTE_NOT_KNOWABLE_OR_STALE"
+    if not (exit_event < candidate["horizon_end_ns"]
+            and exit_event <= exit_avail < cutoff_ns
+            and 0 <= candidate["horizon_end_ns"] - exit_event <= max_quote_age_ns):
+        return None, "EXIT_QUOTE_NOT_KNOWABLE_OR_STALE"
+    eb,ea,ebsize,easize = _best_quote(p,"entry",role+".entry")
+    xb,xa,xbsize,xasize = _best_quote(p,"exit",role+".exit")
+    if candidate["direction"] == 1:
+        entry,exit_price = ea,xb
+        enough = easize >= size and xbsize >= size
+    else:
+        entry,exit_price = eb,xa
+        enough = ebsize >= size and xasize >= size
+    if not enough:
+        return None, "INSUFFICIENT_DISPLAYED_TOP_SIZE"
+    fees = _money(p["fees_usd"], role + ".fees")
+    # The same Q0 and M0 are frozen once for both legs. Quote-side crossing
+    # includes spread once; do not re-charge spread through the fees field.
+    delta = Fraction(candidate["direction"]) * size * (exit_price - entry) - fees
+    return Fraction(10000) * delta / (size * anchor), None
+
+
+def evaluate_same_candidate(*, candidate, baseline, challenger,
+                            evaluation_cutoff_ns, source_watermark_ns,
+                            watermark_received_ns, market_health,
+                            market_health_receipt_sha256):
+    """Calculate paired *research-only* utility without any live authority.
+
+    The caller must obtain original receipts, candidate/policy freeze, and
+    qualified source/NYSE trading-time evidence externally. This function
+    validates consistency but cannot authenticate market data or simulated fills.
+    """
+    keys = {
+        "candidate_id", "ticker", "session", "source_mode",
+        "source_receipt_sha256", "candidate_source_available_ns",
+        "decision_ns", "deadline_ns", "horizon_end_ns",
+        "horizon_trading_minutes", "calendar_receipt_sha256",
+        "direction", "research_quantity", "initial_midpoint_usd",
+        "max_quote_age_ns",
+    }
+    c = _dict(candidate, keys, "candidate")
+    if (type(c["candidate_id"]) is not str or not 0 < len(c["candidate_id"]) <= 128
+            or type(c["ticker"]) is not str or not SYMBOL.fullmatch(c["ticker"])
+            or type(c["session"]) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH", c["session"])):
+        raise ValueError("candidate: invalid frozen identity")
+    if c["source_mode"] not in MODES:
+        raise ValueError("candidate: invalid source mode")
+    _sha(c["source_receipt_sha256"], "candidate.receipt")
+    source_available = _clock(c["candidate_source_available_ns"], "candidate.source_available")
+    _sha(c["calendar_receipt_sha256"], "calendar.receipt")
+    _sha(market_health_receipt_sha256, "market_health.receipt")
+    decision = _clock(c["decision_ns"], "candidate.decision")
+    if source_available >= decision:
+        raise ValueError("candidate: original source arrived after decision")
+    deadline = _clock(c["deadline_ns"], "candidate.deadline")
+    endpoint = _clock(c["horizon_end_ns"], "candidate.endpoint")
+    if not decision <= deadline < endpoint:
+        raise ValueError("candidate: invalid entry deadline/horizon")
+    if endpoint - decision != 30 * MINUTE_NS:
+        raise ValueError("candidate: nominal same-session 30-minute horizon mismatch")
+    # Reuse incumbent full-session holiday reference (no duplicate calendar).
+    # Its early-close/one-off coverage is deliberately NOT source certification.
+    et = ZoneInfo("America/New_York")
+    def nominal_rth(ns):
+        local = datetime.fromtimestamp(ns // 1_000_000_000, timezone.utc).astimezone(et)
+        return local, local.timetz().replace(tzinfo=None)
+    opened, from_time = nominal_rth(decision)
+    closed, to_time = nominal_rth(endpoint)
+    if (not is_session(opened.date()) or opened.date() != closed.date()
+            or c["session"] != opened.date().isoformat() + ":RTH"
+            or not time(9, 30) <= from_time < time(16, 0)
+            or not time(9, 30) < to_time <= time(16, 0)):
+        raise ValueError("candidate: outside nominal NYSE RTH session")
+    # This is an external calendar assertion, NOT a verified 30-min horizon.
+    if type(c["horizon_trading_minutes"]) is not int or c["horizon_trading_minutes"] != 30:
+        raise ValueError("candidate: unexpected trading-minute horizon")
+    if type(c["direction"]) is not int or c["direction"] not in (-1, 1):
+        raise ValueError("candidate: direction must come from incumbent")
+    maxage = _clock(c["max_quote_age_ns"], "candidate.max_quote_age")
+    if maxage > MAX_QUOTE_AGE_NS:
+        raise ValueError("candidate: quote freshness exceeds five seconds")
+    size = _money(c["research_quantity"], "research_quantity", positive=True)
+    anchor = _money(c["initial_midpoint_usd"], "initial_midpoint", positive=True)
+    cutoff = _clock(evaluation_cutoff_ns, "evaluation_cutoff")
+    through = _clock(source_watermark_ns, "source_watermark")
+    arrived = _clock(watermark_received_ns, "watermark_received")
+    if arrived < through:
+        raise ValueError("watermark receipt before native source time")
+    if market_health not in ("NORMAL", "HALTED", "UNKNOWN"):
+        raise ValueError("market health outside frozen source categories")
+    identity = dict(
+        schema=SCHEMA, candidate_id=c["candidate_id"], ticker=c["ticker"],
+        session=c["session"], source_mode=c["source_mode"],
+        horizon_trading_minutes=30, original_decision_ns=decision,
+        horizon_end_ns=endpoint, evaluation_cutoff_ns=cutoff,
+        policy_count=2, forward_outcome_available_to_original_decision=False,
+        source_authenticated=False, simulated_execution_not_fill=True,
+        calendar_qualified_by_this_function=False, actual_consumer_delivery_proven=False,
+        predictive_rank_trading_alert_authority=False, prospective_promotion=False,
+        supplied_input_first_knowable_ns=None,
+        supplied_input_first_knowable_not_consumer_receipt=True,
+        primary_policy_authority="RESEARCH_DIAGNOSTIC_ONLY",
+    )
+    if cutoff <= endpoint or through < endpoint or arrived >= cutoff:
+        return {**identity, "state":"NOT_MATURE", "reason":"HORIZON_OR_WATERMARK_NOT_KNOWABLE",
+                "baseline_bps":None, "challenger_bps":None, "delta_bps":None}
+    if market_health != "NORMAL":
+        return {**identity, "state":"CENSORED", "reason":"HALTED_OR_UNKNOWN_MARKET",
+                "baseline_bps":None, "challenger_bps":None, "delta_bps":None}
+    b,br = _policy(baseline,role="baseline",candidate=c,cutoff_ns=cutoff,
+                   max_quote_age_ns=maxage,anchor=anchor,size=size)
+    h,hr = _policy(challenger,role="challenger",candidate=c,cutoff_ns=cutoff,
+                   max_quote_age_ns=maxage,anchor=anchor,size=size)
+    if br or hr:
+        return {**identity,"state":"UNOBSERVABLE", "reason":{"baseline":br,"challenger":hr},
+                "baseline_bps":None,"challenger_bps":None,"delta_bps":None}
+    assert b is not None and h is not None
+    # Only the supplied input-component arrival lower bound; never pretend
+    # a real Terminal consumer received the result at this clock.
+    ready_times = [arrived]
+    for policy in (baseline, challenger):
+        ready_times.append(
+            policy["exit_quote_available_ns"] if policy["state"] == "SIMULATED_FULL"
+            else policy["abstain_available_ns"]
+        )
+    return {**identity,"state":"PAIRED_RESEARCH_UTILITY", "reason":None,
+            "supplied_input_first_knowable_ns":max(ready_times),
+            "baseline_bps":_exact_bp(b),"challenger_bps":_exact_bp(h),
+            "delta_bps":_exact_bp(h-b)}
