@@ -10,7 +10,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from engine.neuralweb.mastermind_context import build_market_plane  # noqa: E402
+from engine.neuralweb.mastermind_context import build_market_plane, build_and_write_market_plane  # noqa: E402
 
 NOW = datetime(2026, 10, 14, 20, 0, tzinfo=timezone.utc)
 
@@ -101,6 +101,34 @@ class NativePlaneVerdictClock(unittest.TestCase):
         self.assertTrue(d["is_context_only"])
         self.assertNotIn("may_execute", d["verdict"])
         self.assertNotIn("may_gate", d["verdict"])
+
+
+class NativePlaneDualWrite(unittest.TestCase):
+    def test_dual_write_preserves_qualified_verdict_source_clocks(self):
+        with tempfile.TemporaryDirectory(prefix="ror1-plane-dual-") as dirname:
+            root = Path(dirname)
+            data = root / "data" / "neuralweb"
+            data.mkdir(parents=True)
+            (data / "world_state.json").write_text(json.dumps({
+                "produced_at": "2026-10-14T19:32:19Z",
+                "verdict": {"verdict": "MIXED", "score": 50,
+                            "asof": "2026-10-13",
+                            "freshness": {"any_input_stale": True,
+                                          "data_asof": "2026-10-13",
+                                          "expected_asof": "2026-10-13"}},
+            }))
+            output = build_and_write_market_plane(root=root, now=NOW)
+            canonical = (root / "data" / "neuralweb" / "market_plane.json").read_bytes()
+            public = (root / "site" / "neuralwebdata" / "market_plane.json").read_bytes()
+            self.assertEqual(canonical, public)
+            projected = json.loads(canonical)
+            self.assertEqual(projected["verdict"]["source_session"], "2026-10-13")
+            self.assertIs(projected["verdict"]["source_freshness"]["any_input_stale"], True)
+            self.assertEqual(projected["asof"], "2026-10-14")
+            self.assertEqual(projected["verdict"]["score"], 50)
+            self.assertTrue(projected["is_context_only"])
+            self.assertEqual(projected, output)
+
 
 
 if __name__ == "__main__":
