@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T08:43:19.260787+00:00",
-  "count": 2946,
+  "generated_at": "2026-10-15T09:12:57.210120+00:00",
+  "count": 2947,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,24 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-aw9qvbltjyw-13f780",
+      "title": "Jefferies European Equity Daily",
+      "institution": "Jefferies",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T08:45:32Z",
+      "summary_points": [
+        "ASML Margin Outlook: Gross margin strength into 2027 critical for tech sector valuation; 2028 trends uncertain due to industry cyclicality (fundamentals) - China Credit Growth: Record low credit growth pivotal geopolitical data affecting commodity markets and portfolio risk exposure (geopolitics/data) - Nordea Bank Buybacks Paused: ECB model review halts buybacks; ROE 15.1% vs. 6% target (key risk factor) - Ashmore Group AUM & Flows: $54.5bn AUM (vs.",
+        "$54.2bn cons), net inflows split equally across fixed income/equities; redemptions lowest quarterly in 15 years (flows) - KION Weak Q3 & Guidance Cut: Q3 sales weak, 2026 guidance cut due to continued demand slump; valuation pricing in difficult outcome (risk factor)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-m1cncqqs1za-46f41b",
       "title": "Turkiye Garanti Bankasi (GARAN.IS) Data update Changes to estimates",
