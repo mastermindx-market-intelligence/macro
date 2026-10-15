@@ -20060,6 +20060,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
       - "collectors/__init__.py"
@@ -27416,6 +27421,10 @@ jobs:
     # Pin the measured import closure; unrelated template changes do not select GR3.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/dod_budget.py"

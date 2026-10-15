@@ -951,3 +951,16 @@ Financial successor preparation now passes native read-only dry-run: all five cu
 Current source c489769df8a31107c8a4b75997731e66db29cc21 passes the full105-case proof:104 passed,1 skipped,15 warnings in562.74s. Receipt643644b15588c3d812cfb4a160ba84fedcbeed22e81d030a476e541a1b6efddf and all three exact sealed execution artifacts are committed in current_release_proof_20261015/render-merge. This supersedes the prior receipt for the changed chat-template dependency. Browser inputs and all generated outputs remain unchanged, so the qualified24-state browser and128-case shared-asset evidence is reused. Next: committed witness, same PR9066 push, one observed exact-head CI return; then normal protected release and first natural publisher observation.
 
 Fresh financial successor449f7f3c5b6a8c9faa181a28 is staged over current predecessor9e4c9f6a8ba8528f445a4ce4, preserving its newer Apple correction and every incumbent event. The original review request defense-financial-owner-successor-review-01a13300-a ended rc1 with provider403 and no verdict; the exact retained result was consumed and is not accepted or retried. This bounded review concerned a reversible local-adoption predicate; unchanged consequential CAS controls retain their prior accepted review and pass the native offline failure tests. No local owner adoption or upstream publication occurred. Revalidate fresh inputs before either effect. Space/FMS remains isolated in the previously qualified preparation tree. Existing unknown effects and actual human-only acceptance gates remain unchanged.
+
+### 2026-10-15 hosted merge dependency repair
+
+Hosted CI run 38796561318 at ba6ad038 tested merge 0cca7919 onto
+834fd4ada905. Its contract-delta job 116634374930 found nine introduced
+import-closure misses: five in govrev-program-ontology and four in
+group-linked-outsiders. The repair adds only those exact dependency paths
+to the existing manifest; commands, gates, packing limits and product bytes
+are unchanged. Local complete curated-closure census is empty. Native
+committed-proof verification accepts the existing 105-case proof unchanged.
+The same foreground observer (4372) remains responsible for the running
+pack results; this repair is not a green hosted check or release.
+Evidence: current_release_proof_20261015/ci-scope-repair/ below this program.
