@@ -31,11 +31,10 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from engine.sector_intelligence.consumer_cyclical_display import display_packet
-
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+sys.path.insert(0, str(_REPO_ROOT))
+
+from engine.sector_intelligence.consumer_cyclical_display import display_packet  # noqa: E402
 
 TEMPLATE_NAME = "consumer_cyclical_plnt.html.j2"
 PAGE_NAME = "consumer_cyclical_plnt.html"

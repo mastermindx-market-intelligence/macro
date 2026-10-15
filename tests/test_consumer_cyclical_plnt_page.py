@@ -84,6 +84,29 @@ def test_synthetic_page_shows_the_r6_lead_and_minus_four(tmp_path: Path) -> None
     assert forbidden not in text  # CI vocabulary guard
 
 
+def test_zh_lead_is_not_the_english_lead(tmp_path: Path) -> None:
+    """The zh half of the lead carries Chinese copy, not a repeat of the EN.
+
+    The packet lead is data-dependent (it is the projection's explanation),
+    so the EN half stays ``packet.lead`` and the zh half is fixed Chinese
+    card copy; a dropped zh argument would repeat the English verbatim.
+    """
+    packet = display_packet(_committed_synthetic_case())
+    text = _render_text(tmp_path)
+    lead = re.search(
+        r'<p class="ccp-lead"><span class="l-en">(.*?)</span>'
+        r'<span class="l-zh">(.*?)</span></p>',
+        text,
+        flags=re.S,
+    )
+    assert lead is not None
+    en, zh = lead.group(1), lead.group(2)
+    assert en == html.escape(packet["lead"], quote=True)
+    assert zh and zh != en
+    forbidden = "申" "报"  # assembled at runtime: no authored file carries the term
+    assert forbidden not in zh
+
+
 def test_unavailable_document_is_shown_as_unavailable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -114,7 +137,49 @@ def test_unavailable_document_is_shown_as_unavailable(
     # legitimately carries "-45deg" transforms elsewhere on the page.
     figure = re.search(r'<dd class="ccp-figure">(.*?)</dd>', text, flags=re.S)
     assert figure is not None
-    assert "-4" not in figure.group(1)  # a withheld figure is never shown as complete
+    body = figure.group(1)
+    # The FIGURE element itself carries the template's withheld copy — the
+    # whole if/elif/else branch may not be dropped to the bare value, which
+    # would print the literal None (value_text is None once withheld).
+    assert "withheld — figure not shown" in body
+    assert "已暂缓 — 未展示数值" in body
+    assert "None" not in body
+    assert not re.search(r"\d", body)
+    assert "-4" not in body  # a withheld figure is never shown as complete
+
+
+def test_absent_advertising_row_is_shown_as_absent(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No advertising row emitted by the projection: print absent, never None.
+
+    Built the same way as the unavailable case above — a monkeypatched
+    ``project_economic_change`` whose results carry no advertising row, so
+    ``display_packet`` reports the ``absent`` status (engine
+    consumer_cyclical_display.py:91-105).
+    """
+    case = _committed_synthetic_case()
+    document = project_economic_change(case)
+    rows = [
+        dict(row)
+        for row in document["results"]
+        if row["key"] != "advertising_net_change"
+    ]
+    assert len(rows) == len(document["results"]) - 1
+    monkeypatch.setattr(
+        "engine.sector_intelligence.consumer_cyclical_display.project_economic_change",
+        lambda case: {**document, "results": rows},
+    )
+    text = _render_text(tmp_path)
+    assert 'data-state="absent"' in text
+    figure = re.search(r'<dd class="ccp-figure">(.*?)</dd>', text, flags=re.S)
+    assert figure is not None
+    body = figure.group(1)
+    assert "absent — no row emitted" in body
+    assert "缺行 — 未生成该行" in body
+    assert "None" not in body
+    assert not re.search(r"\d", body)
 
 
 def test_native_admitted_true_writes_nothing(tmp_path: Path) -> None:
@@ -130,7 +195,7 @@ def test_native_admitted_true_writes_nothing(tmp_path: Path) -> None:
     assert not destination.exists()
 
 
-def test_nav_family_is_existing_and_navlinks_untouched() -> None:
+def test_nav_family_is_existing_and_frozen_templates_not_included() -> None:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     public_nav = template.count('{% include "_public_nav.html.j2" %}')
     site_nav = template.count('{% include "_site_nav.html.j2" %}')
@@ -163,7 +228,7 @@ def _job_block(workflow: str) -> str:
     return "\n".join(lines[start:end])
 
 
-def test_site_access_route_and_carrier_job(tmp_path: Path) -> None:
+def test_site_access_route_note_and_carrier_job(tmp_path: Path) -> None:
     # 1) The route is declared inside the yml's public block. It is held
     #    commented until the paired Caddyfile token + committed site/ target
     #    land, because test_site_access_boundary.py compares the Caddy
@@ -179,7 +244,18 @@ def test_site_access_route_and_carrier_job(tmp_path: Path) -> None:
             continue
         if in_public:
             public_block.append(line)
-    assert PAGE_ROUTE in "\n".join(public_block)
+    # D4 intent: the route is NOTED in the public block but held COMMENTED
+    # until its paired Caddyfile token + committed site/ target land. A raw
+    # substring match on the whole block would also pass if the entry were
+    # uncommented, so split commented from live lines.
+    commented = "\n".join(
+        line for line in public_block if line.lstrip().startswith("#")
+    )
+    live = "\n".join(
+        line for line in public_block if not line.lstrip().startswith("#")
+    )
+    assert PAGE_ROUTE in commented
+    assert PAGE_ROUTE not in live
     # 2) The full-site build hook is asserted in
     #    tests/test_consumer_cyclical_plnt_site_wiring.py, run by the inferred
     #    public-render-fastlane job: it reads scripts/build_site.py as text, and

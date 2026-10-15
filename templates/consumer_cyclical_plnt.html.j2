@@ -56,7 +56,7 @@ a{color:inherit;text-decoration:none}
            data-contract-status="{{ packet.shared_contract_status }}">
     <p class="ccp-kicker">{{ t('Consumer Cyclical — synthetic display', '消费周期板块 — 合成展示') }}</p>
     <h1 id="ccp-title">{{ t('PLNT economic change', 'PLNT 经济变化') }}</h1>
-    <p class="ccp-lead">{{ t(packet.lead) }}</p>
+    <p class="ccp-lead">{{ t(packet.lead, '本卡片经由展示数据包读取已提交的合成样例，呈现消费周期板块 PLNT 的经济变化读数，仅作展示。') }}</p>
     <p class="ccp-meta">{{ t('PLNT · quarter over prior-year quarter · display-only reading', 'PLNT · 本季对比上年同季 · 仅作展示') }}</p>
 
     <dl class="ccp-rows">
@@ -76,7 +76,7 @@ a{color:inherit;text-decoration:none}
     </dl>
 
     <p class="ccp-provenance" data-provenance="{{ packet.provenance }}">{{ t('synthetic fixture', '合成样例') }}</p>
-    <p class="ccp-note" data-filing-claim="{{ 'true' if packet.filing_claim else 'false' }}">{{ t('This card mounts the committed synthetic fixture through the display packet. It is not a filing claim and states no rating, entry or sizing.', '本卡片经由展示数据包读取已提交的合成样例。它不构成披露申报主张，也不包含评级、入场或仓位建议。') }}</p>
+    <p class="ccp-note" data-filing-claim="{{ 'true' if packet.filing_claim else 'false' }}">{{ t('This card mounts the committed synthetic fixture through the display packet. It is not a filing claim and states no rating, entry or sizing.', '本卡片经由展示数据包读取已提交的合成样例。它不构成披露主张，也不包含评级、入场或仓位建议。') }}</p>
   </section>
 </main>
 
