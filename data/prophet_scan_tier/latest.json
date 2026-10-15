@@ -25,9 +25,9 @@
   "curated_overlap_n": 2384,
   "scan_n": 1652,
   "store_manifest": {
-   "n_tickers": 21697,
-   "latest_date": "2026-10-07",
-   "updated_at": "2026-10-09T03:17:04.508990+00:00"
+   "n_tickers": 21715,
+   "latest_date": "2026-10-13",
+   "updated_at": "2026-10-15T01:46:08.646084+00:00"
   }
  },
  "bases": {

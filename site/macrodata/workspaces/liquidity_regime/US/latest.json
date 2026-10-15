@@ -82,12 +82,8 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [
-      "ofr_fsi_pctile"
-    ],
-    "reasons": [
-      "worst_required_source_freshness=STALE_SOURCE"
-    ],
+    "degraded": [],
+    "reasons": [],
     "required": [
       {
         "component_id": "net_liquidity_roc",
@@ -98,7 +94,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-13",
+        "source_asof": "2026-10-14",
         "status": "PRESENT"
       },
       {
@@ -110,7 +106,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-13",
+        "source_asof": "2026-10-14",
         "status": "PRESENT"
       },
       {
@@ -127,19 +123,19 @@
       },
       {
         "component_id": "ofr_fsi_pctile",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "OFR FSI percentile",
           "zh": "OFR 金融压力分位"
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-06",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-12",
+        "status": "PRESENT"
       }
     ],
-    "state": "STALE_SOURCE",
-    "worst_freshness": "STALE_SOURCE"
+    "state": "CURRENT",
+    "worst_freshness": "CURRENT"
   },
   "axes": {
     "items": [
@@ -149,7 +145,7 @@
         "components": [
           {
             "component_id": "nfci_pctile",
-            "contribution": -6.21,
+            "contribution": -6.23,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -159,16 +155,16 @@
             "null_reason": null,
             "owner_field": "conditions.financial_conditions.nfci_pctile",
             "owner_ref": "engine.conditions.financial_conditions",
-            "raw_value": 0.29285714285714287,
+            "raw_value": 0.2924603174603175,
             "sign": 1,
-            "standardized_value": 29.29,
+            "standardized_value": 29.25,
             "weight": 0.3
           },
           {
             "component_id": "ofr_fsi_pctile",
-            "contribution": -8.23,
-            "coverage_state": "PARTIAL",
-            "freshness": "STALE_SOURCE",
+            "contribution": -8.29,
+            "coverage_state": "PRESENT",
+            "freshness": "CURRENT",
             "label": {
               "en": "OFR FSI percentile",
               "zh": "OFR 金融压力分位"
@@ -176,16 +172,16 @@
             "null_reason": null,
             "owner_field": "conditions.systemic_stress.ofr_fsi_pctile",
             "owner_ref": "engine.conditions.systemic_stress",
-            "raw_value": 0.2257936507936508,
+            "raw_value": 0.22380952380952382,
             "sign": 1,
-            "standardized_value": 22.58,
+            "standardized_value": 22.38,
             "weight": 0.3
           },
           {
             "component_id": "hy_oas_z",
-            "contribution": 6.4,
-            "coverage_state": "PARTIAL",
-            "freshness": "STALE_SOURCE",
+            "contribution": 8.72,
+            "coverage_state": "PRESENT",
+            "freshness": "CURRENT",
             "label": {
               "en": "HY OAS z-score",
               "zh": "高收益利差 z 值"
@@ -193,14 +189,14 @@
             "null_reason": null,
             "owner_field": "liquidity_quality.stress_overlay.hy_oas_z",
             "owner_ref": "engine.regime.liquidity_quality",
-            "raw_value": 1.6,
+            "raw_value": 2.18,
             "sign": 1,
-            "standardized_value": 82.0,
+            "standardized_value": 93.6,
             "weight": 0.2
           },
           {
             "component_id": "rates_scare_score",
-            "contribution": 4.78,
+            "contribution": 3.3,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -210,9 +206,9 @@
             "null_reason": null,
             "owner_field": "regime_vector.rate_pressure_rates_scare_score",
             "owner_ref": "engine.regime.regime_vector",
-            "raw_value": 73.9,
+            "raw_value": 66.5,
             "sign": 1,
-            "standardized_value": 73.9,
+            "standardized_value": 66.5,
             "weight": 0.2
           }
         ],
@@ -222,7 +218,7 @@
         "definition_version": "1.1.0",
         "direction_semantics": "higher_tighter",
         "frequency_alignment": "mixed: NFCI/ANFCI weekly (Fri), OFR FSI ~2-business-day lag, HY OAS daily, rates scare daily; each carried with its own source clock",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Funding pressure",
           "zh": "融资压力"
@@ -243,7 +239,7 @@
           }
         },
         "transformation": "percentiles x100; z-score mapped 50+clamp(z/2.5,-1,1)*50; scare score passthrough (already 0-100); prior-only owner reads, no in-composer estimation",
-        "value": 46.74,
+        "value": 47.51,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, weights renormalized over present components; NFCI pctile 0.30, OFR FSI pctile 0.30, HY OAS z 0.20, rates scare 0.20"
       },
@@ -287,7 +283,7 @@
           },
           {
             "component_id": "net_liquidity_roc",
-            "contribution": -1.41,
+            "contribution": -0.96,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -297,9 +293,9 @@
             "null_reason": null,
             "owner_field": "liquidity_quality.quantity_roc_bn",
             "owner_ref": "engine.regime.liquidity_quality",
-            "raw_value": -56.3,
+            "raw_value": -38.4,
             "sign": 1,
-            "standardized_value": 44.37,
+            "standardized_value": 46.16,
             "weight": 0.25
           }
         ],
@@ -330,7 +326,7 @@
           }
         },
         "transformation": "owner labels mapped to descriptive support levels (benign-expansion 85 ... contracting 20); RoC mapped 50+clamp(roc/500bn,-1,1)*50; RRP buffer disclosure (informational, not axis-weighted): a balance at or below 1.0bn carries an exhausted-floor flag in the implications and drivers while the value itself remains published; a negative balance is physically impossible for a facility and is treated as a failed source reading",
-        "value": 27.84,
+        "value": 28.29,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, weights renormalized over present; quality label 0.40, overlay level 0.35, net-liquidity RoC 0.25"
       }
@@ -340,31 +336,31 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 46.74,
-        "delta": -0.28,
+        "current_value": 47.51,
+        "delta": 0.77,
         "metric_id": "funding_pressure",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 47.02
+        "prior_value": 46.74
       },
       {
-        "current_value": 27.84,
-        "delta": -0.48,
+        "current_value": 28.29,
+        "delta": 0.45,
         "metric_id": "balance_sheet_support",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 28.32
+        "prior_value": 27.84
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-10-12",
-    "prior_generation_id": "liquidity_regime-US-4a7856e6d35241d1",
+    "prior_effective_date": "2026-10-13",
+    "prior_generation_id": "liquidity_regime-US-c2d860298c8be38b",
     "prior_method_version": "liquidity_regime.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
-    "predecessor_generation_id": "liquidity_regime-US-de5468f8c3e34671"
+    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
+    "predecessor_generation_id": "liquidity_regime-US-c2d860298c8be38b"
   },
   "drivers": {
     "balance_sheet": [
@@ -399,88 +395,88 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "net_liquidity_roc",
-        "impact_magnitude": 1.41,
+        "impact_magnitude": 0.96,
         "impact_sign": -1,
         "label": {
           "en": "Net-liquidity RoC",
           "zh": "净流动性变化率"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=44.37, weight=0.25 [rrp_floor] RRP buffer is at/below its 1.0bn descriptive floor: the benign RRP->reserves cushion is exhausted.",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=46.16, weight=0.25 [rrp_floor] RRP buffer is at/below its 1.0bn descriptive floor: the benign RRP->reserves cushion is exhausted.",
         "owner_field": "liquidity_quality.quantity_roc_bn",
         "unit": "USD_bn",
-        "value": -56.3
+        "value": -38.4
       }
     ],
     "rate_side": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "nfci_pctile",
-        "impact_magnitude": 6.21,
+        "impact_magnitude": 6.23,
         "impact_sign": -1,
         "label": {
           "en": "NFCI percentile",
           "zh": "NFCI 分位"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=29.29, weight=0.3",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=29.25, weight=0.3",
         "owner_field": "conditions.financial_conditions.nfci_pctile",
         "unit": "percentile",
-        "value": 0.29285714285714287
+        "value": 0.2924603174603175
       },
       {
-        "coverage_state": "PARTIAL",
+        "coverage_state": "PRESENT",
         "driver_id": "ofr_fsi_pctile",
-        "impact_magnitude": 8.23,
+        "impact_magnitude": 8.29,
         "impact_sign": -1,
         "label": {
           "en": "OFR FSI percentile",
           "zh": "OFR 金融压力分位"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=22.58, weight=0.3",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=22.38, weight=0.3",
         "owner_field": "conditions.systemic_stress.ofr_fsi_pctile",
         "unit": "percentile",
-        "value": 0.2257936507936508
+        "value": 0.22380952380952382
       },
       {
-        "coverage_state": "PARTIAL",
+        "coverage_state": "PRESENT",
         "driver_id": "hy_oas_z",
-        "impact_magnitude": 6.4,
+        "impact_magnitude": 8.72,
         "impact_sign": 1,
         "label": {
           "en": "HY OAS z-score",
           "zh": "高收益利差 z 值"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=82.0, weight=0.2",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=93.6, weight=0.2",
         "owner_field": "liquidity_quality.stress_overlay.hy_oas_z",
         "unit": "z_score",
-        "value": 1.6
+        "value": 2.18
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "rates_scare_score",
-        "impact_magnitude": 4.78,
+        "impact_magnitude": 3.3,
         "impact_sign": 1,
         "label": {
           "en": "Rates scare score",
           "zh": "利率恐慌评分"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=73.9, weight=0.2",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=66.5, weight=0.2",
         "owner_field": "regime_vector.rate_pressure_rates_scare_score",
         "unit": "score",
-        "value": 73.9
+        "value": 66.5
       }
     ]
   },
   "generation": {
-    "built_at": "2026-10-14T16:18:54Z",
-    "calculation_as_of": "2026-10-13",
-    "code_version": "b355075be34a6f4abe43a0e356e41ed199fc1de2",
-    "content_sha256": "c2d860298c8be38b6ea5dbb9e9a3b2afdc46aee8a70eece18be5e489ea3a7eb4",
-    "generation_id": "liquidity_regime-US-c2d860298c8be38b",
+    "built_at": "2026-10-15T05:14:07Z",
+    "calculation_as_of": "2026-10-14",
+    "code_version": "39d00535d992abc7b707b5b53695cbef0ae907ee",
+    "content_sha256": "7a764a4c64a91c2cff08e8f9a066a380a2556a817c9b41e0182bd3b2a9c08658",
+    "generation_id": "liquidity_regime-US-7a764a4c64a91c2c",
     "producer": "engine.market_os.macro_workspaces.liquidity_regime",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-10-13",
+    "effective_date": "2026-10-14",
     "hysteresis": {
       "applied": true,
       "band": 5.0,
@@ -491,27 +487,27 @@
     "movement_state": null,
     "nearest_boundary": {
       "axis": "funding_pressure",
-      "distance": 3.26,
+      "distance": 2.49,
       "null_reason": null
     },
     "null_reason": null,
     "one_month_vector": {
-      "dx": -0.28,
-      "dy": -0.48,
+      "dx": 0.77,
+      "dy": 0.45,
       "null_reason": null,
       "status": "PRESENT",
       "x_axis_id": "funding_pressure",
       "y_axis_id": "balance_sheet_support"
     },
     "prior_state": {
-      "effective_date": "2026-10-12",
+      "effective_date": "2026-10-13",
       "method_version": "liquidity_regime.compose.v1",
       "state_id": "A"
     },
     "quadrant": {
-      "x": 46.74,
+      "x": 47.51,
       "x_status": "PRESENT",
-      "y": 27.84,
+      "y": 28.29,
       "y_status": "PRESENT"
     },
     "state_id": "A",
@@ -524,7 +520,7 @@
       "en": "Rate / liquidity regime",
       "zh": "利率 / 流动性体制"
     },
-    "transition_distance": 0.56
+    "transition_distance": 0.89
   },
   "implications": {
     "items": [
@@ -540,15 +536,15 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US liquidity regime reads A - Easy funding / Strong support (funding pressure 46.7, balance-sheet support 27.8, boundary 50).",
-          "zh": "美国流动性体制读数为 A - 宽松融资 / 强支持（融资压力 46.7，资产负债表支持 27.8，分界 50）。"
+          "en": "US liquidity regime reads A - Easy funding / Strong support (funding pressure 47.5, balance-sheet support 28.3, boundary 50).",
+          "zh": "美国流动性体制读数为 A - 宽松融资 / 强支持（融资压力 47.5，资产负债表支持 28.3，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#liquidity_quality"
       },
@@ -563,7 +559,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "MECHANISM_SUPPORTED",
@@ -586,7 +582,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "MECHANISM_SUPPORTED",
@@ -618,21 +614,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-10-13",
+        "calculation_as_of": "2026-10-14",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.funding_pressure",
         "definition_version": "1.1.0",
         "direction_semantics": "higher_tighter",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "funding_pressure",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-13",
+        "observed_at": "2026-10-14",
         "owner_ref": "engine.market_os.macro_workspaces.liquidity_regime",
         "reference_id": "mastermind.market_reference/v1#funding_pressure",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -647,14 +643,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 46.74,
+        "value": 47.51,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-10-13",
+        "calculation_as_of": "2026-10-14",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.balance_sheet_support",
@@ -665,10 +661,10 @@
         "metric_id": "balance_sheet_support",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-13",
+        "observed_at": "2026-10-14",
         "owner_ref": "engine.market_os.macro_workspaces.liquidity_regime",
         "reference_id": "mastermind.market_reference/v1#balance_sheet_support",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -683,14 +679,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 27.84,
+        "value": 28.29,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "roc_over_owner_window",
-        "calculation_as_of": "2026-10-13",
+        "calculation_as_of": "2026-10-14",
         "collected_at": null,
         "coverage": null,
         "definition_id": "liquidity_quality.quantity_roc_bn",
@@ -701,10 +697,10 @@
         "metric_id": "net_liquidity_roc_bn",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-13",
+        "observed_at": "2026-10-14",
         "owner_ref": "engine.regime.liquidity_quality",
         "reference_id": "mastermind.market_reference/v1#net_liquidity_roc_bn",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -719,14 +715,14 @@
           "value": null
         },
         "unit": "USD_bn",
-        "value": -56.3,
+        "value": -38.4,
         "value_type": "currency_bn"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-13",
+        "calculation_as_of": "2026-10-14",
         "collected_at": null,
         "coverage": null,
         "definition_id": "liquidity_quality.rrp_buffer_bn",
@@ -737,10 +733,10 @@
         "metric_id": "rrp_buffer_bn",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-13",
+        "observed_at": "2026-10-14",
         "owner_ref": "engine.regime.liquidity_quality",
         "reference_id": "mastermind.market_reference/v1#rrp_buffer_bn",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -798,21 +794,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-06",
+        "calculation_as_of": "2026-10-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.systemic_stress.ofr_fsi",
         "definition_version": "1.1.0",
         "direction_semantics": "higher_more_stress",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "ofr_fsi",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-06",
+        "observed_at": "2026-10-12",
         "owner_ref": "engine.conditions.systemic_stress",
         "reference_id": "mastermind.market_reference/v1#ofr_fsi",
-        "reference_period": "2026-10-06",
+        "reference_period": "2026-10-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -827,28 +823,28 @@
           "value": null
         },
         "unit": "stddev",
-        "value": -2.152,
+        "value": -2.154,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-07",
+        "calculation_as_of": "2026-10-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "liquidity_quality.stress_overlay.hy_oas_pct",
         "definition_version": "1.1.0",
         "direction_semantics": "higher_wider_spread",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "hy_oas_pct",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-07",
+        "observed_at": "2026-10-13",
         "owner_ref": "engine.regime.liquidity_quality",
         "reference_id": "mastermind.market_reference/v1#hy_oas_pct",
-        "reference_period": "2026-10-07",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -863,14 +859,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 3.09,
+        "value": 3.16,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-13",
+        "calculation_as_of": "2026-10-14",
         "collected_at": null,
         "coverage": null,
         "definition_id": "regime_vector.rate_pressure_rates_scare_score",
@@ -881,10 +877,10 @@
         "metric_id": "rates_scare_score",
         "model_version": "liquidity_regime.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-13",
+        "observed_at": "2026-10-14",
         "owner_ref": "engine.regime.regime_vector",
         "reference_id": "mastermind.market_reference/v1#rates_scare_score",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -899,17 +895,17 @@
           "value": null
         },
         "unit": "score",
-        "value": 73.9,
+        "value": 66.5,
         "value_type": "score_0_100"
       }
     ]
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "liquidity_regime-US-4a7856e6d35241d1"
+      "generation_id": "liquidity_regime-US-c2d860298c8be38b"
     },
     "headline": {
-      "effective_date": "2026-10-12",
+      "effective_date": "2026-10-13",
       "hysteresis": {
         "applied": true,
         "band": 5.0,
@@ -920,27 +916,27 @@
       "movement_state": null,
       "nearest_boundary": {
         "axis": "funding_pressure",
-        "distance": 2.98,
+        "distance": 3.26,
         "null_reason": null
       },
       "null_reason": null,
       "one_month_vector": {
-        "dx": -1.22,
-        "dy": -17.7,
+        "dx": -0.28,
+        "dy": -0.48,
         "null_reason": null,
         "status": "PRESENT",
         "x_axis_id": "funding_pressure",
         "y_axis_id": "balance_sheet_support"
       },
       "prior_state": {
-        "effective_date": "2026-10-09",
+        "effective_date": "2026-10-12",
         "method_version": "liquidity_regime.compose.v1",
         "state_id": "A"
       },
       "quadrant": {
-        "x": 47.02,
+        "x": 46.74,
         "x_status": "PRESENT",
-        "y": 28.32,
+        "y": 27.84,
         "y_status": "PRESENT"
       },
       "state_id": "A",
@@ -953,7 +949,7 @@
         "en": "Rate / liquidity regime",
         "zh": "利率 / 流动性体制"
       },
-      "transition_distance": 17.74
+      "transition_distance": 0.56
     },
     "metrics": {
       "items": [
@@ -961,21 +957,21 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-10-12",
+          "calculation_as_of": "2026-10-13",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.funding_pressure",
           "definition_version": "1.1.0",
           "direction_semantics": "higher_tighter",
-          "freshness": "CURRENT",
+          "freshness": "STALE_SOURCE",
           "market_session": null,
           "metric_id": "funding_pressure",
           "model_version": "liquidity_regime.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-12",
+          "observed_at": "2026-10-13",
           "owner_ref": "engine.market_os.macro_workspaces.liquidity_regime",
           "reference_id": "mastermind.market_reference/v1#funding_pressure",
-          "reference_period": "2026-10-12",
+          "reference_period": "2026-10-13",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -990,14 +986,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 47.02,
+          "value": 46.74,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-10-12",
+          "calculation_as_of": "2026-10-13",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.balance_sheet_support",
@@ -1008,10 +1004,10 @@
           "metric_id": "balance_sheet_support",
           "model_version": "liquidity_regime.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-12",
+          "observed_at": "2026-10-13",
           "owner_ref": "engine.market_os.macro_workspaces.liquidity_regime",
           "reference_id": "mastermind.market_reference/v1#balance_sheet_support",
-          "reference_period": "2026-10-12",
+          "reference_period": "2026-10-13",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1026,14 +1022,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 28.32,
+          "value": 27.84,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "roc_over_owner_window",
-          "calculation_as_of": "2026-10-12",
+          "calculation_as_of": "2026-10-13",
           "collected_at": null,
           "coverage": null,
           "definition_id": "liquidity_quality.quantity_roc_bn",
@@ -1044,10 +1040,10 @@
           "metric_id": "net_liquidity_roc_bn",
           "model_version": "liquidity_regime.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-12",
+          "observed_at": "2026-10-13",
           "owner_ref": "engine.regime.liquidity_quality",
           "reference_id": "mastermind.market_reference/v1#net_liquidity_roc_bn",
-          "reference_period": "2026-10-12",
+          "reference_period": "2026-10-13",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1062,14 +1058,14 @@
             "value": null
           },
           "unit": "USD_bn",
-          "value": -37.0,
+          "value": -56.3,
           "value_type": "currency_bn"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-10-12",
+          "calculation_as_of": "2026-10-13",
           "collected_at": null,
           "coverage": null,
           "definition_id": "liquidity_quality.rrp_buffer_bn",
@@ -1080,10 +1076,10 @@
           "metric_id": "rrp_buffer_bn",
           "model_version": "liquidity_regime.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-12",
+          "observed_at": "2026-10-13",
           "owner_ref": "engine.regime.liquidity_quality",
           "reference_id": "mastermind.market_reference/v1#rrp_buffer_bn",
-          "reference_period": "2026-10-12",
+          "reference_period": "2026-10-13",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1098,7 +1094,7 @@
             "value": null
           },
           "unit": "USD_bn",
-          "value": 2.3,
+          "value": 0.3,
           "value_type": "currency_bn"
         },
         {
@@ -1147,7 +1143,7 @@
           "definition_id": "conditions.systemic_stress.ofr_fsi",
           "definition_version": "1.1.0",
           "direction_semantics": "higher_more_stress",
-          "freshness": "CURRENT",
+          "freshness": "STALE_SOURCE",
           "market_session": null,
           "metric_id": "ofr_fsi",
           "model_version": "liquidity_regime.compose.v1",
@@ -1183,7 +1179,7 @@
           "definition_id": "liquidity_quality.stress_overlay.hy_oas_pct",
           "definition_version": "1.1.0",
           "direction_semantics": "higher_wider_spread",
-          "freshness": "CURRENT",
+          "freshness": "STALE_SOURCE",
           "market_session": null,
           "metric_id": "hy_oas_pct",
           "model_version": "liquidity_regime.compose.v1",
@@ -1213,7 +1209,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-10-12",
+          "calculation_as_of": "2026-10-13",
           "collected_at": null,
           "coverage": null,
           "definition_id": "regime_vector.rate_pressure_rates_scare_score",
@@ -1224,10 +1220,10 @@
           "metric_id": "rates_scare_score",
           "model_version": "liquidity_regime.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-12",
+          "observed_at": "2026-10-13",
           "owner_ref": "engine.regime.regime_vector",
           "reference_id": "mastermind.market_reference/v1#rates_scare_score",
-          "reference_period": "2026-10-12",
+          "reference_period": "2026-10-13",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1242,7 +1238,7 @@
             "value": null
           },
           "unit": "score",
-          "value": 70.3,
+          "value": 73.9,
           "value_type": "score_0_100"
         }
       ]
@@ -1346,7 +1342,7 @@
         },
         "owner_ref": "engine.regime.liquidity_quality",
         "provider": "Federal Reserve H.4.1 / FRED",
-        "reference_period": "2026-10-13",
+        "reference_period": "2026-10-14",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1381,14 +1377,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "OFR Financial Stress Index",
           "zh": "OFR 金融压力指数"
         },
         "owner_ref": "engine.conditions.systemic_stress",
         "provider": "OFR",
-        "reference_period": "2026-10-06",
+        "reference_period": "2026-10-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1402,14 +1398,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "HY OAS credit spread",
           "zh": "高收益期权调整利差"
         },
         "owner_ref": "engine.regime.liquidity_quality",
         "provider": "ICE BofA / FRED",
-        "reference_period": "2026-10-07",
+        "reference_period": "2026-10-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
