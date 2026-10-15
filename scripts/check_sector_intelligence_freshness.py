@@ -70,7 +70,9 @@ def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"site/sector_central.html is absent or unreadable: {exc}")
         return {key: None for key in _HTML_ATTRS}
-    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    # Non-greedy so text between two comments survives; an unclosed
+    # ``<!--`` hides the rest of the page from a browser, so it does here too.
+    text = re.sub(r"<!--.*?(?:-->|\Z)", "", text, flags=re.S)
     out: dict[str, str | None] = {}
     for key, attr in _HTML_ATTRS.items():
         match = re.search(rf'\b{re.escape(attr)}="([^"]+)"', text)

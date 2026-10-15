@@ -604,6 +604,11 @@ def _fact_admission_failure(fact: Any) -> str | None:
         return "fact_period_end_missing_or_malformed"
     if not _DATE_RE.match(_envelope_period_start(fact)):
         return "fact_period_start_missing_or_malformed"
+    if _as_date(_envelope_period_start(fact)) is None:
+        # Same hole as ``period_end`` above: the schema gives both bounds
+        # ``format: date``, so an impossible start day must withhold this
+        # fact here rather than reach the shape backstop and lose the case.
+        return "fact_period_start_missing_or_malformed"
     if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
         return "fact_period_kind_outside_vocabulary"
 

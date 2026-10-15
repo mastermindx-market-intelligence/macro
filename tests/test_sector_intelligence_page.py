@@ -828,3 +828,36 @@ def test_non_datetime_separator_as_of_is_not_usable(tmp_path: Path) -> None:
         "no usable as_of" in error and "2026-09-14Z" in error
         for error in report["errors"]
     ), report
+
+
+def test_text_between_two_html_comments_is_still_read(tmp_path: Path) -> None:
+    # A greedy strip would run from the first opener to the last closer and
+    # take the real attributes with it.
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text(
+        "<!-- note one -->\n" + body + "\n<!-- note two -->", encoding="utf-8"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    facts_key = "site/sector_central.html:data-si-as-of"
+    assert report["facts"]["dates"][facts_key] == "2026-09-14", report
+
+
+def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
+    # A browser treats an unclosed comment as running to end of document, so
+    # attributes after it are not on the rendered page.
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text("<!-- draft\n" + body, encoding="utf-8")
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "missing data-si-as-of" in error for error in report["errors"]
+    ), report
