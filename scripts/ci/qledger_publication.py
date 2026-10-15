@@ -432,6 +432,29 @@ def rebase_native_pending(
     )
 
 
+def _require_direct_candidate(
+    repo: Path, candidate_oid: str, accepted_tip_oid: str, *,
+    limits: ProtocolLimits, allow_already_accepted: bool = False,
+) -> None:
+    """Do not certify a stale anchor across unaccounted intermediate commits.
+
+    Native no-op readback may name the already accepted commit itself. Every
+    new candidate is one single-parent commit directly over the supplied tip.
+    Other histories require their original owner's explicit reconciliation.
+    """
+    if candidate_oid == accepted_tip_oid and allow_already_accepted:
+        return
+    raw, _ = _git(repo, ["cat-file", "commit", _oid(candidate_oid)],
+                  output_limit=limits.page_bytes)
+    digest = hashlib.sha1 if len(candidate_oid) == 40 else hashlib.sha256
+    if digest(b"commit " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != candidate_oid:
+        _fail("HASH_MISMATCH", "candidate ancestry bytes changed after publication validation")
+    parents = [line[7:] for line in raw.split(b"\n\n", 1)[0].split(b"\n")
+               if line.startswith(b"parent ")]
+    if parents != [_oid(accepted_tip_oid).encode("ascii")]:
+        _fail("CONFLICT", "candidate must have exactly the supplied accepted tip as its sole parent")
+
+
 @dataclass(frozen=True)
 class PublicationContinuityWitness:
     """Mechanical proof for explicitly supplied objects, never release authority.
@@ -448,6 +471,9 @@ class PublicationContinuityWitness:
     source_logical_bytes: int
     source_blob_oid: str | None
     transaction_ids: tuple[str, ...]
+    accepted_tip_oid: str
+    planned_transaction_ids: tuple[str, ...] = ()
+    already_present_transaction_ids: tuple[str, ...] = ()
     source_assurance: str = "EXPLICIT_GIT_OBJECTS_NOT_REMOTE_ACCEPTANCE"
     effect: str = "not_attempted"
     eligible_for_cutover: bool = False
@@ -470,17 +496,23 @@ def check_legacy_conversion_candidate(
     _profile(limits)
     if type(conversion_transaction_id) is not str or not _TAG.fullmatch(conversion_transaction_id):
         _fail("PUBLICATION_INPUT", "an explicit conversion transaction identity is required")
-    _complete_repository(repo)
-    source_tree = _commit_tree(repo, binding.accepted_tip_oid, limits=limits)
-    original = read_legacy_claims_blob(
-        repo, tree_oid=source_tree, expected_blob_oid=expected_legacy_blob_oid, limits=limits,
-    )
+    # Reject invalid binding, inventory and ancestry before loading the legacy
+    # body. A candidate may not silently skip any post-tip source commit.
     publication = check_publish_candidate(
         repo, candidate_oid=candidate_oid, accepted_baseline_oids=accepted_baseline_oids,
         target_ref=target_ref, binding=binding, limits=limits,
     )
+    _require_direct_candidate(repo, candidate_oid, binding.accepted_tip_oid, limits=limits)
+    source_tree = _commit_tree(repo, binding.accepted_tip_oid, limits=limits)
+    original = read_legacy_claims_blob(
+        repo, tree_oid=source_tree, expected_blob_oid=expected_legacy_blob_oid, limits=limits,
+    )
+    if not original.raw_bytes or not original.raw_bytes.endswith(b"\n"):
+        _fail("CONVERSION_INPUT", "conversion requires a nonempty LF-terminated legacy source")
     _, candidate = _candidate_snapshot(repo, publication.tree_oid, binding, limits=limits)
     transactions = candidate._transactions
+    if len(transactions) > 1:
+        _fail("CAPACITY", "conversion supports exactly one bounded append transaction")
     if (candidate.root.base.size != 0 or candidate.root.base.digest != hashlib.sha256(b"").hexdigest()
             or len(transactions) != 1 or transactions[0].kind != "append"
             or transactions[0].transaction_id != conversion_transaction_id):
@@ -502,7 +534,8 @@ def check_legacy_conversion_candidate(
     return PublicationContinuityWitness(
         "LEGACY_CONVERSION_VERIFIED", publication, source_tree,
         original.logical_digest, original.byte_count, original.blob_oid,
-        (conversion_transaction_id,),
+        (conversion_transaction_id,), binding.accepted_tip_oid,
+        planned_transaction_ids=(conversion_transaction_id,),
     )
 
 
@@ -529,6 +562,8 @@ def check_native_operation_candidate(
         repo, candidate_oid=candidate_oid, accepted_baseline_oids=accepted_baseline_oids,
         target_ref=target_ref, binding=binding, limits=limits,
     )
+    _require_direct_candidate(repo, candidate_oid, binding.accepted_tip_oid,
+                              limits=limits, allow_already_accepted=True)
     source_tree = _commit_tree(repo, binding.accepted_tip_oid, limits=limits)
     accepted = verify_source_snapshot(GitTreeSource(repo, tree_oid=source_tree, limits=limits), limits=limits)
     required = rebase_native_pending(accepted, native_operation_receipt=receipt)
@@ -538,7 +573,9 @@ def check_native_operation_candidate(
     return PublicationContinuityWitness(
         "NATIVE_OPERATION_VERIFIED", publication, source_tree,
         accepted.receipt.logical_digest, accepted.receipt.logical_size, None,
-        receipt.authorized_transaction_ids,
+        receipt.authorized_transaction_ids, binding.accepted_tip_oid,
+        planned_transaction_ids=required.applied,
+        already_present_transaction_ids=required.already_applied,
     )
 
 

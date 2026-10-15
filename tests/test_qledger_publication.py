@@ -539,3 +539,98 @@ def test_native_witness_refuses_stale_full_view_replacement_over_new_remote_hist
     candidate = native_candidate(root, {**remote_values, **local.members}, local.snapshot)
     with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
         native_checked(root, candidate, accepted, local.snapshot, local_receipt(base, local.snapshot, limits), limits)
+
+
+# Independent review F1/F2: a named old tip must not hide intermediate history.
+@pytest.mark.parametrize("intermediate", ["legacy-append", "unrelated-change"])
+def test_review_conversion_requires_exact_direct_parent(tmp_path, limits, intermediate):
+    root, baseline, oid = legacy_repo(tmp_path, b'first\n')
+    if intermediate == "legacy-append":
+        write_members(root, {p.BASE_PATH: b'first\nsecond\n'})
+    else:
+        (root / "unrelated.txt").write_text("an unaccounted intermediate commit\n")
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "unaccounted intermediate history")
+    candidate, snapshot = conversion_candidate(root, b'first\n', limits)
+    assert checked(root, candidate, baseline, snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_review_native_cannot_certify_dropping_post_tip_transaction(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    local = p.plan_append(base, transaction_id="local", serialized_rows=[b"local\n"], limits=limits)
+    _, remote_values, _ = appended(root, values, base, limits, tx="remote", rows=[b"remote\n"])
+    candidate = native_candidate(root, {**remote_values, **local.members}, local.snapshot)
+    assert checked(root, candidate, baseline, local.snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        native_checked(root, candidate, baseline, local.snapshot,
+                       local_receipt(base, local.snapshot, limits), limits)
+
+
+def test_review_conversion_rejects_extra_parent_even_when_first_parent_is_tip(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'first\n')
+    candidate, snapshot = conversion_candidate(root, b'first\n', limits)
+    tree = git(root, "rev-parse", candidate + "^{tree}")
+    merge_candidate = git(root, "commit-tree", tree, "-p", baseline, "-p", candidate,
+                          "-m", "synthetic multi-parent candidate")
+    assert checked(root, merge_candidate, baseline, snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, merge_candidate, baseline, oid, snapshot, limits)
+
+
+@pytest.mark.parametrize("raw", [b"", b"unterminated", b"cr-only\r"])
+def test_review_conversion_source_shape_is_explicit(tmp_path, limits, raw):
+    root, baseline, oid = legacy_repo(tmp_path, raw)
+    candidate, snapshot = conversion_candidate(root, raw if raw.endswith(b"\n") else b"", limits)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONVERSION_INPUT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_review_single_transaction_capacity_is_distinct_from_content_conflict(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'a\nb\n')
+    values, base = initial(b"", limits)
+    one = p.plan_append(base, transaction_id="convert", serialized_rows=[b"a\n"], limits=limits)
+    two = p.plan_append(one.snapshot, transaction_id="second", serialized_rows=[b"b\n"], limits=limits)
+    candidate = native_candidate(root, {**values, **one.members, **two.members}, two.snapshot)
+    with pytest.raises(p.SnapshotIntegrityError, match="CAPACITY"):
+        conversion_check(root, candidate, baseline, oid, two.snapshot, limits)
+
+
+def test_review_bad_binding_is_rejected_before_loading_legacy_body(tmp_path, limits, monkeypatch):
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    called = []
+    original = q.read_legacy_claims_blob
+    def observed(*args, **kwargs):
+        called.append(True)
+        return original(*args, **kwargs)
+    monkeypatch.setattr(q, "read_legacy_claims_blob", observed)
+    with pytest.raises(p.SnapshotIntegrityError, match="PUBLICATION_INPUT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits,
+                         accepted_baseline_oids=())
+    assert called == []
+
+
+def test_review_witness_records_accepted_tip_and_planned_conversion(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    witness = conversion_check(root, candidate, baseline, oid, snapshot, limits)
+    assert witness.accepted_tip_oid == baseline
+    assert witness.planned_transaction_ids == ("convert",)
+    assert witness.already_present_transaction_ids == ()
+    assert witness.effect == "not_attempted"
+
+
+@pytest.mark.parametrize("already_present", [False, True])
+def test_review_witness_distinguishes_planned_from_already_present(tmp_path, limits, already_present):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, local = appended(root, values, base, limits)
+    accepted = candidate if already_present else baseline
+    witness = native_checked(root, candidate, accepted, local,
+                             local_receipt(base, local, limits), limits)
+    assert witness.accepted_tip_oid == accepted
+    assert witness.planned_transaction_ids == (() if already_present else ("local",))
+    assert witness.already_present_transaction_ids == (("local",) if already_present else ())
+    assert witness.transaction_ids == ("local",)
+    assert witness.effect == "not_attempted"
