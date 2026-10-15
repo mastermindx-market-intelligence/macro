@@ -607,9 +607,12 @@ def _apply_order_and_edits(
     separator the permutation moved must also have moved on the edit side,
     otherwise mixed glue would let one swap's separator silently outrank the
     other's and this returns ``None``. The flag is keyword-only with no
-    default, so a caller cannot omit it: a permuted-edit-side caller that
-    forgets to state True raises ``TypeError`` at the call site instead of
-    silently merging with no guard. The agreed-permutation caller passes
+    default, so a caller that omits it raises ``TypeError`` at its own call
+    site instead of silently merging with no guard. Omission is the only
+    shape the signature can catch: a caller that states a WRONG False is not
+    caught by it, because no signature sees the edit side's key order, so
+    such a call merges unguarded and its coverage rests on that caller's own
+    base-order precondition. The agreed-permutation caller passes
     True. The base-order callers (an edit side whose keys stay in base order)
     state False: hoisting the guard unconditionally would turn their clean
     merge into an ``__order__`` conflict.

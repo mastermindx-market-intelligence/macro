@@ -987,20 +987,20 @@ def test_cc_research_estimate_consumer_leaves_the_measured_render_untouched():
                                          research_estimate=_estimate(1.0)))
     b, e = _run(fixture=base), _run(fixture=est)
     assert "Forecast: none" in b["early"], b["early"]
-    # GAP (reported, not pinned): the panel gates on status === 'available'
-    # (templates/sector_central.html.j2, mr-panel region) while the owner emits
-    # status 'estimate' (engine/leadership_rotation_context.py:1023), so a real
-    # ResearchEstimate can never change the measured read's render.
-    assert "Forecast: none" in e["early"], e["early"]
-    assert b["early"] == e["early"]
+    # Admitted estimate branch (N-RE1): a real ResearchEstimate now renders the
+    # "display only" line and no longer falls through to "Forecast: none".
+    assert "Forecast: none" not in e["early"], e["early"]
+    assert "100%" in e["early"], e["early"]
+    # the measured read render is byte-identical between the two fixtures
     for key in ("list", "cov", "status", "sub", "rows", "un", "detail"):
         assert b[key] == e[key], key
     assert [g for g, _ in e["rows"]] == RANKED_FULL
-    # the render CAN change, so the equality above is not vacuous: the panel's
-    # own admitted vocabulary suppresses the forecast line
+    # a non-estimate shape ({status: "available"}) is refused by the gate: it
+    # now falls through to the "Forecast: none" line, not the estimate line.
     admitted = _run(cfg={"mr": {"research_estimate": {"status": "available"}}},
                     fixture=base)
-    assert "Forecast: none" not in admitted["early"], admitted["early"]
+    assert "Forecast: none" in admitted["early"], admitted["early"]
+    assert "Research estimate" not in admitted["early"], admitted["early"]
     assert admitted["list"] == b["list"] and admitted["rows"] == b["rows"]
 
 
@@ -1100,21 +1100,35 @@ def test_cc_evidence_mode_flipping_the_mode_flips_exactly_the_eligibility():
 
 
 def test_cc_evidence_mode_declared_basis_flip_is_visible_at_the_source():
-    """Flipping the DECLARED basis breaks em02 at the source; the projection's
-    ``price_basis`` is a hard-coded literal, so the flip is NOT silently
-    absorbed into a matching label."""
+    """Flipping the DECLARED basis is visible end to end: the projection READS
+    ``meta.rs_history.basis``, so a non-engine basis word projects ``unknown``
+    and never a matching label, the engine word ``price`` projects
+    ``price_only``, and no measured value moves either way."""
+    # MUTATION: hard-coded price_basis literal (a declared non-engine basis word
+    # still projects a matching label instead of `unknown`)
     from engine import inputs as engine_inputs
     default_basis = inspect.signature(engine_inputs.yahoo_closes).parameters["basis"].default
     ok = _full_cyc_payload(history=_declared_history(basis="tr"))
     px = _full_cyc_payload(history=_declared_history(basis="px"))
+    price = _full_cyc_payload(history=_declared_history(basis="price"))
     assert ok["meta"]["rs_history"]["basis"] == default_basis
     assert px["meta"]["rs_history"]["basis"] != default_basis
     proj_ok, proj_px = _project(ok, _rot()), _project(px, _rot())
+    proj_price = _project(price, _rot())
     assert proj_ok["generation"]["price_basis"] == "total_return"
-    assert proj_px["generation"]["price_basis"] == "total_return", \
-        "the owner hard-codes price_basis and never reads the declared basis"
-    assert _canon(proj_ok) == _canon(proj_px), \
+    assert proj_px["generation"]["price_basis"] == "unknown", \
+        "the projection reads the declared basis: a non-engine word is unknown"
+    assert proj_price["generation"]["price_basis"] == "price_only"
+    # the declared basis is a LABEL axis only: strip it from both projections and
+    # they are identical, so the flip never silently moves any measured value
+    stripped_ok, stripped_px = copy.deepcopy(proj_ok), copy.deepcopy(proj_px)
+    del stripped_ok["generation"]["price_basis"]
+    del stripped_px["generation"]["price_basis"]
+    assert _canon(stripped_ok) == _canon(stripped_px), \
         "a declared-basis flip must not silently move any measured value"
+    stripped_price = copy.deepcopy(proj_price)
+    del stripped_price["generation"]["price_basis"]
+    assert _canon(stripped_price) == _canon(stripped_ok)
     # flipping the declared MODE to a retained label is a source-side lie the
     # projection also does not absorb: it still labels every group reconstructed
     lied = _full_cyc_payload(history=_declared_history(mode="original_retained"))

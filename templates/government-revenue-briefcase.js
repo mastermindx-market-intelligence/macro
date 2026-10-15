@@ -663,6 +663,13 @@
 
     function buildJsonExport(workspace, filters) {
       if (!usableWorkspace(workspace)) throw new Error('invalid governed workspace');
+      // Export must never silently substitute the Change feed for another page mode.
+      var requestedMode = object(filters) ? text(filters.mode, 30).toLowerCase() : '';
+      if (['candidates', 'budget', 'programs', 'fms'].indexOf(requestedMode) >= 0) {
+        var unsupported = new Error('unsupported export mode');
+        unsupported.code = 'unsupported_export_mode';
+        throw unsupported;
+      }
       var clean = cleanFilters(filters);
       var records = array(workspace.events).filter(function (event) {
         return object(event) && matchesFilters(event, clean);

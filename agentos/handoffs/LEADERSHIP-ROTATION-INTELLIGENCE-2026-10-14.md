@@ -2,11 +2,14 @@
 workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
 session: claude/ssd-leadership-rotation-fable-ea1aa1-e607a9aeaf45c29e (seat 135304d0, SSD tree)
 model: fable
-ended_because: ci_handoff
+ended_because: complete
 mission: >-
   Programme completion for Rotation Command / Sector Central (Chairman masterplan zip
-  2026-10-13, task graph T01–T26). This handoff records wave 1 (source qualification, contract
-  projection, evidence modes, replay isolation) at the CI/merge rung and the state of waves 2–3.
+  2026-10-13, task graph T01–T26). Updated 2026-10-14 ~20:00Z: waves 1–4 MERGED+LANDED
+  (contracts, evidence modes, replay isolation, science protocol + prereg V1/V2, measured read,
+  journey, counter-cases, challenge repair packets A–D with Terminal D in production); wave 5
+  (harness repair under prereg V2.1) MERGED+LANDED 2026-10-14 (#9380 → c55b54dab056); T26 four states
+  recorded in research/LEADERSHIP_ROTATION_T26_CLOSEOUT_2026_10_14.md.
 state_before: >-
   #8470 merged; carriers #8412 (replay isolation), #8476 (rs_history.v1) and Terminal #881
   (journey) were unmerged prior drafts on stale bases; no contracts module existed; `build_rotation_events`
@@ -79,29 +82,61 @@ unresolved:
   on mb by hand until the fabric-policy owner republishes.
 next_actions:
 - >-
-  After the sweeper merges #9224/#9225/#9240, blob-verify each file set against origin/main.
-- Dispatch ONE main ci.yml baseline only over a clear field (`gh run list --workflow ci.yml --branch main
-  --json databaseId,status` shows nothing queued/in_progress).
+  DONE 2026-10-14: ORCH-REPAIR return consumed; #9380 merged exact-head → c55b54dab056; baseline 38627611213
+  SUCCESS → MEASURED_PRODUCT_COMPLETE = COMPLETE; T12R SIZED 42/42; T13R all NOT_EXECUTABLE; V3 not
+  triggered by V2 rules. The #9380 merged head is CI-authority-frozen until one green main ci.yml run on a
+  descendant (baseline 38648008782 @51865d51 completed SUCCESS 2026-10-14T23:20:01Z — freeze CLEARED); never re-dispatch over a live run.
 - >-
-  Close #8412 and #8476 as superseded, naming #9224 and #9225; reclaim judge trees
-  lr-orch-src-judge-feb0c5f1875a112b and lr-meas-judge-f9831580b40f167b.
-- Consume ORCH-SCI (T07, T09–T14) and ORCH-PROD (T17, T18, T21, T22) returns; then ORCH-CHAL
-  (T19/T20/T23), T24 conditional, T25 release/natural-consumption proof, T26 four-state closeout.
+  Follow-on LR-W6 (not in this masterplan): author PREREG V3 (own blob pin) re-registering H1 (statistic
+  not T_a ≡ 5 by construction) and H2/H3 effect scales vs margins; re-run size+power; only SIZED+POWERED
+  authorises a P1 read. Until then P1/P2/P3 stay unread (DEC:LEADERSHIP-ROTATION-P1-WITHHELD-UNTIL-STATISTICS-REREGISTERED).
+- >-
+  Terminal D visual acceptance: crop matrix + `qualify_sector_rotation.cjs` not executed (lane-only
+  claims); signed-in visual pass is a human gap — never call D visually accepted.
+- >-
+  T18 natural-consumption proof waits on the first nightly publishing `measured_read` and
+  `meta.rs_history` (never dispatch daily.yml). T24 conditional; T25 release/operator readback
+  (human). Final comment on Mastermind #1194 with the four T26 states.
+- >-
+  Latent nonblocking repair candidates from ORCH-REVIEW (route as ordinary follow-ups): negative-count
+  guard in `from_leadership_receipt` (no production caller), unhashable member-id TypeError,
+  vacuous `groupsOk` on `groups:[]`, no test pinning D's 128-row cap, B README/receipt A44 wording.
+- Lab cleanup report-first on ubuntu1 (`~/lanes/wt/lr-rev-d/` hardlinked node_modules) — no deletions while lanes may be active.
 do_not_redo:
 - >-
   T01 frontier, T02 qualification of #8412/#8476/#881 (recorded in the seat's judge files).
 - >-
-  T03–T05/T08 contract projection (#9240), T06 (#9225), T16 (#9224) — accepted at CI rung.
+  Waves 1–4 are MERGED+LANDED (SHAs in the WS record do_not_redo): never re-ACK, re-START or re-spec;
+  a fresh session is not a material invalidator.
 - >-
-  Never push to #9224/#9225/#9240 branches; never touch sol/* carriers, #7455, holds #7060/#8713.
+  Terminal D #1003 → 73a935e0 on master has PRODUCTION_PROOF (VPS terminal-build.sh identity check,
+  served data-dpl-id at edge 18:52Z). Never relaunch terminal-build.sh; Vercel deployment failures are
+  the known spurious surface, production is the VPS.
+- >-
+  ORCH-SRC/MEAS/SCI/PROD/CHAL/FIX/REVIEW are COMPLETE and ORCH-REPAIR is RUNNING (a1122618ebecf481a):
+  never re-spawn any of them; SendMessage only. Returns under the seat scratchpad `returns/`.
+- >-
+  C #9368 attempt-1 red was hosted-runner slowness (DSC:A-SIX-MINUTE-JOB-BUDGET-SITS-INSIDE-HOSTED-RUNNER-VARIANCE),
+  not a defect; attempt 2 green. Do not open a heal for it.
+- >-
+  Never push to merged branches; never touch sol/* carriers (#8299, #7976, #9035, #9256, #9134),
+  #7455, holds #7060/#8713.
 danger_areas:
-- All three wave-1 PRs edit .github/ci/legacy-jobs.yml in different hunks — a later one can conflict
-  after an earlier merge; rebase under disarm→push→re-arm, never push into an armed PR.
-- Every lane PR is a CI-authority edit (legacy-jobs.yml) so candidate-era proof cannot excuse an
-  inherited red; the clearing lever is a green main baseline postdating the red.
+- Every lane PR is a CI-authority edit (legacy-jobs.yml / scripts/**) so candidate-era proof cannot
+  excuse an inherited red; the clearing lever is a green main baseline postdating the red. Edit a
+  CI-authority PR body ONCE per run (combine with the ready act).
+- Any PR adding a module into the LRS/countercases import closure must add it to the job's `paths:`
+  in `.github/ci/legacy-jobs.yml` in the same PR, or the job silently stops running those tests.
+- >-
+  `tests/test_rotation_early_context.py::test_registry_contains_separate_explicit_context_groups`
+  fails in a SPARSE tree (data/ omitted) — artifact, not a regression; CI full checkout is green.
+- >-
+  `unrun-grading-board` has a 6-minute budget inside hosted-runner variance (3x between VMs):
+  compare step wall time with a sibling before attributing a timeout red to the PR; remedy = re-run.
 - Writes into data/ or site/ in a sparse tree truncate committed artifacts; builders must redirect to
   scratch art_dir.
-prs: [9224, 9225, 9240, 9205]
+- F1/F3 are settled by V2 §3/§5 per V2.1 §5 (blob 8f48509b); never edit V1/V2/V2.1 in place — any change is a dated V3 with its own blob pin.
+prs: [9224, 9225, 9240, 9245, 9288, 9250, 9251, 9258, 9293, 9327, 9332, 9345, 9257, 9271, 9368, 9371, 9372, 9205, 9380, 9386]
 ---
 
 # LEADERSHIP-ROTATION-INTELLIGENCE — handoff 2026-10-14 (wave 1 at CI rung)
@@ -110,3 +145,16 @@ Wave 1 delivered three DRAFT→READY PRs from two Opus orchestrators (ORCH-SRC: 
 ORCH-MEAS: T03–T05/T08) over M2 fabric lanes. Seat judged each diff against the acceptance matrix
 and the contracts spec before arming. Wave 2 (science) and wave 3 (product) orchestrators are
 running; the challenge wave is drafted and waits for an Opus slot.
+
+## Update 2026-10-14 ~20:00Z — waves 1–4 landed, wave 5 in flight
+
+Waves 1–3 merged and landed blob-for-blob (SHAs in the WS record). The independent challenge
+wave (ORCH-CHAL, T19/T23) ruled H1 **P0 DEVELOPMENT_FAIL: MIS-SIZED** under prereg V1 and produced
+a BLOCKING set that ORCH-FIX repaired as packets A–D; all four are merged and landed, and Terminal D
+is in production on the VPS (deployment identity verified at the edge). An independent fabric
+re-review (ORCH-REVIEW, four M2 lanes, no native reviewer) returned ACCEPT_WITH_NONBLOCKING_GAPS on
+every packet, so MEASURED_PRODUCT_COMPLETE is supportable on code pending main baseline
+38627611213. The science side is a recorded FAIL plus a repair protocol (prereg V2, blob
+1fcd151c; DEC:LEADERSHIP-ROTATION-PREREG-V2-NOISE-REFERENCED-H1); ORCH-REPAIR is building the
+harness repair (F9 size gate, real look_count, PREREG V2.1) — no P1/P2 read until it lands and
+re-size passes. PREDICTIVE_CAPABILITY_QUALIFIED = NO. ORIGINAL_PROGRAMME_COMPLETE = NOT COMPLETE.

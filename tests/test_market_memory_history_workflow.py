@@ -1,0 +1,43 @@
+"""The shipped workflow must carry executable, outcome-isolated request examples."""
+from pathlib import Path
+import json
+import re
+
+from lib.dataos.web_api import dispatch
+from tests.test_dataos_web_history import case  # existing descriptor-confined fixture
+from tests.test_market_memory_history_dossier import macro
+
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW = ROOT / "plugins/mastermind-data-lab/skills/data-workspace"
+
+
+def test_history_request_examples_execute_through_existing_dispatch(case):
+    text = (WORKFLOW / "references/requests.md").read_text()
+    assert "## Historical daily dossier" in text
+    section = text.split("## Historical daily dossier", 1)[1].split("\n## ", 1)[0]
+    examples = []
+    for block in re.findall(r"```json\n(.*?)```", section, flags=re.S):
+        for line in block.splitlines():
+            if line.strip():
+                examples.append(json.loads(line))
+    examples = [q for q in examples if q.get("action") == "history_dossier"]
+    assert len(examples) >= 2
+    macro_path, macro_hash = macro(case.base)
+    for q in examples:
+        assert q.get("reveal_outcomes", False) is False
+        q = {**q, "ref": "fixture:history/manifest.json",
+             "manifest_sha256": case.receipt["manifest_sha256"], "date": "2020-01-05"}
+        if "macro_ref" in q:
+            q.update(macro_ref="fixture:macro.json", macro_sha256=macro_hash)
+        result = dispatch(case.ws, q, config_path=case.config)
+        assert result["result"]["mode"] == "RETROSPECTIVE_EXPLORATORY"
+        assert not result["result"]["outcomes_revealed"]
+        assert not any("outcomes-" in source["ref"] for source in result["source_files"])
+
+
+def test_workflow_preserves_source_discovery_and_truth_boundaries():
+    skill = (WORKFLOW / "SKILL.md").read_text()
+    for required in ("history_dossier", "manifest_sha256", "macro_sha256",
+                     "initial release", "not full revision", "never open outcome"):
+        assert required in skill
+    assert "Do not silently fall back" in skill

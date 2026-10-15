@@ -4792,9 +4792,14 @@ def _run_ancestor_init_census(args: argparse.Namespace) -> int:
     fixture) — and the curator already owns closure failure in
     ``curated_exclusive_closure_findings``. The ``pairs=… jobs=…/<n>`` line
     is the published baseline; per-init rows follow sorted by cross-job
-    count descending then path.
+    count descending then path. ``--gate`` is forwarded to
+    ``load_legacy_jobs`` (the single gate filter choke point); its argparse
+    default is ``None``, so the default census stays whole-manifest and
+    byte-identical. ``--semantic-replay-job`` is the one mode that loads
+    ``load_legacy_jobs`` ungated (``main`` calls
+    ``load_legacy_jobs(args.workflow)`` without ``gate=``).
     """
-    jobs = load_legacy_jobs(args.workflow)
+    jobs = load_legacy_jobs(args.workflow, gate=args.gate)
     repo_root = _find_repo_root(Path(args.workflow))
     findings = ancestor_init_census(jobs, repo_root=repo_root)
     per_init_count: dict[str, int] = {}
@@ -5209,7 +5214,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "validates pack selection; exits 0 on a loadable manifest and "
             "nonzero (observed 2) when load_legacy_jobs refuses the manifest; "
             "pairs the curated-tier closure audit with the silent "
-            "ancestor-init blind spot the closure audit cannot see"
+            "ancestor-init blind spot the closure audit cannot see; "
+            "``--gate`` narrows the census to that gate's jobs (default: "
+            "whole-manifest)"
         ),
     )
     parser.add_argument(
@@ -5350,12 +5357,34 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         (args.execute, "--execute"),
         (args.validate_only, "--validate-only"),
         (args.plan_only, "--plan-only"),
+        # ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+        # (``default=None``) are not ``store_true``: the census dispatched
+        # first in ``main`` silently WON over both (observed rc=0, the plan
+        # never read/never emitted), so presence — ``is not None``, not
+        # truthiness — is the conflict test. The seven flags after them are
+        # the same class: ``default=None``, not ``store_true``, and only read
+        # after the census has already returned. ``--github-output`` and
+        # ``--changed-from`` (#9378 P3-a) join it: the census never reads them.
+        (args.plan_json is not None, "--plan-json"),
+        (args.emit_plan_json is not None, "--emit-plan-json"),
+        (args.emit_changed_files is not None, "--emit-changed-files"),
+        (args.changed_files_file is not None, "--changed-files-file"),
+        (args.expect_plan_sha is not None, "--expect-plan-sha"),
+        (args.emit_semantic_fragment is not None, "--emit-semantic-fragment"),
+        (args.emit_timing_observations is not None, "--emit-timing-observations"),
+        (args.github_output is not None, "--github-output"),
+        (args.changed_from is not None, "--changed-from"),
     ):
         if args.ancestor_init_census and _census_conflict:
             parser.error(
                 "--ancestor-init-census is a terminal report-only mode and "
                 f"cannot pair with {_flag}"
             )
+    # P3-b (#9378), deliberately NOT refused: --tested-tree-sha
+    # --subject-head-sha --base-sha --workflow-run-id --workflow-name --event
+    # --role --expect-tested-tree-sha --expect-subject-head-sha --expect-base-sha,
+    # and the env-/int-defaulted --scope-mode --matrix-mode --base-replay-budget-seconds
+    # --pack-index --pack-count: census reads only args.workflow/args.gate.
     if args.tracked_paths_file is not None and not args.plan_only:
         parser.error("--tracked-paths-file is planner-only and requires --plan-only")
     if args.tracked_paths_file is not None and not args.tested_tree_sha:

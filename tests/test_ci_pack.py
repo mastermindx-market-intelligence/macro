@@ -4661,6 +4661,8 @@ CURATED_EXCLUSIVE = {
     # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "entry-radar-rs-pullback-calendar",
+    # PR #9199: actual-file identity reader; keep equality and closure gates intact.
+    "entry-radar-identity-snapshot",
     # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
@@ -6957,19 +6959,407 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
     ], parsed
 
 
+def test_ancestor_init_census_honours_gate_flag(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """(o) the census honours ``--gate`` through the load choke point.
+
+    ``--gate`` defaults to ``None`` (whole manifest), so the published
+    census is unchanged; when present the census must filter exactly like
+    every other mode does — ``load_legacy_jobs(path, gate=...)`` is the
+    single choke point. A fixture with one ``code`` job (three ancestor
+    inits) and one ``data`` job (two ancestor inits) prints five pairs
+    whole-manifest, three under ``--gate code`` (only ``csub/`` rows), two
+    under ``--gate data`` (only ``dsub/`` rows). Before the census passed
+    ``args.gate`` every invocation printed the same five pairs (OBSERVED).
+
+    ``GIT_CEILING_DIRECTORIES`` pins ``_find_repo_root`` to the fixture
+    tree, same ceiling the CLI summary test documents.
+    """
+    workflow = tmp_path / "legacy.yml"
+    job_block = {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "scope": "exclusive",
+        "steps": [{"name": "ancestor-init fixture", "run": "echo fixture"}],
+    }
+    workflow.write_text(
+        yaml.safe_dump(
+            {
+                "jobs": {
+                    "code-job": {
+                        **job_block,
+                        "gate": "code",
+                        "paths": ["csub/deep/mod.py", "csub/other/mod.py"],
+                    },
+                    "data-job": {
+                        **job_block,
+                        "gate": "data",
+                        "paths": ["dsub/deep/mod.py"],
+                    },
+                }
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    _aic_optional_init(tmp_path / "csub", body=b"# csub\n")
+    _aic_optional_init(tmp_path / "csub" / "deep", body=b"")
+    _aic_optional_init(tmp_path / "csub" / "other", body=b"")
+    _aic_optional_init(tmp_path / "dsub", body=b"# dsub\n")
+    _aic_optional_init(tmp_path / "dsub" / "deep", body=b"")
+    monkeypatch.setenv(
+        "GIT_CEILING_DIRECTORIES", str(tmp_path.resolve().parent)
+    )
+
+    def _census(gate_args: list[str]) -> str:
+        args = PACK.parse_args(
+            [
+                "--workflow",
+                str(workflow),
+                "--ancestor-init-census",
+                *gate_args,
+            ]
+        )
+        assert PACK._run_ancestor_init_census(args) == 0
+        return capsys.readouterr().out
+
+    whole = _census([])
+    code = _census(["--gate", "code"])
+    data = _census(["--gate", "data"])
+
+    assert whole.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=5 "), whole
+    assert "jobs=2/2" in whole.splitlines()[0], whole
+    assert code.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=3 "), code
+    assert "jobs=1/1" in code.splitlines()[0], code
+    assert data.splitlines()[0].startswith("ANCESTOR_INIT_CENSUS pairs=2 "), data
+    assert "jobs=1/1" in data.splitlines()[0], data
+    assert "csub/" in code and "dsub/" not in code, code
+    assert "dsub/" in data and "csub/" not in data, data
+    assert {line.split()[0] for line in code.splitlines()[1:]} == {
+        "csub/__init__.py",
+        "csub/deep/__init__.py",
+        "csub/other/__init__.py",
+    }, code
+    assert whole != code and code != data and whole != data
+
+
 @pytest.mark.parametrize(
-    "other_flag", ["--execute", "--validate-only", "--plan-only"]
+    "other_flag,other_value",
+    [
+        pytest.param("--execute", None, id="--execute"),
+        pytest.param("--validate-only", None, id="--validate-only"),
+        pytest.param("--plan-only", None, id="--plan-only"),
+        pytest.param("--plan-json", "/nonexistent/plan.json", id="--plan-json"),
+        pytest.param("--emit-plan-json", "-", id="--emit-plan-json"),
+        pytest.param("--emit-plan-json", "", id="--emit-plan-json-empty"),
+        pytest.param("--emit-changed-files", "/nonexistent/x.json", id="--emit-changed-files"),
+        pytest.param("--emit-changed-files", "", id="--emit-changed-files-empty"),
+        pytest.param("--changed-files-file", "/nonexistent/x.json", id="--changed-files-file"),
+        pytest.param("--expect-plan-sha", "0" * 40, id="--expect-plan-sha"),
+        pytest.param("--emit-semantic-fragment", "x", id="--emit-semantic-fragment"),
+        pytest.param("--emit-timing-observations", "x", id="--emit-timing-observations"),
+        pytest.param("--github-output", "/nonexistent/out", id="--github-output"),
+        pytest.param("--changed-from", "0" * 40, id="--changed-from"),
+        pytest.param("--changed-from", "", id="--changed-from-empty"),
+    ],
 )
-def test_ancestor_init_census_refuses_ambiguous_modes(other_flag: str) -> None:
+def test_ancestor_init_census_refuses_ambiguous_modes(
+    other_flag: str, other_value: "str | None", capsys: pytest.CaptureFixture[str]
+) -> None:
     """(n) the census is terminal: pairing it with another mode exits 2 at parse.
 
     Before this refusal ``--ancestor-init-census`` silently WON the dispatch
     in ``main`` (observed rc=0 with the paired flag ignored). ``parse_args``
     must now reject the combination the same way it rejects
     ``--execute``/``--validate-only`` — a usage error, exit code 2.
+
+    ``--plan-json`` (``type=Path, default=None``) and ``--emit-plan-json``
+    (``default=None``) are the remaining silent-win class: they are NOT
+    ``store_true``, so a plain truthiness loop misses them and the valueless
+    tokens cannot be passed bare — the pair is (flag, value) and the refusal
+    keys on ``is not None``. Seven more ``default=None`` flags join that class.
+    The empty-value pins kill a truthiness mutant (``""`` is falsy); an empty
+    ``--plan-json``/``--github-output`` could not — both are ``type=Path``.
+
+    rc 2 alone does not say WHICH refusal fired — any later ``parser.error``
+    would do. The exact message is part of the contract (a renamed string is
+    a silent UX break), so stderr is captured (``capsys``, as the rest of
+    this suite uses) and asserted as well.
     """
+    argv = ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
+    if other_value is not None:
+        argv.append(other_value)
     with pytest.raises(SystemExit) as excinfo:
-        PACK.parse_args(
-            ["--workflow", str(MANIFEST), "--ancestor-init-census", other_flag]
-        )
+        PACK.parse_args(argv)
     assert excinfo.value.code == 2
+    captured = capsys.readouterr()
+    assert (
+        "--ancestor-init-census is a terminal report-only mode" in captured.err
+    ), captured.err
+
+
+# ---------------------------------------------------------------------------
+# W15-F-FVE lane — RATCHET on the ancestor-init blind spot (ceiling, not fix).
+#
+# #9315 shipped the report-only census; the lane that measured it found the
+# blind spot on main at seed 9b4bd85aa4f0a5c56bb0f025954aa743a2fe8c68: 340
+# ``(job, ancestor __init__.py)`` rows across 106 of 112 curated-exclusive
+# jobs, 136 of those rows (42 jobs) pointing at a SUBSTANTIVE init — one
+# whose module body has a statement beyond a leading docstring and
+# ``from __future__`` imports, i.e. code CPython actually executes on every
+# import under that package while no job's ``paths:`` selects it. Fixing the
+# closure is deferred (full ancestor expansion breaches the packing-probe
+# ceilings), so these constants make the blind spot NON-GROWABLE meanwhile:
+# a new exclusive declaration whose tracked ancestor ``__init__.py`` stays
+# undeclared pushes the measured rows over the ceiling and REDs here. The
+# comparison is ``<=`` on purpose — shrinking the blind spot stays green.
+#
+# Determinism: ``ancestor_init_census`` resolves existence with ``stat()``
+# on the WORKING TREE (scripts/run_ci_pack.py:1822-1830), and a job checkout
+# may be partial, so the ceiling counts are computed from the TRACKED
+# inventory (``git ls-tree -r --name-only HEAD``) through the census module's
+# own lexical mapping helpers (``_ancestor_init_paths``/``_has_glob``/
+# ``_matches_any``/``ANCESTOR_INIT_ALLOWLIST``) — never from what happens to
+# be materialised. The shipped function is still called and pinned as the
+# cross-check: its rows must be a subset of the tracked mapping on any tree
+# (an init can be tracked-but-absent from a sparse checkout; a clean checkout
+# has no untracked package inits to invent extra rows).
+# ---------------------------------------------------------------------------
+
+# Lane W15-F-FVE measured 340 / 136 at seed 9b4bd85 (its sparse checkout's
+# census printed the identical 340 because it excludes only data/, site/,
+# mockups/, verify_shots/). Main moved before this landed, so the seat
+# re-measured with the same tracked-inventory walk at main 3a316a30
+# (2026-10-14) and the ceilings pin THAT measurement:
+#   total rows       = 344 across 107/113 exclusive jobs
+#   substantive rows = 138 across 43/113 exclusive jobs
+_ANCESTOR_INIT_CENSUS_CEILING = 344
+_ANCESTOR_INIT_SUBSTANTIVE_CEILING = 138
+
+_ANCESTOR_INIT_CENSUS_CLI = (
+    "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml "
+    "--ancestor-init-census"
+)
+
+
+def _aic_tracked_paths(root: Path = ROOT) -> frozenset[str]:
+    """Paths tracked at HEAD — stable under any sparse/partial checkout.
+
+    The owning job ``ci-control-plane-contracts`` runs a bare
+    ``actions/checkout@v4`` (.github/ci/legacy-jobs.yml:8142) with no
+    ``sparse-checkout`` or ``filter`` option, so HEAD's tree and blobs are
+    fetched whole and these git reads need no network in CI either.
+    ``-z`` is used because it gives NUL-terminated, unquoted names
+    regardless of ``core.quotePath``: with plain ``--name-only`` a
+    non-ASCII or control-character path is emitted octal-escaped inside
+    double quotes, so such an init would silently drop out of the
+    inventory and the ratchet would fail open.
+    """
+    result = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return frozenset(p for p in result.stdout.split("\0") if p)
+
+
+def test_aic_tracked_paths_keeps_non_ascii_paths(tmp_path: Path) -> None:
+    """A non-ASCII or control-character tracked path survives ``core.quotePath`` escaping.
+
+    Git's default ``core.quotePath=true`` makes a plain
+    ``ls-tree -r --name-only`` print such paths octal-escaped inside
+    double quotes (non-ASCII bytes become ``\\NNN`` octal sequences; a
+    TAB becomes the C-style ``\\t``); the
+    escaped line then never equals the real init row, so the census
+    inventory would silently lose it (fail open). The quoting is pinned
+    repo-locally so this test discriminates on every host regardless of
+    any global git config.
+    """
+    target = tmp_path / "pkg" / "na\u00efve"
+    target.mkdir(parents=True)
+    (target / "__init__.py").write_text("", encoding="utf-8")
+    tab_target = tmp_path / "tab\there"
+    tab_target.mkdir(parents=True)
+    (tab_target / "y.py").write_text("", encoding="utf-8")
+
+    def git(*args: str) -> None:
+        subprocess.run(
+            # -c core.hooksPath= isolates the scratch repo from any
+            # global hook configuration; a hostile global hook that
+            # exit(1)s on commit would otherwise fail this test
+            # without involving _aic_tracked_paths.
+            ["git", "-c", "core.hooksPath=", *args],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+    git("init", "-q")
+    git("add", "pkg/na\u00efve/__init__.py", "tab\there/y.py")
+    git("config", "core.quotePath", "true")
+    git(
+        "-c", "user.name=t",
+        "-c", "user.email=t@example.invalid",
+        "-c", "commit.gpgsign=false",
+        "commit", "-qm", "x",
+    )
+    tracked = _aic_tracked_paths(tmp_path)
+    assert "pkg/na\u00efve/__init__.py" in tracked
+    assert "tab\there/y.py" in tracked
+
+    # Pin the precondition the test discriminates on: a plain (non -z)
+    # ls-tree with the repo-local `core.quotePath true` setting must
+    # emit the escaped, double-quoted form, never the raw path;
+    # otherwise the test would silently stop discriminating.
+    plain = subprocess.run(
+        ["git", "-c", "core.hooksPath=", "ls-tree", "-r", "--name-only", "HEAD"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    plain_lines = plain.stdout.splitlines()
+    assert '"pkg/na\\303\\257ve/__init__.py"' in plain_lines
+    assert '"tab\\there/y.py"' in plain_lines
+    assert "pkg/na\u00efve/__init__.py" not in plain_lines
+
+
+def _aic_rows_from_tracked_inventory(
+    jobs: list[PACK.LegacyJob], tracked_paths: frozenset[str]
+) -> list[tuple[str, str, str]]:
+    """``ancestor_init_census``'s declared-path -> ancestor-init mapping,
+    with existence resolved from the tracked inventory instead of the working
+    tree. Same walk, same three suppressions (literal declaration, glob match,
+    allowlist), same per-``(job, init)`` dedupe keeping the lexicographically
+    first declared path (scripts/run_ci_pack.py:1806-1838) — built from the
+    module's own helpers so the mapping cannot drift from the shipped census.
+    """
+    rows: dict[tuple[str, str], tuple[str, str, str]] = {}
+    for job in jobs:
+        if not job.exclusive:
+            continue
+        declared_set = frozenset(job.paths)
+        for declared in job.paths:
+            if PACK._has_glob(declared):
+                continue
+            for rel_dir in PACK._ancestor_init_paths(declared):
+                init_path = f"{rel_dir}/__init__.py"
+                if init_path in declared_set:
+                    continue
+                if PACK._matches_any(job.paths, init_path):
+                    continue
+                if init_path in PACK.ANCESTOR_INIT_ALLOWLIST:
+                    continue
+                if init_path not in tracked_paths:
+                    continue
+                key = (job.job_id, init_path)
+                if key not in rows or declared < rows[key][1]:
+                    rows[key] = (job.job_id, declared, init_path)
+    return sorted(rows.values(), key=lambda row: (row[0], row[2]))
+
+
+def _aic_init_is_substantive(source: str) -> bool:
+    """True if the module body holds any statement beyond a leading
+    docstring and ``from __future__`` imports — the W15-F-FVE definition that
+    measured 136 substantive rows at 9b4bd85 and 138 at 3a316a30. Such an
+    init runs real code on every import of its package, which is exactly
+    what an undeclared path hides. Unparseable source counts as substantive:
+    the ratchet fails closed.
+    """
+    try:
+        body = list(ast.parse(source).body)
+    except SyntaxError:
+        return True
+    if (
+        body
+        and isinstance(body[0], ast.Expr)
+        and isinstance(body[0].value, ast.Constant)
+        and isinstance(body[0].value.value, str)
+    ):
+        body = body[1:]
+    for stmt in body:
+        if isinstance(stmt, ast.ImportFrom) and stmt.module == "__future__":
+            continue
+        return True
+    return False
+
+
+def _aic_ceiling_failure(
+    kind: str, measured: int, ceiling: int, rows: list[tuple[str, str, str]]
+) -> str:
+    over_jobs = sorted({job for job, _declared, _init in rows})
+    return (
+        f"ancestor-init blind spot GREW: {kind} rows measured {measured} "
+        f"against ceiling {ceiling} (main 3a316a30) — "
+        f"{measured - ceiling} over. Remedy: declare the ancestor "
+        "`__init__.py` in that job's `paths:` so the change that executes it "
+        "selects the job. List every row with "
+        f"`{_ANCESTOR_INIT_CENSUS_CLI}`; jobs currently covered: "
+        f"{len(over_jobs)} ({', '.join(over_jobs[:8])} ...)"
+    )
+
+
+def test_ancestor_init_census_does_not_grow() -> None:
+    """Ratchet: the undeclared-ancestor-init blind spot may not grow.
+
+    Closes the 2026-10-14 measurement at main 3a316a30 (344 rows / 107
+    jobs, 138 substantive / 43 jobs) behind two ``<=`` ceilings. Counts
+    come from HEAD's tracked inventory, so the verdict is identical in a
+    full CI checkout and in a sparse session tree.
+    """
+    # The CLI's own two calls (_run_ancestor_init_census,
+    # scripts/run_ci_pack.py:4800 and :4802; ``gate`` defaults to None,
+    # i.e. the whole manifest, which is what this call loads):
+    #   jobs = load_legacy_jobs(args.workflow, gate=args.gate)
+    #   findings = ancestor_init_census(jobs, repo_root=repo_root)
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    tracked_paths = _aic_tracked_paths()
+    rows = _aic_rows_from_tracked_inventory(jobs, tracked_paths)
+
+    # Cross-check against the shipped census function itself: every row it
+    # emits from the working tree must exist in the tracked mapping too.
+    census = PACK.ancestor_init_census(jobs, repo_root=ROOT)
+    tracked_keys = {(job, init) for job, _declared, init in rows}
+    census_keys = {(f.job, f.init_path) for f in census}
+    assert census_keys, (
+        "ancestor_init_census returned no rows — the cross-check "
+        "would be vacuous"
+    )
+    assert census_keys <= tracked_keys, (
+        "ancestor_init_census emitted working-tree rows absent from the "
+        f"tracked mapping: {sorted(census_keys - tracked_keys)}"
+    )
+
+    substantive_cache: dict[str, bool] = {}
+
+    def _substantive(init_path: str) -> bool:
+        if init_path not in substantive_cache:
+            blob = subprocess.run(
+                ["git", "show", f"HEAD:{init_path}"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout
+            substantive_cache[init_path] = _aic_init_is_substantive(blob)
+        return substantive_cache[init_path]
+
+    substantive_rows = [row for row in rows if _substantive(row[2])]
+
+    assert len(rows) <= _ANCESTOR_INIT_CENSUS_CEILING, _aic_ceiling_failure(
+        "total", len(rows), _ANCESTOR_INIT_CENSUS_CEILING, rows
+    )
+    assert len(substantive_rows) <= _ANCESTOR_INIT_SUBSTANTIVE_CEILING, (
+        _aic_ceiling_failure(
+            "substantive",
+            len(substantive_rows),
+            _ANCESTOR_INIT_SUBSTANTIVE_CEILING,
+            substantive_rows,
+        )
+    )

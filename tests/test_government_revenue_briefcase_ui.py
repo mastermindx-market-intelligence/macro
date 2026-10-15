@@ -381,3 +381,35 @@ def test_ui_waits_for_subject_and_purges_private_options_on_logout(tmp_path: Pat
     assert 'B private' in out['resumedB']['html'] and 'A private' not in out['resumedB']['html']
     assert 'A private' in out['resumedA']['html'] and 'B private' not in out['resumedA']['html']
     assert out['clears'] == 5
+
+
+
+@needs_node
+def test_exports_do_not_substitute_change_feed_for_known_unimplemented_page_modes(tmp_path: Path) -> None:
+    workspace = _workspace(_event('govws-export-mode-award', 'award_change'))
+    out = _run_node(tmp_path, r'''
+        const app = make();
+        const WORKSPACE = %s;
+        const refused = [];
+        for (const mode of ['candidates', 'budget', 'programs', 'fms', ' CANDIDATES ', 'FMS']) {
+          for (const method of ['buildJsonExport', 'buildCsvExport']) {
+            try { app[method](WORKSPACE, {mode}); refused.push({mode, method, code:null}); }
+            catch (error) { refused.push({mode, method, code:error.code}); }
+          }
+        }
+        const preserved = [];
+        for (const mode of ['changes', 'awards', 'opportunities', 'recompetes', 'companies', 'AWARDS', ' awards ', '', undefined, 'unknown-old-mode']) {
+          const json = app.buildJsonExport(WORKSPACE, {mode});
+          const csv = app.buildCsvExport(WORKSPACE, {mode});
+          preserved.push({input:mode || '', mode:json.query.filters.mode, count:json.records.length, csv:csv.content});
+        }
+        console.log(JSON.stringify({refused, preserved}));
+    ''' % json.dumps(workspace))
+    assert len(out['refused']) == 12
+    assert all(row['code'] == 'unsupported_export_mode' for row in out['refused'])
+    assert [row['mode'] for row in out['preserved']] == [
+        'changes', 'awards', 'opportunities', 'recompetes', 'companies',
+        'awards', 'awards', 'changes', 'changes', 'changes',
+    ]
+    assert [row['count'] for row in out['preserved']] == [1, 1, 0, 0, 0, 1, 1, 1, 1, 1]
+    assert all('export_contract' in row['csv'] for row in out['preserved'])
