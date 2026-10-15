@@ -714,3 +714,75 @@ def test_only_worktree_never_force_removes_ignored_artifacts(repo, tmp_path, mon
     assert target.exists() and (target / "local.buildcache").exists()
     assert row["apply"]["deleted"] == []
     assert row["apply"]["pruned"] is False
+
+
+def test_exact_lsof_rc1_with_output_is_busy(monkeypatch, tmp_path):
+    # lsof returns 1 even when an open file was listed on Linux/macOS.
+    monkeypatch.setattr(wgc, "_run", lambda *args, **kw: (1, "p42\\nffile\\n", ""))
+    assert wgc.exact_target_open_handles(tmp_path) is True
+
+
+def test_exact_lsof_empty_with_warning_or_timeout_is_unknown(monkeypatch, tmp_path):
+    for result in ((1, "", "cannot inspect one pid"),
+                   (-1, "", "TimeoutExpired"), (0, "", "")):
+        monkeypatch.setattr(wgc, "_run", lambda *a, result=result, **kw: result)
+        assert wgc.exact_target_open_handles(tmp_path) is None
+
+
+def test_exact_lsof_clean_empty_is_unoccupied(monkeypatch, tmp_path):
+    monkeypatch.setattr(wgc, "_run", lambda *args, **kw: (1, "", ""))
+    assert wgc.exact_target_open_handles(tmp_path) is False
+
+
+@pytest.mark.parametrize("result", [True, None])
+def test_only_worktree_refuses_busy_or_unverifiable_handle_probe(
+    repo, tmp_path, monkeypatch, result,
+):
+    target = _add_worktree(repo, "busy", branch="lane/busy")
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    monkeypatch.setattr(wgc, "exact_target_open_handles", lambda path: result)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc != 0
+    assert target.exists()
+    assert row["apply"]["deleted"] == []
+    assert "open handles" in row["apply"]["errors"][0]
+
+
+def test_exact_real_external_cwd_open_fd_holds_checkout(
+    repo, tmp_path, monkeypatch,
+):
+    """The accepted cleanup must observe processes even with a foreign cwd."""
+    import shutil
+    import subprocess
+    import sys
+    if shutil.which("lsof") is None:
+        pytest.skip("lsof unavailable: production exact mode must refuse")
+    target = _add_worktree(repo, "held-fd", branch="lane/held-fd")
+    _age(repo, target)
+    worker = subprocess.Popen(
+        [sys.executable, "-c",
+         "import sys,time; f=open(sys.argv[1], 'rb'); print('READY', flush=True); time.sleep(16)",
+         str(target / "README.md")],
+        cwd=str(repo["primary"]), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, text=True,
+    )
+    try:
+        assert worker.stdout is not None
+        assert worker.stdout.readline().strip() == "READY"
+        assert wgc.exact_target_open_handles(target) is True
+        cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+        rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                            extra=["--only-worktree", str(target), "--no-fetch"])
+        assert rc != 0
+        assert target.exists()
+        assert row["apply"]["deleted"] == []
+        assert "open handles" in row["apply"]["errors"][0]
+    finally:
+        worker.terminate()
+        try:
+            worker.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            worker.kill()
+            worker.wait(timeout=3)

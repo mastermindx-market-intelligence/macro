@@ -157,6 +157,24 @@ def _git(repo: Path, *args: str, timeout: int = 30) -> tuple[int, str, str]:
     return _run(["git", "-C", str(repo), *args], timeout=timeout)
 
 
+def exact_target_open_handles(path: Path) -> bool | None:
+    """Bounded exact-directory file-descriptor scan before a destructive remove.
+
+    A process may have cwd elsewhere while holding a file under this worktree.
+    On macOS and Linux lsof +D may return rc=1 even WITH matching output;
+    therefore output is ALWAYS busy. An empty, error-free rc=1 is clean.
+    Every timeout, permission warning, missing lsof, unexpected rc or
+    contradictory result is UNKNOWN, never permission to delete.
+    """
+    rc, out, err = _run(
+        ["lsof", "-nP", "-Fpcn", "+D", str(path)], timeout=45)
+    if out.strip():
+        return True
+    if rc == 1 and not err.strip():
+        return False
+    return None
+
+
 # ── discovery ────────────────────────────────────────────────────────────────
 
 @dataclass
@@ -775,6 +793,33 @@ def apply_deletions(
                 if rc_ignored != 0 or ignored:
                     summary["errors"].append(
                         f"{wt.path}: refused - ignored local content or unreadable ignore probe")
+                    continue
+                # The earlier broad cwd scan is insufficient for a detached
+                # process with an open file under this tree. Refuse both busy
+                # and unknown observations; never trust a partial lsof result.
+                occupied = exact_target_open_handles(wt.path)
+                if occupied is not False:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - open handles or handle scan unverified")
+                    continue
+                # Re-read the original Git registration, branch, HEAD and
+                # cleanliness after the potentially long lsof probe. A raced
+                # checkout or a newly written file must never be removed.
+                rc_reg, out_reg, _ = _git(
+                    primary, "worktree", "list", "--porcelain", timeout=60)
+                if rc_reg != 0:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - worktree registration unreadable")
+                    continue
+                current = [
+                    other for other in parse_worktree_list(out_reg)
+                    if other.path.resolve() == wt.path.resolve()]
+                if (len(current) != 1 or current[0].head != wt.head
+                        or current[0].branch != wt.branch or current[0].locked
+                        or wt.path.is_symlink() or not wt.path.is_dir()
+                        or status_clean(wt) is not True):
+                    summary["errors"].append(
+                        f"{wt.path}: refused - worktree changed since classification")
                     continue
             argv = (("worktree", "remove", str(wt.path)) if exact_single else
                     ("worktree", "remove", "--force", str(wt.path)))
