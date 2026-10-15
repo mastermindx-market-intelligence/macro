@@ -212,7 +212,7 @@ def test_supplied_composite_keeps_its_original_components_and_clock():
     assert section["cycle_rows"][0]["components"]["asof"] in text
 
 
-def component_values_fixture(score, weight, *, zero_inflation=False):
+def component_values_fixture(score, weight, *, zero_inflation=False, empty_axes=()):
     from lib.intl_workspace_macro import build_macro_section
     supplied = components()
     supplied["growth"] = [{"key": "gdp_trend", "score": score, "weight": weight}]
@@ -220,8 +220,10 @@ def component_values_fixture(score, weight, *, zero_inflation=False):
     if zero_inflation:
         supplied["inflation"][0].update(score=0, weight=0)
     for axis in ("growth", "inflation"):
-        supplied[f"{axis}_score"] = supplied[axis][0]["score"]
-        supplied[f"{axis}_n_components"] = int(supplied[axis][0]["score"] is not None)
+        if axis in empty_axes:
+            supplied[axis] = []
+        supplied[f"{axis}_score"] = supplied[axis][0]["score"] if supplied[axis] else None
+        supplied[f"{axis}_n_components"] = int(bool(supplied[axis]) and supplied[axis][0]["score"] is not None)
     packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
         method_kind="mixed_composite", economic_support=None, components=supplied,
     )})
@@ -245,7 +247,26 @@ def test_component_readings_distinguish_missing_from_zero(axis_index, score, wei
     assert section == before
 
 
-def component_workspace_fixture(*, missing_components=False):
+@pytest.mark.parametrize("empty_axes", [("growth",), ("inflation",), ("growth", "inflation")])
+def test_empty_component_axes_are_explicit_without_erasing_supplied_zero(empty_axes):
+    section, registry = component_values_fixture(0, 0, empty_axes=empty_axes)
+    before = copy.deepcopy(section)
+    composite = BeautifulSoup(render(section, registry), "html.parser").select_one(".intl-macro__composite")
+    readings = composite.select("dd")
+    for axis, reading in zip(("growth", "inflation"), readings[:2], strict=True):
+        text = reading.get_text(" ", strip=True)
+        if axis in empty_axes:
+            assert text == "No components supplied. 未提供分项。"
+        else:
+            assert "No components supplied" not in text
+            assert re.search(r"Score:\s*评分：\s*0", text)
+            assert re.search(r"Weight:\s*权重：\s*0", text)
+    assert readings[2].get_text(strip=True) == before["cycle_rows"][0]["components"]["asof"]
+    assert composite.select_one("[data-im-macro-components-unavailable]") is None
+    assert section == before
+
+
+def component_workspace_fixture(*, missing_components=False, empty_axes=()):
     """Native mount and full page with explicitly synthetic component inputs."""
     from uuid import uuid4
     from engine.intl_inputs import countries
@@ -266,6 +287,10 @@ def component_workspace_fixture(*, missing_components=False):
                     inflation=[{"key": "cpi_direction", "score": 0, "weight": 0}],
                     growth_score=None, growth_n_components=0,
                     inflation_score=0, inflation_n_components=1)
+    for axis in empty_axes:
+        supplied[axis] = []
+        supplied[f"{axis}_score"] = None
+        supplied[f"{axis}_n_components"] = 0
     evidence = cycle(method_kind="mixed_composite", economic_support=None,
                      components=supplied, method_ref="synthetic:component-reading")
     if missing_components:

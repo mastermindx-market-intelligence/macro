@@ -111,17 +111,17 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   });
 }
 
-let macroComponentValuesHtml;
-function macroComponentValuesFixture() {
-  if(!macroComponentValuesHtml) macroComponentValuesHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+const macroComponentValuesHtml=new Map();
+function macroComponentValuesFixture(emptyAxis=false) {
+  if(!macroComponentValuesHtml.has(emptyAxis)) macroComponentValuesHtml.set(emptyAxis,execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture
-print(component_workspace_fixture())
-`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
-  return macroComponentValuesHtml;
+print(component_workspace_fixture(empty_axes=${emptyAxis ? '("growth",)' : '()'}))
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
+  return macroComponentValuesHtml.get(emptyAxis);
 }
 
-for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
-  test(`Macro component readings distinguish absent and zero ${theme} ${lang}`,async()=>{
+for(const emptyAxis of [false,true]) for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Macro ${emptyAxis?'empty component axis preserves its supplied neighbor':'component readings distinguish absent and zero'} ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{
       await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
       await page.waitForSelector('[data-im-enhanced="true"]');
@@ -133,8 +133,12 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
       assert.equal(await composite.evaluate(n=>n.open),true);
       const readings=composite.locator('dd');
       const missing=await readings.nth(0).innerText();
-      assert.match(missing,lang==='zh'?/评分：\s*未提供/:/Score:\s*Not supplied/);
-      assert.match(missing,lang==='zh'?/权重：\s*未提供/:/Weight:\s*Not supplied/);
+      if(emptyAxis) {
+        assert.equal(missing,lang==='zh'?'未提供分项。':'No components supplied.');
+      } else {
+        assert.match(missing,lang==='zh'?/评分：\s*未提供/:/Score:\s*Not supplied/);
+        assert.match(missing,lang==='zh'?/权重：\s*未提供/:/Weight:\s*Not supplied/);
+      }
       const zero=await readings.nth(1).innerText();
       assert.match(zero,lang==='zh'?/评分：\s*0/:/Score:\s*0/);
       assert.match(zero,lang==='zh'?/权重：\s*0/:/Weight:\s*0/);
@@ -148,12 +152,12 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
           fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
           await page.evaluate(()=>document.fonts.ready);
           await composite.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
-          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-component-values-settled-${theme}-${lang}-320.png`)});
+          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-component-${emptyAxis?'empty-growth':'values-settled'}-${theme}-${lang}-320.png`)});
         }
       }
       await summary.focus();await summary.press('Enter');
       assert.equal(await composite.evaluate(n=>n.open),false);
-    },{htmlOverride:macroComponentValuesFixture(),width:320,bootLanguage:lang,initialSearch:'?view=macro'});
+    },{htmlOverride:macroComponentValuesFixture(emptyAxis),width:320,bootLanguage:lang,initialSearch:'?view=macro'});
   });
 }
 

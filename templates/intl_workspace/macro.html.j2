@@ -41,6 +41,8 @@
 {% macro component_readings(components) -%}
 {% for component in components %}
   <span>{{ component.key|e }} · <span class="l-en">Score:</span><span class="l-zh" lang="zh">评分：</span> {% if component.score is none %}{{ not_supplied() }}{% else %}{{ component.score|e }}{% endif %} · <span class="l-en">Weight:</span><span class="l-zh" lang="zh">权重：</span> {% if component.weight is none %}{{ not_supplied() }}{% else %}{{ component.weight|e }}{% endif %}</span>{% if not loop.last %} · {% endif %}
+{% else %}
+  <span class="l-en">No components supplied.</span><span class="l-zh" lang="zh">未提供分项。</span>
 {% endfor %}
 {%- endmacro %}
 {% macro reason_text(reason) -%}
