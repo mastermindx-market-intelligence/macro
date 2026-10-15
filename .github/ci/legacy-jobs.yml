@@ -7524,6 +7524,19 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - collectors/biocatalyst/__init__.py
+      - engine/biocatalyst/__init__.py
+      - engine/capital_structure/__init__.py
+      - engine/codex_lane/__init__.py
+      - engine/context_index/__init__.py
+      - engine/earnings_narrative/__init__.py
+      - engine/earnings_release/__init__.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/intelligence_workspace/adapters/__init__.py
+      - engine/market_os/__init__.py
+      - engine/seasonality/__init__.py
+      - engine/signal_foundry/__init__.py
+      - tests/__init__.py
       - engine/rates_command_basis.py
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
