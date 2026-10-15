@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume admitted9209/9455 refreshes; both prior exact heads passed CI but controller38726967675 marks proof stale after main27d401d1. Require protected install and native probes, then SAME Press follow-oncb54d3e9 (517checks/45groups). Terminal recovery appc3909a50 integrates maind93b884e as0b6407bf with unchanged five-file diff/dependencies; reuse52tests/6groups/local stalled-browser proof and create one PR when admitted (11:35indexed9of8). Installed POWI/VNO source scope requalified11:30, no generation. Chrome human step and unresolved Fabric regression001 remain pending. Preserve CAT44refs/five drafts,publication0of10 and unknown effects.
+next_action: Consume9209 exact b4b65190 CI38729755961 after controller38729397033 admitted main179e9e88 at4of8load. All24sources/3pages unchanged; prepared14-file bundle remains unexecuted. Actual squash/normal install/4probes precede SAME follow-oncb54d3e9 (517checks/45groups). Serving9455 remains931d584d/oldgreen stale, refresh deferred. Terminal0b6407bf has unchanged accepted source/tests, no PR at11:48indexed9of8. Preserve Chrome human step, unresolved Fabric regression001, CAT44refs/five drafts,publication0of10 and all unknown effects.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
