@@ -1,0 +1,39 @@
+{
+  "state": "LOCAL_SOURCE_GENERATION_QUALIFIED_NOT_PUBLISHED",
+  "source_head": "de6310a840a4badee215314f55d0dc5ce1af5314",
+  "candidate_cases": 105,
+  "pytest_summary": "104 passed, 1 skipped, 36 warnings in 538.05s (0:08:58)",
+  "proof_sha256": "95b9926056d9be848a5367d2dc70227e73490393b617bd282f6aae2d45bc97f0",
+  "general_browser_cases": 24,
+  "additional_space_capacity_cases": 8,
+  "accepted_case_ids": [
+    "1440-dark-en",
+    "1440-dark-zh",
+    "1440-light-en",
+    "1440-light-zh",
+    "390-dark-en",
+    "390-dark-zh",
+    "390-light-en",
+    "390-light-zh"
+  ],
+  "images": {
+    "1440-dark-en-program.png": "106c6ce46c84c51b8973d9801264783f8466516f5353602a970187a4f743486d",
+    "1440-dark-zh-program.png": "f0aeb444abb346d33f7c26471e5958f59e723645a00e1f1831954c9095fe0042",
+    "1440-light-en-program.png": "bdbcf5a3f9fb0c5128ef552294df34302079f935144e423ce85712720d2450a2",
+    "1440-light-zh-program.png": "4cb55f091c9e321a475da65c5ebbe88d355eb98bd45c587a23f36c1a816459d3",
+    "390-dark-en-production-2.png": "022ca918ca2c0794533105e23eb4d7f780413fdbcb0a5a527c4fae6e07417282",
+    "390-dark-zh-production-2.png": "fc58597c782734a0ab3ef05941733f965fe067a1c4a0270083b9f5fa18293a9a",
+    "390-light-en-production-2.png": "3eedcf1189b6d9f4a874c8ff3cc4017cda28d2d043b92f930eee9bf74f433c3c",
+    "390-light-zh-production-2.png": "38fd5314dfbf148bc2af13878e427816e61df9fa59cd67b0f8916bdc1764ee27"
+  },
+  "harness_repairs": "Initial mobile capture failed on hidden sheet; first repair omitted required workspace scroll; final single cell waited for network-settled DOM. No product bytes changed. Original failures retained and no failed case counted as pass.",
+  "visual_inspection": "Parent inspected light English desktop, dark English mobile and light Chinese mobile; full EN/ZH dark/light desktop/mobile structure exercised by actual browser. No independent taste verdict claimed.",
+  "six_theme_research_state": "EVIDENCE_INSUFFICIENT",
+  "market_reference_state": "six stale approvals preserved",
+  "candidate_ledger_rows": 655,
+  "issuance_append_count": 0,
+  "installed_entitlement": false,
+  "upstream_publication": false,
+  "all_source_servers_stopped": true,
+  "retained_complete_local_evidence": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/expanded-followup"
+}

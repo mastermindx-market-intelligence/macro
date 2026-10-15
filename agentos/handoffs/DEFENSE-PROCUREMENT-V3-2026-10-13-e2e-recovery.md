@@ -993,3 +993,15 @@ All six market-context approvals remain stale and all six research themes remain
 EVIDENCE_INSUFFICIENT. No GAO/NASA admission, publication or production claim.
 The paired generation is saved; complete candidate proof and actual local ASGI
 browser qualification are next. Evidence: capacity_integration_20261015.
+
+October15 isolated Space/PAC-3/FMS generation de6310a840a4 passed the full
+105-case proof (104passed/1skipped),24actual-source ASGI browser states,
+plus8specific Space/PAC-3 cases across EN/ZH,dark/light,desktop/mobile.
+Mobile source behavior was unchanged: the harness now scrolls to the workspace,
+opens Inspect, scrolls all three production categories and verifies Escape focus
+return. One final cell awaited the network-settled DOM; original failed harness
+runs remain evidence, not passes. Native ledger remains655rows,zeroissuance;
+all six research themes remain EVIDENCE_INSUFFICIENT and six market references
+stale. Source/visual qualification is under capacity_integration_20261015/qualified-generation.
+This separate follow-up is qualified locally, not published or installed.
+PR9066 remains the release carrier with the existing live CI observer.

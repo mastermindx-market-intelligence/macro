@@ -1,0 +1,22 @@
+{
+  "scope": "Actual source ASGI loopback with explicit local test principal; not installed entitlement or production acceptance",
+  "stage_sha256": "4e36784eff4f65fc9c0cc5b64a2543aa340b380e6985cac714ea9ac1e476fdc8",
+  "server_sha256": "1dee3af73631258fe05749febb77536395939b87885f04a455027f7f55c32b01",
+  "all_pass": true,
+  "rows": [
+    {
+      "case": "390-light-zh",
+      "pass": true,
+      "public_capacity_text": "项目档案\nacq-program:pac-3-mse\nPatriot Advanced Capability-3 Missile Segment Enhancement (PAC-3 MSE)\n项目身份已核验\n仅展示\n观察，不追逐\n这是什么?\n\nPatriot Advanced Capability-3 Missile Segment Enhancement (PAC-3 MSE)\n\n阶段：production · 主管机构：U.S. government\n\n已核验记录中尚无型别/批次变体。\n\n政府为何需要?\n\n项目归属:未解决/未认定\n\n数量无法由合同事件源表示(v1);待SAR/预算来源接入后提供\n无已复核经济敞口——参与关系不代表收入份额\n\n公开生产披露\n\n公布目标\n\n整体产品 · PAC-3 MSE INTERCEPTORS - LOCKHEED MARTIN ISSUER REPORT\n约 2000 件/年\n\nSeven-year agreement; start/end not stated; issuer-stated approximate 600 baseline is unverified context\n已知时间：2026-10-14T12:13:19+00:00\n\n零部件 · PAC-3 MSE SEEKERS - BOEING ISSUER REPORT\n3 相对倍数\n\nPreviously announced seven-year framework; absolute baseline unspecified\n已知时间：2026-10-14T12:13:19+00:00\n\n已建产能\n\n本类别无已复核观测\n\n已实现产出\n\n整体产品 · PAC-3 MSE INTERCEPTORS - LOCKHEED MARTIN ISSUER REPORT\n620 件\n\n2025 as reported; calendar versus fiscal basis not stated\n已知时间：2026-10-14T12:13:19+00:00\n\n目标描述计划；已建产能与已实现产出是不同观测。零部件与整体产品不能相加。\n\n有何变化?\n合同事件源\n合同事件源为最新——尚无事件与该项目完成复核关联\n合同类型:待事件与该项目完成复核关联后提供\n哪些上市公司经复核参与?\n参与方尚未复核\n\n本栏公司参与同一项目;不主张它们之间存在任何商业关系。\n\n已复核的参与关系不代表收入份额。此处不将合同金额分配至任何股票。\n\n尚有哪些未决?\n预算\n预算来源不可用\n经济关系\n无已复核的经济关系数据\n监督\nGAO/DOT&E 评估:暂未收录\n接下来是什么?\n前瞻里程碑尚未复核\n检查器 · 技术标识\n技术标识\nprogram_id: acq-program:pac-3-mse program_revision: 1 public_capacity_id (announced_target): prog-capacity:1ce0b6f4c16037f216d6f93f evidence_refs: ev:17cc11b30b0a, ev:b558a0f8f3aa public_capacity_id (announced_target): prog-capacity:77b79da90686ae9f0c616d6b evidence_refs: ev:17cc11b30b0a, ev:f03e2070ab91 public_capacity_id (demonstrated_throughput): prog-capacity:674783ef0e7d727578f93774 evidence_refs: ev:17cc11b30b0a, ev:b558a0f8f3aa\n读取模型限制\nProgram/capability/platform truth is reviewed acquisition-domain ontology, not budget or contract-value truth. · The awards rail is a pointer to the reviewed program<->event relation; amounts, dates, and agencies live in the award plane's own artifacts. · Economic relationships between participants are not asserted anywhere in this bundle.",
+      "space_known": "Northrop Grumman：已有2026Q2报告分部证据。它不代表项目份额或股东获益。 Northrop Grumman：已有2025Q2报告分部证据。它不代表项目份额或股东获益。 L3Harris披露已完成商业航天推进、电力及电子业务的多数股权出售；出售后不能将广泛航天需求全部归于LHX。这属于所有权背景，未量化收入损失。 L3Harris披露保留Rocketdyne约40%的股权，RS-25业务不在出售范围内。股权比例不等于项目份额或收入份额。 NOC Space Systems 2026Q2报告基准：销售额 2753.0 百万美元、营业利润 236.0 百万美元、利润率 8.6 %。 NOC Space Systems 2025Q2报告基准：销售额 2646.0 百万美元、营业利润 280.0 百万美元、利润率 10.6 %。 NOC GEM63XL 2026Q2报告基准：不利完工成本估计调整 91.0 百万美元。",
+      "space_missing": "尚未解决：资金阶段、已审查参与关系、市场背景、下一条件。 所引NOC Space Systems季度销售额上升，但营业利润与利润率下降，比较基准为上年同期。销售额增长未转化为更高的分部利润。这些报告分部比较不能证明项目份额、产能、现金生成或股东获益。 另行报告的GEM63XL调整涉及预计完工成本；该金额不能确认已支付现金或HALO的财务影响。",
+      "url": "http://127.0.0.1:58751/government_revenue.html?mode=programs&item=program%3Aacq-program%3Apac-3-mse"
+    }
+  ],
+  "images": {
+    "390-light-zh-themes.png": "cc235ce1b32b86c00005864ec947f155daa99f54fa8e8b024b0f960c9fa137dc",
+    "390-light-zh-production-0.png": "0c295570ebf0bb28676d9d48cd7cbe09efde21daa6b06dae34a53f06c5ff05c1",
+    "390-light-zh-production-1.png": "38fd5314dfbf148bc2af13878e427816e61df9fa59cd67b0f8916bdc1764ee27",
+    "390-light-zh-production-2.png": "38fd5314dfbf148bc2af13878e427816e61df9fa59cd67b0f8916bdc1764ee27"
+  }
+}
