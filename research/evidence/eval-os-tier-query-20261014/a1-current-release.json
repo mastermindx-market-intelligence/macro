@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T15:19:28.515355+00:00",
+  "updated_at": "2026-10-15T15:51:27.545553+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "old": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
@@ -58,18 +58,185 @@
   "programme_complete": false,
   "next": "Consume original run38757206381/attempt1 terminal evidence and all binding checks; repair a real failure or continue incumbent-only merge. Stop polling former lease owner9441.",
   "followon": {
-    "qualified_source": "dd1d34db1d40160205be33950c5936f0ad32148b",
+    "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
     "updater_fix": "9cb9d0ad0c955ad1f46cc3519d34e4c12fd708a4",
     "no_pr": true,
     "composition_pending": true,
-    "prepared_resolution": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-resolution-preview/resolution.json",
-    "resolution_limit": "Six conflict resolutions prepared against earlier hypothetical main575a+A1 squash; exact evaluator equals qualified runtime, current A1 commands preserved. Nine redundant path copies need removal and newer4574 options source must be reconciled against actual qualified landing before application. No carrier integration or acceptance."
+    "prepared_resolution": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/targeted-qualification.json",
+    "resolution_limit": "Prospective composition0add on incumbent b2c44/main4574 is locally qualified. Six conflicts resolved;9merge-created duplicates removed; current A1/main commands and incoming options source retained. Actual qualified landing must be reconciled before same-carrier integration and PR; no carrier/main base integration or production acceptance.",
+    "scope_repair": {
+      "added_paths": [
+        "engine/intl_performance_charts.py",
+        "engine/rates_command_basis.py",
+        "engine/sector_intelligence/consumer_cyclical_display.py",
+        "engine/sector_intelligence/consumer_cyclical_projection.py",
+        "engine/sector_intelligence/consumer_cyclical_shared_contract.py",
+        "engine/sector_intelligence/finance_case_signal.py",
+        "engine/sector_intelligence/finance_page_signal.py",
+        "engine/sector_intelligence/finance_projection.py",
+        "engine/sector_intelligence/finance_watching.py",
+        "engine/sector_intelligence/finance_witness_hints.py",
+        "lib/intl_chart_geometry.py",
+        "lib/intl_chart_mount.py",
+        "lib/intl_chart_publication.py",
+        "scripts/build_consumer_cyclical_plnt_page.py",
+        "tests/test_backfill_qledger_us.py"
+      ],
+      "definitions_preserved": 314,
+      "focused_controls_passed": 2,
+      "unchanged_source_full_closure_reused_from": "dd1d34db1d40160205be33950c5936f0ad32148b",
+      "selection_parity": [
+        {
+          "probe": "templates/index.html",
+          "before": false,
+          "after": false
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "before": false,
+          "after": false
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "before": false,
+          "after": false
+        }
+      ],
+      "strict_probes_reused": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 134,
+          "weight": 5621,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5803,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 134,
+          "weight": 5441,
+          "packs": 10,
+          "max_jobs": 134,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5384,
+          "packs": 9,
+          "max_jobs": 130,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+        }
+      ],
+      "runtime_unchanged": true,
+      "ancestor_control_source_limit": "The attempted newer control is absent on this historical follow-on source (exit4 retained). The actual new-main prospective composition has independently executed this control successfully on0add; do not call the absent test a pass."
+    },
+    "prospective_composition": {
+      "source": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "tree": "723ceb25eb8389613d525c17b0a03f66b3da36e9",
+      "a1_source": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+      "main": "4574d083b0398dd4ac75e283eabff041c561c369",
+      "definitions_preserved": 320,
+      "canonical_qledger_closure_count": 920,
+      "canonical_qledger_closure_misses": [],
+      "other_jobs_closure_reused": true,
+      "ancestor_test_exit": 0,
+      "strict_probes_reused_after_selection_parity": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 135,
+          "weight": 5659,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5803,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 135/320 jobs (2 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 134,
+          "weight": 5467,
+          "packs": 10,
+          "max_jobs": 135,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/320 jobs (2 unscoped always-on, 132 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5410,
+          "packs": 10,
+          "max_jobs": 130,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/320 jobs (2 unscoped always-on, 126 scoped matches)"
+        }
+      ],
+      "claims": "Local prospective composition only, not hosted or installed proof."
+    },
+    "retained_local_proof": [
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/focused-red.xml",
+        "sha256": "be4e28da84f409c951169dcf4dcef8c13967e3b494cc718a5b6206e7306878f0"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/qualification-0e949-red.json",
+        "sha256": "b8ab444ef810ca9e504a0e26f6f49b2b09a8d82376d114fdf1a998727884325b"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/targeted-qualification.json",
+        "sha256": "146790b1422e44d2247b398531c7b0f2f3465db2f53508450fca15e06c2fcf79"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-source-validation-wrong-test.json",
+        "sha256": "694a63ff4e3a36fb549b5a2423287f68b14bb34c3d4a5b0904255e4142dc8556"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-source-qualification.json",
+        "sha256": "30ac92043822101bd2859ca7c16f154ee0a8085d0701070e4b47dd05e8f04dcc"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-b2c44-resolution/followon-focused.xml",
+        "sha256": "b2666b0f4be75d5dfba46a029c1ec086a1eb6843eef119f52bd77cdc7b64e65f"
+      }
+    ]
   },
   "preserved_boundaries": [
     "incumbent-only A1 refresh/final merge",
     "no second manual A1 integration",
     "original Fabric effects and refusals",
     "all production, model, PIT and consumer adoption obligations"
-  ]
+  ],
+  "latest_ci_observation": {
+    "at": "2026-10-15T15:49:46.068583+00:00",
+    "run": 38757206381,
+    "head": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+    "status": "in_progress",
+    "passed": [
+      "ci-plan",
+      "contract-delta",
+      "ci-pack-0",
+      "ci-pack-1",
+      "ci-pack-2",
+      "ci-pack-3",
+      "ci-pack-4",
+      "ci-pack-6",
+      "ci-pack-7",
+      "ci-pack-8",
+      "ci-pack-9",
+      "ci-pack-10",
+      "ci-pack-11"
+    ],
+    "pending": [
+      "ci-pack-5"
+    ]
+  }
 }

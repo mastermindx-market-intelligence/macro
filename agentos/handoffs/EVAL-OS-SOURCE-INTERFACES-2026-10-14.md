@@ -152,9 +152,9 @@ unresolved:
 - Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own
   CI38757206381 is running. Terminal binding checks, protected merge and production proof remain owed.
 next_actions:
-- "A1 PR6651 refreshed by incumbent tob2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0, exact parent3f+main4574/tree02a018 verified; all17 production files unchanged. Consume original CI38757206381/attempt1: planPASS, contract and12packsrunning15:15:54; original plan digest/source/tree/A1execution verified, A1pack10. Stop polling settled owner9441."
-- "Follow-on dd1d34 source/runtime retained. Six future squash conflict resolutions are prepared locally with explicit limits; reconcile actual qualified A1 landing, remove nine redundant merge-created path copies while preserving both parents, retain newer main options source, and release on this same branch through one PR."
-- "After qualified A1 merge bind17fileprobe and assetprojector; prove installation/assets/authenticated API/DOM/eight visual states/natural owner/comprehension, then follow-on updater/actual API-admin processes/numeric-internal-log/CLI/rights-qualified Discovery use. Preserve original unknown/refused effects; all final flags remain false."
+- "A1 PR6651/headb2c44 original CI38757206381/attempt1: plan+contract+11packsPASS15:49:46, onlypack5running; A1pack10PASS. Consume terminal original artifact and all binding checks, then incumbent-only merge. No duplicate observer/controller/producer."
+- "Follow-on34077489ec62 adds15exact incoming QLedger dependencies with314definitions/runtime/limits unchanged;2controlsPASS and prior closure/strict probes reused after parity. Prospective actual-b2c44/main4574 composition0add resolves six conflicts/removes9duplicate copies and passes corrected QLedger920-path closure plus ancestor check; other full closure and packing proof reused. Reconcile actual qualified A1 landing before same-carrier integration and its singlePR."
+- "After qualified A1merge bind17fileprobe andassetprojector; prove deployment/assets/authAPI-DOM/8visualstates/naturalowner/comprehension, then release follow-on and prove installed updater/API-adminprocesses/numeric-log/CLI/rights-qualifiedDiscovery. Preserve original effects/refusals and false completion flags."
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -168,24 +168,31 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T15:19:28.515355+00:00
+## Current checkpoint — 2026-10-15T15:51:27.545553+00:00
 
-Incumbent A1 refresh b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0 is the exact ordinary
-merge of3f340 and protected main4574, tree02a018. Owned local A1 fast-forwarded only.
-All17 production files, including all7 asset-projector inputs, are unchanged. Original
-CI38757206381/attempt1 is running: planPASS, contract-delta and12packsrunning15:15:54.
-Original plan artifact11984037247 digest and canonical identity verified; tested1846b4,
-base4574 and tree02a018 match.127 jobs/A1pack10; A1 execution/step identities unchanged.
-Prior3f terminal127jobs/350semanticsteps is retained historical proof, not this new head's
-terminal result. Former lease9441 completed successfully and is no longer our dependency.
+A1 remainsOPENb2c44. Original CI38757206381/attempt1 has plan, contract-delta and11packsPASS
+at15:49:46; onlypack5running, including passed A1pack10. The source/plan/17file identities
+are already verified. Terminal original evidence and allbindingchecks remain owed.
 
-Follow-on dd1d34/runtime3528080/updater9cb are unchanged; accepted qualification is reused.
-Six future squash conflict resolutions were prepared locally, preserving the exact qualified
-evaluator, current A1 commands and both parents' paths. Actual qualified landing remains
-required: remove9 redundant merge-created path copies and reconcile the newer4574 options
-source before applying them. No integration, PR, deployment or adoption is claimed.
-Current source/plan evidence: research/evidence/eval-os-tier-query-20261014/a1-current-release.json.
-All final flags stay false; original Fabric effects/refusals remain frozen.
+Follow-on34077489ec627188041d3b062d12f44ceed9c0cd adds15 exact QLedger scope paths:
+one incoming main command's test and14 imports discovered in the real composed closure.
+All314 current-branch definitions/commands/priorpaths/limits/runtime are unchanged. Two
+existing controlsPASS; accepted full closure and134/134/128strict probes are reused after
+proving only an exclusive-scope widening and unchanged selection at all three probes.
+A mistakenly selected newer ancestor test is absent on this historical branch (exit4
+retained, never called a pass); that control passes on the newer prospective composition.
+
+Prospective composition0add301edcf8d435b751a92ffe75be780fc67ac2 on actual b2c44/main4574
+resolves all six conflicts and removes9merge-created duplicate copies without removing any
+parent membership. It retains all320 A1/main definitions, newer options source and exact
+qualified evaluator3528080. Three initial controlsPASS; the newly discovered QLedger scope
+failure was repaired, canonical target closure920paths/zero misses and ancestor recheckPASS.
+Other jobs' full closure and135/134/128 strict packing are reused after exact source and
+selection parity; no broader retest. Source, RED/GREEN and limits are recorded in the single
+current record research/evidence/eval-os-tier-query-20261014/a1-current-release.json.
+Actual qualified A1 landing still must be reconciled before carrier integration and one
+follow-onPR. No base integration, deployment, model/PIT or adoption acceptance is claimed.
+Original Fabric effects/refusals and all false final flags remain.
 
 ## 2026-10-15 A1 repair published
 
