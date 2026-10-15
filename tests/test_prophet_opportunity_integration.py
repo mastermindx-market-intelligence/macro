@@ -86,6 +86,18 @@ def test_exact_model_relation_is_not_created_by_the_card():
     assert not card.select("input[type='checkbox']:not([disabled])")
 
 
+def test_bound_context_link_survives_today_and_screener_without_markup_injection():
+    source = _source(theme={'id': 'ai_infra', 'name': '<em>AI infrastructure</em>', 'name_zh': '人工智能基础设施'})
+    for prefix in ('today', 'screener', 'today-paid', 'screener-paid'):
+        card = _render([source], prefix).select_one('.po-card')
+        link = card.select_one('.po-context')
+        assert link['href'] == '/baskets.html#theme-ai_infra'
+        assert '<em>AI infrastructure</em>' in link.get_text()
+        assert '人工智能基础设施' in link.get_text()
+        assert link.find('em') is None
+    assert _render([_source(theme={'name': 'No relationship id'})]).select_one('.po-context') is None
+
+
 def test_actual_card_geometry_survives_native_detail_chart_copy():
     """Exercise the existing dialog's sanitizer on the new card's real SVG."""
     import json

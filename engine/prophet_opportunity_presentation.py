@@ -88,6 +88,17 @@ def _href(value):
     return value if value.startswith("#") or (value.startswith("/") and not value.startswith("//")) else None
 
 
+def _theme_context(row):
+    """Use the producer's existing membership and the native theme-id resolver."""
+    theme = _mapping(row.get("theme"))
+    theme_id, name = _text(theme.get("id")), _text(theme.get("name"))
+    if not name or not theme_id or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}", theme_id):
+        return {}
+    return {"href": f"/baskets.html#theme-{theme_id}",
+            "en": f"{name} · Explore context",
+            "zh": f"{_text(theme.get('name_zh')) or name} · 探索背景"}
+
+
 def _evidence_profile(prophet):
     """Show the incumbent v3 producer's contributions without recomputing a score."""
     fusion = _mapping(prophet.get("fusion"))
@@ -215,7 +226,7 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
         "asof": _text(board_asof) if valid_zone else None,
         "currency": "USD" if valid_zone else None,
     }
-    context = _mapping(context)
+    context = _theme_context(row) if context is None else _mapping(context)
     link = _href(context.get("href"))
     supplied_marks = []
     for mark in marks:

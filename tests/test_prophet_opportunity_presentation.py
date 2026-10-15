@@ -182,6 +182,28 @@ def test_ids_are_supplied_occurrences_not_ticker_deduplication():
         present_us_candidate(row(), occurrence_id='bad" onclick="x')
 
 
+def test_context_uses_bound_theme_and_existing_resolver_without_changing_assessment():
+    source = row()
+    before = present(source)
+    source['theme'] = {'id': 'ai_infra', 'name': 'AI infrastructure', 'name_zh': '人工智能基础设施'}
+    original = deepcopy(source)
+    after = present(source)
+    assert after['context'] == {'href': '/baskets.html#theme-ai_infra',
+        'label': {'en': 'AI infrastructure · Explore context', 'zh': '人工智能基础设施 · 探索背景'}}
+    assert {k: v for k, v in after.items() if k != 'context'} == {k: v for k, v in before.items() if k != 'context'}
+    assert source == original
+    assert present(source, context={})['context'] is None
+    assert present(source, context={'href': '//external.test', 'en': 'Bad'})['context'] is None
+
+
+@pytest.mark.parametrize('theme', [None, 'ai_infra', {}, {'name': 'Name only'},
+    {'id': 'ai_infra'}, {'id': '../ai_infra', 'name': 'Unsafe'},
+    {'id': 'ai_infra?x=y', 'name': 'Unsafe'}, {'id': 'ai_infra#x', 'name': 'Unsafe'}])
+def test_missing_or_unsafe_bound_theme_does_not_gain_a_context_link(theme):
+    source = row(); source['theme'] = theme
+    assert present(source)['context'] is None
+
+
 @pytest.mark.parametrize("status", ["watch", "wait_pullback", "bounce_wait"])
 def test_native_wait_states_are_named_without_becoming_unknown(status):
     source = row(); source["entry_signal"]["status"] = status
