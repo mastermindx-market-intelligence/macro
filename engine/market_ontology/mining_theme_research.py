@@ -47,6 +47,7 @@ from engine.market_ontology.mining_dependency_binding import (
     MiningResearchRefusal,
     validate_query as _validate_query_kernel,
 )
+from engine.market_ontology.mining_company_card import company_card_absences
 
 
 __all__ = [
@@ -692,14 +693,20 @@ def compose_mining_research(
             if "missing_issuer" not in limitations:
                 limitations.append("missing_issuer")
             continue
-        companies.append(
-            {
-                "stable_subject_id": sid,
-                "name": str(ident.get("name", "")),
-                "cik": cik,
-                "role": "issuer",
-            }
-        )
+        company = {
+            "stable_subject_id": sid,
+            "name": str(ident.get("name", "")),
+            "cik": cik,
+            "role": "issuer",
+        }
+        # W10-3 — print the row's typed absences on the card. Opt-in: an
+        # identity row without ``typed_absences`` keeps today's four-key
+        # company object byte-for-byte (the T07 copper limitations pin
+        # is untouched; the card mints no limitation and no IssuerIdentity).
+        absences = company_card_absences(ident)
+        if absences:
+            company["absences"] = absences
+        companies.append(company)
 
     # Industrial views are pulled from interpretation_blocks verbatim and ordered by
     # stable_subject_id (PLAN:203). Duplicate local asset labels stay visible but are
