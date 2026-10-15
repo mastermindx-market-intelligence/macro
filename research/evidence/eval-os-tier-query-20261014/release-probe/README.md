@@ -56,9 +56,10 @@ log writer. Native answers execute in `macro-api.service`; the operator reader e
 in `admin.service`. After the normal updater installs the qualified follow-on, verify
 both actual service processes and the native API process's source directory/start time.
 The admin PID alone cannot establish that the native caller loaded the new source.
-The current release changes gateway/native-facts/log-writer paths that the installed
-API restart trigger covers. A checker-only `response_eval.py` change is not covered by
-that trigger, so do not infer restart readiness for a later isolated checker repair. The two CLI invocations do not execute that numeric path. After release,
+The follow-on also adds `response_eval.py` to the existing exact API restart trigger:
+its native caller caches that module after the first numeric request. Verify the normal
+updater installed that qualified rule; the earlier pre-release observation correctly
+reported that the old installed trigger did not cover checker-only changes. The two CLI invocations do not execute that numeric path. After release,
 use the authenticated native numeric request and preserve its actual request ID.
 Both gateway modes write that ID as the response-log row ID. Observe the corresponding
 row through the existing operator log reader and its

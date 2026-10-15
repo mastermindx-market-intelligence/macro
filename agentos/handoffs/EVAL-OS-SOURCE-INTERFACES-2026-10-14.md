@@ -195,6 +195,15 @@ credential/corpus read or production mutation occurred. Final qualified files, b
 loaded processes and actual request/log consumption remain owed after release. See
 `research/evidence/eval-os-tier-query-20261014/t11-native-runtime-readiness-20261015.json`.
 
+Follow-on deployment closure repair: native_facts now lazily imports response_eval,
+which the current-main663dbf1 and installed updater did not match. The existing real
+grep-based positive test first failed for that exact path. The updater now adds only
+response_eval to the API module alternation, with lookalike/nightly-script negatives;
+169 affected restart controls PASS and bash syntax passes. Removing that one token
+and its comment exactly recovers the prior updater bytes, preserving all transactions,
+other service triggers, fences and limits. No service was restarted. Prior 2d0 CI-scope
+and native runtime proof remains valid; final hosted release/installed rule proof is owed.
+
 ## 2026-10-15 A1 repair published
 
 A1ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17 ordinarypush/readback06:54:58 aftercanonical6/cap8admission. Parentfea exactremote/custody/ancestry verified and read-onlypreviewagainstactualmain3f62 clean/tree1e6ba68177e4a60af5e5d3c0f6071ee693262043. No secondbaseintegration or forcepush. ExistingPRbody updated06:55:38. Follow-on sourcead03 and containing7104 publishedclean; nofollow-onPR/CIproducer. FreshA1checks/merge/production remainopen. Sixoriginalpublicationrecords retained, allfinalflagsfalse.
