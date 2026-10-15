@@ -617,3 +617,102 @@ def render_breadth_clock_fixture():
     with patch('scripts.build_intl.attach_risks', side_effect=mount):
         html = render_history_fixture(history_sources={})
     return dict(html=html, cases=cases)
+
+
+ANNUAL_CLOCK_CASES = ('actual', 'estimate', 'projection', 'zero', 'stale',
+                      'no_calculation', 'value_denied', 'metadata_denied',
+                      'metadata_unknown', 'missing_observation', 'absent')
+
+
+def annual_clock_input(kind, market='JP'):
+    """Synthetic annual measure with distinct field year, vintage and clocks."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    key = 'JP.annual_current_account'
+    measure, support = source['measures'][key], source['field_support'][key]
+    measure['instrument']['market_id'] = market
+    support.update(market_id=market, vintage='2026-07-30')
+    measure.update(observation_at='2026-08-21', calculation_at='2026-08-22T05:00:00+00:00')
+    if kind in ('estimate', 'projection'):
+        support['observation_type'] = kind
+        if kind == 'projection':
+            support['field_year'] = 2027
+            measure['period'].update(start='2027-01-01', end='2028-01-01')
+    elif kind == 'zero':
+        measure['value'] = 0
+    elif kind == 'stale':
+        measure.update(quality='stale', value=-1.25)
+    elif kind == 'no_calculation':
+        measure['calculation_at'] = None
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'missing_observation':
+        measure.update(quality='missing', value=None, observation_at=None)
+    elif kind == 'absent':
+        return None, None
+    return measure, support
+
+
+@pytest.mark.parametrize('kind', ANNUAL_CLOCK_CASES)
+def test_annual_render_distinguishes_field_year_vintage_observation_and_calculation(kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = annual_clock_input(kind, market)
+    key = market + '.annual_current_account'
+    source = dict(registry=registry, measures={key: measure} if measure else {},
+                  field_support={key: support} if support else {})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    cell = BeautifulSoup(render(section, registry), 'html.parser').select_one(f'[data-im-risk-row="{market}"] td:nth-of-type(3)')
+    metadata = kind not in ('metadata_denied', 'metadata_unknown', 'absent')
+    for attr, key, labels in (
+        ('observation', 'observation_at', 'Observation观测'),
+        ('calculation', 'calculation_at', 'Calculation time计算时间'),
+    ):
+        node = cell.select_one(f'[data-im-annual-{attr}]')
+        expected = measure[key] if metadata else None
+        assert (node is not None) == (expected is not None)
+        if expected is not None:
+            assert node.get_text() == labels + ' ' + expected
+    supported = metadata and kind not in ('value_denied', 'missing_observation')
+    if supported:
+        assert 'Field year字段年份 ' + str(support['field_year']) in cell.get_text()
+        assert 'Vintage版本 2026-07-30' in cell.get_text()
+        label = {'actual': 'Actual实际', 'estimate': 'Estimate估计', 'projection': 'Projection预测'}[support['observation_type']]
+        assert label in cell.get_text()
+        value = cell.select_one('[data-im-risk-value]').get_text()
+        assert value == ('0' if kind == 'zero' else '-1.25' if kind == 'stale' else '+3.4')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+        assert '2026-07-30' not in cell.get_text()
+    if kind == 'missing_observation':
+        assert 'Missing data' in cell.get_text()
+        assert '2026-08-21' not in cell.get_text()
+    if not metadata:
+        assert '2026-08' not in cell.get_text()
+    assert source == before
+
+
+def render_annual_clock_fixture():
+    """Existing publication/mount path with explicit synthetic annual inputs."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('actual', 'projection', 'no_calculation', 'stale', 'value_denied', 'missing_observation', 'metadata_denied')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        key = case['market'] + '.annual_current_account'
+        measures[key], support[key] = annual_clock_input(case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases)

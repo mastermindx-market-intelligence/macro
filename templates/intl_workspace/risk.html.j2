@@ -313,12 +313,14 @@
               {% if annual is mapping %}
                 {% set support = annual.get('support') %}
                 {% if support is mapping %}
-                  {% if support.get('field_year') is not none %}<small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small>{% endif %}
-                  {% if support.get('vintage') is not none %}<small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small>{% endif %}
+                  {% if support.get('field_year') is not none %}<p><small>{{ words('Field year', '字段年份') }} {{ support.get('field_year')|e }}</small></p>{% endif %}
+                  {% if support.get('vintage') is not none %}<p><small>{{ words('Vintage', '版本') }} {{ support.get('vintage')|e }}</small></p>{% endif %}
                   {% if support.get('observation_type') in annual_types %}
-                    <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
+                    <p><small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small></p>
                   {% endif %}
                 {% endif %}
+                {% if annual.get('observation_at') is not none %}<p data-im-annual-observation><small>{{ words('Observation', '观测') }} {{ annual.get('observation_at')|e }}</small></p>{% endif %}
+                {% if annual.get('calculation_at') is not none %}<p data-im-annual-calculation><small>{{ words('Calculation time', '计算时间') }} {{ annual.get('calculation_at')|e }}</small></p>{% endif %}
               {% endif %}
             </td>
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">

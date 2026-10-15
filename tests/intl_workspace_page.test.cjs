@@ -308,6 +308,69 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   });
 }
 
+let riskAnnualClockFixture;
+function riskAnnualClocksFixture() {
+  if(!riskAnnualClockFixture) riskAnnualClockFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+    'import json; from tests.test_intl_workspace_risk_render import render_annual_clock_fixture; print(json.dumps(render_annual_clock_fixture()))'],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return riskAnnualClockFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Risk annual clocks keep vintage and observation types separate ${theme} ${lang}`,async()=>{
+    const fixture=riskAnnualClocksFixture();
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const controls=page.locator('[data-im-controls]');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        for(const [horizon,basis] of [['1m','usd_unhedged'],['3m','local']]) {
+          await controls.locator('select[data-im-action="set_horizon"]').selectOption(horizon);
+          await controls.locator('select[data-im-action="set_basis"]').selectOption(basis);
+          const panel=page.locator('[data-im-panel][data-view="risk"]:visible');
+          for(const {market,kind} of fixture.cases) {
+            const cell=panel.locator(`[data-im-risk-row="${market}"] td:nth-of-type(3)`);
+            assert.equal(await cell.isVisible(),true);
+            const observation=cell.locator('[data-im-annual-observation]');
+            const calculation=cell.locator('[data-im-annual-calculation]');
+            const metadata=kind!=='metadata_denied';
+            const supported=metadata&&!['value_denied','missing_observation'].includes(kind);
+            assert.equal(await observation.count(),metadata&&kind!=='missing_observation'?1:0);
+            assert.equal(await calculation.count(),metadata&&kind!=='no_calculation'?1:0);
+            if(await observation.count()) assert.equal(await observation.innerText(),lang==='en'?'Observation 2026-08-21':'观测 2026-08-21');
+            if(await calculation.count()) assert.equal(await calculation.innerText(),(lang==='en'?'Calculation time':'计算时间')+' 2026-08-22T05:00:00+00:00');
+            const text=await cell.innerText();
+            if(supported) {
+              assert.ok(text.includes((lang==='en'?'Field year':'字段年份')+' '+(kind==='projection'?'2027':'2024')));
+              assert.ok(text.includes((lang==='en'?'Vintage':'版本')+' 2026-07-30'));
+              const type=kind==='projection'?(lang==='en'?'Projection':'预测'):(lang==='en'?'Actual':'实际');
+              assert.ok(text.split('\n').includes(type));
+              assert.equal(await cell.locator('[data-im-risk-value]').innerText(),kind==='stale'?'-1.25':'+3.4');
+              assert.equal(text.includes(lang==='en'?'Stale data':'数据过期'),kind==='stale');
+            } else {
+              assert.equal(await cell.locator('[data-im-risk-value]').count(),0);
+              assert.doesNotMatch(text,/2026-07-30/);
+            }
+            if(kind==='missing_observation') assert.ok(text.includes(lang==='en'?'Missing data':'数据缺失'));
+            const lines=await cell.locator('p').evaluateAll(ns=>ns.map(n=>{const r=n.getBoundingClientRect();return {top:r.top,bottom:r.bottom,width:n.clientWidth,scroll:n.scrollWidth};}));
+            assert.ok(lines.every((r,i)=>r.scroll<=r.width+1&&(!i||r.top>=lines[i-1].bottom-1)),`${kind} ${lang} ${width}`);
+            assert.equal(await cell.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+            if(width===320&&horizon==='1m'&&kind==='projection'&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+              fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+              await page.evaluate(()=>document.fonts.ready);
+              await cell.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+              await cell.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`risk-annual-clocks-${theme}-${lang}-320.png`)});
+            }
+          }
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+        }
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=risk'});
+  });
+}
+
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture
