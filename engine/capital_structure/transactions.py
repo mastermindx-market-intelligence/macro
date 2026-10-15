@@ -1532,13 +1532,24 @@ def _share_reconciliations(
     as_of_date: date,
     unknowns: _Unknowns,
 ) -> list[dict[str, Any]]:
-    visible = [
-        item for item in share_observations
-        if item.basis == "issued_and_outstanding"
-        and _day(item.as_of_date, "share_observation.as_of_date") <= as_of_date
-        and (item.source is None or item.source.available_at is None
-             or _instant(item.source.available_at, "share_observation.source.available_at") <= cutoff)
-    ]
+    # A figure with no stated availability cannot be shown to be known at the
+    # cutoff, so it is never visible; it is reported as an unknown instead.
+    visible: list[ShareObservationRef] = []
+    for item in share_observations:
+        if item.basis != "issued_and_outstanding":
+            continue
+        if _day(item.as_of_date, "share_observation.as_of_date") > as_of_date:
+            continue
+        if item.source is None or item.source.available_at is None:
+            unknowns.note(
+                f"share_observation_availability_unstated:{item.observation_id}",
+                f"share observation {item.observation_id} states no availability time, so it is not visible at the cutoff",
+                "the time the share figure became available",
+                (f"share_observation:{item.observation_id}",),
+            )
+            continue
+        if _instant(item.source.available_at, "share_observation.source.available_at") <= cutoff:
+            visible.append(item)
     by_class: dict[str, list[ShareObservationRef]] = {}
     for item in visible:
         by_class.setdefault(item.security_class_id, []).append(item)

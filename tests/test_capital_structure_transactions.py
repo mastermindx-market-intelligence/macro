@@ -969,6 +969,26 @@ def test_point_in_time_a_late_coverage_record_completes_nothing():
     exact(record, "evidenced_floor", "1000000")
 
 
+def test_point_in_time_a_share_figure_with_no_availability_is_invisible():
+    """A share figure that states no availability time is never visible; it is a named unknown."""
+    undated = c.ShareObservationRef(
+        observation_id=c.stable_id("shareref", {"day": "2026-06-30", "undated": True}),
+        basis="issued_and_outstanding", as_of_date="2026-06-30", security_class_id=CLASS,
+        value="10100000", source=c.Provenance("share_count_observations", generation_id=T.GEN),
+    )
+    unsourced = c.ShareObservationRef(
+        observation_id=c.stable_id("shareref", {"day": "2026-07-31", "unsourced": True}),
+        basis="issued_and_outstanding", as_of_date="2026-07-31", security_class_id=CLASS,
+        value="10200000",
+    )
+    first, last = share_ref("2026-03-31", "10000000"), share_ref("2026-09-30", "10240000")
+    ledger = reconcile(as_of=ts("2026-09-30"), share_observations=(first, undated, unsourced, last))
+    assert [(item["from_observation_id"], item["to_observation_id"])
+            for item in ledger.share_reconciliations] == [(first.observation_id, last.observation_id)]
+    for item in (undated, unsourced):
+        assert f"share_observation_availability_unstated:{item.observation_id}" in unknown_ids(ledger)
+
+
 # ---------------------------------------------------------------------------
 # One ledger carrying every record kind — reused by the contract, order and
 # determinism tests

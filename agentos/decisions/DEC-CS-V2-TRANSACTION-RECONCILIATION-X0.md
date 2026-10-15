@@ -60,7 +60,8 @@ answer: >
   ledger dated after the instrument set it updates. The cash paid on a
   redemption or repurchase is the reported amount only; its principal is
   never taken as the cash paid, because a redemption can carry a premium or
-  a discount.
+  a discount. A share figure that states no availability time is never
+  visible at the cutoff; it is a named unknown, not a reconciliation input.
 rationale: >
   The two failure modes the masterplan names for this task are additive.
   Deducting a cumulative usage figure and the individual sales it already
