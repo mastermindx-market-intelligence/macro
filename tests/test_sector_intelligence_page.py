@@ -761,3 +761,70 @@ def test_focused_basket_mode_stops_before_unrelated_tail() -> None:
     tail = src.index("from scripts.build_anticipation import main as _build_anticipation")
     assert guard < tail
     assert "return 0" in src[guard:tail]
+
+
+def test_truncated_as_of_is_not_usable(tmp_path: Path) -> None:
+    # scripts/check_sector_intelligence_freshness.py:86 emits "no usable as_of".
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-140", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-140" in error
+        for error in report["errors"]
+    ), report
+
+
+def test_trailing_garbage_as_of_is_not_usable(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-14X", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-14X" in error
+        for error in report["errors"]
+    ), report
+
+
+def test_html_comment_does_not_supply_data_si_attrs(tmp_path: Path) -> None:
+    # tests/test_sector_intelligence_page.py:358-style helper; the real facts key
+    # is "site/sector_central.html:data-si-as-of" (product line 156).
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text(
+        '<!-- data-si-as-of="2020-01-01" -->\n' + body, encoding="utf-8"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    facts_key = "site/sector_central.html:data-si-as-of"
+    assert report["facts"]["dates"][facts_key] == "2026-09-14", report
+
+
+def test_full_timestamp_as_of_still_parses(tmp_path: Path) -> None:
+    stamp = "2026-09-14T21:05:00Z"
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof=stamp, action_asof=stamp
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    assert report["facts"]["as_of"] == "2026-09-14", report
+
+
+def test_non_datetime_separator_as_of_is_not_usable(tmp_path: Path) -> None:
+    # Discriminates the T/space guard (scripts/check_sector_intelligence_freshness.py
+    # :43). "2026-09-14Z" is a valid fromisoformat timestamp once "Z" is rewritten,
+    # but its 11th char is not "T"/space, so the gate must still reject it.
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-14Z", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-14Z" in error
+        for error in report["errors"]
+    ), report
