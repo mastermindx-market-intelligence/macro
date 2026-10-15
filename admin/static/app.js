@@ -1,3 +1,4 @@
+/* global AdminWorkspace */
 "use strict";
 /* Mastermind Admin — single-page console. Vanilla JS, no external deps. */
 
@@ -250,7 +251,7 @@ function toast(msg, err) {
 }
 
 /* ---- login -------------------------------------------------------------- */
-function showLogin() { $("#login").classList.add("show"); $("#app").style.display = "none"; }
+function showLogin() { if (typeof AdminWorkspace !== "undefined") AdminWorkspace.close(); $("#login").classList.add("show"); $("#app").style.display = "none"; }
 function hideLogin() { $("#login").classList.remove("show"); $("#app").style.display = ""; }
 
 $("#loginForm").addEventListener("submit", async (e) => {
@@ -782,6 +783,7 @@ function go(id) {
   hideLobeTip();
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.setPage(id);
   if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
   return runAdminRender(id, RENDER[id]);
 }
@@ -860,13 +862,17 @@ function renderHeader() {
   const m = SUMMARY.meta || {};
   const hh = SUMMARY.health || {};
   const sv = SUMMARY.services || {};
-  const { healthKnown, serviceKnown } = adminOverviewModel(SUMMARY);
-  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy;
-  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy);
+  const { healthKnown, serviceKnown, resourceKnown, notices } = adminOverviewModel(SUMMARY);
+  // One triage model owns both the global summary and the overview's red notices.
+  // Otherwise memory/disk pressure could render a red warning below a green "Healthy" pill.
+  const criticalNotice = notices.some(notice => notice.tone === "bad");
+  // Missing or invalid resource readings cannot certify the entire system healthy.
+  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy && resourceKnown && !criticalNotice;
+  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy) || criticalNotice;
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
-  const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy)) ? "bad" : "warn");
+  const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy) || criticalNotice) ? "bad" : "warn");
   const el = $("#hmeta"); el.innerHTML = "";
-  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
+  el.appendChild(h(`<span class="pill" id="adminHealthStatus"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
   const sysMeta = [
     m.deployed ? "deployed" : "local",
     `repo ${m.repo || "unknown"}`,
@@ -897,13 +903,24 @@ async function doCommit(push) {
   else toast(r.error || "commit failed", true);
 }
 
+let ADMIN_SUMMARY_EPOCH = 0;
 async function refresh() {
-  const next = await api("/api/summary");
-  if (!next || next.error || next.ok === false || !next.meta || !next.health) {
-    throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+  const epoch = ++ADMIN_SUMMARY_EPOCH;
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.beginStatus();
+  try {
+    const next = await api("/api/summary");
+    if (epoch !== ADMIN_SUMMARY_EPOCH) return;
+    if (!next || next.error || next.ok === false || !next.meta || !next.health) {
+      throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+    }
+    SUMMARY = next; // keep the last good snapshot when a refresh fails
+    renderHeader(); renderBanner();
+    if (typeof AdminWorkspace !== "undefined") AdminWorkspace.statusReceived();
+  } catch (error) {
+    if (epoch !== ADMIN_SUMMARY_EPOCH) return; // an obsolete failure cannot invalidate a newer successful read
+    if (typeof AdminWorkspace !== "undefined") AdminWorkspace.statusFailed();
+    throw error;
   }
-  SUMMARY = next; // keep the last good snapshot when a refresh fails
-  renderHeader(); renderBanner();
 }
 
 /* ---- helpers ------------------------------------------------------------ */
@@ -1220,11 +1237,27 @@ function adminOverviewModel(s) {
   const hh = s.health || {}, sv = s.services || {}, sys = s.system || {}, cost = s.cost || {};
   const healthKnown = typeof hh.healthy === "boolean" && Number.isFinite(hh.age_hours) && hh.age_hours >= 0;
   const serviceKnown = sv.available === true && typeof sv.healthy === "boolean";
+  const knownResourcePct = key => {
+    const pct = (sys[key] || {}).used_pct;
+    return Number.isFinite(pct) && pct >= 0 && pct <= 100;
+  };
+  const resourceKnown = sys.available === true && knownResourcePct("memory") && knownResourcePct("disk");
   const notices = [];
   if (!healthKnown) notices.push({ page: "health", title: "Pipeline status unavailable", detail: "Open data health to inspect the latest report.", tone: "warn" });
   else if (!hh.healthy) notices.push({ page: "health", title: "Data pipeline needs attention", detail: "Review the latest pipeline report before rebuilding.", tone: "warn" });
   if (sv.available && sv.healthy === false) notices.push({ page: "system", title: "Background services need attention", detail: "Check service failures in System status.", tone: "bad" });
-  return { hh, sv, sys, cost, healthKnown, serviceKnown, notices };
+  // Match the existing resource meter's critical threshold; invalid metrics
+  // are missing evidence, never a reason to raise or clear an incident.
+  if (sys.available === true) {
+    for (const [key, label] of [["memory", "Memory"], ["disk", "Disk"]]) {
+      const pct = (sys[key] || {}).used_pct;
+      if (Number.isFinite(pct) && pct >= 90 && pct <= 100) notices.push({
+        page: "system", title: `${label} use is high`,
+        detail: `${pct}% used in the latest host snapshot. Inspect System status.`, tone: "bad",
+      });
+    }
+  }
+  return { hh, sv, sys, cost, healthKnown, serviceKnown, resourceKnown, notices };
 }
 function adminOverviewMetric(page, label, value, detail, tone = "") {
   return `<button type="button" class="card admin-metric" data-admin-go="${page}"><span class="eyebrow">${esc(label)}</span><strong class="admin-metric-value ${tone ? "admin-tone-" + tone : ""}">${esc(value)}</strong><span class="sub">${esc(detail)}</span><span class="admin-metric-link">Open ${esc(TAB_LABELS[page])} →</span></button>`;
@@ -1234,7 +1267,7 @@ RENDER.overview = async () => {
   const { hh, sv, sys, cost, healthKnown, serviceKnown, notices } = adminOverviewModel(s);
   const mem = sys.memory || {}, disk = sys.disk || {}, meta = s.meta || {};
   const sources = hh.sources || {};
-  const sourceDetail = Number.isFinite(sources.ok) && Number.isFinite(sources.total)
+  const sourceDetail = healthKnown && Number.isFinite(sources.ok) && Number.isFinite(sources.total) && sources.total > 0 && sources.ok >= 0 && sources.ok <= sources.total
     ? `${sources.ok}/${sources.total} sources · last run ${fmtAge(hh.age_hours)} ago`
     : "No current source report";
   const serviceCounts = Number.isFinite(sv.ok_count) && Number.isFinite(sv.total);
@@ -4392,10 +4425,18 @@ function iosReasonCard(c) {
     <div>${rows.map(r => `<span class="statpill s-mut mono">${esc(r.code)} · ${esc(String(r.n))}</span>`).join(" ")}</div></div>`;
 }
 
+let IOS_RENDER_SEQUENCE = 0;
 RENDER.intelligence_os = async () => {
+  const sequence = ++IOS_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  // The estate can take several seconds to derive. Never let an older success
+  // replace a newer page, engine-detail view, or a second Intelligence OS read.
+  const obsolete = () => sequence !== IOS_RENDER_SEQUENCE ||
+    routeEpoch !== ADMIN_RENDER_EPOCH || CURRENT !== "intelligence_os" ||
+    location.hash !== "#/page/intelligence_os";
   const v = $("#view");
   v.innerHTML = `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card" style="height:220px"></div>`;
   const d = await api("/api/intelligence_os");
+  if (obsolete()) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Could not derive the estate", (d && d.error) || "panel error"); return; }
   IOS.data = d; IOS.rows = d.engines || []; IOS.page = 1;
   const c = d.census || {};
@@ -4417,6 +4458,7 @@ RENDER.intelligence_os = async () => {
        module's own 5-minute cache — anything less returns the same bytes and looks like
        a no-op button. */
     const fresh = await api("/api/intelligence_os?force=1", { cache: "no-store" });
+    if (obsolete()) return;
     if (fresh && fresh.ok) { IOS.data = fresh; IOS.rows = fresh.engines || []; RENDER.intelligence_os(); }
     else { rf.disabled = false; rf.textContent = "Re-derive"; toast((fresh && fresh.error) || "re-derive failed", true); }
   };
@@ -4562,10 +4604,16 @@ function orchChatMsgsHtml() {
     </div>`).join("");
 }
 
+let ORCH_RENDER_SEQUENCE = 0;
 RENDER.orchestrator = async () => {
+  const sequence = ++ORCH_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => sequence === ORCH_RENDER_SEQUENCE &&
+    routeEpoch === ADMIN_RENDER_EPOCH && CURRENT === "orchestrator" &&
+    location.hash === "#/page/orchestrator";
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const d = await api("/api/orchestrator");
+  if (!current()) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Master Brain unavailable", (d && d.error) || "panel error"); return; }
   const hero = d.status_hero || {}, s = d.settings || {}, dia = d.dialogue || {}, cx = d.cortex || {};
   const st = hero.overall_status || "unknown";
@@ -4728,6 +4776,8 @@ RENDER.orchestrator = async () => {
     prophetSuggestionsHtml = `<div class="section">Prophet suggestions</div><div class="sub muted">Prophet page unavailable.</div>`;
   }
 
+  // Prophet is a second independent read; it can finish after navigation.
+  if (!current()) return;
   v.innerHTML = heroHtml + settingsHtml + runlogHtml + reviewsHtml + dialogueHtml + prophetSuggestionsHtml + chatHtml;
 
   /* Prophet page link */
@@ -4784,7 +4834,7 @@ RENDER.orchestrator = async () => {
     if (!dailyStrip) return;
     let lr;
     try { lr = await api("/api/live_runs"); } catch (e) { return; }
-    if (!lr || CURRENT !== "orchestrator") return;
+    if (!lr || !current() || !dailyStrip.isConnected) return;
     const line = dailyPipelineStripLine(lr.nightly || null);
     dailyStrip.innerHTML = line;
     if (line) {
@@ -15405,10 +15455,16 @@ RENDER.causal_lab = async () => {
 };
 
 /* ---- METABOLISM --------------------------------------------------------- */
+let MET_RENDER_SEQUENCE = 0;
 RENDER.metabolism = async () => {
+  const sequence = ++MET_RENDER_SEQUENCE, routeEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => sequence === MET_RENDER_SEQUENCE &&
+    routeEpoch === ADMIN_RENDER_EPOCH && CURRENT === "metabolism" &&
+    location.hash === "#/page/metabolism";
   const v = $("#view");
   v.innerHTML = `<div class="sub muted">Loading metabolism status…</div>`;
   const d = await api("/api/metabolism");
+  if (!current()) return;
 
   // State chip
   const stateChip = () => {
@@ -15860,11 +15916,13 @@ RENDER.metabolism = async () => {
     try {
       ach = await api("/api/metabolism/achievements");
     } catch (e) {
+      if (!current()) return;
       const c = $("#metAchCard");
       if (c) c.innerHTML = `<div class="sub muted">Could not load loop activity: ${esc(String(e))}</div>`;
       return;
     }
 
+    if (!current()) return;
     const c = $("#metAchCard");
     if (!c) return;
 
@@ -15977,12 +16035,14 @@ RENDER.metabolism = async () => {
     try {
       h = await api("/api/metabolism/history?limit=200");
     } catch (e) {
+      if (!current()) return;
       const card = $("#mhCard");
       if (card) card.innerHTML = `<div class="sub muted">Could not load change history: ${esc(String(e))}</div>`;
       return;
     }
 
-    // Guard: user may have navigated away.
+    // Guard both navigation and a newer refresh of this same page.
+    if (!current()) return;
     const card = $("#mhCard");
     if (!card) return;
 
@@ -16307,6 +16367,10 @@ function schedulePostBootAdvisories() {
 
 async function boot() {
   renderSidebar();
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.init({
+    groups: NAV_GROUPS, icons: ICONS, navigate: go, closeNavigation: () => setSidebarOpen(false),
+    refresh: async () => { clearApiCache(); await refresh(); if (CURRENT === "overview") await RENDER.overview(); },
+  });
   wireSidebarDrawer();
   startTableObserver();
   try {

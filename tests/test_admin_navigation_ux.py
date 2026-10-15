@@ -375,3 +375,187 @@ def test_site_inventory_has_named_controls_and_read_error_recovery():
     assert 'Live-site check unavailable. Try again.' in content
     assert '$("#view").appendChild' not in content
     assert 'post(' not in content and 'dispatch(' not in content
+
+
+def test_overview_resource_pressure_uses_only_valid_observed_percentages():
+    _node_assert("""
+const model = new Function(block('function adminOverviewModel(', 'function adminOverviewMetric(') + '; return adminOverviewModel;')();
+const baseline = {health:{healthy:true,age_hours:1},services:{available:true,healthy:true}};
+const pressure = model({...baseline,system:{available:true,memory:{used_pct:94},disk:{used_pct:97}}});
+assert.equal(pressure.notices.length, 2);
+assert(pressure.notices.every(item => item.page === 'system' && item.tone === 'bad'));
+assert(pressure.notices.some(item => /memory/i.test(item.title)));
+assert(pressure.notices.some(item => /disk/i.test(item.title)));
+for (const used_pct of [null, -1, 101, Infinity, '95']) {
+ const invalid = model({...baseline,system:{available:true,memory:{used_pct},disk:{used_pct}}});
+ assert.equal(invalid.notices.length, 0);
+}
+assert.equal(model({...baseline,system:{available:false,memory:{used_pct:99}}}).notices.length, 0);
+""")
+
+
+def test_header_cannot_show_healthy_during_observed_critical_resource_pressure():
+    _node_assert("""
+const source = block('function renderHeader() {', 'function renderBanner()') +
+  block('function adminOverviewModel(', 'function adminOverviewMetric(');
+function pillFor(snapshot) {
+  let pill = null;
+  const meta = {innerHTML:'',appendChild(node) {if (pill === null) pill = node.html;}};
+  const lookup = selector => {assert.equal(selector, '#hmeta');return meta;};
+  const create = html => ({html,style:{}});
+  new Function('SUMMARY','SESSION','$','h','esc','go',source+';renderHeader();')(
+    snapshot,{auth_enabled:false},lookup,create,value=>String(value),()=>{});
+  return pill;
+}
+const baseline = {
+  health:{healthy:true,age_hours:1},services:{available:true,healthy:true},
+  system:{available:true,memory:{used_pct:12},disk:{used_pct:25}}
+};
+assert.match(pillFor(baseline), /led ok/);
+assert.match(pillFor(baseline), />Healthy<\\/span>/);
+for (const [type,pct] of [['memory',94],['disk',90]]) {
+  const result = pillFor({...baseline,system:{available:true,[type]:{used_pct:pct}}});
+  assert.match(result, /led bad/);
+  assert.match(result, />Attention<\\/span>/);
+  assert.doesNotMatch(result, />Healthy<\\/span>/);
+}
+for (const invalid of [null,Infinity,101,'95',-1]) {
+  const incomplete = pillFor({...baseline,system:{available:true,memory:{used_pct:invalid},disk:{used_pct:25}}});
+  assert.match(incomplete, /led warn/);
+  assert.match(incomplete, />Incomplete<\\/span>/);
+}
+for (const unknown of [undefined, {}, {available:false}, {available:true,memory:{used_pct:20}}]) {
+  const incomplete = pillFor({...baseline,system:unknown});
+  assert.match(incomplete, /led warn/);
+  assert.match(incomplete, />Incomplete<\\/span>/);
+}
+""")
+
+
+def test_slow_intelligence_os_result_cannot_overwrite_newer_navigation():
+    _node_assert("""
+const rendererSource = block('RENDER.intelligence_os = async () => {', '/* ---- Intelligence OS · engine detail');
+function scenario() {
+  const view = {innerHTML:''}, refresh = {disabled:false,textContent:'',onclick:null};
+  const pending = [];
+  const api = url => new Promise(resolve => pending.push({url, resolve}));
+  const build = new Function('api','view','refresh', `
+    let CURRENT = 'intelligence_os', ADMIN_RENDER_EPOCH = 1, IOS_RENDER_SEQUENCE = 0;
+    const location = {hash:'#/page/intelligence_os'}, RENDER = {}, IOS = {};
+    const $ = selector => selector === '#view' ? view : selector === '#ios-refresh' ? refresh : null;
+    const nwEmpty = () => '<p>unavailable</p>';
+    const iosHero = () => '<h2>Intelligence OS</h2>', iosReasonCard = () => '';
+    const fmtNum = value => String(value), iosRenderChips = () => {}, iosRenderTable = () => {};
+    const toast = () => {}, go = () => {};
+    ${rendererSource}
+    return {
+      run: () => RENDER.intelligence_os(),
+      navigate: id => { CURRENT = id; ADMIN_RENDER_EPOCH++; location.hash = '#/page/' + id; },
+      IOS
+    };
+  `);
+  return {view, refresh, pending, ...build(api,view,refresh)};
+}
+// A late successful response must not repaint the user's newer page.
+const away = scenario(), pendingAway = away.run();
+away.navigate('users'); away.view.innerHTML = 'Users active';
+away.pending.shift().resolve({ok:true,engines:[],census:{}});
+await pendingAway;
+assert.equal(away.view.innerHTML, 'Users active');
+assert.equal(away.IOS.data, undefined);
+// Even returning to the same route cannot let an older request win.
+const roundtrip = scenario(), pendingOld = roundtrip.run();
+roundtrip.navigate('users'); roundtrip.navigate('intelligence_os');
+roundtrip.view.innerHTML = 'Newer Intelligence request';
+roundtrip.pending.shift().resolve({ok:true,engines:[],census:{}});
+await pendingOld;
+assert.equal(roundtrip.view.innerHTML, 'Newer Intelligence request');
+// A current response must continue to render normally.
+const current = scenario(), currentRead = current.run();
+current.pending.shift().resolve({ok:true,engines:[],census:{}});
+await currentRead;
+assert.match(current.view.innerHTML, /Intelligence OS/);
+// A forced re-derive finishing after navigation must not reopen its old page.
+const forced = current.refresh.onclick();
+current.navigate('users'); current.view.innerHTML = 'Users after forced refresh';
+current.pending.shift().resolve({ok:true,engines:[],census:{}});
+await forced;
+assert.equal(current.view.innerHTML, 'Users after forced refresh');
+""")
+
+
+def test_orchestrator_and_metabolism_late_reads_cannot_repaint_new_route():
+    _node_assert("""
+function make(route, sectionEnd) {
+  // Execute each renderer's real initial await and route guard, and replace only
+  // its later synchronous HTML construction with a sentinel paint.
+  const body = block('RENDER.'+route+' = async () => {', sectionEnd);
+  const pending=[], view={innerHTML:''};
+  const api=() => new Promise(resolve=>pending.push(resolve));
+  const factory = new Function('api','view', `
+    let CURRENT='${route}', ADMIN_RENDER_EPOCH=1, ORCH_RENDER_SEQUENCE=0, MET_RENDER_SEQUENCE=0;
+    const location={hash:'#/page/${route}'}, RENDER={};
+    const $=()=>view;
+    const nwEmpty=()=>'<p>Unavailable</p>';
+    ${body}
+      view.innerHTML='<h1>${route} finished</h1>';
+    };
+    return {
+      run:()=>RENDER['${route}'](),
+      navigate:id=>{CURRENT=id;location.hash='#/page/'+id;ADMIN_RENDER_EPOCH++;},
+    };
+  `);
+  return {pending,view,...factory(api,view)};
+}
+for(const [route,end] of [
+  ['orchestrator','  const hero = d.status_hero'],
+  ['metabolism','  // State chip']
+]) {
+  const gone=make(route,end);
+  const old=gone.run();
+  gone.navigate('users');gone.view.innerHTML='<h1>Users</h1>';
+  gone.pending.shift()({ok:true});
+  await old;
+  assert.equal(gone.view.innerHTML,'<h1>Users</h1>',route+' stale after departure');
+
+  const returnTrip=make(route,end);
+  const first=returnTrip.run();
+  returnTrip.navigate('users');returnTrip.navigate(route);
+  returnTrip.view.innerHTML='<h1>Newer '+route+'</h1>';
+  returnTrip.pending.shift()({ok:true});
+  await first;
+  assert.equal(returnTrip.view.innerHTML,'<h1>Newer '+route+'</h1>',route+' stale roundtrip');
+
+  const overlap=make(route,end);
+  const early=overlap.run(), latest=overlap.run();
+  overlap.pending[1]({ok:true});await latest;
+  assert.equal(overlap.view.innerHTML,'<h1>'+route+' finished</h1>');
+  overlap.view.innerHTML='latest '+route;
+  overlap.pending[0]({ok:true});await early;
+  assert.equal(overlap.view.innerHTML,'latest '+route,route+' stale overlap');
+}
+""")
+
+
+def test_status_refresh_keeps_last_good_data_and_discards_obsolete_success():
+    _node_assert("""
+const pending = [], state = [];
+const workspace = {beginStatus:()=>state.push('reading'),statusReceived:()=>state.push('received'),statusFailed:()=>state.push('failed')};
+const api = () => new Promise((resolve,reject) => pending.push({resolve,reject}));
+const source = 'let SUMMARY = {kept:true};' + block('let ADMIN_SUMMARY_EPOCH = 0;', '/* ---- helpers') + ';return {refresh,getSummary:()=>SUMMARY};';
+const component = new Function('api','renderHeader','renderBanner','AdminWorkspace',source)(api,()=>{},()=>{},workspace);
+const first = component.refresh(), second = component.refresh();
+pending[1].resolve({meta:{revision:'new'},health:{healthy:true}}); await second;
+pending[0].resolve({meta:{revision:'old'},health:{healthy:false}}); await first;
+assert.equal(component.getSummary().meta.revision, 'new');
+const failed = component.refresh();pending[2].reject(new Error('transport unavailable'));
+await assert.rejects(failed,/transport unavailable/);
+assert.equal(component.getSummary().meta.revision,'new');
+assert.equal(state.at(-1),'failed');
+const retry=component.refresh();pending[3].resolve({meta:{revision:'recovered'},health:{healthy:true}});await retry;
+assert.equal(component.getSummary().meta.revision,'recovered');assert.equal(state.at(-1),'received');
+const obsolete=component.refresh(),latest=component.refresh();
+pending[5].resolve({meta:{revision:'latest'},health:{healthy:true}});await latest;
+pending[4].reject(new Error('obsolete failure'));await obsolete;
+assert.equal(component.getSummary().meta.revision,'latest');assert.equal(state.at(-1),'received');
+""")

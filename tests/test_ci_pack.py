@@ -4983,8 +4983,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_805),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_604),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5683,6 +5683,81 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Narrowing either job without a complete closure audit would discard
     coverage, while padding counts beyond the exact measured entrants
     would hide the next change. No selector or runtime source is edited.
+
+    2026-10-13 (#9074 admin task workspace): adding the separately tested
+    workspace model to the existing admin-js-no-undef CODE job broadened that
+    job's inferred dependency closure. Hosted contract-delta on tested merge
+    0df562cf7ae5ad1e9cbdfc043c49f98b76f267c0 measured the
+    engine/prophet/plan_book.py probe moving 129 -> 130 jobs and
+    5,558 -> 5,574 weight-seconds. It remains within 5,600 seconds
+    and 10 packs. The extra selection is admin-js-no-undef; the five
+    pre-existing admin guard steps and all assertions remain wired.
+    Attempted exclusive curation was rejected: inference on the available
+    sparse source tree already found 1,013 concrete closure inputs, of which
+    an admin-only path declaration would omit 943. This is a lower bound;
+    full-tree closure verification remains a hosted-CI responsibility.
+    Shrinking the job would silently drop dependency-sensitive coverage.
+    Accept only the one measured job
+    increment (129 -> 130), with zero padding and no plan_book weight/pack
+    ceiling changes. Full-closure curation can be considered separately only after
+    a proven safe split of the existing guard and its imported source tree.
+
+    2026-10-13 (#9074 current-main integration at 5569baad64b80): the
+    previous 5,600-second build_free_content.py weight ceiling had already
+    been exceeded on that main snapshot: 134 jobs / 5,602 seconds / 10 packs.
+    The exact conflict-free merge tree 1c0681f39e66bad190cf1fbd42be65221b047bd4
+    measured 134 jobs / 5,604 seconds / 10 packs. The same admin-js-no-undef
+    job is selected in both; its weight rises 14 -> 16 because this PR adds
+    the workspace regression suite to the existing admin guard. No other
+    new selection or lost guard justifies weakening coverage. Rebase only
+    this weight ceiling to measured 5,604, without changing the job or pack
+    ceilings (134 jobs, 10 packs), and do not pretend the 5,602 inherited
+    baseline was healthy. Exact-current-head hosted checks and merge-queue
+    integration remain separate binding release gates.
+
+    2026-10-13 (#9074 head 675850ea8c3, hosted merge d542270a39b):
+    the new hosted contract-delta/ci-pack-0 rerun on base 6efbaadcaf6c
+    measured the templates/index.html probe at 5,799 weight-seconds on
+    the exact tested base, versus 5,801 after including the admin workspace.
+    Job count remained 134, no newly selected jobs entered this probe, and
+    the same previously selected admin-js-no-undef job grew weight 14 -> 16
+    from its new workspace test. The unchanged 5,800 bound therefore went
+    red by 1 second; this was introduced by the added scope and is not
+    an inherited-base failure. Set only its weight ceiling to the exact
+    hosted measurement 5,801 (no padding), retaining 135-job and 10-pack
+    bounds, all test suites, all inference/closure checks and all guards.
+    Full-tree post-change hosted CI must independently qualify the result;
+    local sparse-worktree totals are not comparable to complete hosted totals.
+
+    2026-10-13 (#9074 same-PR current-main collision reconciliation):
+    main 402b57defb301fc611ab81242f685a96e085d035 carries the
+    independent SNI INT1 sni-public-exposure-scan job and its required
+    templates/** declaration (+1 selected job, +4 weight: 5,799 -> 5,803).
+    The admin workspace separately increases the previously selected
+    admin-js-no-undef job's estimated weight 14 -> 16 (+2) without changing
+    the probe's selected-job count. Preserve both complete job closures,
+    source-owned tests, and the independent ratchet explanations above.
+    The combined template bound is therefore 5,803 + 2 = 5,805 as a
+    pre-hosted estimate (not a completed full-tree CI measurement);
+    the original 135-job and 10-pack limits stay fixed. Build-free
+    5,604 and plan-book 130 retain their earlier exact hosted receipts.
+    The merged tree and actual current protected-base full CI must
+    remeasure and qualify all three; do not interpret this estimate as a
+    green CI result or reduce either owner's subject coverage.
+    2026-10-14 (#9074 current-main Market Memory/Rotation overlap):
+    Main 05ea40d5557939bf557d7ce3b74f7f5c2a74aa50 independently
+    admits the leadership rotation evidence owner on templates/index.html:
+    136 jobs, and 130 on engine/prophet/plan_book.py. The admin
+    navigation workspace retains its previously hosted-measured +2
+    estimated seconds in existing admin-js-no-undef for templates
+    and build-free; no extra selected admin job on these two probes.
+    Keep the main 136-job template limit and 130-job Prophet limit,
+    the admin 5,805 template/5,604 build-free weight limits,
+    and ten packs. These are merged upper bounds, not exact measurements.
+    Retain both owners' explicit dependency claims and tests; full-tree
+    current-base contract-delta and pack-0 must qualify the combined
+    workload before release.
+
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

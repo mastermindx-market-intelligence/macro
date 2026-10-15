@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-10-13T04:13:21.679215+00:00",
+  "scope": "Actual loopback development server; no synthetic sessions or API responses; not production acceptance",
+  "source_sha256": {
+    "admin/static/app.js": "b77895781ecd2ffca9b7aef31203d9a4958c23deabb5a20cd54e334ce90fa94f",
+    "admin/static/index.html": "1ade035d23fa3fe12f353cd1825bac3e306f9860946fc4fd433a20787c252be5",
+    "admin/static/workspace.js": "369a25a1b6d0bfd3f2c5e19378b5f470d28ca5764285eda02a3dc66c431e3b8c",
+    "admin/static/workspace.css": "eeb1582711a535567f0d56ee3081f253d28c543e85d1927dbea51a205b6a2c8c",
+    "admin/server.py": "0dd5ee796077536429c18b6e4f201f164149448b0f24083f4d4cce8b6bef996a"
+  },
+  "regression": {
+    "passed": 87,
+    "files": [
+      "test_admin_navigation_ux.py",
+      "test_admin_api_cache_recovery.py",
+      "test_admin_server.py",
+      "test_admin_auth.py",
+      "test_admin_inline_handler_attrs.py"
+    ]
+  },
+  "browser_observation": "observation.json",
+  "screenshots": {
+    "after-desktop.png": "a416c25333eea91232f0e34783c88f21cadbbc46a611a2b2d4cb01178cb099a7",
+    "after-mobile.png": "8e3bb3c75726b888cb3dd4bb4f2e6e042f96dfa43f791acd8e268d3567c00e23",
+    "failed-refresh.png": "9f409c757582a4364b4570475c503572fe331ad10640b0ca0df0928193db066c",
+    "mobile-tools.png": "edd51576c44815760240fac3e2cd796c19095ddd6201387bf351606a27e5a9a7",
+    "task-search.png": "426509d8812e4ce06c4124819698bf8a24cbe7b601b779509968ca96397f0c89"
+  },
+  "limits": [
+    "English/dark inherited admin only; no light/Chinese certification",
+    "All 54 route identities retained; no claim all specialist integrations are production verified",
+    "Initial combined fixture/pytest call refused before dispatch, not retried",
+    "Model test module submitted through existing CI coverage; no local execution claimed"
+  ]
+}

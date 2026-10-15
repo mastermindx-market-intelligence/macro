@@ -66,7 +66,7 @@ _CTYPES = {".html": "text/html; charset=utf-8",
 # The SPA bundle is public (the authenticated data is not), so give it
 # content-addressed URLs and let the browser/edge keep each immutable revision.
 # index.html itself remains no-store and always points at the current hashes.
-_STATIC_ASSET_NAMES = ("app.js", "styles.css")
+_STATIC_ASSET_NAMES = ("app.js", "styles.css", "workspace.js", "workspace.css")
 _STATIC_ASSET_VERSIONS = {
     name: hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
     for name in _STATIC_ASSET_NAMES
@@ -765,7 +765,7 @@ class Handler(BaseHTTPRequestHandler):
         return self.do_GET()
 
     # ---- GET ----------------------------------------------------------------
-    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
+    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/workspace.js", "/workspace.css", "/favicon.ico",
                    "/healthz", "/api/session"}
 
     def do_GET(self):
@@ -780,7 +780,7 @@ class Handler(BaseHTTPRequestHandler):
             # public, no-auth surfaces
             if path in ("/", "/index.html"):
                 return self._file("index.html")
-            if path in ("/app.js", "/styles.css"):
+            if path in ("/app.js", "/styles.css", "/workspace.js", "/workspace.css"):
                 return self._file(path.lstrip("/"))
             if path == "/favicon.ico":
                 return self._json({}, 204)
