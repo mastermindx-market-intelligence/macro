@@ -44,6 +44,7 @@ TITLES = {
 }
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 MAX_METADATA_BYTES = 256 * 1024
+MAX_INDUSTRY_VIEW_BYTES = 16 * 1024 * 1024
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 # Preserve opaque publisher tokens; case is part of identity, not an alias.
 # Meaning comes from pinned original bytes, never this lexical safety envelope.
@@ -531,3 +532,54 @@ def materialize_industry_inputs(candidate: BEAGVCCandidate) -> Iterator[dict[str
                         "attribution":"Source: U.S. Bureau of Economic Analysis",
                     }
     return rows()
+
+
+@dataclass(frozen=True)
+class BEAGVCCandidateIndustryView:
+    """Complete immutable L1 candidate bytes; not an installed Data OS store."""
+
+    industry_code_exact: str
+    source_generation_id: str
+    proposed_relative_storage_path: str
+    jsonl_bytes: bytes
+    sha256: str
+    row_count: int
+
+
+def candidate_industry_jsonl(
+    candidate: BEAGVCCandidate, industry_code_exact: str,
+) -> BEAGVCCandidateIndustryView:
+    """Package one exact industry across every selected accounting year.
+
+    Revalidate the entire original-byte candidate before producing anything.
+    This is an in-memory, digest-bound export for the incumbent native owner,
+    not a source-store write, native ingestion, public serving or rights grant.
+    The proposed path is informational; no directory or file is opened.
+    """
+    if type(industry_code_exact) is not str or not _CODE.fullmatch(industry_code_exact):
+        raise BEAGVCRefused("exact safe source industry code required")
+    all_rows = materialize_industry_inputs(candidate)
+    payload_rows: list[bytes] = []
+    total_bytes = 0
+    for row in all_rows:
+        if row["industry_code_exact"] == industry_code_exact:
+            encoded = _encoded(row) + b"\n"
+            total_bytes += len(encoded)
+            if total_bytes > MAX_INDUSTRY_VIEW_BYTES:
+                raise BEAGVCRefused("candidate industry view exceeds byte bound")
+            payload_rows.append(encoded)
+    expected = 139 * len(candidate.manifest["accounting_years"])
+    if len(payload_rows) != expected:
+        raise BEAGVCRefused("industry absent or incomplete in candidate source axes")
+    payload = b"".join(payload_rows)
+    return BEAGVCCandidateIndustryView(
+        industry_code_exact=industry_code_exact,
+        source_generation_id=candidate.generation_id,
+        proposed_relative_storage_path=(
+            "data/bea/gvc/may2026/industry_inputs/"
+            f"industry_{industry_code_exact}.jsonl"
+        ),
+        jsonl_bytes=payload,
+        sha256=_sha(payload),
+        row_count=len(payload_rows),
+    )

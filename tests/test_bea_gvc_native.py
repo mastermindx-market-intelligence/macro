@@ -326,6 +326,12 @@ class TestCandidateHardening(unittest.TestCase):
         self.assertEqual(count,153456)
         self.assertEqual(set(per_year.values()),{19182})
         self.assertEqual(set(per_industry.values()),{1112})
+        view = bea.candidate_industry_jsonl(candidate, "5241X")
+        self.assertEqual(view.row_count, 1112)
+        self.assertEqual(view.sha256, digest(view.jsonl_bytes))
+        self.assertEqual(len(view.jsonl_bytes.splitlines()), 1112)
+        self.assertEqual({json.loads(row)["accounting_year"]
+                          for row in view.jsonl_bytes.splitlines()}, set(bea.YEARS))
 
     def test_source_tokens_preserve_case_without_aliasing(self):
         blob = change_table(original("ImMatCan"),
@@ -434,6 +440,71 @@ class TestProducerIdentity(unittest.TestCase):
                 bea.materialize_industry_inputs(self.candidate)
             with self.assertRaisesRegex(bea.BEAGVCRefused, "producer"):
                 bind(self.parts)
+
+
+class TestCandidateIndustryView(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.candidate = bind(fixture())
+
+    def test_exact_industry_jsonl_is_complete_and_digest_bound(self):
+        view = bea.candidate_industry_jsonl(self.candidate, "5241X")
+        self.assertEqual(view.industry_code_exact, "5241X")
+        self.assertEqual(view.source_generation_id, self.candidate.generation_id)
+        self.assertEqual(view.row_count, 139)
+        self.assertEqual(view.sha256, digest(view.jsonl_bytes))
+        self.assertEqual(
+            view.proposed_relative_storage_path,
+            "data/bea/gvc/may2026/industry_inputs/industry_5241X.jsonl",
+        )
+        self.assertTrue(view.jsonl_bytes.endswith(b"\n"))
+        lines = view.jsonl_bytes.splitlines()
+        self.assertEqual(len(lines), view.row_count)
+        rows = [json.loads(line) for line in lines]
+        self.assertEqual(len({row["commodity_code_exact"] for row in rows}), 139)
+        self.assertEqual({row["accounting_year"] for row in rows}, {2017})
+        self.assertEqual(rows[0]["total_use_million_USD"], 1000)
+        self.assertEqual(rows[0]["world_import_million_USD"], 3)
+        self.assertEqual(rows[0]["canada_import_million_USD"], -2)
+        self.assertEqual(rows[0]["legacy_industry_mapping_state"],
+                         "UNRESOLVED_5241X_VS_5241XX")
+        self.assertTrue(all(row["candidate_state"] == "BYTE_VERIFIED_NOT_INSTALLED"
+                            and row["dataos_native_admitted"] is False
+                            and row["native_ingested_at"] is None
+                            and row["may_publish"] is False for row in rows))
+
+    def test_replay_is_byte_identical(self):
+        left = bea.candidate_industry_jsonl(self.candidate, "5241X")
+        right = bea.candidate_industry_jsonl(self.candidate, "5241X")
+        self.assertEqual(left, right)
+
+    def test_unregistered_and_unsafe_source_codes_refuse(self):
+        for code in ("5241XX", "5241x", "../escape", "", None, True):
+            with self.subTest(code=code), self.assertRaises(bea.BEAGVCRefused):
+                bea.candidate_industry_jsonl(self.candidate, code)
+
+    def test_tampering_or_incomplete_rows_never_returns_export(self):
+        manifest = self.candidate.manifest
+        manifest["may_publish"] = True
+        with self.assertRaises(bea.BEAGVCRefused):
+            bea.candidate_industry_jsonl(
+                replace(self.candidate, manifest_bytes=encoded(manifest)), "5241X")
+        with patch.object(bea, "materialize_industry_inputs",
+                          return_value=iter([{"industry_code_exact": "5241X"}])):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "incomplete"):
+                bea.candidate_industry_jsonl(self.candidate, "5241X")
+
+    def test_view_byte_limit_refuses_without_partial_artifact(self):
+        with patch.object(bea, "MAX_INDUSTRY_VIEW_BYTES", 64):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "byte bound"):
+                bea.candidate_industry_jsonl(self.candidate, "5241X")
+
+    def test_export_never_writes_or_fetches(self):
+        with patch("pathlib.Path.write_bytes", side_effect=AssertionError("write")), \
+             patch("pathlib.Path.write_text", side_effect=AssertionError("write")), \
+             patch("urllib.request.urlopen", side_effect=AssertionError("network")):
+            view = bea.candidate_industry_jsonl(self.candidate, "5241X")
+            self.assertEqual(view.row_count, 139)
 
 
 if __name__ == "__main__":

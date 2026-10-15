@@ -114,6 +114,36 @@ No real-source transform, denied source-axis inspection, private research-view
 read, local registry-validation action, collection, or source admission was
 replayed. The original-source proof below remains HELD.
 
+## Complete per-industry candidate export — October 15 continuation
+
+The offline `candidate_industry_jsonl(candidate, industry_code_exact)` API now
+packages one **exact source-industry** candidate view as immutable LF-ended JSONL
+bytes, SHA-256, total row count, candidate generation and the informational
+`data/bea/gvc/may2026/industry_inputs/industry_{industry_code_exact}.jsonl`
+relative path from the **proposed** registry contract. It validates the full
+candidate and current producer identity before returning any export, requires
+exact source-code membership and every selected accounting year × 139 commodities,
+and caps each industry's output at 16 MiB. It does not read a source path,
+create directories, write to a store, fetch data, claim native ingestion, change
+rights or make the candidate publicly readable.
+
+The exporter preserves original-source receipt hashes, signed geographic amounts,
+publisher DAY precision, unresolved industry crosswalk, null native/historical
+availability clocks and all `may_publish=false` / PIT / ranking / trading refusals
+inside each row. Caller-supplied codes cannot escape the informational relative
+path or silently alias `5241X` to `5241XX`. A missing or partial source industry,
+forged publish flag, oversized view or source-byte/producer mismatch refuses
+before a complete artifact is returned. No separate custody/revision or
+publication authority was created. The **existing Data OS owner**, not this helper,
+must later install and atomically authenticate full L0/L1 source generations.
+
+Local synthetic verification: 39 native tests and 65 subtests passed;
+the existing complete eight-year 72-response/153,456-row fixture also exercised
+the per-industry exporter and confirmed 1,112 exact rows across all eight years
+(its targeted test passed separately). Neither fixture proves the denied original
+source-axis inspection or a real installed L1 view. Hosted CI and independent
+source review must be repeated on the eventual published exact head.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files
