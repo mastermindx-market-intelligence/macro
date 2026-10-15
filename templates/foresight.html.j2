@@ -580,6 +580,11 @@
         {% if r.altdata_summary %}<span class="fx-chip conf{{ ' lit' if r.n_altdata_leading else '' }}" title="{{ (r.altdata_members or [])|join(', ') }}">🛰 {{ r.altdata_summary }}</span>{% endif %}
         {% if r.theme_feed_summary %}{% set tfs = r.theme_feed_summary %}<span class="fx-chip feed-{{ tfs.tone or 'mute' }}" title="{{ tfs.rationale or '' }}">⚕ {{ t(tfs.label, tfs.label_zh) }}</span>{% endif %}
         {% if r.molecule_gap %}<span class="fx-chip mute">{{ t(r.molecule_gap.en, r.molecule_gap.zh) }}</span>{% endif %}
+        {% if r.observation_split %}{% set osp = r.observation_split %}
+        <span class="fx-chip mute">{{ t(osp.regulator.en, osp.regulator.zh) }}</span>
+        <span class="fx-chip mute">{{ t(osp.manufacturer.en, osp.manufacturer.zh) }}</span>
+        <span class="fx-chip mute">{{ t(osp.capacity.en, osp.capacity.zh) }}</span>
+        {% endif %}
       </div>
       {% if r.score_detail and r.score_detail.caps %}<div class="fx-cap">⚑ {{ t('score held back', '评分受限') }}: {{ r.score_detail.caps|join(' · ') }}</div>{% endif %}
     </article>
