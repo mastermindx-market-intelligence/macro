@@ -2,6 +2,8 @@
 workstream: WS:EVAL-OS-EVIDENCE-VIEW
 session: claude/eval-os-required-tier-20261014
 model: fable
+discoveries:
+- DSC:WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS
 ended_because: ci_handoff
 mission: Deliver the accepted T12, T5, T6 and bounded T11 source interfaces through existing protected source,
   CI and actual consumer adoption. This is a continuity checkpoint; the active root continues.
@@ -33,6 +35,9 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: Actual first-party claim metadata passes the T12 CLI and typed Discovery admission without outcomes.
+  command: scripts/check_qledger_metric_validity.py --project-findings retained claims-only input; scripts.agentos.draft_discovery/check_discovery
+  result: One exact rule-2 whitehouse binding; 300 real claims (210 positive,90 negative); one excess_mean legality finding; zero draft-validator problems. This is local source consumption, not installed follow-on adoption. See research/evidence/eval-os-tier-query-20261014/t12-real-claim-consumer.json.
 - claim: Follow-on integration preserved the owned source and passed its affected checks.
   command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
   result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency closure 1189 of 1189
@@ -178,6 +183,8 @@ The incumbent refreshed original PR6651 to939b348451fc1e46b70eee2e55309e4e1756ab
 Predecessor624465 original CI38764340141/final11990733639 passed127jobs/351semantic commandsteps with all26bindingcheckruns clean. Those results belong only to624465. Newer observedmain40324 differs from proofbase32bbb only in3769generateddata/sitepaths; no new source or CI-definition change was found. Actual freshness and merge remain incumbent-owned.
 
 Follow-on80fb runtime3528080/updater9cb/probe2edbb/CI340774 are unchanged. Twelve-file probe16tests+20subtestsPASS;20suppliedtextcases+bear/T11/T5/T12/QLedger/169updater proof retained. The retained A1/preparedfollowon previews preserve the actual incoming research-factory-authority command and all5changed runtime/test blobs exactly. Reconcile actualqualifiedA1landing and current continuity before SAMEfollowon integration/singlePR. No final integration/qualification or production/adoption claim.
+
+A real T12 consumer now uses the production claims snapshot observed2026-10-15T17:46:25Z:300 whitehouse claim-direction records, exact canonical rule-2 binding, and explicit intended excess_mean assessment. Actual local CLI output feeds DSC:WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS through the existing drafter/validator with independently authored admission fields. No grade/sealed outcome/model read, metric publication assertion or gate/producer mutation. Protected Discovery delivery and installed consumer execution remain owed.
 
 Canonical current record: research/evidence/eval-os-tier-query-20261014/a1-current-release.json. After actual qualified landing, bind17fileprobe ANDassetprojector, then prove updater/install/process/assets/authAPI-DOM/8visualstates/naturalowner/comprehension. Separate follow-on owes12fileidentity/actualupdatercopy/API-admin,numeric/internal-log,CLI/rights-qualifiedDiscovery adoption. All finalflagsfalse; originalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals preserved. SESSION END: DURABLE_EXECUTION_RUNNING.
 
