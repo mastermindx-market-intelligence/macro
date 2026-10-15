@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261015-mm-return-language'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -4048,7 +4048,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
@@ -6356,8 +6360,6 @@
   var SHELL_READY_FALLBACK_MS = 7000;
   var FRAME_LOAD_FALLBACK_MS = 6000;
   var REPEAT_FRAME_LOAD_FALLBACK_MS = 2500;
-  // Lifecycle v3: rotate the immutable bundle only after the live checkout advances.
-  var HARD_LAUNCH_FALLBACK_MS = 9000;
   var CLOSE_ANIMATION_MS = 300;
   var HISTORY_STATE_KEY = '__mdxTerminalOverlay';
 
@@ -6841,7 +6843,7 @@
     }, SHELL_READY_FALLBACK_MS);
   }
 
-  function scheduleFrameLoadFallback(frame, delay) {
+  function scheduleFrameLoadFallback(frame) {
     clearTimeout(state.frameLoadFallbackTimer);
     state.frameLoadFallbackTimer = setTimeout(function () {
       state.frameLoadFallbackTimer = 0;
@@ -6850,9 +6852,7 @@
       // fail-open path for WebKit restores where the document paints but its
       // cross-origin ready message never reaches the parent.
       markReady({ path: state.path, symbol: state.symbol, state: 'frame-load-fallback' });
-    }, delay == null
-      ? (state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS)
-      : delay);
+    }, state.completedLaunches ? REPEAT_FRAME_LOAD_FALLBACK_MS : FRAME_LOAD_FALLBACK_MS);
   }
 
   function shouldRemountFrame() {
@@ -6911,10 +6911,10 @@
     if (!state.booted) {
       state.booted = true;
       beginLoading(root);
-      // The load handler shortens this guard once WebKit confirms a document
-      // load. Until then, never allow a failed iframe navigation to strand the
-      // user behind an infinite branded splash.
-      scheduleFrameLoadFallback(frame, HARD_LAUNCH_FALLBACK_MS);
+      // Until a document loads or Terminal signals readiness, keep the loader
+      // and its slow-load recovery actions visible. Elapsed time alone cannot
+      // prove that the frame painted; revealing it could hide both actions
+      // behind a blank frame. The load handler owns the post-load fallback.
       return;
     }
 
