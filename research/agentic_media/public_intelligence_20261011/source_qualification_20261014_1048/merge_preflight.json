@@ -1,9 +1,0 @@
-{
-  "at": "2026-10-14T10:52:25.836474+00:00",
-  "candidate": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
-  "protected_main": "f5f19f61b909dbf9c61cf1f1acc8cf30914f18fb",
-  "merge_tree_exit": 0,
-  "stdout": "e0f9c39a0c1b5d34611e35bfa83dfbc263ab365c\n",
-  "stderr": "",
-  "worktree_modified": false
-}

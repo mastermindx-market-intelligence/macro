@@ -1,5 +1,0 @@
-{
-  "passed": true,
-  "control": "wrong-source-digest-rejected-before-import-and-effects",
-  "returncode": 1
-}

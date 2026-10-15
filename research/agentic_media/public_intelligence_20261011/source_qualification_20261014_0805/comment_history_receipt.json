@@ -1,9 +1,0 @@
-{
-  "comment_id": 6107930181,
-  "previous_updated_at": "2026-10-14T07:51:00Z",
-  "body_characters": 63176,
-  "body_sha256": "6652ee11458de6746ceb4b3f53d3a9461749dc6159dc8ac47b218169364ce53d",
-  "archive_path": "research/agentic_media/public_intelligence_20261011/github_evidence_history_before_20261014_0805.md",
-  "archive_verbatim": true,
-  "reason": "Existing comment is63176characters near GitHub limit; preserve history in Git before replacing current comment with linked concise frontier."
-}

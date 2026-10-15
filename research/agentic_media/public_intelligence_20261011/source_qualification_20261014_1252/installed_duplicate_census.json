@@ -1,9 +1,0 @@
-{
-  "head": "b4a515dcbab349be7636ad8cb7a8ef8367240d8b",
-  "observed_at": "2026-10-14T13:04:25.100693+00:00",
-  "catalog_sha256": "b0fed4b55e5fe7e9f0903bad4f6907035c4054f6181778f0420647bb94049f0c",
-  "count": 2895,
-  "matching_rows": [],
-  "catalog_unchanged": true,
-  "head_after": "b4a515dcbab349be7636ad8cb7a8ef8367240d8b"
-}
