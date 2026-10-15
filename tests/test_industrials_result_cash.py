@@ -958,6 +958,61 @@ def test_infinity_decimal_text_refuses() -> None:
     assert r["status"] == "refused"
 
 
+def test_plus_infinity_decimal_text_refuses() -> None:
+    """Signed infinity words parse as Decimal but are not finite."""
+    for value_text in ("+infinity", "+Infinity"):
+        bad = dict(cell("100"), value=value_text)
+        r = derive_result_cash(
+            "growth_pct",
+            [bad, cell("100", metric="revenue_prior")],
+            comparison_receipt=comparison(
+                "year_over_year", [bad, cell("100", metric="revenue_prior")]
+            ),
+        )
+        assert r["status"] == "refused"
+        assert r["value"] is None
+        assert any("non_finite" in lim for lim in r["limitations"])
+
+
+def test_plus_nan_decimal_text_refuses() -> None:
+    """Signed NaN words and sNaN parse as Decimal but are not finite."""
+    for value_text in ("+nan", "-nan", "sNaN"):
+        bad = dict(cell("100"), value=value_text)
+        r = derive_result_cash(
+            "growth_pct",
+            [bad, cell("100", metric="revenue_prior")],
+            comparison_receipt=comparison(
+                "year_over_year", [bad, cell("100", metric="revenue_prior")]
+            ),
+        )
+        assert r["status"] == "refused"
+        assert r["value"] is None
+        assert any("non_finite" in lim for lim in r["limitations"])
+
+
+def test_finite_signed_decimal_text_still_ready() -> None:
+    """Finite signed text keeps the ready path (models :342 and :1081 pairs)."""
+    pos_cells = [cell("+110", metric="revenue_current"), cell("100", metric="revenue_prior")]
+    pos = derive_result_cash(
+        "growth_pct",
+        pos_cells,
+        comparison_receipt=comparison("year_over_year", pos_cells),
+    )
+    assert pos["status"] == "ready"
+    assert pos["value"] == "10"
+    neg_cells = [
+        cell("-0.5", metric="operating_cash"),
+        cell("-0.2", metric="cash_capital_payments"),
+    ]
+    neg = derive_result_cash(
+        "cash_after_capital_payments",
+        neg_cells,
+        comparison_receipt=comparison("same_period", neg_cells),
+    )
+    assert neg["status"] == "ready"
+    assert neg["value"] == "-0.3"
+
+
 def test_bool_operand_refuses() -> None:
     bad = dict(cell("100"), value=True)
     r = derive_result_cash(

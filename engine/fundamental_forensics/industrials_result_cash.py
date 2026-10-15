@@ -297,9 +297,11 @@ def _parse_operand(index: int, raw: Mapping[str, Any]) -> _Operand | None:
         if value_text.strip().lower() in _NON_FINITE_TOKENS:
             raise _OperandParseError(["operand_malformed:non_finite"])
         try:
-            Decimal(value_text)
+            parsed_decimal = Decimal(value_text)
         except InvalidOperation as exc:
             raise _OperandParseError(["operand_malformed:not_decimal"]) from exc
+        if not parsed_decimal.is_finite():
+            raise _OperandParseError(["operand_malformed:non_finite"])
         value_text_parsed = value_text
 
     return _Operand(
