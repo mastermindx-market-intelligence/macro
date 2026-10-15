@@ -240,6 +240,11 @@ def _admission_digest(admission: Mapping[str, Any]) -> str:
     return _verify_receipt(admission, "admission")
 
 
+def _utc_now() -> datetime:
+    """UTC wall clock for actual source-day completion (separately testable)."""
+    return datetime.now(timezone.utc)
+
+
 def certify_source_day(
     *,
     source_date: str,
@@ -262,6 +267,17 @@ def certify_source_day(
     if cutoff < next_midnight:
         raise CaptureContractError(
             "source-day census cannot certify before the next UTC midnight"
+        )
+    # A claimed coverage clock is not proof that the UTC day has elapsed. Reject
+    # forged future COMPLETE receipts before any certificate can be sealed.
+    observed_now = _utc_now()
+    if observed_now < next_midnight:
+        raise CaptureContractError(
+            "source-day UTC day has not ended; future certification refused"
+        )
+    if cutoff > observed_now:
+        raise CaptureContractError(
+            "source-day claimed coverage extends into the future"
         )
     if isinstance(channel_receipts, (str, bytes)) or not isinstance(
         channel_receipts, Sequence
@@ -288,6 +304,10 @@ def certify_source_day(
         if swept_through < next_midnight:
             raise CaptureContractError(
                 f"source-day channel {channel} does not cover the full UTC day"
+            )
+        if swept_through > observed_now:
+            raise CaptureContractError(
+                f"source-day channel {channel} has future-dated coverage"
             )
         covered_raw = raw.get("covered_event_classes")
         if isinstance(covered_raw, (str, bytes)) or not isinstance(

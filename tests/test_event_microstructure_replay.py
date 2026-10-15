@@ -939,6 +939,80 @@ def test_capture_epoch2_source_day_refuses_partial_utc_day():
         )
 
 
+def _synthetic_completed_day_channels(*, reuters_swept="2026-10-07T00:00:00Z"):
+    return [
+        {
+            "channel": "reuters_wire",
+            "status": "COMPLETE",
+            "swept_through": reuters_swept,
+            "covered_event_classes": sorted(capture.EVENT_CLASSES),
+            "receipt": "synthetic-wire-only-no-real-source-certification",
+        },
+        {
+            "channel": "ukmto",
+            "status": "COMPLETE",
+            "swept_through": "2026-10-07T00:00:00Z",
+            "covered_event_classes": ["physical_energy_shipping_security"],
+            "receipt": "synthetic-ukmto-only-no-real-source-certification",
+        },
+    ]
+
+
+def test_epoch2_source_day_rejects_future_day_even_if_receipt_clocks_claim_complete(monkeypatch):
+    monkeypatch.setattr(
+        capture, "_utc_now", lambda: datetime.fromisoformat("2026-10-06T23:59:59+00:00")
+    )
+    with pytest.raises(capture.CaptureContractError, match="UTC day has not ended"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=_synthetic_completed_day_channels(),
+            candidate_dispositions=[],
+        )
+
+
+def test_epoch2_source_day_rejects_claimed_future_cutoff_after_midnight(monkeypatch):
+    monkeypatch.setattr(
+        capture, "_utc_now", lambda: datetime.fromisoformat("2026-10-07T00:01:00+00:00")
+    )
+    with pytest.raises(capture.CaptureContractError, match="coverage extends into the future"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:10:00Z",
+            channel_receipts=_synthetic_completed_day_channels(),
+            candidate_dispositions=[],
+        )
+
+
+def test_epoch2_source_day_rejects_future_dated_channel_sweep_after_midnight(monkeypatch):
+    monkeypatch.setattr(
+        capture, "_utc_now", lambda: datetime.fromisoformat("2026-10-07T00:01:00+00:00")
+    )
+    with pytest.raises(capture.CaptureContractError, match="future-dated coverage"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=_synthetic_completed_day_channels(
+                reuters_swept="2026-10-07T00:10:00Z"
+            ),
+            candidate_dispositions=[],
+        )
+
+
+def test_epoch2_source_day_allows_completed_utc_day_with_honest_clock(monkeypatch):
+    monkeypatch.setattr(
+        capture, "_utc_now", lambda: datetime.fromisoformat("2026-10-07T00:01:00+00:00")
+    )
+    receipt = capture.certify_source_day(
+        source_date="2026-10-06",
+        source_coverage_complete_through="2026-10-07T00:00:00Z",
+        channel_receipts=_synthetic_completed_day_channels(),
+        candidate_dispositions=[],
+    )
+    assert receipt["state"] == "COMPLETE"
+    assert receipt["source_coverage_complete_through"] == "2026-10-07T00:00:00Z"
+
+
 def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
     with pytest.raises(capture.CaptureContractError, match="ukmto"):
         capture.certify_source_day(
