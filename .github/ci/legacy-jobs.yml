@@ -6866,6 +6866,7 @@ jobs:
           tests/test_capital_structure_capacity.py
           tests/test_capital_structure_capacity_c2.py
           tests/test_capital_structure_capacity_c2b.py
+          tests/test_capital_structure_capacity_c2c_a.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_authorized_shares.py
@@ -13347,6 +13348,7 @@ jobs:
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
       - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_witness_hints.py
       - engine/sector_intelligence/finance_page_signal.py
       - engine/sector_intelligence/finance_case_signal.py
       - engine/sector_intelligence/finance_projection.py
@@ -21402,6 +21404,7 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
@@ -22663,6 +22666,7 @@ jobs:
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
@@ -28968,6 +28972,7 @@ jobs:
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
