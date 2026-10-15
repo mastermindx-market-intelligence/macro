@@ -168,3 +168,16 @@ for (const limited of [false,true]) test(`leaving a ${limited?'limited':'full'} 
   await page.waitForFunction(()=>StockChart._cur!==retiredChart&&StockChart._cur.ticker==='NEXT'&&StockChart._cur.chart!==null);
   assert.equal(await page.evaluate(()=>StockChart._cur!==retiredChart&&StockChart._cur.chart!==null),true);
 });
+
+for(const lang of ['en','zh']) for(const ime of ['composing','legacy229']) test(`stock search Enter does not select a suggestion during IME composition ${lang}/${ime}`,async t=>{
+  const {page,requested,reply}=await setup(t,lang);
+  await page.locator('#q').fill('NEW');
+  await page.locator('#q').evaluate((q,ime)=>q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',isComposing:ime==='composing',keyCode:ime==='legacy229'?229:13,bubbles:true,cancelable:true})),ime);
+  await page.evaluate(()=>new Promise(requestAnimationFrame));
+  assert.equal(new URL(page.url()).hash,'','composition confirmation must not navigate');
+  assert.equal(await page.locator('#q').inputValue(),'NEW');
+  assert.equal(await page.locator('#sugg').isVisible(),true);
+  const loaded=requested('NEW');
+  await page.locator('#q').press('Enter'); await loaded; await reply('NEW');
+  await page.waitForFunction(()=>document.getElementById('r_name').textContent==='NEW fixture (NEW)');
+});

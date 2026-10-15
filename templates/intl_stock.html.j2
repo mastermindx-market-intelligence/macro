@@ -390,6 +390,7 @@
     sugg.style.display = items.length ? 'block' : 'none';
   });
   q.addEventListener('keydown', function (e) {
+    if (e.isComposing || e.keyCode === 229) return;
     if (sugg.style.display === 'none') return;
     var divs = sugg.querySelectorAll('div');
     if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, divs.length - 1); e.preventDefault(); }
