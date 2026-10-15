@@ -3503,6 +3503,29 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "config/dataset_registry.yml"
+      - "config/intelligence_workspace/datapoints.v1.json"
+      - "contracts/intelligence_workspace/datapoint_registry.schema.json"
+      - "contracts/intelligence_workspace/datapoint_value.schema.json"
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/contracts.py"
+      - "engine/intelligence_workspace/entity.py"
+      - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/registry.py"
+      - "engine/intelligence_workspace/resolver.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "tests/__init__.py"
+      - "tests/test_observe_options_matrix_identity.py"
+      - "tests/test_options_selection_composition.py"
+      - "tests/test_observe_options_matrix_selection.py"
+      - "tests/fixtures/options_matrix_selection_vectors_v1.json"
       - "collectors/flow_signals.py"
       - "config/flow_detector.yml"
       - "engine/ledger_lane.py"
@@ -3606,7 +3629,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py -q
 
   flow-surface:
     if: ${{ false }}
