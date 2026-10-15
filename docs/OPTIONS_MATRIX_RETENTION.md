@@ -185,6 +185,27 @@ extend the root relation's date interval, establish IDX identity or grant rights
 fresh entitlement or Saved Research admission. A synthetic Matrix exercising
 this adapter remains synthetic even when its reference inputs are real.
 
+## Exact saved-selection membership composition
+
+`resolve_option_matrix_selection` in the existing workspace Options identity
+module accepts the exact Matrix reference/capture, its canonical identity inputs,
+and at most 2048 bytes of closed `options_matrix_selection.v1` JSON. It verifies
+underlying identity and exact own-side membership using the existing retention
+helpers. Strikes retain canonical decimal strings throughout; missing pins or
+ambiguous source coordinates refuse the complete selection.
+
+The immutable result preserves primary and comparison roles, comparison order,
+and the stored view. The primary may also appear once among the comparisons.
+Side/expiry filters produce hidden flags without removing pins; expiry membership
+uses the full snapshot. A zero OI/volume observation is a valid side witness.
+The chosen metric is recorded without asserting that its value is available.
+
+This pure composition makes no store read or write and grants no source-use
+rights, fresh entitlement, contract identity or Saved Research admission. Existing
+Investigation v1/v2 remain unchanged; future v3, SQL, authenticated runtime and
+production reopen still require their own integration. The tests reuse the
+unchanged 76-vector IW2 selection corpus plus exact-byte/identity membership cases.
+
 ## R2 head precondition
 
 `_upload_r2` reads `options_structure/matrix/<ROOT>.json` before `put_object`.
