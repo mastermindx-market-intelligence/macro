@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume protected controller refresh for9209 b4b65190 (CI38729755961 green but stale after6e3ab92f), serving9455 a02f0d44 CI38731621436, and new Terminal9464 exact317c2174 CI38735311827. Actual squash/normal updater/source plus running-process or dossier-selected-bundle verification required. Terminal public-render owns restamping, no heavy-render wait/dispatch. Original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups. Retained receipt8controls PASS; no article. Preserve Chrome human step, unresolved Fabric001,44refs/five drafts and publication0of10.
+next_action: Publish tested9464 repair d527b2446c2f to SAME existing branch when capacity admits (12:58 8indexed+0reservations/cap8,9077lease). Remote317c/CI38735311827 terminal pack6 receipt-closure failure; PR disarmed. Actual192fixture cases and25testsPASS; three receipt files only, application unchanged. Patch retained in CHECKPOINT sibling terminal9464_receipt_repair.patch. Then re-arm/protected release/normal public-render-selected bundle and browser checks. Consume controller9209 b4 and serving9455 a02; original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups. Preserve Chrome human step, unresolved Fabric001,44refs/five drafts/publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
