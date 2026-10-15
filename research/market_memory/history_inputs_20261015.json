@@ -1,0 +1,239 @@
+{
+  "schema": "market_memory.history_inputs.v1",
+  "mode": "RETROSPECTIVE_EXPLORATORY",
+  "basis": "tradj",
+  "benchmark": "SPY",
+  "start": "2015-01-01",
+  "end": "2026-10-14",
+  "warmup_start": "2010-01-01",
+  "capture_cutoff": "2026-10-15T05:22:00+00:00",
+  "acknowledge_hindsight": true,
+  "symbols": [
+    {
+      "vendor_symbol": "SPY",
+      "refs": [
+        [
+          "2026-10-11",
+          "053850f36ac9f76a270199930344a48488e13671f2fbe57e8ddf286095d8cca9"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "QQQ",
+      "refs": [
+        [
+          "2026-10-12",
+          "a738cd5d481d06bb6823285d8e8ff53cdf9908c95f575e3ca3d444f00f5c0649"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "IWM",
+      "refs": [
+        [
+          "2026-10-12",
+          "32cf34086eed6326ba8c73d34b117f73c5b7e47c9afb0590248f35c34e660b06"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "RSP",
+      "refs": [
+        [
+          "2026-10-12",
+          "0a840aa069805eb766ab5c33f34ff562b2c334e3a0e3d9f4f9719443412395c8"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "DIA",
+      "refs": [
+        [
+          "2026-10-12",
+          "136756044ca13377d67ad8236de31f7460a021f898b401a3c2f4dbf5dfed2c03"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLB",
+      "refs": [
+        [
+          "2026-10-12",
+          "902c126d863de03248bba44389bedb5d8c8be3b21bf44a229ee7ed262b73779b"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLC",
+      "refs": [
+        [
+          "2026-10-12",
+          "6a851ca4d883ba59f284780de480b17a8cb94b8b659c1b5e5948311b7858173f"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLE",
+      "refs": [
+        [
+          "2026-10-12",
+          "ea690bba85bbaf8e9bc5d6fb59be8f17208d554e8a806b90ecc116657b5ba18e"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLF",
+      "refs": [
+        [
+          "2026-10-12",
+          "272063277f7599e7f09818288931bd63967428b6099eb71b316616a7c3ab0081"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLI",
+      "refs": [
+        [
+          "2026-10-12",
+          "8bd75072cc6a903bc40cb97def453b92bacbc1f1420dada2aacbba87918f2ed6"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLK",
+      "refs": [
+        [
+          "2026-10-12",
+          "dcc4ab622f26b9184628d60e688a34534dd6d54ba7d6ee87fb04c328009a1a82"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLP",
+      "refs": [
+        [
+          "2026-10-12",
+          "2148206a131bc493f7cd1ba7b905604363a88e2029b2f063cb83a4d5e2cb0094"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLRE",
+      "refs": [
+        [
+          "2026-10-12",
+          "22b7cd924f965ee70d27f7bdfcc2c4291a663fb4e4c554a0878bba096b812d5e"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLU",
+      "refs": [
+        [
+          "2026-10-12",
+          "abf8f63148a20f00a24f1b333788db9f5519a637fb2cee72b7406f9c332c9297"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLV",
+      "refs": [
+        [
+          "2026-10-12",
+          "6206b205e82a938edca503aa07290fb4921dad601fbd9e6581bfbe871d5ca447"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "XLY",
+      "refs": [
+        [
+          "2026-10-12",
+          "5816b1aa8a84e72b1c5dc4c41a161758726bed6ac3ef9050a505eb1f8e6ce55f"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "TLT",
+      "refs": [
+        [
+          "2026-10-12",
+          "6dfc4ac8bf38ff37ed31f9b6c91951da62d5d3aa990652c4405bfefa9b24c43e"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "IEF",
+      "refs": [
+        [
+          "2026-10-12",
+          "7ffd7f6682b942043de2dd86b7ea06c01e31dc9689163c274b48f1b727d5b31a"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "SHY",
+      "refs": [
+        [
+          "2026-10-12",
+          "fddfcca90b798715760907c85c7ee658fa31047204d54fe1d6844f28626a93e7"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "HYG",
+      "refs": [
+        [
+          "2026-10-12",
+          "9b7470111ba8fc79c5b52fe386c09a28c7ba5fc1c81dce9be38eb987be18a0d0"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "LQD",
+      "refs": [
+        [
+          "2026-10-12",
+          "9001c46c55a4ccbc64da48c557388c6c818a7648c16e410e56f67ad134597793"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "UUP",
+      "refs": [
+        [
+          "2026-10-12",
+          "ad5b9c1b11bc689eaa17b63b1f7d7a09032f528439962fcdcfd34572bb1588b7"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "GLD",
+      "refs": [
+        [
+          "2026-10-12",
+          "7fd1dd32d2c067f22125eabf2019246a6ff11709ac455ffe98f4313081e8f49c"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "USO",
+      "refs": [
+        [
+          "2026-10-12",
+          "e446b648e912d4f1ee86d7e38a9d678e8b9383fc3a04c31879437d7899e0bbaa"
+        ]
+      ]
+    },
+    {
+      "vendor_symbol": "SLV",
+      "refs": [
+        [
+          "2026-10-12",
+          "f7a52b69ab502ecf01e71172fcd9aa5791e3e5f22256aba4cd977ec1a0382044"
+        ]
+      ]
+    }
+  ],
+  "selection": "Fixed explicit market/sector/cross-asset proxy panel; not a PIT or whole-stock-market universe."
+}
