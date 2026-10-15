@@ -54,6 +54,16 @@ SCHEMA_VERSION = "1.0.0"
 FACT_KEY_TOTAL_REVENUE = "total_revenue"
 FACT_KEY_ADVERTISING_REVENUE = "advertising_revenue"
 FACT_KEY_ADVERTISING_EXPENSE = "advertising_expense"
+# Closed V1 fact metric vocabulary: every V1 fact carries one of these
+# three metric strings. Disjoint from ``_EMITTABLE_RESULT_KEYS`` so an
+# admitted fact never collides with an emittable result key.
+_V1_FACT_METRICS: frozenset[str] = frozenset(
+    {
+        FACT_KEY_TOTAL_REVENUE,
+        FACT_KEY_ADVERTISING_REVENUE,
+        FACT_KEY_ADVERTISING_EXPENSE,
+    }
+)
 
 RESULT_KEY_TOTAL_REVENUE_CHANGE = "total_revenue_change"
 RESULT_KEY_ADVERTISING_REVENUE_CHANGE = "advertising_revenue_change"
@@ -62,6 +72,17 @@ RESULT_KEY_ADVERTISING_NET_CHANGE = "advertising_net_change"
 RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET = "advertising_current_period_net"
 RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT = (
     "advertising_share_of_revenue_change_pct"
+)
+# Closed set of result keys ``project_economic_change`` may emit, in the
+# same order as the ``RESULT_KEY_*`` constants above. Disjoint from
+# ``_V1_FACT_METRICS``; pinned by a regression test.
+_EMITTABLE_RESULT_KEYS: tuple[str, ...] = (
+    RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+    RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    RESULT_KEY_ADVERTISING_NET_CHANGE,
+    RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
 )
 
 
@@ -314,13 +335,23 @@ def _envelope_unit(fact: Any) -> str:
     return "USD"
 
 
+#: Scale grammar: an optional SINGLE leading ``-`` then ASCII digits only.
+#: ``str.isdigit`` answers True for ``"\u00b2"`` and ``"--3".lstrip("-")``
+#: answers ``"3"``, so both passed the old check and then crashed ``int()``
+#: inside this reader -- and a crash here killed the whole case instead of
+#: withholding one fact. ``[0-9]`` (not ``\d``) is deliberate: it refuses
+#: the non-ASCII digits ``int()`` would otherwise silently rebase. Shared
+#: with ``_fact_admission_failure``: the gate admits exactly what this reads.
+_SCALE_TEXT_RE = re.compile(r"-?[0-9]+")
+
+
 def _envelope_scale(fact: Any) -> int:
     if not isinstance(fact, Mapping):
         return 0
     raw = fact.get("scale_power10")
     if isinstance(raw, int) and not isinstance(raw, bool):
         return raw
-    if isinstance(raw, str) and raw.lstrip("-").isdigit():
+    if isinstance(raw, str) and _SCALE_TEXT_RE.fullmatch(raw):
         return int(raw)
     return 0
 
@@ -562,7 +593,21 @@ def _fact_admission_failure(fact: Any) -> str | None:
         return "fact_value_text_unparseable"
     if not _DATE_RE.match(_envelope_period_end(fact)):
         return "fact_period_end_missing_or_malformed"
+    if _as_date(_envelope_period_end(fact)) is None:
+        # ``_DATE_RE`` mirrors the schema's PATTERN, which admits
+        # ``2026-06-31``; the schema's own ``format: date`` does not.
+        # A regex-only gate let that day travel into the emitted
+        # document, where the shape backstop raised ``CaseShapeError``
+        # and one impossible calendar day lost the whole case. Same
+        # refusal reason as a missing/malformed bound: refusal is the
+        # mechanism, withholding one fact is the scope.
+        return "fact_period_end_missing_or_malformed"
     if not _DATE_RE.match(_envelope_period_start(fact)):
+        return "fact_period_start_missing_or_malformed"
+    if _as_date(_envelope_period_start(fact)) is None:
+        # Same hole as ``period_end`` above: the schema gives both bounds
+        # ``format: date``, so an impossible start day must withhold this
+        # fact here rather than reach the shape backstop and lose the case.
         return "fact_period_start_missing_or_malformed"
     if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
         return "fact_period_kind_outside_vocabulary"
@@ -600,7 +645,7 @@ def _fact_admission_failure(fact: Any) -> str | None:
     _scale = fact.get("scale_power10")
     if not (
         (isinstance(_scale, int) and not isinstance(_scale, bool))
-        or (isinstance(_scale, str) and _scale.lstrip("-").isdigit())
+        or (isinstance(_scale, str) and _SCALE_TEXT_RE.fullmatch(_scale))
     ):
         return "fact_scale_power10_missing_or_malformed"
     if not isinstance(fact.get("evidence"), Mapping):
@@ -976,10 +1021,11 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         # non-``_pct`` row whose ``current_period_fact`` is not a Mapping
         # is withheld, exactly as on ``main``, where the trigger read the
         # missing side's ``display_quantum`` as ``None`` and compared that
-        # against the stated quantum. An absent PRIOR side stays
-        # non-contradicting: ``main`` never read the prior side, so
-        # withholding for its absence would be a new tightening beyond
-        # the restored baseline.
+        # against the stated quantum. An absent or malformed (present but
+        # not a Mapping) PRIOR side stays non-contradicting:
+        # ``_envelope_side_contradicts`` returns False for any non-Mapping
+        # side, and ``main`` never read the prior side, so withholding for
+        # either would be a new tightening beyond the restored baseline.
         if (
             filled.get("unit") != _STATED_DEFINITION_UNIT
             or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
@@ -1904,9 +1950,17 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # (independent PR #9285 review, defects D1/D2: the check used to live
     # only inside ``_emit_result``, which runs after both).
     # Snapshot the rows withheld BEFORE the screen runs: a row already
-    # withheld at build time keeps its existing bookkeeping exactly (its
-    # entries come from ``_compose_changes`` and the omission loops, not
-    # from this block).
+    # withheld at build time keeps its existing bookkeeping exactly, and
+    # this block records only the rows the screen newly withholds. The
+    # build-time rows follow the two legs of Ruling A
+    # (research/consumer_cyclical/v1/V1_PLNT_BOUNDARY_AND_FROZEN_SPEC.md
+    # §8a): an OMISSION (``inputs_present`` False) is recorded by
+    # ``_compose_changes`` and the omission loops below, while a refusal
+    # in ``_make_ratio_result`` (nonpositive denominator, or a rounding
+    # envelope that includes zero) keeps ``inputs_present`` True, is
+    # emitted with its ``withheld_reason``, and is deliberately not a
+    # ``degraded_dependencies`` entry: "A withheld result is an answer
+    # about inputs that exist; an omitted result is the absence of inputs."
     _keys_withheld_before_screen = {
         _r.get("key") for _r in all_results if _r.get("withheld_reason")
     }
@@ -2011,23 +2065,19 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # present (whether the entry survived the ``_omitted_keys`` filter
     # above OR was never created in ``_compose_changes``) must show up
     # in ``degraded_dependencies`` so downstream consumers can see the
-    # full unmet-result set.
-    _emittable_keys = [
-        "total_revenue_change",
-        "advertising_revenue_change",
-        "advertising_expense_change",
-        "advertising_net_change",
-        "advertising_current_period_net",
-        "advertising_share_of_revenue_change_pct",
-    ]
+    # full unmet-result set. All three result-side recorders
+    # (``_compose_changes``, the ``_omitted_keys`` loop, and this loop)
+    # now dedupe on ``dependency`` so a single fact yields a single entry.
     _present_result_keys = {
         r.get("key") for r in all_results if r.get("inputs_present")
     }
-    for _rk in _emittable_keys:
+    for _rk in _EMITTABLE_RESULT_KEYS:
         if _rk in _present_result_keys:
             continue
         # Skip the keys the loop above already covered.
         if _rk in _omitted_keys:
+            continue
+        if _rk in _already_degraded:
             continue
         degraded_facts.append(
             _degraded(_rk, "ready_result_unavailable_for_" + _rk)

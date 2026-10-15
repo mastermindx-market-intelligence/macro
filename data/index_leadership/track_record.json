@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-10-13",
-  "generated_at": "2026-10-14T17:57:46.625691+00:00",
+  "generated_at": "2026-10-15T07:11:04.347595+00:00",
   "is_context_only": true,
   "n_snapshots": 1215,
   "n_days": 41,
@@ -11,8 +11,8 @@
       "by_stage": {
         "running": {
           "n": 1114,
-          "mean_fwd_rel": -0.0064,
-          "hit_rate": 0.401
+          "mean_fwd_rel": -0.0063,
+          "hit_rate": 0.408
         },
         "coiling": {
           "n": 36,
@@ -21,12 +21,12 @@
         },
         "coiling_primed": {
           "n": 41,
-          "mean_fwd_rel": 0.0105,
-          "hit_rate": 0.561
+          "mean_fwd_rel": 0.011,
+          "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0258,
-      "running_ic_t_hac": -0.374,
+      "running_ic": -0.0252,
+      "running_ic_t_hac": -0.364,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,22 +35,22 @@
       "by_stage": {
         "running": {
           "n": 1010,
-          "mean_fwd_rel": -0.0122,
-          "hit_rate": 0.361
+          "mean_fwd_rel": -0.0118,
+          "hit_rate": 0.365
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0067,
+          "mean_fwd_rel": -0.0068,
           "hit_rate": 0.417
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0148,
+          "mean_fwd_rel": 0.0146,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0443,
-      "running_ic_t_hac": -0.797,
+      "running_ic": -0.0425,
+      "running_ic_t_hac": -0.757,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -59,22 +59,22 @@
       "by_stage": {
         "running": {
           "n": 817,
-          "mean_fwd_rel": -0.0269,
-          "hit_rate": 0.307
+          "mean_fwd_rel": -0.0264,
+          "hit_rate": 0.31
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0183,
+          "mean_fwd_rel": -0.0184,
           "hit_rate": 0.306
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0197,
+          "mean_fwd_rel": 0.0195,
           "hit_rate": 0.605
         }
       },
       "running_ic": 0.0275,
-      "running_ic_t_hac": 0.661,
+      "running_ic_t_hac": 0.67,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,21 +83,21 @@
       "by_stage": {
         "running": {
           "n": 204,
-          "mean_fwd_rel": -0.0462,
+          "mean_fwd_rel": -0.0457,
           "hit_rate": 0.304
         },
         "coiling": {
           "n": 10,
-          "mean_fwd_rel": -0.071,
+          "mean_fwd_rel": -0.0699,
           "hit_rate": 0.2
         },
         "coiling_primed": {
           "n": 9,
-          "mean_fwd_rel": 0.0246,
+          "mean_fwd_rel": 0.0233,
           "hit_rate": 0.556
         }
       },
-      "running_ic": 0.0567,
+      "running_ic": 0.0587,
       "running_ic_t_hac": null,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
@@ -144,7 +144,7 @@
       "id": "russell:gold",
       "name": "Gold",
       "stage": "running",
-      "fwd_rel": -0.1335,
+      "fwd_rel": -0.1525,
       "horizon_d": 21
     },
     {
@@ -152,7 +152,7 @@
       "id": "subsectors:capital-markets",
       "name": "Capital Markets",
       "stage": "running",
-      "fwd_rel": -0.0767,
+      "fwd_rel": -0.0771,
       "horizon_d": 21
     },
     {
@@ -165,18 +165,18 @@
     },
     {
       "date": "2026-09-22",
-      "id": "nasdaq:semiconductors",
-      "name": "Semiconductors",
+      "id": "subsectors:farm-heavy-construction-machinery",
+      "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0585,
+      "fwd_rel": -0.0623,
       "horizon_d": 21
     },
     {
       "date": "2026-09-22",
-      "id": "subsectors:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
+      "id": "nasdaq:semiconductors",
+      "name": "Semiconductors",
       "stage": "running",
-      "fwd_rel": -0.0574,
+      "fwd_rel": -0.0604,
       "horizon_d": 21
     }
   ],
