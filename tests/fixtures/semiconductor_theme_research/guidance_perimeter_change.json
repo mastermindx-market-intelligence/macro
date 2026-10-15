@@ -1,0 +1,75 @@
+{
+  "synthetic": true,
+  "case_key": "guidance_perimeter_change",
+  "task_refs": ["T06"],
+  "expected_regression": "Display all values; refuse unbridged organic/acquisition-adjusted delta",
+  "status": "ready",
+  "inputs": {
+    "prior": {
+      "schema": "guidance_item.v1",
+      "metric": "revenue_usd_m",
+      "low": 4150,
+      "high": 4350,
+      "unit": "USD_m",
+      "horizon": "2026Q2",
+      "status": "introduced",
+      "basis": "reported_gaap",
+      "currency": "USD",
+      "perimeter": "organic",
+      "definition": "revenue_net_of_returns",
+      "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+    },
+    "actual": {
+      "metric": "revenue_usd_m",
+      "value": 4380,
+      "unit": "USD_m",
+      "fiscal_period": "2026Q2",
+      "basis": "reported_gaap",
+      "currency": "USD",
+      "perimeter": "as_reported",
+      "definition": "revenue_net_of_returns",
+      "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+    },
+    "next_outlook": {
+      "schema": "guidance_item.v1",
+      "metric": "revenue_usd_m",
+      "low": 4500,
+      "high": 4700,
+      "unit": "USD_m",
+      "horizon": "2026Q3",
+      "status": "introduced",
+      "basis": "reported_gaap",
+      "currency": "USD",
+      "perimeter": "as_reported",
+      "definition": "revenue_net_of_returns",
+      "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+    },
+    "native_derivations": null
+  },
+  "expected": {
+    "schema": "management_sequence_assessment.v1",
+    "comparisons": {
+      "prior_vs_actual": {
+        "status": "refused",
+        "reason": "perimeter_change",
+        "position": null
+      },
+      "actual_vs_new_outlook": {
+        "status": "not_comparable",
+        "reason": "different_period",
+        "relationship": "next_outlook"
+      }
+    },
+    "display": {
+      "all_values_visible": true,
+      "refused_deltas": ["prior_vs_actual"]
+    },
+    "authority": {
+      "can_rank": false,
+      "can_gate": false,
+      "can_size": false,
+      "can_originate": false,
+      "can_open_entry": false
+    }
+  }
+}

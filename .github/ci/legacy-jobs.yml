@@ -1847,6 +1847,9 @@ jobs:
       # closure, and the suite resolves every declared owner reader on the checked-out
       # base in addition to schema/fixture semantics. The FIF owner contracts that
       # once preceded it here moved to fif-kernel-guards (gate: code) on 2026-10-12.
+      # 2026-10-12 packing curation (#8805 shape): tests/test_semiconductor_native_identity.py
+      # moved to semiconductor-b-boundary (scope: exclusive, gate: code). Leaving it on this
+      # broad job added 2 declared weight-seconds to every ordinary code PR.
       - name: K1 Evidence Foundation ref, block, recipe, and hostile-fixture contracts
         run: >
           python -m pytest
@@ -2768,6 +2771,9 @@ jobs:
       - "scripts/build_strategies.py"
       - "scripts/build_theme_detail.py"
       - "engine/leadership_receipt.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_vector.py"
       - "scripts/capture_china_archetype_d_evidence.py"
       - "scripts/capture_page_evidence.py"
@@ -3363,6 +3369,10 @@ jobs:
       # with exactly `pytest pyyaml jinja2 fastapi httpx`: 10 passed.
       - name: member Earnings Wire API transport (auth gate + private headers)
         run: python -m pytest tests/test_earnings_api.py -q
+      # 2026-10-12 packing curation (#8805 shape): the Semiconductor B T09 paid
+      # theme-research transport step moved to semiconductor-b-boundary (scope:
+      # exclusive, gate: code). The three suites still run there; this broad job
+      # no longer carries their +8 declared weight onto ordinary code PRs.
 
   regwall-boundary:
     if: ${{ false }}
@@ -3421,6 +3431,339 @@ jobs:
         run: pip install pytest pyyaml
       - name: access boundary (Caddyfile public matchers <-> site_access.yml policy)
         run: python -m pytest tests/test_regwall_json_gate.py -q
+
+  semiconductor-b-boundary:
+    if: ${{ false }}
+    gate: code
+    # SEMICONDUCTOR THEME INTELLIGENCE B, ON THE MERGE GATE (2026-09-24, #7870).
+    #
+    # Every Semiconductor B suite was named only in `gate: data` jobs — the
+    # paid theme-research transport in `tier-gate`, the issuer profiles /
+    # guidance history / intake in `neural-web-core`, the composer in
+    # `unrun-intl-libraries`, the basket mount in `unrun-subsector-themes`,
+    # and the K1 evidence-foundation / native-identity contracts in
+    # `signal-contract`. That last pair was MISSED by this job's first
+    # revision, and a semantic mutation proved the cost: flipping
+    # `_rights_and_missingness`' UNKNOWN branch to `permitted` — the
+    # "never silently permitted" law on 620 lines of new shared foundation —
+    # left all twelve steps here GREEN and reddened only
+    # `test_semiconductor_native_identity.py`, i.e. only the nightly lane,
+    # only after merge. `engine/theme_graph/**` already triggers this job, so
+    # the trigger fired while no step read the module's contract: a gate whose
+    # read set is disjoint from the diff's write set returns the same verdict
+    # either way.
+    # ci.yml packs `--gate code`, so a PR that removed the rights-owner veto
+    # from app/theme_research.py or broke the closed release grammars would
+    # merge green and red only in the next day's data-health lane (the
+    # independent review of 7384a891929e constructed exactly that case).
+    # By the manifest's own definition these verdicts are `gate: code`: pure
+    # tree logic over tmp_path fixtures, monkeypatched registries, synthetic
+    # exhibit bodies and public EDGAR metadata constants — no `data/**`, no
+    # rendered `site/**`, no nightly ledger. Same correction class as
+    # `regwall-boundary` above. The nightly steps stay where they are (the
+    # field never deletes a receipt); this job adds the merge-gate verdict.
+    #
+    # Scope is inferred (the suites import their subjects), so an edit to any
+    # engine/company_intelligence, engine/market_ontology, engine/theme_graph,
+    # app/theme_research.py or templates/_theme_research_mount.html.j2 subject
+    # re-runs it.
+    #
+    # Deps: fastapi/httpx for the transport suites (they import app.main),
+    # jsonschema for the frozen contracts, jinja2 for the mount partial,
+    # pandas/numpy/pyarrow/requests because the company-intelligence intake
+    # imports them at module load. Proven locally with exactly this line.
+    #
+    # `scope: exclusive` (job id registered in CURATED_EXCLUSIVE in
+    # tests/test_ci_pack.py): the transport suites import app.main, whose
+    # closure is opaque enough that inference falls back to whole-tree scan
+    # roots and the job would select on templates/index.html and every other
+    # ordinary code PR it never reads (the packing-ceiling probe caught exactly
+    # that: +1 job on all three probes). The paths below are the files these
+    # twenty-two suites import, open or render — the vertical's own subjects, the
+    # shared owners it consumes (Theme Graph rights/contracts, Earnings
+    # Intelligence binder, crosswalk) and the app the transport mounts on.
+    scope: exclusive
+    paths:
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths enter this job's own import closure through upstream
+      # modules. `scope: exclusive` means declared paths REPLACE inference,
+      # so an undeclared closure file silently stops selecting this job.
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/sparse_guard.py"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
+      # Base-sync 2 (merge of origin/main c50af4eb into 36e2064d, 2026-10-11):
+      # main's app/prophet_observations.py (reached through app.main, which
+      # the transport suites import) names this artifact, so the union tree's
+      # closure gained a file neither side reached alone. contract-delta job
+      # 114527295194 / ci-pack-0 job 114527512551 at 1eb871d6 named it.
+      - "site/turn_watch/turn_watch.json"
+      # Base-sync 3 (merge of origin/main c7543cd1 into 839bd6a1, 2026-10-12):
+      # main's DailyBrief strategy definition (engine/prophet_strategy_definition.py,
+      # PR #9037) and issuer-disclosure owner/preflight / identity modules, all
+      # reached through app.main, name these; contract-delta at the staged
+      # merge listed exactly these five.
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
+      - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
+      - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
+      - "scripts/build_security_master.py"
+      - "scripts/publish_company_disclosure.py"
+      # Base-sync 10 CI (merge ref with origin/main 54195c10, 2026-10-14):
+      # main's engine/neuralweb/market_memory_retained_use.py (PR #9170), reached
+      # through app.main, names its authority record; contract-delta job
+      # 115687457728 at 7ad23edf named exactly this one.
+      - "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
+      # The vertical's own subjects first, then the app.main import closure the
+      # transport suites drag in — the same glob closure `defense-rail-laws`
+      # (gate: code, also imports app.main) declares, minus that job's own
+      # suites and fixtures. Verified against the closure audit.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # Shared hook 1 (Sol #7780 issuecomment-5813801605): the closed vertical
+      # registration the transport dispatches through, and its suite.
+      - "engine/market_ontology/theme_research_registry.py"
+      - "tests/test_theme_research_registry.py"
+      - "tests/test_theme_sources_registry.py"
+      # Shared hook 2 (same ruling): the leaf module that owns what a mount
+      # renders — anchor, slices, schema ids, bilingual copy — read by BOTH
+      # the registration and the page builders. It is a leaf on purpose: the
+      # registry's own closure is 55 files (composer, reader, theme-graph
+      # store), which a page builder must not inherit.
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "templates/_theme_research_section.html.j2"
+      - "templates/_theme_research_mounts.html.j2"
+      - "tests/test_theme_research_mount_context.py"
+      - "config/theme_crosswalk.yml"
+      # Hook 2 on the Theme Tracker: the page mounts one section per
+      # registered vertical whose anchor is already a theme row, through the
+      # same partial the basket page uses.
+      - "tests/test_theme_tracker_research_mounts.py"
+      # The registry module imports through the package, so its closure carries
+      # engine/market_ontology/__init__.py -> exposure_map.py (as conviction-profile declares).
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      # T08b-fix (public workspace -> composer-shaped projection) and T08c-1
+      # (declared witness roster + identity join through the Theme Graph /
+      # Data OS owners): the binder's read-side primitives and their suites.
+      # Their import closure (engine/theme_graph/**, lib/**) is already below.
+      - "engine/market_ontology/workspace_projection.py"
+      - "tests/test_workspace_projection.py"
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      - "tests/test_semiconductor_witness_scope.py"
+      # T08c-2: the registered owner-bundle loader (public half through the
+      # Company Intelligence reader, private half declared absent) and the one
+      # exception a loader raises, with their suite. The registry binds the
+      # loader LAZILY (first served request), so a static closure walk from
+      # app.main reaches the binding leaf but not the loader — it is named
+      # here explicitly so an edit to it re-runs this job.
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      # The binding leaf grew from one exception class into the shared
+      # stdlib-only kernel every vertical's loader and the shell call
+      # (cutoff comparison, unreadable-owner withholding, pagination,
+      # generation fingerprint). Its own suite imports NO vertical, so it is
+      # the one place those laws are pinned without a composer in the way —
+      # named here because a mutation pass showed four of them discriminated
+      # by no other test in the tree.
+      - "tests/test_theme_research_binding.py"
+      - "tests/test_semiconductor_owner_bundle.py"
+      # The K1 evidence-foundation contract and the owner-native identity /
+      # evidence-reference projection. Their subjects are already covered
+      # (lib/**, engine/theme_graph/**, contracts/**), but an edit to the
+      # SUITES themselves must re-run them too — a test file that re-runs only
+      # when its subject changes is the packer's own documented false green.
+      - "tests/test_evidence_foundation_contract.py"
+      - "tests/test_semiconductor_native_identity.py"
+      # That suite reaches its helpers as `from tests.semiconductor_research_helpers
+      # import ...` — a PACKAGE import, so the closure audit counts the package
+      # initialiser too (two other exclusive jobs declare it for the same reason).
+      - "tests/__init__.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "scripts/build_theme_detail.py"
+      - "templates/_theme_research_mount.html.j2"
+      - "templates/_basket_intelligence_mounts.html.j2"
+      - "templates/basket_detail.html.j2"
+      - "tests/semiconductor_research_helpers.py"
+      - "tests/fixtures/semiconductor_theme_research/**"
+      - "tests/fixtures/theme_research_client/**"
+      # T10: the paid client's node-shelled contract. It ran only in the
+      # `gate: data` job `unrun-subsector-themes` — the exact gap this job
+      # exists to close. It has teeth: on 2026-09-24 its new label positive
+      # control named 60 keys that all rendered "Unmapped label" on screen,
+      # a defect that had merged and sat green. The suite reads only the
+      # checked-in JS and synthetic fixtures — `gate: code` by the manifest's
+      # own definition. The nightly step stays where it is.
+      - "site/assets/js/theme-research.js"
+      - "tests/test_semiconductor_theme_research_ui.py"
+      # T12: the served proof — real app + real reader + the mount partial +
+      # the checked-in client executed by node, for BOTH mandated witnesses.
+      - "tests/test_semiconductor_witness_served_proof.py"
+      # Item 2 (Sol #7780): the publication primitives B consumes, proven
+      # against the Company Intelligence owner's writer/validator/reader.
+      - "tests/test_semiconductor_publication_primitives.py"
+      - "engine/company_intelligence/event_workspace.py"
+      # CORRECTION (2026-09-24): an earlier version of this comment said the
+      # client suite asserts the BUILT Theme Tracker page carries the mount. It
+      # does not — no test does, and the committed site/state_of_themes.html
+      # predates the mount entirely (it regenerates on the nightly after
+      # merge). What is true is the reason these paths are here: the suite
+      # imports the tracker suite's synthetic-root helper, so its closure
+      # reaches the render pair, the sync checker and the sparse helper. Named
+      # by the curated-exclusive closure audit; widening is the safe direction.
+      - "site/assets/css/theme-research.css"
+      - "templates/state_of_themes.html.j2"
+      - "site/state_of_themes.html"
+      - "tests/test_state_of_themes.py"
+      - "templates/chat.html"
+      - "site/chat.html"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/worktree_sparse.py"
+      - "tests/test_theme_research_api.py"
+      - "tests/test_theme_research_rights_refresh.py"
+      - "tests/test_theme_research_private_binding.py"
+      - "tests/test_semiconductor_guidance_history.py"
+      - "tests/test_semiconductor_earnings_witnesses.py"
+      - "tests/test_semiconductor_earnings_intake.py"
+      - "tests/test_semiconductor_earnings_intake_integration.py"
+      - "tests/test_semiconductor_research_inputs.py"
+      - "tests/test_semiconductor_research_composition.py"
+      - "tests/test_semiconductor_research_temporal.py"
+      - "tests/test_theme_graph_curation_assertion.py"
+      - "tests/test_semiconductor_assertion_semantics.py"
+      - "tests/test_semiconductor_industrial_views.py"
+      - "tests/test_basket_intelligence_mounts.py"
+      - "scripts/build_state_of_themes.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
+      - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
+      - "research/US_BOARD_MEASUREMENT.md"
+      - "scripts/compile_capital_structure_events.py"
+      - "app/**"
+      - "collectors/**"
+      - "lib/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      # institutional_census is reached BOTH ways by the K1 evidence-foundation
+      # contract: a static import of `models` and an importlib resolution of the
+      # `institutional_13f.catalog_generation` reader string (catalog.py, through
+      # _resolve_reader). The closure audit can only see the first; declaring just
+      # models.py would satisfy that audit and leave the dynamic half uncovered,
+      # so the whole package is named, like every other reader package in that
+      # same contract table.
+      - "engine/institutional_census/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/marketing/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/theme_graph/**"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "site/basketdata/**"
+      - "site/canadabasketdata/**"
+      - "site/chinabasketdata/**"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/**"
+      - "site/flowleaders/**"
+      - "site/government_revenue.html"
+      - "site/hkbasketdata/**"
+      - "site/leaderradar/**"
+      - "site/master_brief.json"
+      - "site/prophet/**"
+      - "site/vol/**"
+      - "templates/government-revenue-dossiers.js"
+      - "templates/government_revenue.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 jsonschema fastapi httpx requests numpy pandas pyarrow
+      - name: shared binding kernel (day-vs-instant cutoffs, unreadable-owner withhold, pagination bounds, generation fingerprint) — no vertical imported
+        run: python -m pytest tests/test_theme_research_binding.py -q
+      - name: K1 evidence-foundation contract + owner-native identity and evidence-reference admission (rights never silently permitted)
+        run: >
+          python -m pytest
+          tests/test_evidence_foundation_contract.py
+          tests/test_semiconductor_native_identity.py
+          -q
+      - name: paid theme research transport (auth gate, closed vertical registration, rights owner veto, private binding)
+        run: python -m pytest tests/test_theme_research_registry.py tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
+      - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)
+        run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
+      - name: semiconductor research composer (inputs, composition, temporal law)
+        run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      - name: shared curation_assertion v1 contract + semiconductor industrial-context semantics
+        run: python -m pytest tests/test_theme_graph_curation_assertion.py tests/test_semiconductor_assertion_semantics.py tests/test_semiconductor_industrial_views.py -q
+      - name: binder read-side primitives (workspace projection; declared witness scope + owner identity join)
+        run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
+      - name: registered owner-bundle loader (public half through the reader; private half declared absent)
+        run: python -m pytest tests/test_semiconductor_owner_bundle.py -q
+      # The client-contract cases are executed BY node. Without it the suite's
+      # `needs_node` skips would report green on a runner that checked nothing,
+      # so the version step fails the job loudly instead. `ci-pack` (the
+      # `--gate code` runner) installs node 20.
+      - name: node must be on PATH — the paid client contract skips without it
+        run: node --version
+      - name: paid theme-research client contract (envelope validation, label maps, economics triple)
+        run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
+      - name: served witness proof W-A (HBM/TSMC) + W-B (SiC-GaN/onsemi) — mount, route, node render
+        run: python -m pytest tests/test_semiconductor_witness_served_proof.py -q
+      - name: publication primitives (absent, create, read, identical replay, stale predecessor, supersession)
+        run: python -m pytest tests/test_semiconductor_publication_primitives.py -q
+      - name: basket-intelligence mount partial
+        run: python -m pytest tests/test_basket_intelligence_mounts.py -q
+      - name: registration-driven mount (nine strings, primary-only basket claim, second vertical with no template edit)
+        run: python -m pytest tests/test_theme_research_mount_context.py -q
+      - name: theme tracker mounts (row-gated, page order, two verticals, failure never fails the build)
+        run: python -m pytest tests/test_theme_tracker_research_mounts.py -q
+      - name: evidence source registry + rights binding (family enums, per-family review rows, path-scoped grandfather, prefix shadowing, recognition-only refusal, display-ok-never-redistributable)
+        run: python -m pytest tests/test_theme_sources_registry.py -q
 
   quant-q03-share-basis:
     if: ${{ false }}
@@ -3626,6 +3969,14 @@ jobs:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -3643,6 +3994,22 @@ jobs:
       - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -6645,6 +7012,25 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      # Semiconductor B carrier (#7870) modules the merged app/ import closure
+      # reaches: app.main mounts app/theme_research.py, whose market_ontology /
+      # theme_graph imports enter this job's closure on the union tree only
+      # (contract-delta at the staged merge of origin/main c7543cd1 into
+      # 839bd6a1, 2026-10-12, listed exactly these fourteen).
+      - "app/theme_research.py"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/company_intelligence/guidance_history.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "engine/market_ontology/theme_research_registry.py"
+      - "engine/market_ontology/workspace_projection.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/transmission_chains.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7918,7 +8304,7 @@ jobs:
         #    exercises that degraded branch instead of the shipped one.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
-        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
+        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake_integration.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -9502,7 +9888,13 @@ jobs:
       # theme_graph/store.py and lib/pages.py transitively. Widening is the
       # safe direction per tests/test_ci_pack.py::test_curated_exclusive_scopes
       # _cover_their_own_import_closure.
+      # Shared hook 2 (#7870): scripts.build_state_of_themes renders theme-research
+      # mounts, so this job's closure now reaches the stdlib-only mount leaf and the
+      # crosswalk a mount resolves its PRIMARY basket claim against. Widening only —
+      # same safe direction the closure note above already takes.
+      - "config/theme_crosswalk.yml"
       - "engine/__init__.py"
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/research_priority_ordering.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/store.py"
@@ -9580,6 +9972,43 @@ jobs:
       - "engine/research_vault/r2_store.py"
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
+      # import closure of engine/theme_graph/curation_assertion.py, the shared
+      # owner that tests/test_consumer_cyclical_shared_contract.py and
+      # consumer_cyclical_shared_contract.py load by import_module; listed so the
+      # exclusive scope covers itself.
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/theme_graph/identity.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12583,6 +13012,14 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_trusted.py
       - lib/intl_eod_publication.py
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "engine/theme_graph/curation_assertion.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
@@ -15004,6 +15441,14 @@ jobs:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -15051,6 +15496,22 @@ jobs:
       - scripts/build_intl_library.py
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
@@ -15727,6 +16188,14 @@ jobs:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -15747,6 +16216,22 @@ jobs:
       - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -17756,6 +18241,7 @@ jobs:
       - app/tape.py
       - app/tape_decode.py
       - app/tape_symbols.py
+      - app/theme_research.py
       - app/ticker_news.py
       - app/unsubscribe.py
       - collectors/__init__.py
@@ -17844,6 +18330,7 @@ jobs:
       - contracts/intelligence_workspace/datapoint_registry.schema.json
       - contracts/intelligence_workspace/datapoint_value.schema.json
       - contracts/market_os/security_state.v1.schema.json
+      - contracts/theme_graph/curation_assertion.v1.schema.json
       - contracts/theme_graph/membership_collection.v2.schema.json
       - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/probation_relation_event.v2.schema.json
@@ -17940,6 +18427,7 @@ jobs:
       - engine/company_intelligence/event_workspace.py
       - engine/company_intelligence/event_workspace_build.py
       - engine/company_intelligence/events.py
+      - engine/company_intelligence/guidance_history.py
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_disclosure_owner.py
@@ -18104,6 +18592,15 @@ jobs:
       - engine/manager_lag.py
       - engine/manager_quality.py
       - engine/manager_trades.py
+      - engine/market_ontology/__init__.py
+      - engine/market_ontology/exposure_map.py
+      - engine/market_ontology/semiconductor_owner_bundle.py
+      - engine/market_ontology/semiconductor_theme_research.py
+      - engine/market_ontology/semiconductor_witness_scope.py
+      - engine/market_ontology/theme_research_binding.py
+      - engine/market_ontology/theme_research_mounts.py
+      - engine/market_ontology/theme_research_registry.py
+      - engine/market_ontology/workspace_projection.py
       - engine/marketing/chart_render.py
       - engine/marketing/confluence_source.py
       - engine/marketing/logo_cache.py
@@ -18291,6 +18788,7 @@ jobs:
       - engine/theme_context.py
       - engine/theme_crowding.py
       - engine/theme_graph/__init__.py
+      - engine/theme_graph/curation_assertion.py
       - engine/theme_graph/identity.py
       - engine/theme_graph/identity_resolution.py
       - engine/theme_graph/ontology.py
@@ -18309,6 +18807,7 @@ jobs:
       - engine/ticker_alerts.py
       - engine/ticker_shape.py
       - engine/track_record.py
+      - engine/transmission_chains.py
       - engine/trial_ledger.py
       - engine/tushare_freshness.py
       - engine/universe_history.py
@@ -18512,6 +19011,10 @@ jobs:
       - config/capability_manifest.yml
       - config/delisted_symbols.yml
       - config/metabolism_budget.yml
+      # #7870: build_theme_detail.py (already in this closure) imports the mount
+      # leaf, which reads the crosswalk. Without these two paths the job stops
+      # running when either file changes.
+      - config/theme_crosswalk.yml
       - contracts/theme_graph/membership_collection.v2.schema.json
       - engine/__init__.py
       - engine/active_alloc.py
@@ -18659,6 +19162,7 @@ jobs:
       - engine/manager_trades.py
       - engine/market_state.py
       - engine/market_state_ca.py
+      - engine/market_ontology/theme_research_mounts.py
       - engine/master_brain.py
       - engine/masterminds.py
       - engine/metabolism/__init__.py
@@ -19096,6 +19600,10 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_probation_hierarchy.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
+      # 2026-10-12 packing curation (#8805 shape): Semiconductor B T01, T02, T03 and
+      # T07/T08 moved to semiconductor-b-boundary (scope: exclusive, gate: code).
+      # The suites still run there. Leaving the four steps on this broad job added
+      # 21 declared weight-seconds to every ordinary code PR.
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)
@@ -19227,6 +19735,13 @@ jobs:
     scope: exclusive
     paths:
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -19236,6 +19751,22 @@ jobs:
       - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -19643,6 +20174,14 @@ jobs:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -19663,6 +20202,22 @@ jobs:
       - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -21072,6 +21627,7 @@ jobs:
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
       - "engine/market_heatmap.py"
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
       - "engine/market_os/macro_workspaces/registry.py"
@@ -22767,6 +23323,9 @@ jobs:
       - "scripts/build_subsector_rotation_pages.py"
       - "scripts/build_theme_detail.py"
       - "engine/leadership_receipt.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
@@ -24639,6 +25198,21 @@ jobs:
       - "templates/chat.html"
       - "templates/state_of_themes.html.j2"
       - "tests/test_state_of_themes.py"
+      - "site/assets/css/theme-research.css"
+      - "site/assets/js/theme-research.js"
+      - "tests/test_semiconductor_theme_research_ui.py"
+      # The client suite validates its envelope against the frozen contract
+      # (curated-exclusive closure audit, 2026-09-24).
+      - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
+      - "templates/_basket_intelligence_mounts.html.j2"
+      - "templates/_theme_research_mount.html.j2"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "templates/_theme_research_section.html.j2"
+      - "templates/_theme_research_mounts.html.j2"
+      - "templates/basket_detail.html.j2"
+      - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"
       - "tests/test_subsector_rotation.py"
       - "tests/test_subsector_rotation_alerts.py"
@@ -24659,6 +25233,22 @@ jobs:
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
         run: python -m pytest tests/test_themes_heatmap.py tests/test_principal_receipt_ambiguity.py tests/test_state_of_themes.py -q
+      # Semiconductor B T10 (2026-09-24): the generic paid theme-research client
+      # mounted hidden on the Theme Tracker page — node-shelled contract cases
+      # (same-origin fetch, typed refusals, closed bilingual error codes, no
+      # arithmetic on paid figures) plus the template mount tests that reuse
+      # tests/test_state_of_themes.py's render root. Needs node on PATH like the
+      # dossier JS contract; the guard makes its absence loud, not a vacuous pass.
+      - name: node must be on PATH — theme research client contract skips without it
+        run: node --version
+      - name: theme research paid client — node-shelled contract + Theme Tracker mount (Semiconductor B T10)
+        run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
+      # Semiconductor B T10b (2026-09-24, #7669 custody ruling): the ONE guarded
+      # include seam in basket_detail + the aggregator and the theme-research
+      # mount partial; pins include position, missing-partial harmlessness,
+      # anchor validation and base byte-identity.
+      - name: basket-detail intelligence include seam + theme-research mount partial (Semiconductor B T10b)
+        run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
@@ -24748,6 +25338,14 @@ jobs:
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
       - "engine/prophet_candidate_state_sources.py"
@@ -24768,6 +25366,22 @@ jobs:
       - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_registry.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/theme_research_binding.py"
+      # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      # owner-bundle loader -> workspace projection (T08b-fix, #7870)
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -25329,6 +25943,7 @@ jobs:
       - "app/tape.py"
       - "app/tape_decode.py"
       - "app/tape_symbols.py"
+      - "app/theme_research.py"
       - "app/ticker_news.py"
       - "app/unsubscribe.py"
       - "collectors/__init__.py"
@@ -25439,6 +26054,7 @@ jobs:
       - "contracts/options/prophet.option_mark_observation.v1.schema.json"
       - "contracts/options/prophet.option_shadow_lifecycle_event.v1.schema.json"
       - "contracts/research/momoedge_oracle_completion_benchmark_prereg.v1.schema.json"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
@@ -25537,6 +26153,7 @@ jobs:
       - "engine/company_intelligence/event_workspace.py"
       - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/guidance_history.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
@@ -25705,6 +26322,15 @@ jobs:
       - "engine/manager_lag.py"
       - "engine/manager_quality.py"
       - "engine/manager_trades.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "engine/market_ontology/theme_research_registry.py"
+      - "engine/market_ontology/workspace_projection.py"
       - "engine/marketing/chart_render.py"
       - "engine/marketing/confluence_source.py"
       - "engine/marketing/logo_cache.py"
@@ -25905,6 +26531,7 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/curation_assertion.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
@@ -25924,6 +26551,7 @@ jobs:
       - "engine/ticker_alerts.py"
       - "engine/ticker_shape.py"
       - "engine/track_record.py"
+      - "engine/transmission_chains.py"
       - "engine/trial_ledger.py"
       - "engine/tushare_freshness.py"
       - "engine/universe_history.py"
@@ -27696,6 +28324,25 @@ jobs:
       - engine/neuralweb/market_memory_retained_use.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
+      # Derived-closure coverage (compose with origin/main 7abc73b9): these
+      # concrete paths entered this job's own suite import closure when the
+      # shared theme-research kernel was registered (app/main.py:2293).
+      # `scope: exclusive` means declared paths REPLACE inference, so an
+      # undeclared closure file silently stops selecting this job.
+      - "app/theme_research.py"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/company_intelligence/guidance_history.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "engine/market_ontology/theme_research_registry.py"
+      - "engine/market_ontology/workspace_projection.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/transmission_chains.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -29180,6 +29827,9 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # Shared hook 2 (#7780): the leaf module the tracker builder above reads
+      # to decide which registered verticals mount on the board.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"

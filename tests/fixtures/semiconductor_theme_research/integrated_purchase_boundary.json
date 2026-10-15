@@ -1,0 +1,248 @@
+{
+  "synthetic": true,
+  "case_key": "integrated_purchase_boundary",
+  "task_refs": [
+    "T02",
+    "T07"
+  ],
+  "status": "ready",
+  "expected_regression": "Assembly plus contained parts refuses duplicate purchase total",
+  "assertions": {
+    "valid_assembly": {
+      "schema": "theme_graph.curation_assertion.v1",
+      "curation_revision": "gmirca_ca0203e110d295d1a430caa3e199dfc0",
+      "review": {
+        "disposition": "accepted",
+        "reviewed_at": "2026-04-02T09:00:00Z",
+        "reviewer": "fixture-reviewer",
+        "review_due_at": "2026-05-02T09:00:00Z"
+      },
+      "source": {
+        "publisher": "Example Trade Wire",
+        "source_uri": "https://example.invalid/press/meridian-q1-purchases",
+        "locator": "para-3",
+        "published_at": "2026-03-14",
+        "published_at_grain": "date",
+        "observed_at": "2026-03-15T08:00:00Z",
+        "retained_at": "2026-03-15T08:05:00Z",
+        "retention_ref": "retention:example-invalid-2026",
+        "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "subject": {
+        "company_node_id": null,
+        "source_business_label": "Meridian Wafer Systems",
+        "source_product_label": "Meridian integrated assembly line",
+        "source_platform_label": null,
+        "configuration": null
+      },
+      "object": {
+        "source_product_label": "Meridian integrated assembly line",
+        "configuration": null
+      },
+      "predicate": "REPORTED_FINANCIAL_MEASURE",
+      "statement_mode": "REPORTED_FACT",
+      "scope": {
+        "canonical_theme_id": "theme:semiconductors",
+        "application": "advanced packaging",
+        "technology_facet": "wafer-level packaging",
+        "region": "TW",
+        "period": "2026Q1",
+        "denominator": null
+      },
+      "observation": {
+        "value": 42,
+        "value_high": null,
+        "unit": "assembly",
+        "quantity_basis": "per_installation",
+        "gross_net_basis": "gross",
+        "stock_flow": "flow",
+        "estimate_status": "reported",
+        "precision": "integer"
+      },
+      "temporal": {
+        "business_valid_from": "2026-03-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": [
+          "the business publicly described the line"
+        ],
+        "does_not_establish": [
+          "shipping volume",
+          "revenue impact"
+        ],
+        "coverage": "single vendor press description",
+        "source_dependence": "vendor-authored claim",
+        "expiry_trigger": "the vendor withdraws the product page"
+      },
+      "correction": {
+        "predecessor_revision": null,
+        "reason": null
+      },
+      "authority": {
+        "can_rank": false,
+        "can_gate": false,
+        "can_size": false,
+        "can_originate": false,
+        "can_open_entry": false
+      },
+      "industrial_context": {
+        "local_objects": [
+          {
+            "selector": "asm:line-a",
+            "kind": "product",
+            "source_label": "Meridian integrated assembly line",
+            "manufacturer": "Meridian Wafer Systems",
+            "model": "MB-300",
+            "configuration": null
+          },
+          {
+            "selector": "cfg:mb300",
+            "kind": "configuration",
+            "source_label": "assembly configuration",
+            "manufacturer": null,
+            "model": null,
+            "configuration": "submodule-A"
+          }
+        ],
+        "relation": null,
+        "stage": null,
+        "stage_source_language": null,
+        "measure_scope": {
+          "value_basis": "purchase total",
+          "denominator": null,
+          "period_kind": "quarter",
+          "period_start": "2026-01-01",
+          "period_end": "2026-03-31",
+          "stock_flow": "flow",
+          "gross_net": null,
+          "wafer_diameter_mm": 300,
+          "currency": "USD",
+          "precision": "integer",
+          "estimate_status": "reported",
+          "purchase_boundary": "integrated_assembly"
+        },
+        "lineage_refs": [],
+        "interpretation": null
+      }
+    },
+    "double_count": {
+      "schema": "theme_graph.curation_assertion.v1",
+      "curation_revision": "gmirca_4b3191d9c9cd4e2c3ea0ae4ac3566827",
+      "review": {
+        "disposition": "accepted",
+        "reviewed_at": "2026-04-02T09:00:00Z",
+        "reviewer": "fixture-reviewer",
+        "review_due_at": "2026-05-02T09:00:00Z"
+      },
+      "source": {
+        "publisher": "Example Trade Wire",
+        "source_uri": "https://example.invalid/press/meridian-q1-purchases",
+        "locator": "para-3",
+        "published_at": "2026-03-14",
+        "published_at_grain": "date",
+        "observed_at": "2026-03-15T08:00:00Z",
+        "retained_at": "2026-03-15T08:05:00Z",
+        "retention_ref": "retention:example-invalid-2026",
+        "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "subject": {
+        "company_node_id": null,
+        "source_business_label": "Meridian Wafer Systems",
+        "source_product_label": "Meridian integrated assembly line",
+        "source_platform_label": null,
+        "configuration": null
+      },
+      "object": {
+        "source_product_label": "Meridian integrated assembly line",
+        "configuration": null
+      },
+      "predicate": "REPORTED_FINANCIAL_MEASURE",
+      "statement_mode": "REPORTED_FACT",
+      "scope": {
+        "canonical_theme_id": "theme:semiconductors",
+        "application": "advanced packaging",
+        "technology_facet": "wafer-level packaging",
+        "region": "TW",
+        "period": "2026Q1",
+        "denominator": null
+      },
+      "observation": {
+        "value": 42,
+        "value_high": null,
+        "unit": "assembly",
+        "quantity_basis": "per_installation",
+        "gross_net_basis": "gross",
+        "stock_flow": "flow",
+        "estimate_status": "reported",
+        "precision": "integer"
+      },
+      "temporal": {
+        "business_valid_from": "2026-03-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": [
+          "the business publicly described the line"
+        ],
+        "does_not_establish": [
+          "shipping volume",
+          "revenue impact"
+        ],
+        "coverage": "single vendor press description",
+        "source_dependence": "vendor-authored claim",
+        "expiry_trigger": "the vendor withdraws the product page"
+      },
+      "correction": {
+        "predecessor_revision": null,
+        "reason": null
+      },
+      "authority": {
+        "can_rank": false,
+        "can_gate": false,
+        "can_size": false,
+        "can_originate": false,
+        "can_open_entry": false
+      },
+      "industrial_context": {
+        "local_objects": [
+          {
+            "selector": "asm:line-a",
+            "kind": "product",
+            "source_label": "Meridian integrated assembly line",
+            "manufacturer": "Meridian Wafer Systems",
+            "model": "MB-300",
+            "configuration": null
+          },
+          {
+            "selector": "cfg:mb300",
+            "kind": "configuration",
+            "source_label": "assembly configuration",
+            "manufacturer": null,
+            "model": null,
+            "configuration": "MB-300"
+          }
+        ],
+        "relation": null,
+        "stage": null,
+        "stage_source_language": null,
+        "measure_scope": {
+          "value_basis": "purchase total",
+          "denominator": null,
+          "period_kind": "quarter",
+          "period_start": "2026-01-01",
+          "period_end": "2026-03-31",
+          "stock_flow": "flow",
+          "gross_net": null,
+          "wafer_diameter_mm": 300,
+          "currency": "USD",
+          "precision": "integer",
+          "estimate_status": "reported",
+          "purchase_boundary": "integrated_assembly"
+        },
+        "lineage_refs": [],
+        "interpretation": null
+      }
+    }
+  }
+}
