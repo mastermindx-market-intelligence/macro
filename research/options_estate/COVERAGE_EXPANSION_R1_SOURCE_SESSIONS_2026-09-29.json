@@ -1,0 +1,136 @@
+{
+  "canonical_store_reads": false,
+  "case": "Monday before close: row as_of Monday, GEX and skew clocks differ; compare with Friday through existing calendar",
+  "code_sha256": {
+    "lib/options_coverage.py": "dfc2785bc43958d0dfcdba8f4fcfa598f4a714abd01ab5253b809ef958bb8f43",
+    "scripts/audit_options_entry_coverage.py": "0233a27eaeceef21e3e031484eda38387035b3325c3601557a107ed90fc36d21",
+    "tests/test_options_coverage_object.py": "fc06320d4ca57557c242047b2fde6b3415ec37691e3e31e41eeec00afc154c1c"
+  },
+  "input_origin": "operation-owned two-ticker synthetic fixture, not production data",
+  "input_sha256": "1ce1b8213bfad2505eb726bf4a99c6a9af7adffbaa4f45a5199c87eba7973dbd",
+  "output_sha256": "0339181eb1dabd04795290df50bb29ec2cbd343778bbf134c7ac6b309267b949",
+  "preserved_gex_value_presence": {
+    "feature": "gex_confirm_verdict",
+    "n_nonnull": 2,
+    "n_total": 2,
+    "share_nonnull": 1.0
+  },
+  "production_changes": false,
+  "proof_class": "SYNTHETIC_REAL_AUDIT_WRITER",
+  "provider_calls": 0,
+  "source_session_coverage": {
+    "basis": "source_session_alignment_only",
+    "comparison_session": "2026-09-25",
+    "n_all_source_dates_matching": 0,
+    "n_duplicate_tickers": 0,
+    "n_invalid_ticker_rows": 0,
+    "n_rows": 2,
+    "n_tickers": 2,
+    "note": "Source dates are reported independently; matching dates do not qualify data. Older dates are relative to the comparison session, not a provider SLA verdict.",
+    "qualified_ticker_count": null,
+    "sources": {
+      "src_flow_asof": {
+        "column_present": true,
+        "counts": {
+          "conflict": 0,
+          "future_session": 0,
+          "invalid": 0,
+          "matching_session": 2,
+          "missing": 0,
+          "older_session": 0
+        },
+        "tickers_by_status": {
+          "conflict": [],
+          "future_session": [],
+          "invalid": [],
+          "matching_session": [
+            "AAPL",
+            "MU"
+          ],
+          "missing": [],
+          "older_session": []
+        }
+      },
+      "src_gex_asof": {
+        "column_present": true,
+        "counts": {
+          "conflict": 0,
+          "future_session": 0,
+          "invalid": 0,
+          "matching_session": 1,
+          "missing": 0,
+          "older_session": 1
+        },
+        "tickers_by_status": {
+          "conflict": [],
+          "future_session": [],
+          "invalid": [],
+          "matching_session": [
+            "AAPL"
+          ],
+          "missing": [],
+          "older_session": [
+            "MU"
+          ]
+        }
+      },
+      "src_ivspread_asof": {
+        "column_present": true,
+        "counts": {
+          "conflict": 0,
+          "future_session": 0,
+          "invalid": 0,
+          "matching_session": 2,
+          "missing": 0,
+          "older_session": 0
+        },
+        "tickers_by_status": {
+          "conflict": [],
+          "future_session": [],
+          "invalid": [],
+          "matching_session": [
+            "AAPL",
+            "MU"
+          ],
+          "missing": [],
+          "older_session": []
+        }
+      },
+      "src_skew_asof": {
+        "column_present": true,
+        "counts": {
+          "conflict": 0,
+          "future_session": 0,
+          "invalid": 0,
+          "matching_session": 1,
+          "missing": 0,
+          "older_session": 1
+        },
+        "tickers_by_status": {
+          "conflict": [],
+          "future_session": [],
+          "invalid": [],
+          "matching_session": [
+            "MU"
+          ],
+          "missing": [],
+          "older_session": [
+            "AAPL"
+          ]
+        }
+      }
+    },
+    "status": "measured"
+  },
+  "verification": {
+    "test_scope": [
+      "test_options_surface.py",
+      "test_options_universe_expansion.py",
+      "test_universe_history.py",
+      "test_check_script_import_pinning.py",
+      "test_options_coverage_object.py",
+      "test_audit_options_entry_coverage.py"
+    ],
+    "tests_passed": 189
+  }
+}

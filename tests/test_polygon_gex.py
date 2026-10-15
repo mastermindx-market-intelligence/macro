@@ -3361,3 +3361,23 @@ class TestAD1C01VintageProofContractCounts:
         assert recomputed_floor == vp["required_overlap"], (
             "an auditor recomputing the floor from the receipt's OWN fields "
             "must reproduce the SAME required_overlap the receipt reports")
+
+
+def test_legacy_snapshot_universe_is_not_expanded_by_thetadata_rollout(monkeypatch):
+    from scripts import build_polygon_gex as builder
+    cfg = {"symbols": ["SPY", "AAPL"], "include_baskets": False,
+           "max_underlyings": 2,
+           "daily_expansion": {"enabled": True, "target_stocks": 1000, "max_total_roots": 1500}}
+    monkeypatch.setattr(builder.config, "load", lambda: {"polygon": {"gex": cfg}})
+    class NoNetworkClient:
+        def enabled(self):
+            return True
+    monkeypatch.setattr(builder, "PolygonOptions", NoNetworkClient)
+    def no_expansion(*args, **kwargs):
+        raise AssertionError("legacy snapshot attempted expanded membership")
+    monkeypatch.setattr(eou, "plan_daily_expansion", no_expansion)
+    # Universe resolution precedes the existing session gate. Use a non-session
+    # so this real entry path cannot reach a provider or any store writer.
+    result = builder.accrue(date(2026, 9, 27))
+    assert result["status"] == "non_session"
+    assert cfg["daily_expansion"]["enabled"] is True
