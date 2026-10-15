@@ -8,7 +8,7 @@
   "scope_en": "United Kingdom national economy; FTSE 100 and FTSE 250 are market context.",
   "scope_zh": "英国全国经济；富时100与富时250仅作市场背景。",
   "asof": "2026-10-08",
-  "built": "2026-10-09 14:40 UTC",
+  "built": "2026-10-14 19:06 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -544,7 +544,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-03",
-      "age_days": 587,
+      "age_days": 592,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -552,7 +552,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 191,
+      "age_days": 196,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -560,7 +560,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-05",
-      "age_days": 161,
+      "age_days": 166,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -568,7 +568,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 69,
+      "age_days": 74,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"
@@ -626,6 +626,28 @@
         "publisher": "Bank of England",
         "source_key": "boe_news",
         "jurisdiction": "UK",
+        "title": "Minutes of the Money Market Committee meeting – September 2026",
+        "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+        "published": "2026-10-13T15:04:27+00:00",
+        "known_at": "2026-10-13T15:44:33.176801+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "CMORG holds sector-wide cloud outage simulation exercise",
+        "url": "https://www.bankofengland.co.uk/news/2026/october/cmorg-holds-sector-wide-cloud-outage-simulation-exercise",
+        "published": "2026-10-09T09:00:00+00:00",
+        "known_at": "2026-10-09T15:23:48.603541+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
         "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
         "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
         "published": "2026-10-07T23:01:00+00:00",
@@ -654,32 +676,10 @@
         "known_at": "2026-10-08T04:16:28.376473+00:00",
         "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
         "rights_state": "VERIFIED_PUBLIC_REUSE"
-      },
-      {
-        "publisher": "Bank of England",
-        "source_key": "boe_news",
-        "jurisdiction": "UK",
-        "title": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
-        "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
-        "published": "2026-10-07T09:08:40+00:00",
-        "known_at": "2026-10-08T04:16:28.376473+00:00",
-        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
-        "rights_state": "VERIFIED_PUBLIC_REUSE"
-      },
-      {
-        "publisher": "Bank of England",
-        "source_key": "boe_news",
-        "jurisdiction": "UK",
-        "title": "Regulatory thresholds set to shift to automatic increases",
-        "url": "https://www.bankofengland.co.uk/news/2026/october/regulatory-thresholds-set-to-shift-to-automatic-increases",
-        "published": "2026-10-07T09:00:00+00:00",
-        "known_at": "2026-10-07T13:12:47.405757+00:00",
-        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
-        "rights_state": "VERIFIED_PUBLIC_REUSE"
       }
     ],
     "stance": {
-      "label": "supportive",
+      "label": "routine",
       "provider_label": "assistant",
       "authoritative": false
     },

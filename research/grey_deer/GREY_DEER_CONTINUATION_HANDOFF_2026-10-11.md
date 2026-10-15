@@ -4,7 +4,8 @@
 · **Carrier key:** `grey-deer-fable-orchestration-20261003-001` · **Seat:** Claude Code Fable 5.1
 principal (session `da1ad7ad-6fbb-45a4-8a6a-46cee9cadc62`, Macro worktree
 `claude/14851c4656838a3b/grey-deer-fable-continuation-32b5d5`). **Continued 2026-10-13** by the same
-session on Opus 5.5 (W4 run + W5); the wave table, lane matrix and ledger below carry that state.
+session on Opus 5.5 (W4 run + W5), and again on 2026-10-14 (W7 + W8, all merged); the wave table,
+lane matrix and ledger below carry that state.
 
 This is the resumption file (fable-mode L.1). A cold successor reads this file, the latest
 `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-*.md`, and the Slack thread from the last consumed
@@ -43,8 +44,10 @@ counterpart edge, then resumes in one cycle. It is updated at wave boundaries; i
 | W1 Foundations | O1/T02 source-clock-basis-rights qualification; O7/T03 publication-health note; O8/T22 preregistration | three docs MERGED; every pullback feed has a rights disposition (`recorded` / `source_unavailable`); prereg frozen with sha256 before any outcome inspection; GH001 + heartbeat repairs routed to owners on their carriers | DONE (T02 `565d883c2657`; T03 `f1ae1e0365fc`, PRODUCTION_PROOF 2026-10-13 `ed391bf44d44`; T22 #8852 `8145c6e2e584`) |
 | W2 Observed-move primitives | PIT, basis-correct 5/10/21-session local-move primitives + tests, off the render path | MERGED, CI green, no `data/`/`site/` writes from the render budget, nulls printed | DONE (#8854 `21088b534599`) |
 | W3 Consumer qualification | evaluate under the frozen prereg; #8721 consumed read-only through CI | results doc with honest episode N, blocked OOS + purge, abstention rate, negative results preserved; Opus READ_ONLY red-team before presenting | DONE (#8938 `6a6f7b05c6bb`: stage-1 SPY null, INC deviation logged) |
-| W4 Repair + widen + design | stage-1 red team and repairs; stage-1b pooled 14-ETF panel under prereg v1.1 (frozen with blob pins before the run); prospective-lane design; G3 CN evidence; heartbeat expected-session check (G-HB) | each doc/runner MERGED; prereg v1.1 + manifest v1.1.0 frozen before any panel outcome; one execution; red team answered by a dated addendum, never by editing results | DONE except the run: #9082 `6b4bb403e4f9`, #9070 `8f25c9b54852` (G-HB, PRODUCTION_PROOF 2026-10-13 `ed391bf44d44`), #9091 `bb8da347eca1`, #9114 `c36e57ec65b4`; stage-1b results + addendum #9122 (0/12) in CI |
-| W5 Prospective lane | the frozen SPY lane runs in the nightly: writer, grader, refusals log, readiness reporter, heartbeat + grading-closure enrollment | MERGED; first nightly after merge writes `data/grey_deer_pullback/forward_log.jsonl` with SPY rows and no `grey-deer-pullback-*-error` annotation; nothing appended to `data/trial_ledger.jsonl` | #9128 in CI (CI wiring repaired 2026-10-13) |
+| W4 Repair + widen + design | stage-1 red team and repairs; stage-1b pooled 14-ETF panel under prereg v1.1 (frozen with blob pins before the run); prospective-lane design; G3 CN evidence; heartbeat expected-session check (G-HB) | each doc/runner MERGED; prereg v1.1 + manifest v1.1.0 frozen before any panel outcome; one execution; red team answered by a dated addendum, never by editing results | DONE except the run: #9082 `6b4bb403e4f9`, #9070 `8f25c9b54852` (G-HB, PRODUCTION_PROOF 2026-10-13 `ed391bf44d44`), #9091 `bb8da347eca1`, #9114 `c36e57ec65b4`; stage-1b results + addendum #9122 (0/12) `1e9364f5ab8c` |
+| W5 Prospective lane | the frozen SPY lane runs in the nightly: writer, grader, refusals log, readiness reporter, heartbeat + grading-closure enrollment | MERGED; first nightly after merge writes `data/grey_deer_pullback/forward_log.jsonl` with SPY rows and no `grey-deer-pullback-*-error` annotation; nothing appended to `data/trial_ledger.jsonl` | MERGED #9128 `af468522ab6e`; PRODUCTION_PROOF waits for the first nightly whose head descends from it |
+| W7 Grok fan-out | PBOC liquidity read (GD-4C), T12 episode samples + T19 B2 masks, T13/T14/T19 prereg drafts, panel addendum draft, GD-9A census, W5 adversarial review + repairs | each lane judged by artifact; drafts stay unfrozen and spend no trial budget; integration PR MERGED | DONE (#9208 `ed1497887c99`; review repairs folded into #9128) |
+| W8 Research follow-up | readiness-floor projection (exploratory); panel episode-rule options for a v1.2 prereg (draft memo) | reads only blob-pinned committed results; artifacts regenerate byte-equal; MERGED | DONE (#9215 `54195c10bbeb`) |
 | W6 Integration + acceptance | warning-delivery dependency (#8132 lineage) only after publication continuity is proven; HOLDs intact | production proof on the live surface (authenticated HTTP 200, four authority booleans false); Sol/Chairman checkpoints per the wave matrix §6 | after the prospective lane reaches its power floor |
 
 Pre-mortem tripwires (O.15): (a) a lane writes into #8721/#8188 paths → freeze, one owner; (b) Yahoo
@@ -66,8 +69,10 @@ seat posts for this key → search the key before every once-per-operation act.
 | W2 primitives | this seat | `lib/observed_moves.py` + tests | PR | MERGED (PR #8854, `21088b534599`) |
 | W3 stage-1 run | this seat | `PULLBACK_STAGE1_RESULTS_2026-10-11.*`, deviation log | PR | MERGED (PR #8938, `6a6f7b05c6bb`): null |
 | W4 G-HB / docs / runner / freeze | this seat + Grok lanes | heartbeat expected-session check; red team, diagnosis, lane design, G3 evidence; stage-1b runner; v1.1 freeze | PRs | MERGED: #9070 `8f25c9b54852`, #9082 `6b4bb403e4f9`, #9091 `bb8da347eca1`, #9114 `c36e57ec65b4` |
-| W4 stage-1b run | this seat (one execution) + GD-W5-REDTEAM / ADDENDUM Grok lanes (mmx-ubuntu3) | `pullback_stage1b/` results + addendum; latent-red test fix | PR #9122, hand-merge on concluded green | CI |
-| W5 prospective lane | this seat (integration) + GD-W5 Grok build lanes (mmx-ubuntu0/2/3) | forward writer, grader, nightly entry, readiness reporter, daily.yml/DAG/synapse/heartbeat/grading-closure enrollment, CI job `grey-deer-pullback-forward` | PR #9128, hand-merge on concluded green | CI (contract-delta wiring repaired 2026-10-13) |
+| W4 stage-1b run | this seat (one execution) + GD-W5-REDTEAM / ADDENDUM Grok lanes (mmx-ubuntu3) | `pullback_stage1b/` results + addendum; latent-red test fix | PR #9122 | MERGED (`1e9364f5ab8c`) |
+| W5 prospective lane | this seat (integration) + GD-W5 Grok build lanes (mmx-ubuntu0/2/3) | forward writer, grader, nightly entry, readiness reporter, daily.yml/DAG/synapse/heartbeat/grading-closure enrollment, CI job `grey-deer-pullback-forward` | PR #9128 | MERGED (`af468522ab6e`); production read pending |
+| W7 integration | this seat + 13 Grok lanes (mmx-ubuntu0/1/2/3; receipts in the 2026-10-14 handoff) | `engine/china_pboc_liquidity.py`, `scripts/research/grey_deer_episode_samples.py`, T13/T14/T19 + panel drafts, GD-9A census, CI jobs | PR #9208 | MERGED (`ed1497887c99`) |
+| W8 follow-up | this seat + FLOORPROJ (mmx-ubuntu2) / D9ALT (mmx-ubuntu3) | `pullback_floor_projection/`, `pullback_episode_rule_options/`, two memos, two scripts + 21 tests | PR #9215 | MERGED (`54195c10bbeb`) |
 | Fabric dispatch | Executive OS | — | — | BLOCKED (enrollment gate; named, not routed around). Labor runs as direct Grok CLI lanes (§0 item 4). |
 
 ## 3. Ledger
@@ -140,12 +145,13 @@ seat posts for this key → search the key before every once-per-operation act.
 3. ~~O7/T03 publication-health note + heartbeat repair + owner routing comments → PR → merge → production read.~~ DONE: PR #8835 squash `f1ae1e0365fc`; MERGED edge `1791741691.143669`; PRODUCTION_PROOF 2026-10-13 `ed391bf44d44` (see O-g).
 4. ~~O8/T22 preregistration → Opus READ_ONLY audit → freeze → PR → merge.~~ DONE: PR #8852 `8145c6e2e584`.
 5. ~~W2 primitives; W3 stage-1; W4 repairs, runner, freeze.~~ DONE (§2).
-6. PR #9122 (stage-1b results + addendum) and PR #9128 (W5 forward lane): hand-merge each on concluded
-   green with `--match-head-commit`, then check landing by blob compare against a freshly fetched
-   `origin/main`. Neither is armed for merge-on-green.
-7. After #9128 merges, read the first nightly: `data/grey_deer_pullback/forward_log.jsonl` has SPY
-   rows, `forward_log_refusals.jsonl` explains any refusal, and there is no
-   `grey-deer-pullback-*-error` annotation. (O-g closed 2026-10-13; see OPEN.)
+6. ~~PR #9122 and PR #9128: hand-merge on concluded green, then check landing.~~ DONE 2026-10-14:
+   #9122 `1e9364f5ab8c`, #9128 `af468522ab6e`, #9208 (W7) `ed1497887c99`, #9215 (W8) `54195c10bbeb`; every
+   landing checked by per-path blob compare against a freshly fetched `origin/main`.
+7. Read the first nightly whose head descends from `af468522ab6e`:
+   `data/grey_deer_pullback/forward_log.jsonl` has SPY rows, `forward_log_refusals.jsonl` explains any
+   refusal, and there is no `grey-deer-pullback-*-error` annotation. On clean rows, record W5 at
+   PRODUCTION_PROOF in a records PR. (O-g closed 2026-10-13; see OPEN.)
 8. Grading accrues as each horizon elapses. `scripts/research/grey_deer_pullback_readiness.py` reports
    when the prereg power floor can be met. Nothing is promoted before that and the gauntlet.
 9. Never re-run stage-1 or stage-1b on real data. A new configuration is a new prereg revision with
@@ -163,6 +169,7 @@ seat posts for this key → search the key before every once-per-operation act.
 - Packet of record: `research/grey_deer/GREY_DEER_FABLE_HANDOFF_2026-10-11.md` (PR #8772) and `#8128` comment 5975760082.
 - W0 receipt: `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md`.
 - W4 run + W5 receipt: `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md`.
+- W7 + W8 receipt (13 Grok lane receipts): `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md`.
 - Prior acceptance: `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-08-27-GD3-DONE.md`.
 - Incident notes: this seat's T03 note is `research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md`. The 2026-10-08 note proposed in #8128 comment 6072335386 already exists in held PR #8648 at `8473e82a67c9` (`research/grey_deer/incidents/2026-10-08_QL_GH001_NIGHTLY_ISSUER_PUBLICATION.md`); it is held-frontier and never written by this seat.
 - Price-basis law: `lib/dataos/price.py` (`AdjustmentBasis`, `adjustment_asof`); `DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT`.
