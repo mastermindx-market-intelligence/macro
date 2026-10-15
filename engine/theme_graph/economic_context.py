@@ -37,6 +37,62 @@ def _unavailable(code: str) -> dict[str, Any]:
             "context": None, "authority": "context_only"}
 
 
+def _project_selected(admission: native.Admission, request: native.Request, selected: dict) -> dict[str, Any]:
+    """Internal rendering of a same-request native read, not an admission API."""
+    if (type(selected) is not dict
+            or selected.get("schema") != NATIVE_SCHEMA
+            or selected.get("authority") != "context_only"
+            or selected.get("reference") != admission.reference.payload()
+            or selected.get("edition") != admission.edition.payload()
+            or selected.get("generation") != admission.generation):
+        return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
+    fact = selected.get("fact")
+    timing = selected.get("source_timing")
+    if (type(fact) is not dict or not REQUIRED_FIELDS <= fact.keys()
+            or type(timing) is not dict
+            or set(timing) != {"published_date", "published_at",
+                              "publication_precision", "known_at"}):
+        return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
+    if (fact["kind"] != "product_integration" or fact["lifecycle"] != "planned"
+            or fact["amount"] is not None or fact["economic_share"] is not None):
+        return _unavailable("ECONOMIC_SPECIES_NOT_MAPPED")
+    context = {
+        "usage": {"purpose": request.purpose, "audience": request.audience},
+        "relationship": {k: fact[k] for k in (
+            "kind", "lifecycle", "subject_id", "object_id", "product",
+            "platform", "amount", "economic_share",
+        )},
+        "provenance": {
+            "fact_id": fact["fact_id"], "revision": fact["revision"],
+            "reference": selected["reference"], "edition": selected["edition"],
+            "generation": selected["generation"],
+        },
+        "timing": {
+            "source_published_date": timing["published_date"],
+            "source_published_at": timing["published_at"],
+            "publication_precision": timing["publication_precision"],
+            "edition_known_at": timing["known_at"],
+            "fact_known_at": admission.known_at,
+            "identity_mode": admission.identity_mode,
+            "query_mode": request.mode, "query_as_of": request.as_of,
+        },
+        "mapping": {
+            "state": "native_fact_context_only",
+            "legacy_theme_graph_edge": None, "propagation_hypothesis": None,
+            "reason": "PLANNED_INTEGRATION_MAPPING_NOT_ADOPTED",
+        },
+        "limitations": {
+            "current_plan_established": False,
+            "current_commercial_relationship_established": False,
+            "fulfilled_shipment_established": False,
+            "economic_sensitivity_established": False,
+            "historical_identity_inferred": False,
+        },
+    }
+    return {"schema": SCHEMA, "status": "available", "reason": None,
+            "context": deepcopy(context), "authority": "context_only"}
+
+
 def read_economic_context(
     store: object,
     authority: native.DisclosureAuthority,
@@ -73,57 +129,6 @@ def read_economic_context(
         selected = native.read_disclosure(
             store, authority, request, expected_admission=admission,
         )
-        if (type(selected) is not dict
-                or selected.get("schema") != NATIVE_SCHEMA
-                or selected.get("authority") != "context_only"
-                or selected.get("reference") != admission.reference.payload()
-                or selected.get("edition") != admission.edition.payload()
-                or selected.get("generation") != admission.generation):
-            return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
-        fact = selected.get("fact")
-        timing = selected.get("source_timing")
-        if (type(fact) is not dict or not REQUIRED_FIELDS <= fact.keys()
-                or type(timing) is not dict
-                or set(timing) != {"published_date", "published_at",
-                                  "publication_precision", "known_at"}):
-            return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
-        if (fact["kind"] != "product_integration" or fact["lifecycle"] != "planned"
-                or fact["amount"] is not None or fact["economic_share"] is not None):
-            return _unavailable("ECONOMIC_SPECIES_NOT_MAPPED")
-        context = {
-            "usage": {"purpose": request.purpose, "audience": request.audience},
-            "relationship": {k: fact[k] for k in (
-                "kind", "lifecycle", "subject_id", "object_id", "product",
-                "platform", "amount", "economic_share",
-            )},
-            "provenance": {
-                "fact_id": fact["fact_id"], "revision": fact["revision"],
-                "reference": selected["reference"], "edition": selected["edition"],
-                "generation": selected["generation"],
-            },
-            "timing": {
-                "source_published_date": timing["published_date"],
-                "source_published_at": timing["published_at"],
-                "publication_precision": timing["publication_precision"],
-                "edition_known_at": timing["known_at"],
-                "fact_known_at": admission.known_at,
-                "identity_mode": admission.identity_mode,
-                "query_mode": request.mode, "query_as_of": request.as_of,
-            },
-            "mapping": {
-                "state": "native_fact_context_only",
-                "legacy_theme_graph_edge": None, "propagation_hypothesis": None,
-                "reason": "PLANNED_INTEGRATION_MAPPING_NOT_ADOPTED",
-            },
-            "limitations": {
-                "current_plan_established": False,
-                "current_commercial_relationship_established": False,
-                "fulfilled_shipment_established": False,
-                "economic_sensitivity_established": False,
-                "historical_identity_inferred": False,
-            },
-        }
-        return {"schema": SCHEMA, "status": "available", "reason": None,
-                "context": deepcopy(context), "authority": "context_only"}
+        return _project_selected(admission, request, selected)
     except native.DisclosureError as exc:
         return _unavailable(exc.code)

@@ -1,58 +1,50 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ROIV-BULL-20260805",
-  "asof": "2026-10-14",
+  "asof": "2026-10-15",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 40.6,
-  "raw_confidence": 39.1,
-  "delta_vs_base": -19.4,
-  "recommended_action": null,
+  "management_confidence": 38.5,
+  "raw_confidence": 36.0,
+  "delta_vs_base": -21.5,
+  "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 74.2,
+    "validity": 64.3,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.801,
+    "dist_to_stop_r": 0.721,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 151.1,
-    "p1": -0.1325,
-    "p2": -0.0662,
+    "horizon_pct_used": 153.3,
+    "p1": -0.1859,
+    "p2": -0.093,
     "p3": null,
-    "move_r": -0.199,
+    "move_r": -0.279,
     "mfe_r": 0.51,
-    "mae_r": -0.201
+    "mae_r": -0.279
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.470001373291012,
-  "_mae": -2.159999694824222,
+  "_mae": -2.9900015258789097,
   "_max_p1": 0.3401742147569038,
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 68,
-  "tau": 1.5111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-08",
-    "run_asof": "2026-10-14",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 69,
+  "tau": 1.5333
 }
