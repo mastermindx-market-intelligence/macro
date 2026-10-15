@@ -32,6 +32,8 @@ def _finite_positive(value: object) -> float | None:
 
 def _saved_series(source_evidence: object, series_id: str, ref: str, digest: str, *, expected_basis: str, expected_tip: str) -> bool:
     """Require one unambiguous exact-source witness, never a global source OK."""
+    if type(expected_basis) is not str or not expected_basis.strip():
+        return False
     if type(source_evidence) is not list:
         return False
     candidates = [item for item in source_evidence
@@ -45,7 +47,9 @@ def _saved_series(source_evidence: object, series_id: str, ref: str, digest: str
         and item.get("basis_state") == "accepted"
         and type(item.get("decision_ref")) is str
         and item["decision_ref"].strip()
-        and item.get("adjustment_basis") == expected_basis
+        and type(item.get("adjustment_basis")) is str
+        and item["adjustment_basis"].strip()
+        and item["adjustment_basis"] == expected_basis
         and item.get("latest_completed_observation") == expected_tip
         and item.get("calendar_ref") == "intl-conservative-observed-eod-tplus2-v1"
     )

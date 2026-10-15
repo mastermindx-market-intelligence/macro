@@ -242,3 +242,42 @@ def test_wrong_adjustment_basis_withholds_only_affected_chart(inputs):
     next(row for row in bad if row["series_id"]=="^N225")["adjustment_basis"] = "unknown-or-unadjusted"
     result = _project(view, chart, bad)
     assert [line["market_id"] for line in result["series"]] == ["GB"]
+
+
+# Null/missing adjustment-basis source admission regression (PR #8890).
+@pytest.mark.parametrize("mode", ["missing", "null", "empty", "spaces", "numeric"])
+def test_r10_missing_adjustment_basis_cannot_match_missing_witness(mode):
+    from lib.intl_chart_publication import _saved_series
+    tip = "2026-10-09T00:00:00"
+    witness = {
+        "series_id":"^N225", "source_reference":REF,
+        "content_sha256":"a"*64, "basis_state":"accepted",
+        "decision_ref":"saved-parquet:sha256:"+"b"*64,
+        "adjustment_basis":"yfinance:auto_adjust=true:observed-close",
+        "latest_completed_observation":tip,
+        "calendar_ref":"intl-conservative-observed-eod-tplus2-v1",
+    }
+    bad = None if mode in ("missing", "null") else ("" if mode == "empty" else (" " if mode == "spaces" else 0))
+    if mode == "missing": witness.pop("adjustment_basis")
+    else: witness["adjustment_basis"] = bad
+    assert not _saved_series([witness], "^N225", REF, "a"*64,
+                             expected_basis=bad, expected_tip=tip)
+
+@pytest.mark.parametrize("mode", ["missing", "null", "empty", "spaces", "numeric"])
+def test_r10_missing_basis_withholds_only_dependent_chart_market(inputs, mode):
+    from engine.intl_inputs import countries
+    view, chart, evidence = _case(inputs)
+    bases = {symbol:"yfinance:auto_adjust=true:observed-close"
+             for m in countries().values() for symbol in (m["index"],m["fx"])}
+    row = next(x for x in evidence if x["series_id"] == "^N225")
+    bad = None if mode in ("missing", "null") else ("" if mode == "empty" else (" " if mode == "spaces" else 0))
+    if mode == "missing":
+        bases.pop("^N225")
+        row.pop("adjustment_basis")
+    else:
+        bases["^N225"] = bad
+        row["adjustment_basis"] = bad
+    result = build_source_bound_charts(view, chart, source_evidence=evidence,
+        adjustment_bases=bases, snapshot_date=chart["records"][0]["window"]["end"][:10])
+    assert [r["market_id"] for r in result["series"]] == ["GB"]
+    assert result["status"] == "partial"
