@@ -126,10 +126,13 @@ def _history_publication_sources(receipts):
 
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
-                           history_sources=None):
+                           history_sources=None, chart_source_sink=None):
     """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
+    if chart_source_sink is not None and (
+            type(chart_source_sink) is not dict or chart_source_sink):
+        raise ValueError("invalid_international_chart_sink")
     generation = "im-workspace-generation:" + str(uuid4())
     publication_inputs = None
     try:
@@ -160,6 +163,10 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
             "as_of": closes.index[-1].date().isoformat(),
             "policy": "intl-conservative-observed-eod-tplus2-v1",
         }
+        if chart_source_sink is not None:
+            # Private, transient source-bound pair: templates never receive
+            # the dataframe, saved evidence or disclosure decisions.
+            chart_source_sink["sources"] = (closes, publication_inputs)
     registry = {
             "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
                         for cc, row in countries().items()],
@@ -1057,12 +1064,14 @@ def main() -> int:
             perf.pop("bench", None)
 
         workspace = None
+        chart_source_sink = {}
         try:
             workspace = _publication_workspace(
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
                 history_sources=_history_publication_sources(_intl_history_receipts),
+                chart_source_sink=chart_source_sink,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
@@ -1109,7 +1118,10 @@ def main() -> int:
                                     "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             log.error("International Library copy unavailable (%s)", type(exc).__name__)
-        macro_html, stocks_html = render_international_pages(tmpl, vm, catalogue=catalogue)
+        macro_html, stocks_html = render_international_pages(
+            tmpl, vm, catalogue=catalogue,
+            chart_sources=chart_source_sink.get("sources"),
+        )
         write_page(site / "intl.html", macro_html)
         write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",
