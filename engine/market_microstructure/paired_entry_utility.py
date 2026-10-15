@@ -383,6 +383,9 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         **policy_freeze,
         horizon_trading_minutes=30, original_decision_ns=decision,
         horizon_end_ns=endpoint, evaluation_cutoff_ns=cutoff,
+        source_watermark_ns=through, watermark_received_ns=arrived,
+        market_health=market_health,
+        market_health_receipt_sha256=market_health_receipt_sha256,
         policy_count=2, forward_outcome_available_to_original_decision=False,
         source_authenticated=False, simulated_execution_not_fill=True,
         calendar_qualified_by_this_function=False, actual_consumer_delivery_proven=False,
@@ -561,6 +564,8 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             "baseline_policy_state", "challenger_policy_state",
             "horizon_trading_minutes", "original_decision_ns", "horizon_end_ns",
             "evaluation_cutoff_ns", "policy_count",
+            "source_watermark_ns", "watermark_received_ns",
+            "market_health", "market_health_receipt_sha256",
             "forward_outcome_available_to_original_decision",
             "source_authenticated", "simulated_execution_not_fill",
             "calendar_qualified_by_this_function",
@@ -624,10 +629,34 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             row["supplied_input_first_knowable_not_consumer_receipt"] is not True,
         )):
             raise ValueError("cohort: source identity or authority changed")
-        _clock(row["evaluation_cutoff_ns"], "evaluation.cutoff")
+        cutoff = _clock(row["evaluation_cutoff_ns"], "evaluation.cutoff")
+        through = _clock(row["source_watermark_ns"], "evaluation.source_watermark")
+        received = _clock(row["watermark_received_ns"], "evaluation.watermark_received")
+        _sha(row["market_health_receipt_sha256"], "evaluation.market_health_receipt")
+        health = row["market_health"]
+        if type(health) is not str or health not in ("NORMAL", "HALTED", "UNKNOWN"):
+            raise ValueError("cohort: unrecognized market health")
+        if received < through:
+            raise ValueError("cohort: watermark receipt before source time")
+        mature = (cutoff > identity["horizon_end_ns"]
+                  and through >= identity["horizon_end_ns"]
+                  and received < cutoff)
         state = row["state"]
         if type(state) is not str or state not in COHORT_STATES:
             raise ValueError("cohort: unrecognized evaluation outcome")
+        # Preserve the original evaluator's precedence: source maturity is
+        # checked BEFORE market health. A client cannot cherry-pick an
+        # unfavourable completed pair and call it immature or market-censored.
+        if state == "NOT_MATURE":
+            if mature:
+                raise ValueError("cohort: false maturity status for ready evidence")
+        elif not mature:
+            raise ValueError("cohort: premature outcome chronologically impossible without matured watermark")
+        elif state == "CENSORED":
+            if health == "NORMAL":
+                raise ValueError("cohort: false market health censorship")
+        elif health != "NORMAL":
+            raise ValueError("cohort: false outcome: market health forbids measured outcome")
         if state == "PAIRED_RESEARCH_UTILITY":
             if row["reason"] is not None:
                 raise ValueError("cohort: paired output cannot have refusal reason")

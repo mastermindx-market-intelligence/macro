@@ -1102,3 +1102,80 @@ def test_one_ns_before_nyse_close_still_eligible_same_original_horizon():
     reconciled=accounted([registered_row(shifted)],[observed])
     assert reconciled["n_complete_software_pairs"]==1
     assert reconciled["empirical_source_qualified"] is False
+
+
+# The former cohort accountant trusted the outcome's status label without the
+# market-health or watermark inputs used to derive it. A completed unfavorable
+# pair could be relabelled NOT_MATURE/CENSORED and silently omitted from the
+# measured subset. The supplied health and watermark evidence must be
+# conserved with the actual row and checked against the claimed state.
+@pytest.mark.parametrize(("false_state","false_reason"), [
+    ("NOT_MATURE","HORIZON_OR_WATERMARK_NOT_KNOWABLE"),
+    ("CENSORED","HALTED_OR_UNKNOWN_MARKET"),
+])
+def test_fabricated_market_maturity_or_censoring_cannot_hide_completed_pair(
+        false_state,false_reason):
+    a=setup()
+    row=run(a)
+    assert row["state"]=="PAIRED_RESEARCH_UTILITY"
+    row.update(state=false_state,reason=false_reason,
+               baseline_bps=None,challenger_bps=None,delta_bps=None,
+               supplied_input_first_knowable_ns=None)
+    with pytest.raises(ValueError,match="maturity|market health"):
+        accounted([registered_row(a)],[row])
+
+
+def test_actual_market_censoring_cannot_relabel_as_measured_utility():
+    a=setup()
+    a["market_health"]="HALTED"
+    row=run(a)
+    genuine=run(setup())
+    row.update(state="PAIRED_RESEARCH_UTILITY",reason=None,
+               baseline_bps=genuine["baseline_bps"],
+               challenger_bps=genuine["challenger_bps"],
+               delta_bps=genuine["delta_bps"],
+               supplied_input_first_knowable_ns=genuine["supplied_input_first_knowable_ns"])
+    with pytest.raises(ValueError,match="market health"):
+        accounted([registered_row(a)],[row])
+
+
+
+def test_reported_mature_pair_cannot_hide_immature_source_watermark():
+    a=setup()
+    row=run(a)
+    row["source_watermark_ns"]=a["candidate"]["horizon_end_ns"]-1
+    with pytest.raises(ValueError,match="premature outcome"):
+        accounted([registered_row(a)],[row])
+
+
+def test_reported_mature_pair_requires_watermark_received_before_cutoff():
+    a=setup()
+    row=run(a)
+    row["watermark_received_ns"]=a["evaluation_cutoff_ns"]
+    with pytest.raises(ValueError,match="premature outcome"):
+        accounted([registered_row(a)],[row])
+
+
+def test_genuine_censoring_retains_source_health_and_maturity_evidence():
+    a=setup()
+    a["market_health"]="HALTED"
+    observed=run(a)
+    assert observed["state"]=="CENSORED"
+    assert observed["market_health"]=="HALTED"
+    assert observed["source_watermark_ns"]>=a["candidate"]["horizon_end_ns"]
+    assert observed["market_health_receipt_sha256"]==a["market_health_receipt_sha256"]
+    paired=accounted([registered_row(a)],[observed])
+    assert paired["by_state"]["CENSORED"]==1
+    assert paired["n_complete_software_pairs"]==0
+
+
+def test_genuine_immature_horizon_keeps_original_watermark_evidence():
+    a=setup()
+    a["source_watermark_ns"]=a["candidate"]["horizon_end_ns"]-1
+    observed=run(a)
+    assert observed["state"]=="NOT_MATURE"
+    assert observed["source_watermark_ns"]<observed["horizon_end_ns"]
+    reported=accounted([registered_row(a)],[observed])
+    assert reported["by_state"]["NOT_MATURE"]==1
+    assert reported["observed_pair_subset_mean_bps"] is None
+    assert reported["source_authenticated"] is False
