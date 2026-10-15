@@ -25,6 +25,14 @@ function record(ticker, {limited = false, name = ticker + ' fixture'} = {}) {
     ladder:{state:'NEUTRAL', points:[], entry:{}, cycle_plain:{}}, cycle:{}, tech:{price:123},
     fundamentals:{valuation:{pe:17}}, analyst:{}, earnings:{}, positioning:{}};
 }
+async function renderedStock(page, ticker, name = ticker + ' fixture') {
+  // A fulfilled request or network-idle page can precede response.json() and
+  // the inline controller's commit. Wait for the actual record being asserted.
+  await page.waitForFunction(expected =>
+    document.getElementById('r_name').textContent === expected &&
+    document.getElementById('result').style.display !== 'none' &&
+    document.getElementById('lookup_status').textContent === '', name + ' (' + ticker + ')');
+}
 async function setup(t, lang = 'en', {initialHash='', indexStatus=200, realChart=false} = {}) {
   const context = await browser.newContext();
   t.after(() => context.close());
@@ -105,12 +113,12 @@ for (const lang of ['en','zh']) for (const status of [404, 503]) test(`current l
 
 test('pending lookup hides prior analysis without moving input focus', async t => {
   const {page, select, reply}=await setup(t);
-  await select('OLD'); await reply('OLD'); await page.waitForLoadState('networkidle');
+  await select('OLD'); await reply('OLD'); await renderedStock(page,'OLD');
   await page.locator('#q').focus(); await select('NEXT');
   assert.equal(await page.locator('#result').isVisible(), false);
   assert.equal(await page.locator('#q').evaluate(n=>n===document.activeElement), true);
   assert.match(await page.locator('#lookup_status').innerText(), /NEXT/);
-  await reply('NEXT'); await page.waitForLoadState('networkidle');
+  await reply('NEXT'); await renderedStock(page,'NEXT');
   assert.equal(await page.locator('#result').isVisible(), true);
 });
 
@@ -131,13 +139,14 @@ test('latest request wins even when a preference change requests the same ticker
   await reply('SAME', record('SAME',{name:'Obsolete'})); await settled;
   await page.evaluate(()=>new Promise(requestAnimationFrame));
   assert.equal(await page.locator('#result').isVisible(), false);
-  await reply('SAME', record('SAME',{name:'Current'})); await page.waitForLoadState('networkidle');
+  await reply('SAME', record('SAME',{name:'Current'})); await renderedStock(page,'SAME','Current');
   assert.equal(await page.locator('#r_name').innerText(), 'Current (SAME)');
 });
 
 test('selecting the same ticker retries a failed lookup through the native search control', async t => {
   const {page, select, reply, requested}=await setup(t);
-  await select('RETRY'); await reply('RETRY', {}, 503); await page.waitForLoadState('networkidle');
+  await select('RETRY'); await reply('RETRY', {}, 503);
+  await page.waitForFunction(()=>document.getElementById('lookup_status').textContent.includes('could not be loaded'));
   const retry=requested('RETRY');
   await page.locator('#q').fill('RETRY'); await page.locator('#q').press('Enter');
   // The visible loading state is the bounded assertion; do not await a request
@@ -153,7 +162,7 @@ for (const lang of ['en','zh']) test(`deep-linked record can load when the optio
   const {page, reply, initialRequest}=await setup(t,lang,{initialHash:'DIRECT',indexStatus:503});
   await page.waitForFunction(()=>document.getElementById('lookup_status').textContent.includes('DIRECT'));
   await initialRequest; await reply('DIRECT',record('DIRECT',{limited:true}));
-  await page.waitForLoadState('networkidle');
+  await renderedStock(page,'DIRECT');
   assert.equal(await page.locator('#r_name').innerText(), 'DIRECT fixture (DIRECT)');
   assert.equal(await page.locator('#result').isVisible(), true);
 });
@@ -161,7 +170,7 @@ for (const lang of ['en','zh']) test(`deep-linked record can load when the optio
 
 for (const limited of [false,true]) test(`leaving a ${limited?'limited':'full'} stock retires its fullscreen chart before the next lookup settles`,async t=>{
   const {page,select,reply}=await setup(t,'en',{realChart:true});
-  await select('OLD'); await reply('OLD',record('OLD',{limited})); await page.waitForLoadState('networkidle');
+  await select('OLD'); await reply('OLD',record('OLD',{limited})); await renderedStock(page,'OLD');
   await page.locator('.bchart-fsbtn').click();
   assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),true);
   await page.evaluate(()=>{window.retiredChart=StockChart._cur;});
