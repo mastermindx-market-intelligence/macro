@@ -15,11 +15,6 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "KWEB": {
-      "asof": "2026-10-13",
-      "lag_days": 2,
-      "state": "fresh"
-    },
     "TCOM": {
       "asof": "2026-10-14",
       "lag_days": 1,
@@ -31,6 +26,11 @@
       "state": "fresh"
     },
     "BABA": {
+      "asof": "2026-10-13",
+      "lag_days": 2,
+      "state": "fresh"
+    },
+    "KWEB": {
       "asof": "2026-10-13",
       "lag_days": 2,
       "state": "fresh"

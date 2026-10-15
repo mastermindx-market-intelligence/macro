@@ -498,7 +498,7 @@
        account.js from pinning an older navigation loader. */
     var pfx = _mmSharedAssetRoot;
     var s = document.createElement('script');
-    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261015-mm-return-language'; s.async = true;
     document.head.appendChild(s);
   }
   var boot = window.MDX_PROGRESSIVE_BOOT;
@@ -4075,7 +4075,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
