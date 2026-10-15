@@ -73,9 +73,16 @@ def test_template_block_sits_below_the_chips_and_out_of_titles():
         i for i, ln in enumerate(lines) if "{% if r.observation_split %}" in ln
     )
     split_end = next(i for i in range(split_if, len(lines)) if "{% endif %}" in lines[i])
+    chips_open = next(i for i, ln in enumerate(lines) if '<div class="fx-chips">' in ln)
+    # The container close is the first bare </div> after the open, so a line
+    # moved inside the chip container sits before it and goes red here.
+    chips_close = next(
+        i for i in range(chips_open + 1, len(lines)) if lines[i].strip() == "</div>"
+    )
     fda = next(i for i, ln in enumerate(lines) if "{% if r.fda_details %}" in ln)
     cap = next(i for i, ln in enumerate(lines) if "fx-cap" in ln and "r.score_detail" in ln)
-    assert split_end < fda < cap, "the FDA line block must sit below .fx-chips"
+    assert chips_open < split_end < chips_close, "split chips must close inside .fx-chips"
+    assert chips_close < fda < cap, "the FDA line block must sit below .fx-chips"
     for ln in lines:
         if "title=" in ln:
             assert "fda_details" not in ln, "fda_details must never appear in a title"
@@ -109,6 +116,52 @@ def test_template_block_renders_and_escapes():
 
     assert env.from_string(source).render(r={"fda_details": None}) == ""
     assert env.from_string(source).render(r={}) == ""
+
+
+def _qualified_scarcity_row(details):
+    """A minimal FDA row: a qualified, finished capture carrying raw details."""
+    return {
+        "band": "SHORTAGE_ACTIVE",
+        "source_status": "CURRENT_REPORTED",
+        "n_active": 1,
+        "n_resolved": 0,
+        "n_discontinued": 0,
+        "details": list(details),
+        "rationale": "one regulator record observed",
+        "summary": {"freshness": dict(QUALIFIED)},
+    }
+
+
+def _glp1_inputs():
+    """Every cascade input supplied, so no engine, store or network is read."""
+    return dict(
+        bottleneck={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}},
+        revisions={"themes": {"glp1_obesity": {
+            "name": "GLP-1 / Obesity", "breadth": 0.05, "level_state": "FLAT_LOW"}}},
+        demand={"themes": {}},
+        glut={"themes": {}},
+        guidance={"themes": {}},
+        confirmers={"themes": {}},
+        policy_reg={"themes": {}},
+        write_ledger=False,
+    )
+
+
+def test_cascade_row_carries_fda_details_end_to_end():
+    from engine.foresight_cascade import compute_foresight_cascade
+
+    out = compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": _qualified_scarcity_row(FOUR)}, **_glp1_inputs()
+    )
+    assert out["themes"][0]["fda_details"] == FOUR[:3]
+
+    unqualified = _qualified_scarcity_row(FOUR)
+    unqualified["summary"]["freshness"]["capture_qualified"] = False
+    out = compute_foresight_cascade(
+        fda_scarcity={"glp1_obesity": unqualified}, **_glp1_inputs()
+    )
+    assert out["themes"][0]["fda_details"] is None
 
 
 def test_cascade_publishes_fda_details_from_the_helper():
