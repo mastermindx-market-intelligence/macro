@@ -293,8 +293,8 @@
     <div class="topline">
       <h1><span class="l-en">International analyzer</span><span class="l-zh">国际个股分析</span></h1>
       <div class="searchwrap">
-        <input id="q" placeholder="Search any JP / KR / TW / UK / EU stock… (e.g. Toyota, Samsung, TSMC, Shell, ASML)" autocomplete="off">
-        <div id="sugg"></div>
+        <input id="q" role="combobox" aria-autocomplete="list" aria-controls="sugg" aria-expanded="false" aria-label="Search stocks" placeholder="Search any JP / KR / TW / UK / EU stock… (e.g. Toyota, Samsung, TSMC, Shell, ASML)" autocomplete="off">
+        <div id="sugg" role="listbox"></div>
       </div>
     </div>
   </div>
@@ -428,7 +428,7 @@
     return lang() === 'zh' ? (d.label_zh || d.label) + ' · ' + (d.action_zh || d.action)
                            : d.label + ' · ' + d.action;
   }
-  q.placeholder = L('ph');
+  q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
 
   // one unified universe — load THIS market first so a deep-linked #TICKER resolves
   // immediately, then fold in every other market so the box can find ANY stock and
@@ -470,10 +470,17 @@
   window.addEventListener('hashchange', fromHash);
   fromHash();
 
+  function hideSuggestions() {
+    sugg.style.display = 'none';
+    q.setAttribute('aria-expanded', 'false');
+    q.removeAttribute('aria-activedescendant');
+    sel = -1;
+  }
+  q.addEventListener('blur', hideSuggestions);
   q.addEventListener('input', function () {
     var v = q.value.trim().toLowerCase();
-    sel = -1;
-    if (!v) { sugg.style.display = 'none'; return; }
+    sel = -1; q.removeAttribute('aria-activedescendant');
+    if (!v) { hideSuggestions(); return; }
     items = idx.filter(function (x) {
       return x.t.toLowerCase().indexOf(v) === 0 ||
              x.n.toLowerCase().indexOf(v) >= 0 || x.s.toLowerCase().indexOf(v) >= 0;
@@ -485,13 +492,14 @@
       return ap - bp || a.t.localeCompare(b.t);
     }).slice(0, 12);
     sugg.innerHTML = items.map(function (x, i) {
-      return '<div data-i="' + i + '">' +
+      return '<div id="intl-stock-option-' + i + '" role="option" aria-selected="false" data-i="' + i + '">' +
              (x._fl ? '<span style="flex:none;width:18px;text-align:center">' + x._fl + '</span>' : '') +
              '<b>' + x.t + '</b><small>' + x.n +
              (x.s ? ' · ' + x.s : '') + '</small><span class="muted" style="font-size:11px">' +
              disp(x.st) + '</span></div>';
     }).join('');
     sugg.style.display = items.length ? 'block' : 'none';
+    q.setAttribute('aria-expanded', items.length ? 'true' : 'false');
   });
   q.addEventListener('keydown', function (e) {
     if (e.isComposing || e.keyCode === 229) return;
@@ -500,8 +508,15 @@
     if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, divs.length - 1); e.preventDefault(); }
     else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); e.preventDefault(); }
     else if (e.key === 'Enter') { pick(sel >= 0 ? sel : 0); e.preventDefault(); return; }
-    else if (e.key === 'Escape') { sugg.style.display = 'none'; return; }
-    divs.forEach(function (d, i) { d.classList.toggle('sel', i === sel); });
+    else if (e.key === 'Escape') { hideSuggestions(); return; }
+    divs.forEach(function (d, i) {
+      d.classList.toggle('sel', i === sel);
+      d.setAttribute('aria-selected', i === sel ? 'true' : 'false');
+    });
+    if (divs[sel]) {
+      q.setAttribute('aria-activedescendant', divs[sel].id);
+      divs[sel].scrollIntoView({block: 'nearest'});
+    }
   });
   sugg.addEventListener('mousedown', function (e) {
     var d = e.target.closest('div[data-i]');
@@ -509,7 +524,7 @@
   });
   function pick(i) {
     if (!items[i]) return;
-    sugg.style.display = 'none';
+    hideSuggestions();
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'intl_stock.html') {
@@ -869,7 +884,7 @@
     var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
   });
   document.addEventListener('langchange', function () {
-    q.placeholder = L('ph'); var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
+    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果')); var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
   });
 })();
 </script>

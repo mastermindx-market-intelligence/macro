@@ -181,3 +181,24 @@ for(const lang of ['en','zh']) for(const ime of ['composing','legacy229']) test(
   await page.locator('#q').press('Enter'); await loaded; await reply('NEW');
   await page.waitForFunction(()=>document.getElementById('r_name').textContent==='NEW fixture (NEW)');
 });
+
+for(const lang of ['en','zh']) test(`stock search exposes its keyboard selection and closes on Escape or blur ${lang}`,async t=>{
+  const {page}=await setup(t,lang);
+  const search=page.getByRole('combobox',{name:lang==='zh'?'搜索任意 日/韩/台/英/欧 个股…':'Search any JP / KR / TW / UK / EU stock…',exact:true});
+  await search.fill('N');
+  assert.equal(await search.getAttribute('aria-expanded'),'true');
+  const list=page.getByRole('listbox',{name:lang==='zh'?'股票搜索结果':'Stock search results',exact:true});
+  assert.equal(await list.getByRole('option').count(),1);
+  await search.press('ArrowDown');
+  const selected=list.getByRole('option',{selected:true});
+  assert.match(await selected.innerText(),/NEW/);
+  assert.equal(await search.getAttribute('aria-activedescendant'),await selected.getAttribute('id'));
+  assert.equal(await search.evaluate(n=>n===document.activeElement),true);
+  await search.press('Escape');
+  assert.equal(await search.getAttribute('aria-expanded'),'false');
+  assert.equal(await search.getAttribute('aria-activedescendant'),null);
+  assert.equal(await list.isVisible(),false);
+  await search.fill('NE'); await search.press('Tab');
+  assert.equal(await search.getAttribute('aria-expanded'),'false');
+  assert.equal(await list.isVisible(),false);
+});
