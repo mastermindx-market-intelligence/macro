@@ -3,10 +3,10 @@ workstream: WS:EVAL-OS-EVIDENCE-VIEW
 session: claude/eval-os-required-tier-20261014
 model: fable
 ended_because: ci_handoff
-mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and
-  actual consumer adoption. This is a continuity checkpoint; the active root continues.
-state_before: A1 source05a was blocked by shared CI-list conflicts; follow-on f573 had nine analogous
-  conflicts against observed main. Capacity then admitted the ordinary source correction.
+mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and actual
+  consumer adoption. This is a continuity checkpoint; the active root continues.
+state_before: A1 source05a was blocked by shared CI-list conflicts; follow-on f573 had nine analogous conflicts
+  against observed main. Capacity then admitted the ordinary source correction.
 changed:
 - path: engine/intelligence_registry.py
   what: Expose exact registered-producer evaluation requirements without claiming earned evaluation.
@@ -15,25 +15,28 @@ changed:
 - path: engine/postmortem.py
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit thirteen bounded supplied-text cases with explicit callbacks. Preserve prior cases and legacy
-    bear; no independent model observation or historical byte-custody claim.
+  what: Admit fourteen bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
+    bear. No independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/project_served_asset_identity.py
-  what: Bind expected served assets to an explicit qualified revision with reviewed source contracts and
-    no production effects.
+  what: Bind expected served assets to an explicit qualified revision with reviewed source contracts and no
+    production effects.
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py
-  what: Observe two installed follow-on CLI consumers after lawful release, with direct source identity
-    and bounded subprocess evidence; no acceptance authority.
+  what: Observe two installed follow-on CLI consumers after lawful release, with direct source identity and
+    bounded subprocess evidence; no acceptance authority.
 - path: engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json
-  what: Add one bounded official-release diagnostic separating announcement, implementation, runoff caps
-    and realized effects; keep historical byte availability unverified.
+  what: Add one bounded official-release diagnostic separating announcement, implementation, runoff caps and
+    realized effects; keep historical byte availability unverified.
+- path: engine/neuralweb/eval/benchmark_snb_floor_rate_2015-01-15.json
+  what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
+    width and commitment limits; answer excludes oracle.
 verified:
 - claim: Follow-on integration preserved the owned source and passed its affected checks.
   command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
-  result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency closure 1189
-    of 1189 with no omissions. Source and acceptance receipts are retained under the programme evidence
-    integration directory.
+  result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency closure 1189 of 1189
+    with no omissions. Source and acceptance receipts are retained under the programme evidence integration
+    directory.
 - claim: Supported browser capture can bind real authenticated responses to rendered data.
   command: Ordinary Chrome page navigation with supported CDP Network response capture and DOM comparison.
   result: Actual overview 200 and engine detail 200/no-store matched rendered counts, null state and reason.
@@ -44,8 +47,7 @@ verified:
 - claim: T6 first two cases passed existing response evaluation suite before integration.
   command: python -m pytest tests/test_response_eval.py -q
   result: 96 PASS; receipt research/evidence/eval-os-tier-query-20261014/t6-regression.xml.
-- claim: Chris released the reserved A1 hold and authorized the existing merge controller and production
-    verification.
+- claim: Chris released the reserved A1 hold and authorized the existing merge controller and production verification.
   command: Read direct Chairman approval and existing GitHub release record.
   result: Recorded at https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
 - claim: Integrated source interfaces and latest two historical text cases passed affected checks.
@@ -53,97 +55,98 @@ verified:
   result: Combined 709 PASS plus all 15 repaired nodes PASS; latest text tranche 171 PASS, zero failures/errors/skips.
     Exact HEAD 9c18 dependency inventory had 1184 inputs and none missing.
 - claim: Final follow-on CI scope preserves existing execution and actual dependencies.
-  command: Retained actual-head tracked inventory, canonical closure and strict packing helpers, focused
-    controls and original qledger commands.
-  result: Source3adb0b0bfd16:3 focused PASS, zero closure misses,134/134/128 jobs and10/10/9packs within
-    older limits. Earlierf095 six canonical PASS and unchanged qledger nine-command Python3.12 sequence1252PASS/0skip
+  command: Retained actual-head tracked inventory, canonical closure and strict packing helpers, focused controls
+    and original qledger commands.
+  result: Source3adb0b0bfd16:3 focused PASS, zero closure misses,134/134/128 jobs and10/10/9packs within older
+    limits. Earlierf095 six canonical PASS and unchanged qledger nine-command Python3.12 sequence1252PASS/0skip
     plus7selftests. All314job execution definitions and24protected source files preserved. Canonical ci-integration-20261014
     receipts retain RED evidence and review corrections.
 - claim: Final-source offline probe and public-asset bindings are reproducible.
   command: Explicit-revision binders and retained positive/refusal selfchecks.
-  result: Asset projector reproduces all4assets and rewrittenHTML for05a/f095; refuses symbolic refs,
-    existing destinations and unreviewed rewrite contracts. This proves verifier source behavior only.
+  result: Asset projector reproduces all4assets and rewrittenHTML for05a/f095; refuses symbolic refs, existing
+    destinations and unreviewed rewrite contracts. This proves verifier source behavior only.
 - claim: Six new supplied-text diagnostic cases are source-qualified without changing executable evaluator
     logic or CI execution definitions.
-  command: Retained RED/GREEN runner/adversarial checks, exact8453 tracked inventory, canonical closure,
-    direct input selection and strict packing helpers.
+  command: Retained RED/GREEN runner/adversarial checks, exact8453 tracked inventory, canonical closure, direct
+    input selection and strict packing helpers.
   result: 12RED before registration;179PASS and2chronologyPASS;3CIcontrolsPASS/zero closure misses/134-134-128jobs.
-    All314 execution definitions preserved. Canonical t6-fourth-20261014/qualification.json and lossless
-    evidence manifest.
-- claim: Prepared source-only A1 CI collision repair preserves all execution and selection semantics,
-    and follow-on observation tools pass fake-consumer controls.
-  command: Retained normalized full-YAML comparison/selector review and git merge-tree on a8d9 versus
-    a5a548; standalone test_followon_adoption_probe.py.
-  result: All309 A1 job definitions/order/path memberships/counts preserved; only12 existing path entries
-    relocated across4jobs. Proposed single-parent head merges cleanly. Not published or hosted-qualified.
-    Probe13testsPASS after4identityRED witnesses; seven-blob offline binding matches0302. No product CLI
-    or production action.
-- claim: New official-release case preserves answer/oracle separation, prior cases, evaluator logic and
-    all314 CI execution definitions.
-  command: Retained source hashes,119 final harness controls,3canonical CI controls, actual e2 tracked
-    inventory, full closure, strict packing and final fa9 text-only correction comparison.
-  result: 13 supplied-text cases plus unchanged legacybear. Final fa9:119PASS, no failures/errors/skips;
-    scope e2:3PASS/zero closure misses/134-134-128jobs and10-10-9packs. Source/oracle leakage caught and
-    repaired; current HTTP timestamps are not historical byte custody. Canonical fomc-clock-20261014 contains18
-    original-hash records. Root adjudication only; no independent model run, PIT or production/adoption
-    claim.
+    All314 execution definitions preserved. Canonical t6-fourth-20261014/qualification.json and lossless evidence
+    manifest.
+- claim: Prepared source-only A1 CI collision repair preserves all execution and selection semantics, and follow-on
+    observation tools pass fake-consumer controls.
+  command: Retained normalized full-YAML comparison/selector review and git merge-tree on a8d9 versus a5a548;
+    standalone test_followon_adoption_probe.py.
+  result: All309 A1 job definitions/order/path memberships/counts preserved; only12 existing path entries relocated
+    across4jobs. Proposed single-parent head merges cleanly. Not published or hosted-qualified. Probe13testsPASS
+    after4identityRED witnesses; seven-blob offline binding matches0302. No product CLI or production action.
+- claim: New official-release case preserves answer/oracle separation, prior cases, evaluator logic and all314
+    CI execution definitions.
+  command: Retained source hashes,119 final harness controls,3canonical CI controls, actual e2 tracked inventory,
+    full closure, strict packing and final fa9 text-only correction comparison.
+  result: 13 supplied-text cases plus unchanged legacybear. Final fa9:119PASS, no failures/errors/skips; scope
+    e2:3PASS/zero closure misses/134-134-128jobs and10-10-9packs. Source/oracle leakage caught and repaired;
+    current HTTP timestamps are not historical byte custody. Canonical fomc-clock-20261014 contains18 original-hash
+    records. Root adjudication only; no independent model run, PIT or production/adoption claim.
 - claim: Current A1 conflict repair retains every job definition and path membership.
   command: Exact original05a/currentmain479 merge-tree and full normalized-YAML equivalence.
   result: Olda8d9 previewRED with5new scope conflicts. Replacement1b7916353dd4 has soleparent05a; all309jobs/order/path
-    counts preserved and merge-treePASS against479. Moves22existing readiness entries across9lists. No
-    source branch/remote update or base refresh. Canonical a1-conflict-v2-20261014 retains both RED and
-    GREEN.
-- claim: A1 source-only correction was published on the original carrier after capacity and exact-main
-    preview passed.
+    counts preserved and merge-treePASS against479. Moves22existing readiness entries across9lists. No source
+    branch/remote update or base refresh. Canonical a1-conflict-v2-20261014 retains both RED and GREEN.
+- claim: A1 source-only correction was published on the original carrier after capacity and exact-main preview
+    passed.
   command: Retained capacity census, sole-parent/source custody checks, git merge-tree, ordinary fast-forward/push
     and git ls-remote.
-  result: Published1b7916353dd4, soleparent05a; six active proofs/cap8 with no lease, preview against
-    b4a515 passed. New CI38568750084 started; authority/main and fences passed while plan/contract remained
-    pending. No base refresh or merge by root.
-- claim: Follow-on source-only path relocation resolves observed conflicts without weakening execution
-    or selection.
-  command: Full normalized-YAML equality, incumbent bounded-manifest classifier, four canonical controls
-    and exact-current-main merge-tree.
+  result: Published1b7916353dd4, soleparent05a; six active proofs/cap8 with no lease, preview against b4a515
+    passed. New CI38568750084 started; authority/main and fences passed while plan/contract remained pending.
+    No base refresh or merge by root.
+- claim: Follow-on source-only path relocation resolves observed conflicts without weakening execution or selection.
+  command: Full normalized-YAML equality, incumbent bounded-manifest classifier, four canonical controls and
+    exact-current-main merge-tree.
   result: Local62c077fce230, soleparentf573:103existing entries across9lists, all314 definitions/order/path
     multisets retained. Four testsPASS; preview against29e383PASS. Reuse unchanged e2 static and fa9 runtime
     proof explicitly. No hostedCI/release/adoption claim.
 - claim: Final follow-on source anticipates exact incoming A1/main dependencies without changing any incumbent
     execution definition.
-  command: Canonical manifest loader, full preserved-definition/path-count comparison, strict three-probe
-    declared match-vector equality and exact current-main/composed-A1 merge-tree previews.
+  command: Canonical manifest loader, full preserved-definition/path-count comparison, strict three-probe declared
+    match-vector equality and exact current-main/composed-A1 merge-tree previews.
   result: Source566a10d139a0:314jobs load; all existing path memberships/counts retained;13 exact incoming
     paths added across9exclusive scopes. Both mainc703 and composedA1 7c610b6d previewsPASS. Earlier failed
     order-only candidates and ancestry diagnosis retained in source-conflict-release-20261014/followon-final.
     No main/A1 code merge or hosted/release/adoption claim.
+- claim: SNB supplied-text source candidate is qualified and independently reviewed within its bounded scope.
+  command: Retained source/admission comparison,121 response harness tests,3 focused CI controls, exact a353
+    tracked closure/strict packing and same-ID Fabric review.
+  result: Candidate a353babbb5b8:121PASS/0skip;3focusedPASS reused after interrupted exec29598; only unfinished
+    closure/packing resumed,zero misses,strict134/134/128jobs and10/10/9packs. All314execution definitions/prior
+    memberships/limits preserved. Original eval-snb-source-review-01a1333d-c1 retained5145bytes consumed, reviewer
+    accepted with count/report corrections. Twelve added entries across11job lists; no model/PIT/adoption claim.
+    Canonical snb-floor-20261014 manifest retains12original records.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
-  what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the
-    actual followon PR revision and release through the existing controls. Local source3adb scope checks
-    are now qualified.
+  what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the actual
+    followon PR revision and release through the existing controls. Local source3adb scope checks are now qualified.
 - claim: Installed source, live consumer adoption, subsequent normal owner update and operator comprehension.
-  what_would_verify: Normal deployment followed by installed identity, authenticated actual consumers,
-    natural update receipts and the real operator response.
+  what_would_verify: Normal deployment followed by installed identity, authenticated actual consumers, natural
+    update receipts and the real operator response.
 unresolved:
 - Original historical20/15 objective and historical source availability remain open.
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
-- Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
-  byte-custody witness. All model, historical availability and adoption obligations remain open.
-- Current published A1 b1db2fc7510b has exact-head CI38601317870/attempt1 still running. Its
-  contract-delta and packs1/2/3/5/6/9/10 passed at17:19:53; five packs remain running. The old1b failure
-  remains historical evidence, not the current source verdict. Binding completion and incumbent
-  landing remain owed. No raw-log escape, duplicate producer or release bypass.
+- Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
+  witness. All model, historical availability and adoption obligations remain open.
+- 'Current A1 fea04c414282 remainsOPEN/merge-blocked: hosted ancestor-init census test failed; contract-delta
+  and11otherpacks passed. Exact local reproduction/repair is in progress; no production acceptance.'
 next_actions:
-- Consume original CI38601317870/attempt1 for published A1 b1db2fc7510b3121bb9494f7f55a4351e6a48c77.
-  Last observation17:19:53UTC; next observation no earlier than17:25:00UTC. Repair a real failure
-  or let the incumbent perform final merge and any subsequent admitted base refresh. Chris's
-  one-time integration exception is consumed in7e; no second manual integration, force push,
-  rerun, duplicate controller or producer.
-- After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source.
-  Verify normal updater, installed files/admin process, served assets, authenticated API-to-DOM,
-  eight theme/language/viewport states, genuine owner progression and actual operator comprehension.
-  Use original Chrome profile actual browser ID2/tab1925922370; the older alias/tab is stale.
+- Repair the exact current A1 fea04c414282 ancestor-init census failure from CI38624362438/attempt1 on original
+  PR6651. Original b1 CI38601317870 is terminalPASS and its final artifact consumed; it does not qualify refreshed
+  fea. Root adopted verified incumbent base-only refresh by fast-forward only. No second manual base integration,
+  force push, rerun or duplicate controller. Retain census ceilings, current checks, capacity and incumbent
+  final merge.
+- After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source. Verify
+  normal updater, installed files/admin process, served assets, authenticated API-to-DOM, eight theme/language/viewport
+  states, genuine owner progression and actual operator comprehension. Use original Chrome profile actual browser
+  ID2/tab1925922370; the older alias/tab is stale.
 - Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
   Then use its separately bound two-CLI observation tool and obtain real rights-qualified Discovery adoption;
   no synthetic substitute.
@@ -159,6 +162,13 @@ danger_areas:
 prs:
 - 6651
 ---
+
+## 2026-10-15 recovery and qualified SNB case
+
+Original b1 run38601317870 passed all12packs,contract-delta andci-gate. Final originalZIP SHA726cff115f0620ae2810461c58f74e4b535ec97cfc2a2a469b039158794d7706 was verified and canonical semantic validation found126jobs/348passed commandsteps/zero inherited or blocking steps. These are not unit-test or zero-skip counts. Current A1 fea04c414282 is an exact ordinary b1+main1865 merge (treea912044e6f699337156f983f1efbd676cb787ee2), all17productionfiles unchanged. Its own CI38624362438 failed ancestor-init census inpack0; no waiver or further manual base integration. Local source is being repaired on the same carrier.
+
+Follow-on a353 SNB case now has completed zero-miss closure, strict134/134/128 jobs, unchanged314definitions and accepted independent packet review with report-count corrections. Resumed only unfinished work after user interruption; prior121+3 passing controls reused. Fourteen supplied-text cases plus legacybear remain fixtures, not14empirical model observations. No follow-on PR, PIT, production or real adoption proof. Finalflagsfalse. Originalexperience/CLIreview effects remain frozen.
+
 
 # Intelligence Evaluation OS — source interfaces, 2026-10-14
 
