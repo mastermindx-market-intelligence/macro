@@ -200,6 +200,9 @@ def test_blank_summary_cannot_corroborate_any_release(tmp_path):
     'https://www.fda.gov:' + RELEASE_URL_PATH,
     'https://WWW.FDA.GOV' + RELEASE_URL_PATH,
     'https://www.fda.gov/drugs/resources-information-approved-drugs/%2e%2e',
+    CANONICAL_RELEASE_URL + '?',
+    CANONICAL_RELEASE_URL + '#',
+    CANONICAL_RELEASE_URL.replace('www.fda.gov', 'www.f\nda.gov'),
 ])
 def test_noncanonical_authority_and_escaped_slug_refuse(tmp_path, url):
     read_refuses(tmp_path, 'item_url', q_updates={'item_url': url})

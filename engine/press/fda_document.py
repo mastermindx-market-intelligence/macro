@@ -78,6 +78,8 @@ def _canonical_fda_release_url(item_url: object) -> str:
     """
     if not isinstance(item_url, str) or not item_url:
         raise ValueError("item_url must be a nonempty string")
+    if any(ord(char) <= 32 or ord(char) == 127 for char in item_url):
+        raise ValueError("item_url must not contain whitespace or control characters")
     parts = urlsplit(item_url)
     if parts.scheme not in ("http", "https"):
         raise ValueError("item_url must be an http or https www.fda.gov URL")
@@ -87,9 +89,9 @@ def _canonical_fda_release_url(item_url: object) -> str:
         raise ValueError("item_url must not carry userinfo")
     if parts.port is not None:
         raise ValueError("item_url must not carry a port")
-    if parts.query:
+    if "?" in item_url:
         raise ValueError("item_url must not carry a query string")
-    if parts.fragment:
+    if "#" in item_url:
         raise ValueError("item_url must not carry a fragment")
     path = parts.path
     if not path.startswith(_RELEASE_ROUTE_PREFIX):
