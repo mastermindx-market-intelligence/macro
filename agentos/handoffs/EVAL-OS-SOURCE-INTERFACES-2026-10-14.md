@@ -157,8 +157,9 @@ unresolved:
 - Current A1 head939b original CI38773271071 passed; canonical original terminal evidence is consumed.
   All26 check runs are canonically binding-clean at18:08; incumbent freshness/merge and production remain separate.
 next_actions:
-- Consume the incumbent release disposition after actual new-main CI changes; current939b binding/terminal evidence
-  is accepted. The incumbent alone refreshes or merges. No second manual integration.
+- Publish local b4ff two-input correction on the original A1 carrier only after fresh capacity/custody admission;
+  if the incumbent refreshed first, apply those two additions to its verified successor. Fresh binding CI and
+  incumbent merge remain required. No second manual base integration.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
 - Reconcile actual qualified landing with locally qualified0add and clean newer-base preview2c2a9; integrate
@@ -176,19 +177,17 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T18:04Z
+## Current checkpoint — 2026-10-15T18:53Z
 
-PR6651 remains OPEN939b348451fc1e46b70eee2e55309e4e1756ab98 at18:02:57. Its original CI38773271071/attempt1 completed successfully:12packs,contract-delta,plan andci-gate. Final artifact11996491671 ZIP SHA6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6 matches GitHub; canonical validation accepts127jobs/351semantic commandsteps,zero blocked/inherited/infrastructure failure. Every execution/step identity matches the original plan. These are command results, not a unit-test or zero-skip count. All26 check runs are canonically binding-clean at18:08. Main5bb contains real new Yahoo CI definitions; the incumbent release/freshness decision remains separate. No root refresh or merge.
+A1 PR6651 remains OPEN939b at18:49. Original CI38773271071 and all26 binding checks passed; final11996491671 is canonically consumed as127jobs/351semantic commandsteps,0blocked. That proof belongs to939b. Incumbent freshness is still required because main has new CI definitions.
 
-The qualified plan/source identity remains tested529cae70/base32bbb/tree5820d767 with17productionfiles/7assetinputs unchanged. Preserve the incumbent-only refresh/merge path and consumed one-time base exception. The original terminal artifact and consumption record are retained in a1-refresh-recovery-20261015/ beside this record; a1-current-release.json carries the current structured state.
+LOCAL CLEAN b4ff0d721ab8f40cd7aa50d469167537f43ca3cd is an ordinary sole-parent939b source correction, UNPUBLISHED. It adds only collectors/yahoo.py and lib/stooq.py to eval-os-a1; all320execution definitions, prior memberships, eight suites, limits and product bytes are preserved. Its main5bb preview exactly reproduces the already qualified repair manifest (1210closure/0misses/3controlsPASS). Fresh maind925 introduces one unrelated research-price-panel command/path delta; preview78065 is clean and preserves its execution/memberships plus the same three accepted A1 additive paths. A1 itself is unchanged by that new-main delta. No broad tests repeated or manual base integration.
 
-Follow-on runtime3528080/updater9cb/probe2edbb/CI340774 remain unchanged; accepted12-file probe,20 supplied-text cases plus bear,T11/T5/T12/QLedger and169updater checks are reused. Newest3d46 Discovery/continuity cleanly composes with the existing prospective integration (unreferenced2e1e3057/treeada6; main32 preview197198d9), preserving all320 prospective job definitions and incoming research-factory command. This is no carrier integration or final qualification: reconcile actual qualified A1 landing before the same follow-on single PR.
+Canonical GET-only18:49:47 admission is11active/cap8/0reservations/no leaseowner, so no A1 push. PR8888 original38721056371/attempt2 still had pack11 running18:44; its running state alone is not an exclusive aggregate-capacity dependency. At the next actual source/completion event or existing wake, consume one bounded canonical admission, then ordinary same-carrier publication if head/custody still match. If incumbent refreshes first, retain b4ff and apply only its two additions to the actual successor. Never push synthetic previews or old26.
 
-The actual main5bb dependency delta exposes two missing inputs in each prospective A1/QLedger exclusive list: collectors/yahoo.py and lib/stooq.py. Four declarations repair the follow-on and private composition, preserving314/320 execution definitions, all prior paths and limits. Source2controls and prospective3controls pass; canonical closures1240/922 have zero misses, and all packing-probe selections remain unchanged. Unchanged runtime/strict packing proof is reused. A1 carrier remains untouched; apply only its precise two-input correction to a verified admitted successor when required.
+Follow-on runtime3528080/updater9cb/probe2edbb/source7f1dc remain unchanged; accepted T5/T11/T12,20textcases+bear,12fileprobe and169updater checks are reused. Prospective cb274+maind925 is clean/tree12ba386; actual qualified A1 landing and latest continuity still require reconciliation before the same follow-on single PR. T12 real300claim metadata/typedDiscovery and T5local649 outputs remain bounded local consumption, not installed adoption or model/PIT proof.
 
-The real local T12 consumer uses300 production whitehouse claim-direction records (210positive/90negative), exact rule-2 binding and intended excess_mean assessment. It feeds the existing typed Discovery drafter/validator with independently authored admission fields. No grade/sealed outcome/model read or metric-publication assertion; protected Discovery delivery, installed execution and subsequent consumption remain owed.
-
-After qualified A1 landing bind17-file probe ANDasset projector, then prove normal deployment,served assets,authenticatedAPI/DOM,eightvisualstates,naturalownerprogression and comprehension. Follow-on separately owes12-fileidentity/actualupdatercopy/API-admin,numeric/internal-log,CLI/Discovery adoption. Allfinalflagsfalse; originalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals preserved. SESSION END: DURABLE_EXECUTION_RUNNING.
+After qualified A1 landing bind17-file probe ANDasset projector; prove updater/install/process/servedassets/authAPI-DOM/eightstates/naturalowner/comprehension. Follow-on separately owes12files/actualupdatercopy/API-admin/numeric-internallog/CLI/Discovery adoption. Source and current-main comparison/admission are retained in a1-current-release.json. OriginalFabricIDs/unknowns/refusals/capacity remain protected; all final flagsfalse. SESSION END: DURABLE_EXECUTION_RUNNING.
 
 ## 2026-10-15 A1 repair published
 

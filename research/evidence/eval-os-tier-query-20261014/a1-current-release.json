@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T18:21:14.497779+00:00",
+  "updated_at": "2026-10-15T18:53:31.895876+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "parents": [
@@ -19,9 +19,9 @@
   "terminal_binding_checks_pending": false,
   "production_verified": false,
   "programme_complete": false,
-  "next": "Incumbent adjudicates actual new-main CI-definition change and admits any required refresh. Preserve current939b terminal PASS; prepare exact new collector dependency correction for actual next head, then fresh binding checks/incumbent merge/production.",
+  "next": "On actual capacity/source change or existing wake, one bounded canonical admission/current head check. Publish local b4ff source correction on unchanged 939b if admitted, or apply only its two input additions to the verified incumbent successor. No second manual base integration. Fresh binding CI and incumbent merge, then production verification.",
   "followon": {
-    "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
+    "qualified_source": "7f1dcf04176ccef68a4d82a20ca846cf95f57120",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
     "updater_fix": "9cb9d0ad0c955ad1f46cc3519d34e4c12fd708a4",
     "no_pr": true,
@@ -576,15 +576,53 @@
     ]
   },
   "a1_prepared_source_correction": {
-    "at": "2026-10-15T18:20:40.799380+00:00",
-    "qualified_preview_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
-    "newer_main": "e01a8aee7e5647af37805fa24c13f1f0feebca3c",
-    "changed_source_paths": [],
-    "changed_generated_path_count": 3771,
-    "a1_patch_parent": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "a1_patch_file": "a1-yahoo-two-input-source.patch",
-    "application": "Fresh read actual A1 remote/main and canonical custody/capacity. Apply only the two eval-os-a1 input additions to the same carrier, preferably after incumbent base refresh; no manual main merge, no force push. Revalidate changed source and preview. Never copy the follow-on qledger-exclusive scope into A1.",
-    "qualification": "a1-yahoo-two-input-qualification.json: actual A1 closure1210, RED2 -> GREEN0,3controlsPASS, packing probe selection unchanged. All production/runtime files unchanged by this correction.",
-    "carrier_modified": false
+    "at": "2026-10-15T18:48:12.894031+00:00",
+    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "parent": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "job_count": 320,
+    "added_inputs": [
+      "collectors/yahoo.py",
+      "lib/stooq.py"
+    ],
+    "scope": "Only eval-os-a1 declaration changes. All job execution definitions, other path lists, prior memberships and limits preserved. No base integration or publication.",
+    "reused_qualification": "a1-yahoo-two-input-qualification.json: exact same repair on incoming-main preview, 1210 closure with 0 misses and three controls passed; no product changes.",
+    "published": false,
+    "clean": true,
+    "current_main_reuse": {
+      "at": "2026-10-15T18:52:11.185992+00:00",
+      "a1_source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+      "main": "d925921fc6af801d15412a518a93406e2417dc88",
+      "preview_tree": "78065b00d491564f35ff9b65010382a05825afe6",
+      "job_count": 320,
+      "changed_job_from_qualified_preview": [
+        "research-price-panel"
+      ],
+      "incoming_changed_job_execution_and_memberships_preserved": true,
+      "preexisting_additive_paths_retained": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py",
+        "engine/seasonality/multiplicity.py"
+      ],
+      "a1_job_including_paths_unchanged": true,
+      "new_main_source_matches_a1_scopes": {
+        "engine/entry_radar/replay/rs_pullback_launch_labels.py": [],
+        "tests/test_entry_radar_rs_pullback_launch_labels.py": []
+      },
+      "reuse_basis": "Only new-main source changes are outside the previously qualified complete A1 closure; A1 declared input set and execution are unchanged. Incoming research-price-panel execution and path memberships are preserved with the same pre-existing three additive paths. Fresh hosted checks remain required.",
+      "initial_overstrict_equality_assertion": "Initial whole-job equality to main failed because three already accepted A1 paths are additive; no source error or mutation. Exact new-main execution and membership containment now verified.",
+      "followon_prepared_preview_exit": 0,
+      "followon_prepared_preview_output": "12ba386d8b3fc2eee28aa06b60a870519e429ce4\n",
+      "not_a_followon_carrier_integration": true
+    },
+    "admission": {
+      "at": "2026-10-15T18:49:47.251916+00:00",
+      "pr_head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+      "main": "d925921fc6af801d15412a518a93406e2417dc88",
+      "lease_owner": null,
+      "active_pr_proofs": 11,
+      "reservations": 0,
+      "cap": 8,
+      "publication_admitted": false
+    }
   }
 }
