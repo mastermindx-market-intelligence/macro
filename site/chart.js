@@ -279,6 +279,7 @@
     // its hourly bars are lazy-fetched from intraday/<T>.json on first 4H select.
     this.intraday = !!this.opts.intraday;
     this.intradayRows = null;
+    this._timeframeSerial = 0;
     this.chart = null; this.S = {};            // series refs
     this._destroyed = false;                  // async responses cannot revive a retired instance
     var pr = loadPrefs();
@@ -411,17 +412,17 @@
   // expect to have data, so this is a rare graceful no-op.
   Instance.prototype.setTimeframe = function (tf) {
     if (this._destroyed) return;
-    var self = this;
+    var self = this, serial = ++this._timeframeSerial;
     if (tf === '4H' && !this.intradayRows) {
       fetch('intraday/' + safeName(this.ticker) + '.json')
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (self._destroyed) return;
+          if (self._destroyed || serial !== self._timeframeSerial) return;
           if (j && j.bars && j.bars.length) {
             self.intradayRows = normaliseIntra(j);
             self.tf = '4H'; self.persist(); self.syncBar(); self.rerender();
           } else { self.syncBar(); }
-        }).catch(function () { if (!self._destroyed) self.syncBar(); });
+        }).catch(function () { if (!self._destroyed && serial === self._timeframeSerial) self.syncBar(); });
       return;
     }
     this.tf = tf; this.persist(); this.syncBar(); this.rerender();

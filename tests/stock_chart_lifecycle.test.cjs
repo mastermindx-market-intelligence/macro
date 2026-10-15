@@ -127,3 +127,14 @@ test('current delayed signals still become available',async t=>{
   assert.equal(await page.locator('[data-sig]').count(),1);
   assert.equal(await page.evaluate(()=>CURRENT.signals.markers.length),1);
 });
+
+test('a later daily timeframe choice wins over a pending 4H request',async t=>{
+  const {page,mount,reply,waitRequest}=await setup(t);
+  await mount('CURRENT');
+  await waitRequest('/intraday/CURRENT.json',()=>page.locator('[data-tf="4H"]').click());
+  await page.locator('[data-tf="1W"]').click();
+  await reply('/intraday/CURRENT.json',intra);
+  assert.equal(await page.evaluate(()=>CURRENT.tf),'1W');
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bchart.prefs')).tf),'1W');
+  assert.equal(await page.locator('[data-tf="1W"]').getAttribute('class'),'on');
+});
