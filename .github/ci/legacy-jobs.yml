@@ -26094,6 +26094,35 @@ jobs:
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
 
+  entry-radar-identity-snapshot:
+    # Actual five-file/Parquet observation boundary for the existing pure identity owner.
+    # A passing synthetic read is not publication, market admission, or live trading proof.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - lib/__init__.py
+      - lib/dataos/**
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_dataos_identity.py
+      - tests/test_entry_radar_identity_observation_snapshot.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install actual Parquet reader test dependencies
+        run: pip install pytest pyyaml pyarrow
+      - name: actual-clock identity snapshot file boundary
+        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py -q
+
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
     gate: code
