@@ -22,8 +22,8 @@ The canonical execution frontier remains `/Volumes/Mastermind/evidence/intellige
 ## Separate follow-on consumers
 
 The follow-on has a different source identity and delivery obligation. After its final
-source is independently qualified, `bind_followon_adoption_probe.py --repo REPO
---source-commit FULL_SHA --destination NEW_BINDING_JSON` binds seven direct files from
+source passes the applicable checks, `bind_followon_adoption_probe.py --repo REPO
+--source-commit FULL_SHA --destination NEW_BINDING_JSON` binds eleven direct files from
 that commit. It does not substitute for the A1 seventeen-file or served-asset bindings.
 The new destination must not exist. A symbolic revision or Git symlink is refused.
 
@@ -32,7 +32,7 @@ After lawful follow-on landing and normal installation, the original parent can 
 --producer EXACT_REGISTERED_PRODUCER_PATH --python INSTALLED_PYTHON`. Repeat `--producer`
 for the actual planned change being assessed. This invokes only the existing T12
 required-tier CLI and T5 source-findings CLI, without overrides of clocks or artifacts.
-It records the seven file hashes and installed HEAD before and after observation.
+It records the eleven file hashes and installed HEAD before and after observation.
 The installed HEAD may differ from the qualified branch SHA because of squash merge;
 direct file hashes, not commit-name equality, are the stated identity check.
 
@@ -50,3 +50,15 @@ acceptance, earned tiers, natural owner progression or a complete adoption verdi
 The rights-qualified QLedger packet, real Agent OS Discovery admission and subsequent
 consumer use remain separate obligations; this probe cannot fabricate them. Its three
 completion/adoption flags always remain false.
+
+The eleven-file binding includes the native checker, executor, gateway and internal
+log writer. The two CLI invocations do not execute that numeric path. After release,
+use the authenticated native numeric request and preserve its actual request ID.
+Both gateway modes write that ID as the response-log row ID. Observe the corresponding
+row through the existing operator log reader and its
+`/api/mastermind_ai/response_logs` route after normal ingestion. Correlate the
+request, rendered answer, native receipt and internal `native_numeric_verification`;
+do not substitute a different successful row or infer a verdict from the public
+receipt. A missing row or non-verified verdict remains an unproved obligation.
+The internal verdict must remain absent from public responses and stream events.
+This observation does not require a log refresh, model-judge run or source-clock reset.
