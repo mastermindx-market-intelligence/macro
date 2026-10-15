@@ -11583,6 +11583,11 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
@@ -11678,6 +11683,11 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "collectors/base.py"
       - "collectors/fred.py"
       - "config/sector_legs.json"
@@ -11759,6 +11769,10 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - ".github/ci/legacy-jobs.yml"
@@ -13618,6 +13632,11 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
@@ -14462,6 +14481,10 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "research/rates_inflation_command/seat_20261014/**"
       - "tests/test_ric_m0_requal.py"
       - "tests/test_ric_x0_reaction.py"
@@ -14611,6 +14634,11 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "engine/risk_envelope.py"
@@ -26381,6 +26409,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -29866,6 +29898,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "contracts/news_impact/**"
       - "tests/test_news_impact_contracts.py"
       - "engine/company_intelligence/**"
