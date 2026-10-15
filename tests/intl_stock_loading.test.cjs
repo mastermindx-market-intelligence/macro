@@ -1,0 +1,149 @@
+'use strict';
+// Actual Jinja shell and inline lookup controller. Supplied records and chart/MTF
+// doubles isolate lookup ordering; this is not data, chart, or live acceptance.
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const {execFileSync} = require('node:child_process');
+const path = require('node:path');
+const {chromium} = require('playwright');
+const ROOT = path.resolve(__dirname, '..');
+const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c', `
+import json
+from jinja2 import Environment, FileSystemLoader
+from engine.cycles import STATE_DISPLAY
+env = Environment(loader=FileSystemLoader('templates'))
+print(env.get_template('intl_stock.html.j2').render(state_display_json=json.dumps(STATE_DISPLAY), generated_utc='fixture UTC'))
+`], {cwd: ROOT, encoding: 'utf8', maxBuffer: 4*1024*1024});
+let browser;
+test.before(async () => { browser = await chromium.launch({headless: true,
+  ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})}); });
+test.after(async () => { if (browser) await browser.close(); });
+
+function record(ticker, {limited = false, name = ticker + ' fixture'} = {}) {
+  return {ticker, name, asof:'2026-10-01', limited, listed:'2026-09-01', history_days:20,
+    ladder:{state:'NEUTRAL', points:[], entry:{}, cycle_plain:{}}, cycle:{}, tech:{price:123},
+    fundamentals:{valuation:{pe:17}}, analyst:{}, earnings:{}, positioning:{}};
+}
+async function setup(t, lang = 'en', {initialHash='', indexStatus=200} = {}) {
+  const context = await browser.newContext();
+  t.after(() => context.close());
+  await context.addInitScript(lang => {
+    localStorage.setItem('lang', lang);
+    window.StockChart = {mount(host, ticker) { host.textContent='chart fixture '+ticker; }};
+    window.renderMTF = host => { host.textContent='MTF fixture'; };
+  }, lang);
+  const page = await context.newPage(); page.setDefaultTimeout(3000);
+  const waiting = new Map(), arrivals = new Map();
+  function requested(ticker) { return new Promise(resolve => arrivals.set(ticker, resolve)); }
+  await page.route('**/*', async route => {
+    const url = new URL(route.request().url());
+    if (url.hostname !== 'stock.test') return route.abort();
+    if (url.pathname === '/intl_stock.html') return route.fulfill({contentType:'text/html', body:html});
+    if (url.pathname.endsWith('/index.json')) return route.fulfill({status:indexStatus, json:indexStatus!==200 ? {error:'fixture unavailable'} :
+      url.pathname.startsWith('/intlstockdata/') ? ['OLD','NEW','RETRY'].map(t=>({t,n:t+' fixture',s:'fixture sector',st:'LIMITED'})) : []});
+    if (url.pathname.endsWith('/calibration.json')) return route.fulfill({json:{}});
+    if (url.pathname.startsWith('/intlstockdata/')) {
+      const key = url.pathname.split('/').pop().replace('.json','');
+      (waiting.get(key) || waiting.set(key, []).get(key)).push(route);
+      if (arrivals.has(key)) { arrivals.get(key)(); arrivals.delete(key); }
+      return;
+    }
+    return route.fulfill({body:'', contentType:url.pathname.endsWith('.js')?'text/javascript':'text/css'});
+  });
+  const initialRequest=initialHash ? requested(initialHash) : null;
+  await page.goto('http://stock.test/intl_stock.html'+(initialHash?'#'+initialHash:''));
+  if (!initialHash) await page.waitForLoadState('networkidle');
+  async function select(ticker) {
+    const pending = requested(ticker);
+    await page.evaluate(ticker => { location.hash=ticker; }, ticker);
+    await pending;
+  }
+  async function reply(ticker, payload = record(ticker), status = 200) {
+    const routes=waiting.get(ticker);
+    assert.ok(routes && routes.length, 'expected retained request for '+ticker);
+    await routes.shift().fulfill({status, json:payload});
+  }
+  return {page, select, reply, requested, initialRequest};
+}
+
+for (const oldStatus of [200, 404, 503]) test(`obsolete lookup ${oldStatus} cannot repaint the newer ticker`, async t => {
+  const {page, select, reply}=await setup(t);
+  await select('OLD'); await select('NEW');
+  await reply('NEW', record('NEW', {limited:true}));
+  await page.waitForFunction(() => document.querySelector('#r_name').textContent.includes('(NEW)'));
+  await reply('OLD', record('OLD'), oldStatus); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#r_name').innerText(), 'NEW fixture (NEW)');
+  assert.match(await page.locator('#tvbox').innerText(), /NEW/);
+  assert.equal(new URL(page.url()).hash, '#NEW');
+});
+
+for (const lang of ['en','zh']) for (const status of [404, 503]) test(`current lookup ${status} hides prior analysis ${lang}`, async t => {
+  const {page, select, reply}=await setup(t,lang);
+  await select('OLD'); await reply('OLD'); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#result').isVisible(), true);
+  assert.match(await page.locator('#tvbox').innerText(), /OLD/);
+  await select('MISSING'); await reply('MISSING', {}, status); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#result').isVisible(), false, 'old analysis and chart must not be attributed to the failed selection');
+  const message=await page.locator('#lookup_status').innerText();
+  assert.match(message, /MISSING/);
+  assert.match(message, status===404 ? (lang==='zh'?/不在库中/:/NOT IN LIBRARY/) : (lang==='zh'?/暂时无法加载/:/could not be loaded/));
+  if (status!==404) assert.doesNotMatch(message, /NOT IN LIBRARY|不在库中/);
+  await select('RECOVERED'); await reply('RECOVERED'); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#result').isVisible(), true);
+  assert.equal(await page.locator('#lookup_status').innerText(), '');
+  assert.equal(await page.locator('#r_name').innerText(), 'RECOVERED fixture (RECOVERED)');
+});
+
+test('pending lookup hides prior analysis without moving input focus', async t => {
+  const {page, select, reply}=await setup(t);
+  await select('OLD'); await reply('OLD'); await page.waitForLoadState('networkidle');
+  await page.locator('#q').focus(); await select('NEXT');
+  assert.equal(await page.locator('#result').isVisible(), false);
+  assert.equal(await page.locator('#q').evaluate(n=>n===document.activeElement), true);
+  assert.match(await page.locator('#lookup_status').innerText(), /NEXT/);
+  await reply('NEXT'); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#result').isVisible(), true);
+});
+
+test('clearing the route invalidates a pending stock response', async t => {
+  const {page, select, reply}=await setup(t);
+  await select('OLD'); await page.evaluate(() => { location.hash=''; });
+  await reply('OLD'); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#result').isVisible(), false);
+});
+
+test('latest request wins even when a preference change requests the same ticker', async t => {
+  const {page, select, reply, requested}=await setup(t);
+  await select('SAME');
+  const second=requested('SAME');
+  await page.evaluate(()=>document.dispatchEvent(new Event('langchange'))); await second;
+  // The old request settles first. It must remain hidden until the current one settles.
+  const settled=page.waitForEvent('requestfinished',req=>req.url().endsWith('/SAME.json'));
+  await reply('SAME', record('SAME',{name:'Obsolete'})); await settled;
+  await page.evaluate(()=>new Promise(requestAnimationFrame));
+  assert.equal(await page.locator('#result').isVisible(), false);
+  await reply('SAME', record('SAME',{name:'Current'})); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#r_name').innerText(), 'Current (SAME)');
+});
+
+test('selecting the same ticker retries a failed lookup through the native search control', async t => {
+  const {page, select, reply, requested}=await setup(t);
+  await select('RETRY'); await reply('RETRY', {}, 503); await page.waitForLoadState('networkidle');
+  const retry=requested('RETRY');
+  await page.locator('#q').fill('RETRY'); await page.locator('#q').press('Enter');
+  // The visible loading state is the bounded assertion; do not await a request
+  // that the broken same-hash path never issued.
+  await page.waitForFunction(()=>document.getElementById('lookup_status').textContent.includes('Loading'));
+  await retry; await reply('RETRY'); await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#r_name').innerText(), 'RETRY fixture (RETRY)');
+  assert.equal(await page.locator('#result').isVisible(), true);
+});
+
+for (const lang of ['en','zh']) test(`deep-linked record can load when the optional search index fails ${lang}`, async t => {
+  const {page, reply, initialRequest}=await setup(t,lang,{initialHash:'DIRECT',indexStatus:503});
+  await page.waitForFunction(()=>document.getElementById('lookup_status').textContent.includes('DIRECT'));
+  await initialRequest; await reply('DIRECT',record('DIRECT',{limited:true}));
+  await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#r_name').innerText(), 'DIRECT fixture (DIRECT)');
+  assert.equal(await page.locator('#result').isVisible(), true);
+});

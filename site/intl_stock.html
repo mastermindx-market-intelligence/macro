@@ -299,6 +299,7 @@
     </div>
   </div>
 
+  <p id="lookup_status" class="muted" role="status" aria-live="polite"></p>
   <div id="result">
     <div class="panel">
       <div class="topline">
@@ -381,11 +382,12 @@
 <script src="stockview.js?v=b7490d45" defer></script>
 <script>
 (function () {
-  var idx = [], cal = null, sel = -1, items = [];
+  var idx = [], cal = null, sel = -1, items = [], lookupSerial = 0;
   var q = document.getElementById('q'), sugg = document.getElementById('sugg');
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { asof: 'data through', notlib: 'NOT IN LIBRARY',
+          loading: 'Loading stock analysis…', unavailable: 'Stock analysis could not be loaded. Try this stock again.',
           notlibmsg: 'Not in the nightly library (curated JP/KR/TW/UK/EU large-caps + sector ETFs + indices). Add it in config.yml → intl.constituents.',
           season: 'Seasonality', failed: '⚠ Failed cycle — price is below the low that started this cycle; the larger trend is usually rolling over.',
           next: 'Next:', ph: 'Search any JP / KR / TW / UK / EU stock…',
@@ -401,6 +403,7 @@
           cb_oil: 'Oil β', cb_gold: 'Gold β', cb_cad: 'CAD β', cb_primary: 'primary driver',
           cb_fit: 'fit R²', cb_none: 'market-driven · no commodity tilt' },
     zh: { asof: '数据截至', notlib: '不在库中',
+          loading: '正在加载个股分析…', unavailable: '暂时无法加载个股分析。请重新选择该股票。',
           notlibmsg: '不在每晚更新的标的库中（精选 日/韩/台/英/欧 大盘股 ＋ 板块 ETF ＋ 指数）。可在 config.yml → intl.constituents 添加。',
           season: '季节性', failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点；此时更大的趋势通常正在转向下行。',
           next: '下一步：', ph: '搜索任意 日/韩/台/英/欧 个股…',
@@ -444,14 +447,17 @@
   }
   (function () {
     var home = STOCK_MKTS.filter(function (m) { return m[1] === STOCK_HOME; })[0];
-    fetch(home[0] + 'index.json').then(function (r) { return r.json(); }).then(function (d) {
-      idx = tagMkt(d, home); fromHash();
+    fetch(home[0] + 'index.json').then(function (r) {
+      if (!r.ok) throw new Error('search index unavailable');
+      return r.json();
+    }).then(function (d) {
+      idx = tagMkt(d, home);
       STOCK_MKTS.forEach(function (m) {
         if (m[1] === STOCK_HOME) return;
         fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
           .then(function (e) { idx = idx.concat(tagMkt(e, m)); }).catch(function () {});
       });
-    });
+    }).catch(function () { /* Search is optional for a direct stock link. */ });
   })();
   fetch('intlstockdata/calibration.json').then(r => r.ok ? r.json() : null)
     .then(d => { cal = d; }).catch(() => {});
@@ -459,8 +465,10 @@
   function fromHash() {
     var t = decodeURIComponent((location.hash || '').slice(1));
     if (t) load(t);
+    else { lookupSerial += 1; showLookupStatus(''); }
   }
   window.addEventListener('hashchange', fromHash);
+  fromHash();
 
   q.addEventListener('input', function () {
     var v = q.value.trim().toLowerCase();
@@ -506,24 +514,38 @@
     if (items[i]._tgt && items[i]._tgt !== 'intl_stock.html') {
       location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
     }
-    location.hash = encodeURIComponent(items[i].t);
+    var hash = '#' + encodeURIComponent(items[i].t);
+    if (location.hash === hash) load(items[i].t);
+    else location.hash = hash;
   }
 
   function load(t) {
+    var serial = ++lookupSerial;
+    // A hash or preference change can start another request before this one
+    // settles. Neither a stale record nor its failure may repaint that selection.
+    showLookupStatus(t + ' · ' + L('loading'));
     var safe = t.replace('=', '_').replace('^', '_');
     fetch('intlstockdata/' + safe + '.json').then(function (r) {
-      if (!r.ok) throw new Error('not in library');
+      if (!r.ok) {
+        var error = new Error('stock lookup failed'); error.status = r.status; throw error;
+      }
       return r.json();
-    }).then(render).catch(function () {
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('r_name').textContent = t;
-      document.getElementById('r_state').textContent = L('notlib');
-      document.getElementById('r_state').className = 'state';
-      document.getElementById('r_entry').style.display = 'none';
-      document.getElementById('r_points').innerHTML = '';
-      document.getElementById('r_conviction_panel').style.display = 'none';
-      document.getElementById('r_cyclebox').innerHTML = L('notlibmsg');
+    }).then(function (d) {
+      if (serial !== lookupSerial) return;
+      render(d);
+      document.getElementById('lookup_status').textContent = '';
+    }).catch(function (error) {
+      if (serial !== lookupSerial) return;
+      showLookupStatus(t + ' · ' + (error.status === 404 ? L('notlib') : L('unavailable')));
     });
+  }
+
+  function showLookupStatus(message) {
+    // Keep old facts, chart and decision bands out of the accessible/visible page
+    // until the current selection has a complete record. Do not move search focus.
+    document.getElementById('result').style.display = 'none';
+    liveHeaderPx({});
+    document.getElementById('lookup_status').textContent = message;
   }
 
   // unified Conviction Profile hero — renders the SAME block as the standout card on
