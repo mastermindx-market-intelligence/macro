@@ -4041,6 +4041,9 @@ jobs:
       - "scripts/capture_market_memory_options_episodes.py"
       - "scripts/chain_snapshot_poller.py"
       - "scripts/ci/options_signal_nightly.sh"
+      # Options publisher's externalized lock helper is consumed by the
+      # existing locked-commit tests in this data-gate closure.
+      - "scripts/ci/options_index_lock_identity.py"
       - "scripts/launchd/theta_staleness_sentinel.sh"
       - "scripts/live_flow_poller.py"
       - "scripts/mirror_flow_idx.py"
@@ -8648,11 +8651,13 @@ jobs:
       - "scripts/check_dag_conformance.py"
       - "scripts/ci/append_only_base_fence.py"
       - "scripts/ci/options_signal_nightly.sh"
+      - "scripts/ci/options_index_lock_identity.py"
       - "scripts/ci/push_retry.sh"
       - "scripts/ci/qledger_publication.py"
       - "scripts/workflow_run_source.py"
       - "tests/test_append_only_base_fence.py"
       - "tests/test_push_retry.py"
+      - "tests/test_options_index_lock_identity.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
       # Read closure of tests/test_crypto_publication_contract.py.
@@ -8733,6 +8738,11 @@ jobs:
         run: pip install pytest pyyaml pandas pyarrow requests
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
         run: python -m pytest tests/test_push_retry.py -q
+      # This is the existing code-gate owner of the shared Git publication
+      # index boundary. Execute the M2-heredoc regression and exact inode
+      # ownership refusals here; flow-surface retains its data-gate closure.
+      - name: Options nightly index-lock subprocess and ownership safety
+        run: python -m pytest tests/test_options_index_lock_identity.py -q
       - name: QLedger explicit publication checks and publisher preservation boundaries
         run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py tests/test_crypto_publication_contract.py -q
       - name: crypto observation store contract (T22) — fake payloads, temp store, live network forbidden
