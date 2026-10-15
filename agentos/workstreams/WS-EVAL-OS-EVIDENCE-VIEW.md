@@ -26,8 +26,8 @@ waves:
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
     next_action: >
-      Finish exact-head verification, independent review and authenticated production proof for
-      the derived Intelligence OS evidence view, without persisting a new score state.
+      Publish the qualified ancestor-input repair on original PR6651 when independent review and
+      canonical capacity admit, then fresh binding checks, incumbent merge and real production proof.
 next_action: >
   Continue the existing PR #6651 under current Chairman assignment and root
   01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
@@ -58,6 +58,15 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
+
+## Current ancestor-input repair — 2026-10-15
+
+Original b1 run38601317870 completed successfully; its final semantic evidence binds126jobs and348passing commandsteps. The incumbent refreshed tofea04c414282 (b1+main1865), exact ordinary merge verified, with all17productionfiles unchanged. Its own run38624362438 failed the new ancestor-init census ratchet, so the controller correctly refused release. That refusal is preserved, not recast as inherited or nonbinding.
+
+Source2d0e6e334986eb73496c102a939ee4e24a688c63 declares13existing ancestor package inputs in eval-os-a1. It preserves all319job execution definitions, existing path memberships, eightA1suites, census ceilings, weights and pack limits. Exact local RED was357rows/147substantive versusbase344/138; all13extra pairs belong to A1. After the additive repair the census returns344rows withzeroA1omissions. Three focused controls pass, complete tracked dependency closure haszero misses, and strict probes136/135/129jobs withweights5694/5502/5445 use10packs each within existing limits. Read-only preview againstobservedmainccbd7d874b0b passes; no secondmainintegration occurred. Sourcehashes/RED/GREEN/originalartifact are retained under research/evidence/eval-os-20261012/a1-ancestor-repair-20261015/.
+
+Independent same-ID Fabric review eval-a1-ancestor-review-01a1333d-c1 is consumed and reviewer-accepted with report qualifiers (three lists are derived from one census; representative inputs include a test; non-substantive does not imply docstring-only). No material defect. This source is locally qualified, reviewed and unpublished; exact containinghead publication, fresh hosted checks, incumbent-only merge, normal updater/install/servedassets, authenticatedAPI-DOM/eightvisualstates, natural postrelease owner progression and actualoperator comprehension remain owed. Chris already released HOLD-FOR-SOL and the one-timebaseexception was consumed7e; no new approval is needed or inferred. Allcompletionflags remainfalse. Original experienceUNKNOWN and lostCLIreview effects remain frozen.
+
 
 ## Chairman release decision and CI repair — 2026-10-14
 
