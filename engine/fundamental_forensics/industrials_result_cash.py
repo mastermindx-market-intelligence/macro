@@ -66,6 +66,12 @@ _REQUIRED_QUALIFIER_FIELDS: tuple[str, ...] = (
 
 _NON_FINITE_TOKENS: frozenset[str] = frozenset({"nan", "inf", "-inf", "infinity", "-infinity", "+inf", "-inf"})
 
+# Largest |adjusted exponent| an operand may carry. Finite text such as
+# "1E+999999" passes is_finite() but overflows the ambient decimal context
+# (Emax 999999) in the growth and ratio arithmetic; 9999 leaves ample
+# headroom for 100 * x and for sums of a handful of operands.
+_MAX_OPERAND_ADJUSTED_EXPONENT: int = 9999
+
 _REFUSAL_UNAUTHORIZED_REF_FORMAT: str = "operand_ref_malformed"
 
 CLOSED_RESULT_KEYS: frozenset[str] = frozenset(
@@ -297,9 +303,13 @@ def _parse_operand(index: int, raw: Mapping[str, Any]) -> _Operand | None:
         if value_text.strip().lower() in _NON_FINITE_TOKENS:
             raise _OperandParseError(["operand_malformed:non_finite"])
         try:
-            Decimal(value_text)
+            parsed_decimal = Decimal(value_text)
         except InvalidOperation as exc:
             raise _OperandParseError(["operand_malformed:not_decimal"]) from exc
+        if not parsed_decimal.is_finite():
+            raise _OperandParseError(["operand_malformed:non_finite"])
+        if abs(parsed_decimal.adjusted()) > _MAX_OPERAND_ADJUSTED_EXPONENT:
+            raise _OperandParseError(["operand_malformed:magnitude_out_of_range"])
         value_text_parsed = value_text
 
     return _Operand(

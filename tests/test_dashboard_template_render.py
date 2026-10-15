@@ -338,6 +338,21 @@ def _health_panel(html: str) -> str:
     return match.group(0)
 
 
+def test_macro_health_detail_is_lazy_but_complete_on_disclosure():
+    """The large static health table must not inflate Macro's initial active DOM."""
+    html = _render("macro")
+    panel = _health_panel(html)
+    assert re.search(r"</summary>\s*<template data-health-fold>\s*<div class=\"tbl-scroll\">\s*<table>", panel)
+    assert panel.index("</summary>") < panel.index("<template data-health-fold>")
+    assert panel.count("<table>") == 1
+    assert "Source health data is unavailable for this build." in panel
+    assert "panel.appendChild(contents.content);" in html
+    assert "panel.addEventListener('toggle', hydrate);" in html
+    assert "panel.removeEventListener('toggle', hydrate);" in html
+    assert "document.dispatchEvent(new CustomEvent('mmx-tables-ready'" in html
+    assert "data-health-fold" not in _render("stocks")
+
+
 def test_macro_health_empty_is_unknown_not_green():
     panel = _health_panel(_render("macro"))
     opening = panel.split(">", 1)[0]
