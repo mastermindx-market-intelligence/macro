@@ -1923,28 +1923,28 @@ def _fixed_source_index(raw_rows, *, cutoff):
 def _fixed_endpoint_price(index, source_problem, stamp, *, source_id, venue_scope,
                           price_basis, session_id):
     if source_problem:
-        return None, source_problem
+        return None, source_problem, None
     versions = index.get(stamp)
     if not versions:
-        return None, "missing_exact_endpoint"
+        return None, "missing_exact_endpoint", None
     last_available = max(t for t, _ in versions)
     latest = [row for t, row in versions if t == last_available]
     if len(latest) > 1 and any(row != latest[0] for row in latest[1:]):
-        return None, "ambiguous_correction"
+        return None, "ambiguous_correction", None
     row = latest[0]
     if (row.get("source_id") != source_id or row.get("venue_scope") != venue_scope
             or row.get("price_basis") != price_basis or row.get("session_id") != session_id
             or type(row.get("bar_seconds")) is not int or row["bar_seconds"] != 60):
-        return None, "incompatible_source_or_session"
+        return None, "incompatible_source_or_session", None
     # Vendor aggregate timestamps are the START of each minute; the sampled
     # close cannot be causally known before that entire minute has ended.
     from datetime import timedelta
     if last_available < stamp + timedelta(minutes=1):
-        return None, "unfinalized_minute"
+        return None, "unfinalized_minute", None
     raw = row.get("close")
     if not is_measured(raw) or float(raw) <= 0:
-        return None, "invalid_price"
-    return float(raw), None
+        return None, "invalid_price", None
+    return float(raw), None, last_available
 
 
 def fixed_minute_horizons(
@@ -2017,18 +2017,23 @@ def fixed_minute_horizons(
     for horizon in sorted(horizons):
         start = end - timedelta(minutes=horizon)
         bm_return = None
+        bm_available = None
         bm_problem = source_state
         if bm_problem is None:
-            b0, p0 = price(benchmark, start)
-            b1, p1 = price(benchmark, end)
+            b0, p0, a0 = price(benchmark, start)
+            b1, p1, a1 = price(benchmark, end)
             bm_problem = p0 or p1
             if bm_problem is None:
                 bm_return = b1 / b0 - 1
                 if not is_measured(bm_return):
                     bm_return, bm_problem = None, "invalid_benchmark_return"
+                else:
+                    bm_available = max(a0, a1)
         window = {"minutes": horizon, "benchmark_return_pct":
                   (bm_return * 100 if bm_return is not None else None),
-                  "benchmark_reason": bm_problem, "groups": []}
+                  "benchmark_reason": bm_problem,
+                  "benchmark_available_at": (bm_available.isoformat() if bm_available else None),
+                  "groups": []}
         for group_id in sorted(memberships):
             expected = memberships[group_id]
             valid_members = (isinstance(expected, (list, tuple)) and bool(expected)
@@ -2036,12 +2041,13 @@ def fixed_minute_horizons(
                              and len(expected) == len(set(expected)))
             expected_n = len(expected) if isinstance(expected, (list, tuple)) else None
             observed = []
+            observed_availability = []
             excluded = []
             first_exclusion_reason = None
             if valid_members and bm_return is not None:
                 for symbol in sorted(expected):
-                    p0, x0 = price(symbol, start)
-                    p1, x1 = price(symbol, end)
+                    p0, x0, a0 = price(symbol, start)
+                    p1, x1, a1 = price(symbol, end)
                     if x0 or x1:
                         excluded.append(symbol)
                         first_exclusion_reason = first_exclusion_reason or x0 or x1
@@ -2049,6 +2055,7 @@ def fixed_minute_horizons(
                         val = p1 / p0 - 1
                         if is_measured(val):
                             observed.append(val)
+                            observed_availability.append(max(a0, a1))
                         else:
                             excluded.append(symbol)
                             first_exclusion_reason = first_exclusion_reason or "invalid_member_return"
@@ -2060,6 +2067,7 @@ def fixed_minute_horizons(
                       bm_problem if bm_problem else
                       first_exclusion_reason or "no_matched_members")
             abs_return = rel_return = None
+            measurement_available = None
             if matched_n:
                 absolute = sum(observed) / matched_n
                 relative = relative_wealth(absolute, bm_return)
@@ -2068,6 +2076,9 @@ def fixed_minute_horizons(
                     rel_return = relative * 100
                     state = "measured" if matched_n == expected_n else "partial"
                     reason = None if state == "measured" else "partial_matched_cohort"
+                    # A group-relative reading is not observable until its
+                    # benchmark AND every contributing member endpoint is.
+                    measurement_available = max([bm_available, *observed_availability])
                 else:
                     reason = "invalid_relative_return"
             window["groups"].append({
@@ -2077,6 +2088,11 @@ def fixed_minute_horizons(
                 "matched_n": matched_n, "expected_n": expected_n,
                 "coverage_fraction": (matched_n / expected_n if valid_members else None),
                 "excluded_members": excluded,
+                "measurement_available_at": (measurement_available.isoformat()
+                                             if measurement_available else None),
+                "source_lag_seconds": ((measurement_available -
+                                        (end + timedelta(minutes=1))).total_seconds()
+                                       if measurement_available else None),
             })
         output["windows"].append(window)
     return output

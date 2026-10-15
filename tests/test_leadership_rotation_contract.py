@@ -1727,7 +1727,7 @@ def test_fixed_minute_hidden_daily_handoff_and_four_exact_horizons():
         assert tech["state"] == defense["state"] == "measured"
         assert tech["relative_wealth_pct"] > 0 and defense["relative_wealth_pct"] < 0
         assert tech["coverage_fraction"] == 1 and tech["matched_n"] == 1
-        assert set(tech) <= {"group_id", "state", "reason", "absolute_return_pct", "relative_wealth_pct", "matched_n", "expected_n", "coverage_fraction", "excluded_members"}
+        assert set(tech) <= {"group_id", "state", "reason", "absolute_return_pct", "relative_wealth_pct", "matched_n", "expected_n", "coverage_fraction", "excluded_members", "measurement_available_at", "source_lag_seconds"}
     # Raw and benchmark returns are different quantities; no predictive tier.
     assert _fixed_at(out, 5, "TECH")["absolute_return_pct"] != pytest.approx(
         _fixed_at(out, 5, "TECH")["relative_wealth_pct"])
@@ -1883,3 +1883,39 @@ def test_fixed_minute_malformed_group_identity_is_a_programmer_error():
     args = _fixed_case();args["memberships"] = {None: ["XLK"]}
     with pytest.raises(ValueError, match="group identities"):
         fixed_minute_horizons(**args)
+
+
+def test_fixed_minute_first_observable_clock_and_no_refresh_freshness_fraud():
+    args = _fixed_case()
+    out = fixed_minute_horizons(**args)
+    base = _fixed_at(out, 5, "TECH")
+    expected = (args["endpoint"] + _td(seconds=75)).isoformat()
+    assert base["measurement_available_at"] == expected
+    assert base["source_lag_seconds"] == pytest.approx(15)
+    assert out["windows"][0]["benchmark_available_at"] == expected
+    # Merely rebuilding later cannot move the producer's first-observable clock.
+    args["knowledge_cutoff"] += _td(minutes=30)
+    repeated = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert repeated["measurement_available_at"] == expected
+    assert repeated["source_lag_seconds"] == pytest.approx(15)
+
+
+def test_fixed_minute_late_member_correction_moves_available_at_not_bar_at():
+    args = _fixed_case()
+    prior = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    new_available = args["endpoint"] + _td(minutes=11)
+    args["bars_by_symbol"]["XLK"].append(dict(args["bars_by_symbol"]["XLK"][-1],
+                                             close=120, available_at=new_available.isoformat()))
+    args["knowledge_cutoff"] = args["endpoint"] + _td(minutes=12)
+    revised = _fixed_at(fixed_minute_horizons(**args), 5, "TECH")
+    assert revised["measurement_available_at"] == new_available.isoformat()
+    assert revised["source_lag_seconds"] == pytest.approx(600)
+    assert revised["absolute_return_pct"] > prior["absolute_return_pct"]
+
+
+def test_fixed_minute_denied_or_unknown_has_no_observable_clock():
+    args = _fixed_case();args["rights"] = {}
+    out = fixed_minute_horizons(**args)
+    assert all(r["measurement_available_at"] is None and r["source_lag_seconds"] is None
+               for w in out["windows"] for r in w["groups"])
+    assert all(w["benchmark_available_at"] is None for w in out["windows"])
