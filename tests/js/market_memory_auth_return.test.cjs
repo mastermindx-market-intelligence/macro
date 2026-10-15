@@ -13,10 +13,10 @@ function setup(query, capsule) {
  const document={readyState:'complete',documentElement:{getAttribute:()=>lang},getElementById:id=>elements[id],addEventListener(t,f){events[t]=f;}};
  const saved=capsule||{};
  const sessionStorage={getItem:k=>saved[k]||null,setItem:(k,v)=>{capsuleWrites++;saved[k]=v;},removeItem:k=>{delete saved[k];}};
- const window={location,history,sessionStorage,addEventListener(t,f){windowEvents[t]=f;},setLang(v){lang=v;},MDXAuth:{onChange(f){authChanged=f;},open(){opened++;}}};
+ const window={location,history,sessionStorage,addEventListener(t,f){(windowEvents[t]||(windowEvents[t]=[])).push(f);},setLang(v){lang=v;},MDXAuth:{onChange(f){authChanged=f;},open(){opened++;}}};
  const context={window,document,location,history,URL,URLSearchParams,console,localStorage:{getItem:k=>stored[k],setItem(k,v){stored[k]=v;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve}))};
  vm.createContext(context);vm.runInContext(script('market_memory_intent.js'),context);vm.runInContext(script('market_memory.js'),context);
- return {elements,events,pending,stored,window,location,saved,auth:u=>authChanged(u),get opened(){return opened;},get capsuleWrites(){return capsuleWrites;},setLang(v){lang=v;events.langchange();},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
+ return {elements,events,pending,stored,window,location,saved,auth:u=>authChanged(u),get lang(){return lang;},get opened(){return opened;},get capsuleWrites(){return capsuleWrites;},setLang(v){lang=v;events.langchange();},navigate(query){location.href=new URL(query,location).href;(windowEvents.popstate||[]).forEach(f=>f());},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
 }
 for (const raw of ['', 'a/b', 'A APL']) test('explicit latest invalid input survives login destination: '+JSON.stringify(raw),async()=>{
  const x=setup('?ticker=AAPL&mm_issuer_input='+encodeURIComponent(raw)+'&mm_lang=zh');await tick();
@@ -217,3 +217,37 @@ test('macro sign-in retry renders pending in both languages until the current re
  assert.equal(x.elements['mm-macro-note'].textContent,'');
  assert.match(x.elements['mm-macro-state'].textContent,/Memory unavailable/);
 });
+
+// Run both actual preference readers against the actual page intent/client.
+// Server hydration used to replace an explicit OAuth return language and rewrite ret.
+function profileReader(x, owner) {
+ x.window.setLang=v=>x.setLang(v);
+ const docEl={getAttribute:()=>x.lang};
+ const context={window:x.window,document:{documentElement:docEl},docEl,_prefSyncing:false,_hydrating:false,curTheme:()=> 'light',setTheme(){},setThemeAuto(){},setLang:v=>x.setLang(v)};
+ const theme=script('theme.js'),account=script('account.js');
+ const body=owner==='theme' ? theme.slice(theme.indexOf('function _sharedPref('),theme.indexOf('/* Save ONLY the atomics')) : account.slice(account.indexOf('function applyPrefs('),account.indexOf('// S1-01: theme/lang edits'));
+ vm.createContext(context);vm.runInContext(body,context);
+ return language=>owner==='theme' ? context._applyServerPrefs({user_metadata:{lang:language}}) : context.applyPrefs({authenticated:true,prefs:{lang:language}});
+}
+for(const owner of ['theme','account']) {
+ for(const language of ['en','zh']) test(owner+' profile hydration preserves explicit OAuth language and source intent: '+language,async()=>{
+  const prior=setup(legacyLocaleQuery.replace('mm_lang=zh','mm_lang='+language));await tick();
+  const x=setup('?onboard=resume&code=synthetic',prior.saved);await tick();
+  const apply=profileReader(x,owner),before=x.location.href,writes=x.capsuleWrites,reads=x.pending.length;
+  apply(language==='en'?'zh':'en');await tick();
+  assert.equal(x.lang,language);assert.equal(x.location.href,before);assert.equal(x.capsuleWrites,writes);assert.equal(x.pending.length,reads);
+  const next=language==='en'?'zh':'en';
+  x.navigate('?ticker=SPY&mm_issuer_input=SPY&mm_lang='+next);await tick();
+  const navigation=x.location.href;apply(language);assert.equal(x.lang,next);assert.equal(x.location.href,navigation,'Back/Forward language must replace the earlier navigation preference');
+ });
+ test(owner+' profile default remains available without incoming language; later user choice wins',async()=>{
+  const x=setup('?ticker=SPY');await tick();const apply=profileReader(x,owner);
+  apply('zh');assert.equal(x.lang,'zh','initial generated URL must not suppress the account default');
+  x.setLang('en');const before=x.location.href,writes=x.capsuleWrites,reads=x.pending.length;apply('zh');await tick();
+  assert.equal(x.lang,'en');assert.equal(x.location.href,before);assert.equal(x.capsuleWrites,writes);assert.equal(x.pending.length,reads);
+ });
+ test(owner+' profile language behavior is unchanged without the page intent API',async()=>{
+  const x=setup('?ticker=SPY');await tick();delete x.window.MarketMemoryIntent;const apply=profileReader(x,owner);
+  apply('zh');assert.equal(x.lang,'zh');apply('en');assert.equal(x.lang,'en');
+ });
+}
