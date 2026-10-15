@@ -2140,6 +2140,8 @@ def test_minted_fabric_lane_admits_tools_without_completion_state(
         lambda mp: mp.setenv("FABRIC_WORKSPACE_READY", "0"),
         lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "other-run"),
         lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "../wt/opus-sparse-w9"),
+        # Accepted by the run-id charset, so this one exercises the path check.
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9.."),
     ],
 )
 def test_fabric_lane_requires_matching_readiness_env(tmp_path, monkeypatch, capsys, mutate):
@@ -2162,12 +2164,91 @@ def test_fabric_lane_rejects_branch_that_does_not_name_the_run(
 
 def test_fabric_lane_env_does_not_admit_other_roots(tmp_path, monkeypatch, capsys):
     primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
-    # The primary checkout and a subdirectory-rooted path stay quarantined even
-    # with the lane's readiness env inherited.
+    # The primary checkout stays quarantined even with the lane's readiness env
+    # inherited. Admission is decided for the lane top level only: a direct
+    # subdirectory path is not a lane (the hook's _repo_root normalises a
+    # subdirectory cwd to the top level first, so the whole tree is one unit).
     assert GUARD._fabric_lane_admission(primary) == ""
     assert _bash_decision(primary, tmp_path / "s.json", capsys) == "deny"
     (lane / "sub").mkdir()
     assert GUARD._fabric_lane_admission(lane / "sub") == ""
+
+
+def test_fabric_lane_rejects_detached_head(tmp_path, monkeypatch, capsys):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    _git(lane, "checkout", "--detach")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_rejects_symlinked_lane_path(tmp_path, monkeypatch, capsys):
+    home = tmp_path / "home"
+    (home / "lanes" / "wt").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    primary = _root_fixture(tmp_path)
+    elsewhere = tmp_path / "elsewhere"
+    # A real linked worktree on the right branch, reached through a symlink.
+    _git(primary, "worktree", "add", "-b", "lane/opus-sparse-w9", str(elsewhere))
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.symlink_to(elsewhere, target_is_directory=True)
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_unreadable_git_identity_is_not_a_lane(
+    tmp_path, monkeypatch, capsys
+):
+    home = tmp_path / "home"
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.mkdir(parents=True)
+    (lane / ".git").write_text("gitdir: /nonexistent/worktrees/x\n", encoding="utf-8")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+
+
+def test_fabric_lane_cannot_promote_itself_into_the_ship_loop(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "startup"}
+    )
+    capsys.readouterr()
+    assert GUARD._load(state_path)["fabric_lane_run_id"] == "opus-sparse-w9"
+
+    # The worker renames its own branch into the delivery namespace.
+    _git(lane, "branch", "-m", "lane/opus-sparse-w9", "claude/escape")
+
+    admitted, reason = GUARD._delivery_root_admission(lane)
+    assert admitted is False
+    assert "never a delivery root" in reason
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, state_path, capsys) == "deny"
+
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "compact"}
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is False
+    assert "fabric_lane_run_id" not in state
+    GUARD._stop(
+        lane,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "done"},
+    )
+    assert capsys.readouterr().out.strip() == ""
 
 
 def test_fabric_lane_path_on_primary_checkout_is_not_a_lane(

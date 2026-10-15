@@ -652,7 +652,15 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     Unknown git identity fails closed. This is admission, not completion: the
     existing Stop chain still owns every delivery/CI/merge/live proof after a
     session has been admitted.
+
+    A minted Fabric lane is never a delivery root, whatever branch it is on: the
+    lane identity comes from the launcher's env and the lane path, so a worker
+    that renames its branch to claude/* falls back to quarantine instead of
+    acquiring the ship loop its parent run owns.
     """
+    lane_run_id = _fabric_lane_session_root(root)
+    if lane_run_id:
+        return False, f"Fabric lane checkout for run {lane_run_id} is never a delivery root"
     try:
         branch = _run(root, "git", "branch", "--show-current")
         git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
@@ -685,13 +693,11 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
 _FABRIC_LANE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")
 
 
-def _fabric_lane_admission(root: Path) -> str:
-    """Return the run id when ``root`` is this process's minted Fabric lane, else "".
+def _fabric_lane_session_root(root: Path) -> str:
+    """Return the run id when the launcher's env names ``root`` as its lane path.
 
-    Every condition must hold: the launcher's readiness env names a safe run id,
-    ``root`` is exactly ``~/lanes/wt/<run-id>`` and the worktree's top level, it
-    is a linked worktree (never the primary), and its branch is
-    ``lane/<run-id>``. Never raises; anything unknown is not a lane.
+    Path identity only (no git): the readiness env names a safe run id and
+    ``root`` is ``~/lanes/wt/<run-id>``. Never raises.
     """
     if os.environ.get("FABRIC_WORKSPACE_READY") != "1":
         return ""
@@ -699,10 +705,35 @@ def _fabric_lane_admission(root: Path) -> str:
     if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
         return ""
     try:
-        root = root.resolve()
-        if root != (Path.home() / "lanes" / "wt" / run_id).resolve():
+        if root.resolve() != (Path.home() / "lanes" / "wt" / run_id).resolve():
             return ""
-        if Path(_run(root, "git", "rev-parse", "--show-toplevel")).resolve() != root:
+    except Exception:
+        return ""
+    return run_id
+
+
+def _fabric_lane_admission(root: Path) -> str:
+    """Return the run id when ``root`` is this process's minted Fabric lane, else "".
+
+    Every condition must hold: the launcher's readiness env names a safe run id,
+    ``root`` is exactly ``~/lanes/wt/<run-id>`` (a real directory, not a symlink,
+    with a regular ``.git`` file) and the worktree's top level, it is a linked
+    worktree (never the primary), and its branch is ``lane/<run-id>``. This
+    mirrors the launcher's own mint postconditions. Never raises; anything
+    unknown is not a lane.
+    """
+    run_id = _fabric_lane_session_root(root)
+    if not run_id:
+        return ""
+    try:
+        lane = Path.home() / "lanes" / "wt" / run_id
+        if lane.is_symlink() or (lane / ".git").is_symlink():
+            return ""
+        if not (lane / ".git").is_file():
+            return ""
+        root = root.resolve()
+        toplevel = _run(root, "git", "rev-parse", "--show-toplevel")
+        if not toplevel or Path(toplevel).resolve() != root:
             return ""
         git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
         common_dir = _resolved_git_path(
@@ -4742,6 +4773,8 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     lane_run_id = "" if admitted else _fabric_lane_admission(root)
     if lane_run_id:
         state["fabric_lane_run_id"] = lane_run_id
+    else:
+        state.pop("fabric_lane_run_id", None)
     _save(path, state)
 
     if lane_run_id:
