@@ -53,6 +53,7 @@ import logging
 import os
 import sys
 import time
+from datetime import date, datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -538,6 +539,64 @@ def _manifest_doc(d: str, base: Path, names: list[str]) -> dict:
     return doc
 
 
+def _massive_publish_tip_ok(local: object, remote: object | None, *,
+                            now: datetime | None = None,
+                            max_missing_sessions: int | None = None,
+                            ) -> tuple[bool, str]:
+    """Refuse regressive/stale Massive day-store publication BEFORE any upload.
+
+    This is the existing publisher's safety fence, not an independent data
+    publisher or admission authority. The local collector manifest proves only
+    a source clock, never price basis, vendor rights or customer entitlement.
+    """
+    # Keep publish_r2's credential import order and non-Massive bootstrap
+    # independent of this specialized check. The original calendar and audit
+    # policy are loaded only for the Massive daily source.
+    from lib.nyse_calendar import expected_last_session, sessions_behind  # noqa: PLC0415
+    from scripts.audit_r2 import DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS  # noqa: PLC0415
+    now = now or datetime.now(timezone.utc)
+    if max_missing_sessions is None:
+        max_missing_sessions = DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS
+    if type(max_missing_sessions) is not int or max_missing_sessions < 0:
+        return False, "SOURCE_UNVERIFIED: invalid configured completed-session grace"
+
+    def _read_date(v: object) -> date | None:
+        if not isinstance(v, str) or len(v) != 10:
+            return None
+        try:
+            parsed = date.fromisoformat(v)
+        except ValueError:
+            return None
+        return parsed if parsed.isoformat() == v else None
+
+    if not isinstance(local, dict) or local.get("store") != "massive_stock_day":
+        return False, "SOURCE_UNVERIFIED: missing or incompatible local collector manifest"
+    latest = _read_date(local.get("latest_date"))
+    if latest is None:
+        return False, "SOURCE_UNVERIFIED: invalid local latest_date"
+    expected = expected_last_session(now)
+    if latest > expected:
+        return False, "SOURCE_UNVERIFIED: local daily bar is later than the completed NYSE session"
+    missing = sessions_behind(latest, now)
+    if missing > max_missing_sessions:
+        return False, (f"SOURCE_STALE: local latest {latest} is {missing} completed "
+                       f"NYSE sessions behind {expected} (limit {max_missing_sessions})")
+
+    if remote is not None:
+        if not isinstance(remote, dict) or remote.get("dir") != "massive_stock_day":
+            return False, "REMOTE_UNVERIFIED: no authentic remote publisher document"
+        recorded = remote.get("store")
+        if not isinstance(recorded, dict) or recorded.get("store") != "massive_stock_day":
+            return False, "REMOTE_UNVERIFIED: missing original remote collector metadata"
+        older = _read_date(recorded.get("latest_date"))
+        if older is None:
+            return False, "REMOTE_UNVERIFIED: invalid remote latest_date"
+        if latest < older:
+            return False, (f"SOURCE_REGRESSION: local latest {latest} predates "
+                           f"remote source latest {older}")
+    return True, "source tip admitted"
+
+
 def _manifest_ok(new_count: int, remote: dict | None, floor: float = 0.5) -> tuple[bool, str]:
     """May a freshly-built manifest replace `remote`? Bulk consumers sync AND PRUNE
     against this list, so a partial-tree invocation must never clobber it: replacing
@@ -589,6 +648,19 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
     site = config.ROOT / config.load()["storage"]["site_dir"]
     up = skip = failed = 0
     data = config.ROOT / config.load()["storage"]["data_dir"]
+    # Use the existing audit owner's grace configuration, not a second R2 SLA.
+    massive_tip_limit: int | None = None
+    if "massive_stock_day" in dirs:
+        from scripts.audit_r2 import DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS  # noqa: PLC0415
+        massive_tip_limit = DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS
+        raw_limit = (config.load().get("r2_data_plane") or {}).get(
+            "massive_tip_max_missing_sessions", massive_tip_limit)
+        if type(raw_limit) is int:
+            massive_tip_limit = raw_limit
+        elif isinstance(raw_limit, str) and raw_limit.isdecimal():
+            massive_tip_limit = int(raw_limit)
+        else:
+            massive_tip_limit = -1  # fail closed inside _massive_publish_tip_ok
     # Per-dir store-path overrides: let the ops host publish stores that live
     # outside the repo checkout (e.g. the theta-ops worktree).
     # WP-RESOLVER: thetadata_eod routes through the canonical resolver
@@ -631,6 +703,28 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
                   "skipped", flush=True)
             continue
         remote = _remote_etags(s3, bucket, d + "/")
+        if d == "massive_stock_day":
+            # The publisher's source clock comes from the original collector
+            # manifest, NOT Last-Modified on a freshly re-PUT file-list doc.
+            # Do this BEFORE changed Parquets are uploaded: the old shrink guard
+            # ran only after uploads and could not prevent full stale snapshots
+            # from replacing newer remote objects.
+            try:
+                local_source = json.loads((base / "_manifest.json").read_text())
+            except (OSError, ValueError):
+                local_source = None
+            remote_source = _remote_manifest(s3, bucket, d)
+            if remote_source is None and remote:
+                admitted, why_tip = False, "REMOTE_UNVERIFIED: data objects exist but source manifest is unavailable"
+            else:
+                admitted, why_tip = _massive_publish_tip_ok(
+                    local_source, remote_source, max_missing_sessions=massive_tip_limit)
+            if not admitted:
+                failed += 1
+                log.error("%s: %s — refusing ALL source uploads", d, why_tip)
+                print(f"::error title=publish_r2 source-tip guard::{d}: {why_tip} — "
+                      "no Parquet or manifest uploaded", flush=True)
+                continue
         todo, guarded = [], 0
         for p in files:
             key = f"{d}/{p.relative_to(base).as_posix()}"
@@ -705,6 +799,27 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             log.info("%s: manifest untouched (%d upload failure(s) — every file it "
                      "lists must be in place first)", d, len(failures))
             continue
+        if d == "massive_stock_day":
+            # The remote may advance while this process is uploading deltas.
+            # Never put our older file-list/source descriptor over a newer one.
+            # File uploads already attempted here cannot be made atomic, but the
+            # authoritative manifest must retain the newer published source.
+            latest_remote = _remote_manifest(s3, bucket, d)
+            try:
+                latest_local = json.loads((base / "_manifest.json").read_text())
+            except (OSError, ValueError):
+                latest_local = None
+            if latest_remote is None and remote:
+                still_ok, why_tip = False, "REMOTE_UNVERIFIED: remote manifest changed or disappeared"
+            else:
+                still_ok, why_tip = _massive_publish_tip_ok(
+                    latest_local, latest_remote, max_missing_sessions=massive_tip_limit)
+            if not still_ok:
+                failed += 1
+                log.error("%s: %s — manifest NOT replaced", d, why_tip)
+                print(f"::error title=publish_r2 source-tip guard::{d}: {why_tip} — "
+                      "manifest not replaced", flush=True)
+                continue
         names = sorted(p.relative_to(base).as_posix() for p in files)
         ok, why = (True, "forced") if force_manifest else \
             _manifest_ok(len(names), _remote_manifest(s3, bucket, d))
