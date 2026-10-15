@@ -499,3 +499,249 @@ def test_tombstone_reports_retired_without_changing_admission_history(build_scra
     current=b.build(out)
     assert current['direct_registrant_intake']==first['direct_registrant_intake']
     assert current['direct_registrant_rederivation']['SPY']=='RETIRED'
+
+
+# Bounded SPY option-root source admission; synthetic fixtures only.
+from datetime import datetime, timezone
+
+ROOT_NOW='2026-10-15T12:00:00+00:00'
+ROOT_URLS={
+ 'cboe_reference':'https://cdn.cboe.com/data/us/options/market_statistics/symbol_reference/cone-underlying.csv',
+ 'cboe_product':'https://www.cboe.com/tradable_products/sp_500/spx_weekly_options/specifications',
+ 'theta_contract':'https://thetadata.net/docs/operations/option_history_eod.html',
+ 'registrant':'https://data.sec.gov/submissions/CIK0000884394.json'}
+
+def root_capture(role,body):
+ return dict(url=ROOT_URLS[role],final_url=ROOT_URLS[role],status=200,bytes=len(body),sha256=hashlib.sha256(body).hexdigest(),
+   request_started_at='2026-10-15T11:00:00Z',read_completed_at='2026-10-15T11:00:01Z')
+
+def root_body_change(s,role,body):
+ s[role]={'body':body,'capture':root_capture(role,body)}
+
+@pytest.fixture
+def root_sources():
+ d=intake_input()
+ raw=json.loads(d['response_body']);raw['name']='SPDR S&P 500 ETF TRUST'
+ values={
+  'registrant':json.dumps(raw).encode(),
+  'cboe_reference':b'Symbol,Company,Symbol Type,Options Type,Clearing\nSPY,STATE STR SPDR S&P 500 ETF TR TR UNIT,ETF,Standard,OCC\n',
+  'cboe_product':('<table><tr><th></th><th>SPDR ® S&P 500 ® ETF Options</th></tr>'
+    '<tr><td>Root Ticker Symbol</td><td>SPY</td></tr><tr><td>Options Chain</td><td>SPY</td></tr>'
+    '<tr><td>Settlement Type</td><td>Physical Shares of ETF</td></tr>'
+    '<tr><td>Exercise Style</td><td>American</td></tr></table>').encode(),
+  'theta_contract':b'<p>/v3/option/history/eod</p><p>symbol Required - The stock or index symbol, or underlying symbol for options. Type: string</p>'}
+ return {**{k:{'body':v,'capture':root_capture(k,v)} for k,v in values.items()},
+  'listing_body':d['listing_body'],'listing_receipt_body':d['listing_receipt_body']}
+
+def root_master():
+ return dict(security_id='SEC:US-ARCX-SPY',listing_key='US-ARCX-SPY',country='US',mic='ARCX',
+  inception_code='SPY',security_state=None,superseded_by=None,
+  effective_at='2026-10-15T00:00:00',ingested_at='2026-10-15T10:00:00')
+
+def test_root_prepare_and_canonical_admission(root_sources):
+ row,e=b.admit_spy_option_root(root_sources,[root_master()],decision_at=ROOT_NOW)
+ assert row.security_id=='SEC:US-ARCX-SPY' and row.alias_kind=='occ_root'
+ assert row.valid_from==date(2026,10,15) and row.valid_to==date(2026,10,16)
+ assert row.known_at.isoformat()=='2026-10-15T11:00:01+00:00'
+ assert e['listing']['listing_key']=='US-ARCX-SPY'
+
+@pytest.mark.parametrize('field,value', [('status',403),('status',True),('url','https://wrong.example'),
+ ('final_url','https://wrong.example'),('bytes',True),('bytes',1),('sha256','0'*64),
+ ('request_started_at','2026-10-14T11:00:00Z'),('read_completed_at','2026-10-16T11:00:00Z'),
+ ('request_started_at','2026-10-15T11:00:02Z'),('read_completed_at','2026-10-15T11:00:01')])
+def test_root_capture_refusal(root_sources,field,value):
+ root_sources['cboe_reference']['capture'][field]=value
+ with pytest.raises(b.IdentityError):b.prepare_spy_option_root(root_sources,decision_at=ROOT_NOW)
+
+@pytest.mark.parametrize('role,old,new',[
+ ('cboe_reference',b'SPY,',b'QQQ,'),('cboe_reference',b',ETF,',b',Index,'),
+ ('cboe_reference',b',Standard,',b',Adjusted,'),('cboe_reference',b',OCC',b',Other'),
+ ('cboe_reference',b'STATE STR SPDR S&P 500 ETF TR TR UNIT',b'Other ETF'),
+ ('cboe_product',b'<td>SPY</td>',b'<td>SPY1</td>'),
+ ('cboe_product',b'Physical Shares of ETF',b'Cash'),('cboe_product',b'American',b'European'),
+ ('theta_contract',b'/v3/option/history/eod',b'/v2/history'),
+ ('theta_contract',b'underlying symbol for options',b'issuer ticker for options'),
+ ('registrant',b'0000884394',b'0000000001'),('registrant',b'SPDR S&P 500 ETF TRUST',b'Other fund')])
+def test_root_semantic_refusals_even_with_matching_hash(root_sources,role,old,new):
+ root_body_change(root_sources,role,root_sources[role]['body'].replace(old,new))
+ with pytest.raises(b.IdentityError):b.prepare_spy_option_root(root_sources,decision_at=ROOT_NOW)
+
+@pytest.mark.parametrize('change',['duplicate_reference','duplicate_column','duplicate_product','split_tables','nested_table','invalid_utf8','oversize'])
+def test_root_source_shape(root_sources,change):
+ if change=='duplicate_reference':role='cboe_reference';raw=root_sources[role]['body']+root_sources[role]['body'].splitlines(True)[1]
+ elif change=='duplicate_column':role='cboe_reference';raw=root_sources[role]['body'].replace(b'Symbol,Company',b'Symbol,Symbol')
+ elif change=='duplicate_product':role='cboe_product';raw=root_sources[role]['body']*2
+ elif change=='split_tables':role='cboe_product';raw=root_sources[role]['body'].replace(b'<tr><td>Root',b'</table><table><tr><td>Root')
+ elif change=='nested_table':role='cboe_product';raw=b'<table>'+root_sources[role]['body']+b'</table>'
+ elif change=='invalid_utf8':role='theta_contract';raw=b'\xff'
+ else:role='cboe_reference';raw=b' '*(b._REFERENCE_MAX_BYTES+1)
+ root_body_change(root_sources,role,raw)
+ with pytest.raises(b.IdentityError):b.prepare_spy_option_root(root_sources,decision_at=ROOT_NOW)
+
+@pytest.mark.parametrize('field,value', [('security_id','IDX:SPX'),('security_state','SUPERSEDED'),
+ ('superseded_by','SEC:US-XNYS-OTHER'),('listing_key','US-XNYS-SPY'),('country','CA'),('mic','XNYS'),
+ ('inception_code','QQQ'),('effective_at','2026-10-16T00:00:00'),('ingested_at','2026-10-15T13:00:00'),
+ ('ingested_at','2026-10-14T23:00:00'),('effective_at',None)])
+def test_root_bad_existing_target(root_sources,field,value):
+ m=root_master();m[field]=value
+ with pytest.raises(b.IdentityError):b.admit_spy_option_root(root_sources,[m],decision_at=ROOT_NOW)
+
+@pytest.mark.parametrize('rows',[[],[root_master(),root_master()]])
+def test_root_missing_or_duplicate_target(root_sources,rows):
+ with pytest.raises(b.IdentityError):b.admit_spy_option_root(root_sources,rows,decision_at=ROOT_NOW)
+
+@pytest.fixture
+def root_published(build_scratch,monkeypatch):
+ out,original=build_scratch
+ b.build(out,direct_registrant_inputs=[intake_input()])
+ monkeypatch.setattr(b,'_iso_now',lambda:'2026-10-15T12:00:00')
+ return out,original
+
+def root_contents(out):return {p.name:p.read_bytes() for p in out.iterdir()}
+def root_records(out):return b._read_existing(out/b.ALIASES_NAME,b.ALIAS_COLUMNS,b.ALIAS_DTYPES,allow_missing=b.OPTIONAL_ALIAS_COLUMNS)
+
+def test_root_full_writer_preserves_records_and_root_lookup(root_published,root_sources):
+ out,original=root_published;before=root_contents(out);old=root_records(out)
+ result=b.build(out,spy_option_root_input=root_sources)
+ assert result['prospective_reference']==original
+ new=root_records(out);assert len(new)==len(old)+1 and all(r in new for r in old)
+ for name,body in before.items():
+  if name not in (b.ALIASES_NAME,b.RECEIPT_NAME):assert (out/name).read_bytes()==body
+ ev=(json.dumps(result['spy_option_root'],indent=2,sort_keys=True)+'\n').encode()
+ table=b.VendorAliasTable.from_records(new)
+ assert table.resolve_option_underlying('thetadata','SPY',date(2026,10,15),decision_at=ROOT_NOW,evidence_bytes=ev).security_id=='SEC:US-ARCX-SPY'
+ assert table.resolve('thetadata','SPY',date(2026,10,15)) is None
+ assert table.vendor_symbol_for('thetadata','SEC:US-ARCX-SPY',date(2026,10,15)) is None
+ saved=root_contents(out)
+ again=b.build(out)
+ assert again['spy_option_root']==result['spy_option_root'] and root_records(out)==new
+ with pytest.raises(b.IdentityError,match='no replay'):b.build(out,spy_option_root_input=root_sources)
+ assert root_contents(out)==saved
+
+@pytest.mark.parametrize('change',['missing_target','retired_target','current_listing','listing_bytes','ordinary_change','retained_tamper','missing_evidence','combined'])
+def test_root_writer_refuses_before_outputs(root_published,root_sources,monkeypatch,change,tmp_path):
+ out,_=root_published
+ if change in ('missing_target','retired_target'):
+  rows=b._read_existing(out/b.MASTER_NAME,b.MASTER_COLUMNS,b.MASTER_DTYPES)
+  if change=='missing_target':rows=[r for r in rows if r['inception_code']!='SPY']
+  else:next(r for r in rows if r['inception_code']=='SPY').update(security_state='SUPERSEDED',superseded_by='SEC:US-XNYS-OTHER')
+  b._write_parquet(rows,b.MASTER_COLUMNS,out/b.MASTER_NAME,b.MASTER_DTYPES)
+ elif change in ('current_listing','listing_bytes'):
+  mapping,flags,day,path=b.load_directory()
+  if change=='current_listing':mapping=dict(mapping);mapping.pop('SPY')
+  else:path=tmp_path/'changed.parquet';path.write_bytes(root_sources['listing_body']+b' ')
+  monkeypatch.setattr(b,'load_directory',lambda:(mapping,flags,day,path))
+ elif change=='ordinary_change':
+  old=b.build_alias_rows
+  monkeypatch.setattr(b,'build_alias_rows',lambda *a,**k:old(*a,**k)+[b.AliasRow('yahoo','EXTRA','SEC:US-ARCX-SPY')])
+ elif change in ('retained_tamper','missing_evidence'):
+  b.build(out,spy_option_root_input=root_sources)
+  path=out/b.RECEIPT_NAME;value=json.loads(path.read_bytes())
+  if change=='retained_tamper':value['spy_option_root']['scope']='changed bytes'
+  else:del value['spy_option_root']
+  path.write_text(json.dumps(value))
+ before=root_contents(out)
+ with pytest.raises(b.IdentityError):
+  if change in ('retained_tamper','missing_evidence'):b.build(out)
+  elif change=='combined':b.build(out,spy_option_root_input=root_sources,direct_registrant_inputs=[intake_input()])
+  else:b.build(out,spy_option_root_input=root_sources)
+ assert root_contents(out)==before
+
+def root_manifest(tmp_path,root_sources):
+ value=copy.deepcopy(root_sources)
+ for role in ROOT_URLS:
+  name=role+'.dat';(tmp_path/name).write_bytes(value[role]['body']);value[role]['body']=name
+ for role in ('listing_body','listing_receipt_body'):
+  name=role+'.dat';(tmp_path/name).write_bytes(value[role]);value[role]=name
+ p=tmp_path/'input.json';p.write_text(json.dumps({'schema':'mastermind.spy_option_root_input.v1','sources':value}));return p
+
+def test_root_cli_and_manifest(root_published,root_sources,tmp_path):
+ out,_=root_published;p=root_manifest(tmp_path,root_sources)
+ assert b.main(['--out',str(out),'--spy-option-root-evidence',str(p)])==0
+ assert json.loads((out/b.RECEIPT_NAME).read_text())['spy_option_root']['root']=='SPY'
+
+@pytest.mark.parametrize('kind',['duplicate','traversal','wrong_schema','missing_file','symlink','nightly'])
+def test_root_bad_local_manifest(root_sources,tmp_path,kind):
+ p=root_manifest(tmp_path,root_sources)
+ if kind=='nightly':
+  with pytest.raises(SystemExit) as e:b.main(['--nightly','--spy-option-root-evidence',str(p)])
+  assert e.value.code==2;return
+ if kind=='duplicate':p.write_text('{"schema":1,"schema":2}')
+ elif kind=='missing_file':(tmp_path/'registrant.dat').unlink()
+ elif kind=='symlink':
+  f=tmp_path/'registrant.dat';f.rename(tmp_path/'real.dat');f.symlink_to(tmp_path/'real.dat')
+ else:
+  v=json.loads(p.read_text())
+  if kind=='traversal':v['sources']['registrant']['body']='../parent.dat'
+  else:v['schema']='unknown'
+  p.write_text(json.dumps(v))
+ with pytest.raises(b.IdentityError):b.read_spy_option_root_input(p)
+
+
+@pytest.mark.parametrize('decision', ['2026-10-16T00:00:00Z', '2026-10-17T12:00:00Z'])
+def test_root_new_admission_refuses_after_observed_day(root_sources, decision):
+    with pytest.raises(b.IdentityError, match='observed date'):
+        b.admit_spy_option_root(root_sources, [root_master()], decision_at=decision)
+
+
+def test_root_retains_listing_clocks_and_exact_canonical_target_in_seal(root_sources):
+    master = root_master()
+    row, evidence = b.admit_spy_option_root(root_sources, [master], decision_at=ROOT_NOW)
+    assert evidence['canonical_target'] == {key: master.get(key) for key in b.MASTER_COLUMNS}
+    assert evidence['listing']['listing_snapshot_sha256'] == hashlib.sha256(root_sources['listing_body']).hexdigest()
+    assert evidence['listing']['listing_receipt_sha256'] == hashlib.sha256(root_sources['listing_receipt_body']).hexdigest()
+    assert evidence['listing']['response_sha256'] == root_sources['registrant']['capture']['sha256']
+    for role in ROOT_URLS:
+        assert evidence['sources'][role]['request_started_at'] == '2026-10-15T11:00:00+00:00'
+    assert any('No verified Matrix session' in text for text in evidence['limits'])
+    changed = dict(master, ingested_at='2026-10-15T10:01:00')
+    changed_row, _ = b.admit_spy_option_root(root_sources, [changed], decision_at=ROOT_NOW)
+    assert changed_row.evidence_sha256 != row.evidence_sha256
+    assert changed_row.binding_sha256 != row.binding_sha256
+
+
+def test_root_capture_uses_one_closed_grammar(root_sources):
+    root_sources['theta_contract']['capture']['http_status'] = 200
+    with pytest.raises(b.IdentityError):
+        b.prepare_spy_option_root(root_sources, decision_at=ROOT_NOW)
+
+
+@pytest.mark.parametrize('tag', ['script', 'style', 'template'])
+@pytest.mark.parametrize('role', ['theta_contract', 'cboe_product'])
+def test_root_hidden_markup_is_not_product_semantics(root_sources, tag, role):
+    raw = ('<' + tag + '>').encode() + root_sources[role]['body'] + ('</' + tag + '>').encode()
+    root_body_change(root_sources, role, raw)
+    with pytest.raises(b.IdentityError):
+        b.prepare_spy_option_root(root_sources, decision_at=ROOT_NOW)
+
+
+def test_root_refuses_spy_in_a_second_product_column(root_sources):
+    role = 'cboe_product'
+    raw = root_sources[role]['body'].replace(b'<td>Root Ticker Symbol</td><td>SPY</td>',
+        b'<td>Root Ticker Symbol</td><td>SPY</td><td>SPY</td>')
+    root_body_change(root_sources, role, raw)
+    with pytest.raises(b.IdentityError):
+        b.prepare_spy_option_root(root_sources, decision_at=ROOT_NOW)
+
+
+def test_root_late_cli_admission_preserves_all_outputs(root_published, root_sources, monkeypatch, tmp_path):
+    out, _ = root_published
+    manifest = root_manifest(tmp_path, root_sources)
+    monkeypatch.setattr(b, '_iso_now', lambda: '2026-10-16T00:00:00')
+    before = root_contents(out)
+    with pytest.raises(b.IdentityError, match='observed date'):
+        b.main(['--out', str(out), '--spy-option-root-evidence', str(manifest)])
+    assert root_contents(out) == before
+
+
+def test_root_later_ordinary_refresh_keeps_historical_window(root_published, root_sources, monkeypatch):
+    out, _ = root_published
+    first = b.build(out, spy_option_root_input=root_sources)
+    saved = root_records(out)
+    monkeypatch.setattr(b, '_iso_now', lambda: '2026-10-16T12:00:00')
+    later = b.build(out, dry_run=True)
+    assert later['spy_option_root'] == first['spy_option_root']
+    assert root_records(out) == saved
+    body = (json.dumps(first['spy_option_root'], indent=2, sort_keys=True) + '\n').encode()
+    assert b.VendorAliasTable.from_records(saved).resolve_option_underlying(
+        'thetadata', 'SPY', date(2026, 10, 16), decision_at='2026-10-16T12:00:00Z', evidence_bytes=body) is None
