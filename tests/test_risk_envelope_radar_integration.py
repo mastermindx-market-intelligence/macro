@@ -884,3 +884,110 @@ def test_foreground_settled_session_does_not_accept_a_timestamp_as_a_day():
     summary = _foreground_fragment(_foreground_render(e))
     assert 'data-state="unavailable"' in summary
     assert 'Credit stress: building' not in summary
+
+
+# R5: response ordering belongs to the existing live reader, not a second store.
+def _quiet_response(feed, *, session=None, built=None):
+    quiet = deepcopy(feed)
+    if session is not None:
+        quiet['source_session'] = session
+    if built is not None:
+        quiet['built'] = built
+    quiet['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    quiet['live_transition'].update(candidate_stage='NONE', stable_stage='NONE', pending=None)
+    quiet['measured_state']['usable'] = True
+    for source in quiet['provenance']['sources']:
+        source['as_of'] = quiet['source_session']
+        source['coverage'] = 'FRESH'
+        if source.get('role') == 'hazard_evidence':
+            source.update(state='calm', hazard_stage='NONE')
+    return quiet
+
+
+@pytest.mark.parametrize('ordering', ['earlier_session', 'earlier_publication', 'duplicate_publication'])
+def test_delayed_quiet_response_cannot_replace_a_newer_rendered_warning(ordering):
+    current = _partial_live_warning()
+    current['built'] = '2026-09-19 15:00:30 UTC'
+    delayed = _quiet_response(current)
+    if ordering == 'earlier_session':
+        delayed = _quiet_response(current, session='2026-09-18', built='2026-09-19 15:01:00 UTC')
+    elif ordering == 'earlier_publication':
+        delayed['built'] = '2026-09-19 15:00:00 UTC'
+    command = (_FOREGROUND_DOM + 'applyFeed(FEED);var before=foregroundResult();var detailBefore=result();'
+               + 'applyFeed(' + json.dumps(delayed) + ');'
+               + 'console.log(JSON.stringify({before,after:foregroundResult(),detailBefore,detailAfter:result()}));')
+    out = _js_value(command, current)
+    assert out['before']['state'] == 'partial-warning'
+    assert out['after'] == out['before']
+    assert out['detailAfter'] == out['detailBefore']
+
+
+def test_response_order_guard_survives_outage_without_retaining_a_live_warning_as_fresh():
+    current = _partial_live_warning()
+    delayed = _quiet_response(current, session='2026-09-18')
+    command = (_FOREGROUND_DOM + "nodes['risk-response-summary'].hidden=true;nodes['risk-response-summary'].attrs['data-state']='quiet';"
+               + 'applyFeed(FEED);unpaint(true);var outage=foregroundResult();'
+               + 'applyFeed(' + json.dumps(delayed) + ');console.log(JSON.stringify({outage,after:foregroundResult()}));')
+    out = _js_value(command, current)
+    assert out['outage']['state'] == 'unavailable'
+    assert not out['outage']['hidden']
+    assert out['after'] == out['outage']
+
+
+def test_newer_valid_quiet_response_can_clear_the_existing_foreground_warning():
+    current = _partial_live_warning()
+    recovery = _quiet_response(current, built='2026-09-19 15:01:00 UTC')
+    command = (_FOREGROUND_DOM + 'applyFeed(FEED);applyFeed(' + json.dumps(recovery)
+               + ');console.log(JSON.stringify(foregroundResult()));')
+    out = _js_value(command, current)
+    assert out['state'] == 'quiet' and out['hidden']
+
+
+def test_foreign_market_payload_cannot_advance_the_us_response_order():
+    valid = _partial_live_warning()
+    foreign = deepcopy(valid)
+    foreign.update(market='CN', source_session='2026-09-20')
+    command = (_FOREGROUND_DOM + 'applyFeed(' + json.dumps(foreign)
+               + ');applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));')
+    out = _js_value(command, valid)
+    assert out['state'] == 'partial-warning'
+    assert '2026-09-19' in out['date']
+
+
+def test_foreign_market_payload_never_replaces_the_existing_radar_detail():
+    valid = _partial_live_warning()
+    foreign = deepcopy(valid)
+    foreign.update(market='CN', built='2026-09-19 15:01:00 UTC')
+    foreign['provenance']['sources'][2]['detail']['label_en'] = 'Foreign-market-only cause'
+    command = (_FOREGROUND_DOM + 'applyFeed(FEED);applyFeed(' + json.dumps(foreign)
+               + ');console.log(JSON.stringify({foreground:foregroundResult(),detail:result()}));')
+    out = _js_value(command, valid)
+    assert out['foreground']['state'] == 'unavailable'
+    assert 'Foreign-market-only cause' not in json.dumps(out)
+
+
+def test_future_source_session_cannot_poison_ordering_or_suppress_a_current_warning():
+    current = _partial_live_warning()
+    future = deepcopy(current)
+    future['source_session'] = '2099-12-31'
+    for source in future['provenance']['sources']:
+        source['as_of'] = future['source_session']
+    command = (_FOREGROUND_DOM + 'applyFeed(' + json.dumps(future)
+               + ');var rejected=foregroundResult();applyFeed(FEED);'
+               + 'console.log(JSON.stringify({rejected,current:foregroundResult()}));')
+    out = _js_value(command, current)
+    assert out['rejected']['state'] == 'unavailable'
+    assert out['current']['state'] == 'partial-warning'
+    assert '2026-09-19' in out['current']['date']
+
+
+def test_foreign_read_keeps_the_original_settled_date_as_unavailable_context():
+    current = _partial_live_warning()
+    foreign = deepcopy(current)
+    foreign.update(market='CN', built='2026-09-19 15:01:00 UTC')
+    command = (_FOREGROUND_DOM + 'applyFeed(FEED);applyFeed(' + json.dumps(foreign)
+               + ');console.log(JSON.stringify(foregroundResult()));')
+    out = _js_value(command, current)
+    assert out['state'] == 'unavailable'
+    assert '2026-09-18' in out['date']
+    assert '2026-09-19' not in out['date']

@@ -38,6 +38,10 @@
   }
 
   var lastLiveFeed = null, hadLive = false, requestPending = false;
+  // Per-page ordering fence in this existing reader, not a retained warning or
+  // a source freshness clock. Keep it through unpaint so delayed responses do
+  // not undo newer evidence. `built` only orders publications within a session.
+  var latestPaintedOrder = null;
 
   function contextCopy() {
     var el = document.getElementById("gde-context-copy");
@@ -144,11 +148,36 @@
      qualified causes; quiet (hidden) only on a current NONE; partial-warning only
      on the recognized coverage/mapping gap the band already accepts; anything
      unknown, malformed or ungrounded renders unavailable — never an all-clear. */
+  function publicationUsDay(d) {
+    // Causality ceiling only: a US observation cannot belong to a calendar day
+    // after its own publication. This is not an exchange-session/freshness SLA.
+    if (!d || typeof d.built !== "string") return "";
+    var stamp = Date.parse(d.built.replace(" UTC", "Z").replace(" ", "T"));
+    if (!isFinite(stamp)) return "";
+    try {
+      var parts = new Intl.DateTimeFormat("en-US", {timeZone: "America/New_York",
+        year: "numeric", month: "2-digit", day: "2-digit"}).formatToParts(new Date(stamp));
+      var fields = {};
+      parts.forEach(function (part) { fields[part.type] = part.value; });
+      return fields.year + "-" + fields.month + "-" + fields.day;
+    } catch (e) { return ""; }
+  }
+
   function foregroundView(d, copy) {
     var fgc = copy.foreground || {};
     var hz = d.hazard_summary || {};
     var view = contextView(d, copy);
     var session = (typeof d.source_session === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.source_session)) ? d.source_session : "";
+    var summary = document.getElementById("risk-response-summary");
+    var expected = summary && summary.getAttribute("data-expected-session");
+    var publicationDay = publicationUsDay(d);
+    // Reject an explicitly foreign owner or a source older than the independent
+    // calendar expectation. A newly generated wrapper cannot refresh either.
+    if ((Object.prototype.hasOwnProperty.call(d, "market") && d.market !== "US") ||
+        !publicationDay || !session || session > publicationDay ||
+        (expected && session < expected))
+      return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
+        cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
     var partialGrounds = hz.stage === null && (hz.stage_reason === "required_coverage_unavailable" ||
       hz.stage_reason === "required_source_state_unmapped");
     var rows = fgCauses(d, copy);
@@ -169,7 +198,7 @@
       cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
   }
 
-  function paintForeground(d) {
+  function paintForeground(d, preserveSettledDate) {
     var sec = document.getElementById("risk-response-summary");
     if (!sec) return;
     fgSave();
@@ -190,7 +219,8 @@
     textPair(document.getElementById("risk-response-cause"), view.cause);
     textPair(document.getElementById("risk-response-action"), view.action);
     var label = fgc.source_label || ["Source session: ", "来源交易日："];
-    textPair(document.getElementById("risk-response-date"), view.date ? [label[0] + view.date, label[1] + view.date] : ["", ""]);
+    if (view.date || !preserveSettledDate)
+      textPair(document.getElementById("risk-response-date"), view.date ? [label[0] + view.date, label[1] + view.date] : ["", ""]);
   }
 
   // Present source-owned states; never compute a score, action or dwell threshold.
@@ -424,6 +454,27 @@
     try {
       if (!d) { unpaint(true); return; }
       if (active(d, band)) {
+        var foreground = document.getElementById("risk-response-summary");
+        var expected = foreground && foreground.getAttribute("data-expected-session");
+        var publicationDay = publicationUsDay(d);
+        if ((Object.prototype.hasOwnProperty.call(d, "market") && d.market !== "US") ||
+            !publicationDay || !d.source_session || d.source_session > publicationDay ||
+            (expected && d.source_session < expected)) {
+          // Neither the dialog nor the ordering fence may adopt a different
+          // market or an observation rejected by this page's session floor.
+          unpaint(true);
+          paintForeground(d, true);
+          return;
+        }
+        var order = {session: d.source_session,
+          published: Date.parse(d.built.replace(" UTC", "Z").replace(" ", "T")),
+          content: JSON.stringify(d)};
+        if (latestPaintedOrder && (order.session < latestPaintedOrder.session ||
+            (order.session === latestPaintedOrder.session &&
+              (order.published < latestPaintedOrder.published ||
+               (order.published === latestPaintedOrder.published && order.content !== latestPaintedOrder.content))))) return;
+        // An identical still-fresh response may repaint after a transient outage;
+        // changed content at the same publication identity is not a new recovery.
         /* Route on the ENVELOPE's own hazard stage alone (adjudication #8):
            a null stage means "not enough to say" regardless of what
            data_state happens to read (FRESH-but-null is exactly the shape a
@@ -438,6 +489,7 @@
         } else {
           paint(d, band);
         }
+        latestPaintedOrder = order;
       } else {
         unpaint(!(d.live_active === false || d.precedence === "settled"));
       }
