@@ -584,6 +584,14 @@ def registered_row(args):
         "anchor_ask_usd":c["anchor_ask_usd"],
         "anchor_bid_size_shares":c["anchor_bid_size_shares"],
         "anchor_ask_size_shares":c["anchor_ask_size_shares"],
+        "baseline_policy_receipt_sha256":args["baseline"]["policy_receipt_sha256"],
+        "baseline_policy_frozen_ns":args["baseline"]["policy_frozen_ns"],
+        "baseline_fees_usd":args["baseline"]["fees_usd"],
+        "challenger_policy_receipt_sha256":args["challenger"]["policy_receipt_sha256"],
+        "challenger_policy_frozen_ns":args["challenger"]["policy_frozen_ns"],
+        "challenger_fees_usd":args["challenger"]["fees_usd"],
+        "challenger_consumer_receipt_sha256":args["challenger"]["consumer_receipt_sha256"],
+        "challenger_consumer_available_ns":args["challenger"]["consumer_available_ns"],
     }
 
 
@@ -908,3 +916,119 @@ def test_original_economic_basis_survives_censored_and_immature_results():
         assert reconciled["state"]=="ALL_FROZEN_CANDIDATES_ACCOUNTED_SOFTWARE_ONLY"
         assert reconciled["primary_population_mean_bps"] is None
         assert reconciled["source_authenticated"] is False
+
+
+# The ORIGINAL Commission 15 policies and scalar research costs are frozen.
+# A later outcome must not swap the study policy receipt or cost assumption
+# while claiming to evaluate the same preregistered candidate/policies.
+@pytest.mark.parametrize(("role","field","value"), [
+    ("baseline","policy_receipt_sha256",SHA("9")),
+    ("challenger","policy_receipt_sha256",SHA("9")),
+    ("baseline","policy_frozen_ns",T-2*MIN),
+    ("challenger","consumer_receipt_sha256",SHA("9")),
+    ("challenger","consumer_available_ns",T-2*D),
+    ("baseline","fees_usd","4"),
+    ("challenger","fees_usd","5"),
+])
+def test_cohort_rejects_changed_frozen_policy_receipt_or_cost(role,field,value):
+    a=setup()
+    changed=setup()
+    changed[role][field]=value
+    assert run(changed)["state"]=="PAIRED_RESEARCH_UTILITY"
+    with pytest.raises(ValueError,match="frozen policy"):
+        accounted([registered_row(a)],[run(changed)])
+
+
+def test_cohort_rejects_paired_result_claiming_missing_policy_action():
+    a=setup()
+    label=run(a)
+    label["challenger_policy_state"]="UNOBSERVABLE"
+    label["challenger_fees_usd"]=None
+    with pytest.raises(ValueError,match="paired policy state"):
+        accounted([registered_row(a)],[label])
+
+
+def test_cohort_rejects_nonzero_utility_relabelled_frozen_abstention():
+    a=setup()
+    label=run(a)
+    label["challenger_policy_state"]="FROZEN_ABSTAIN"
+    label["challenger_fees_usd"]=None
+    with pytest.raises(ValueError,match="nonzero abstention"):
+        accounted([registered_row(a)],[label])
+
+
+def test_true_frozen_abstention_can_skip_precommitted_fee_without_missingness():
+    original=setup()
+    altered=setup()
+    h=altered["challenger"]
+    for key in (
+        "entry_quote_event_ns","entry_quote_available_ns",
+        "entry_quote_receipt_sha256","entry_bid_usd","entry_ask_usd",
+        "entry_bid_size_shares","entry_ask_size_shares","exit_quote_event_ns",
+        "exit_quote_available_ns","exit_quote_receipt_sha256",
+        "exit_bid_usd","exit_ask_usd","exit_bid_size_shares",
+        "exit_ask_size_shares","fees_usd",
+    ):
+        h[key]=None
+    h["state"]="FROZEN_ABSTAIN"
+    h["abstain_receipt_sha256"]=SHA("0")
+    h["abstain_available_ns"]=T+MIN+D
+    label=run(altered)
+    assert bps(label,"challenger")==(0,1)
+    # Fee schedule was registered at original T; a genuine frozen abstention
+    # intentionally incurs zero, rather than falsely treating missing as zero.
+    r=accounted([registered_row(original)],[label])
+    assert r["state"]=="ALL_FROZEN_CANDIDATES_ACCOUNTED_SOFTWARE_ONLY"
+    assert r["n_complete_software_pairs"]==1
+    assert r["primary_population_mean_bps"] is None
+
+
+@pytest.mark.parametrize(("key","value"),[
+    ("baseline_policy_receipt_sha256","not-a-real-digest"),
+    ("baseline_policy_frozen_ns",T),
+    ("challenger_fees_usd","-1"),
+])
+def test_unevaluated_candidate_requires_original_frozen_study_policy(key,value):
+    a=setup()
+    expected=registered_row(a)
+    expected[key]=value
+    with pytest.raises(ValueError):
+        accounted([expected],[])
+
+
+def test_immature_results_retain_independent_policy_receipt_identity():
+    a=setup()
+    a["source_watermark_ns"]=T+30*MIN-1
+    r=run(a)
+    for role in ("baseline","challenger"):
+        assert r[role+"_policy_receipt_sha256"]==a[role]["policy_receipt_sha256"]
+        assert r[role+"_policy_frozen_ns"]==a[role]["policy_frozen_ns"]
+        assert r[role+"_fees_usd"]==a[role]["fees_usd"]
+    observed=accounted([registered_row(a)],[r])
+    assert observed["by_state"]["NOT_MATURE"]==1
+    assert observed["n_complete_software_pairs"]==0
+
+
+def test_missing_source_stays_unobservable_with_independent_frozen_cost_schedule():
+    a=setup()
+    h=a["challenger"]
+    for key in (
+        "entry_decision_ns","entry_quote_event_ns","entry_quote_available_ns",
+        "entry_quote_receipt_sha256","entry_bid_usd","entry_ask_usd",
+        "entry_bid_size_shares","entry_ask_size_shares","exit_quote_event_ns",
+        "exit_quote_available_ns","exit_quote_receipt_sha256","exit_bid_usd",
+        "exit_ask_usd","exit_bid_size_shares","exit_ask_size_shares","fees_usd",
+    ):
+        h[key]=None
+    h["state"]="UNOBSERVABLE"
+    h["unobservable_reason"]="SOURCE_GAP"
+    r=run(a)
+    assert r["state"]=="UNOBSERVABLE" and r["delta_bps"] is None
+    # A preregistered scalar fee schedule may exist even though this policy
+    # never obtains enough source evidence to simulate a full fill.
+    frozen=registered_row(a)
+    frozen["challenger_fees_usd"]="1"
+    observed=accounted([frozen],[r])
+    assert observed["by_state"]["UNOBSERVABLE"]==1
+    assert observed["observed_pair_subset_mean_bps"] is None
+    assert observed["primary_population_mean_bps"] is None

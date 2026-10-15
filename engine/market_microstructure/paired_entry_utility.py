@@ -43,6 +43,17 @@ COHORT_CANDIDATE_FREEZE_FIELDS = (
     "anchor_bid_size_shares", "anchor_ask_size_shares",
 )
 
+# Original study registration binds policy/control receipts and scalar research
+# fee assumptions independently of the later outcome. State (entry/abstain/
+# missing) may develop through the allowed decision window; the POLICY freeze
+# and execution-fee schedule may not be retuned after observing that outcome.
+COHORT_POLICY_FREEZE_FIELDS = (
+    "baseline_policy_receipt_sha256", "baseline_policy_frozen_ns",
+    "challenger_policy_receipt_sha256", "challenger_policy_frozen_ns",
+    "challenger_consumer_receipt_sha256", "challenger_consumer_available_ns",
+    "baseline_fees_usd", "challenger_fees_usd",
+)
+
 
 def _dict(value, keys, label):
     if type(value) is not dict or set(value) != set(keys):
@@ -208,6 +219,53 @@ def _policy(row, *, role, candidate, cutoff_ns, max_quote_age_ns, anchor, size):
     return Fraction(10000) * delta / (size * anchor), None
 
 
+def _policy_freeze_snapshot(policy, role, candidate):
+    """Conserve caller-supplied original study policy receipts for every outcome.
+
+    These are asserted identities only, NEVER source/authentication receipts
+    verified against actual original bytes or a new trial registration plane.
+    """
+    if (type(policy) is not dict
+            or policy.get("candidate_id") != candidate["candidate_id"]
+            or policy.get("role") != role):
+        raise ValueError(role + ": original frozen policy identity invalid")
+    state = policy.get("state")
+    if type(state) is not str or state not in STATES:
+        raise ValueError(role + ": invalid state")
+    receipt = _sha(policy.get("policy_receipt_sha256"), role + ".policy")
+    frozen = _clock(policy.get("policy_frozen_ns"), role + ".freeze")
+    if frozen >= candidate["decision_ns"]:
+        raise ValueError(role + ": policy not frozen before original candidate")
+    fee = policy.get("fees_usd")
+    if state == "SIMULATED_FULL":
+        _money(fee, role + ".frozen_fees")
+    # Do not preempt the established, more specific _policy errors for
+    # malformed missing/abstention states. In mature NORMAL paths _policy
+    # rejects any fee when there was no simulated fill; the cohort also
+    # refuses charging fees for a reported frozen abstention.
+    result = {
+        role + "_policy_receipt_sha256": receipt,
+        role + "_policy_frozen_ns": frozen,
+        role + "_policy_state": state,
+        role + "_fees_usd": fee,
+    }
+    consumer = policy.get("consumer_available_ns")
+    consumer_receipt = policy.get("consumer_receipt_sha256")
+    if role == "baseline":
+        if consumer is not None or consumer_receipt is not None:
+            raise ValueError("baseline: overlay claim forbidden")
+    else:
+        # A missing or AFTER-T overlay is still an UNOBSERVABLE/late source,
+        # not a zero-PnL policy action. Preserve the actual claimed values.
+        if consumer is not None:
+            _clock(consumer, "challenger.consumer")
+        if consumer_receipt is not None:
+            _sha(consumer_receipt, "challenger.consumer_receipt")
+        result["challenger_consumer_available_ns"] = consumer
+        result["challenger_consumer_receipt_sha256"] = consumer_receipt
+    return result
+
+
 def evaluate_same_candidate(*, candidate, baseline, challenger,
                             evaluation_cutoff_ns, source_watermark_ns,
                             watermark_received_ns, market_health,
@@ -291,12 +349,17 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         raise ValueError("watermark receipt before native source time")
     if market_health not in ("NORMAL", "HALTED", "UNKNOWN"):
         raise ValueError("market health outside frozen source categories")
+    policy_freeze = {
+        **_policy_freeze_snapshot(baseline, "baseline", c),
+        **_policy_freeze_snapshot(challenger, "challenger", c),
+    }
     identity = dict(
         schema=SCHEMA, candidate_id=c["candidate_id"], ticker=c["ticker"],
         session=c["session"], source_mode=c["source_mode"],
         candidate_source_receipt_sha256=c["source_receipt_sha256"],
         calendar_receipt_sha256=c["calendar_receipt_sha256"],
         **{key: c[key] for key in COHORT_CANDIDATE_FREEZE_FIELDS},
+        **policy_freeze,
         horizon_trading_minutes=30, original_decision_ns=decision,
         horizon_end_ns=endpoint, evaluation_cutoff_ns=cutoff,
         policy_count=2, forward_outcome_available_to_original_decision=False,
@@ -399,6 +462,7 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             "original_decision_ns", "horizon_end_ns",
             "source_receipt_sha256", "calendar_receipt_sha256",
             *COHORT_CANDIDATE_FREEZE_FIELDS,
+            *COHORT_POLICY_FREEZE_FIELDS,
         }, "frozen_candidate")
         key = e["candidate_id"]
         if (type(key) is not str or not 0 < len(key) <= 128
@@ -442,6 +506,20 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         )
         if anchor != (original_bid + original_ask) / 2:
             raise ValueError("cohort: frozen candidate original midpoint disagrees")
+        for role in ("baseline", "challenger"):
+            _sha(e[role + "_policy_receipt_sha256"], "frozen_policy."+role)
+            policy_frozen = _clock(
+                e[role + "_policy_frozen_ns"], "frozen_policy."+role+".frozen"
+            )
+            if policy_frozen >= start:
+                raise ValueError("cohort: frozen policy after original candidate")
+            _money(e[role + "_fees_usd"], "frozen_policy."+role+".fees")
+        consumer = e["challenger_consumer_available_ns"]
+        consumer_receipt = e["challenger_consumer_receipt_sha256"]
+        if consumer is not None:
+            _clock(consumer, "frozen_policy.challenger.consumer")
+        if consumer_receipt is not None:
+            _sha(consumer_receipt, "frozen_policy.challenger.consumer_receipt")
         modes.add(e["source_mode"])
         expected[key] = e
     if len(modes) != 1:
@@ -457,6 +535,8 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             "schema", "candidate_id", "ticker", "session", "source_mode",
             "candidate_source_receipt_sha256", "calendar_receipt_sha256",
             *COHORT_CANDIDATE_FREEZE_FIELDS,
+            *COHORT_POLICY_FREEZE_FIELDS,
+            "baseline_policy_state", "challenger_policy_state",
             "horizon_trading_minutes", "original_decision_ns", "horizon_end_ns",
             "evaluation_cutoff_ns", "policy_count",
             "forward_outcome_available_to_original_decision",
@@ -476,6 +556,30 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         if any(row[name] != identity[name]
                for name in COHORT_CANDIDATE_FREEZE_FIELDS):
             raise ValueError("cohort: frozen candidate economic basis or source-clock drift")
+        # The registered policy version and claimant's original consumer receipt
+        # never change after enrolment. Per-policy realized fee is checked only
+        # when a hypothetical trade actually occurs: frozen abstention/missing
+        # evidence legitimately incurs no research fill fee.
+        for role in ("baseline", "challenger"):
+            freeze_fields = (role+"_policy_receipt_sha256", role+"_policy_frozen_ns")
+            if any(row[name] != identity[name] for name in freeze_fields):
+                raise ValueError("cohort: frozen policy receipt/timing changed")
+            state = row[role+"_policy_state"]
+            if type(state) is not str or state not in STATES:
+                raise ValueError("cohort: frozen policy reported invalid action state")
+            fee = row[role+"_fees_usd"]
+            if state == "SIMULATED_FULL":
+                if fee != identity[role+"_fees_usd"]:
+                    raise ValueError("cohort: frozen policy fee assumption changed")
+            elif fee is not None:
+                raise ValueError("cohort: frozen policy charges fee without fill")
+        if any(
+            row[name] != identity[name] for name in (
+                "challenger_consumer_receipt_sha256",
+                "challenger_consumer_available_ns",
+            )
+        ):
+            raise ValueError("cohort: frozen policy challenger consumer receipt changed")
         if any((
             row["schema"] != SCHEMA,
             row["ticker"] != identity["ticker"],
@@ -505,9 +609,15 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         if state == "PAIRED_RESEARCH_UTILITY":
             if row["reason"] is not None:
                 raise ValueError("cohort: paired output cannot have refusal reason")
+            if any(row[role+"_policy_state"] == "UNOBSERVABLE"
+                   for role in ("baseline", "challenger")):
+                raise ValueError("cohort: paired policy state cannot be unobservable")
             original = _frozen_paired_rational(row["baseline_bps"], "baseline")
             new = _frozen_paired_rational(row["challenger_bps"], "challenger")
             delta = _frozen_paired_rational(row["delta_bps"], "delta")
+            if (row["baseline_policy_state"] == "FROZEN_ABSTAIN" and original != 0
+                    or row["challenger_policy_state"] == "FROZEN_ABSTAIN" and new != 0):
+                raise ValueError("cohort: nonzero abstention is false economic utility")
             if new - original != delta:
                 raise ValueError("cohort: paired delta not conserved")
             first_knowable = _clock(
