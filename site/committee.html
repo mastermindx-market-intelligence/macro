@@ -4700,6 +4700,29 @@
         + (v.score != null ? '<span class="mp-sub">' + esc(String(v.score)) + '</span>' : '')
         + '</span>';
     }
+    // The verdict's native observation session is separate from the wrapper's
+    // processing date. Do not call a data source fresh solely because the plane
+    // was built today; these are display facts, not a new risk/alert gate.
+    if (v.verdict || v.label_en || v.label_zh) {
+      var sourceDay = typeof v.source_session === 'string' ? v.source_session : '';
+      if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(sourceDay)
+          || isNaN(Date.parse(sourceDay + 'T00:00:00Z'))
+          || new Date(sourceDay + 'T00:00:00Z').toISOString().slice(0, 10) !== sourceDay) {
+        sourceDay = '';
+      }
+      var sf = (v.source_freshness && typeof v.source_freshness === 'object'
+                && !Array.isArray(v.source_freshness)) ? v.source_freshness : {};
+      var qEn = sf.any_input_stale === true ? 'Some inputs late'
+                : (sf.any_input_stale === false ? '' : 'Input freshness unverified');
+      var qZh = sf.any_input_stale === true ? '部分输入延迟'
+                : (sf.any_input_stale === false ? '' : '输入新鲜度未核实');
+      html += '<span class="mp-chip mp-source"' +
+        (sf.any_input_stale === true ? ' style="color:var(--warn)"' : '') + '>'
+        + '<span class="l-en">' + (sourceDay ? 'As of ' + esc(sourceDay) : 'Source date unverified')
+        + (qEn ? ' · ' + esc(qEn) : '') + '</span>'
+        + '<span class="l-zh">' + (sourceDay ? '截至' + esc(sourceDay) : '来源日期未核实')
+        + (qZh ? ' · ' + esc(qZh) : '') + '</span></span>';
+    }
     // Regime chip: quad_name + transition_state
     if (rg.quad_name || rg.quad) {
       html += '<span class="mp-chip">'
