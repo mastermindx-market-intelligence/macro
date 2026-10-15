@@ -152,9 +152,8 @@ unresolved:
 - Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own CI38757206381 is running.
   Terminal binding checks, protected merge and production proof remain owed.
 next_actions:
-- Consume the existing incumbent refresh/capacity disposition after624465 terminal CI and binding checks passed.
-  Mainbe18 changed CI definitions; incumbent alone owns admitted refresh, fresh checks and merge. Preserve
-  the completed original result.
+- Consume original A1 head939b CI38773271071 terminal artifact and all binding evidence; the incumbent
+  alone refreshes or merges. Predecessor624465 checks do not qualify this new head.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
 - Reconcile actual qualified landing with locally qualified0add and clean newer-base preview2c2a9; integrate
@@ -172,19 +171,15 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T16:47:21.989542+00:00
+## Current checkpoint — 2026-10-15T17:07:06.642210+00:00
 
-A1 originalPR6651/head624465 completed original CI38764340141/attempt1. Finalartifact11990733639 ZIPdigest/canonical gate consumed:127jobs/351semantic commandstepsPASS,0blocked/0inherited. All26check runs accounted for; incumbent binding verdict clean, onlyinactivepilot context nonbinding. Mainbe18 added a real CI-definition change during this run; observedmain32bbb therefore needs incumbent-only admitted refresh/freshchecks before merge. No second manual base integration, no duplicate controller. Production remains unproved.
+The incumbent refreshed original PR6651 to939b348451fc1e46b70eee2e55309e4e1756ab98 at16:57:10Oct15. Exact parents624465+main32bbb and tree5820d767 match a clean merge preview; all17productionfiles and7assetinputs remain unchanged. Root only fast-forwarded its owned clean checkout to that existing commit. Original CI38773271071/attempt1 has planPASS and contract+12packsRUNNING at17:08:15. Original planartifact11992178667 ZIPdigest/canonicalhash verified:127jobs/A1pack10, tested529cae70/base32bbb/tree5820d767 equals the incumbent source;17productionfiles and A1execution identity match. Terminal artifact and all binding conclusions remain owed. A1 now owns the canonical refresh lease;8active/cap8/0unindexedreservations. Owner9099 CI completed and is no longer our dependency. No duplicate controller or manual base integration.
 
-Original b2c44 CI38757206381/attempt1 completedPASS. Original finalartifact11987181156 ZIPdigest/canonical gate consumed:127jobs/351semantic commandstepsPASS,0blocked/0inherited; all execution and step identities match its original plan. This is b2c44 proof, not successor624465 or unit-test/zero-skip proof.
+Predecessor624465 original CI38764340141/final11990733639 passed127jobs/351semantic commandsteps with all26bindingcheckruns clean. Those results belong only to624465. Newer observedmain40324 differs from proofbase32bbb only in3769generateddata/sitepaths; no new source or CI-definition change was found. Actual freshness and merge remain incumbent-owned.
 
-Follow-on source34077489ec62 containing7a2a2de5bd03 published clean; noPR. Exact15QLedger inputs repair the real prospective integration failure; all314branch execution definitions and priorpaths/limits/runtime preserved,2affectedcontrolsPASS and accepted closure/strict134-134-128 reused after source/selection parity. Prospective0add has320definitions,920QLedger closure paths/0misses and ancestorPASS; the newer main76c386 read-only preview2c2a9 is clean and preserves current320definitions, priorpathmultisets, incoming options code and qualified evaluator. Actual qualified landing reconciliation still required; no carrier base integration.
+Follow-on80fb runtime3528080/updater9cb/probe2edbb/CI340774 are unchanged. Twelve-file probe16tests+20subtestsPASS;20suppliedtextcases+bear/T11/T5/T12/QLedger/169updater proof retained. The retained A1/preparedfollowon previews preserve the actual incoming research-factory-authority command and all5changed runtime/test blobs exactly. Reconcile actualqualifiedA1landing and current continuity before SAMEfollowon integration/singlePR. No final integration/qualification or production/adoption claim.
 
-Follow-on release probe source2edbb42d5e8c now binds12files, including app/deploy/update.sh. Two regressions demonstrated that stale updater bytes and an older11-file binding previously reached a child invocation; both now refuse before any child. All16affected tests and20subtestsPASS (36JUnit entries),0failures/errors/skips. Product/runtime/updater/CI bytes and both CLI commands remain unchanged. Rebind final source after release qualification; the actual updater copy and API/admin process evidence remain separate and unproved.
-
-The current2522 follow-on now has a retained prospective resolution1c3ac: one duplicate-declaration ordering conflict fixed using the already-qualified0add manifest after preserving all314latest path multisets. Newer-base preview9883075 preserves all320current definitions and all6latest nonmanifest files, including the12file probe. This is preparation only; reconcile actual qualified landing.
-
-Canonical current record: research/evidence/eval-os-tier-query-20261014/a1-current-release.json. Reuse20textcases+bear/T11/T5/T12/QLedger and169updater proof. Production, model/PIT and consumer adoption remain unproved. OriginalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals and all release controls remain. SESSION END: DURABLE_EXECUTION_RUNNING.
+Canonical current record: research/evidence/eval-os-tier-query-20261014/a1-current-release.json. After actual qualified landing, bind17fileprobe ANDassetprojector, then prove updater/install/process/assets/authAPI-DOM/8visualstates/naturalowner/comprehension. Separate follow-on owes12fileidentity/actualupdatercopy/API-admin,numeric/internal-log,CLI/rights-qualifiedDiscovery adoption. All finalflagsfalse; originalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals preserved. SESSION END: DURABLE_EXECUTION_RUNNING.
 
 ## 2026-10-15 A1 repair published
 
