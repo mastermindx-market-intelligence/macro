@@ -221,6 +221,33 @@ def test_interrupted_validation_retains_generated_draft_without_passing_it(tmp_p
     assert R.run_emit(root, cfg)["emitted"] == 0
 
 
+def test_quarantined_return_retains_draft_and_failed_report_without_emit(tmp_path, monkeypatch):
+    root = F.fixture_root(tmp_path)
+    cfg = P.load_config(root)
+    returned = []
+
+    def invalid_title(slot, n):
+        draft = _good_draft(slot, n)
+        draft["title"] = "x" * 100
+        returned.append(draft)
+        return draft
+
+    calls = _stub_writer(monkeypatch, draft_fn=invalid_title)
+    summary = R.run_staging(root, cfg, as_of="2026-07-26", desks=["brief"],
+                            max_slots=1, single_attempt=True)
+    item = json.loads(next((root / "data/press/staging").glob("press-*.json")).read_text())
+    assert summary["quarantined"] == 1 and calls["n"] == 1
+    assert item["status"] == "quarantined"
+    assert item["draft"]["body_html"] == returned[0]["body_html"]
+    assert item["draft"]["title"] == returned[0]["title"]
+    assert item["validator_report"]["ok"] is False
+    assert "frontmatter" in item["validator_report"]["failed"]
+    assert item["provider"] == "stub" and item["retained_draft_attempt"] == 0
+    before = _snapshot(root)
+    assert R.run_emit(root, cfg)["emitted"] == 0
+    assert _snapshot(root) == before
+
+
 def test_stage_checkpoint_storage_failure_prevents_provider_call(tmp_path, monkeypatch):
     root = F.fixture_root(tmp_path)
     calls = _stub_writer(monkeypatch)
