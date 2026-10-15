@@ -71,3 +71,12 @@ model-performance acceptance and real adoption remain open.
 ## BLS survey and revision case — 2026-10-15
 
 The fifteenth supplied-text case uses the official8March2024 employment release to distinguish payroll jobs from household employment/unemployment, revisions from current-month growth, and each survey's own sampling threshold. The M2 Fabric fixture constructor returned its original retained artifacts; root corrected an ambiguous gold-sentence threshold reference and verified source binding and answer/oracle separation. The affected response suite passes123tests. Current official-page reading supports the paraphrase; a raw-HTML request returned403 and was not retried. No raw-page hash, historical byte custody, model performance or statistical independence is claimed. The original20/15 objective and actual model acceptance remain open; the prior refused blind-answer operation is unchanged.
+
+
+## GDP growth units and vintage case — 2026-10-15
+
+The sixteenth supplied-text case uses the official April25,2024 BEA advance release and technical note. It separates annualized from quarterly growth, growth deceleration from a falling level, nominal from real measures, aggregate coverage, import accounting and revision availability. The parent verified the supplied facts against the official sources and kept later estimates outside the packet. Current reading is not historical byte custody.
+
+The original M2 fixture constructor returned its retained artifact; parent review changed the question to remove leading conclusions, while preserving the exact source and separate judge-only adjudication. Two new-case source-binding/explicit-callback controls and two affected CI controls pass. This extends diagnostic coverage without changing evaluator function bodies, model defaults, the rubric or authority. Sixteen supplied-text cases plus the unchanged legacy bear case still do not prove the original20/15 historical objective, actual model performance, independent trials or consumer adoption. Original refused blind-answer operations remain unchanged. Source: `research/GDP_GROWTH_UNITS_CASE_2024_04_25.md`.
+
+Final source6cb697a6be23 adds twelve source-path memberships while preserving all314job execution definitions and limits. The full closure check identified one new native-verifier dependency; its isolated repair passed the250-path target closure, and unchanged jobs/strict134-134-128 packing were reused after exact diff validation. See `research/evidence/eval-os-tier-query-20261014/gdp-units-20261015.json`.
