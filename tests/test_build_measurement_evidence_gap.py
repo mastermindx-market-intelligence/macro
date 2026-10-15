@@ -13,7 +13,7 @@ Tests:
 10. build_thesis_monitor_broken: BROKEN-only rows, index-paired fired criteria.
 11. build_thesis_monitor_broken: absent-file-safe (returns {available: False}).
 12. build_thesis_monitor_broken: non-list "monitored" or a non-object file is
-    unavailable.
+    unavailable; non-list criteria/statuses and null fields degrade, never raise.
 13. measurement.html.j2: eg-thesis-broken prints the BROKEN thesis, escaped.
 14. measurement.html.j2: eg-thesis-broken hidden when unavailable / key absent.
 
@@ -496,7 +496,7 @@ def test_thesis_monitor_non_object_file_is_unavailable(monkeypatch, tmp_path):
     assert result["available"] is False
 
 
-def test_thesis_monitor_llm_only_row_shows_heat_decay(monkeypatch, tmp_path):
+def test_thesis_monitor_llm_only_row_shows_its_inputs(monkeypatch, tmp_path):
     """An LLM-only thesis is shaped like the producer's standalone row
     (engine/thesis_monitor.py): opened_asof, text kill_criteria, no
     criterion_statuses.  It still names when it opened and what it was
@@ -515,13 +515,79 @@ def test_thesis_monitor_llm_only_row_shows_heat_decay(monkeypatch, tmp_path):
     rows = bm.build_thesis_monitor_broken()["rows"]
     assert rows == [{
         "theme": "fixture_llm", "opened": "2025-12-05", "stage_at_open": "",
-        "fired": [{"kind": "heat_decay",
-                   "detail": "heat 0.196 → 0.157 · 1 surface(s) now"}],
+        "fired": [{"kind": "llm_inputs",
+                   "detail": "heat 0.196 → 0.157 · 1 surface(s) now · physical now: no"}],
     }]
     html = _render_measurement(thesis_monitor_broken=bm.build_thesis_monitor_broken())
     panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
-    assert "2025-12-05" in panel and "heat_decay" in panel
+    assert "2025-12-05" in panel and "llm_inputs" in panel
     assert '<td class="eg-mono">—</td>' in panel  # no stage at open
+
+
+def test_thesis_monitor_llm_row_does_not_claim_heat_decay(monkeypatch, tmp_path):
+    """The producer breaks an LLM thesis on lost physical confirmation, too few
+    surfaces OR a heat drop, and does not record which.  Steady heat with
+    physical confirmation lost must not be labelled as heat decay."""
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {
+        "asof": "2026-01-01", "n_broken": 1, "n_weakening": 0,
+        "monitored": [{
+            "theme": "fixture_llm_phys", "source": "llm", "status": "BROKEN",
+            "heat_at_open": 0.2, "heat_now": 0.2, "n_surfaces_now": 3,
+            "physical_now": False, "opened_asof": "2025-12-05",
+            "kill_criteria": ["a text criterion"],
+        }],
+    })
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    (fired,) = bm.build_thesis_monitor_broken()["rows"][0]["fired"]
+    assert fired["kind"] == "llm_inputs"
+    assert "decay" not in fired["kind"]
+    assert fired["detail"] == "heat 0.2 → 0.2 · 3 surface(s) now · physical now: no"
+
+
+def test_thesis_monitor_llm_row_without_inputs_shows_dashes(monkeypatch, tmp_path):
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {
+        "asof": "2026-01-01", "n_broken": 1, "n_weakening": 0,
+        "monitored": [{"theme": "fixture_llm_bare", "source": "llm", "status": "BROKEN"}],
+    })
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    (fired,) = bm.build_thesis_monitor_broken()["rows"][0]["fired"]
+    assert fired["detail"] == "heat — → — · — surface(s) now · physical now: —"
+
+
+def test_thesis_monitor_malformed_criteria_degrade(monkeypatch, tmp_path):
+    """Non-list kill_criteria / criterion_statuses must not raise out of run()."""
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {
+        "asof": "2026-01-01", "n_broken": 2, "n_weakening": 0,
+        "monitored": [
+            {"theme": "fixture_int_criteria", "status": "BROKEN",
+             "kill_criteria": 3, "criterion_statuses": ["BROKEN"]},
+            {"theme": "fixture_int_statuses", "status": "BROKEN",
+             "kill_criteria": [{"kind": "k", "detail": "d"}], "criterion_statuses": 5},
+        ],
+    })
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    rows = bm.build_thesis_monitor_broken()["rows"]
+    assert [(r["theme"], r["fired"]) for r in rows] == [
+        ("fixture_int_criteria", []), ("fixture_int_statuses", []),
+    ]
+
+
+def test_thesis_monitor_null_fields_never_render_none(monkeypatch, tmp_path):
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {
+        "asof": None, "n_broken": None, "n_weakening": None,
+        "monitored": [{"theme": None, "status": "BROKEN", "stage_at_open": None,
+                       "kill_criteria": [], "criterion_statuses": []}],
+    })
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    result = bm.build_thesis_monitor_broken()
+    assert result["rows"][0]["stage_at_open"] == ""
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "None" not in panel
 
 
 # ---------------------------------------------------------------------------
@@ -574,6 +640,12 @@ BROKEN_THESIS_CONTEXT = {
             "stage_at_open": "PRECIPICE",
             "fired": [{"kind": "k_second", "detail": "<b>x</b>"}],
         },
+        {
+            "theme": "<script>x</script>",
+            "opened": "2025-12-02",
+            "stage_at_open": "BROADENING",
+            "fired": [],
+        },
     ],
 }
 
@@ -587,6 +659,8 @@ def test_measurement_template_lists_broken_thesis_escaped():
     # autoescape=False in the builder — producer strings must carry |e
     assert "&lt;b&gt;x&lt;/b&gt;" in html
     assert "<b>x</b>" not in html
+    assert "&lt;script&gt;x&lt;/script&gt;" in html
+    assert "<script>x</script>" not in html
     # no real producer theme may leak into a synthetic render
     assert "ai_semiconductors" not in html
 

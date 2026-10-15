@@ -1792,9 +1792,11 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       </div>{# end .eg-table-wrap #}
       <div class="eg-footnote">
         <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
-        Deterministic kill criteria; display only, not a sizing input.</span>
+        Deterministic kill criteria; an llm_inputs row lists the inputs an AI-judged
+        thesis was broken on, not which one fired. Display only, not a sizing input.</span>
         <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
-        确定性失效条件，仅供展示，不用于仓位决策。</span>
+        确定性失效条件；llm_inputs 行列出 AI 评判论点所依据的输入，不指明具体触发哪一项。
+        仅供展示，不用于仓位决策。</span>
       </div>
     </div>
     {% endif %}

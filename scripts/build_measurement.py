@@ -1274,6 +1274,11 @@ def _or_dash(value) -> str:
     return "—" if value is None or value == "" else str(value)
 
 
+def _dash_if_none(value):
+    """A producer value unchanged, or an em dash when it is null/absent."""
+    return "—" if value is None else value
+
+
 def build_thesis_monitor_broken() -> dict:
     """Load thesis_monitor.json and list ONLY the BROKEN theses (display only).
 
@@ -1282,10 +1287,12 @@ def build_thesis_monitor_broken() -> dict:
     through verbatim and rows keep file order.  `fired` pairs a criterion
     status with the kill_criteria entry AT THE SAME INDEX; an index missing
     from either parallel list is skipped, never invented.  An LLM-only thesis
-    (source "llm") has no per-criterion statuses, so its row shows the
-    heat-decay inputs the producer judged it on.
+    (source "llm") has no per-criterion statuses and the producer does not
+    record which of its conditions fired, so its row carries the neutral kind
+    "llm_inputs" and shows every input it was judged on.
     Absent-safe: returns {available: False} if the file is missing/unreadable,
-    is not a JSON object, or if "monitored" is not a list.
+    is not a JSON object, or if "monitored" is not a list.  A malformed entry
+    (non-list criteria or statuses, null fields) degrades and never raises.
     """
     if not THESIS_MONITOR_PATH.exists():
         log.warning("thesis_monitor.json not found: %s", THESIS_MONITOR_PATH)
@@ -1314,20 +1321,31 @@ def build_thesis_monitor_broken() -> dict:
         fired: list[dict] = []
         if entry.get("source") == "llm":
             # An LLM-only thesis has text criteria and no per-criterion
-            # statuses; the producer judges it by heat decay and surface count
-            # (engine/thesis_monitor.py _status_llm).  Show those inputs as
-            # written — they are not re-judged here.
+            # statuses.  The producer breaks it on ANY of: physical
+            # confirmation lost, too few surfaces, or a heat drop
+            # (engine/thesis_monitor.py _status_llm) and does not say which,
+            # so the kind stays neutral and all inputs show as written —
+            # nothing is re-judged here.
+            physical = entry.get("physical_now")
             fired.append({
-                "kind": "heat_decay",
-                "detail": "heat {} → {} · {} surface(s) now".format(
+                "kind": "llm_inputs",
+                "detail": "heat {} → {} · {} surface(s) now · physical now: {}".format(
                     _or_dash(entry.get("heat_at_open")),
                     _or_dash(entry.get("heat_now")),
                     _or_dash(entry.get("n_surfaces_now")),
+                    "yes" if physical is True else "no" if physical is False
+                    else _or_dash(physical),
                 ),
             })
         else:
-            criteria = entry.get("kill_criteria") or []
-            statuses = entry.get("criterion_statuses") or []
+            criteria = entry.get("kill_criteria")
+            statuses = entry.get("criterion_statuses")
+            # a malformed producer row degrades to no fired criteria; it must
+            # never raise out of run()
+            if not isinstance(criteria, list):
+                criteria = []
+            if not isinstance(statuses, list):
+                statuses = []
             for i, cstatus in enumerate(statuses):
                 if cstatus != "BROKEN" or i >= len(criteria):
                     continue
@@ -1337,18 +1355,20 @@ def build_thesis_monitor_broken() -> dict:
                     "detail": crit.get("detail", ""),
                 })
         rows.append({
-            "theme": entry.get("theme", ""),
+            "theme": _or_dash(entry.get("theme")),
             # deterministic rows write "opened"; LLM-only rows "opened_asof"
             "opened": entry.get("opened") or entry.get("opened_asof") or "",
-            "stage_at_open": entry.get("stage_at_open", ""),
+            "stage_at_open": entry.get("stage_at_open") or "",
             "fired": fired,
         })
 
+    # a present-but-null value must not render as the literal "None"; counts
+    # keep their type when present
     return {
         "available": True,
-        "asof": raw.get("asof", ""),
-        "n_broken": raw.get("n_broken", 0),
-        "n_weakening": raw.get("n_weakening", 0),
+        "asof": _or_dash(raw.get("asof")),
+        "n_broken": _dash_if_none(raw.get("n_broken")),
+        "n_weakening": _dash_if_none(raw.get("n_weakening")),
         "rows": rows,
     }
 
@@ -1949,7 +1969,7 @@ def run() -> None:
     thesis_monitor_broken = build_thesis_monitor_broken()
     if thesis_monitor_broken.get("available"):
         log.info(
-            "Thesis monitor: %d BROKEN theses listed (%d broken, %d weakening overall)",
+            "Thesis monitor: %d BROKEN theses listed (%s broken, %s weakening overall)",
             len(thesis_monitor_broken.get("rows", [])),
             thesis_monitor_broken.get("n_broken", 0),
             thesis_monitor_broken.get("n_weakening", 0),
