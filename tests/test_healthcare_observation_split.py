@@ -108,6 +108,64 @@ def test_capacity_slot_never_claims_a_thesis():
         assert "capacity" not in lowered
 
 
+def _observation_inputs_row(rows, freshness):
+    """Minimal scarcity row in the shape the cascade reads.
+
+    Keys mirror the publisher: row keys at engine/fda_scarcity.py:190-191 and
+    :194 (absent), summary.freshness keys at engine/fda_scarcity.py:461 and
+    :468; the consumer is engine/foresight_cascade.py:331-364, which returns
+    (regulator_counts, manufacturer_counts, capture_incomplete) or None.
+    """
+    return {
+        "summary": {
+            "counts": {"current": 1, "resolved": 0, "discontinued": 0},
+            "rows": rows,
+            "freshness": freshness,
+        }
+    }
+
+
+def test_observation_inputs_tally_skips_rows_absent_from_the_generation():
+    from engine.foresight_cascade import _fda_observation_inputs
+
+    available = {"manufacturer_availability": "Available",
+                 "availability_normalized": "available"}
+    rows = [dict(available, absent=False), dict(available, absent=True)]
+    freshness = {"capture_qualified": True, "capture_incomplete": False}
+    inputs = _fda_observation_inputs(_observation_inputs_row(rows, freshness))
+
+    assert inputs is not None
+    regulator, manufacturer, capture_incomplete = inputs
+    assert regulator == {"current": 1, "resolved": 0, "discontinued": 0}
+    assert manufacturer == {
+        "available": 1, "limited": 0, "unavailable": 0, "not_stated": 0,
+    }
+    assert capture_incomplete is False
+
+
+def test_observation_inputs_are_none_when_the_source_did_not_answer():
+    from engine.foresight_cascade import _fda_observation_inputs
+
+    rows = [{"manufacturer_availability": "Limited",
+             "availability_normalized": "limited", "absent": False}]
+    freshness = {"capture_qualified": False, "capture_incomplete": False}
+    unqualified = _fda_observation_inputs(_observation_inputs_row(rows, freshness))
+    assert unqualified is None
+
+
+def test_observation_inputs_publish_the_withheld_form_for_unfinished_capture():
+    from engine.foresight_cascade import _fda_observation_inputs
+
+    rows = [{"manufacturer_availability": "Limited",
+             "availability_normalized": "limited", "absent": False}]
+    freshness = {"capture_qualified": False, "capture_incomplete": True}
+    inputs = _fda_observation_inputs(_observation_inputs_row(rows, freshness))
+
+    assert inputs is not None, "an unfinished capture must still reach the clause"
+    _regulator, _manufacturer, capture_incomplete = inputs
+    assert capture_incomplete is True
+
+
 def test_template_reads_observation_split_outside_the_title():
     text = (ROOT / "templates" / "foresight.html.j2").read_text(encoding="utf-8")
     assert "observation_split" in text
@@ -121,6 +179,13 @@ def test_template_reads_observation_split_outside_the_title():
     assert title_lines
     for line in title_lines:
         assert "observation_split" not in line
+    for slot in ("regulator", "manufacturer", "capacity"):
+        needle = f"t(osp.{slot}.en, osp.{slot}.zh)"
+        assert needle in block, f"the {slot} clause chip must render"
+    for line in text.splitlines():
+        if "title=" in line:
+            assert "osp." not in line, line
+            assert "observation_split" not in line, line
 
 
 def test_cascade_source_calls_the_helper_and_does_not_edit_the_chip_dict():
