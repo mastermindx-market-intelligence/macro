@@ -33,7 +33,9 @@ SCHEMA_NAME = "prophet_evidence.v1"
 BUNDLE_SCHEMA_NAME = "prophet_evidence_bundle.v1"
 AUTHORITY = "context_only"
 STANCE_KEY = "stance_heads_up"
-ADAPTER_VERSION = "ni-prophet-adapter-1"
+ADAPTER_VERSION = "ni-prophet-adapter-2"
+# news_impact_event.v1 quantity_range carries no bound; display_quantity requires one.
+RANGE_BOUND = "exact"
 
 CODES = frozenset({
     "AUTHORITY_NOT_CONTEXT_ONLY",
@@ -486,22 +488,31 @@ def _absence_dict(raw: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _require_quantity_keys(slot: str, raw: Mapping[str, Any], keys: tuple[str, ...]) -> None:
+    for key in keys:
+        if key not in raw:
+            raise ProphetAdapterError("MISSING_REQUIRED_FIELD", f"{slot}.{key}")
+
+
 def _project_quantity(slot: str, raw: Mapping[str, Any]) -> dict[str, Any]:
     form = raw.get("form")
     if form == "absent":
         absence = raw.get("absence") or {}
         return {"slot": slot, "form": "absent", "absence": _absence_dict(absence)}
     if form == "range":
+        # "exact" is the only bound that adds no hedge the v1 range does not carry.
+        _require_quantity_keys(slot, raw, ("low", "high", "unit", "currency", "basis"))
         return {
             "slot": slot,
             "form": "range",
             "low": raw["low"],
             "high": raw["high"],
-            "bound": raw["bound"],
+            "bound": raw.get("bound") or RANGE_BOUND,
             "unit": raw["unit"],
             "currency": raw["currency"],
             "basis": raw["basis"],
         }
+    _require_quantity_keys(slot, raw, ("value", "bound", "unit", "currency", "basis"))
     return {
         "slot": slot,
         "form": "point",

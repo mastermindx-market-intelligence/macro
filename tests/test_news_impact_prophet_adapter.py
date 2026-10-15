@@ -34,6 +34,7 @@ from engine.news_impact.prophet_adapter import (
     load_transfer_edge_schema,
     render_glance_copy,
 )
+from engine.news_impact.validate import validate_event
 
 SRC = Path(__file__).resolve().parents[1]
 CONTRACTS = SRC / "contracts" / "news_impact"
@@ -928,6 +929,80 @@ def test_every_code_string(code: str) -> None:
         raise ProphetAdapterError(code, "x")
     assert ei.value.code == code
     assert code in CODES
+
+
+# ---------------------------------------------------------------- range quantities
+def _w1_range(low: float = 100e9, high: float = 150e9) -> dict:
+    """W1 with incremental_amount as a news_impact_event.v1 quantity_range (no bound)."""
+    event = _worked("W1")
+    point = event["incremental_amount"]
+    event["incremental_amount"] = {
+        "form": "range",
+        "low": low,
+        "high": high,
+        **{k: point[k] for k in ("unit", "currency", "basis", "period", "negated", "evidence")},
+    }
+    return event
+
+
+def _quantity(record: ProphetEvidence, slot: str) -> dict:
+    return next(q for q in record.to_dict()["quantities"] if q["slot"] == slot)
+
+
+def test_range_quantity_projects_with_exact_bound() -> None:
+    event = _w1_range()
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert _quantity(got, "incremental_amount") == {
+        "slot": "incremental_amount",
+        "form": "range",
+        "low": 100e9,
+        "high": 150e9,
+        "bound": "exact",
+        "unit": "USD",
+        "currency": "USD",
+        "basis": "incremental",
+    }
+    rendered = _assert_en_zh(got)
+    amount = got.to_dict()["glance"]["slots"]["amount_plain"]
+    assert amount.count("billion") == 2 and "–" in amount
+    assert amount in rendered["en"]["subtitle"]
+    assert "1000亿美元–1500亿美元" in rendered["zh"]["subtitle"]
+
+
+def test_range_bound_present_is_carried() -> None:
+    event = _w1_range()
+    event["incremental_amount"]["bound"] = "approximately"
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert _quantity(got, "incremental_amount")["bound"] == "approximately"
+
+
+def test_range_quantity_through_adapt_batch() -> None:
+    (got,) = adapt_batch([_w1_range()], listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert _quantity(got, "incremental_amount")["form"] == "range"
+
+
+@pytest.mark.parametrize("key", ["low", "high", "unit", "currency", "basis"])
+def test_range_missing_key_is_coded(key: str) -> None:
+    event = _w1_range()
+    del event["incremental_amount"][key]
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "MISSING_REQUIRED_FIELD"
+    assert str(ei.value).endswith(f"incremental_amount.{key}")
+
+
+@pytest.mark.parametrize("key", ["value", "bound", "unit", "currency", "basis"])
+def test_point_missing_key_is_coded(key: str) -> None:
+    event = _worked("W1")
+    del event["incremental_amount"][key]
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "MISSING_REQUIRED_FIELD"
+    assert str(ei.value).endswith(f"incremental_amount.{key}")
 
 
 # ---------------------------------------------------------------- transfer / thesis
