@@ -980,3 +980,16 @@ committed-proof verification accepts the existing 105-case proof unchanged.
 The same foreground observer (4372) remains responsible for the running
 pack results; this repair is not a green hosted check or release.
 Evidence: current_release_proof_20261015/ci-scope-repair/ below this program.
+
+October15 isolated follow-up generation: the native combined builder now composes
+Space, PAC-3 and the prepared FMS persistence source. Its 655-row candidate
+ledger is byte-identical and issuance count remains zero. Seven exact NOC
+Space Systems financial leaves replace the generic Space economics selection.
+Three existing ontology references were explicitly requalified after proving
+only the two admitted PAC-3 coverage rows changed their dependency hashes.
+The sparse checkout initially omitted the existing listing snapshot; its exact
+HEAD bytes were materialized and the original listing fingerprint restored.
+All six market-context approvals remain stale and all six research themes remain
+EVIDENCE_INSUFFICIENT. No GAO/NASA admission, publication or production claim.
+The paired generation is saved; complete candidate proof and actual local ASGI
+browser qualification are next. Evidence: capacity_integration_20261015.

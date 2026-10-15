@@ -1,0 +1,95 @@
+{
+  "state": "EXPLICIT_PARENT_REVIEW_OF_THREE_ADDITIVE_DEPENDENCY_CHANGES",
+  "independent_review": false,
+  "rows": [
+    {
+      "token": "nato_fms_demand/funding_stage/1",
+      "old_fingerprint": "67fa90c3dc185add345469257de09ebd841ec5b194427a7dea8a1bdf64566982",
+      "new_fingerprint": "ec5d41f6fea33ff00b9dea2c67953943c1f87020edb0b35d67a2cbe323c8665c",
+      "selected_row_node_and_exact_source_dependencies_unchanged": true,
+      "only_fingerprint_dependency_change": "two reviewed PAC-3 coverage rows added",
+      "new_coverage": [
+        {
+          "admitted_count": 1,
+          "coverage_id": "rev-cov:4634026e50da",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "program_identity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        },
+        {
+          "admitted_count": 3,
+          "coverage_id": "rev-cov:6c8ee5df4a1d",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "public_capacity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        }
+      ]
+    },
+    {
+      "token": "shipbuilding/exposure/0",
+      "old_fingerprint": "ef2872ccb794fb02a66bbfadb45b86d8e205570fa3fb262fbac55a5237d851e8",
+      "new_fingerprint": "b651ce6357cbd7a887a48372198ad33e1d3f93170e01a8d6510079db6ed4471a",
+      "selected_row_node_and_exact_source_dependencies_unchanged": true,
+      "only_fingerprint_dependency_change": "two reviewed PAC-3 coverage rows added",
+      "new_coverage": [
+        {
+          "admitted_count": 1,
+          "coverage_id": "rev-cov:4634026e50da",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "program_identity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        },
+        {
+          "admitted_count": 3,
+          "coverage_id": "rev-cov:6c8ee5df4a1d",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "public_capacity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        }
+      ]
+    },
+    {
+      "token": "shipbuilding/next_event/0",
+      "old_fingerprint": "c7360bac102b28ccd1b6a6f10041ece117693d0e779f04435bd5e31f25384231",
+      "new_fingerprint": "6ff559836265aec5c5c0084fd7b03b4b371b2295b0a618f2b6e9e6bc2f08abfe",
+      "selected_row_node_and_exact_source_dependencies_unchanged": true,
+      "only_fingerprint_dependency_change": "two reviewed PAC-3 coverage rows added",
+      "new_coverage": [
+        {
+          "admitted_count": 1,
+          "coverage_id": "rev-cov:4634026e50da",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "program_identity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        },
+        {
+          "admitted_count": 3,
+          "coverage_id": "rev-cov:6c8ee5df4a1d",
+          "known_at": "2026-10-14T12:13:19+00:00",
+          "scope": "public_capacity",
+          "subject_id": "acq-program:pac-3-mse",
+          "subject_type": "program",
+          "worksheet_ref": "research/government_revenue/PROGRAM_ONTOLOGY_REVIEW_2026-10-14_pac3_capacity_preparation.json",
+          "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219"
+        }
+      ]
+    }
+  ],
+  "market_fingerprints_rewritten": false,
+  "original_stage_refusal_preserved": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/expanded-followup/space-selection/qualification.log"
+}

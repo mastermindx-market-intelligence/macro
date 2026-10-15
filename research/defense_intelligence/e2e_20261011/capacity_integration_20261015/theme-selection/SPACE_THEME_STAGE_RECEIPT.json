@@ -1,0 +1,74 @@
+{
+  "state": "STAGED_SPACE_SOURCE_TO_THEME_VERIFIED",
+  "existing_fingerprints_checked": 43,
+  "existing_fingerprints_preserved_before_change": 34,
+  "preexisting_market_leaves_not_reminted": [
+    "golden_dome/market_context/0",
+    "munitions_replenishment/market_context/0",
+    "space/market_context/0",
+    "nato_fms_demand/market_context/0",
+    "fleet_sustainment_upgrades/market_context/0",
+    "shipbuilding/market_context/0"
+  ],
+  "new_space_economic_references": [
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/20",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_sales"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/21",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_sales_prior"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/22",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_operating_profit"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/23",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_operating_profit_prior"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/24",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_margin"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/25",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_segment_margin_prior"
+    },
+    {
+      "owner_key": "quartet_economics",
+      "pointer": "/profiles/2/axes/economics/facts/26",
+      "row_id": "evt_cik0001133421_2026q2_results:issuer_space_gem63xl_unfavorable_eac"
+    }
+  ],
+  "only_selected_seven_and_three_explicitly_requalified_ontology_fingerprints_changed": true,
+  "space_rail_states": {
+    "funding_stage": "source_unavailable",
+    "exposure": "source_unavailable",
+    "economics": "partial",
+    "market_context": "stale",
+    "contrary_case": "partial",
+    "next_event": "source_unavailable"
+  },
+  "all_six_theme_research_states": {
+    "golden_dome": "EVIDENCE_INSUFFICIENT",
+    "munitions_replenishment": "EVIDENCE_INSUFFICIENT",
+    "space": "EVIDENCE_INSUFFICIENT",
+    "nato_fms_demand": "EVIDENCE_INSUFFICIENT",
+    "fleet_sustainment_upgrades": "EVIDENCE_INSUFFICIENT",
+    "shipbuilding": "EVIDENCE_INSUFFICIENT"
+  },
+  "canonical_config_unchanged": true,
+  "canonical_financial_owner_unchanged": true,
+  "publication": false,
+  "stage": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/resume-20261015/expanded-followup/space-selection-v3/theme-stage",
+  "reviewed_at": "2026-10-15T20:19:00.193903+00:00",
+  "new_config_sha256": "f4cf04dddcc55ed465a86bd036744e1d58286d47e3d3468e459dab5f5e2e0ee4",
+  "display_sha256": "dcda024f20001fed8ad9312c1f61cc802f59a1a3592b51c09f08aa16ebb974f1"
+}

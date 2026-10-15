@@ -1,0 +1,10 @@
+{
+  "input": "data/stock_identity/partition/universe_snapshot_v1.parquet",
+  "blob": "5759566f176f0f1e75482badcb3c16a84d3262c2",
+  "sha256": "9f22807e7cb6ba570f1963de945b7be77461a1788608754e25db6235f4fe3730",
+  "materialized_from_exact_HEAD": true,
+  "matches_qualified_release_input": true,
+  "native_atlas_rebuilt": true,
+  "new_source_acquisition": false,
+  "publications": 0
+}
