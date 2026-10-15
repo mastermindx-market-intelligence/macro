@@ -309,3 +309,67 @@ def test_qualified_usage_is_carried_but_not_reflected_on_refusal(ready):
     result = read(ready)
     assert_refusal(result, "SOURCE_NOT_ADMITTED")
     assert ready[3].audience not in json.dumps(result)
+
+
+@pytest.fixture
+def qualified_local_owner(tmp_path):
+    # Reuse the native owner's own synthetic publication harness. No live
+    # state, source acquisition, actual permission grant or C01 republish.
+    from tests.test_company_disclosure_owner import case, publish as publish_generation
+    value = case.__wrapped__(tmp_path)
+    result = publish_generation(value)
+    assert result["status"] == "COMMITTED_OBSERVED"
+    return value, result
+
+
+def test_actual_native_owner_and_readonly_store_path(qualified_local_owner):
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from tests.test_company_disclosure_owner import request
+    value, published = qualified_local_owner
+    source, state, artifacts, *_ = value
+    frozen = {str(p): p.read_bytes() for root in (state.root, artifacts.root)
+              for p in root.rglob("*") if p.is_file()}
+    actual_owner = owner.CurrentDisclosureOwner(source, owner.ReadOnlyLocalObjects(state.root))
+    readonly = owner.ReadOnlyLocalObjects(artifacts.root)
+    result = context.read_economic_context(readonly, actual_owner, request(value))
+    assert result["status"] == "available"
+    c = result["context"]
+    assert c["provenance"]["generation"] == published["generation"]
+    assert c["relationship"]["kind"] == "product_integration"
+    assert c["relationship"]["lifecycle"] == "planned"
+    assert c["usage"] == {"purpose": owner.PURPOSE, "audience": owner.AUDIENCE}
+    assert c["timing"]["source_published_date"] == "2024-02-26"
+    assert c["mapping"]["legacy_theme_graph_edge"] is None
+    assert not hasattr(readonly, "put_bytes_strict_conditional")
+    assert frozen == {str(p): p.read_bytes() for root in (state.root, artifacts.root)
+                       for p in root.rglob("*") if p.is_file()}
+
+
+def test_actual_native_owner_revocation_prevents_any_fact_read(qualified_local_owner):
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from tests.test_company_disclosure_owner import request
+    value, _ = qualified_local_owner
+    source, state, *_ = value
+    source.value = replace(source.value, ruling_revision="0"*64)
+    actual_owner = owner.CurrentDisclosureOwner(source, owner.ReadOnlyLocalObjects(state.root))
+    class NoArtifactRead:
+        reads = 0
+        def get_bytes_strict_bounded(self, *args, **kwargs):
+            self.reads += 1
+            raise AssertionError("artifact access after revoked native metadata")
+    store = NoArtifactRead()
+    assert_refusal(context.read_economic_context(store, actual_owner, request(value)))
+    assert store.reads == 0
+
+
+def test_actual_native_owner_rejects_historical_route_before_source_lookup(qualified_local_owner):
+    from engine.company_intelligence import issuer_disclosure_owner as owner
+    from tests.test_company_disclosure_owner import request
+    value, _ = qualified_local_owner
+    source, state, artifacts, *_ = value
+    actual_owner = owner.CurrentDisclosureOwner(source, owner.ReadOnlyLocalObjects(state.root))
+    source.calls = 0
+    historical = request(value, mode="historical", as_of="2026-09-01T12:00:00Z")
+    result = context.read_economic_context(owner.ReadOnlyLocalObjects(artifacts.root), actual_owner, historical)
+    assert_refusal(result, "SOURCE_NOT_ADMITTED")
+    assert source.calls == 0

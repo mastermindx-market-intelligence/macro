@@ -91,6 +91,11 @@ Counterexamples cover field grants before reads, post-read owner changes,
 request/audience substitution, historical cutoffs, corrupted or absent bytes,
 revision bindings, writer-free consumption, response drift and copy isolation.
 
+The integration suite also exercises the ACTUAL `CurrentDisclosureOwner` and
+`ReadOnlyLocalObjects` against the existing native synthetic publication harness,
+including revocation and historical-route refusal. Temporary local generations
+are isolated test fixtures; the accepted production generation is not touched.
+
 The sole test execution home is the existing code-gated
 `company-relationship-candidates` CI job. This adds one suite and the necessary
 scope paths, not another runner/controller or relaxed test budget.
