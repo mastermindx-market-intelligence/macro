@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T11:28:02.462252+00:00",
-  "count": 2954,
+  "generated_at": "2026-10-15T12:43:19.273007+00:00",
+  "count": 2957,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -189,6 +189,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ol1vfmcdtmp-c713bc",
+      "title": "Americas Retail Supermarkets Food at home inflation decelerated to +1.8 in September",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:51Z",
+      "summary_points": [
+        "FAH CPI Deceleration: Food-at-Home CPI slowed to +1.8% (vs +2.2% in August), driven by protein deceleration, with fruits/vegetables and non-alcoholic beverages accelerating.",
+        "Grocery-Restaurant Spending Shift: Grocery inflation outpaced restaurants (gap at -1.7% in September), but PCE data shows a shift toward restaurants (-70 bps y/y vs historical -35 bps), signaling spending reallocation risk.",
+        "FAH CPI Reacceleration Indicators: Leading indicators (S&P GSCI Ag & Livestock Index, GS Food COGS Index) suggest slight FAH CPI reacceleration over next six months, supporting grocery sector outperformance.",
+        "CPI-PPI Spread Widening: CPI-PPI spread widened to +2.6% in September (vs +0.5% in August), supporting retailer margins and signaling heightened inflationary pressures on retail supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kgnykp6nskn-b06237",
+      "title": "Ulta Beauty Inc. (ULTA) Takeaways from our meeting with management and store tour",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:39Z",
+      "summary_points": [
+        "Beauty Demand & Loyalty Strength: 95% of sales driven by 47m loyalty members (47m), with 80% experiential store sales and K-beauty (52% exclusive brands) fueling category demand (80-85% basket new items).",
+        "Margin Strategy Shift: Management prioritizes operating profit growth over gross margin/SG&A targets, leveraging distribution centers to offset freight costs and balancing merchandising margin with promotional investments.",
+        "Wellness Category Expansion: Dedicated wellness sections with enhanced signage capitalize on health-focused demand, positioning ULTA for margin expansion in higher-value categories.",
+        "Critical Downside Risks: Market share deterioration, moderating loyalty growth, supply chain disruptions (freight/port), and distribution pressure from prestige beauty threaten near-term performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -664,6 +704,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-d3gm4uxih4a-5c6f34",
+      "title": "Strategy Daily 2026 10 14",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:47:14Z",
+      "summary_points": [
+        "USD Geopolitical & Rate Impact: Middle East energy infrastructure concerns pushed WTI to $95, triggering curve flattening, rate moves, and global bond rally lowering yields amid Williams' hawkish comments and Treasury issuance speculation.",
+        "EUR Sovereign Flows: EUR/USD at 5-month low driven by France-specific OAT dynamics (reversed cheapening) and heavy sovereign supply (€73bn/€87bn), with German supply indigestion fueling EGB rally.",
+        "GBP Fiscal & Geopolitical Shift: Saudi strikes on Sanaa reversed oil-driven gilt rally; fiscal headroom debate (proposed £8bn vs tax relief) and hawkish BoE commentary support GBP ahead of 28 Oct Budget.",
+        "JPY Curve Dynamics: JGB curve steepening (2y-5y outperformance vs 10y richness) amid reduced BoJ tightening expectations, with belly swaps outperforming cash and ultra-long underperformance (20y lagging)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
