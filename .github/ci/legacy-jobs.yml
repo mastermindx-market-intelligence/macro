@@ -10942,6 +10942,22 @@ jobs:
     # unchanged; an opaque transitive import must not select unrelated builders.
     scope: exclusive
     paths:
+      # Incoming main QLedger test and imports, qualified in the A1 composition.
+      - engine/intl_performance_charts.py
+      - engine/rates_command_basis.py
+      - engine/sector_intelligence/consumer_cyclical_display.py
+      - engine/sector_intelligence/consumer_cyclical_projection.py
+      - engine/sector_intelligence/consumer_cyclical_shared_contract.py
+      - engine/sector_intelligence/finance_case_signal.py
+      - engine/sector_intelligence/finance_page_signal.py
+      - engine/sector_intelligence/finance_projection.py
+      - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_witness_hints.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
+      - scripts/build_consumer_cyclical_plnt_page.py
+      - tests/test_backfill_qledger_us.py
       # The existing clock invariant audits this tracked namespace, including new files.
       - data/qledger/control_evidence_clock_start/**
       # Runtime-loaded reader modules and their complete source closure.
