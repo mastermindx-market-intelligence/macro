@@ -171,6 +171,56 @@ for (const lang of ['en','zh']) {
 }
 
 for (const lang of ['en','zh']) {
+  test(`Native Compare Scenario review commits only the confirmed chart context ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      async function view(name) {
+        if(lang==='zh') await page.selectOption('[data-im-controls] select[data-im-action="set_view"]',name);
+        else await page.locator(`[data-im-controls] button[data-im-view="${name}"]`).click();
+      }
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      const originalChart=await chart.innerHTML();
+      const target=page.locator('[data-im-compare-panel][data-horizon="3m"][data-basis="usd_unhedged"]');
+      const targetMarks=await target.locator('[data-im-chart-series]').evaluateAll(ns=>ns.filter(n=>['AU','KR'].includes(n.dataset.imChartSeries)).map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')]));
+      await view('history');
+      // Desktop displays History and Scenario together; only narrow screens use tabs.
+      if(lang==='zh') await page.locator('[data-im-scenario-tab="scenario"]').click();
+      const local=page.locator('[data-im-scenario-field="local"]'),fx=page.locator('[data-im-scenario-field="fx"]');
+      await local.fill('5');await fx.fill('-3');
+      await page.locator('[data-im-scenario-action="calculate"]').click();
+      const initialResult=await page.locator('[data-im-scenario-usd]').innerText();
+      await view('compare');
+      const originalUrl=page.url(),horizon=page.locator('[data-im-controls] select[data-im-action="set_horizon"]');
+      await horizon.selectOption('3m');
+      assert.equal(await page.locator('[data-im-scenario-confirm-context]').isVisible(),true);
+      assert.equal(new URL(page.url()).searchParams.get('horizon'),'1m');
+      assert.equal(await horizon.inputValue(),'1m');
+      assert.equal(await page.locator('[data-im-compare-panel]:visible').count(),0);
+      await local.fill('12');await local.press('Escape');
+      assert.equal(page.url(),originalUrl);
+      assert.equal(await chart.innerHTML(),originalChart);
+      assert.equal(await local.inputValue(),'5');
+      assert.equal(await page.locator('[data-im-scenario-usd]').innerText(),initialResult);
+      assert.equal(await horizon.evaluate(n=>n===document.activeElement),true);
+      await horizon.selectOption('3m');await local.fill('10');
+      await page.locator('[data-im-scenario-action="confirm_context"]').click();
+      assert.equal(await panel.getAttribute('data-horizon'),'3m');
+      assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');
+      assert.equal(new URL(page.url()).searchParams.get('pins'),'KR,AU');
+      assert.deepEqual(await chart.locator('[data-im-chart-series]:not([hidden])').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')])),targetMarks);
+      assert.equal(await page.locator('[data-im-scenario-confirm-context]').isVisible(),false);
+      assert.equal(await page.evaluate(()=>!document.activeElement.closest('[hidden]')),true);
+      await view('history');
+      assert.equal(await local.inputValue(),'10');assert.equal(await fx.inputValue(),'-3');
+      assert.match(await page.locator('[data-im-scenario-usd]').innerText(),/6\.7/);
+      assert.match(await page.locator('[data-im-scenario-context]').innerText(),/3m/);
+    },{htmlOverride:sourceChartFixture(),width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
+for (const lang of ['en','zh']) {
   test(`Native Compare missing FX retains selections across basis and Back ${lang}`,async()=>{
     await pageFixture(async page=>{
       const panel=page.locator('[data-im-compare-panel]:not([hidden])');
