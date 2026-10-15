@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T04:41:57.843607+00:00",
-  "count": 2934,
+  "generated_at": "2026-10-15T04:57:07.619466+00:00",
+  "count": 2935,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -508,6 +508,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rovjseanl6l-39c4b6",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:41:51Z",
+      "summary_points": [
+        "US CPI & Fed Policy Tension: Strong CPI print (headline +0.57%, YoY +2.4%) drives 24% market probability of Oct Fed rate hike (highest since Oct 2023), with Williams supporting 25bp move amid inflation data uncertainty.",
+        "Geopolitical Oil Pressure: Brent crude at $87.37/bbl (new high) fuels 9.6% monthly fuel price surge due to Iran conflict, amplifying inflation fears ahead of Fed meeting.",
+        "China Producer Inflation Surge: China’s producer inflation hit 5.0% YoY (vs 4.4% forecast), driven by AI input costs and Middle East supply disruptions, compounding global inflation risks.",
+        "Fed Policy & Inflation Dynamics: Persistent inflation underpins Fed’s tightening stance (Barkin), with 10yr yield falling to 5.21% (risk-off tone) as inflation expectations dominate yield moves."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
