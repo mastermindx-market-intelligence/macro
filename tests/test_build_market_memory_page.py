@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
+from html.parser import HTMLParser
 from pathlib import Path
 import shutil
 import subprocess
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
@@ -47,7 +50,7 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
     assert "request('/symbol/'" in source
     assert "basisPoints(query.spread_2s10s)" in source
     assert "data.historical_basis" in source
-    assert "error.status === 403" in source
+    assert "notice.status === 403" in source
     assert "macroRequest: 0" in source
     assert "requestId !== state.macroRequest" in source
     assert "requestId !== state.symbolRequest" in source
@@ -67,10 +70,42 @@ def test_market_memory_client_uses_only_the_owned_read_api() -> None:
 
 
 def test_market_memory_assets_are_template_owned_and_byte_identical() -> None:
-    for name in ("market_memory.css", "market_memory.js"):
+    for name in ("market_memory.css", "market_memory.js", "market_memory_intent.js", "market_memory_retained.js", "market_memory_retained.css"):
         assert (ROOT / "templates" / name).read_bytes() == (
             ROOT / "site" / name
         ).read_bytes()
+
+
+def test_market_memory_page_loads_current_owned_asset_versions() -> None:
+    """A new emitted bundle must not leave returning browsers on an immutable old URL."""
+    owned = {
+        "market_memory.css", "market_memory.js", "market_memory_intent.js",
+        "market_memory_retained.js", "market_memory_retained.css",
+    }
+    refs: dict[str, list[str]] = {name: [] for name in owned}
+
+    class LoadedAssets(HTMLParser):
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attributes = dict(attrs)
+            if tag == "script":
+                reference = attributes.get("src")
+            elif tag == "link" and "stylesheet" in (attributes.get("rel") or "").split():
+                reference = attributes.get("href")
+            else:
+                return
+            if not reference:
+                return
+            parsed = urlsplit(reference)
+            if not parsed.scheme and not parsed.netloc and parsed.path in owned:
+                refs[parsed.path].append(reference)
+
+    LoadedAssets().feed((ROOT / "site" / "market_memory.html").read_text(encoding="utf-8"))
+    for name in sorted(owned):
+        assert len(refs[name]) == 1, (name, refs[name])
+        parsed = urlsplit(refs[name][0])
+        expected = hashlib.sha256((ROOT / "site" / name).read_bytes()).hexdigest()[:8]
+        assert parse_qs(parsed.query) == {"v": [expected]}, (name, refs[name][0], expected)
+        assert not parsed.fragment
 
 
 def test_market_memory_is_wired_into_build_router_and_navigation() -> None:
@@ -145,7 +180,7 @@ let lang = 'en';
 let authChanged;
 const location = new URL('https://mastermind-x.com/market_memory.html?ticker=AAPL');
 const document = {readyState:'complete',documentElement:{getAttribute:()=>lang},getElementById:id=>elements[id],addEventListener(type,fn){events[type]=fn;}};
-const context = {document,location,URL,localStorage:{getItem:()=>null,setItem(){}},history:{replaceState(_,__,url){location.href=new URL(url,location).href;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve})),window:{MDXAuth:{onChange(fn){authChanged=fn;}}}};
+const context = {document,location,URL,localStorage:{getItem:()=>null,setItem(){}},history:{replaceState(_,__,url){location.href=new URL(url,location).href;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve})),window:{addEventListener(){},MDXAuth:{onChange(fn){authChanged=fn;}}}};
 vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const summary = () => elements['mm-symbol-summary'].innerHTML;
@@ -158,12 +193,12 @@ const noEvidence = () => {assert.ok(!summary().includes('mm-symbol-ticker'),summ
  await tick(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>')); assert.ok(grids().includes('mm-grid-card'));
  submit('NVDA'); await tick(); const loading=summary(); const loadingGrids=grids(); changeLanguage(); noEvidence(); assert.equal(summary(),loading); assert.equal(grids(),loadingGrids); assert.equal(location.search,'?ticker=NVDA');
  reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>')); assert.ok(grids().includes('mm-grid-card'));
- submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),invalid); assert.equal(location.search,'?ticker=NVDA');
+ submit('A APL'); const invalid=summary(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker')); assert.equal(location.search,'?ticker=NVDA');
  submit('MSFT'); await tick(); submit('AAPL'); await tick(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); reply('AAPL'); await tick(); assert.ok(summary().includes('>AAPL</span>'));
- submit('NVDA'); await tick(); reply('NVDA',503); await tick(); const failure=summary(); changeLanguage(); noEvidence(); assert.equal(summary(),failure);
+ submit('NVDA'); await tick(); reply('NVDA',503); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'个股记忆暂不可用':'Symbol memory unavailable'));
  submit('NVDA'); await tick(); reply('NVDA'); await tick(); assert.ok(summary().includes('>NVDA</span>'));
- submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),invalidPending);
- submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); const signedOut=summary(); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.equal(summary(),signedOut);
+ submit('MSFT'); await tick(); submit('!'); const invalidPending=summary(); reply('MSFT'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
+ submit('AAPL'); await tick(); reply('AAPL'); await tick(); submit('NVDA'); await tick(); authChanged(null); reply('NVDA'); await tick(); changeLanguage(); noEvidence(); assert.ok(summary().includes(lang==='zh'?'登录以打开个股记忆':'Sign in to open symbol memory'));
  console.log('pending, invalid, latest-intent, late completion, failure, recovery, sign-out and language assertions passed');
 })().catch(error => {console.error(error);process.exitCode=1;});
 '''
@@ -197,7 +232,7 @@ let lang = 'en';
 let authChanged;
 const location = new URL('https://mastermind-x.com/market_memory.html?ticker=AAPL&view=memory');
 const document = {readyState:'complete', documentElement:{getAttribute:()=>lang}, getElementById:id=>elements[id], addEventListener(type,fn){events[type]=fn;}};
-const context = {document, location, URL, localStorage:{getItem:key=>stored[key], setItem(key,value){stored[key]=value;}}, history:{replaceState(_,__,url){location.href=new URL(url,location).href;}}, fetch:url=>new Promise(resolve=>pending.push({url,resolve})), window:{MDXAuth:{onChange(fn){authChanged=fn;}}}};
+const context = {document, location, URL, localStorage:{getItem:key=>stored[key], setItem(key,value){stored[key]=value;}}, history:{replaceState(_,__,url){location.href=new URL(url,location).href;}}, fetch:url=>new Promise(resolve=>pending.push({url,resolve})), window:{addEventListener(){},MDXAuth:{onChange(fn){authChanged=fn;}}}};
 vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const summary = () => elements['mm-symbol-summary'].innerHTML;
@@ -208,7 +243,7 @@ const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);
 (async () => {
  await tick(); reply('/symbol/AAPL',401); reply('/macro?limit=6',401); await tick();
  submit(scenario.invalid); const invalidSummary=summary(); changeLanguage();
- assert.equal(summary(),invalidSummary); assert.ok(summary().includes('Check the ticker'));
+ assert.notEqual(summary(),invalidSummary,'invalid feedback follows the new locale'); assert.ok(summary().includes(lang==='zh'?'请检查代码':'Check the ticker'));
  if(scenario.signOut) {authChanged(null); changeLanguage();}
  const beforeSignIn=summary();
  authChanged({id:'controlled-user'}); await tick();
@@ -238,5 +273,23 @@ const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);
         [node, "-e", script, str(ROOT / relative),
          json.dumps({"invalid": invalid, "signOut": sign_out})],
         capture_output=True, text=True, timeout=20, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("suite", [
+    "market_memory_intent.test.cjs",
+    "market_memory_retained.test.cjs",
+    "market_memory_auth_return.test.cjs",
+    "market_memory_retained_state.test.cjs",
+])
+def test_retained_owner_wire_auth_and_state_regressions(suite: str) -> None:
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the retained UI acceptance suite"
+    result = subprocess.run(
+        [node, str(ROOT / "tests" / "js" / suite),
+         str(ROOT / "templates" / "market_memory_retained.js"),
+         str(ROOT / "tests" / "fixtures" / "market_memory_retained_owner_wire.json")],
+        cwd=ROOT, capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr

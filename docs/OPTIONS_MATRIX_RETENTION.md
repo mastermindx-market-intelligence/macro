@@ -143,3 +143,31 @@ product entitlement, retained digest or fixture can substitute for that decision
 Independent Research Lab and IW2 peers reproduced A/B interoperability (13Python
 and26TypeScript checks); their earlier scoped acceptance remains separate from
 frozen candidate review and real-store/publication/production acceptance.
+
+## R2 head precondition
+
+`_upload_r2` reads `options_structure/matrix/<ROOT>.json` before `put_object`.
+The read follows the history snapshot bound: `NoSuchKey`, `NotFound` and `404`
+are missing; `ContentLength` must be an int no larger than the 16 MiB ceiling;
+the body is read in chunks of at most 64 KiB, up to that ceiling plus one byte,
+and closed in `finally`. A missing key is published. Any other read error, an
+oversize object, non-UTF-8, invalid or duplicate-key or non-finite JSON, a
+schema mismatch, a root mismatch, or a usable head (cells and spot present)
+without a trustworthy source session refuses the put, logs an error, and
+returns false. A legacy empty head (no cells, or spot null) may be replaced.
+A usable head session newer than the candidate session is not overwritten; the
+error log contains `resolved session <candidate> older than R2 head <head>`.
+A head session equal to or older than the candidate is published, which is how
+a stale published head self-heals to the candidate.
+
+When the published head is newer than the candidate, the local head and the
+immutable history copy may still advance to that candidate. Only the published
+R2 head is protected from regression. The process exits 1 with
+`R2 publication failed`, the existing fail-closed signal. The guard runs only
+inside `_upload_r2`, which the publisher calls under `--publish`, so a
+non-publish run makes no new network call.
+
+Not in this guard: an ETag `If-Match` compare-and-swap. R2 support for that
+precondition is unverified, so a concurrent writer between the head GET and
+PUT can still race. The build clock (`asof`) inside the digest is a separate
+matter (R3) and is not compared here.
