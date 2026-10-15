@@ -1,6 +1,6 @@
 # Options matrix exact-byte retention
 
-Source candidate on existing Macro PR #7861. This is deterministic source proof;
+The retention implementation originated in Macro PR #7861. This is source documentation;
 no production storage, runtime installation, source rights or Saved Research
 admission is established by this document.
 
@@ -129,10 +129,11 @@ lost write acknowledgments. There is no object-store network call in these tests
 ## Admission gaps retained
 
 The canonical `reference.vendor_aliases` reader is `lib/dataos/identity.py`.
-The observed local canonical parquet has vendors ledger, membership, store,
-theme_graph_native, yahoo, yahoo_fetch and **zero thetadata rows**. Its existence
-cannot bind a Theta producer root using another vendor's ticker equality. A valid
-mapping must be supplied through the existing identity owner, not a new registry.
+The existing writer now supports one explicitly observed-day `thetadata/SPY`
+root relation, described in [direct registrant intake](dataos/direct-registrant-intake.md).
+Its captured source evidence, canonical SEC target, event-date interval and
+availability clocks constrain every lookup. Other vendors' ticker equality
+cannot supply a missing relation; older and future sessions remain unbound.
 
 The inspected `engine/theme_graph/rights_use.py::current_use_verdict` accepts
 selection-cohort capture purposes/markets. It does not supply an Options request
@@ -143,6 +144,46 @@ product entitlement, retained digest or fixture can substitute for that decision
 Independent Research Lab and IW2 peers reproduced A/B interoperability (13Python
 and26TypeScript checks); their earlier scoped acceptance remains separate from
 frozen candidate review and real-store/publication/production acceptance.
+
+## Optional identity on a publication observation
+
+The existing one-shot observer can join its exact verified Matrix bytes to the
+captured canonical SPY identity:
+
+```sh
+python3 scripts/observe_options_matrix_publication.py \
+  --repo /path/to/deployed/repo --out /existing/options_matrix \
+  --identity-vendor thetadata --receipt /path/to/new-observation.json
+```
+
+Use the existing provisioned store client and producer output. The flag captures
+the deployed repository's `data/reference/vendor_aliases.parquet`,
+`security_master.parquet` and `_receipt.json` with their hashes and actual read
+completion clocks. The alias independently binds the source evidence retained
+inside the writer receipt. The exact verified Matrix supplies the root and source
+session to `resolve_option_matrix_security`; it does not infer them from a ticker
+label or the observer's wall clock.
+
+`identity.scope` is explicitly SPY only. `identity.complete` requires a successful
+publication observation and a resolved canonical target for that Matrix session.
+Invalid or unavailable captures, retired/conflicting targets, unbound sessions
+and failed store verification cannot produce identity success. With the flag,
+CLI exit0 requires both publication and identity success. Without it, the existing
+publication result and exit semantics stay unchanged. The observation remains
+read-only apart from its new exclusive local receipt.
+
+When `--prior` is supplied, a successful prior-history reopen is followed by a
+final read of the current local and remote heads. A head change, disappearance or
+denial at that boundary makes the observation unstable and prevents advancing or
+identity success. Failed prior reads do not trigger an additional head read.
+This proves the observed sequence only; it does not lock the publisher or promise
+that heads remain unchanged after their final read.
+
+Capture is a finite, non-atomic read using the incumbent bounded local reader.
+It does not authenticate HTTP source provenance, prove a natural invocation,
+extend the root relation's date interval, establish IDX identity or grant rights,
+fresh entitlement or Saved Research admission. A synthetic Matrix exercising
+this adapter remains synthetic even when its reference inputs are real.
 
 ## R2 head precondition
 
