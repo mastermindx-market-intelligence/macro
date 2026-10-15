@@ -296,6 +296,82 @@ with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
   return sourceChartHtml.get(isolated);
 }
 
+for(const lang of ['en','zh']) {
+  test(`Native Compare system colours retain line and point readings ${lang}`,async t=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      for(const slot of ['0','1','2','4']) await picker.selectOption(slot);
+      const chart=panel.locator('[data-im-chart-model]');
+      const original={url:page.url(),geometry:await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')]))};
+      for(const scheme of ['light','dark']) {
+        await page.emulateMedia({forcedColors:'none',colorScheme:scheme,reducedMotion:'reduce'});
+        await page.evaluate(scheme=>setTheme(scheme==='light'?'dark':'light'),scheme);
+        const normalStrokes=await chart.locator('svg [stroke]').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).stroke));
+        await page.emulateMedia({forcedColors:'active',colorScheme:scheme,reducedMotion:'reduce'});
+        // The user's system contrast colours must work independently of the
+        // application theme, including a previously saved opposite theme.
+        await page.evaluate(scheme=>setTheme(scheme==='light'?'dark':'light'),scheme);
+        await page.locator('.sky-fx').waitFor({state:'detached'});
+        assert.equal(await page.evaluate(()=>matchMedia('(forced-colors: active)').matches),true);
+        for(const width of [320,1440]) {
+          await page.setViewportSize({width,height:900});
+          const metrics=await chart.evaluate(chart=>{
+            const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+            canvas.width=canvas.height=1;
+            const rgb=value=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=value;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];};
+            const luminance=c=>c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+            const marks=[...chart.querySelectorAll('[data-im-chart-series]:not([hidden])')];
+            return marks.map(n=>{
+              const point=n.hasAttribute('data-im-chart-point'),mark=point?n.querySelector('path'):n;
+              const legend=chart.querySelector(`[data-im-chart-table-market="${n.dataset.imChartSeries}"] ${point?'[data-im-chart-point-key]':'svg line'}`);
+              const style=getComputedStyle(mark),key=getComputedStyle(legend),ink=rgb(style.stroke);
+              let background=null;
+              for(let p=mark;p;p=p.parentElement) {
+                const s=getComputedStyle(p),color=rgb(s.backgroundColor);
+                if(s.opacity!=='1'||s.backgroundImage!=='none')throw Error('unsupported chart surface');
+                if(color[3]===255){background=color;break;}
+                if(color[3]!==0)throw Error('translucent chart surface');
+              }
+              if(!background||ink[3]!==255)throw Error('missing opaque chart pair');
+              const a=luminance(ink),b=luminance(background);
+              return {market:n.dataset.imChartSeries,point,ink,background,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),
+                pattern:point?mark.getAttribute('d'):style.strokeDasharray,
+                legendPattern:point?legend.getAttribute('d'):key.strokeDasharray,
+                legendStroke:key.stroke,stroke:style.stroke,vector:style.vectorEffect};
+            });
+          });
+          t.diagnostic(JSON.stringify({scheme,lang,width,metrics}));
+          if(width===320&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+            fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+            const group=chart.locator('[data-im-chart-cohort]:not([hidden])').first();
+            await group.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+            await group.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`compare-system-colours-${scheme}-${lang}-320.png`)});
+          }
+          assert.ok(metrics.some(m=>m.point)&&metrics.some(m=>!m.point),'fixture needs lines and isolated observations');
+          assert.ok(metrics.every(m=>m.ratio>=3),JSON.stringify({scheme,lang,width,metrics}));
+          const systemForeground=await chart.evaluate(n=>getComputedStyle(n).color);
+          assert.equal(await chart.locator('figure > svg > line').first().evaluate(n=>getComputedStyle(n).stroke),systemForeground);
+          const keys=new Map();
+          for(const m of metrics) {
+            assert.equal(m.stroke,systemForeground);
+            assert.equal(m.pattern,m.legendPattern);
+            assert.equal(m.stroke,m.legendStroke);
+            assert.equal(m.vector,'non-scaling-stroke');
+            keys.set(m.market,`${m.point}:${m.pattern}`);
+          }
+          assert.equal(keys.size,4);
+          assert.equal(new Set(keys.values()).size,4,'non-colour keys must distinguish every selected market');
+          assert.equal(page.url(),original.url);
+          assert.deepEqual(await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')])),original.geometry);
+        }
+        await page.emulateMedia({forcedColors:'none'});
+        assert.deepEqual(await chart.locator('svg [stroke]').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).stroke)),normalStrokes,'leaving forced colours restores the application palette');
+      }
+    },{htmlOverride:sourceChartFixture(true),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
 for (const bootLanguage of ['en','zh']) {
   test(`Source chart accessible reading follows locale and selection ${bootLanguage}`,async()=>{
     await pageFixture(async page=>{

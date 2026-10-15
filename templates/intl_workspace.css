@@ -258,6 +258,11 @@ html[data-lang="zh"] .intl-workspace__deeper-title { letter-spacing:0; text-tran
 .intl-compare__market button { padding-inline:calc(var(--fs-body) / 2); font-size:var(--fs-sm); }
 .intl-compare summary { cursor:pointer; padding-block:calc(var(--fs-body) / 2); }
 .intl-compare :is(button,select,summary,a):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+@media (forced-colors: active) {
+  /* SVG presentation colours otherwise survive the forced system canvas.
+     Preserve the existing line/point keys while using the user's foreground. */
+  .intl-chart svg [stroke] { stroke:CanvasText; }
+}
 [data-theme="light"] .intl-compare { background:var(--panel); box-shadow:var(--card-shadow); }
 [data-theme="light"] .intl-compare__header { background:var(--panel2); }
 [data-theme="light"] .intl-compare__metrics { gap:0; }
