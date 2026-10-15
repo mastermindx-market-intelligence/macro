@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T10:12:52.848654+00:00",
-  "count": 2950,
+  "generated_at": "2026-10-15T10:28:01.101348+00:00",
+  "count": 2951,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1128,6 +1128,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-feekl0clxq5-2d4c02",
+      "title": "Global Markets Daily Credit When Higher Yields Become Less Supportive",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:48Z",
+      "summary_points": [
+        "Credit Spread/Yield Correlation Shift: USD IG spread vs.",
+        "Treasury yield correlation turned positive (Exhibit 2), while EUR IG spread vs.",
+        "Bund yield correlation turned negative (Exhibit 1), creating dual headwinds for unhedged credit returns as spreads and yields now move in tandem.",
+        "Eroded Yield Cushion: Credit spreads now represent only 15% of all-in yield (vs. 45% avg 2019-2021), drastically reducing yield support reliability and amplifying vulnerability to rate hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
