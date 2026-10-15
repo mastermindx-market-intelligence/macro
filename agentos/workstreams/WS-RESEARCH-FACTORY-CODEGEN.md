@@ -13,6 +13,7 @@ class: build
 blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
+  - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/
   - research/research_factory_codegen/
   - scripts/research_codegen_qualification/runtime/
@@ -23,13 +24,16 @@ waves:
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
   Consume original archive and mount reviews after the existing Fabric owner
-  completes qualified collector installation. Integrate the fixed workload plan
-  leaf and verify its single-attempt frontend. Land fence/capture through the
+  completes qualified collector installation. Resolve the fixed-plan source reservation through the pending Chris decision;
+  do not retry its refused read or replace its original operation. Land fence/capture through the
   existing merge controller, then publish the combined carrier.
 artifacts:
+  - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
+  - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
   - research/research_factory_codegen/2026-10-14/CONTRACTS_SOURCE_ACCEPTANCE.md
   - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
   - research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md
+  - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
   - Reuse accepted checks and reviews until their relevant source or requirements change.
@@ -55,8 +59,8 @@ CI remains required. The carrier is rearmed after the push. The fence contract-d
 check has passed. No new runner was requested for the previous infrastructure
 failure. Normal merge controls remain in force.
 
-Combined source at 7b9a969e1fac includes actual main and the landed strict
-transport. The changed deploy composition passed 270 checks; its capsule bytes
+The combined source now integrates the current fence and capture branches,
+including their landed-base repairs and the strict transport. The changed deploy composition passed 270 checks; its capsule bytes
 remain unchanged. The actual local admin server, existing login/session flow,
 API and browser display were exercised with the retained synthetic fixture:
 unsigned diagnostics return401, authenticated good/refused rows preserve their
@@ -84,4 +88,5 @@ general engine still has no qualification issuer; enrollment alone cannot enable
 
 Reuse prior accepted source, visual and scientific-mechanics checks until their
 relevant inputs change. Original contracts EFFECT_UNKNOWN remains quarantined
-under Chris's decision. The programme is incomplete with no current Chris-only gate.
+under Chris's decision. The new two-file source-release decision is pending;
+independent release and recovery work remains ready. The programme is incomplete.
