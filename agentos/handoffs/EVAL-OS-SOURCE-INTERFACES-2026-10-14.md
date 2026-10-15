@@ -35,6 +35,13 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: The existing context compiler consumes the real T12 Discovery on published follow-on source.
+  command: python3 scripts/agentos.py compile-context --workstream EVAL-OS-EVIDENCE-VIEW --json
+  result: On3a6a5be the exact whitehouse Discovery appears once as A3 scoped evidence with its source locator;
+    no_answer_reason is null and acceptance_basis remains non-authoritative. Missing active-build metadata and
+    token estimate9761 versus default budget8000 are declared degradation, not suppressed. This is bounded
+    parent-local context consumption, not installed adoption or independent operator acceptance. See
+    research/evidence/eval-os-tier-query-20261014/t12-real-context-consumer.json.
 - claim: Actual first-party claim metadata passes the T12 CLI and typed Discovery admission without outcomes.
   command: scripts/check_qledger_metric_validity.py --project-findings retained claims-only input; scripts.agentos.draft_discovery/check_discovery
   result: One exact rule-2 whitehouse binding; 300 real claims (210 positive,90 negative); one excess_mean legality finding; zero draft-validator problems. This is local source consumption, not installed follow-on adoption. See research/evidence/eval-os-tier-query-20261014/t12-real-claim-consumer.json.
