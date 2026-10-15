@@ -149,19 +149,18 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 published1bb4b0c394aa has fresh exact-head CI38733137011 in progress.
-  The original plan, tested merge/base and all17productionfiles are verified; terminal checks,
-  incumbent protected merge and all production proof remain owed.
+- Current A1 published3f34040de3a5 repairs four actual contract-delta omissions plus two newly
+  reachable current-main inputs. Source qualification passes; fresh hosted checks, protected
+  merge and all production proof remain owed.
 next_actions:
-- A1 originalPR6651 sourcecorrection1bb4b0c394aa is PUBLISHED after12:12:53Oct15 canonical
-  admission7active/cap8/0reservations and cleanpreview3810d367 with currentmain24e858. It relocates
-  3existingpaths only, preserving319branchdefinitions/pathmultisets/limits and all current-main
-  commands with the accepted A1 suite addition.2controlsPASS; prior semantic proof retained.
-  Original plan38733137011/attempt1 is digest/canonically verified:127eligiblejobs/A1pack9;
-  tested24b30fc1/base24e858 tree3810 exactly matches the admitted preview.17productionfiles
-  and A1job/step identities match accepted source. Consume the terminal artifact and binding
-  checks; ff791CI38716442763PASS remains bound to its original source. Incumbent alone refreshes/finalmerges; no newmanualbaseintegration,
-  duplicateproducer or adminmerge. After qualifiedmerge proceed through normal production proof.
+- A1 originalPR6651 source3f34040de3a5 is PUBLISHED/readback12:53Oct15 after canonical
+  admission7active/cap8/0reservations and cleanpreview2f90626 with actualmain9c37ad.
+  Six exact dependency additions preserve319branchdefinitions/prior paths/commands/limits.
+  Current-main source preview passes3controls/fullclosure0/strict136-135-129jobs.
+  Original run38733137011 on1bb has genuine contract-deltaFAILURE and remains bound to1bb.
+  Consume the new3f exact-head run/plan/terminalartifact and bindingchecks; incumbent alone
+  refreshes/finalmerges. No second manualbaseintegration or duplicate producer/controller.
+  After qualifiedmerge proceed through normal deployment and production verification.
 
 - Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
   eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
@@ -189,9 +188,9 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-A1 PR6651 is published at1bb4b0c394aa. Original run38733137011/attempt1 has a successful plan and running contract-delta/twelve packs at12:25:48Z. Its original plan ZIP digest and canonical plan hash pass; tested24b30fc1/base24e858 exactly reproduces admitted preview3810. All17productionfiles and both A1 semantic step identities remain unchanged. The127eligible jobs include A1 inpack9. See `research/evidence/eval-os-tier-query-20261014/a1-plan-consumption-38733137011.json` and the original plan ZIP. Terminal evidence, incumbent refresh/merge and production verification remain owed; prior ff791 success cannot qualify this new head. No controller or duplicate producer was dispatched.
+A1 PR6651 is published at3f34040de3a5 after normal capacity admission and verified readback at12:53:44Z. Original run38733137011 correctly rejected four undeclared international-chart dependencies. The correction adds those four exact inputs plus the receipt helper/schema newly reached through current main's build_security_master. All319branch execution definitions, prior paths, eight A1 suites, limits and product files remain intact. An isolated current-main source preview passes three controls, zero closure misses and strict136/135/129jobs within existing weight/pack limits. Main9c37's later changes are only data/site paths, leaving qualified source/CI bytes unchanged; its preview is clean. The local qualification snapshot is not a release revision or a second carrier base integration. See `research/evidence/eval-os-tier-query-20261014/a1-six-input-repair-20261015.json`. Fresh hosted binding checks, incumbent merge and production proof remain required.
 
-Follow-on qualified3528080 remains published on the same branch with20supplied-textcases plus legacybear and accepted T11/T5/T12/QLedger source checks. Runtime/CI are unchanged. No follow-onPR, installed numeric/internal-log proof, model/PIT proof or real consumer adoption is claimed. After A1 landing, reconcile final source/capacity and release this same follow-on. Original unknown/refused effects and all completion flags remain unchanged.
+Follow-on runtime/CI3528080 remains unchanged with20supplied-textcases plus legacybear and accepted T11/T5/T12/QLedger source proof. No follow-onPR, installed numeric/internal-log proof, model/PIT proof or real adoption is claimed. After A1 landing, reconcile final source/capacity and release this same follow-on. Original unknown/refused effects and all completion flags remain unchanged.
 
 ## 2026-10-15 A1 repair published
 
