@@ -197,6 +197,7 @@ ALIAS_COLUMNS = (
     "known_at",
     "evidence_sha256",
     "binding_sha256",
+    "alias_kind",
 )
 #: ``reference.issuer_master`` — one row per distinct non-null issuer_id (spec §3).
 ISSUER_MASTER_COLUMNS = (
@@ -242,6 +243,7 @@ SECURITY_MIGRATIONS_COLUMNS = (
 MASTER_DTYPES = {"effective_at": "datetime", "ingested_at": "datetime",
                  "issuer_evidence_snapshot": "date"}
 REFERENCE_ALIAS_COLUMNS = frozenset({"known_at", "evidence_sha256", "binding_sha256"})
+OPTIONAL_ALIAS_COLUMNS = REFERENCE_ALIAS_COLUMNS | {"alias_kind"}
 ALIAS_DTYPES = {"valid_from": "date", "valid_to": "date", "ingested_at": "datetime"}
 ISSUER_MASTER_DTYPES = {"evidence_snapshot": "date", "n_securities": "int"}
 ISSUER_MIGRATIONS_DTYPES = {"evidence_snapshot": "date", "migrated_at": "datetime"}
@@ -1662,6 +1664,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     if not path.exists():
         return []
     frame = pd.read_parquet(path)
+    if "alias_kind" in columns and any(
+        name in frame.columns and frame[name].notna().any()
+        for name in ("attempt_id", "alias_family_id", "alias_revision_id")
+    ):
+        raise IdentityError("revisioned alias requires observation history writer; refusing projection")
     missing = [c for c in columns if c not in frame.columns]
     hard_missing = [c for c in missing if c not in allow_missing]
     if hard_missing:
@@ -1672,6 +1679,11 @@ def _read_existing(path: Path, columns: tuple[str, ...],
     present = [c for c in columns if c not in missing]
     rows: list[dict] = []
     for record in frame[present].to_dict("records"):
+        if "alias_kind" in columns and pd.notna(record.get("alias_kind")):
+            # Validate the new namespace BEFORE legacy date/string coercion can
+            # turn a malformed stored value into the tuple its seal describes.
+            raw_alias = {k: None if pd.isna(v) else v for k, v in record.items()}
+            VendorAliasTable.from_records([raw_alias])
         row: dict = {}
         for column in columns:
             if column in missing:
@@ -2916,6 +2928,24 @@ def _prune_stale_aliases(
     not a conflict (ordinary merge dedup in :func:`merge_alias_rows` already
     handles those), and this never touches a fresh row's own side.
     """
+    # Root relations are immutable additions, not ordinary symbol refinements.
+    # Validate before the tombstone branch so no malformed/unknown kind disappears.
+    if any(r.get("alias_kind") is not None for r in existing) or any(r.alias_kind is not None for r in fresh):
+        prior = VendorAliasTable.from_records(existing)
+        VendorAliasTable(fresh)
+        roots = [r for r in prior.rows if r.alias_kind == "occ_root"]
+        new_roots = [r for r in fresh if r.alias_kind == "occ_root"]
+        for row in roots:
+            if row.security_id in superseded_ids:
+                raise VendorAliasPruneConflict("option-root tombstone requires explicit evidence curation")
+        # Merge enforces unchanged seals; the table enforces forward uniqueness.
+        root_records = [r for r in existing if r.get("alias_kind") == "occ_root"]
+        VendorAliasTable.from_records(merge_alias_rows(new_roots, root_records, "unused"))
+        ordinary, pruned = _prune_stale_aliases(
+            [r for r in existing if r.get("alias_kind") is None],
+            [r for r in fresh if r.alias_kind is None], superseded_ids)
+        return ordinary + root_records, pruned
+
     fresh_by_vendor_symbol: dict[tuple[str, str], list[AliasRow]] = {}
     fresh_by_vendor_sec: dict[tuple[str, str], list[AliasRow]] = {}
     for row in fresh:
@@ -3002,6 +3032,8 @@ def _as_bound_date(value: str | None) -> date | None:
 
 def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> list[dict]:
     """Append-only on the declared grain; a committed row keeps its ``ingested_at``."""
+    # Check raw root record bounds/types before legacy date normalization.
+    VendorAliasTable.from_records([r for r in existing if r.get("alias_kind") is not None])
     merged: dict[tuple, dict] = {}
     for row in existing:
         key = (
@@ -3010,7 +3042,10 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             str(row["security_id"]),
             _normalize_bound(row["valid_from"]),
             _normalize_bound(row["valid_to"]),
+            row.get("alias_kind"),
         )
+        if key in merged and row.get("alias_kind") == "occ_root":
+            raise IdentityError("duplicate committed option-root relation")
         merged[key] = {
             "vendor": key[0],
             "vendor_symbol": key[1],
@@ -3018,13 +3053,13 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": str(row["ingested_at"]),
-            **{c: row.get(c) for c in REFERENCE_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in OPTIONAL_ALIAS_COLUMNS},
         }
     for row in fresh:
         key = (row.vendor, row.vendor_symbol, row.security_id,
-               _as_iso(row.valid_from), _as_iso(row.valid_to))
+               _as_iso(row.valid_from), _as_iso(row.valid_to), row.alias_kind)
         if key in merged:
-            if row.vendor == "polygon" and merged[key].get("binding_sha256") != row.binding_sha256:
+            if (row.vendor == "polygon" or row.alias_kind == "occ_root") and merged[key].get("binding_sha256") != row.binding_sha256:
                 raise IdentityError("conflicting prospective native alias; revisions not admitted")
             continue
         merged[key] = {
@@ -3037,8 +3072,12 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "known_at": row.known_at.isoformat() if isinstance(row.known_at, datetime) else row.known_at,
             "evidence_sha256": row.evidence_sha256,
             "binding_sha256": row.binding_sha256,
+            "alias_kind": row.alias_kind,
         }
-    return [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4])))]
+    rows = [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4]), str(k[5])))]
+    # New root relations never rely on the main caller to catch forward conflicts.
+    VendorAliasTable.from_records([r for r in rows if r.get("alias_kind") is not None])
+    return rows
 
 
 def _normalize_bound(value) -> str | None:
@@ -3081,6 +3120,8 @@ def _write_parquet(rows: list[dict], columns: tuple[str, ...], path: Path,
     """Write the declared columns in the declared order, with the declared dtypes."""
     import pandas as pd
 
+    if "alias_kind" in columns:
+        VendorAliasTable.from_records(rows)
     data: dict[str, object] = {}
     for column in columns:
         values = [row.get(column) for row in rows]
@@ -3729,7 +3770,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     ) + cn_hk_alias_rows + native_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
         _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
-                       allow_missing=REFERENCE_ALIAS_COLUMNS),
+                       allow_missing=OPTIONAL_ALIAS_COLUMNS),
         fresh_aliases, superseded_ids,
     )
     # AMENDMENT ruling 6 (M5) / AMENDMENT §2 — every prune is receipted + a
@@ -4055,7 +4096,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if any(r["inception_code"] not in reference_only_keys for r in extras):
             raise IdentityError("bounded reference intake would mint a non-probe security")
         old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
-                                     allow_missing=REFERENCE_ALIAS_COLUMNS)
+                                     allow_missing=OPTIONAL_ALIAS_COLUMNS)
         old_native = [r for r in old_aliases if r["vendor"] == "polygon"]
         new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"]
         old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]

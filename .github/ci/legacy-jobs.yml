@@ -9926,6 +9926,8 @@ jobs:
       - scripts/check_symbol_rename_drift.py
       - tests/test_append_only_assertions.py
       - tests/test_dataos_security_master.py
+      - tests/test_dataos_options_root.py
+      - tests/test_dataos_options_underlying.py
       - tests/test_house_law_registry.py
       - tests/test_ticker_alias_boundary.py
     # Meta-guard: verifies config/house_law_checks.yml is complete and honest.
@@ -9975,6 +9977,8 @@ jobs:
       # the job count, and the arithmetic, where it is.
       - name: Data OS security master + time-scoped vendor alias table (MMC/MRSH, SATS/ECHO)
         run: python -m pytest tests/test_dataos_security_master.py -q
+      - name: Forward Options root and canonical underlying identity
+        run: python -m pytest tests/test_dataos_options_root.py tests/test_dataos_options_underlying.py -q
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
       # data.append_only_assertions — registered at `discipline` with EMPTY

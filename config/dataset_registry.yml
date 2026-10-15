@@ -410,16 +410,16 @@ datasets:
     producer: scripts/build_security_master.py
     storage: data/reference/vendor_aliases.parquet
     format: parquet
-    grain: [vendor, vendor_symbol, valid_from]
+    grain: [alias_kind, vendor, vendor_symbol, valid_from]
     identity:
       id_column: security_id
-      id_type: SEC
+      id_type: SEC_or_IDX
     temporal_profile: SNAPSHOT_SERIES
     timezone: UTC
     frequency: on_demand   # same producer, same reason — see reference.security_master
     conflict_policy: DOMAIN_AUTHORITY
     quality_checks: [uniqueness, referential, temporal_integrity]
-    version: "0.1.0"
+    version: "0.2.0"
     inputs: [reference.security_master]
     schema:
       vendor: {dtype: string, nullable: false}
@@ -437,7 +437,18 @@ datasets:
       known_at: {dtype: string, nullable: true, note: "aware UTC evidence observation; required for polygon, not consumer read availability"}
       evidence_sha256: {dtype: string, nullable: true, note: "retained decoded source evidence digest; required for polygon"}
       binding_sha256: {dtype: string, nullable: true, note: "semantic alias tuple seal; consistency, not source authenticity"}
+      alias_kind: {dtype: string, nullable: true, enum: [occ_root], note: "null preserves ordinary bidirectional aliases; occ_root is a forward-only typed-underlying relation"}
     notes: >
+      For alias_kind=occ_root the existing security_id column holds an exact SEC or IDX
+      target; a prefix is syntax, never a canonical record or permission grant.
+      This relation requires an event date, aware known_at, retained source digest,
+      and a kind-separated binding seal. The dedicated lookup verifies exact retained
+      evidence bytes by decision cutoff. Distinct roots may share one underlying;
+      overlapping targets for one vendor/root refuse. Ordinary lookup excludes these
+      rows. Existing null alias_kind rows retain their bidirectional uniqueness.
+      Ingestion must establish source-specific root semantics and bind an existing
+      canonical security or index record before publishing any root row. This schema
+      does not create an index registry or admit a source by ticker equality.
       The additional `polygon` historical-naming namespace is a bounded prospective
       reference observation, with valid_from on the actual requested date and exclusive
       valid_to. Both canonical lookup directions require an explicit aware decision_at;
