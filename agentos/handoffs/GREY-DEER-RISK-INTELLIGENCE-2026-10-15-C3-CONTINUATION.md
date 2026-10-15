@@ -1,8 +1,8 @@
 ---
 workstream: "WS:GREY-DEER-RISK-INTELLIGENCE"
 session: "gd-native-publish-continuity-20261015"
-model: "user-selected Pro; served identity not independently verified"
-ended_because: "checkpoint save; execution continuing"
+model: sol
+ended_because: ci_handoff
 mission: >-
   Complete the Chairman-assigned alertful risk radar through the existing QLedger,
   Risk Envelope, warning publisher and Terminal consumers. This record is a save,
@@ -11,6 +11,11 @@ state_before: >-
   #9426 was source-pushed at 7e59b65859d827efaab3fa50f93a0d4bdb776d8c with
   independent review and hosted CI pending. Earlier heartbeat and Terminal repair
   records were outdated relative to merged #8835/#9070/#856.
+changed:
+  - path: scripts/ci/qledger_publication.py
+    what: "Require direct-parent continuity and expose exact planned/already-present transaction identities; existing production selection stays unchanged."
+  - path: terminal/components/fin/OracleDash.tsx
+    what: "Separate current Terminal source carrier exposes native hazard and unavailable source disclosure; not part of this Macro code tree."
 verified:
   - claim: "Original #9426 source passed hosted semantic CI, but independent review found and reproduced stale-anchor intermediate-history loss."
     command: "Original retained Fabric result plus twelve red-first local regressions."
@@ -48,7 +53,11 @@ do_not_redo:
   - "Completed independent review children 01 and fix02; do not duplicate their runs."
   - "Any original explicitly refused operation, including old Terminal #852 wiring publication, #849 job-log read, old checkpoint update, old raw-ledger distribution read or typed-Git publication precheck."
   - "Do not treat preview replacement-initialization root as the append-initialization candidate required by #9426. Preview returns no materializable plan or permission."
-prs: [9426, 8756, 8042, 856]
+danger_areas:
+  - "The model enum is the canonical Sol role taxonomy, not a provider/model attestation. The user selected Pro; actually served identity is not independently verified."
+  - "This is a CI-handoff checkpoint save while execution continues. Pending or canceled runs are not a concluded pass; source-only witnesses never authorize live format conversion."
+  - "Do not reintroduce old Terminal readers over merged #856 or replay the original denied actions. Preserve source-specific HOLD and effect identity."
+prs: [9426, 8756, 8042, 856, 1008]
 ---
 
 # Current recoverable execution state
