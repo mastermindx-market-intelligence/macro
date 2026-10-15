@@ -1,6 +1,7 @@
 {
+  "browser": "chromium",
   "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
-  "template_sha256": "3efe45caf4c63b7f031630837bd287ed748a10eb96a8360901e7934868dcb174",
+  "template_sha256": "c48128c0086ddf710f346c5922e133a592d66f7c31b2f20634ab45fbd63778ed",
   "cases": [
     {
       "viewport": 1440,
@@ -109,6 +110,21 @@
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
       "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
@@ -220,6 +236,21 @@
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
       "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
@@ -331,6 +362,21 @@
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
       "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
@@ -442,19 +488,34 @@
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
+      "console_errors": [
+        "subsector_rotation render failed: TypeError: Cannot read properties of undefined (reading 'filter')\n    at drawMap (http://rotation.test/subsector_rotation.js:511:23)\n    at drawMapCard (http://rotation.test/subsector_rotation.js:506:5)\n    at render (http://rotation.test/subsector_rotation.js:427:5)\n    at http://rotation.test/subsector_rotation.js:294:42",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "cloud.umami.is/script.js",
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/fonts/Inter-800.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
       "pulse_requests": 5,
       "denied_text": "请使用有权限的账户登录查看。",
       "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
     }
   ],
   "screenshots": {
-    "390-dark-en-page.png": "043747c5dd411f0a7337ea03301bafe7f303cbe0fdd35c3103a6e246e0e49cac",
-    "1440-dark-en-page.png": "6cbd449eada28db9ecaaf3d7f65dec5637ed145260b5ffc41ff8fba0554e836e",
-    "1440-dark-en-panel.png": "61c9f9fc2f8c551b9af248f046405bdcedea6299e30a363efc926cb638ad7304",
-    "390-dark-en-panel.png": "47dbc4026a5280f29498922c1dd59714f9f8d377d1299ef04bfab56d74e9b3e3",
-    "390-light-zh-panel.png": "e3faedf87d3ac72abc7a457d3a4811c5a8af5d2c57a58dd3082422286c6d9298",
-    "390-light-zh-page.png": "5890c52af9de3482ca457384f755a2f3ad9f3412cb528bc9bbde80cb5d6c0ade",
-    "1440-light-en-panel.png": "fb2cc20f57a88c4e4963c3672e0cd68608d2c429ce2abcf2e309bc4044b3fa2f",
-    "1440-light-en-page.png": "ad9156c373093915ec91ab03aeee537c8a4f246d0281bc8610d0845dae128823"
+    "390-dark-en-page.png": "38c865153b779fa03931e367521faa2110b22f2fcffefbed03deec9c58f6bfcf",
+    "1440-dark-en-page.png": "a9fa764bc885e4c786a720bd0ba7ff1b5ee0acf99d88e2f5e28cf4335be9e01e",
+    "1440-dark-en-panel.png": "16c400bf597c518a8f79b0576b0ef8f1c164bc8837762b8a977932f237261058",
+    "390-dark-en-panel.png": "b842964a9945f67a7ba8376e37db4a742de08adda01efb43547feb2b3b3bf1d6",
+    "390-light-zh-panel.png": "20a1feb6f4d3161a67c4ca18860223f5e3db1e5119dd783044a381268de2c437",
+    "390-light-zh-page.png": "a0275f357062cca5186c37588598e60c620b3dacc727e220465a20dbb1703e17",
+    "1440-light-en-panel.png": "4bb05160481926a7c3a1b970959d00908b0a899c27fe5533068d42c9ddab1028",
+    "1440-light-en-page.png": "9011923de0aaaaa75cffd332636b293fdc19ac3e883b4d8432c6ba229caae38b"
   }
 }

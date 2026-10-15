@@ -147,3 +147,16 @@ def test_relative_moves_heading_is_direction_neutral_and_focus_landing_exists():
     assert 'Intraday relative moves' in source
     assert 'id="si-intraday-body" tabindex="-1"' in source
     assert 'id="si-intraday-more" type="button" aria-controls="si-intraday-body"' in source
+
+
+@pytest.mark.parametrize('band_present',[True,False])
+def test_shared_tape_renderer_clears_slim_overview_on_missing_pulse(band_present):
+    source=PAGE.read_text();start=source.index('  function renderTapeBand(pulse){')
+    region=source[start:source.index('/* intraday-observation:start */',start)]
+    script='''const vm=require('node:vm');var calls=[];var band={classList:{remove:x=>calls.push('band-clear'),add:x=>calls.push('band-show')}};
+var c={document:{getElementById:()=>BAND},renderSlimStrip:p=>calls.push(p?'strip-data':'strip-clear'),renderTapeStrip:p=>calls.push('full-data')};vm.createContext(c);
+'''.replace('BAND','band' if band_present else 'null')
+    script+='vm.runInContext('+json.dumps(region+'\nrenderTapeBand(null);')+',c);console.log(JSON.stringify(calls));'
+    result=subprocess.run(['node','-e',script],text=True,capture_output=True,check=True,timeout=15)
+    calls=json.loads(result.stdout)
+    assert calls.count('strip-clear')==1 and 'strip-data' not in calls and 'full-data' not in calls

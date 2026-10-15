@@ -2146,13 +2146,14 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 
   // ── Main fetch + render ───────────────────────────────────────────────────
   function renderTapeBand(pulse){
+    // The shared fetch can now return denied/unavailable; clear BOTH views.
+    // Do this before the optional full-band guard, even if only the strip exists.
+    renderSlimStrip(pulse);
     var band = document.getElementById('ftr-tape-band');
     if(!band) return;
     if(!pulse){ band.classList.remove('visible'); return; }
 
     band.classList.add('visible');
-    // Slim strip: state token + top-3 leaders + top-3 laggards + expander
-    renderSlimStrip(pulse);
     // Full band: state token + ONE as-of + ranked two-column body
     renderTapeStrip(pulse);
 

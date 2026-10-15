@@ -1,0 +1,515 @@
+{
+  "browser": "webkit",
+  "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
+  "template_sha256": "c48128c0086ddf710f346c5922e133a592d66f7c31b2f20634ab45fbd63778ed",
+  "cases": [
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120.03125,
+        "scroll": 1118
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "Did not parse stylesheet at 'http://rotation.test/cycle.css?v=4' because non CSS MIME types are not allowed in strict mode.",
+        "subsector_rotation render failed: drawMap@http://rotation.test/subsector_rotation.js:511:23\ndrawMapCard@http://rotation.test/subsector_rotation.js:506:12\nrender@http://rotation.test/subsector_rotation.js:427:16\n@http://rotation.test/subsector_rotation.js:294:48",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120.03125,
+        "scroll": 1118
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "Did not parse stylesheet at 'http://rotation.test/cycle.css?v=4' because non CSS MIME types are not allowed in strict mode.",
+        "subsector_rotation render failed: drawMap@http://rotation.test/subsector_rotation.js:511:23\ndrawMapCard@http://rotation.test/subsector_rotation.js:506:12\nrender@http://rotation.test/subsector_rotation.js:427:16\n@http://rotation.test/subsector_rotation.js:294:48",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-600.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "Did not parse stylesheet at 'http://rotation.test/cycle.css?v=4' because non CSS MIME types are not allowed in strict mode.",
+        "subsector_rotation render failed: drawMap@http://rotation.test/subsector_rotation.js:511:23\ndrawMapCard@http://rotation.test/subsector_rotation.js:506:12\nrender@http://rotation.test/subsector_rotation.js:427:16\n@http://rotation.test/subsector_rotation.js:294:48",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "show_all_without_refetch": true,
+      "expansion_survives_repaint": true,
+      "page_errors": [],
+      "console_errors": [
+        "Did not parse stylesheet at 'http://rotation.test/cycle.css?v=4' because non CSS MIME types are not allowed in strict mode.",
+        "subsector_rotation render failed: drawMap@http://rotation.test/subsector_rotation.js:511:23\ndrawMapCard@http://rotation.test/subsector_rotation.js:506:12\nrender@http://rotation.test/subsector_rotation.js:427:16\n@http://rotation.test/subsector_rotation.js:294:48",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "failed_requests": [],
+      "stubbed_paths": [
+        "rotation.test/cycle.css",
+        "rotation.test/fonts/Inter-400.woff2",
+        "rotation.test/fonts/Inter-700.woff2",
+        "rotation.test/live_config.js",
+        "rotation.test/mm_charts.js"
+      ],
+      "pulse_requests": 5,
+      "denied_text": "请使用有权限的账户登录查看。",
+      "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
+    }
+  ],
+  "screenshots": {
+    "390-dark-en-page.png": "43c29ab4b1790f90d7d244d31e52f3d26221db35500b1f94a0daf4065c419fd4",
+    "1440-dark-en-page.png": "8c19532824785fee8f919be24829cc2d0b610ba2460ec869c7d6f2bda15d701e",
+    "1440-dark-en-panel.png": "6da15bc0a6c5d4b9347fedc3a917336af3afeff8a75c3b6154ccd13b52dd5569",
+    "390-dark-en-panel.png": "334df3a32565bb28c4ebe7ffd60f0b5284adac862062cb569eb65fa372130bd5",
+    "390-light-zh-panel.png": "6e8bb79f53f5cda1541ba4d58c1861170b078a9e1398e41ec659b68da74ce5e0",
+    "390-light-zh-page.png": "9d9f8f750d343c019bba8663b376bd7492754a8652f1bde3bbba66e89f72a771",
+    "1440-light-en-panel.png": "625563fda018d4eeefb851461c46b3c0c4578b2970e64262eaf0de781c119b9f",
+    "1440-light-en-page.png": "2f72b116056edadcd427f87fe5ab0ccdb1e215d8faa8b31ed6541e0520693705"
+  }
+}
