@@ -48,7 +48,6 @@
           <line x1="0" y1="{{ cohort.baseline_y|e }}" x2="{{ cohort.width|e }}"
                 y2="{{ cohort.baseline_y|e }}" stroke="var(--muted)" stroke-width="1"
                 stroke-dasharray="5 5" />
-          <text x="4" y="{{ ([cohort.baseline_y - 8, 14]|max)|e }}" fill="var(--muted)" font-size="11">100</text>
           {% for line in cohort.paths %}
             {% set stroke = palette[(loop.index0) % (palette|length)] %}
             {% set pattern = patterns[(loop.index0) % (patterns|length)] %}
@@ -71,6 +70,9 @@
         </svg>
         <figcaption id="{{ identity|e }}-desc">
           {{ words('Line and point styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型和点形用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
+          {# Keep the reference reading in normal text: SVG glyphs shrink with
+             the 640-unit plot and become unreadable on narrow screens. #}
+          <span data-im-chart-baseline-label>{{ words('Horizontal dashed reference line: 100.', '水平虚线基准：100。') }}</span>
         </figcaption>
       </figure>
       <table class="intl-compare__table" data-im-chart-data-table>

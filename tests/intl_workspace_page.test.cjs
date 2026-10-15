@@ -129,6 +129,35 @@ for (const bootLanguage of ['en','zh']) {
 
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Native Compare reference label stays readable at phone width ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(theme=>setTheme(theme),theme);
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const group=panel.locator('[data-im-chart-cohort]:not([hidden])');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const label=await group.evaluate(group=>{
+          const n=group.querySelector('[data-im-chart-baseline-label]')||group.querySelector('figure > svg > text');
+          const style=getComputedStyle(n),matrix=n instanceof SVGElement?n.getScreenCTM():null;
+          const scale=matrix?Math.hypot(matrix.c,matrix.d):1;
+          return {text:(n.innerText||n.textContent).trim(),renderedFont:parseFloat(style.fontSize)*scale,
+            minimum:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fs-sm')),
+            scale,rects:n.getClientRects().length};
+        });
+        assert.ok(label.rects>0&&label.text.includes('100'),JSON.stringify(label));
+        assert.ok(label.renderedFont>=label.minimum,JSON.stringify({width,...label}));
+        assert.match(label.text,lang==='zh'?/^水平虚线基准：100。$/:/^Horizontal dashed reference line: 100\.$/);
+        if(process.env.INTL_BROWSER_EVIDENCE_DIR) {
+          fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+          await page.evaluate(()=>document.fonts.ready);
+          await group.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`baseline-${theme}-${lang}-${width}.png`)});
+        }
+      }
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
   test(`Native Compare chart remains readable with enlarged spaced text ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{
       const panel=page.locator('[data-im-compare-panel]:not([hidden])');
