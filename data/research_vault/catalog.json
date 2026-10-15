@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T07:12:26.888182+00:00",
-  "count": 2941,
+  "generated_at": "2026-10-15T07:27:31.392687+00:00",
+  "count": 2942,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1135,6 +1135,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0s8awubyiu8-936aa2",
+      "title": "BofA European Fund Manager Survey",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:48:47Z",
+      "summary_points": [
+        "AI Dual Risk Factor: AI investment disappointment (34%) is top downside risk, while AI-driven productivity gains (13%) are top upside risk, highlighting AI’s critical dual role in growth expectations.",
+        "European Growth Optimism Disconnect: 94% expect Europe to avoid recession (up from 86%), but only 22% anticipate growth acceleration vs. 71% global expectation of lower growth, signaling weak confidence.",
+        "Sector Concentration & Risk: Tech leads at 28% overweight (largest consensus), Retail at 47% underweight; 50% expect earnings concentration in sectors, amplifying rotation risks.",
+        "ECB Rate & Geopolitical Pressures: 44% expect higher ECB deposit rates in 12 months; Middle East instability (35%) is top geopolitical risk, driving energy/inflation concerns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
