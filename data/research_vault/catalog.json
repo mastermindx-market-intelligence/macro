@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T10:28:01.101348+00:00",
-  "count": 2951,
+  "generated_at": "2026-10-15T17:27:35.752615+00:00",
+  "count": 2959,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -115,6 +115,45 @@
   ],
   "items": [
     {
+      "id": "marketdesk-zarzrnqfgu6-29437b",
+      "title": "GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T12:35:21Z",
+      "summary_points": [
+        "CPI & Core PCE Surprises: Core CPI +0.33% (vs. 20% est.), driven by shelter (OER +0.35% MoM); Core PCE +0.32% (vs. 20% est.), YoY +3.09%—upward revisions signal persistent inflation, delaying Fed rate cuts and triggering sector sell-offs.",
+        "Quality Factor Overbought Risk: GSP1QUAL at 12m high (up 20% in 3mo), RSI 83 (stretched)—reversal risk if CPI softens or rates peak, critical for portfolio positioning amid inflation data.",
+        "Sector-Specific Fundamentals: RPM (consumer weakness/supply chain), DAL (RASM acceleration vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ixfukwixfml-b74821",
+      "title": "GS Johnstone GS TMT SPEC SALES Hot CPI and credit concerns; TSMC solid; VAT beats; Ericsson beats; Havas beats; Eutelsat up 15 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T12:35:09Z",
+      "summary_points": [
+        "Market volatility from hot CPI & credit/AI risks: Global equities sold off on hot US CPI reviving rate hike fears, with AI unwind intensifying (Nasdaq -2%, SOX -4.5%) and credit stress (CoreWeave bonds <80c, yields >15%).",
+        "Ericsson Q3 Beat with Geopolitical RAN Headwinds: Revenue beat (SEK59.48bn, +7%), Networks strong in Asia/Oceania/India, EBITA beat 28% (SEK10.12bn); geopolitical uncertainty and component costs threaten next year’s RAN gross margins.",
+        "Eutelsat’s Ukraine Starlink Restrictions Highlight Europe’s US Infrastructure Risk: 23% stock surge due to Starlink restrictions in Ukraine, underscoring Europe’s strategic need to reduce reliance on US-controlled critical infrastructure amid Trump-Ukraine tensions.",
+        "RELX's AI Growth Catalyst: Proprietary legal datasets and token-efficient AI tools position RELX for 10% revenue growth despite severe market bear case (17x 2027E EPS), with strong negative correlation to GS AI EU leaders basket."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ly1qlac333k-67980a",
       "title": "Strategy Daily 2026 10 15",
       "institution": "Mizuho",
@@ -189,6 +228,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ol1vfmcdtmp-c713bc",
+      "title": "Americas Retail Supermarkets Food at home inflation decelerated to +1.8 in September",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:51Z",
+      "summary_points": [
+        "FAH CPI Deceleration: Food-at-Home CPI slowed to +1.8% (vs +2.2% in August), driven by protein deceleration, with fruits/vegetables and non-alcoholic beverages accelerating.",
+        "Grocery-Restaurant Spending Shift: Grocery inflation outpaced restaurants (gap at -1.7% in September), but PCE data shows a shift toward restaurants (-70 bps y/y vs historical -35 bps), signaling spending reallocation risk.",
+        "FAH CPI Reacceleration Indicators: Leading indicators (S&P GSCI Ag & Livestock Index, GS Food COGS Index) suggest slight FAH CPI reacceleration over next six months, supporting grocery sector outperformance.",
+        "CPI-PPI Spread Widening: CPI-PPI spread widened to +2.6% in September (vs +0.5% in August), supporting retailer margins and signaling heightened inflationary pressures on retail supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kgnykp6nskn-b06237",
+      "title": "Ulta Beauty Inc. (ULTA) Takeaways from our meeting with management and store tour",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:39Z",
+      "summary_points": [
+        "Beauty Demand & Loyalty Strength: 95% of sales driven by 47m loyalty members (47m), with 80% experiential store sales and K-beauty (52% exclusive brands) fueling category demand (80-85% basket new items).",
+        "Margin Strategy Shift: Management prioritizes operating profit growth over gross margin/SG&A targets, leveraging distribution centers to offset freight costs and balancing merchandising margin with promotional investments.",
+        "Wellness Category Expansion: Dedicated wellness sections with enhanced signage capitalize on health-focused demand, positioning ULTA for margin expansion in higher-value categories.",
+        "Critical Downside Risks: Market share deterioration, moderating loyalty growth, supply chain disruptions (freight/port), and distribution pressure from prestige beauty threaten near-term performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -668,6 +747,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-d3gm4uxih4a-5c6f34",
+      "title": "Strategy Daily 2026 10 14",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:47:14Z",
+      "summary_points": [
+        "USD Geopolitical & Rate Impact: Middle East energy infrastructure concerns pushed WTI to $95, triggering curve flattening, rate moves, and global bond rally lowering yields amid Williams' hawkish comments and Treasury issuance speculation.",
+        "EUR Sovereign Flows: EUR/USD at 5-month low driven by France-specific OAT dynamics (reversed cheapening) and heavy sovereign supply (€73bn/€87bn), with German supply indigestion fueling EGB rally.",
+        "GBP Fiscal & Geopolitical Shift: Saudi strikes on Sanaa reversed oil-driven gilt rally; fiscal headroom debate (proposed £8bn vs tax relief) and hawkish BoE commentary support GBP ahead of 28 Oct Budget.",
+        "JPY Curve Dynamics: JGB curve steepening (2y-5y outperformance vs 10y richness) amid reduced BoJ tightening expectations, with belly swaps outperforming cash and ultra-long underperformance (20y lagging)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rovjseanl6l-39c4b6",
       "title": "Early Morning Reid Macro Strategy",
       "institution": "Deutsche Bank",
@@ -813,6 +912,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-q7fylwxyafm-58b881",
+      "title": "Dailyspark 2026 10 13 v2",
+      "institution": "Apollo",
+      "side": "buy",
+      "desk": "",
+      "published_at": "2026-10-14T02:37:02Z",
+      "summary_points": [
+        "Document Missing: Source document not provided for extraction; critical data unavailable for analysis Fundamentals Gap: No fundamental data (earnings, revenue, margins) included to assess company/sector health Risk Factor Omission: Key risk factors (geopolitical, policy shifts, flow data) absent from input list"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xeistvhtalj-a6a397",
       "title": "Bii global outlook in charts",
       "institution": "BlackRock",
@@ -848,6 +964,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-til0rufiiqu-13767f",
+      "title": "Equity outlook parallel worlds",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:06:42Z",
+      "summary_points": [
+        "EM AI Momentum: MSCI Korea (+95.53%) and Taiwan (+69.31%) lead EM equities driven by AI adoption, USD returns, and sector strength (energy/tech), with EM 2027e earnings growth at 64.8% vs DM’s 23.9% (IT/energy/healthcare).",
+        "Circular Economy Fundamentals: Business-driven circularity (scarcity, supply chain resilience) fuels efficiency across sectors/regions, distinct from regulation; mid/small-cap focus and buybacks (e.g., SK Hynix $30B) reduce dilution and offset net issuance drag.",
+        "EM Earnings Structural Shift: EM earnings growth momentum (20% CAGR USD EPS since April 2024) supported by broad sector strength (energy, healthcare), buybacks, and domestic demand (China innovation), outpacing DM fundamentals.",
+        "Critical Risk Divergence: Omnicrisis risks (US-China trade, energy wars, debt inflation) contrast with positive drivers (AI, manufacturing spend, EM recovery); geopolitical tensions and liquidity constraints are top portfolio risks.",
+        "EM vs DM Valuation Gap: EM outperformance sustained by structural catalysts (circular economy, buybacks) and earnings growth (64.8% vs DM 23.9%), while DM faces headwinds from monetary tightening and political gridlock."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
@@ -1148,6 +1285,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-z3bmza4j1ih-92a919",
+      "title": "Euro Area Data Update GDP Tracking Unchanged",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:43Z",
+      "summary_points": [
+        "Euro Area Inflation Uptick: Headline inflation nearcast rose to 4.21% yoy (vs 4.11% previously), driven by energy prices and German HICP revisions; excludes policy impacts (e.g., German fuel tax discount), creating forecast risk for inflation-sensitive assets.",
+        "France Economic Contraction: BfF surveys show negative PMI Services and PMI Mfg Output, with declining Industry Production, signaling sustained contraction in manufacturing and services sectors.",
+        "Spain Tourism Shock: Nonresident overnight stays dropped sharply in Feb-25 (geopolitical/health event impact), with volatility in resident stays; potential rebound signals sector-specific risk/recovery for hospitality.",
+        "Food Price Inflation Pressure: EA21 food prices (ECB-weighted) spiked, while Germany’s HICP shows persistent inflation in ICT/Vehicles/food services, raising consumer spending risks and inflation expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
