@@ -33,6 +33,7 @@ from lib.pages import write_page  # noqa: E402
 from engine.sector_intelligence.finance_watching import (  # noqa: E402
     SHELL_STATEMENT_ZH,
     SHELL_WINDOW_ZH,
+    shell_hint_rows,
     shell_watching_items,
 )
 
@@ -72,6 +73,11 @@ def render_shell(root: Path) -> Path:
         watching_items=shell_watching_items(),
         shell_statement_zh=SHELL_STATEMENT_ZH,
         shell_window_zh=SHELL_WINDOW_ZH,
+        # W10-FIN-2: the #company-exposure hint roster. Eleven
+        # RESEARCH_HINT_UNVALIDATED rows whose record ids come only from
+        # hint_binding(symbol)["record_id"] — visible citations, no stock
+        # route, no source_record, no identity validation, no fetch.
+        hint_rows=shell_hint_rows(),
         # Bound at integration only (Chairman directive 2026-09-24): an empty
         # value renders the shell in its "not connected" state with no fetch.
         fi_read_url=FI_READ_URL,
