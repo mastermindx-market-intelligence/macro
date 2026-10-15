@@ -7517,6 +7517,10 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/intl_performance_charts.py
+      - lib/intl_chart_geometry.py
+      - lib/intl_chart_mount.py
+      - lib/intl_chart_publication.py
       - engine/sector_intelligence/consumer_cyclical_display.py
       - engine/sector_intelligence/consumer_cyclical_projection.py
       - engine/sector_intelligence/consumer_cyclical_shared_contract.py
