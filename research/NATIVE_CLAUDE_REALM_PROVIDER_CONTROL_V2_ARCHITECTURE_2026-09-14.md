@@ -391,6 +391,20 @@ Do **not** mutate `scripts/build_provider_capacity.py` semantics for existing V1
 
 Mastermind B2/B3/B5 target owners remain existing provider-realm, Claude preflight, Capacity source-acquisition and CF2 claim paths; exact source paths are selected at the later reviewed implementation child after current protected re-pin.
 
+The first source slice is `engine/provider_native_capabilities.py`, with an empty
+`config/provider_native_capabilities.v1.json`. It validates the closed registry,
+its transition against the preceding accepted registry, and deterministic single-row
+registration exports. Native Claude uses `attached_login`; the existing finite
+Claude-compatible MiniMax harness may use the separate `minimax` / `api_key`
+source vocabulary. Both retain `subscription` / `native_cli`. This vocabulary
+does not grant an authentication method, enroll a realm, or establish readiness.
+
+The registry contains no registered domain. The pure parser accepts only supplied
+source documents; a later fixed acquisition path must ground them in actual accepted
+source and include the registry in V2 material-source identity. V1 source census and
+output remain unchanged. No export from this utility alone is Capacity admission,
+a Worker availability fact, or a production B1/B2/B4 acceptance claim.
+
 ## 14. Acceptance falsifiers
 
 Independent review and later tests must kill at least:

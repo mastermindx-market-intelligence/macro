@@ -75,6 +75,10 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance
       - name: daily scope through canonical archive writer and consumer
         run: python -m pytest tests/test_yahoo_universe_backfill.py -q
+      - name: default-off Yahoo availability capture and publication refusals
+        run: python -m pytest tests/test_yahoo_availability_capture.py -q
+      - name: existing dual-basis store regressions
+        run: python -m pytest tests/test_dual_basis_store.py -q
 
   live-flow-recovery-guards:
     if: ${{ false }}
@@ -2458,6 +2462,8 @@ jobs:
       - "lib/procutil.py"
       - "lib/seo.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "scripts/build_ticker_pages.py"
       - "scripts/check_stock_dossier_integrity.py"
       - "scripts/sparse_guard.py"
@@ -4807,6 +4813,10 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "config.yml"
       - "tests/conftest.py"
       - "tests/test_intl_performance_records.py"
@@ -5151,6 +5161,10 @@ jobs:
       - "config/intl_library_catalogue.json"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
       - "config.yml"
@@ -6577,6 +6591,8 @@ jobs:
       - "lib/options_context.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -7286,6 +7302,9 @@ jobs:
       - "lib/config.py"
       - "lib/delisted_symbols.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/seed_china_ths_baskets.py"
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
@@ -7369,6 +7388,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/_cycle_seed.py"
       - "scripts/build_cycle.py"
@@ -7747,6 +7771,8 @@ jobs:
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
@@ -8026,6 +8052,8 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -8733,6 +8761,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "scripts/freshness_sentinel.py"
@@ -8921,6 +8954,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
       - "scripts/build_transmission.py"
@@ -10497,6 +10535,11 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "research/DISLOCATION_VALIDATION.md"
       - "research/HINCL2_PREREG.md"
       - "research/SEASONALITY_BIOCATALYST_INTEGRATION_SEAM.md"
@@ -11398,7 +11441,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -11628,6 +11671,11 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
@@ -11723,6 +11771,11 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "collectors/base.py"
       - "collectors/fred.py"
       - "config/sector_legs.json"
@@ -11809,6 +11862,10 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - ".github/ci/legacy-jobs.yml"
@@ -12247,6 +12304,11 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/build_sanctions_map.py"
       - "scripts/gen_worldmap_svg.py"
       - "site/sanctions_map.html"
@@ -12520,6 +12582,10 @@ jobs:
       - lib/pages.py
       - lib/site_assets.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
       - scripts/__init__.py
@@ -12737,6 +12803,8 @@ jobs:
       - lib/config.py
       - lib/dataos/identity.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
       - scripts/__init__.py
       - scripts/build_company_theme_exposure.py
@@ -13680,6 +13748,11 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
@@ -14524,6 +14597,10 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "research/rates_inflation_command/seat_20261014/**"
       - "tests/test_ric_m0_requal.py"
       - "tests/test_ric_x0_reaction.py"
@@ -14673,6 +14750,11 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "engine/risk_envelope.py"
@@ -18399,6 +18481,8 @@ jobs:
       - lib/options_context.py
       - lib/pages.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - lib/team_membership.py
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
@@ -18818,6 +18902,8 @@ jobs:
       - lib/pages.py
       - lib/site_assets.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - lib/ticker_aliases.py
       - lib/ticker_popularity.py
       - lib/tsx_calendar.py
@@ -21459,6 +21545,8 @@ jobs:
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "lib/tsx_calendar.py"
@@ -21892,6 +21980,8 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -23238,6 +23328,9 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -25634,6 +25727,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/entry_radar/replay/rs_pullback_launch_labels.py"
       - "engine/entry_radar/spool.py"
       - "engine/entry_signal.py"
       - "engine/equity_factors.py"
@@ -26017,6 +26111,8 @@ jobs:
       - "lib/options_context.py"
       - "lib/pages.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -26130,6 +26226,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
+      - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_episode_features.py"
@@ -26203,6 +26300,7 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
           tests/test_ptse_breadth_observation.py
@@ -26554,6 +26652,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -28411,6 +28513,8 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - "lib/team_membership.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -29039,6 +29143,11 @@ jobs:
       - "lib/pages.py"
       - "lib/site_assets.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "scripts/__init__.py"
       - "scripts/_cycle_seed.py"
       - "scripts/build_regime_prior.py"
@@ -29371,6 +29480,11 @@ jobs:
       - "engine/vol_regime.py"
       - "engine/yield_momentum.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
       - "scripts/__init__.py"
       - "scripts/build_price_pressure.py"
@@ -30137,6 +30251,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "contracts/news_impact/**"
       - "tests/test_news_impact_contracts.py"
       - "engine/company_intelligence/**"
@@ -30368,6 +30487,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/massive_ticker.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
@@ -30457,6 +30581,11 @@ jobs:
       - "lib/market_session.py"
       - "lib/massive_ticker.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
@@ -30680,6 +30809,10 @@ jobs:
       - lib/market_session.py
       - lib/nyse_calendar.py
       - lib/store.py
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - lib/ticker_aliases.py
       - lib/tsx_calendar.py
       - lib/us_cash_calendar.py
@@ -30929,6 +31062,10 @@ jobs:
       - "lib/market_session.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/delisted_symbols.py"
+      - "lib/stooq.py"
       - "lib/ticker_aliases.py"
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
