@@ -48,11 +48,10 @@ from tests.test_dashboard_template_render import _env, _board_row, _base_vm  # n
 
 # A card's identity is its whole rendered body (the `<a class="pvcard …">…</a>`
 # block: ticker, name, price, verb, edge, marks — everything), NOT its ticker.
-# This is a single flat board (unlike the ETF/China multi-panel desks where one
-# ticker legitimately appears in several boards), so ticker and row happen to
-# coincide here — but keying on the full body is still what
-# docs/TIER_PREVIEW_PATTERN.md's checklist step 7 requires, and it is what
-# actually catches a markup regression that keys the wrong span.
+# The candidate board is one population; the full page also has separately
+# split leader observations and research-pool records for some of the same
+# tickers. Full-body keys enforce docs/TIER_PREVIEW_PATTERN.md checklist step 7
+# without confusing those records, and detect copies outside the original grid.
 CARD_ROW = re.compile(r'<(?P<card_tag>a|article) class="pvcard.*?</(?P=card_tag)>', re.S)
 TICKER_ATTR = re.compile(r'data-ticker="([^"]*)"')
 SCRIPT_TAG = re.compile(r'<script\b.*?</script>', re.S)
@@ -631,15 +630,55 @@ def _shipped_payload():
     return payload
 
 
-def test_shipped_shell_leaks_no_locked_ticker():
+def _assert_no_shipped_candidate_row_leak(shell, payload):
+    """Check paid content across the whole page, including outside its grid.
+
+    Candidate, leader-observation and research-pool previews are separate
+    populations. A shared ticker is not a shared record (TIER_PREVIEW_PATTERN
+    step 7); compare complete card bodies and prove parser coverage instead.
+    """
+    locked_keys = _keys(payload.get("cards_html") or "")
+    assert payload.get("locked", 0) > 0, "no locked rows is a vacuous leak check"
+    assert len(locked_keys) == payload["locked"], (
+        f"card parser covered {len(locked_keys)} of {payload['locked']} locked rows")
+    assert len(set(locked_keys)) == len(locked_keys), "paid rows have duplicate identities"
+    leaked = set(locked_keys) & set(_keys(shell))
+    assert not leaked, f"{len(leaked)} locked candidate rows reachable in the shipped shell"
+
+
+def test_shipped_shell_leaks_no_locked_candidate_row():
     payload = _shipped_payload()
     if not SHELL.exists():
         pytest.skip("site/us_stocks.html not built in this checkout")
     shell = SHELL.read_text(encoding="utf-8")
-    locked_tickers = {r["ticker"] for r in payload.get("rows", []) if r.get("ticker")}
-    assert locked_tickers, "a gated payload with no locked rows is a vacuous pass"
-    leaked = sorted(tk for tk in locked_tickers if f'data-ticker="{tk}"' in shell)
-    assert leaked == [], f"locked tickers reachable in the shipped shell: {leaked[:5]}"
+    _assert_no_shipped_candidate_row_leak(shell, payload)
+
+
+def test_shipped_row_guard_allows_distinct_research_records_for_same_ticker():
+    paid = '<article class="pvcard po-card" data-ticker="ABC"><a href="stock.html#ABC">ABC</a><p>Paid entry assessment</p></article>'
+    shell = '<div class="plo-row" data-ticker="ABC">Leader observation</div><div class="ucp-row" data-ticker="ABC">Research-pool observation</div>'
+    _assert_no_shipped_candidate_row_leak(shell, {"cards_html": paid, "locked": 1})
+
+
+def test_shipped_row_guard_checks_record_body_not_just_card_ticker():
+    paid = '<article class="pvcard po-card" data-ticker="ABC"><p>Assessment A</p></article>'
+    distinct = paid.replace('Assessment A', 'Assessment B')
+    _assert_no_shipped_candidate_row_leak(distinct, {"cards_html": paid, "locked": 1})
+
+
+@pytest.mark.parametrize("ticker", ["ABC", ""])
+def test_shipped_row_guard_catches_copy_outside_grid_with_new_dom_id(ticker):
+    paid = f'<article class="pvcard po-card" id="po-screener-paid-7" data-po-id="screener-paid-7" data-ticker="{ticker}"><a href="stock.html#ABC">Company</a><p>Paid entry assessment</p></article>'
+    copied = paid.replace('screener-paid-7', 'today-0')
+    shell = '<html><div id="us-cand-grid"></div><aside>' + copied + '</aside></html>'
+    with pytest.raises(AssertionError, match="locked candidate rows reachable"):
+        _assert_no_shipped_candidate_row_leak(shell, {"cards_html": paid, "locked": 1})
+
+
+@pytest.mark.parametrize("cards,locked", [("", 1), ('<section class="changed-card">Paid</section>', 1), ("", 0)])
+def test_shipped_row_guard_refuses_missing_parser_coverage(cards, locked):
+    with pytest.raises(AssertionError, match="parser covered|vacuous"):
+        _assert_no_shipped_candidate_row_leak("", {"cards_html": cards, "locked": locked})
 
 
 def _shell_board_blocks():
