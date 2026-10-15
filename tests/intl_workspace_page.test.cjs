@@ -69,6 +69,44 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 const sourceChartHtml = new Map();
+const omittedGroupHtml = new Map();
+for(const [lang,width,theme] of [['en',1440,'dark'],['zh',320,'light']]) {
+  for(const allOmitted of [false,true]) {
+    test(`Library omitted groups retain readable fallback ${lang} ${width} all=${allOmitted}`,async()=>{
+      if(!omittedGroupHtml.has(allOmitted)) omittedGroupHtml.set(allOmitted,
+        execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+          `from tests.test_intl_workspace_library_render import render_omitted_group_page; print(render_omitted_group_page(${allOmitted?'True':'False'}))`],
+          {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+      await pageFixture(async page=>{
+        await page.waitForSelector('[data-im-enhanced="true"]');
+        await page.evaluate(theme=>setTheme(theme),theme);
+        const panel=page.locator('[data-im-panel][data-view="library"]:visible');
+        const placeholders=panel.locator('[data-im-library-group-unavailable]');
+        assert.equal(await placeholders.count(),allOmitted?6:1);
+        assert.equal(await panel.locator('[data-im-library-search]').isDisabled(),true);
+        assert.equal(await panel.locator('[data-im-library-group-open]:visible').count(),0);
+        assert.equal(await panel.locator('[data-im-library-tool]').count(),allOmitted?0:15);
+        assert.equal(await panel.locator('[data-im-library-group=""], [data-im-group=""]').count(),0);
+        const before=page.url();
+        for(const locale of [lang,lang==='en'?'zh':'en']) {
+          await page.evaluate(locale=>setLang(locale),locale);
+          assert.deepEqual(await placeholders.allInnerTexts(),Array(allOmitted?6:1).fill(
+            locale==='en'?'Tool group unavailable for this view.':'此视图的工具分组暂不可用。'));
+          assert.equal(await panel.locator('h3').evaluateAll(ns=>ns.every(n=>n.innerText.trim())),true);
+          assert.equal(await placeholders.evaluateAll(ns=>ns.every(n=>n.scrollWidth<=n.clientWidth+1)),true);
+          assert.equal(page.url(),before);
+        }
+        assert.doesNotMatch(await panel.innerText(),/Performance & currency|表现与汇率|Find the leaders|寻找领涨者/);
+        if(!allOmitted) {
+          const link=panel.locator('[data-im-library-tool="country_sectors_stocks"] a');
+          await link.focus();
+          assert.equal(await link.evaluate(n=>n===document.activeElement),true);
+          assert.equal(await link.getAttribute('href'),'/intl_stocks.html');
+        }
+      },{htmlOverride:omittedGroupHtml.get(allOmitted),bootLanguage:lang,width,initialSearch:'?view=library'});
+    });
+  }
+}
 let sourceReferenceHtml;
 for(const [lang,width,theme] of [['en',1440,'dark'],['zh',320,'light']]) {
   test(`Macro absent source reference stays readable through locale and keyboard ${lang} ${width}`,async()=>{
