@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Push tested9464 repair d527b2446c2f to SAME existing branch when capacity admits (13:08 8indexed+0reservations/cap8,9077lease); remote317c disarmed, settledCI receipt failure.192fixture cases/25tests remain accepted; patch in checkpoint directory. Consume controller-admitted9209 18030e2b exactCI38738523853 then actual squash/normal updater24sources/3pages/4probes; portable bundle prepared unchanged. Serving9455a02 exactCIgreen but stale, awaiting admitted refresh. Original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups; preflight retains26sources/319jobs. Preserve Chrome human step,Fabric001,44refs/five drafts/publication0of10.
+next_action: Consume9464 repaired exactCI38743577106 atd527b2446c2f, now pushed/armed after13:28 admission6indexed+1reservation/cap8;192fixture cases/25tests accepted, app unchanged. Consume9209 18030e2b CI38738523853 (11packs+contractPASS,pack0running), protected squash/normal updater24sources/3pages/4probes; then SAME follow-oncb54d3e9 PR/install45groups. Serving9455a02 exactCIgreen but stale after518ba55d, needs controller-admitted refresh and process/PID/APIvenv acceptance. Preserve Chrome human step,Fabric001,44refs/five drafts/publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
