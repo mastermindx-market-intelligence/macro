@@ -27,6 +27,27 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  bea-gvc-native-candidate:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "collectors/bea_gvc_native.py"
+      - "collectors/__init__.py"
+      - "lib/dataos/temporal.py"
+      - "lib/dataos/__init__.py"
+      - "tests/test_bea_gvc_native.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install hermetic candidate test dependency
+        run: pip install pytest
+      - name: BEA byte binding, signed accounting and candidate correction guards
+        run: python -m pytest tests/test_bea_gvc_native.py -q
+
   company-intelligence-private-runtime:
     if: ${{ false }}
     gate: code
