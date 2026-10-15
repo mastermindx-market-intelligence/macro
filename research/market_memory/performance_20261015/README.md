@@ -32,3 +32,17 @@ The admitted Fabric worker supplied the initial harness. Parent review found and
 
 
 The prior real eight-run baseline remains in `research/MARKET_MEMORY_REAL_CORPUS_LATENCY_2026-10-14.md`: nearest-rank P50 20.512 seconds and P95 31.253 seconds (the largest of eight observations). Current-policy checks remain intact. Full program economics still requires qualified refresh, review/model and production-concurrency measurements, including the G0/G1 consumers.
+
+## Existing producer refresh accounting
+
+A read-only systemd metadata snapshot at 2026-10-15T18:33:08.692032+00:00 captured the most recent process accounting for five existing units. No job was triggered and no log payload, source values or outcomes were read. These are individual last-run observations, not a latency distribution or a forecast of recurring costs.
+
+| Existing unit | Last process wall seconds | Recorded CPU seconds | Result |
+|---|---:|---:|---|
+| source-spy-rest | 305.729 | 3.385 | success |
+| technicals-v2 | 0.438 | 0.236 | success |
+| experience-v2 | 2.186 | 1.133 | success |
+| context | 1.490 | 0.486 | success |
+| options | unavailable | 0.208 | signal |
+
+The source unit intentionally waits through a five-minute sealing window; its 305.729-second wall duration is not CPU consumption. Systemd reported 3.385 CPU seconds and 70,410,240 peak memory bytes for that run. Context projection reported 17,866,752 peak bytes. Technicals/experience memory peaks were unavailable. The options unit reported a signal termination and no complete duration, so no successful options-refresh cost is claimed. Exit status alone does not qualify a data generation or prove a causal join; the separate accepted natural-capture evidence retains that obligation. Provider/API fees, fitted-model work, human review and independent evaluator costs remain unmeasured.
