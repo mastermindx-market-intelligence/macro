@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import argparse
 from datetime import date
+import hashlib
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -191,13 +193,50 @@ def audit(documents: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def audit_bundle(bundle: Mapping[str, Any], original_bytes: bytes) -> dict[str, Any]:
+    """Replay a declared, minimized and commit-pinned fixture.
+
+    This validates shape and exact fixture-byte identity; it does not fetch
+    GitHub or independently authenticate the declared source blob hashes.
+    """
+    if not isinstance(bundle, Mapping) or bundle.get("schema") != "ror1.grounded_artifact_excerpt.v1":
+        raise AuditError("invalid_bundle_schema")
+    commit = bundle.get("macro_commit")
+    if not isinstance(commit, str) or not re.fullmatch(r"[a-f0-9]{40}", commit):
+        raise AuditError("invalid_macro_commit")
+    sources = bundle.get("sources")
+    if not isinstance(sources, Mapping) or not sources:
+        raise AuditError("missing_source_manifest")
+    for key, val in sources.items():
+        if (not isinstance(key, str) or not isinstance(val, Mapping)
+                or not isinstance(val.get("blob_sha"), str)
+                or not re.fullmatch(r"[a-f0-9]{40}", val["blob_sha"])):
+            raise AuditError("invalid_declared_source_blob")
+    return {
+        "macro_commit": commit,
+        "sources": dict(sources),
+        "inputs_sha256": hashlib.sha256(original_bytes).hexdigest(),
+        "audit": audit(bundle.get("observations")),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--bundle", type=Path, help="pinned minimal source excerpt JSON")
     for name in _REQUIRED_DOCS:
-        parser.add_argument("--" + name.replace("_", "-"), required=True, type=Path)
+        parser.add_argument("--" + name.replace("_", "-"), type=Path)
     args = parser.parse_args()
-    inputs = {k: json.loads(getattr(args,k).read_text()) for k in _REQUIRED_DOCS}
-    print(json.dumps(audit(inputs), indent=2, sort_keys=True))
+    direct = {k: getattr(args, k) for k in _REQUIRED_DOCS}
+    if args.bundle is not None:
+        if any(v is not None for v in direct.values()):
+            parser.error("--bundle cannot be combined with separate source documents")
+        raw = args.bundle.read_bytes()
+        result = audit_bundle(json.loads(raw), raw)
+    else:
+        if any(v is None for v in direct.values()):
+            parser.error("supply --bundle or all five --<source> document paths")
+        result = audit({k: json.loads(v.read_text()) for k, v in direct.items()})
+    print(json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
