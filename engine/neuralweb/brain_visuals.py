@@ -74,9 +74,6 @@ def _shape(params: Any) -> dict:
                 clean.append(_text(cell))
         normalized.append(clean)
     result["rows"] = normalized
-    if params["basis"] == "source":
-        _require(not any(isinstance(c, str) and re.match(r"^\s*[+\-]?(?:\d|\.\d)", c)
-                         for r in normalized for c in r[1:]), "numeric_text_is_unbound")
     if template in ("bar", "line", "area", "donut", "scatter"):
         for row in normalized:
             if template == "scatter":
@@ -97,11 +94,34 @@ def _shape(params: Any) -> dict:
     return result
 
 
-def _pointer(value: Any, pointer: Any) -> Any:
+def _source_node_ok(value: Any, source_ok: Callable[[Any], bool] | None) -> bool:
+    if isinstance(value, dict):
+        if any(value.get(key) is False for key in ("ok", "available", "success")):
+            return False
+        error = value.get("error")
+        if error and str(error).strip().lower() not in ("none", "no_error", "false", "not_applicable"):
+            return False
+    return source_ok(value) if source_ok is not None else True
+
+
+def _required_cells(view: dict) -> set[tuple[int, int]]:
+    """All values, and every narrative cell, require exact source equality.
+
+    Non-narrative first-column labels are model-authored display labels, not
+    certified source identities. No numeric-looking-string parser is needed:
+    currency, formatted values and ordinary text follow the same rule.
+    """
+    narrative = view["template"] in ("status", "scenarios", "timeline", "flow")
+    return {(ri, ci) for ri, row in enumerate(view["rows"]) for ci, cell in enumerate(row)
+            if cell is not None and (narrative or ci > 0 or _number(cell))}
+
+
+def _pointer(value: Any, pointer: Any, source_ok: Callable[[Any], bool] | None = None) -> Any:
     _require(isinstance(pointer, str) and 0 < len(pointer) <= 512 and pointer.startswith("/"), "invalid_source_pointer")
     parts = pointer[1:].split("/")
     _require(len(parts) <= 32, "source_pointer_too_deep")
     for part in parts:
+        _require(_source_node_ok(value, source_ok), "source_failed")
         _require(not re.search(r"~(?![01])", part), "invalid_source_pointer")
         key = part.replace("~1", "/").replace("~0", "~")
         if isinstance(value, dict):
@@ -117,13 +137,14 @@ def _pointer(value: Any, pointer: Any) -> Any:
     return value
 
 
-def _bind(view: dict, bindings: Any, observations: Sequence[tuple[str, Any]]) -> dict:
+def _bind(view: dict, bindings: Any, observations: Sequence[tuple], source_ok: Callable[[Any], bool] | None) -> dict:
     _require(isinstance(bindings, list) and len(bindings) <= 480, "invalid_bindings")
     numeric = {(ri, ci) for ri, row in enumerate(view["rows"]) for ci, cell in enumerate(row) if _number(cell)}
+    required = _required_cells(view)
     if view["basis"] == "illustrative":
         _require(not bindings, "illustrations_cannot_claim_sources")
-        return {"numeric_cells_matched": 0, "sources": [], "semantic_verification": False, "freshness_verified": False}
-    _require(bool(numeric), "source_requires_numeric_data")
+        return {"numeric_cells_matched": 0, "text_cells_matched": 0, "sources": [], "semantic_verification": False, "freshness_verified": False}
+    _require(bool(required), "source_requires_observed_data")
     # Retain the existing tool-use ID to distinguish repeated source calls.
     records = [(o[0], o[1], o[2] if len(o) == 3 else None) for o in observations]
     matched, sources = set(), set()
@@ -133,7 +154,7 @@ def _bind(view: dict, bindings: Any, observations: Sequence[tuple[str, Any]]) ->
         ri, ci, tool = b["row"], b["column"], b["tool"]
         _require(type(ri) is int and type(ci) is int, "invalid_cell_index")
         cell = (ri, ci)
-        _require(cell in numeric and cell not in matched, "duplicate_or_invalid_binding")
+        _require(cell in required and cell not in matched, "duplicate_or_invalid_binding")
         _require(isinstance(tool, str) and bool(_TOKEN.fullmatch(tool)) and tool != "render_inline_visual", "invalid_source_tool")
         call_id = b.get("call_id")
         _require(call_id is None or (isinstance(call_id, str) and bool(re.fullmatch(r"[A-Za-z0-9_-]{1,128}", call_id))), "invalid_call_id")
@@ -141,22 +162,23 @@ def _bind(view: dict, bindings: Any, observations: Sequence[tuple[str, Any]]) ->
         _require(len(candidates) == 1, "ambiguous_or_missing_source_call")
         source = candidates[0][1]
         _require(isinstance(source, (dict, list)), "source_not_found")
-        if isinstance(source, dict):
-            _require(not source.get("error") and source.get("ok") is not False, "source_failed")
-        value = _pointer(source, b["pointer"])
-        _require(_number(value) and value == view["rows"][ri][ci], "source_value_mismatch")
+        value = _pointer(source, b["pointer"], source_ok)
+        expected = view["rows"][ri][ci]
+        _require((_number(value) if _number(expected) else isinstance(value, str))
+                 and value == expected, "source_value_mismatch")
         matched.add(cell)
         sources.add(tool)
-    _require(matched == numeric, "unbound_numeric_cell")
-    return {"numeric_cells_matched": len(matched), "sources": sorted(sources), "semantic_verification": False, "freshness_verified": False}
+    _require(matched == required and len(sources) <= 40, "unbound_value_cell")
+    return {"numeric_cells_matched": len(numeric), "text_cells_matched": len(required - numeric), "sources": sorted(sources), "semantic_verification": False, "freshness_verified": False}
 
 
-def compile_visual(params: Any, observations: Sequence[tuple[str, Any]], identity: str,
-                   *, screen: Callable[[str], bool] | None = None) -> dict:
+def compile_visual(params: Any, observations: Sequence[tuple], identity: str,
+                   *, screen: Callable[[str], bool] | None = None,
+                   source_ok: Callable[[Any], bool] | None = None) -> dict:
     """Return an existing chart wire or a small non-sensitive correction receipt."""
     try:
         view = _shape(params)
-        view["provenance"] = _bind(view, params.get("bindings", []), observations)
+        view["provenance"] = _bind(view, params.get("bindings", []), observations, source_ok)
         if screen:
             text = "\n".join([view[k] for k in ("title", "subtitle", "takeaway", "unit")] + view["columns"] + [c for r in view["rows"] for c in r if isinstance(c, str)])
             _require(screen(text), "visual_copy_rejected")
@@ -167,7 +189,7 @@ def compile_visual(params: Any, observations: Sequence[tuple[str, Any]], identit
         _size(wire)
         return wire
     except (VisualError, TypeError, ValueError, OverflowError, RecursionError, KeyError, IndexError):
-        return {"error": "visual_not_available", "note": "Use a supported bounded template and exact prior numeric source bindings; otherwise label the example illustrative."}
+        return {"error": "visual_not_available", "note": "Use a supported bounded template with exact prior-source bindings. Never replace unavailable observations with invented examples."}
 
 
 def validate_view(wire: Any) -> bool:
@@ -180,13 +202,21 @@ def validate_view(wire: Any) -> bool:
         _require(isinstance(view, dict) and set(view) == (_REQUIRED | {"subtitle", "takeaway", "unit", "provenance"}), "invalid_view")
         clean = _shape({k: v for k, v in view.items() if k != "provenance"})
         p = view["provenance"]
-        _require(isinstance(p, dict) and set(p) == {"numeric_cells_matched", "sources", "semantic_verification", "freshness_verified"}, "invalid_provenance")
+        _require(isinstance(p, dict) and set(p) in (
+            {"numeric_cells_matched", "sources", "semantic_verification", "freshness_verified"},
+            {"numeric_cells_matched", "text_cells_matched", "sources", "semantic_verification", "freshness_verified"}), "invalid_provenance")
         _require(p["semantic_verification"] is False and p["freshness_verified"] is False, "unsupported_claim")
         _require(type(p["numeric_cells_matched"]) is int and isinstance(p["sources"], list) and len(p["sources"]) <= 40, "invalid_provenance")
         _require(all(isinstance(t, str) and bool(_TOKEN.fullmatch(t)) for t in p["sources"]), "invalid_source")
         count = sum(_number(c) for r in clean["rows"] for c in r)
-        _require((clean["basis"] == "source" and count > 0 and p["numeric_cells_matched"] == count and bool(p["sources"])) or
-                 (clean["basis"] == "illustrative" and p["numeric_cells_matched"] == 0 and not p["sources"]), "invalid_claim")
+        required = _required_cells(clean)
+        text_count = len(required) - count
+        recorded_text = p.get("text_cells_matched", 0)
+        _require(type(recorded_text) is int, "invalid_text_count")
+        _require((clean["basis"] == "source" and bool(required) and p["numeric_cells_matched"] == count
+                  and recorded_text == text_count and bool(p["sources"])) or
+                 (clean["basis"] == "illustrative" and p["numeric_cells_matched"] == 0
+                  and recorded_text == 0 and not p["sources"]), "invalid_claim")
         return True
     except (VisualError, TypeError, ValueError, OverflowError, RecursionError, KeyError):
         return False
@@ -204,10 +234,10 @@ def tool_schema() -> dict:
     return {"name": "render_inline_visual", "description":
         "Draw a preset chart/table/metrics/scenario/timeline/relationship visual in this reply. "
         "Prefer zero or one useful visual after an answer. Keep price candles on render_inline_chart. "
-        "For observed numeric data use basis=source and bind EVERY numeric cell to a completed prior tool "
+        "For observed data use basis=source and bind EVERY value cell (number or text) to a completed prior tool. Narrative templates bind every non-null cell, including dates/labels. "
         "with {row,column,tool,pointer,call_id}; repeated tools require the exact existing tool-use call_id. "
         "Pointer is RFC6901 into that result. Values must match exactly; "
-        "do not invent freshness, units or evidence. For teaching examples use illustrative (visibly unverified). "
+        "do not invent freshness, units or evidence. Source binding accepts exact strings without reformatting. For explicitly requested fictional teaching examples use illustrative (visibly unverified). "
         "Line/bar/area: first column category, remaining numbers/null, one shared unit. Scatter: numeric X,Y. "
         "Donut: category and nonnegative value. Metrics: label,value,optional delta. Narrative templates: 2-3 text columns. "
         "No HTML/URLs/styles. At most four per report. Final guards may withhold a rejected visual.",

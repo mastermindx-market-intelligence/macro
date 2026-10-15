@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-15T06:32:49Z",
+  "generated_at": "2026-10-15T07:47:51Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 23176,
+        "payload_bytes_total": 303551,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 6,
@@ -100,7 +100,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 297589,
+        "payload_bytes_total": 300623,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 6,
@@ -113,6 +113,56 @@
       },
       "page_id": "mockups_evidence_mastermind-ai-illustrations_brief.html",
       "route": "/mockups/evidence/mastermind-ai-illustrations/brief.html"
+    },
+    {
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 25750,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 6,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 82
+      },
+      "page_id": "mockups_evidence_mastermind-ai-illustrations_timeline.html",
+      "route": "/mockups/evidence/mastermind-ai-illustrations/timeline.html"
     }
   ],
   "schema": "mastermind.ux_smell_report.v1",
@@ -120,7 +170,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mastermind-ai-illustrations-20261015-c1",
-    "resolved_sha_or_none": "39d00535d992abc7b707b5b53695cbef0ae907ee",
+    "resolved_sha_or_none": "d99df6116a36052c4cabb52f6c31102fdf05cee3",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mastermind-ai-illustrations-20261015-c1 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind 2/agent-workspaces/macro/web/mastermind-ai-illustrations-20261015-c1"
   },

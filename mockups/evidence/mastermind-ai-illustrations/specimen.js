@@ -17,7 +17,7 @@
     if (url.endsWith('/api/brain/me')) return Promise.resolve(new Response(JSON.stringify({tier:'guest',quotas:{fast:{limit:20,remaining:20},pro:{limit:0,remaining:0}}}),{headers:{'Content-Type':'application/json'}}));
     if (url.endsWith('/api/brain/stream')) return fixtures.then(function (all) {
       var lang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
-      var kind = location.pathname.endsWith('/brief.html') ? 'brief' : 'chart';
+      var kind = location.pathname.endsWith('/timeline.html') ? 'timeline' : location.pathname.endsWith('/brief.html') ? 'brief' : 'chart';
       var item = all[lang][kind];
       var events = [{type:'meta',lane:'fast'},{type:'delta',text:item.answer},item.wire,{type:'done',charts:[item.wire],citations:[],filtered:false,degraded:false}];
       return new Response(new ReadableStream({start:function (controller) {

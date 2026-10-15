@@ -6585,10 +6585,10 @@ def _prepare_inline_visual(result: dict, observations: list, identity: str, char
     request = result["visual_request"]
     # Numeric examples require explicit teaching intent in the user's own request.
     if isinstance(request, dict) and request.get("basis") == "illustrative":
-        teaching = bool(re.search(r"\b(example|illustrat\w*|hypothetical|synthetic|fictional|sample|toy)\b|举例|示例|示意|假设|虚构", message, re.I))
+        teaching = bool(re.search(r"\b(example|illustrative|hypothetical|synthetic|fictional|sample|toy)\b|举例|示例|示意|假设|虚构", message, re.I))
         rows = request.get("rows", [])
         has_numbers = isinstance(rows, list) and any(type(c) in (int, float) for r in rows if isinstance(r, list) for c in r)
-        asks_observed = bool(re.search(r"\b(current|latest|today|live|actual|historical|real)\b|真实|最新|当前|今天|历史|实时", message, re.I))
+        asks_observed = bool(re.search(r"\b(current|latest|today|live|actual|historical|history|yesterday|past|since|last|previous|reported|observed|real)\b|真实|最新|当前|今天|历史|实时|昨天|上周|上月|去年|过去|截至|自从|\b(?:19|20)\d{2}\b", message, re.I))
         if has_numbers and (not teaching or asks_observed):
             return {"error": "numeric_example_not_requested", "note": "Do not replace missing observed data with an example. Fetch and bind real values, or explain that the chart is unavailable."}
     if sum(bool(c.get("visual")) for c in charts) >= MAX_VISUALS:
@@ -6598,7 +6598,14 @@ def _prepare_inline_visual(result: dict, observations: list, identity: str, char
         filtered, rejected = _post_filter_advice(text, [])
         return not rejected and filtered == text and _leak_screen(text) == text
 
-    wire = compile_visual(result["visual_request"], _json_safe(observations), identity, screen=safe_copy)
+    def source_admitted(node: Any) -> bool:
+        # Reuse the existing evidence owner; inspect each pointer ancestor, never
+        # penalize a valid observation for a missing unrelated sibling.
+        return not set(_evidence_result_conditions(node)).intersection(
+            {"UNAVAILABLE", "NOT_COVERED", "NOT_APPLICABLE", "CONFLICTED"})
+
+    wire = compile_visual(result["visual_request"], _json_safe(observations), identity,
+                          screen=safe_copy, source_ok=source_admitted)
     if "error" in wire:
         return wire
     charts.append(wire)
@@ -10582,14 +10589,14 @@ def get_thread(thread_id: str, user_id: str) -> dict | None:
 
     msg_rows = _thread_read_rows(
         f"brain_messages?thread_id=eq.{urllib.parse.quote(thread_id)}"
-        f"&select=role,content,created_at,meta&order=created_at.asc&limit=200"
+        f"&select=role,content,created_at,visuals:meta->visuals&order=created_at.asc&limit=200"
     )
     from engine.neuralweb.brain_visuals import public_visuals
     messages = []
     for row in msg_rows:
         message = {k: row[k] for k in ("role", "content", "created_at") if k in row}
         if row.get("role") == "assistant":
-            visuals = public_visuals(row.get("meta"))
+            visuals = public_visuals({"visuals": row.get("visuals")})
             if visuals:
                 message["visuals"] = visuals
         messages.append(message)

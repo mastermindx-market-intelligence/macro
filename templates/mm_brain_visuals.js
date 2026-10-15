@@ -27,7 +27,6 @@
       if (!Array.isArray(s.rows) || !s.rows.length || s.rows.length > 80) return false;
       if (!s.rows.every(function (r) { return Array.isArray(r) && r.length === s.columns.length && r.every(function (c) { return c === null || number(c) || text(c); }); })) return false;
       var numeric = s.rows.flat().filter(number).length;
-      if (s.basis === 'source' && s.rows.some(function (r) { return r.slice(1).some(function (c) { return typeof c === 'string' && /^\s*[+\-]?(?:\d|\.\d)/.test(c); }); })) return false;
       if (['bar','line','area','scatter','donut'].includes(s.template)) {
         if (!s.rows.every(function (r) { return (s.template === 'scatter' ? (r[0] === null || number(r[0])) : text(r[0], true)) && r.slice(1).every(function (v) { return v === null || number(v); }); })) return false;
         if (!s.rows.some(function (r) { return r.slice(1).some(number); })) return false;
@@ -36,9 +35,13 @@
       if (['status','scenarios','timeline','flow'].includes(s.template) && (s.columns.length > 3 || s.rows.length > 20 || !s.rows.every(function (r) { return r.every(function (c) { return c === null || text(c); }); }))) return false;
       if (s.template === 'metrics' && (s.columns.length > 3 || s.rows.length > 6)) return false;
       var p = s.provenance;
-      if (!keys(p, ['numeric_cells_matched','sources','semantic_verification','freshness_verified']) || p.semantic_verification !== false || p.freshness_verified !== false || !Number.isInteger(p.numeric_cells_matched)) return false;
+      if (!(keys(p, ['numeric_cells_matched','sources','semantic_verification','freshness_verified']) || keys(p, ['numeric_cells_matched','text_cells_matched','sources','semantic_verification','freshness_verified'])) || p.semantic_verification !== false || p.freshness_verified !== false || !Number.isInteger(p.numeric_cells_matched)) return false;
       if (!Array.isArray(p.sources) || p.sources.length > 40 || !p.sources.every(function (t) { return typeof t === 'string' && /^[A-Za-z][A-Za-z0-9_]{0,79}$/.test(t); })) return false;
-      return s.basis === 'source' ? numeric > 0 && p.numeric_cells_matched === numeric && p.sources.length > 0 : p.numeric_cells_matched === 0 && p.sources.length === 0;
+      var narrative = ['status','scenarios','timeline','flow'].includes(s.template);
+      var required = s.rows.reduce(function (sum,r) { return sum + r.filter(function (c,i) { return c !== null && (narrative || i > 0 || number(c)); }).length; },0);
+      var textCount = p.text_cells_matched === undefined ? 0 : p.text_cells_matched;
+      if (!Number.isInteger(textCount)) return false;
+      return s.basis === 'source' ? required > 0 && p.numeric_cells_matched === numeric && textCount === required-numeric && p.sources.length > 0 : p.numeric_cells_matched === 0 && textCount === 0 && p.sources.length === 0;
     } catch (_) { return false; }
   }
   function csv(s) {
@@ -154,7 +157,7 @@
     var s=wire.visual, figure=node('figure','mmb-v'); figure.dataset.visualId=wire.visual_id; figure.dataset.template=s.template;
     var caption=node('figcaption'); caption.appendChild(node('h3','mmb-v-title',s.title));
     if (s.subtitle) caption.appendChild(node('p','mmb-v-subtitle',s.subtitle)); figure.appendChild(caption);
-    figure.appendChild(s.basis === 'illustrative' ? label('p','mmb-v-basis','Illustrative · not verified market data','示意 · 非经核实的市场数据') : label('p','mmb-v-basis','Numeric values match retrieved data · labels and interpretation are AI-generated','数值与已读取数据一致 · 标签及解读由 AI 生成'));
+    figure.appendChild(s.basis === 'illustrative' ? label('p','mmb-v-basis','Illustrative · not verified market data','示意 · 非经核实的市场数据') : label('p','mmb-v-basis','Data values match retrieved output · labels and interpretation are AI-generated','数据值与已读取内容一致 · 标签及解读由 AI 生成'));
     var isPlot=['bar','line','area','scatter','donut'].includes(s.template), resize, draw;
     if (isPlot) {
       var body=node('div','mmb-v-plot'), hidden=new Set(); figure.appendChild(body);

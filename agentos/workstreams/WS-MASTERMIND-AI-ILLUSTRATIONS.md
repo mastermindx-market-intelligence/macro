@@ -2,7 +2,7 @@
 key: MASTERMIND-AI-ILLUSTRATIONS
 title: Native illustration templates inside Mastermind AI
 objective: Customers can ask the existing Mastermind AI chat for charts and visual explanations, receive bounded source-aware native templates, and recover the same visuals from their authorized saved conversation on Macro and Terminal. Completion requires published code, admitted release checks, actual model-selection proof and production-browser delivery; fixture previews or passing unit tests alone are not completion.
-status: active
+status: awaiting_ci
 program: macro-mastermind-ai
 repos: [macro, terminal]
 owner: sol
@@ -18,11 +18,11 @@ waves:
     status: done
   - id: delivery
     title: Verify public presentation assets, Terminal policy, browser evidence and review
-    status: in_progress
+    status: done
   - id: release
     title: Publish and qualify model selection and live two-host delivery
-    status: todo
-next_action: Consume the exact retained code-review return while finishing original-head source/asset and Terminal browser checks; publish these registered source workspaces, then follow actual CI and deployment gates to live chat proof.
+    status: awaiting_ci
+next_action: Inspect the new exact-head CI on original Macro PR9447 and the refreshed Terminal PR1010; resolve genuine failures, then use existing release/deployment paths and verify real model-selected visuals plus authenticated saved-history recovery on both hosts.
 artifacts:
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md
   - docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md
@@ -61,3 +61,14 @@ Two earlier large shell edit requests were blocked before execution; original ta
 Terminal PR #1010 is OPEN, exact source `9b20b38a9cd8b99194d95a165d8ccfd461934e0d`; normal commit/push and remote readback are confirmed. Its twelve unit cases, TypeScript check and three actual Terminal CSP browser cases passed. No merge or deployment occurred. Macro local source, evidence and this continuity record are ready for the original-branch commit/push and PR. The existing independent code-review run remains ACTIVE_OR_WAITING with no result; preserve it rather than duplicate a worker.
 
 The typed Studio publisher was found to be Mastermind-only, not an authorization boundary for ordinary Macro/Terminal source Git. Its refused prechecks were NOT_APPLIED; no configuration, credential, policy or scope was changed. The same Studio carrier uses canonically registered normal source Git with exact branch/head checks. The temporary storage-observation error cleared on unchanged canonical reads; no cause, remount or policy repair is claimed.
+
+## R2 verified frontier
+Both original Fabric reviews are TERMINAL / ACCEPTED by reviewer; no review child remains active and no replacement was launched. The code review identified three issues already fixed on d99df6116a36 and five reproduced follow-ups now repaired and tested: formatted/text value binding, real source timelines, historical-example admission, narrow PostgREST projection and failed-source ancestry. Source equality never certifies semantics, labels, units, freshness or investment conclusions.
+
+The exact existing Brain gate source command passed **1199 tests**. The native browser/widget/asset selection passed **50 tests**. The existing evidence-owner callback passed five additional focused cases. The full contract-delta comparison reports **0 introduced / 0 inherited** against original base 39d00535d992; do not rerun that expensive unchanged proof. New UI evidence is **48/48** captured states across three explicitly synthetic specimens, including source-bound text timelines. Existing HK and Canada stock-dashboard browser receipts were re-minted with their original recipe and preserved historical baselines: both pass. The shared theme/auth/overlay source is unchanged except the necessary Brain bundle content hash.
+
+Terminal PR1010 completed all three required checks and CodeQL on f240b7ed242a2495072e663589767837813a3b6e. Its expected-head current-base refresh is confirmed at 59ff0154f06489340c59612b3a291e52f55eaa57; native auto-merge and the existing merge-on-green label were confirmed enabled at 07:41:16 UTC. This is an admitted wait on the refreshed checks, not a merge/deployment receipt. Macro PR9447 remains the original source carrier; this R2 commit carries all induced CI/source/receipt repairs. No production deployment or authenticated model/history acceptance is yet claimed.
+
+DO_NOT_REDO: the previous Thinking failed interruption did not lose either push; original remote heads were reconciled before edits. The one accidental diagnostic provider-health record was restored safely, and no model inference or customer quota was consumed. Both optional typed Git refusals remain NOT_APPLIED and Mastermind-only; ordinary authorized Macro/Terminal source publication stays on Studio Direct. No credential, storage, runtime or auth policy was weakened.
+
+The existing stock-dashboard first-frame suite passed 135 cases with one stale wrapper reference. After regenerating the primary receipts through their real browser recipes, only the two wrapper digest references were rebound; the targeted previously-failing wrapper test plus closure suite passed **22/22**. Historical snapshots and all recorded case counts remained unchanged.

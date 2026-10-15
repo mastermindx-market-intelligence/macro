@@ -134,3 +134,24 @@ def test_csv_download_keeps_utf8_bom_and_escaped_values(page, tmp_path):
 def test_asymmetric_diverging_bars_label_the_actual_zero_baseline(page):
     assert mount(page, sample('bar', columns=['Maturity','Change'], rows=[['Short',1.1],['Long',-3.8]]))
     assert '0' in page.locator('text[data-tick]').all_text_contents()
+
+
+@pytest.mark.parametrize('template', ['status','scenarios','timeline','flow','table','metrics'])
+def test_source_bound_text_visuals_render_without_becoming_fictional(page, template):
+    rows = [['2026-10-15','CPI release']] if template not in ('table','metrics') else [['Price','$1,234']]
+    bindings = [{'row':0,'column':c,'tool':'fixture_read','call_id':'source1','pointer':f'/rows/0/{c}'} for c in (range(2) if template not in ('table','metrics') else [1])]
+    wire = compile_visual({'version':1,'template':template,'title':'Synthetic source fixture, not market data','basis':'source','columns':['Label','Value'],'rows':rows,'bindings':bindings}, [('fixture_read',{'rows':rows},'source1')], 'source-fixture')
+    assert 'visual' in wire
+    assert mount(page, wire)
+    assert 'Data values match retrieved output' in page.locator('.mmb-v-basis').inner_text()
+    assert 'Illustrative' not in page.locator('.mmb-v-basis').inner_text()
+    assert rows[0][1] in page.locator('figure').inner_text()
+    broken = {**wire, 'visual_id':'d'*24, 'visual':{**wire['visual'],'provenance':{**wire['visual']['provenance'],'text_cells_matched':0}}}
+    assert not mount(page, broken)
+
+
+def test_legacy_numeric_only_visual_snapshot_still_renders(page):
+    wire = sample()
+    wire['visual']['provenance'].pop('text_cells_matched', None)
+    assert mount(page, wire)
+    assert page.locator('figure').count() == 1

@@ -65,7 +65,7 @@ def test_stream_guard_withholds_visual_for_rejected_answer(tmp_path):
 def test_history_projects_visuals_only_after_existing_owner_check():
     wire = compile_visual(spec(), [], "1")
     private = {"visuals": [wire], "native_input_manifest": {"secret": "never expose"}, "retained_context": {"private": 1}}
-    with patch.object(gw, "_thread_read_rows", side_effect=[[{"id": TID}], [{"role":"assistant", "content":"Example", "created_at":"2026-10-15", "meta":private}]]) as read:
+    with patch.object(gw, "_thread_read_rows", side_effect=[[{"id": TID}], [{"role":"assistant", "content":"Example", "created_at":"2026-10-15", "visuals":[wire], "meta":private}]]) as read:
         result = gw.get_thread(TID,"owner")
     assert "user_id=eq.owner" in read.call_args_list[0].args[0]
     assert result["messages"][0]["visuals"] == [wire]
@@ -78,7 +78,7 @@ def test_history_projects_visuals_only_after_existing_owner_check():
 
 def test_get_thread_drops_forged_or_user_visuals():
     wire = compile_visual(spec(), [], "1")
-    with patch.object(gw, "_thread_read_rows", side_effect=[[{"id":TID}], [{"role":"user", "content":"Question", "meta":{"visuals":[wire]}}, {"role":"assistant", "content":"Answer", "meta":{"visuals":[{"svg":"bad"}]}}]]):
+    with patch.object(gw, "_thread_read_rows", side_effect=[[{"id":TID}], [{"role":"user", "content":"Question", "visuals":[wire]}, {"role":"assistant", "content":"Answer", "visuals":[{"svg":"bad"}]}]]):
         result=gw.get_thread(TID,"owner")
     assert all(not m.get("visuals") for m in result["messages"])
 

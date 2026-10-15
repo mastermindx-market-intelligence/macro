@@ -99,6 +99,45 @@
           }
         }
       }
+    },
+    "timeline": {
+      "answer": "These synthetic events match the fixture tool output exactly. They are not actual economic releases.",
+      "wire": {
+        "type": "chart",
+        "visual_id": "830567fdf1994b9e8a263cd2",
+        "visual": {
+          "version": 1,
+          "template": "timeline",
+          "basis": "source",
+          "title": "Source-bound timeline · synthetic test data",
+          "subtitle": "Tests source binding and display only; not a real calendar or market feed.",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "Time",
+            "Event"
+          ],
+          "rows": [
+            [
+              "09:00",
+              "Release A"
+            ],
+            [
+              "10:30",
+              "Release B"
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "text_cells_matched": 4,
+            "sources": [
+              "fixture_read"
+            ],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
     }
   },
   "zh": {
@@ -196,6 +235,45 @@
           "provenance": {
             "numeric_cells_matched": 0,
             "sources": [],
+            "semantic_verification": false,
+            "freshness_verified": false
+          }
+        }
+      }
+    },
+    "timeline": {
+      "answer": "这些人工事件与测试工具输出逐字一致，但不代表真实经济发布。",
+      "wire": {
+        "type": "chart",
+        "visual_id": "4ca7d5a4b4cc563ba8eadb3c",
+        "visual": {
+          "version": 1,
+          "template": "timeline",
+          "basis": "source",
+          "title": "来源绑定时间线 · 人工测试数据",
+          "subtitle": "仅验证来源绑定及显示，并非真实日历或市场数据。",
+          "takeaway": "",
+          "unit": "",
+          "columns": [
+            "时间",
+            "事件"
+          ],
+          "rows": [
+            [
+              "09:00",
+              "发布甲"
+            ],
+            [
+              "10:30",
+              "发布乙"
+            ]
+          ],
+          "provenance": {
+            "numeric_cells_matched": 0,
+            "text_cells_matched": 4,
+            "sources": [
+              "fixture_read"
+            ],
             "semantic_verification": false,
             "freshness_verified": false
           }
