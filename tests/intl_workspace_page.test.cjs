@@ -68,6 +68,30 @@ for (const lang of ['en','zh']) {
 }
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Cross-country composite and unknown extension ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_cross_country_reading_render import country_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(records=country_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]'),query=lang==='zh'?'跨经济体':'Cross-country';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-cross-country"]');await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-cross-country');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('..'),region=panel.locator('[data-cross-country-scroll]');await region.focus();assert.equal(await region.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await panel.locator('tbody tr').count(),3);const last=panel.locator('tbody tr').last().locator('td').last();assert.ok((await last.innerText()).includes(lang==='zh'?'不可用':'Unavailable'));
+        if(width===320)assert.ok(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1),'focused region must own narrow overflow');
+        if(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1)){await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('[data-cross-country-scroll]').scrollLeft>0);}
+        await region.scrollIntoViewIfNeeded();await region.evaluate(n=>n.scrollLeft=n.scrollWidth);
+        await page.waitForFunction(()=>{const n=document.querySelector('[data-cross-country-scroll]');return n.scrollLeft>=n.scrollWidth-n.clientWidth-1;});
+        assert.ok(await last.evaluate(n=>{const r=n.getBoundingClientRect();const top=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return top===n||n.contains(top);}), 'rightmost extension reading must not be covered by the Economy column');
+        const text=await panel.innerText();assert.ok(text.includes(lang==='zh'?'市场压力':'Market stress'));assert.ok(text.includes(lang==='zh'?'波动率':'volatility'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Performance FX contribution keyboard ${theme} ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_performance_reading_render import performance_fixture; from tests.test_intl_rotation_reading_render import rotation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf=performance_fixture(),rotation_ranks=rotation_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
     await pageFixture(async page=>{
@@ -110,6 +134,9 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         const method=await lens.innerText();for(const term of ['50%','30%','20%','MACD'])assert.ok(method.includes(term),method);
         assert.ok(method.includes(lang==='zh'?'基准':'benchmark'));assert.ok(method.includes(lang==='zh'?'绝对':'absolute'));
         await page.keyboard.press('Escape');await region.focus();assert.equal(await region.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await region.locator('.tbl-scroll').count(),0,'no inaccessible nested scroller');
+        if(width===320 && lang==='en')assert.ok(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1),'focused region must own narrow overflow');
+        if(width===320 && lang==='zh')assert.ok(await region.evaluate(n=>n.querySelector('table').getBoundingClientRect().width<=n.clientWidth+1 && n.scrollWidth<=n.clientWidth+1),'short Chinese content fits without scrolling');
         if(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1)){await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('[data-rotation-scroll]').scrollLeft>0);}
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
         await page.goBack();assert.equal(new URL(page.url()).hash,'');assert.equal(await input.inputValue(),query);
@@ -136,6 +163,7 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         assert.ok((await panel.locator('[data-correlation-coverage]').innerText()).includes('3 / 6'));
         const region=panel.locator('[data-correlation-scroll]');await region.focus();assert.equal(await region.evaluate(n=>n===document.activeElement),true);
         assert.equal(await region.getAttribute('aria-labelledby'),'intl-cross-market-correlation');
+        if(width===320)assert.ok(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1),'focused region must own narrow overflow');
         if(await region.evaluate(n=>n.scrollWidth>n.clientWidth+1)){
           await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('[data-correlation-scroll]').scrollLeft>0);
         }

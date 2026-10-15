@@ -111,6 +111,7 @@
   table.cmp td.l, table.cmp th.l { text-align:left; }
   table.cmp td.eco { position:sticky; left:0; background:var(--panel); font-weight:700; z-index:2; }
   table.cmp th.eco { position:sticky; left:0; z-index:3; }
+  @media(max-width:640px){table.cmp td.eco,table.cmp th.eco{position:static;}}
   table.cmp tr:hover td { background:var(--panel2); }
   table.cmp td.eco:hover, table.cmp tr:hover td.eco { background:var(--panel2); }
   .grp { border-left:2px solid var(--line); }
@@ -965,25 +966,25 @@
   <summary><span class="rf-t">{{ t('Full data tables', '完整数据表') }}</span><span class="rf-s">{{ t('Cross-country scorecard · rates & curve desk', '跨国评分卡 · 利率与曲线台') }}</span><span class="rf-caret" aria-hidden="true">▾</span></summary>
 <!-- ===== Cross-country comparison grid (the reference table) ===== -->
 <div class="panel">
-  <h2 id="intl-cross-country">{{ t('Cross-country comparison', '跨国对比') }} {{ help('Same scorecard for every economy: regime, recession risk, rates, CPI, FX, and equity stretch.', '每个经济体用同一套表：周期、衰退风险、利率、CPI、汇率与股市拉伸。') }}</h2>
-  <div class="gridwrap">
+  <h2 id="intl-cross-country" tabindex="-1">{{ t('Cross-country comparison', '跨国对比') }} {{ help('Same scorecard for every economy: regime, recession risk, rates, CPI, FX, and equity stretch.', '每个经济体用同一套表：周期、衰退风险、利率、CPI、汇率与股市拉伸。') }}</h2>
+  <div class="gridwrap tbl-scroll" data-cross-country-scroll role="region" tabindex="0" aria-labelledby="intl-cross-country">
   <table class="cmp">
     <thead><tr>
-      <th class="l eco">{{ t('Economy', '经济体') }}</th>
-      <th class="l">{{ t('1Y · USD', '1年 · 美元') }}</th>
-      <th class="l">{{ t('Regime', '周期') }}</th>
-      <th class="grp">{{ t('Recession', '衰退') }}</th>
-      <th class="grp">{{ t('Policy', '政策利率') }}</th>
-      <th>{{ t('10y', '10年') }}</th>
-      <th>{{ t('Curve', '曲线') }}</th>
-      <th>{{ t('Real 10y', '实际10年') }}</th>
-      <th class="grp">{{ t('CPI', 'CPI') }}</th>
-      <th>{{ t('GDP', 'GDP') }}</th>
-      <th>{{ t('Unemp', '失业') }}</th>
-      <th class="grp">{{ t('FX 3m', '汇率3月') }}</th>
-      <th>{{ t('Off high', '距高点') }}</th>
-      <th>{{ t('Drawdown', '回撤') }} {{ help('Realized damage from the 252-day high — how much has already been lost, not a forward risk estimate.', '距252日高点的已实现回撤——衡量已损失多少，而非前瞻风险预估。') }}</th>
-      <th class="l">{{ t('Market state', '市场状态') }}</th>
+      <th scope="col" class="l eco">{{ t('Economy', '经济体') }}</th>
+      <th scope="col" class="l">{{ t('1Y · USD', '1年 · 美元') }}</th>
+      <th scope="col" class="l">{{ t('Regime', '周期') }}</th>
+      <th scope="col" class="grp">{{ t('Recession', '衰退') }}</th>
+      <th scope="col" class="grp">{{ t('Policy', '政策利率') }}</th>
+      <th scope="col">{{ t('10y', '10年') }}</th>
+      <th scope="col">{{ t('Curve', '曲线') }}</th>
+      <th scope="col">{{ t('Real 10y', '实际10年') }}</th>
+      <th scope="col" class="grp">{{ t('CPI', 'CPI') }}</th>
+      <th scope="col">{{ t('GDP', 'GDP') }}</th>
+      <th scope="col">{{ t('Unemp', '失业') }}</th>
+      <th scope="col" class="grp">{{ t('FX 3m', '汇率3月') }}</th>
+      <th scope="col">{{ t('Off high', '距高点') }}</th>
+      <th scope="col">{{ t('Market stress', '市场压力') }} {{ help('A descriptive 0–100 composite: 50% drawdown depth, 30% below the 200-day trend and 20% elevated volatility. Off high reports the separate distance from the high. This score is neither realized loss nor a forecast probability.', '描述性的0–100综合分：回撤深度占50%，低于200日趋势占30%，波动率升高占20%。距高点一栏单独显示距离高点的幅度。此分数既非已实现损失，也非预测概率。') }}</th>
+      <th scope="col" class="l">{{ t('Market state', '市场状态') }}</th>
     </tr></thead>
     <tbody>
     {% for r in records %}
@@ -1013,14 +1014,15 @@
           {% elif e.ext_grade == 'parabolic' %}<span class="chip warn">{{ t('parabolic', '抛物') }}</span>
           {% elif e.ext_grade == 'stretched' %}<span class="chip caut">{{ t('stretched', '拉伸') }}</span>
           {% elif e.bubble_flag %}<span class="chip caut">{{ t('hot', '过热') }}</span>
-          {% else %}<span class="muted small">{{ t('normal', '正常') }}</span>{% endif %}
+          {% elif e.ext_grade == 'intrend' %}<span class="muted small">{{ t('normal', '正常') }}</span>
+          {% else %}<span class="muted small">{{ t('Unavailable', '不可用') }}</span>{% endif %}
         </td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
-  <p class="caveat" style="margin-top:9px">{{ t("Descriptive only. Equity stretch uses each market's own history.", '仅描述。股市拉伸按各市场自身历史衡量。') }}</p>
+  <p class="caveat" style="margin-top:9px">{{ t("Market stress combines drawdown depth, trend and volatility; it is not realized loss or a forecast. Equity stretch uses each market's own history; unavailable history is not a normal reading.", '市场压力综合回撤深度、趋势与波动率；并非已实现损失或预测。股市拉伸按各市场自身历史衡量；历史不可用不代表正常。') }}</p>
 </div>
 
 <!-- ===== Rates & curve desk ===== -->
@@ -2043,7 +2045,7 @@
   {% if not correlation_coverage.available %}
   <p class="caveat">{{ t('No available pairwise correlations.', '暂无可用的成对相关性。') }}</p>
   {% endif %}
-  <div class="heatwrap" data-correlation-scroll tabindex="0" role="region" aria-labelledby="intl-cross-market-correlation">
+  <div class="heatwrap tbl-scroll" data-correlation-scroll tabindex="0" role="region" aria-labelledby="intl-cross-market-correlation">
     <table class="heat">
       <thead><tr><th scope="col">{{ t('Market', '市场') }}</th>{% for k in CR.order %}<th scope="col">{{ CR.labels[k].flag }} {{ k }}</th>{% endfor %}</tr></thead>
       <tbody>
@@ -2075,7 +2077,7 @@
     <div class="rotation-reading" style="grid-column:1 / -1;min-width:0">
       <h3 id="intl-leadership-rotation" tabindex="-1">{{ t('Leadership rotation — Composite score', '领涨轮动 — 综合分数') }} {{ help('Weights are 50% for 20 sessions, 30% for 10 and 20% for 5. The owner uses changes in the price/benchmark ratio when a benchmark is supplied, otherwise absolute price momentum. State multipliers and overbought / recent bearish MACD penalties adjust the weighted score. Ranking is descending among supplied markets. Window coverage and the benchmark basis of each row are not separately reported here.', '20期权重50%，10期30%，5期20%。提供基准时，模型采用价格与基准比值的变化；否则采用价格绝对动能。状态乘数及超买／近期看跌MACD惩罚调整加权分数。所供市场按分数降序排名。此处未单独报告各行的窗口覆盖和基准口径。') }}</h3>
       <p class="muted small">{{ t('Composite score, not a return. Missing windows enter the model as zero; a zero score does not prove flat prices or complete history.', '综合分数并非收益率。缺失窗口在模型中按零计入；零分不能证明价格持平或历史完整。') }}</p>
-      <div class="heatwrap" data-rotation-scroll tabindex="0" role="region" aria-labelledby="intl-leadership-rotation">
+      <div class="heatwrap tbl-scroll" data-rotation-scroll tabindex="0" role="region" aria-labelledby="intl-leadership-rotation">
         <table class="sb">
           <thead><tr><th scope="col">{{ t('Rank','排名') }}</th><th scope="col" class="l">{{ t('Market','市场') }}</th><th scope="col">{{ t('Score','分数') }}</th><th scope="col" class="l">{{ t('Owner note','模型备注') }}</th></tr></thead>
           <tbody>{% for rr in rotation_ranks %}

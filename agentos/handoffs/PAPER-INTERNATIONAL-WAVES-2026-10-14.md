@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_cross_country_reading_render.py; tests/intl_workspace_page.test.cjs; tests/test_intl_workspace_integration.py
+  what: Correct Cross-country stress meaning and unknown-state fallback; restore actual named scroll owners in three Library tables and unoccluded narrow Cross-country values.
 - path: templates/intl.html.j2; tests/test_intl_performance_reading_render.py; tests/intl_workspace_page.test.cjs
   what: Correct FX contribution to percentage points, preserve unavailable periods and keyboard entry, and repair measured8px narrow return bars without changing owner arithmetic.
 - path: templates/intl.html.j2; tests/test_intl_rotation_reading_render.py; tests/test_intl_workspace_integration.py; tests/intl_workspace_page.test.cjs
@@ -203,6 +205,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Cross-country three render cases and twelve unique browser cases across24width states pass, including final four Cross-country occlusion cases; original failures and one optimizer timeout retained.
+  command: python3 -m pytest -q tests/test_intl_cross_country_reading_render.py; node --test --test-name-pattern="Cross-country composite|Leadership composite reading|Correlation availability" tests/intl_workspace_page.test.cjs with recorded targeted corrections; capture_final_cross.py and inspect_final_cross.py
+  result: CROSS_COUNTRY_STRESS_READING_ACCEPTANCE.json binds source and staged evidence. Earlier Leadership/Correlation narrow keyboard claims are superseded by measured nested-scroller failures and actual focus-owner repairs; data claims retain their original scope. Source not deployed; review pending.
 - claim: Performance has three render and six unique browser cases; eight canonical and twelve focused source views retain units, useful missing-period behavior and readable narrow bars.
   command: python3 -m pytest -q tests/test_intl_performance_reading_render.py; node --test --test-name-pattern="^Performance (FX contribution|unavailable period)" tests/intl_workspace_page.test.cjs; performance-fx-contribution capture.py, inspect_focus.py and inspect_empty.py
   result: performance-fx-contribution-20261014-r1 logs and PERFORMANCE_FX_CONTRIBUTION_ACCEPTANCE.json; original unit/focus/empty/geometry reds and initial captures retained. Counts overlap; source not deployed.
