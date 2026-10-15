@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T10:12:52.848654+00:00",
-  "count": 2950,
+  "generated_at": "2026-10-15T11:28:02.462252+00:00",
+  "count": 2954,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -813,6 +813,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-q7fylwxyafm-58b881",
+      "title": "Dailyspark 2026 10 13 v2",
+      "institution": "Apollo",
+      "side": "buy",
+      "desk": "",
+      "published_at": "2026-10-14T02:37:02Z",
+      "summary_points": [
+        "Document Missing: Source document not provided for extraction; critical data unavailable for analysis Fundamentals Gap: No fundamental data (earnings, revenue, margins) included to assess company/sector health Risk Factor Omission: Key risk factors (geopolitical, policy shifts, flow data) absent from input list"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xeistvhtalj-a6a397",
       "title": "Bii global outlook in charts",
       "institution": "BlackRock",
@@ -848,6 +865,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-til0rufiiqu-13767f",
+      "title": "Equity outlook parallel worlds",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:06:42Z",
+      "summary_points": [
+        "EM AI Momentum: MSCI Korea (+95.53%) and Taiwan (+69.31%) lead EM equities driven by AI adoption, USD returns, and sector strength (energy/tech), with EM 2027e earnings growth at 64.8% vs DM’s 23.9% (IT/energy/healthcare).",
+        "Circular Economy Fundamentals: Business-driven circularity (scarcity, supply chain resilience) fuels efficiency across sectors/regions, distinct from regulation; mid/small-cap focus and buybacks (e.g., SK Hynix $30B) reduce dilution and offset net issuance drag.",
+        "EM Earnings Structural Shift: EM earnings growth momentum (20% CAGR USD EPS since April 2024) supported by broad sector strength (energy, healthcare), buybacks, and domestic demand (China innovation), outpacing DM fundamentals.",
+        "Critical Risk Divergence: Omnicrisis risks (US-China trade, energy wars, debt inflation) contrast with positive drivers (AI, manufacturing spend, EM recovery); geopolitical tensions and liquidity constraints are top portfolio risks.",
+        "EM vs DM Valuation Gap: EM outperformance sustained by structural catalysts (circular economy, buybacks) and earnings growth (64.8% vs DM 23.9%), while DM faces headwinds from monetary tightening and political gridlock."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
@@ -1128,6 +1166,46 @@
       "tickers": [],
       "top_pick": true,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-feekl0clxq5-2d4c02",
+      "title": "Global Markets Daily Credit When Higher Yields Become Less Supportive",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:48Z",
+      "summary_points": [
+        "Credit Spread/Yield Correlation Shift: USD IG spread vs.",
+        "Treasury yield correlation turned positive (Exhibit 2), while EUR IG spread vs.",
+        "Bund yield correlation turned negative (Exhibit 1), creating dual headwinds for unhedged credit returns as spreads and yields now move in tandem.",
+        "Eroded Yield Cushion: Credit spreads now represent only 15% of all-in yield (vs. 45% avg 2019-2021), drastically reducing yield support reliability and amplifying vulnerability to rate hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-z3bmza4j1ih-92a919",
+      "title": "Euro Area Data Update GDP Tracking Unchanged",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:43Z",
+      "summary_points": [
+        "Euro Area Inflation Uptick: Headline inflation nearcast rose to 4.21% yoy (vs 4.11% previously), driven by energy prices and German HICP revisions; excludes policy impacts (e.g., German fuel tax discount), creating forecast risk for inflation-sensitive assets.",
+        "France Economic Contraction: BfF surveys show negative PMI Services and PMI Mfg Output, with declining Industry Production, signaling sustained contraction in manufacturing and services sectors.",
+        "Spain Tourism Shock: Nonresident overnight stays dropped sharply in Feb-25 (geopolitical/health event impact), with volatility in resident stays; potential rebound signals sector-specific risk/recovery for hospitality.",
+        "Food Price Inflation Pressure: EA21 food prices (ECB-weighted) spiked, while Germany’s HICP shows persistent inflation in ICT/Vehicles/food services, raising consumer spending risks and inflation expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },

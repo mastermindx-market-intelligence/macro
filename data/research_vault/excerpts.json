@@ -12863,6 +12863,25 @@
    "Open-weight models are those where the model weights are publicly released. In “Open- weight” models do not release training data and code are often — just the weights themselves (vs open-source). Open-weight models have shown similar competitiveness on general tasks, and tend to be much cheaper. Another advantage is around data privacy, as data is kept on your own infrastructure. Closed frontier models are accessed only through an API – you never see the weights. the provider handles training, infrastructure, safety systems, and updates.",
    "• DeepSeek • GLM-4 from Zhipu AI • Meta Llama 3.1 / 3.3 • Mistral • Phi-4 from Microsoft"
   ],
+  "marketdesk-feekl0clxq5-2d4c02": [
+   "Economics Research 13 October 2026 | 11:08AM BST",
+   "Global Markets Daily: Credit: When Higher Yields Become Less Supportive",
+   "n Credit spreads have historically provided some cushion when government yields Sara Grut | rise, particularly when higher rates reflect stronger growth expectations. That Goldman Sachs International",
+   "cushion has become less reliable in recent months. Since July, USD and EUR credit spreads have moved higher in tandem with government yields, creating a dual headwind for unhedged credit returns. n In this Global Markets Daily, we revisit the relationship between rates and credit spreads, focusing on why the correlation has shifted into more positive territory and what that means for credit investors. The spread/rates correlation is especially important for IG credit, where elevated all-in yields have been an important technical support for demand in recent years. In USD IG, credit spreads account for less than 15% of all-in yield today, versus an average of 45% between 2019 and 2021. But the support from higher all-in yields is less reliable when the increase in risk-free rates is accompanied by wider spreads and elevated rates volatility. n We think the recent spread moves reflect a combination of higher oil prices, a rapid rise in government yields, and renewed fiscal concerns in Europe. While the spread/rates correlation should moderate if the pace of the rates sell-off slows, we do not expect a quick return to the reliably negative relationship that previously helped cushion credit returns. With spreads still tight and credit spread curves relatively flat, we favor carry with controlled duration exposure. Within credit, we retain a modest preference for USD over EUR, favor BBBs over AAs and As, and see better value in the belly of the curve than at the long end.",
+   "Credit: When Higher Yields Become Less Supportive",
+   "For credit investors, the relationship between government yields and credit spreads is an important determinant of total returns. Higher government yields are not necessarily adverse for credit when they reflect stronger growth expectations, as there should be a positive read-through for corporate profitability. Moreover, tighter spreads in such an environment could provide a partial offset to the negative duration impact. This was broadly the pattern through much of 2024 and 2025.",
+   "The recent price action has been different. Since July, USD and EUR government yields and credit spreads have moved higher in tandem rather than offsetting one another (Exhibit 1). The one- and six-month spread/rates correlations have also moved more firmly into positive territory in the USD market, after remaining largely",
+   "Investors should consider this report as only a single factor in making their investment decision. For Reg AC certification and other important disclosures, see the Disclosure Appendix, or go to",
+   "Goldman Sachs Global Markets Daily",
+   "negative since 2024 (Exhibit 2). In the EUR market, the correlation has turned negative again after several months in positive territory. We think this reflects broader signs of stress, which have pushed Bund yields lower.",
+   "Exhibit 1: Credit spreads and rates have moved higher in tandem since July bp USD IG spread vs. 10-year Treasury yield % bp EUR IG spread vs. 10-year Bund yield % 100 USD IG Spread (LHS) 5.6 110 EUR IG Spread (LHS) 3.8 US 10-year Treasury yield (RHS) German 10-year Bund yield (RHS)",
+   "70 3.8 70 2.6 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Jan Feb Mar Apr May Jun Jul Aug Sep Oct",
+   "Source: Bloomberg, Goldman Sachs Global Investment Research",
+   "Exhibit 2: The spread/rates correlation in the USD market has moved back into positive territory Corr. USD IG / 10-year Treasury yield Corr. EUR IG / 10-year Bund yield 1-month rolling correlation since 2026 1-month rolling correlation since 2026 1.0 1.0",
+   "-1.0 -1.0 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Jan Feb Mar Apr May Jun Jul Aug Sep Oct Corr. USD IG / 10-year Treasury yield Corr. EUR IG / 10-year Bund yield 6-month rolling correlation since 2021 6-month rolling correlation since 2021 0.8 1.0",
+   "Source: Bloomberg, Goldman Sachs Global Investment Research",
+   "The correlation shift matters because it reduces the resilience of unhedged credit…"
+  ],
   "marketdesk-ff5yvngghw1-06c20d": [
    "Positioning Intelligence | Weekly Wrap TPM hits \"Attractive\" Signal Into Earnings; HFs Fade Mag7 While Covering Shorts Elsewhere July 24th, 2026",
    "Summary below – Distribution of the full report is restricted. To request access pls contact",
@@ -26512,6 +26531,9 @@
    "End of day comment – 24 July 2026. Another day of spread widening. In the morning there was a bit of pushback against the 10/15bp widening of the ADGB long end yday. Some buying in 49s and 54s emerged lifting cash prices a touch but there wasn't any more activity in the afternoon and ADGB long end goes out +0.125pt/+2bp. The spread widening in the belly was more pronounced. The market is long and took cash prices lower (-0.125/-0.375pt). Coupled with the UST move higher you are looking at spreads being 5/8bp wider across UAE/QATAR sovgn and quasis. OMAN is still outperforming a touch especially if you look at spreads over a week or month (guess who has not issued public or private bonds). In corps ALDAR hybrid which got sold in the prior days continued to get offered down, 56s closing -0.5pt/+15bp. To be sure overall volumes were very low, and Friday spread moves can be significant. It is though pretty clear that techs remain firmly negative as the street has bonds to go. Only a change in flows will reverse the widening. (Source: Dominik Roth, Credit Trader)",
    "PIF signs USD15bn financing framework with US EXIM. Saudi Arabia’s Public Investment Fund (PIF) signed a USD15bn MoU with the Export-Import Bank of the United States to establish a financing framework supporting strategic investments and procurement from US companies. The agreement will provide long-term export credit financing for eligible PIF portfolio companies purchasing US goods and services, while expanding cooperation in sectors including advanced technology, aerospace, infrastructure, future mobility, water security and critical minerals. The deal builds on PIF’s broader capital-raising strategy and existing partnerships with international export credit agencies. The fund noted that the US is its largest international market, with…"
   ],
+  "marketdesk-q7fylwxyafm-58b881": [
+   "Data as of 9/30/2026. Sources: D'Amico, S., D. H. Kim, and M. Wei (2018), \"Tips from TIPS: The Informational Content of Treasury Inflation-Protected Security Prices,\" Journal of Financial and Quantitative Analysis, 53(1), 395-436. Kim, Don, Cait Walsh, and Min Wei (2019). \"Tips from TIPS: Update and Discussions,\" FEDS Notes. Washington: Board of Governors of the Federal Reserve System, May 21, 2019,"
+  ],
   "marketdesk-q8jkpedougf-da7104": [
    "Economics Research 10 August 2026 | 10:51AM EDT",
    "Global Market Views: Same Macro, Different Marks",
@@ -30596,6 +30618,20 @@
    "MSCI AC World index on the month. Similarly, Discre- 4.0%",
    "tionary Macro hedge funds were slightly up in July given 2.0% their more diversified exposure across equity indices and 0.0% across asset classes. -2.0% • It is worth emphasizing that the 10% loss for TMT Equity Sector excludes Situational Awareness, which reportedly -4.0%",
    "saw its assets collapsing from $45bn to $10bn. This -6.0% makes the 10% loss look even more striking and suggests that, like Situational Awareness, several other TMT Equi- -8.0% ty Sector hedge funds suffered from forced liquidations of…"
+  ],
+  "marketdesk-til0rufiiqu-13767f": [
+   "FUNDAMENTAL EQUITY QUARTERLY Q4 2026",
+   "P3 Introduction: Kees Verbaas, Head of Fundamental Equities P8 Interview with Natalie Falkman, Portfolio Manager for the Circular Economy strategy",
+   "Competing narratives around bond market volatility aren’t In this wide-ranging interview Natalie reﬂects on her personal making it any easier for asset allocators, but we believe the investment journey and why economics is driving companies to investment thesis for global equities remains intact. apply circular solutions.",
+   "CLICK HERE TO READ THE FULL ARTICLE CLICK HERE TO READ THE FULL ARTICLE",
+   "Marketing materials for professional investors only, not for onward distribution.",
+   "P10 Trip notes: London P11 Where we differ from the market: Argentina",
+   "Equity analyst Rodrigo Baptista attended a recent London Argentina’s intense economic reform process is on track and the industrials conference where the focus was on the AI buildout ﬁnancial and energy sectors offer compelling risk-reward, says and automation. The macroeconomic and geopolitical backdrop João Giesta, analyst in Robeco’s EM equities team. is not reassuring for every segment though.",
+   "CLICK HERE TO READ THE FULL ARTICLE CLICK HERE TO READ THE FULL ARTICLE",
+   "TOP 3 EM EQUITY MARKETS YEAR TO DATE +95.53% +69.31% +42.28% MSCI KOREA MSCI TAIWAN MSCI COLOMBIA Despite a sell-off in July, AI-powered Korea Taiwan is close behind its North Asian peer Colombia equities have beneﬁted from still leads the emerging markets pack. USD Korea, driven by the same AI build-out peso appreciation vs the USD and a right- price return year-to 28 September 2026. demand driver. USD price return year-to 28 wing political swing. USD price return September 2026. year-to 28 September 2026.",
+   "TOP 3 DM EQUITY MARKETS YEAR TO DATE +28.03% +24.52% +20.46% MSCI AUSTRIA MSCI NORWAY MSCI SINGAPORE Financials and energy have Europe’s energy giant has had a strong Singapore equities have beneﬁted underpinned Austria, augmented by a year, beneﬁting from high oil and gas from AI exposure and safe haven sprinkling of AI stardust. USD price prices. USD price return year-to 28 ﬂows from Indonesia. USD price return year-to 28 September 2026. September 2026. return year-to 28 September 2026.",
+   "Past performance is no guarantee of future results. The value of your investment may ﬂuctuate.",
+   "2 Robeco | Fundamental Equity Quarterly Q4 2026"
   ],
   "marketdesk-tizdevlqjtq-9a0ceb": [
    "GS Jeter - US EQUITIES COLOR CONSUMER INERTIA 22 Sep 2026 Mitch Jeter · Goldman Sachs · Analyst, FICC & Equities Tue 22 Sep 2026, 4:59pm ET",
@@ -37747,6 +37783,20 @@
    "Goldman Sachs does and seeks to do business with companies covered in its research reports. As a result, investors should be aware that the firm may have a conflict of interest that could affect the objectivity of this report. Investors should consider this report as only a single factor in making their investment decision. For Reg AC certification and other important disclosures, see the Disclosure Appendix, or go to Analysts employed by non-US affiliates are not registered/qualified as research analysts with FINRA in the U.S.",
    "Goldman Sachs Robert Half International Inc. (RHI)",
    "Robert Half International Inc. (RHI) Balance Sheet ($ mn) _______________________________________ SELL Rating since Sep 4, 2018 12/25 12/26E 12/27E 12/28E Cash & cash equivalents Accounts receivable Inventory -- -- -- -- Ratios & Valuation __________________________________________ Other current assets /25 12/26E 12/27E 12/28E Total current assets 2,119.0 2,094.6 2,095.0 2,164.6 P/E (X) Net PP&E EV/EBITDA (X) Net intangibles EV/sales (X) 0.7 0.6 0.6 0.6…"
+  ],
+  "marketdesk-z3bmza4j1ih-92a919": [
+   "Economics Research 13 October 2026 | 10:44AM BST",
+   "Euro Area Data Update: GDP Tracking Unchanged; Headline Inflation Nearcast Ticks Up",
+   "BOTTOM LINE: At the area-wide level, our tracking estimate was unchanged at Giovanni Pierdomenico | +0.24%qoq. We currently track Q3 GDP growth at +0.19% in Germany, +0.09% in Goldman Sachs International France, +0.02% in Italy (vs. +0.00% previously), and +0.66% in Spain. Our end-2026 headline inflation nearcast rose by 0.10pp to 4.21%yoy (vs. 4.11% previously).",
+   "1. In France, the early-October business survey by the Banque de France pointed to modest growth in activity over September, albeit at higher levels than implied by the latest PMIs, and mixed expectations for October. The release noted that business leaders expect an acceleration in industrial production but a slowdown in services activity in October. Some AI capex-exposed sectors, such as production of electrical and computing/electronic equipment, and aeronautics continue to face strong demand but also supply-chain pressures. Consumer demand is weaker, partly reflecting a renewed rise in uncertainty. Input price pressures firmed up but selling prices are rising more modestly. The BdF estimates GDP growth at +0.1%qoq in Q3, in line with our tracking.",
+   "2. In Italy, tourist nights spent ticked up sequentially in August after a softer start of the season. On a year-over-year basis, nights spent were up 3.3% in August (up from +0.6% and 1.7% in June and July), reflecting flat resident activity but firmer inflows of foreigners. On net, this resulted in a modest uptick of our GDP tracking estimate to +0.02%qoq (vs. flat previously).",
+   "3. Elsewhere, the goods trade balance improved slightly in Portugal but deteriorated slightly in the Netherlands in August.",
+   "4. German HICP inflation for September was revised down to +3.26%yoy (vs. +3.30%yoy). Across components, ICT equipment inflation firmed up further to +4.6%yoy while autos inflation was broadly unchanged. Within services, transport services inflation ticked down, food services inflation moved sideways, and accommodation services ticked up slightly. The ECB’s measure of farmgate and wholesale commodity prices was revised up for September, bringing the signal closer to what is observed in food PMIs and PPIs. Together with the rise in energy commodity prices, the data pushed up our end-2026 headline inflation nearcast to 4.21%yoy (vs. 4.11% previously). Our end-2026 core inflation forecast ticked down slightly to 2.64%yoy (vs. +2.65% previously).",
+   "Investors should consider this report as only a single factor in making their investment decision. For Reg AC certification and other important disclosures, see the Disclosure Appendix, or go to",
+   "Exhibit 1: Area-Wide Tracking Estimate At +0.24%qoq",
+   "Source: Haver Analytics, Goldman Sachs Global Investment Research, Eurostat",
+   "Exhibit 2: Mixed BdF Survey for Early October",
+   "Source: Haver Analytics, Goldman Sachs Global Investment Research, Banque de France, S&P Global Market Intelligence"
   ],
   "marketdesk-z3kxczs5i8w-aea0e8": [
    "Economics Research 24 July 2026 | 11:32AM BST",
