@@ -1774,6 +1774,38 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
 }
 
 for (const options of [{javaScriptEnabled:false},{broken:true}]) {
+  test(`Native Compare source stays readable after ${options.broken?'failed enhancement':'JavaScript loss'}`,async()=>{
+    await pageFixture(async page=>{
+      assert.equal(await page.locator('[data-im-enhanced]').count(),0);
+      assert.equal(await page.locator('[data-im-controls]').evaluate(n=>n.disabled),true);
+      const charts=page.locator('[data-im-compare-panel]:visible [data-im-chart-model]');
+      assert.ok(await charts.count()>0,'the real publisher must supply at least one chart');
+      for (const chart of await charts.all()) {
+        const panel=chart.locator('..');
+        assert.match(await panel.getAttribute('data-source'),/^intl-supplied-close:sha256:[0-9a-f]{64}$/);
+        const groups=chart.locator('[data-im-chart-cohort]');
+        assert.ok(await groups.count()>0);
+        for (const group of await groups.all()) {
+          if(!await group.evaluate(n=>n.open)) await group.locator('summary').click();
+          const rows=group.locator('[data-im-chart-table-market]:visible');
+          const markets=await rows.evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort());
+          assert.equal(markets.length,7,'unenhanced charts retain the full supplied cohort, not a fabricated URL selection');
+          assert.equal(Number(await group.locator('[data-im-chart-market-count]').textContent()),markets.length);
+          const plotted=await group.locator('[data-im-chart-series]:not([hidden])').evaluateAll(ns=>[...new Set(ns.map(n=>n.dataset.imChartSeries))].sort());
+          assert.deepEqual(plotted,markets);
+          const svg=group.locator('figure > svg');
+          assert.equal(await svg.getAttribute('role'),'img');
+          const labelled=await svg.evaluate(n=>(n.getAttribute('aria-labelledby')||'').split(/\s+/).map(id=>!!document.getElementById(id)));
+          assert.ok(labelled.length>=2&&labelled.every(Boolean));
+        }
+        assert.equal(await chart.locator('[data-im-chart-selection-unavailable]').isVisible(),false);
+        assert.equal(await chart.locator('[data-im-chart-benchmark-unavailable]').isVisible(),true);
+      }
+    },{...options,htmlOverride:sourceChartFixture(),width:320,initialSearch:'?view=compare&pins=1,4'});
+  });
+}
+
+for (const options of [{javaScriptEnabled:false},{broken:true}]) {
   test(options.broken?'failed enhancement restores readable page':'no JavaScript retains every roster and legacy research', async()=>{
     await pageFixture(async page=>{
       assert.equal(await page.locator('[data-im-enhanced]').count(),0);
