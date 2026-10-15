@@ -1,7 +1,7 @@
 # config/ai_pricing.yml — AI provider pricing table.
 #
-# OPERATOR-MAINTAINED: rates change without notice. Review against Anthropic and
-# DeepSeek billing pages before each billing cycle.
+# OPERATOR-MAINTAINED: rates change without notice. Review against the current
+# Anthropic, DeepSeek, MiniMax, and Z.AI billing pages before each billing cycle.
 #
 # Subscription-key costs (claude_oauth, claude_cli "subscription" cost_basis):
 #   est_cost_usd is the API-EQUIVALENT VALUE of the call — what the same tokens
@@ -36,7 +36,36 @@ per_mtok:
     input: 0.14
     output: 0.28
 
-# cache: multipliers applied on top of the input rate.
+  # Production PAYG/API models qualified for the economical-provider program.
+  # These are API price identities only; they do NOT enable routing, credentials,
+  # provider capacity, or subscription fallback. Verified 2026-09-18.
+  # MiniMax source: platform.minimax.io API Pricing. M3 bills by input-context tier.
+  # The rate card labels 512K / 1M rather than binary powers; decimal ceilings
+  # are deliberately conservative so an ambiguous boundary never underprices.
+  MiniMax-M3:
+    context_tiers:
+      - max_context_tokens: 512000
+        input: 0.30
+        output: 1.20
+        cache_read: 0.06
+        cache_write: null  # not published on the current M3 rate card: fail unknown if observed
+      - max_context_tokens: 1000000
+        input: 0.60
+        output: 2.40
+        cache_read: 0.12
+        cache_write: null
+
+  # Z.AI GLM-5.3-Flash direct API list rate after the launch promotion ended.
+  # Cache-write billing is not represented by the current public rate card, so
+  # an observed cache-creation token count fails cost estimation to unknown.
+  glm-5.3-flash:
+    input: 0.15
+    output: 0.50
+    cache_read: 0.03
+    cache_write: null
+
+# cache: default multipliers applied on top of the input rate for legacy rows
+# that do not publish model-specific absolute cache prices.
 #   read_multiplier:       cache-read tokens cost this fraction of the input rate.
 #   write_5m_multiplier:   cache-creation tokens cost this multiple of the input rate.
 cache:
