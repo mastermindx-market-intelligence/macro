@@ -4816,6 +4816,8 @@ CURATED_EXCLUSIVE = {
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
     "leadership-rotation-countercases",
+    # Fixed-runtime helpers have a separate source-only CI owner.
+    "research-codegen-runtime-qualification",
 }
 
 
