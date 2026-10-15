@@ -251,10 +251,14 @@ def test_current_source_truth_reconciles_against_the_ledger_and_the_correction()
         queue["counts"]["total"] - len(corrections["entries"])
         == status["candidate_count"]
     )
-    # Families are a partition of the same total, never a hand-copied tally.
+    # The source contract admits award actions, newly issued awards, and
+    # exercised options. Keep this an independent closed family assertion: a
+    # newly invented or unreviewed event family must still fail this test.
     assert set(queue["counts"]["by_family"]) <= {
         "award_ceiling_change",
         "award_obligation_change",
+        "new_award",
+        "option_exercise",
     }
     assert sum(queue["counts"]["by_family"].values()) == queue["counts"]["total"]
     assert all(count > 0 for count in queue["counts"]["by_family"].values())
