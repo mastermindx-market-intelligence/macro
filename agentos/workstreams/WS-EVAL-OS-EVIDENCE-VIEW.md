@@ -26,8 +26,8 @@ waves:
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
     next_action: >
-      Publish the qualified ancestor-input repair on original PR6651 when independent review and
-      canonical capacity admit, then fresh binding checks, incumbent merge and real production proof.
+      Publish the qualified nine-input tested-merge closure repair on original PR6651 under fresh
+      canonical capacity and source custody, then fresh binding checks, incumbent merge and production proof.
 next_action: >
   Continue the existing PR #6651 under current Chairman assignment and root
   01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
@@ -58,6 +58,16 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
+
+## Current tested-merge dependency repair — 2026-10-15
+
+Published ba848's fresh run38695328397 selected A1 but contract-delta found nine uncovered dependencies in its exact tested merge0ec629 (base3f62 + ba848). The head-only closure had been zero; seven existing files became reachable and main introduced finance_watching.py plus the PLNT builder. The canonical A1 closure on an isolated copy of that exact hosted commit reproduced precisely those nine misses. This is a real binding failure, not the inactive pilot check.
+
+Source634750adc150165d5d336c2c5df5a414b6e266e4 adds only those nine explicit paths to eval-os-a1. All319job definitions, order, prior paths, eight A1 suites, weights, ceilings and pack limits remain intact. The source and the exact existing hosted tree plus the same patch each pass three focused controls and full canonical closure with zero misses. Strict probes remain136/135/129jobs and10packs each; weights are5694/5502/5445 on source and5698/5506/5449 on the hosted tree, all within the unchanged limits. A verifier-only diff-header comparison failed before tests and was corrected to compare the resulting manifest. The hosted receipt's duration is invalid because a text index shadowed its timer; the original is retained and duration stays unknown. This does not affect the test, closure or packing calculations. No accepted test was repeated to repair that reporting field.
+
+Independent original Fabric eval-a1-tested-closure-review-01a1333d-c1 was consumed and reviewer-accepted with report corrections: actual job is eval-os-a1, a hash shape proves no patch identity, and deterministic remaining checks do not imply higher-tier authority. The parent verified exact patch hash and full YAML preservation. Canonical07:24 admission counted6active/cap8/0unindexed reservations. Read-only preview against mainaafbe3 is clean; its difference from tested base3f62 is eight existing generated/research path contents, with unchanged Python/CI sources, inventory and all17production paths. No generated contents or sealed outcomes were read.
+
+These22original records and their manifest are retained in research/evidence/eval-os-20261012/a1-tested-closure-repair-20261015. This containing commit is not yet remotely published; fresh hosted checks, incumbent-only merge and all normal production/consumer acceptance remain owed. Chris's release and consumed one-time base exception stand; no second manual base integration. Preserve original Fabric effects and refusals. All completion flags remain false.
 
 ## Current ancestor-input repair — 2026-10-15
 
