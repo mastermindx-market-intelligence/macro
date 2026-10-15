@@ -1,0 +1,131 @@
+{
+  "schema": "mastermind.provider_subscription_plan_overlay/v1",
+  "verified_at": "2026-09-13T17:55:00Z",
+  "providers": {
+    "openai": {
+      "products": {
+        "chatgpt_work_codex": {
+          "edition": "individual_and_business",
+          "telemetry": {"kind": "provider_usage_ui_and_cli", "locator": "Settings > Usage; codex /status"},
+          "official_references": [
+            "https://help.openai.com/en/articles/11369540",
+            "https://help.openai.com/en/articles/20001516-managing-usage-with-gpt-6-astra-in-work-and-codex"
+          ],
+          "tiers": {
+            "plus": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported", "notes": "Provider-reported allowance; task/model/settings affect burn."},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]},
+            "pro_5x": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]},
+            "pro_20x": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]},
+            "business_standard": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]},
+            "business_premium": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "shared_work_codex", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]}
+          },
+          "notes": ["Work and Codex share the plan allowance; dynamic provider evidence is authoritative for remaining/reset state."]
+        }
+      }
+    },
+    "anthropic": {
+      "products": {
+        "claude_subscription": {
+          "edition": "individual",
+          "telemetry": {"kind": "provider_usage_ui", "locator": "Settings > Usage"},
+          "official_references": [
+            "https://support.claude.com/en/articles/11049741-what-is-the-max-plan",
+            "https://support.claude.com/en/articles/9797557-usage-limit-best-practices",
+            "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan"
+          ],
+          "tiers": {
+            "pro": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"}
+            ]},
+            "max_5x": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "fable_models", "limit_source": "provider_reported", "reset_source": "provider_reported", "relative_fraction_of_parent": 0.5, "parent_scope": "all_models", "notes": "Fable models may consume up to 50% of the same weekly parent allowance; this is not additive capacity."}
+            ]},
+            "max_20x": {"limits": [], "dynamic_limits": [
+              {"horizon": "five_hour", "window_type": "rolling", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "all_models", "limit_source": "provider_reported", "reset_source": "provider_reported"},
+              {"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "fable_models", "limit_source": "provider_reported", "reset_source": "provider_reported", "relative_fraction_of_parent": 0.5, "parent_scope": "all_models", "notes": "Fable models may consume up to 50% of the same weekly parent allowance; this is not additive capacity."}
+            ]}
+          },
+          "notes": ["Usage is shared across Claude surfaces; Fable inclusion depends on plan/seat generation and must be bound explicitly."]
+        }
+      }
+    },
+    "cursor": {
+      "products": {
+        "included_usage": {
+          "edition": "individual_and_team",
+          "telemetry": {"kind": "provider_usage_dashboard", "locator": "dashboard/spending and dashboard/usage"},
+          "official_references": [
+            "https://prod.cursor.com/help/models-and-usage/usage-limits",
+            "https://cursor.com/docs/models-and-pricing"
+          ],
+          "tiers": {
+            "pro": {"limits": [], "dynamic_limits": [
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "cursor_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"},
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "other_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"}
+            ]},
+            "pro_plus": {"limits": [], "dynamic_limits": [
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "cursor_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"},
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "other_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"}
+            ]},
+            "ultra": {"limits": [], "dynamic_limits": [
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "cursor_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"},
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "other_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"}
+            ]},
+            "team_standard": {"limits": [], "dynamic_limits": [
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "cursor_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"},
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "other_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"}
+            ]},
+            "team_premium": {"limits": [], "dynamic_limits": [
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "cursor_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"},
+              {"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "currency", "scope": "other_models", "limit_source": "provider_dashboard", "reset_source": "provider_dashboard"}
+            ]}
+          },
+          "notes": ["Cursor Models and Other Models are separate monthly pools; model selection changes depletion rate."]
+        }
+      }
+    },
+    "xai": {
+      "products": {
+        "supergrok": {
+          "edition": "individual",
+          "telemetry": {"kind": "provider_usage_ui", "locator": "Settings > Usage"},
+          "official_references": ["https://docs.x.ai/grok/faq", "https://x.ai/pricing"],
+          "tiers": {
+            "lite": {"limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "supergrok_shared", "limit_source": "provider_reported", "reset_source": "provider_reported"}]},
+            "standard": {"aliases": ["supergrok"], "limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "supergrok_shared", "limit_source": "provider_reported", "reset_source": "provider_reported"}]},
+            "plus": {"limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "supergrok_shared", "limit_source": "provider_reported", "reset_source": "provider_reported"}]},
+            "heavy": {"limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "supergrok_shared", "limit_source": "provider_reported", "reset_source": "provider_reported"}]}
+          },
+          "notes": ["One shared weekly pool spans Grok paid products; product compute weights differ and provider percentage/reset evidence must be preserved natively."]
+        },
+        "grok_bot": {
+          "edition": "cross_subscription",
+          "telemetry": {"kind": "provider_usage_ui", "locator": "Grok Bot usage"},
+          "official_references": ["https://docs.x.ai/grok-bot/faq", "https://x.ai/news/grok-bot-more-plans"],
+          "tiers": {
+            "included": {"limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "grok_bot", "limit_source": "provider_reported", "reset_source": "provider_reported", "notes": "Separate from base Grok/Cursor plan usage; account binding decides which eligible subscription supplies Bot allowance."}]}
+          },
+          "notes": ["Grok Bot has its own weekly usage on eligible SuperGrok/Cursor plans; if both are present, provider rules choose the larger eligible allowance."]
+        }
+      }
+    }
+  }
+}
