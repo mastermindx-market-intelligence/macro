@@ -1,0 +1,15 @@
+{
+  "schema": "mastermind.provider_native_capability_registry/v1",
+  "owner_program": "shared-ai-provider-control",
+  "capabilities": [
+    {
+      "capacity_capability_id": "ncap_8ca6b62c3f1fc7725b00cd461cc81f76",
+      "capability_generation": 1,
+      "provider": "claude",
+      "billing_mode": "subscription",
+      "credential_kind": "attached_login",
+      "execution_surface": "native_cli",
+      "registration_state": "registered"
+    }
+  ]
+}
