@@ -460,6 +460,9 @@
     }
     document.addEventListener('langchange', function () {
       var patch = {language: isZh() ? 'zh' : 'en'};
+      if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.selectLanguage === 'function') {
+        window.MarketMemoryIntent.selectLanguage(patch.language);
+      }
       if (state.symbolRequest) patch.issuerInput = state.latestRaw;
       syncIntent(patch);
       if (state.macro) renderMacro();
