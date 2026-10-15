@@ -3591,6 +3591,13 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
@@ -3600,7 +3607,18 @@
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
-    var fallback = function () { location.href = pfx + 'index.html?' + fbQ; };
+    var fallbackTarget = pfx + 'index.html?' + fbQ;
+    try {
+      var returnParams = new URL(location.href).searchParams;
+      var returnPath = returnParams.get('ret');
+      var returnUrl = new URL(returnPath || '', location.origin);
+      if (returnParams.getAll('ret').length === 1 && returnPath && returnPath.length <= 4096
+          && returnPath.charAt(0) === '/' && returnPath.slice(0, 2) !== '//'
+          && returnUrl.origin === location.origin) {
+        fallbackTarget += '&ret=' + encodeURIComponent(returnUrl.pathname + returnUrl.search + returnUrl.hash);
+      }
+    } catch (e) { /* Invalid or ambiguous return state cannot choose a destination. */ }
+    var fallback = function () { location.href = fallbackTarget; };
     var t = setTimeout(function () { if (!window.MMOnboard) fallback(); }, 4000);
     s.onload = function () {
       clearTimeout(t); window.__mmOnboardLoading = false;

@@ -153,6 +153,9 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
+  /* Retained evidence states share the canonical theme surfaces. */
+  --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
+  --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
   /* ── Macro Command tints (templates/macro_command.css) ────────────────────
      color-mix on an added surface line is enforce-added-illegal; the mixes
      live here so the surface only names tokens. --text/--info/--ok track

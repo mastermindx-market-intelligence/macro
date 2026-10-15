@@ -1,7 +1,7 @@
 {
   "schema": "thematic_rotation_phase0.v1",
   "region": "us",
-  "generated_at": "2026-10-09T14:00:23.021057+00:00",
+  "generated_at": "2026-10-14T18:20:20.946344+00:00",
   "cost_bps": 10.0,
   "universes": {
     "sectors": {
@@ -13,55 +13,55 @@
       "contaminated": false,
       "algorithm": {
         "ew_buyhold": {
-          "cagr": 0.0883,
+          "cagr": 0.0887,
           "sharpe": 0.66,
           "max_dd": -0.4912,
           "calmar": 0.18,
           "n_months": 334,
-          "dsr": 0.954,
+          "dsr": 0.955,
           "worst_decile_ret": -0.0712
         },
         "top3_mom12_rel": {
-          "cagr": 0.092,
-          "sharpe": 0.66,
+          "cagr": 0.0924,
+          "sharpe": 0.67,
           "max_dd": -0.4325,
           "calmar": 0.21,
           "n_months": 322,
-          "dsr": 0.955,
+          "dsr": 0.956,
           "worst_decile_ret": -0.0664
         },
         "top3_mom6_rel": {
-          "cagr": 0.0848,
+          "cagr": 0.0849,
           "sharpe": 0.64,
           "max_dd": -0.3969,
           "calmar": 0.21,
           "n_months": 324,
-          "dsr": 0.946,
+          "dsr": 0.947,
           "worst_decile_ret": -0.0587
         },
         "top3_mom12_dual": {
-          "cagr": 0.073,
+          "cagr": 0.0735,
           "sharpe": 0.64,
           "max_dd": -0.2804,
           "calmar": 0.26,
           "n_months": 322,
-          "dsr": 0.944,
+          "dsr": 0.946,
           "worst_decile_ret": -0.0446
         },
         "top4_mom12_dual": {
-          "cagr": 0.0738,
+          "cagr": 0.0743,
           "sharpe": 0.68,
           "max_dd": -0.2407,
           "calmar": 0.31,
           "n_months": 322,
-          "dsr": 0.964,
+          "dsr": 0.965,
           "worst_decile_ret": -0.0416
         }
       },
       "rank_ic": {
         "1m": {
-          "mean_ic": 0.0106,
-          "ic_t_hac": 0.491,
+          "mean_ic": 0.0099,
+          "ic_t_hac": 0.461,
           "hit": 0.531,
           "n_steps": 322
         },
@@ -75,7 +75,7 @@
       "tsmom_conditional": {
         "above_trend": {
           "mean": 0.0082,
-          "std": 0.0447,
+          "std": 0.0448,
           "sharpe": 0.64,
           "p05": -0.0679,
           "n": 2246
@@ -87,21 +87,21 @@
           "p05": -0.1196,
           "n": 992
         },
-        "mean_diff_t": 0.11,
-        "mean_diff_p": 0.9124
+        "mean_diff_t": 0.09,
+        "mean_diff_p": 0.9293
       },
       "extension_drawdown": {
         "fwd_days": 63,
         "cohorts": {
           "normal": {
             "mean_fwd_maxdd": -0.0624,
-            "p05_fwd_maxdd": -0.21,
-            "n": 50243
+            "p05_fwd_maxdd": -0.2099,
+            "n": 50270
           },
           "stretched": {
             "mean_fwd_maxdd": -0.0521,
             "p05_fwd_maxdd": -0.156,
-            "n": 12004
+            "n": 12010
           },
           "parabolic": {
             "mean_fwd_maxdd": -0.0564,
@@ -164,35 +164,35 @@
       },
       "rank_ic": {
         "1m": {
-          "mean_ic": 0.082,
-          "ic_t_hac": 1.946,
+          "mean_ic": 0.0822,
+          "ic_t_hac": 1.957,
           "hit": 0.56,
           "n_steps": 25
         },
         "3m": {
-          "mean_ic": 0.0843,
-          "ic_t_hac": 1.43,
+          "mean_ic": 0.0842,
+          "ic_t_hac": 1.429,
           "hit": 0.625,
           "n_steps": 8
         }
       },
       "tsmom_conditional": {
         "above_trend": {
-          "mean": 0.0276,
+          "mean": 0.0277,
           "std": 0.1172,
           "sharpe": 0.82,
           "p05": -0.1373,
-          "n": 1073
+          "n": 1072
         },
         "below_trend": {
-          "mean": 0.0371,
+          "mean": 0.0369,
           "std": 0.1049,
           "sharpe": 1.22,
-          "p05": -0.0986,
-          "n": 740
+          "p05": -0.0983,
+          "n": 741
         },
-        "mean_diff_t": -1.81,
-        "mean_diff_p": 0.0709
+        "mean_diff_t": -1.77,
+        "mean_diff_p": 0.0776
       },
       "extension_drawdown": {
         "fwd_days": 63,
