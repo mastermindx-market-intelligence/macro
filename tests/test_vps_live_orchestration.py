@@ -2623,15 +2623,15 @@ def test_status_wires_board_quotes_and_pulse_projection():
 
     src = ast.unparse(status_fn)
 
-    assert '("flow_pulse", "flow_pulse.json")' in src
-    assert '("intraday_quotes", "intraday_quotes.json")' in src
-    flow_idx = src.index('("flow_pulse", "flow_pulse.json")')
-    quotes_idx = src.index('("intraday_quotes", "intraday_quotes.json")')
+    assert "('flow_pulse', 'flow_pulse.json')" in src
+    assert "('intraday_quotes', 'intraday_quotes.json')" in src
+    flow_idx = src.index("('flow_pulse', 'flow_pulse.json')")
+    quotes_idx = src.index("('intraday_quotes', 'intraday_quotes.json')")
     between = src[flow_idx:quotes_idx]
-    assert '"intraday_quotes"' not in between.replace('("intraday_quotes", "intraday_quotes.json")', "")
+    assert "'intraday_quotes'" not in between.replace("('intraday_quotes', 'intraday_quotes.json')", "")
     assert 'flow_pulse_fields' in src
     assert 'intraday_quotes_fields' in src
-    assert '"bars_today"' not in src
+    assert "'bars_today'" not in src
 
 
 def test_deadman_composes_real_board_through_status_projection():
