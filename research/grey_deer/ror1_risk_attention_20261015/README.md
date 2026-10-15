@@ -149,6 +149,39 @@ when native source session survives the plane projection.
 Reproduce with the same `audit_artifact_consistency.py --bundle`
 command above, pointing at the new `plane_provenance_inputs` file.
 
+## Country Radar issuance and Chronicle gap
+
+The October 15 cross-market census now has three additive artifacts:
+
+- `COUNTRY_WARNING_INPUT_RECEIPT_20261015.json` and
+  `COUNTRY_WARNING_SOURCE_RECONCILIATION_20261015.md`: exact nonmatching
+  country source paths for held #8132 (CN missing native Radar; HK and CA
+  strict-invalid JSON and missing native Radar), while separate CN/HK
+  measured Market States still show Risk-off through October 15.
+- `COUNTRY_NATIVE_ISSUED_LEDGER_RECEIPT_20261015.json` and
+  `COUNTRY_NATIVE_ISSUED_LEDGER_FINDINGS_20261015.md`: actual native
+  source-forward records show Oct13 China Risk-off/98 and HK Elevated/90,
+  both model `alert=true`, **not** delivered notifications. China remains
+  Risk-off/97 through Oct15; HK Radar later Caution/81 while HK measured
+  State remains Risk-off/32. Original ledger source IDs are pinned.
+- `COUNTRY_SOURCE_ALERT_FATIGUE_RECEIPT_20261015.json`: model
+  `alert=true` appears on 26/42 CN and 14/47 HK recorded source rows.
+  Since Sep23 it is 9/9 CN and 11/14 HK. The longest contiguous
+  **recorded row** runs are 18 CN and 11 HK. No per-trading-session,
+  independent-event, false-positive or user-delivery claim follows.
+- `COUNTRY_EPISODE_CHRONICLE_GAP_20261015.md`: the *existing*
+  Chronicle `risk_band` adapter currently reads **US-only**
+  `data/risk_radar/forward_log.jsonl`. Its `REBUILD_SOURCES` and
+  event schema do not cover CN/HK/CA Radar logs. The architecture
+  assigns durable regional episodes to Chronicle/Reflexes/QLedger
+  but the country adapter is **not implemented**. Extend original
+  source/manifest/episode owners; do not create a second event store.
+
+Source owner #8132 was informed via issue comments 6198645125 and
+6198842106. Strict JSON, native observation/market dates, consumer
+entitlement, all existing HOLDs and score/trading authority remain
+unmodified. Nothing in this research PR ships a new warning.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
