@@ -44,6 +44,8 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert 'data-im-chart-data-table' in html
     assert 'data-im-chart-table-market="JP"' in html
     assert 'data-im-chart-table-market="GB"' in html
+    assert 'data-im-chart-visible-count data-im-chart-total="2">2</span>' in html
+
     assert 'no missing price or FX value was filled' in html
     assert 'data-im-chart-benchmark-unavailable' in html
     assert 'data-im-chart-selection-unavailable hidden' in html
