@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Publish tested9464 repair d527b2446c2f to SAME existing branch when capacity admits (12:58 8indexed+0reservations/cap8,9077lease). Remote317c/CI38735311827 terminal pack6 receipt-closure failure; PR disarmed. Actual192fixture cases and25testsPASS; three receipt files only, application unchanged. Patch retained in CHECKPOINT sibling terminal9464_receipt_repair.patch. Then re-arm/protected release/normal public-render-selected bundle and browser checks. Consume controller9209 b4 and serving9455 a02; original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups. Preserve Chrome human step, unresolved Fabric001,44refs/five drafts/publication0of10.
+next_action: Push tested9464 repair d527b2446c2f to SAME existing branch when capacity admits (13:08 8indexed+0reservations/cap8,9077lease); remote317c disarmed, settledCI receipt failure.192fixture cases/25tests remain accepted; patch in checkpoint directory. Consume controller-admitted9209 18030e2b exactCI38738523853 then actual squash/normal updater24sources/3pages/4probes; portable bundle prepared unchanged. Serving9455a02 exactCIgreen but stale, awaiting admitted refresh. Original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups; preflight retains26sources/319jobs. Preserve Chrome human step,Fabric001,44refs/five drafts/publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
