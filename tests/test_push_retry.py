@@ -2581,6 +2581,15 @@ if [ "$(pwd -P)" != "$GH001_FIXTURE_ROOT" ]; then
 fi
 printf '%s\0' "$@" >> "$GH001_GIT_LOG"
 printf '\n' >> "$GH001_GIT_LOG"
+if [ "$1" = ls-tree ]; then
+  # One bounded, read-only committed QLedger path check BEFORE synthetic push.
+  if [ "$2" != -l ] || [ "$3" != synthetic-candidate ] || [ "$4" != -- ] || [ "$5" != data/qledger/claims.jsonl ]; then
+    echo "unexpected Git inspection outside one QLedger path" >&2
+    exit 97
+  fi
+  # Missing legacy path: preserve original remote-GH001 rejection test.
+  exit 0
+fi
 if [ "$1" = push ]; then
   printf '%s\n' "$GH001_ERROR" >&2
   exit "$GH001_RC"
@@ -2666,6 +2675,7 @@ def _gh001_tree_bytes(root: Path) -> dict[str, tuple]:
 
 def _assert_gh001_one_push_and_no_sleep(tmp_path: Path) -> None:
     assert (tmp_path / "gh001-git.log").read_bytes() == (
+        b"ls-tree\0-l\0synthetic-candidate\0--\0data/qledger/claims.jsonl\0\n"
         b"push\0origin\0synthetic-candidate:refs/heads/main\0\n"
     )
     assert not (tmp_path / "gh001-sleep.log").exists()
@@ -2864,3 +2874,100 @@ def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
     )
     assert r.returncode == 0, r.stderr
     assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]
+
+
+# ---------------------------------------------------------------------------
+# Emergency GH001 prevention: a known oversized committed legacy QLedger blob
+# should never be packed for network push. This guards the existing shared
+# push_retry transport, not QLedger's separate native publication admission.
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    ("source_ref", "size", "expected_block"),
+    [
+        ("HEAD", 104_857_601, True),
+        ("HEAD", 104_857_600, False),
+        ("HEAD", 104_770_713, False),
+        ("synthetic-candidate", 136_152_822, True),
+    ],
+)
+def test_committed_qledger_oversize_refuses_network_before_git_push(
+    tmp_path, source_ref, size, expected_block
+):
+    r = run_sh(
+        r"""
+        push_retry_init "pre-network size test"
+        push_qledger_guard() { return 0; }
+        git() {
+          case "$1" in
+            ls-tree)
+              [ "$2" = "-l" ] || return 80
+              [ "$3" = "$SIMULATED_REF" ] || return 81
+              [ "$4" = "--" ] || return 82
+              [ "$5" = "data/qledger/claims.jsonl" ] || return 83
+              printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd %s\tdata/qledger/claims.jsonl\n' "$SIMULATED_BYTES"
+              ;;
+            push)
+              echo 'NETWORK_PUSH_WOULD_EXECUTE'
+              ;;
+            *) return 84 ;;
+          esac
+        }
+        if push_do origin "$SIMULATED_REF:refs/heads/main"; then result=0
+        else result=$?; fi
+        printf 'RESULT=%s CLASS=%s TERMINAL=%s\n' "$result" "$PUSH_FAIL_CLASS" "$PUSH_TERMINAL_RC"
+        """,
+        cwd=tmp_path,
+        env={"SIMULATED_REF": source_ref, "SIMULATED_BYTES": str(size)},
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    if expected_block:
+        assert "NETWORK_PUSH_WOULD_EXECUTE" not in r.stdout
+        assert "CLASS=push-size-preflight" in r.stdout
+        assert "TERMINAL=0" not in r.stdout
+    else:
+        assert "NETWORK_PUSH_WOULD_EXECUTE" in r.stdout
+        assert "RESULT=0" in r.stdout
+
+
+def test_legacy_qledger_preflight_does_not_block_missing_native_base(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "native base absent"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then return 0; fi
+          if [ "$1" = push ]; then echo 'PUSHES_NATIVE_SNAPSHOT'; return 0; fi
+          return 77
+        }
+        push_do origin HEAD:refs/heads/main
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "PUSHES_NATIVE_SNAPSHOT" in r.stdout
+
+
+def test_qledger_size_preflight_terminal_sticky_without_second_push(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "oversize sticky"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd 136152822\tdata/qledger/claims.jsonl\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo 'UNSAFE_PUSH_CALLED'; return 0; fi
+          return 75
+        }
+        if push_do origin HEAD:refs/heads/main; then exit 90; else first=$?; fi
+        if push_do origin other:refs/heads/main; then exit 91; else second=$?; fi
+        printf 'first=%s second=%s stop=%s other=%s\n' "$first" "$second" "$PUSH_STOP" "$PUSH_N_OTHER"
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "UNSAFE_PUSH_CALLED" not in r.stdout
+    assert "first=73 second=73" in r.stdout
+    assert "other=1" in r.stdout
+    assert "stop=local QLedger GH001 size preflight" in r.stdout

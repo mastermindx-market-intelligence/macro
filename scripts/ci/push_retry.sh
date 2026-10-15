@@ -350,6 +350,59 @@ push_classify() {
   return 0
 }
 
+# Block one definitely oversize committed legacy QLedger Git-tree blob before
+# the expensive GitHub GH001 rejection. This is additive transport safety, NOT
+# native storage selection, full ancestry admission or another publication plane.
+# A missing/unresolvable/multi-ref source retains incumbent remote safeguards.
+_push_qledger_committed_size_preflight() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  local source_ref="HEAD" spec metadata size
+  case "$#" in
+    0) ;;
+    1)
+      case "$1" in
+        origin|upstream) ;;
+        *) return 0 ;;
+      esac
+      ;;
+    2)
+      spec="$2"
+      case "$spec" in
+        --*|-*) return 0 ;;
+        *:*) source_ref="${spec%%:*}" ;;
+        *) source_ref="$spec" ;;
+      esac
+      ;;
+    *) return 0 ;;
+  esac
+  source_ref="${source_ref#+}"
+  case "$source_ref" in
+    ""|-*) return 0 ;;
+  esac
+
+  # Inspect one committed path, not the dirty worktree or native claims.
+  metadata=$(git ls-tree -l "$source_ref" -- data/qledger/claims.jsonl 2>/dev/null) || return 0
+  case "$metadata" in
+    *$'\tdata/qledger/claims.jsonl') ;;
+    *) return 0 ;;
+  esac
+  metadata="${metadata%%$'\t'*}"
+  size="${metadata##* }"
+  case "$size" in
+    ""|*[!0-9]*) return 0 ;;
+  esac
+  if [ "$size" -le 104857600 ]; then return 0; fi
+
+  # Terminal LOCAL failure; never invent a remote GitHub rejection receipt.
+  PUSH_TERMINAL_RC=73
+  PUSH_FAIL_CLASS="push-size-preflight"
+  PUSH_TERMINAL_OUTPUT="local QLedger Git-tree blob is ${size} bytes; exceeds 100 MiB (104857600 bytes)"
+  PUSH_STOP="local QLedger GH001 size preflight; network push and automatic retry stopped"
+  PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+  printf '%s\n' "$PUSH_TERMINAL_OUTPUT" >&2
+  return "$PUSH_TERMINAL_RC"
+}
+
 # `git push` with classification. Extra args are passed through. Returns push's status.
 push_do() {
   if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
@@ -361,6 +414,7 @@ push_do() {
     for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
     push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
   fi
+  _push_qledger_committed_size_preflight "$@" || return $?
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
