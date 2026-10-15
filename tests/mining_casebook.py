@@ -150,7 +150,8 @@ def expectations_packets_from_event_facts(
     uses for the native-block channel). Unit and basis are taken from each
     row's literal ``unit`` / ``basis`` field (the ``_present`` shape in
     mining_issuer_profiles.py:422-424), NOT derived from ``period_kind``.
-    Each leg carries its own row's ``period``; the composer's
+    Each leg carries its own row's ``period``; a missing or blank
+    ``period`` on either paired row raises :class:`ValueError`; the composer's
     COMPARABILITY_FIELDS check, not this mapper, decides whether the two legs
     are commensurable.
 
@@ -187,6 +188,14 @@ def expectations_packets_from_event_facts(
 
     if estimate_row is None or actual_row is None:
         return ()
+
+    # Mirrors financial_packets_from_event_facts's period gate: a paired row
+    # whose period is absent or blank raises instead of emitting a
+    # period-blind packet that the composer would polarise on blank legs.
+    for paired_row in (estimate_row, actual_row):
+        paired_period = paired_row.get("period")
+        if not isinstance(paired_period, str) or not paired_period.strip():
+            raise ValueError("event_fact.v1 period must be carried")
 
     packet: dict[str, Any] = {
         "kind": "management_estimate_vs_actual",
