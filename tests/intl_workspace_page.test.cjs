@@ -2952,6 +2952,52 @@ for(const state of ['qualified','negative','denied']) {
   });
 }
 
+for(const [lang,width] of [['en',1440],['zh',320]]) {
+  test(`Library settled search status changes only with its message ${lang} ${width}`,async()=>{
+    await pageFixture(async page=>{
+      await page.waitForSelector('[data-im-library-enhanced="true"]');
+      const input=page.locator('[data-im-library-search]');
+      const status=page.locator('[data-im-library-status]');
+      await status.evaluate(node=>{
+        window.__libraryStatusChanges=[];
+        window.__libraryStatusObserver=new MutationObserver(records=>window.__libraryStatusChanges.push(...records.map(()=>node.textContent)));
+        window.__libraryStatusObserver.observe(node,{childList:true,characterData:true,subtree:true});
+      });
+      const originalURL=page.url();
+      for(const query of ['currency','unmatched-xyzz','a'.repeat(257)]) {
+        await input.fill(query);
+        const message=await status.textContent();
+        assert.ok(message);
+        assert.deepEqual(await page.evaluate(()=>__libraryStatusChanges),[message],'a new settled message updates once');
+        const keys=await page.locator('[data-im-library-results] [data-im-library-tool]').evaluateAll(ns=>ns.map(n=>n.dataset.imLibraryTool));
+        await page.evaluate(()=>{__libraryStatusChanges.length=0;});
+        // A native resize and a no-op locale application repaint the workspace,
+        // but neither changes the committed search result or its status.
+        await afterWindowEvent(page,'resize',()=>page.setViewportSize({width:width+1,height:900}));
+        await afterWindowEvent(page,'resize',()=>page.setViewportSize({width,height:900}));
+        await page.evaluate(lang=>setLang(lang),lang);
+        assert.deepEqual(await page.evaluate(()=>__libraryStatusChanges),[],'unchanged search status must not be rewritten by unrelated repaint');
+        assert.equal(await input.inputValue(),query);
+        assert.equal(await input.evaluate(n=>n===document.activeElement),true);
+        assert.deepEqual(await page.locator('[data-im-library-results] [data-im-library-tool]').evaluateAll(ns=>ns.map(n=>n.dataset.imLibraryTool)),keys);
+        assert.equal(page.url(),originalURL);
+        const other=lang==='en'?'zh':'en';
+        await page.evaluate(other=>setLang(other),other);
+        const translated=await status.textContent();
+        assert.notEqual(translated,message);
+        assert.deepEqual(await page.evaluate(()=>__libraryStatusChanges),[translated],'a new locale still updates the status once');
+        await page.evaluate(lang=>setLang(lang),lang);
+        assert.equal(await status.textContent(),message);
+        await page.evaluate(()=>{__libraryStatusChanges.length=0;});
+      }
+      await page.locator('[data-im-library-clear]').click();
+      assert.equal(await status.textContent(),'');
+      assert.deepEqual(await page.evaluate(()=>__libraryStatusChanges),['']);
+      await page.evaluate(()=>__libraryStatusObserver.disconnect());
+    },{bootLanguage:lang,width,initialSearch:'?view=library'});
+  });
+}
+
 for (const width of [1440,390]) test(`actual Library search and retained research link work at ${width}px`,async()=>{
   await pageFixture(async page=>{
     if(width===1440)await page.click('button[data-im-view="library"]');
