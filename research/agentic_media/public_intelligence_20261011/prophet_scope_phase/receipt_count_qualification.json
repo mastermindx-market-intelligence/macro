@@ -190,5 +190,163 @@
   "staging_writes": 0,
   "publication": false,
   "cutover": false,
-  "d14_credit": "0/10"
+  "d14_credit": "0/10",
+  "retained_source_readiness_20261015_1218": {
+    "at": "2026-10-15T12:18:10.091766+00:00",
+    "scope": "Local numeric readiness analysis using retained native records requalified at 11:30; not installed packet, authoring, editorial acceptance or current live selection",
+    "results": [
+      {
+        "id": "POWI-BULL-20260930",
+        "source_observed_at": "2026-10-15T11:30:36.986963+00:00",
+        "event_date": "2026-10-14",
+        "recorded_at": "2026-10-01",
+        "price_basis_date": "2026-09-30",
+        "parameters": [
+          51.8,
+          46.22,
+          60.17,
+          68.54
+        ],
+        "single_closure_result_display": "-13.55%",
+        "qualified_numeric_receipts": 5,
+        "control_results": [
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "5 distinct anchored receipt(s) (>= minimum 5)",
+            "metrics": {
+              "receipts": 5,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17,
+                68.54
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                13.55,
+                51.8,
+                46.22,
+                60.17
+              ]
+            }
+          }
+        ],
+        "context_limit_preserved_in_prompt": true,
+        "excluded_fact_count": 21,
+        "excluded_aliases": [
+          "rounded duplicate closure percentage",
+          "activation trigger equal to entry",
+          "dates",
+          "duration",
+          "unrelated broad market/mover facts"
+        ],
+        "semantic_limit": "Four historical hypothetical plan levels and one simulated closure result; not five independent market observations, executed trades, investor returns or issuer-event causality."
+      },
+      {
+        "id": "VNO-BULL-20261008",
+        "source_observed_at": "2026-10-15T11:30:36.986963+00:00",
+        "event_date": "2026-10-14",
+        "recorded_at": "2026-10-09",
+        "price_basis_date": "2026-10-08",
+        "parameters": [
+          33.81,
+          33.21,
+          34.71,
+          35.61
+        ],
+        "single_closure_result_display": "-4.35%",
+        "qualified_numeric_receipts": 5,
+        "control_results": [
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "5 distinct anchored receipt(s) (>= minimum 5)",
+            "metrics": {
+              "receipts": 5,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71,
+                35.61
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": false,
+            "detail": "4 distinct anchored receipt(s) (< minimum 5)",
+            "metrics": {
+              "receipts": 4,
+              "minimum": 5,
+              "values": [
+                4.35,
+                33.81,
+                33.21,
+                34.71
+              ]
+            }
+          }
+        ],
+        "context_limit_preserved_in_prompt": true,
+        "excluded_fact_count": 21,
+        "excluded_aliases": [
+          "rounded duplicate closure percentage",
+          "activation trigger equal to entry",
+          "dates",
+          "duration",
+          "unrelated broad market/mover facts"
+        ],
+        "semantic_limit": "Four historical hypothetical plan levels and one simulated closure result; not five independent market observations, executed trades, investor returns or issuer-event causality."
+      }
+    ],
+    "controls_passed": 8,
+    "provider_calls": 0,
+    "staging_writes": 0,
+    "production_writes": 0,
+    "publication": false,
+    "next": "After protected follow-on installation, requalify actual selected guarded packet and unchanged native identity/clocks; then consider one immutable writer attempt through the existing staging path. Do not substitute this analysis fixture for that packet."
+  }
 }
