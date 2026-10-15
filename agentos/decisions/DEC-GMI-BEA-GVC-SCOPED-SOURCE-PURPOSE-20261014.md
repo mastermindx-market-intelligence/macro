@@ -46,7 +46,7 @@ affects:
   - "WS:GMI-THEME-GRAPH"
   - "WS:DATA-OS-COMPLETION"
   - "macro-dashboard:Data OS native source owner"
-  - "bea.gvc.may2026.source_responses"
+  - "bea.gvc.may2026.original_responses"
   - "bea.gvc.may2026.industry_import_inputs"
 confidence: high
 reversibility: easy

@@ -1857,9 +1857,6 @@ datasets:
         purchase_access: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
         internal_computation: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
         redistribution: "DEC:GMI-BEA-GVC-SCOPED-SOURCE-PURPOSE-20261014"
-    code_consumers:
-      - engine/market_ontology/bea_industry_context.py::read_private_bea_accounting_brief
-      - engine/market_ontology/bea_industry_context.py::compare_private_bea_using_industries
     notes: >
       PROPOSED ONLY, not native produced or publicly served. The existing
       separately retained 138 industry research JSONL views (eight annual years,
