@@ -148,8 +148,10 @@ unresolved:
 next_actions:
 - A1 PR6651 repair ff7912003742 was ordinarily published and read back09:55 after canonical admission09:53
   showed7 active proofs/cap8 with0 live reservations. Current-main fb596 preview passed. No base integration
-  was performed. Consume fresh exact-head hosted plan, terminal artifact and binding checks; repair an actual
-  failure or continue incumbent final merge. The old ba848 failure is not a verdict on ff791.
+  was performed. Original exact-head run38716442763/attempt1 is active at10:00; plan passed and12packs plus
+  contract-delta run. Original plan ZIP digest/canonical hash validated;127jobs/A1pack9, tested1ac926/basefb596
+  equals admitted preview tree,17productionfiles and A1execution unchanged. Consume terminal artifact and
+  binding checks; repair an actual failure or continue incumbent final merge. Old ba848 failure stays separate.
 - Existing admission helper now uses incumbent prepare_refresh_lease under GET-only transport; a stale
   generation register is not ownership. Four focused controls retain genuine reservations and fail closed
   on unreadable or cleanup-required state. Source/proof is admission-helper-correction-20261015.json in
