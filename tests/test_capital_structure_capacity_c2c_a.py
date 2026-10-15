@@ -769,3 +769,116 @@ def test_c2ca_known_bound_without_evidence_is_blocked() -> None:
     assert evaluation.inputs["authorized"]["status"] == "known"
     assert Decimal(evaluation.inputs["authorized"]["headroom"]["headroom"]) == Decimal(500_000)
     assert envelope.aggregate_bound.status == "unknown"
+
+
+# ---------------------------------------------------------------------------
+# Audit repairs — independent review of PR #9414
+# ---------------------------------------------------------------------------
+
+
+def test_c2ca_unrepresentable_count_blocks_not_raises() -> None:
+    """A count the selector's exact decimal context cannot hold is a blocker, never a raise."""
+    shares = capital(authorized="1E+70", issued="1000000", reserved="500000")
+    evaluation, _, _ = evaluate(**base_kwargs(extra_shares=shares))
+    envelope = evaluation.envelope
+    pool = pools_by_id(evaluation)[AUTH_POOL]
+    assert "authorized_share_records_invalid" in envelope.blockers
+    assert pool.bound.status == "unknown" and pool.bound.value is None
+    assert pool.bound.share_basis == "authorized_unissued"
+    assert AUTH_POOL in envelope.unknown_constraints
+    assert evaluation.inputs["authorized"] == {
+        "pool": AUTH_POOL,
+        "reason": "authorized_share_records_invalid",
+        "shared_by": [TAKE_A],
+    }
+    # The error CLASS is named (an ArithmeticError subclass), never the value.
+    assert pool.bound.note == (
+        "the authorized-capital share records could not be judged: Inexact"
+    )
+    assert "1E+70" not in output_blob(evaluation)
+    assert envelope.aggregate_bound.status == "unknown"
+
+
+def test_c2ca_ceiling_substitute_deducts_applied_action_once() -> None:
+    """The ceiling solve sees the substitute LESS the applied action, never the whole ceiling."""
+    shares = capital(authorized="2000000", issued="1000000")
+    evaluation = evaluate_actions(
+        [cash(TAKE_A, "shelf_takedown", "200000")], **base_kwargs(extra_shares=shares)
+    )
+    envelope = evaluation.envelope
+    ceiling_shares = Fraction(1_000_000)
+    applied = Fraction(1, 2) * Fraction(200_000)
+    assert applied == Fraction(100_000)
+    remaining = (ceiling_shares - applied) * Fraction(Decimal("2.00"))
+    # The kernel's ceiling is the REMAINING capacity: 900,000 shares at $2.
+    assert Fraction(evaluation.kernel["ceiling"]["value"]) == remaining
+    assert remaining == Fraction(1_800_000)
+    assert evaluation.kernel["ceiling"]["binding"] == [AUTH_POOL]
+    # Fixed use plus remaining reproduces the ceiling exactly once: 2,000,000.00.
+    # Adding the full ceiling on top of the fixed use would have read 2,200,000.00.
+    assert envelope.aggregate_bound.status == "unknown"
+    assert envelope.aggregate_bound.note == (
+        "floor 200000.00 / ceiling 2000000.00 under stated unknowns"
+    )
+    assert "2200000.00" not in envelope.aggregate_bound.note
+    # The pessimistic answer is still undetermined by the unknown pool.
+    assert evaluation.kernel["evidence"]["determined"] is False
+    assert evaluation.kernel["evidence"]["value"] is None
+
+
+@pytest.mark.parametrize(
+    ("mutate", "note"),
+    [
+        pytest.param(
+            {"effective_date": None},
+            "corporate_action_undated_unscaled:share_basis",
+            id="split_undated",
+        ),
+        pytest.param(
+            {"effective_date": "not-a-date"},
+            "corporate_action_undated_unscaled:share_basis",
+            id="split_unreadable_date",
+        ),
+        pytest.param(
+            {"kind": None},
+            "split_since_instant_unscaled:share_basis",
+            id="kindless_dated_in_window",
+        ),
+        pytest.param(
+            {"kind": None, "effective_date": None},
+            "corporate_action_undated_unscaled:share_basis",
+            id="kindless_undated",
+        ),
+    ],
+)
+def test_c2ca_unplaceable_corporate_action_fails_closed(
+    mutate: Mapping[str, Any], note: str
+) -> None:
+    """An action that cannot be placed before the instant unknowns the answer; no scaling."""
+    shares = capital(authorized="2000000", issued="1000000", reserved="500000")
+    split = split_share_basis(shift(SALE, 7))
+    split["corporate_action"].update(mutate)
+    evaluation, _, _ = evaluate(**base_kwargs(outstanding=None, extra_shares=[*shares, split]))
+    pool = pools_by_id(evaluation)[AUTH_POOL]
+    assert pool.bound.status == "unknown" and pool.bound.value is None
+    assert pool.bound.note == note
+    assert AUTH_POOL in evaluation.envelope.unknown_constraints
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+    # A19: the selector's counts are reported unscaled.
+    assert Decimal(evaluation.inputs["authorized"]["headroom"]["headroom"]) == Decimal(500_000)
+
+
+def test_c2ca_kind_none_action_changes_nothing() -> None:
+    """``kind: none`` — what the contract serializes for no action — leaves the bound known."""
+    shares = capital(authorized="2000000", issued="1000000", reserved="500000")
+    split = split_share_basis(shift(SALE, 7))
+    split["corporate_action"] = {
+        "kind": "none",
+        "ratio": None,
+        "effective_date": None,
+        "contract_adjustment_evidence": [],
+    }
+    evaluation, _, _ = evaluate(**base_kwargs(outstanding=None, extra_shares=[*shares, split]))
+    pool = pools_by_id(evaluation)[AUTH_POOL]
+    assert pool.bound.status == "known"
+    assert Decimal(pool.bound.value) == Decimal(500_000)

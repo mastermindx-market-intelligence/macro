@@ -744,6 +744,12 @@ class _Builder:
         self.residual_pools: dict[str, dict[str, Fraction | None]] = {
             branch: {} for branch in BRANCHES
         }
+        # What the applied fixed actions take out of each pool, per branch.  A
+        # ceiling substitute stands in for an unknown bound, so it owes the same
+        # deduction a known bound gets; otherwise the action is counted twice.
+        self.pool_deductions: dict[str, dict[str, Fraction]] = {
+            branch: {} for branch in BRANCHES
+        }
         self.fixed_totals: dict[str, Fraction] = {branch: Fraction(0) for branch in BRANCHES}
         self.infeasible: dict[str, set[str]] = {branch: set() for branch in BRANCHES}
         self.contradiction: str | None = None
@@ -2173,6 +2179,15 @@ class _Builder:
         headroom or ceiling number is multiplied or divided here: the answer
         becomes unknown instead.  The source is a ``selected`` share-basis result,
         which is a different record family from the one the C2c-P selector reads.
+
+        Fail closed: an action that is recorded but cannot be placed in time --
+        any kind other than ``none`` (a missing kind included) with no readable
+        effective date -- returns the note
+        ``corporate_action_undated_unscaled:share_basis``, because it may have
+        taken effect after the instant; a dated action with no kind is placed
+        by its date like a split.  Only ``kind: none`` (what
+        ``CorporateActionBasis`` always serializes for "no action") or an absent
+        action is read as "no action".
         """
         count_day = _day(instant)
         cutoff_day = _day(self.state.request.as_of[:10])
@@ -2186,10 +2201,13 @@ class _Builder:
             if not isinstance(action, Mapping):
                 continue
             kind = _text(action.get("kind"))
-            if kind is None or kind == "none":
+            raw_effective = action.get("effective_date")
+            if kind == "none":
                 continue
-            effective = _day(action.get("effective_date"))
-            if effective is not None and count_day < effective <= cutoff_day:
+            effective = _day(raw_effective[:10]) if isinstance(raw_effective, str) else None
+            if effective is None:
+                return "corporate_action_undated_unscaled:share_basis"
+            if count_day < effective <= cutoff_day:
                 return "split_since_instant_unscaled:share_basis"
         return None
 
@@ -2237,7 +2255,11 @@ class _Builder:
                 issuer_id=self.state.request.issuer_id,
                 as_of=self.state.request.as_of,
             )
-        except AuthorizedSharesInputError as exc:
+        except (AuthorizedSharesInputError, ArithmeticError, TypeError, ValueError) as exc:
+            # A value the selector's exact decimal context cannot hold (an
+            # ``Inexact`` or ``InvalidOperation`` -- both ArithmeticError) or a
+            # malformed field it cannot read is the same finding as a refused
+            # record: the records could not be judged.  No exception escapes.
             self.blockers.append("authorized_share_records_invalid")
             self._undecided_pool(
                 pool_id,
@@ -2809,6 +2831,7 @@ class _Builder:
             if current is not None:
                 route_limits[route_id] = current - view.usd[branch]
         pool_bounds: dict[str, Fraction | None] = {}
+        deductions: dict[str, Fraction] = {}
         for pool in sorted(self.pools, key=lambda item: item.pool_id):
             bound = self._branch_pool_bound(pool, branch)
             deduction = Fraction(0)
@@ -2820,8 +2843,10 @@ class _Builder:
             if bound is not None and deduction:
                 bound = bound - deduction
             pool_bounds[pool.pool_id] = bound
+            deductions[pool.pool_id] = deduction
         self.residual_routes[branch] = route_limits
         self.residual_pools[branch] = pool_bounds
+        self.pool_deductions[branch] = deductions
         self.fixed_totals[branch] = sum(
             (
                 view.usd[branch]
@@ -2885,7 +2910,12 @@ class _Builder:
                 continue
             bound = self.residual_pools[branch].get(pool.pool_id)
             if bound is None:
-                bound = pool.substitute if substitutes and pool.substitute is not None else None
+                if substitutes and pool.substitute is not None:
+                    # The fixed totals already carry the applied actions, so the
+                    # substitute is what is left after them, never the whole
+                    # ceiling a second time.
+                    deduction = self.pool_deductions[branch].get(pool.pool_id, Fraction(0))
+                    bound = max(pool.substitute - deduction, Fraction(0))
             else:
                 bound = max(bound, Fraction(0))
             out.append(JointPool(pool.pool_id, uses, bound))
