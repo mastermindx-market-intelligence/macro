@@ -66,6 +66,52 @@ observations creates alert-fatigue risk if blindly promoted. Study episode-
 level factual attention and data-health disclosures separately from future
 SPY drawdown forecasts and all capital sizing/selection authority.
 
+## October 14 published artifact consistency — real pinned observations
+
+The separate offline audit compares five committed Macro artifacts from
+`1b12af09222df183ac61ed5bcabb1ecc6bf5c735`. A minimized
+`evidence/artifact_boundary_inputs_20261015.json` preserves their exact
+Git blob references and only fields required for this question.
+`evidence/artifact_boundary_findings_20261015.json` is the deterministic
+result. It does NOT establish what an authenticated subscriber saw.
+
+Reproduce without network, credentials, a source writer or new alerts:
+
+```bash
+python3 research/grey_deer/ror1_risk_attention_20261015/audit_artifact_consistency.py \
+  --bundle research/grey_deer/ror1_risk_attention_20261015/evidence/artifact_boundary_inputs_20261015.json
+python3 -m unittest discover -s research/grey_deer/ror1_risk_attention_20261015 -p 'test_artifact_consistency.py' -v
+```
+
+Read-only source comparison found five distinct observations:
+
+1. Site Risk Envelope for October 14 includes **FRESH native Leadership
+   Crack `CRACKING`** and `dislocation=true`, but its hazard stage is null
+   with reason `required_source_state_unmapped`. This is a **confirmed
+   artifact-local mapping drop**, not an assertion of systemic contagion.
+2. Site Risk Envelope is October 14 while `data/risk_envelope/latest.json`
+   remains October 13. They were generated at different times; this is a
+   **publication variant mismatch**, not by itself a pipeline error.
+3. The persisted `data/leadership_crack/latest.json` is October 8 `INTACT`
+   but site envelope contains October 14 `CRACKING`; reconstruct exact
+   source/vintage lineage before deciding how consumers bind to each variant.
+4. Context-only Neural Web plane reads 50/Mixed under an October 14 date
+   while measured October 14 Market State is 44/Mixed. Production clocks
+   differ; do not claim the older model was false when it was produced.
+5. Market State explicitly reports four stale input families despite its
+   October 14 score. These require a user-facing data-quality qualifier.
+
+**Original owner already has the mapping fix:** existing Macro Draft #9428
+includes `CRACKING → FRAGILE` in its held source head; do not create
+or merge a competing adapter. The permitted descriptive stage is
+`FRAGILE`, not `TRANSMITTING` or `BREAKDOWN` without competent evidence.
+Existing alternate producer/consumer and read-permission holds still apply.
+
+**Verification:** ten tests passed after test-first RED; the pinned bundle
+replays to the exact same JSON findings receipt hash
+`429605fc52fba14f63253416674f8ba5abfb5d97db89b6939e222d962a3cf979`.
+No original source artifacts were edited and no production service was invoked.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
