@@ -10,6 +10,13 @@ natural_invocation_verified is always false. natural_session_count is always
 null. Repeated source dates are complete observations of the same session,
 not advances. A successful collection is snapshot evidence only.
 
+Optional --identity-vendor thetadata joins SPY only through the existing captured
+canonical SEC consumer. It uses the exact verified Matrix bytes and source session.
+Publication complete/stable keep their original meaning; identity.scope and
+identity.complete report the separate join. An opt-in CLI requires both to succeed.
+This does not authenticate capture provenance, prove natural invocation, grant
+rights, or enable Save. Local capture is bounded but not an atomic filesystem read.
+
 Canonical observed-side token-set encoding
 (options_structure.matrix_observed_side_token_set/v1):
   1. Tokens come from engine.options_matrix_retention.matrix_observed_side_tokens
@@ -455,6 +462,93 @@ def _reread_heads(roots, snapshots, output_dir, client, bucket, retention, limit
     return issues
 
 
+def _utc_now():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+def capture_spy_identity_inputs(repo, *, vendor):
+    """Capture existing canonical files for an optional identity join.
+
+    The existing writer currently retains only a SPY source admission. Read
+    clocks describe this capture, not historical availability or HTTP provenance.
+    Uses the observer's bounded local reader; no atomic snapshot or hostile
+    filesystem replacement guarantee is introduced.
+    """
+    from engine.intelligence_workspace.entity import IdentityArtifactRead
+    if vendor != "thetadata":
+        raise ObservationRefused("SPY source receipt requires explicit thetadata namespace")
+    retention = _retention()
+    base = Path(repo) / "data/reference"
+
+    def captured(name):
+        raw = read_local_bytes(base / name, retention.MAX_MATRIX_BYTES)
+        return IdentityArtifactRead(raw, hashlib.sha256(raw).hexdigest(), _utc_now())
+
+    try:
+        aliases = captured("vendor_aliases.parquet")
+        master = captured("security_master.parquet")
+        receipt = captured("_receipt.json")
+        document = json.loads(receipt.body.decode("utf-8"),
+                              object_pairs_hook=retention._unique_object,
+                              parse_constant=retention._nonfinite,
+                              parse_float=retention._finite_float)
+        evidence = document["spy_option_root"]
+        if (type(evidence) is not dict
+                or evidence.get("schema") != "mastermind.spy_option_root_sources.v1"
+                or evidence.get("vendor") != vendor or evidence.get("root") != "SPY"):
+            raise ValueError("unexpected source receipt")
+        # This is the existing writer's evidence serialization, which the alias
+        # independently binds. The enclosing receipt hash remains visible too.
+        body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+        root_evidence = IdentityArtifactRead(body, hashlib.sha256(body).hexdigest(), receipt.read_at)
+    except (_ReadIssue, KeyError, ValueError, TypeError, UnicodeError, RecursionError) as exc:
+        raise ObservationRefused("canonical SPY identity inputs unavailable or invalid") from exc
+    return {"vendor": vendor, "roots": ("SPY",), "aliases": aliases, "security_master": master,
+            "root_evidence": root_evidence, "writer_receipt_sha256": receipt.sha256}
+
+
+def _join_observed_identity(required, snapshots, failures, inputs, matrix_reads, retention):
+    """Resolve only exact successfully observed bytes through the existing reader."""
+    from engine.intelligence_workspace.entity import IdentityArtifactRead, IdentityResolutionError
+    from engine.intelligence_workspace.options_identity import resolve_option_matrix_security
+    decision_at = _utc_now()
+    items = {}
+    for root in required:
+        if root in failures or root not in snapshots:
+            items[root] = {"status": "UNAVAILABLE", "reason": "snapshot_not_verified"}
+            continue
+        raw = snapshots[root]
+        ref = retention.reference_for_bytes(root, raw)
+        read = IdentityArtifactRead(raw, hashlib.sha256(raw).hexdigest(), matrix_reads[root])
+        try:
+            resolved = resolve_option_matrix_security(
+                ref, read, vendor=inputs["vendor"], decision_at=decision_at,
+                aliases=inputs["aliases"], security_master=inputs["security_master"],
+                root_evidence=inputs["root_evidence"],
+            )
+        except IdentityResolutionError:
+            items[root] = {"status": "UNAVAILABLE", "reason": "identity_contract_invalid"}
+            continue
+        if resolved is None:
+            items[root] = {"status": "UNAVAILABLE", "reason": "root_session_unbound"}
+            continue
+        underlying = resolved.underlying
+        items[root] = {
+            "status": "RESOLVED", "security_id": underlying.binding.security_id,
+            "listing_key": underlying.listing_key, "vendor": inputs["vendor"],
+            "root": ref.root, "session": ref.session, "matrix_sha256": ref.sha256,
+            "version_ref": ref.version_ref, "matrix_read_at": read.read_at.isoformat(),
+            "available_at": resolved.available_at.isoformat(),
+            "aliases_sha256": underlying.aliases_sha256,
+            "security_master_sha256": underlying.master_sha256,
+            "root_evidence_sha256": inputs["root_evidence"].sha256,
+            "binding_sha256": underlying.binding.binding_sha256,
+        }
+    return {"scope": list(required), "complete": all(item["status"] == "RESOLVED" for item in items.values()),
+            "decision_at": decision_at.isoformat(), "roots": items,
+            "writer_receipt_sha256": inputs["writer_receipt_sha256"]}
+
+
 def observe_publication(
     *,
     output_dir,
@@ -465,12 +559,15 @@ def observe_publication(
     receipt_path=None,
     retention_module=None,
     now=None,
+    identity_inputs=None,
 ) -> dict:
     """Collect one read-only observation of published matrix snapshots.
 
     `client` must already exist. This function never constructs a publisher
     client, never lists buckets, and never writes production objects. A receipt
-    is created only at an explicitly supplied new path.
+    is created only at an explicitly supplied new path. Optional identity_inputs
+    come from capture_spy_identity_inputs; the join covers SPY, not the other roots.
+    Its captured files and clocks describe a finite read, not a current/live grant.
     """
     if client is None:
         raise ObservationRefused("observer requires an injected or CLI-provisioned client")
@@ -487,6 +584,18 @@ def observe_publication(
         if root in seen:
             raise ObservationRefused("duplicate observer root")
         seen.add(root)
+    if identity_inputs is not None:
+        from engine.intelligence_workspace.entity import IdentityArtifactRead
+        fields = {"vendor", "roots", "aliases", "security_master", "root_evidence", "writer_receipt_sha256"}
+        if (type(identity_inputs) is not dict or set(identity_inputs) != fields
+                or identity_inputs["vendor"] != "thetadata"
+                or identity_inputs["roots"] != ("SPY",) or "SPY" not in required
+                or any(not isinstance(identity_inputs[name], IdentityArtifactRead)
+                       for name in ("aliases", "security_master", "root_evidence"))
+                or type(identity_inputs["writer_receipt_sha256"]) is not str
+                or len(identity_inputs["writer_receipt_sha256"]) != 64
+                or any(c not in "0123456789abcdef" for c in identity_inputs["writer_receipt_sha256"])):
+            raise ObservationRefused("invalid captured SPY identity input bundle")
     output_dir = Path(output_dir)
     if not output_dir.exists() or not output_dir.is_dir():
         raise ObservationRefused("output directory is missing")
@@ -503,6 +612,7 @@ def observe_publication(
     observed_at = (now or datetime.datetime.now(datetime.timezone.utc)).isoformat()
     items = {}
     snapshots = {}
+    matrix_reads = {}
     failures = {}
     for root in required:
         try:
@@ -515,6 +625,8 @@ def observe_publication(
             continue
         items[root] = item
         snapshots[root] = raw
+        if identity_inputs is not None:
+            matrix_reads[root] = _utc_now()
 
     issues = []
     if len(items) != len(required):
@@ -590,6 +702,10 @@ def observe_publication(
         "receipt_written": receipt is not None,
         "observed_side_token_set_encoding": TOKEN_SET_ENCODING,
     }
+    if identity_inputs is not None:
+        result["identity"] = _join_observed_identity(
+            identity_inputs["roots"], snapshots, failures, identity_inputs, matrix_reads, retention)
+        result["identity"]["complete"] = complete and result["identity"]["complete"]
     if receipt is not None:
         _write_receipt(receipt, result)
     return result
@@ -613,6 +729,8 @@ def main(argv=None, *, client=None) -> int:
     parser.add_argument("--receipt", default=None, help="New exclusive receipt path (optional)")
     parser.add_argument("--prior", default=None, help="Prior observation receipt to compare (optional)")
     parser.add_argument("--bucket", default=None, help="R2 bucket; default R2_BUCKET from provisioned env")
+    parser.add_argument("--identity-vendor", choices=("thetadata",), default=None,
+                        help="Also join exact observed Matrix bytes to captured canonical SPY identity")
     args = parser.parse_args(argv)
 
     repo = _ensure_repo_path(args.repo)
@@ -621,6 +739,13 @@ def main(argv=None, *, client=None) -> int:
     if tuple(publisher_roots) != tuple(DEFAULT_ROOTS):
         print("observer DEFAULT_ROOTS drifted from publisher", file=sys.stderr)
         return 2
+    identity_inputs = None
+    if args.identity_vendor is not None:
+        try:
+            identity_inputs = capture_spy_identity_inputs(repo, vendor=args.identity_vendor)
+        except ObservationRefused as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
     if client is None:
         from scripts.build_options_matrix import _r2_client
         client = _r2_client()
@@ -644,13 +769,15 @@ def main(argv=None, *, client=None) -> int:
             prior_path=args.prior,
             receipt_path=args.receipt,
             retention_module=retention,
+            identity_inputs=identity_inputs,
         )
     except ObservationRefused as exc:
         print(str(exc), file=sys.stderr)
         return 2
     json.dump(result, sys.stdout, indent=2, allow_nan=False)
     sys.stdout.write("\n")
-    return 0 if result.get("complete") and result.get("stable") else 1
+    identity_ok = identity_inputs is None or result.get("identity", {}).get("complete") is True
+    return 0 if result.get("complete") and result.get("stable") and identity_ok else 1
 
 
 if __name__ == "__main__":
