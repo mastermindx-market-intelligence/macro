@@ -433,6 +433,9 @@ _ENUM_PINS = (
     ("cash_basis", c.CASH_BASES),
     ("cash_effect_kind", c.CASH_EFFECT_KINDS),
     ("price_kind", c.PRICE_KINDS),
+    ("economic_term_name", c.ECONOMIC_TERM_NAMES),
+    ("economic_term_status", c.ECONOMIC_TERM_STATUSES),
+    ("term_fact_origin", c.TERM_FACT_ORIGINS),
 )
 
 
@@ -440,6 +443,45 @@ _ENUM_PINS = (
 def test_schema_enums_mirror_the_module_vocabularies(name, values):
     schema = c.load_state_schema()
     assert set(schema["$defs"][name]["enum"]) == set(values), name
+
+
+#: X0 (C0 2.2.0) record vocabularies live inline in their record ``$defs``,
+#: not as top-level enum ``$defs``; pin them to the module tuples the same way.
+_INLINE_ENUM_PINS = (
+    (("transaction_observation", "kind"), c.TRANSACTION_KINDS),
+    (("transaction_observation", "reporting_basis"), c.REPORTING_BASES),
+    (("transaction_observation", "origin"), c.TRANSACTION_ORIGINS),
+    (("transaction_binding", "target_kind"), c.BINDING_TARGET_KINDS),
+    (("transaction_binding", "usage_class"), c.USAGE_CLASSES),
+    (("transaction_binding", "origin"), c.BINDING_ORIGINS),
+)
+
+
+@pytest.mark.parametrize("path,values", _INLINE_ENUM_PINS,
+                         ids=[".".join(path) for path, _ in _INLINE_ENUM_PINS])
+def test_schema_record_inline_enums_mirror_the_module_vocabularies(path, values):
+    record, field = path
+    schema = c.load_state_schema()
+    assert set(schema["$defs"][record]["properties"][field]["enum"]) == set(values), path
+
+
+def test_schema_realized_cash_kind_is_the_realized_cash_vocabulary():
+    """``realized_cash_kind`` is nullable, so its enum sits in an ``anyOf`` branch."""
+    schema = c.load_state_schema()
+    branches = [item["enum"] for item in
+                schema["$defs"]["realized_cash"]["properties"]["realized_cash_kind"]["anyOf"]
+                if "enum" in item]
+    assert len(branches) == 1
+    assert set(branches[0]) == set(c.REALIZED_CASH_KINDS)
+
+
+def test_schema_warrant_exercise_settlement_is_the_settlement_vocabulary():
+    schema = c.load_state_schema()
+    branches = [item["then"]["properties"]["settlement"]
+                for item in schema["$defs"]["transaction_observation"].get("allOf", [])
+                if "settlement" in item.get("then", {}).get("properties", {})]
+    assert len(branches) == 1
+    assert set(branches[0]["enum"]) == set(c.SETTLEMENTS)
 
 
 def test_schema_input_schema_enum_is_the_compatibility_table():

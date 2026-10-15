@@ -116,7 +116,12 @@
         }
         var payload=briefcase.buildJsonExport(api.getWorkspace(),api.getFilters()),day=text((payload.workspace||{}).as_of,'undated').replace(/[^0-9-]/g,''),bundle=text((payload.workspace||{}).bundle_id,'unversioned').replace(/[^A-Za-z0-9._-]/g,'_'),content=JSON.stringify(payload,null,2)+'\n',jsonOk=download('government-revenue-'+day+'-'+bundle+'-view.json',content,'application/json;charset=utf-8');
         status(jsonOk?tr('Auditable JSON view exported.','已导出可审计的 JSON 视图。'):tr('JSON export is unavailable in this browser.','此浏览器无法导出 JSON。'),!jsonOk);
-      }catch(error){status(tr('The governed view could not be exported.','无法导出受治理视图。'),true)}
+      }catch(error){
+        if(error&&error.code==='unsupported_export_mode'){
+          status(tr('Export is not available for this view. Switch to Changes, Award activity, Opportunities or Recompete watch to export.','此视图暂不支持导出。请切换到变化、授标动态、机会或再竞争观察后导出。'),true);return;
+        }
+        status(tr('The governed view could not be exported.','无法导出受治理视图。'),true);
+      }
     }
 
     function bind(){

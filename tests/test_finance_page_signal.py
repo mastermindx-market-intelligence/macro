@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 import copy
 import json
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, MutableMapping
 from pathlib import Path
 from typing import Any
 
@@ -379,6 +379,184 @@ def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
         apply_page_signal(document, page)
     assert _ids(page) == before
     assert page == before_full
+
+
+class _RaisingReratingLookup(MutableMapping[str, Any]):
+    """Slice mapping whose ``get("rerating")`` raises ``exc``.
+
+    Every other key behaves like the underlying plain dict, so building
+    the id-to-slice index succeeds; only the ``rerating`` lookup raises.
+    The override is required for the KeyError param: an inherited
+    ``Mapping.get`` would swallow a KeyError from ``__getitem__`` and
+    return its default instead of letting it propagate.
+    """
+
+    def __init__(self, store: dict[str, Any], exc: BaseException) -> None:
+        self._store = store
+        self._exc = exc
+
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "rerating":
+            raise self._exc
+        return self._store.get(key, default)
+
+    def __getitem__(self, key: str) -> Any:
+        return self._store[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._store[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self._store[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._store)
+
+    def __len__(self) -> int:
+        return len(self._store)
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        pytest.param(
+            RuntimeError("rerating lookup exploded"), id="runtime_error"
+        ),
+        pytest.param(
+            KeyError("rerating"), id="key_error_from_overridden_get"
+        ),
+    ],
+)
+def test_raising_rerating_lookup_leaves_both_slices_untouched(exc) -> None:
+    """A caller-supplied lookup that raises leaves the page as it was.
+
+    The document routes one falsifier to each of the two slices. The
+    second slice's ``get("rerating")`` raises, so the first slice's
+    falsifiers and the second slice's own placement must both stay
+    unwritten: every lookup on a caller-supplied slice happens before
+    the first caller-visible write. The raised exception propagates.
+    """
+    first = _slice("card_networks", "sentinel-card")
+    second: dict[str, Any] = {
+        "slice_id": "exchanges_trading_venues",
+        "falsifiers": [],
+        "rerating": {"falsifier_ids": []},
+    }
+    page = {"slices": [first, _RaisingReratingLookup(second, exc)]}
+    before_first = copy.deepcopy(first)
+    before_second = copy.deepcopy(second)
+    with pytest.raises(type(exc)) as caught:
+        apply_page_signal(_document(), page)
+    assert caught.value is exc
+    assert first == before_first
+    assert second == before_second
+
+
+class _RaisingClassRerating(MutableMapping):
+    """A MutableMapping whose ``__class__`` raises RuntimeError on access.
+
+    typing.MutableMapping's instance check is a ``_SpecialGenericAlias``
+    that consults ``type(obj)`` and bypasses the Python ``__class__``
+    attribute, so ``isinstance`` returns True here without raising.
+    A plain ``isinstance`` against a type it is not (``dict``, ``int``) reads
+    ``obj.__class__`` with no abc frame; a ``collections.abc`` ``ABCMeta`` check also
+    raises under it. Implemented as a MutableMapping subclass so the
+    rerating write at the end of ``_attach_falsifiers`` runs at HEAD
+    when ``isinstance`` passes: the all-or-nothing assertion can then
+    require the rerating falsifier ids to actually be written.
+    ``==`` returns a bool against a plain dict and raises only against a
+    hostile ``other``; a deepcopy snapshot is one, so tests read ``_store``.
+    """
+
+    def __init__(self) -> None:
+        self._store: dict[str, Any] = {}
+
+    @property
+    def __class__(self):
+        raise RuntimeError("hostile __class__")
+
+    def __getitem__(self, key: str) -> Any:
+        return self._store[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._store[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self._store[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._store)
+
+    def __len__(self) -> int:
+        return len(self._store)
+
+
+def test_raising_class_lookup_leaves_both_slices_consistent() -> None:
+    """A rerating whose ``__class__`` raises RuntimeError keeps slices consistent.
+
+    The second slice's ``rerating`` is a MutableMapping subclass whose
+    ``__class__`` access raises. The all-or-nothing law: after the
+    call, either it raised and BOTH slices equal their pre-call deep
+    copies, or it returned and BOTH slices carry their falsifier
+    writes: ``falsifiers`` ids and ``rerating["falsifier_ids"]`` exactly equal
+    that row's canonical id, on the caller's own rerating. A partial state — slice 1
+    written, slice 2 not — fails with a message naming the partial
+    write. The subclass decision is measured: without subclassing
+    ``MutableMapping`` the HEAD branch skips the rerating write and
+    slice 2 silently loses its ``falsifier_ids``, so the assertion
+    could not distinguish "returned with both writes" from "returned
+    with one write"; subclassing lets the all-or-nothing law name the
+    missing rerating write explicitly. The raised branch checks the
+    hostile rerating by identity and backing store, because comparing
+    it with ``==`` raises the same RuntimeError.
+    """
+    first = _slice("card_networks", "sentinel-card")
+    hostile = _RaisingClassRerating()
+    hostile["falsifier_ids"] = []
+    second: dict[str, Any] = {
+        "slice_id": "exchanges_trading_venues",
+        "falsifiers": [],
+        "rerating": hostile,
+    }
+    page = {"slices": [first, second]}
+    before_first = copy.deepcopy(first)
+    before_second_rest = copy.deepcopy(
+        {key: value for key, value in second.items() if key != "rerating"}
+    )
+    before_store = copy.deepcopy(hostile._store)
+
+    raised: BaseException | None = None
+    try:
+        apply_page_signal(_document(), page)
+    except BaseException as exc:
+        raised = exc
+
+    if raised is not None:
+        assert first == before_first, (
+            f"first slice was written after raise: {first!r} != {before_first!r}"
+        )
+        rest = {key: value for key, value in second.items() if key != "rerating"}
+        assert rest == before_second_rest, (
+            f"second slice was written after raise: {rest!r} != {before_second_rest!r}"
+        )
+        if not (
+            second.get("rerating") is hostile and hostile._store == before_store
+        ):
+            pytest.fail(
+                f"second slice rerating was written after raise: {hostile._store!r}"
+            )
+        return
+
+    alpha_ids = [_row("syn-fin-case-alpha")["canonical_case_id"]]
+    beta_ids = [_row("syn-fin-case-beta")["canonical_case_id"]]
+    assert [item["falsifier_id"] for item in first["falsifiers"]] == alpha_ids
+    assert first["rerating"]["falsifier_ids"] == alpha_ids
+    assert [item["falsifier_id"] for item in second["falsifiers"]] == beta_ids
+    if not (second["rerating"] is hostile and hostile["falsifier_ids"] == beta_ids):
+        pytest.fail(
+            "partial write: second slice rerating is not the caller's hostile "
+            f"object carrying {beta_ids!r}; its store is {hostile._store!r}"
+        )
 
 
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:

@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-10-14T05:51:16+00:00",
-  "expected_session": "2026-10-13",
-  "store_before": "2026-10-12",
-  "store_after": "2026-10-13",
+  "checked_at": "2026-10-15T04:57:01+00:00",
+  "expected_session": "2026-10-14",
+  "store_before": "2026-10-14",
+  "store_after": "2026-10-14",
   "status": "fresh",
-  "healed": true,
-  "heal_attempted": true
+  "healed": false,
+  "heal_attempted": false
 }

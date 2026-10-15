@@ -374,6 +374,162 @@ registered before the gates were built. It labels routing only. It re-grades no 
 - **Not re-scored.** The addendum lives in `audit/sample_gates.json`,
   `audit/gate_verdicts.json` and `audit/gate_validation.json` only.
 
+### Routing gates 2 validation addendum
+
+The gates-1 ruling called for a revised gate set, frozen before a fresh validation on
+cases no card had shown and judged against the same two bars. That set is
+`engine/news_impact/routing_gates_2.py`, version `ni-routing-gates-2`, frozen at commit
+`5baa4b10`. Gates-1 stays frozen and byte-reproducible beside it. This addendum labels
+routing only. It re-grades no slot.
+
+- **What changed from gates-1.** G1 adds patterns for the market report, quote page and
+  solicitation shapes gates-1 missed. G3 reads the event kind the headline names and adds
+  two codes. `g3_template_sense` drops a product sense of "offering" under T1, and under
+  T3 a launch of something other than a product or an equity sales agreement.
+  `g3_event_mismatch` drops a case whose attached filings report none of the headline's
+  event kinds, and a T3 case whose filings carry only items 2.02 and 9.01. T2 guidance
+  with an attached 2.02 filing, and a T2 contract with an attached 1.01 filing, pass the
+  family-language check. Commentary was left as in gates-1, because widening it dropped
+  real events in the cases already read.
+- **Pool and sample.** 235 w2 candidates have an attached body. The 43 routing-check
+  cases and the 60 gates-1 cards were read while gates-2 was built, so all 103 are left
+  out. Of the other 132, gates-2 keeps 56 (19 T1, 37 T2, 0 T3) and drops 76. The seat
+  drew 40 gated-in and 20 gated-out cases (seed 20261018) and read them as shuffled cards
+  that did not show gate status (`audit/sample_gates2.json`, `audit/gates2_verdicts.json`).
+- **Bars, fixed in the tool before any gates-2 status on the pool was computed.** The
+  same as gates-1: at least 34 of 40 gated-in `MATCH`, and an estimated real-event drop
+  share of 0.20 or less.
+- **Gated-in: MISS.** 31 of 40 are `MATCH` (0.775, Wilson 95% [0.625, 0.877]), three
+  short of the bar. No miss is `WRONG_ISSUER`. 6 are commentary on a standing fact rather
+  than a new event, 2 route a product sense of "offering" to capital allocation (both
+  `NO_EVENT`), and 1 names an event no attached filing reports (`OTHER_EVENT`).
+
+  | Template | Gated-in | `MATCH` | `NO_EVENT` | `OTHER_EVENT` |
+  |---|---|---|---|---|
+  | T1 | 16 | 12 | 3 | 1 |
+  | T2 | 24 | 19 | 5 | 0 |
+  | T3 | 0 | 0 | 0 | 0 |
+
+- **Gated-out: MISS.** 3 of 20 are `MATCH`. Weighted by pool size, gates-2 keeps about
+  43.4 real events and drops about 11.4, a share of 0.208 (bound interval [0.074, 0.439]),
+  just over the bar. The 3 dropped real events are cut by the issuer guard (2) and by the
+  results-without-2.02 rule (1). The other 17 are 6 `NO_EVENT`, 6 `OTHER_EVENT` and 5
+  `WRONG_ISSUER`.
+- **T3 gets nothing through.** All 25 T3 pool cases are gated out, and none of the 6
+  sampled is `MATCH` (2 `NO_EVENT`, 2 `OTHER_EVENT`, 2 `WRONG_ISSUER`).
+- **Gates-1 against gates-2 on the same pool.** The two sets agree on 121 of the 132
+  pool cases and disagree on 11. Agreeing cases enter both filters alike, so the 11
+  decide which is the better filter. The rule, fixed in `tools/compare_gates_paired.py`
+  and committed before any of its cards was read: a set is right on a case when it keeps
+  a `MATCH` or drops a non-`MATCH`, and gates-2 replaces gates-1 only if it is right on
+  more of the 11 (a tie keeps gates-1). 5 of the 11 already had a class from this
+  validation, and the seat classed the other 6 on blind cards (seed 20261019,
+  `audit/paired_verdicts.json`). Gates-2 is right on all 11 and gates-1 on none: gates-2
+  keeps 5 real events gates-1 cut for missing family language, and drops 3 `NO_EVENT`
+  and 3 `OTHER_EVENT` cases gates-1 kept (`audit/gates_paired.json`).
+- **The frame binds.** At each family's sampled rates the pool holds about 17 T1, 38 T2
+  and 0 T3 on-event cases, against 200 each. 66 pool cases have still not been carded,
+  and only 15 of them are gated in under gates-2, too few for another 40-case gated-in
+  sample.
+- **Limit of this audit.** The seat wrote both gate sets and classed every card. The
+  cards hid gate status, not the auditor's knowledge of the rules. No second auditor read
+  them, because the GLM, Grok and Codex lanes were exhausted.
+- **Ruling.** Neither gate set is accepted as an on-event guarantee. Gates-2 replaces
+  gates-1 as the draw filter, and every scored continuation case keeps its own routing
+  verdict. No further headline-gate revision is validated on this pool. The next lever is
+  a filing-first widening of the frame inside the existing SEC owners. T3's shortfall is
+  printed at its full 200. See `DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH` and
+  `DSC:NEWS-IMPACT-ROUTING-GATES-2-VALIDATION`.
+- **Not re-scored.** The addendum lives in `audit/sample_gates2.json`,
+  `audit/gates2_verdicts.json`, `audit/gates2_validation.json`,
+  `audit/paired_verdicts.json` and `audit/gates_paired.json` only.
+
+### v2 continuation routing census addendum
+
+The 99-case continuation draw `../gated_v2/` (`ni-edgar-body-2`, gates-2 as the draw
+filter) needs a routing verdict on every case before any of it scores, because only
+`MATCH` cases score (`DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH` item 3). 69 of the 99
+already carry a verdict from a card the seat read earlier (17 from the routing check, 24
+from the gates validation and 28 from the gates-2 validation). The other 30 are a census,
+with no sampling. The rules were fixed in `tools/build_v2_routing.py` before any of its
+cards was read: card order is the sorted ids shuffled with seed 20261020, the four classes
+are unchanged, and the cards are built from the v2 bodies. Each filing shows its session
+offset and relation, and for a graded case whether it sits in the body that was graded.
+The tool's sha256 (`b6aac488…`) was recorded before the first card was opened.
+
+A graded case keeps its grade on its graded v1 body (`DEC:NEWS-IMPACT-EDGAR-BODY-2-BAND`).
+So for a graded case `MATCH` needs a filing in that graded body that reports the event. A
+report found only in a filing the wider band added is `OTHER_EVENT`, kind
+`graded_body_lacks_report`.
+
+| Census (30 cases) | MATCH | NO_EVENT | OTHER_EVENT | WRONG_ISSUER |
+|---|---|---|---|---|
+| graded (8) | 7 | 0 | 1 | 0 |
+| never graded (22) | 10 | 7 | 4 | 1 |
+| total | 17 | 7 | 5 | 1 |
+
+- **Census MATCH share 0.567**, Wilson 95% interval [0.392, 0.726]. This is information
+  only. Gates-2 stays frozen at `5baa4b10` and no gate revision is validated on this
+  population. The 7 `NO_EVENT` cases are 5 commentary pieces and 2 market reports. 4 of the
+  5 `OTHER_EVENT` cases have no attached filing that reports the headline event; the fifth
+  is the one `graded_body_lacks_report`.
+- **Routing map over all 99 drawn cases:** 74 `MATCH`, 15 `NO_EVENT`, 9 `OTHER_EVENT`
+  and 1 `WRONG_ISSUER`. Every drawn case has exactly one verdict, and the tool refuses a
+  case carded twice.
+- **Scorable.** 74 cases score. 62 of them already carry a two-family grade, and the other
+  12, which are `MATCH` but never graded, form the labeling queue.
+
+  | Template | drawn | scorable MATCH | already graded | label queue | non-MATCH | shortfall vs 200 |
+  |---|---|---|---|---|---|---|
+  | T1 | 49 | 34 | 28 | 6 | 6 NO_EVENT, 9 OTHER_EVENT | 166 |
+  | T2 | 46 | 36 | 31 | 5 | 9 NO_EVENT, 1 WRONG_ISSUER | 164 |
+  | T3 | 4 | 4 | 3 | 1 | none | 196 |
+  | Total | 99 | 74 | 62 | 12 | 25 | 526 |
+
+- **The shortfall is printed, never padded.** 74 scorable cases against 600 leaves 526.
+  The band is not the binding lever; issuer resolution is (1,271 candidates name no ticker
+  the ledger maps to a CIK, `DSC:NEWS-IMPACT-EDGAR-BODY-2-FRAME`).
+- **Limit of this census.** The seat classed every card, and no second auditor has read
+  them. A second auditor classes the same cards when a labeling lane opens.
+- **Not re-scored.** The census lives in `audit/v2_routing_spec.json`,
+  `audit/v2_routing_verdicts.json` and `audit/v2_routing.json` only. `summary.json` and
+  the 157-case labels are unchanged. See `DSC:NEWS-IMPACT-V2-ROUTING-CENSUS`.
+
+### v2 label queue addendum
+
+The 12 queue cases above carry two-family labels under prompt-v1.2 (family A MiniMax-M3,
+family B qwen3.7-plus) on their `ni-edgar-body-2` bodies. `tools/score_v2_queue.py` grades
+them with `score_benchmark.py`'s own functions, imported rather than copied, and
+`score_benchmark.py` and its outputs are unchanged. Its output is value-free: per slot it
+keeps the class, both directional outcomes and the mismatch components, never a value.
+
+- **Span replay is clean.** Family A replays 125 of 125 cited spans (Wilson 95% [0.970,
+  1]) and family B 119 of 119 ([0.969, 1]). No case is flagged for injection.
+- **Critical slots agree on 12 of 24 (0.50, [0.31, 0.69]).** 6 agree present, 6 agree
+  absent, 3 differ in value (2 value, 3 period components) and 9 are present against
+  absent. All 12 cases are `routed_pending_third`.
+
+  | Slot | slots | agree | classes |
+  |---|---|---|---|
+  | T1 `executed_amount` | 6 | 0 | 6 present vs absent |
+  | T1 `incremental_amount` | 6 | 4 | 4 agree present, 1 value differs, 1 present vs absent |
+  | T1 `remaining_authorization` | 6 | 6 | 6 agree absent |
+  | T2 `stated_amount` | 5 | 2 | 2 agree present, 2 value differs, 1 present vs absent |
+  | T3 `stated_quantity` | 1 | 0 | 1 present vs absent |
+
+- **One slot carries most of the disagreement.** On T1 `executed_amount` the families
+  split present against absent on all 6 cases, family A reporting a value and family B
+  none on 5 of them. Both cite only text that replays, so this looks like a definition
+  gap (what counts as an executed amount on a buyback disclosure) rather than a reading
+  error. A third family aimed at that slot decides which.
+- **Scorable view.** Joining the 12 to the 62 graded `MATCH` cases gives 74 cases and 142
+  critical slots at agreement 0.535 ([0.453, 0.615]): T1 0.598 over 102 slots, T2 0.361
+  over 36, T3 0.5 over 4. By source the graded v1 bodies sit at 0.542 over 118 and the
+  queue at 0.50 over 24. These are two-family agreement rates, not accuracy, and no queue
+  case is adjudicated until a third family reads it. The shortfall stays 526.
+- **Not re-scored.** The queue lives in `v2_queue/` only. See
+  `DSC:NEWS-IMPACT-V2-QUEUE-SCORING`.
+
 ### Eval receipts
 
 There is one `eval_receipt.v1` per family (`eval_receipt_fam_a.json`,
@@ -507,6 +663,14 @@ entries and 1 CORRECTION.
 | `audit/sample_gates.json` | Gates validation pool counts, the 60 sampled cases with gate status, card order (ids and codes only) |
 | `audit/gate_verdicts.json` | Seat routing verdicts for the 60 gates-validation cases, with paraphrased notes |
 | `audit/gate_validation.json` | Per-case gate status and class, class rates per arm, both bars with PASS or MISS |
+| `audit/sample_gates2.json` | Gates-2 validation pool counts, the 60 sampled cases with gate status, card order (ids and codes only) |
+| `audit/gates2_verdicts.json` | Seat routing verdicts for the 60 gates-2 validation cases, with paraphrased notes |
+| `audit/gates2_validation.json` | Gates-2 per-case status and class, class rates per arm, both bars, per-family estimates |
+| `audit/paired_verdicts.json` | Seat routing verdicts for the 6 disagreement cases not classed in the gates-2 validation |
+| `audit/gates_paired.json` | Gates-1 against gates-2 on the 11 disagreement cases: both statuses, class, who is right, filter pick |
+| `audit/v2_routing_spec.json` | v2 routing census population: counts, census ids with template and graded flag, card order (ids only) |
+| `audit/v2_routing_verdicts.json` | Seat routing verdicts for the 30 census cases, with paraphrased notes |
+| `audit/v2_routing.json` | Census class counts with Wilson intervals, routing map for all 99 drawn cases, scorable ids, label queue, per-template shortfall |
 | `tools/build_label_lanes.py` | Builds the labeling lane trees and packets |
 | `tools/label_batch.template.txt` | Lane packet prompt-v1.0 (64 cases per family) |
 | `tools/label_batch.template.v1.1.txt` | Lane packet prompt-v1.1 (93 cases per family) |
@@ -518,7 +682,13 @@ entries and 1 CORRECTION.
 | `tools/build_audit_malformed.py` | Period-shape census and counterfactual re-grade of the `malformed_value` slots |
 | `tools/build_routing_check.py` | Draws the routing sample and scores the routing verdicts (needs Python 3.11) |
 | `tools/build_gate_validation.py` | Draws the gates-validation sample and scores its verdicts (needs Python 3.12) |
+| `tools/build_gates2_validation.py` | Draws the gates-2 validation sample and scores its verdicts (needs Python 3.12) |
+| `tools/compare_gates_paired.py` | Finds the gates-1/gates-2 disagreement cases and scores the filter comparison (needs Python 3.12) |
+| `tools/build_v2_routing.py` | Finds the gated_v2 cases no card has shown, writes their census cards and scores the census verdicts (needs Python 3.12) |
 | `tools/score_benchmark.py` | Produces `summary.json`, `critical_slots.jsonl` and the receipts |
+| `tools/score_v2_queue.py` | Scores the two-family labels on the 12-case label queue and the 74-case scorable view, reusing `score_benchmark.py`'s grading (needs Python 3.12) |
+| `v2_queue/critical_slots.jsonl` | One row per critical slot of the 12 queue cases: class, both directional outcomes and mismatch components, no values |
+| `v2_queue/summary.json` | Queue span replay, critical-slot and field agreement, and the scorable view by template, prompt version and source, with the shortfall |
 
 Registration: sampler `ni-sampler-1`, sampling seed 20261014. Bootstrap 9,999 reps, seed
 20261012, coverage 0.95. Contract prefix `3edc7139`. Endpoints sha256 `061d1c21…`. Tape
@@ -558,13 +728,33 @@ PYTHONPATH=. python3.11 research/prophet_v4/news_to_business_impact_20261006/ben
 PYTHONPATH=. python3.12 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_gate_validation.py \
   SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
   research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/gate_verdicts.json
+# routing gates 2 validation, then the paired filter comparison (Python 3.12)
+PYTHONPATH=. python3.12 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_gates2_validation.py \
+  SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/gates2_verdicts.json
+PYTHONPATH=. python3.12 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/compare_gates_paired.py \
+  SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/paired_verdicts.json
+# v2 continuation routing census: census population and cards, then score the committed verdicts (Python 3.12)
+PYTHONPATH=.:research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools python3.12 \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/build_v2_routing.py \
+  SCRATCH_W2 research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 AUDIT_OUT \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/audit/v2_routing_verdicts.json
+# v2 label queue: score the canonicalised two-family returns and join the graded MATCH cases (Python 3.12)
+PYTHONPATH=.:research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools python3.12 \
+  research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/tools/score_v2_queue.py \
+  --w2q SCRATCH_W2Q --results research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2 \
+  --bench research/prophet_v4/news_to_business_impact_20261006/benchmark \
+  --out research/prophet_v4/news_to_business_impact_20261006/benchmark/results_w2/v2_queue
 ```
 
 `build_audit.py` also writes `batch_*.txt` audit cards, `build_audit_absent.py` writes
 `batch_absent_*.txt` cards, `build_audit_malformed.py` writes `batch_malformed_*.txt`
-cards, `build_routing_check.py` writes `batch_routing_*.txt` cards and
-`build_gate_validation.py` writes `batch_gates_*.txt` cards. All five quote headlines or
-filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
+cards, `build_routing_check.py` writes `batch_routing_*.txt` cards,
+`build_gate_validation.py` writes `batch_gates_*.txt` cards, `build_gates2_validation.py`
+writes `batch_gates2_*.txt` cards, `compare_gates_paired.py` writes `batch_paired_*.txt`
+cards and `build_v2_routing.py` writes `batch_v2_routing_*.txt` cards. All eight quote
+headlines or filing text and must not be committed. The audit verdicts in `audit/audit.json` are the auditor's, not a
 tool's output.
 
 Checked at commit time from the committed tools and the committed `audit/audit.json`:
@@ -576,22 +766,35 @@ control reports 40 hits and 0 misses. `build_audit_malformed.py` reproduces
 `audit/sample_routing.json` and `audit/routing_check.json` byte for byte.
 `build_gate_validation.py`, run under Python 3.12 against the frozen gates, reproduces
 `audit/sample_gates.json` and `audit/gate_validation.json` byte for byte.
+`build_gates2_validation.py` reproduces `audit/sample_gates2.json` and
+`audit/gates2_validation.json` byte for byte, and `compare_gates_paired.py` reproduces
+`audit/gates_paired.json` byte for byte. `build_v2_routing.py` reproduces
+`audit/v2_routing_spec.json` and `audit/v2_routing.json` byte for byte. `score_v2_queue.py`
+reproduces `v2_queue/critical_slots.jsonl` (`4efe674a…`) and `v2_queue/summary.json`
+(`99fd23b2…`) byte for byte. Its scratch inputs (bundles, label returns and agreement
+output) quote filing text and are not committed.
 
 ## Next
 
-1. Revise the gates for the failure kinds the validation found: a product sense of
-   "offering" under T1, a launch of something other than a product under T3, the market
-   report, quote page and solicitation shapes G1 missed, a body event that differs from the
-   headline's, and G3 cutting T2 events phrased outside the family pattern. Freeze the
-   revised set before drawing a fresh validation sample, from cases no card has shown and
-   under the same bars (`DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH`).
+1. Done: the filing-first widening (`ni-edgar-body-2`, `../gated_v2/`, 99 cases), the
+   routing census above, and two-family labels on the 12-case queue (`v2_queue/`, above).
+   Any new gate rule is frozen and validated on cases no card has shown, under the same two
+   bars (`DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH`).
 2. Run a third family (GLM after 2026-10-19 05:16Z) under prompt-v1.2 and annotation
-   guide-v1.2 on the disputed slots of gated-in cases only: set
+   guide-v1.2 on the disputed slots of gated-in cases only, starting with the 12 queue cases
+   and T1 `executed_amount`, where the two families split on all 6 T1 cases: set
    `LABEL_TEMPLATE=tools/label_batch.template.v1.2.txt` for `tools/build_label_lanes.py`.
-3. Record two candidates for the next contract version without editing the frozen v1
-   contract: a per-share basis for a T1 dividend amount, and a total-authorization slot.
+3. Record three candidates for the next contract version without editing the frozen v1
+   contract: a per-share basis for a T1 dividend amount, a total-authorization slot, and
+   what counts as an executed amount on a buyback disclosure.
 4. Decide per-slot against per-case publication.
 5. Add MiniMax cost capture.
-6. Widen the graded frame toward 600 cases inside the existing source owners. On 8-K
-   bodies alone, T1 needs about 6×, T2 about 4× and T3 about 50× the current frame. Print
-   T3's shortfall rather than fill it with off-event cases.
+6. Grow the scorable set toward 600. It holds 74 (T1 34, T2 36, T3 4), a shortfall of
+   526. The next lever is gated_v3 (`../issuer_fallback/README.md`,
+   `DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER`): one `ni-edgar-body-2` fetch with `--as-of` on
+   or after 2026-10-20 that settles the 113 open windows and reaches the 256 candidates the
+   fill-only issuer fallback resolves, recorded as a new draw. The 914 candidates that name
+   no ticker need a name rung. Print T3's shortfall rather than fill it with off-event
+   cases.
+7. A second auditor classes the 60 gates-2 validation cards, the 11 disagreement cases
+   and the 30 v2 census cards when a labeling lane opens (GLM after 2026-10-19 05:16Z).

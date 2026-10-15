@@ -1618,3 +1618,353 @@ def test_routing_gates_source_has_no_clock_network_or_proxy_cell_read():
     for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
                    '"proxy_cell"', "'proxy_cell'"):
         assert needle not in text, f"forbidden source fragment: {needle!r}"
+
+
+# --- routing gates 2 (DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH item 3) ---------------
+# Synthetic headlines and filing text only: no real issuer, no headline from the w2 pool,
+# no dollar figure (DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE).
+
+from engine.news_impact import routing_gates_2 as RG2
+
+
+def _status2(title, template, ticker, docs):
+    return RG2.classify(title, template, ticker, docs).status()
+
+
+@pytest.mark.parametrize(
+    "title,code",
+    [
+        ("Nasdaq and S&P 500 edge higher as robot stocks rally", "g1_market_report"),
+        ("Stocks, futures slip as investors weigh rate path", "g1_market_report"),
+        ("Analyst Opinions on Zentrix Robotics", "g1_quote_page"),
+        ("Investors Who Lost Money on Zentrix Robotics Should Contact the Firm", "g1_solicitation"),
+        ("Law firm announces investigation on behalf of Zentrix Robotics shareholders", "g1_solicitation"),
+    ],
+)
+def test_gates2_g1_widenings_catch_shapes_gates1_missed(title, code):
+    assert RG.non_event_code(title) is None  # the widening, not the gates-1 rule, catches it
+    assert RG2.non_event_code(title) == code
+    assert _status2(title, "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == f"gated_out:{code}"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Zentrix Robotics declares quarterly dividend",
+        "Zentrix Robotics declares special dividend: here's what investors need to know",
+    ],
+)
+def test_gates2_event_headlines_pass_g1(title):
+    assert RG2.non_event_code(title) is None
+    assert _status2(title, "T1", "ZNTX", [_gdoc(_DIVIDEND)]) == "gated_in"
+
+
+def test_gates2_keeps_every_gates1_non_event_code():
+    for title in (
+        "Industrial Robot Market Size Report 2026-2032",
+        "ZNTX Stock Quote and News",
+        "SHAREHOLDER ALERT: Investors in Zentrix Robotics urged to contact the firm",
+        "3 Robotics Stocks to Buy Before Year End",
+    ):
+        assert RG2.non_event_code(title) == RG.non_event_code(title) is not None
+
+
+def test_gates2_t1_offering_needs_a_capital_sense():
+    title = "Zentrix Robotics expands its service offering for warehouses"
+    product = _gdoc("Item 8.01 Other Events. The Company announced a new service offering for warehouse customers.")
+    assert _status(title, "T1", "ZNTX", [product]) == "gated_in"  # gates-1 reads the family word only
+    assert _status2(title, "T1", "ZNTX", [product]) == "gated_out:g3_template_sense"
+    capital = _gdoc(
+        "Item 8.01 Other Events. The Company entered into an underwriting agreement for a public offering of common stock."
+    )
+    assert _status2(title, "T1", "ZNTX", [capital]) == "gated_in"
+    assert _status2("Zentrix Robotics prices public offering of common stock", "T1", "ZNTX", [product]) == "gated_in"
+
+
+def test_gates2_t1_share_sale_reads_a_trading_plan_as_the_event():
+    body = _gdoc(
+        "Item 8.01 Other Events. The founder adopted a Rule 10b5-1 trading plan for a share sale of company stock."
+    )
+    assert _status2("Zentrix Robotics founder plans share sale", "T1", "ZNTX", [body]) == "gated_in"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Zentrix Robotics unveils fleet performance for August",
+        "Zentrix Robotics launches proxy fight",
+        "Zentrix Robotics enters equity distribution agreement",
+    ],
+)
+def test_gates2_t3_template_sense(title):
+    docs = [_gdoc(_COLLAB, items=("1.01",))]
+    assert _status(title, "T3", "ZNTX", docs) == "gated_in"
+    assert _status2(title, "T3", "ZNTX", docs) == "gated_out:g3_template_sense"
+
+
+def test_gates2_t3_product_launch_is_gated_in():
+    docs = [_gdoc("Item 8.01 Other Events. The Company launched a new warehouse robot, now available to customers.")]
+    assert _status2("Zentrix Robotics launches new warehouse robot", "T3", "ZNTX", docs) == "gated_in"
+
+
+def test_gates2_t3_results_only_filing_is_an_event_mismatch():
+    title = "Zentrix Robotics launches new warehouse robot"
+    docs = [
+        _gdoc(
+            "Item 2.02 Results of Operations. The Company reported quarterly results and launched a new warehouse robot.",
+            items=("2.02", "9.01"),
+        )
+    ]
+    assert _status(title, "T3", "ZNTX", docs) == "gated_in"
+    assert _status2(title, "T3", "ZNTX", docs) == "gated_out:g3_event_mismatch"
+
+
+def test_gates2_body_must_report_the_headline_event():
+    title = "Zentrix Robotics announces share buyback"
+    docs = [_gdoc(_DIVIDEND)]
+    assert _status(title, "T1", "ZNTX", docs) == "gated_in"  # a dividend body carries T1 language
+    assert _status2(title, "T1", "ZNTX", docs) == "gated_out:g3_event_mismatch"
+    buyback = _gdoc("Item 8.01 Other Events. The Board of Directors authorized a share repurchase program.")
+    assert _status2(title, "T1", "ZNTX", [buyback]) == "gated_in"
+
+
+def test_gates2_t2_guidance_relaxation_needs_item_202():
+    title = "Zentrix Robotics lifts outlook"
+    furnished = "Item 2.02 Results of Operations. The Company furnished a press release as Exhibit 99.1."
+    with_202 = [_gdoc(furnished, items=("2.02",))]
+    assert _status(title, "T2", "ZNTX", with_202) == "gated_out:g3_no_family_language"
+    assert _status2(title, "T2", "ZNTX", with_202) == "gated_in"
+    assert _status2("Zentrix Robotics beats estimates and lifts outlook", "T2", "ZNTX", with_202) == "gated_in"
+    regfd = [_gdoc("Item 7.01 Regulation FD Disclosure. The Company furnished a presentation.", items=("7.01",))]
+    assert _status2(title, "T2", "ZNTX", regfd) == "gated_out:g3_no_family_language"
+
+
+def test_gates2_t2_results_headline_still_needs_item_202():
+    docs = [_gdoc("Item 1.01 Entry into a Material Definitive Agreement. The Company signed a supply arrangement.", items=("1.01",))]
+    title = "Zentrix Robotics beats estimates on warehouse contract"
+    assert _status2(title, "T2", "ZNTX", docs) == "gated_out:g3_results_without_202"
+
+
+def test_gates2_t2_contract_relaxation_needs_item_101():
+    title = "Zentrix Robotics wins warehouse contract"
+    text = (
+        "Item 1.01 Entry into a Material Definitive Agreement. "
+        "The Company entered into a supply arrangement with a logistics customer."
+    )
+    assert _status(title, "T2", "ZNTX", [_gdoc(text, items=("1.01",))]) == "gated_out:g3_no_family_language"
+    assert _status2(title, "T2", "ZNTX", [_gdoc(text, items=("1.01",))]) == "gated_in"
+    assert _status2(title, "T2", "ZNTX", [_gdoc(text, items=("8.01",))]) == "gated_out:g3_no_family_language"
+
+
+def test_gates2_keeps_gates1_issuer_guard():
+    docs = [_gdoc(_DIVIDEND, cover=_FORDHAM_COVER)]
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs) == _status(
+        "Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs
+    )
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", docs).startswith("gated_out:g2_")
+
+
+def test_gates2_versions_and_codes_are_separate():
+    assert RG.GATES_VERSION == "ni-routing-gates-1"
+    assert RG2.GATES_VERSION == "ni-routing-gates-2"
+    assert set(RG.CODES) < set(RG2.CODES)
+    assert set(RG2.CODES) - set(RG.CODES) == {"g3_template_sense", "g3_event_mismatch"}
+    assert all(RG2.CODES[c] == g for c, g in RG.CODES.items())
+
+
+def test_gates2_every_code_is_a_valid_gate_status():
+    assert RG2.STATUS_RE is TD.GATE_STATUS_RE
+    assert RG2.STATUS_RE.fullmatch(RG2.GATED_IN)
+    for code, gate in RG2.CODES.items():
+        assert RG2.STATUS_RE.fullmatch(f"gated_out:{code}")
+        assert gate in {"G0", "G1", "G2", "G3"}
+        verdict = RG2.GateVerdict(code)
+        assert not verdict.gated_in and verdict.gate == gate and verdict.status() == f"gated_out:{code}"
+    assert RG2.GateVerdict(None).gated_in and RG2.GateVerdict(None).status() == RG2.GATED_IN
+
+
+def test_gates2_no_documents_is_no_body_and_bad_inputs_raise():
+    assert _status2("Zentrix Robotics declares quarterly dividend", "T1", "ZNTX", []) == "gated_out:no_body"
+    with pytest.raises(RG2.RoutingGateError):
+        RG2.classify("Zentrix Robotics declares quarterly dividend", "T9", "ZNTX", [_gdoc(_DIVIDEND)])
+    for ticker in (None, ""):
+        with pytest.raises(RG2.RoutingGateError):
+            RG2.classify("Zentrix Robotics declares quarterly dividend", "T1", ticker, [_gdoc(_DIVIDEND)])
+
+
+def test_gates2_build_gate_map_and_cli_write_ids_and_codes_only(tmp_path):
+    import hashlib
+
+    candidates, bodies, texts = _gate_inputs(tmp_path)
+    by_id = {b["item_id"]: b for b in bodies}
+    assert RG2.build_gate_map(candidates, by_id, texts) == RG.build_gate_map(candidates, by_id, texts)
+    with pytest.raises(RG2.RoutingGateError):
+        RG2.build_gate_map(candidates + [candidates[0]], by_id, texts)
+    cand_path = tmp_path / "candidates.jsonl"
+    cand_path.write_text("".join(json.dumps(c) + "\n" for c in candidates))
+    bodies_path = tmp_path / "bodies.jsonl"
+    bodies_path.write_text("".join(json.dumps(b) + "\n" for b in bodies))
+    out, report = tmp_path / "gate_map.json", tmp_path / "gate_report.json"
+    argv = ["--candidates", str(cand_path), "--bodies", str(bodies_path), "--texts", str(texts),
+            "--out", str(out), "--report", str(report)]
+    assert RG2.main(argv) == 0
+    summary = json.loads(report.read_text())
+    assert summary["gates_version"] == "ni-routing-gates-2"
+    assert summary["n_candidates"] == 5 and summary["n_gated_in"] == 1
+    assert summary["gate_map_sha256"] == hashlib.sha256(out.read_bytes()).hexdigest()
+    assert summary["candidates_sha256"] == hashlib.sha256(cand_path.read_bytes()).hexdigest()
+    for path in (out, report):
+        blob = path.read_bytes().lower()
+        for word in (b"zentrix", b"robotics", b"dividend", b"payout"):
+            assert word not in blob
+    cand_path.write_text("not json\n")
+    assert RG2.main(argv) == 2
+    cand_path.write_text(json.dumps({"item_id": "c3", "title": "x", "ticker": "ZNTX"}) + "\n")
+    assert RG2.main(argv) == 2
+
+
+def test_gates2_source_has_no_clock_network_or_proxy_cell_read():
+    text = Path(RG2.__file__).read_text()
+    for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
+                   '"proxy_cell"', "'proxy_cell'"):
+        assert needle not in text, f"forbidden source fragment: {needle!r}"
+
+
+# ----------------------------------------------------------- fallback ledger
+
+
+def _write_fallback_pair(tmp_path):
+    primary = tmp_path / "ledger.json"
+    primary.write_text(json.dumps({"note": "p", "tickers": {"F": 37996, "DUP": [111, 222]}}))
+    fallback = tmp_path / "fallback.json"
+    fallback.write_text(
+        json.dumps({"note": "fb", "tickers": {"F": 99999, "DUP": 333, "NEWT": 444, "BRK.B": 1067983}})
+    )
+    return primary, fallback
+
+
+def test_fill_only_ledger_keeps_primary_entries_and_refusals(tmp_path):
+    primary_path, fallback_path = _write_fallback_pair(tmp_path)
+    primary, fallback = load_ledger(str(primary_path)), load_ledger(str(fallback_path))
+    combined = TD.fill_only_ledger(primary, fallback)
+    assert sorted(combined) == ["BRK-B", "DUP", "F", "NEWT"]
+    assert combined["F"] == primary["F"] and combined["DUP"] == primary["DUP"]
+    assert combined["NEWT"] == fallback["NEWT"]
+    assert combined.has_validity_dates is False
+    asof = date(2026, 9, 1)
+    assert TD._resolve_entities(["F"], "Ford", asof, combined)[0] == "cik:0000037996"
+    assert TD._resolve_entities(["DUP"], "Dup", asof, combined)[0] == "unresolved:ambiguous_ticker"
+    assert TD._resolve_entities(["NEWT"], "Newt", asof, combined)[0] == "cik:0000000444"
+    assert TD._resolve_entities(["BRK.B"], "Brk", asof, combined)[:2] == ("cik:0001067983", "BRK-B")
+    with pytest.raises(TD.TapeDrawError):
+        TD.fill_only_ledger({"F": ()}, fallback)
+    with pytest.raises(TD.TapeDrawError):
+        TD.fill_only_ledger(primary, None)
+
+
+def _fallback_inputs(tmp_path):
+    tickers = ["F", "F", "NEWT", "NEWT", "DUP", "ZZZZ", "BRK.B"]
+    tape_rows = [
+        _row(
+            f"fb{i}",
+            f"Company {t.lower()} stock buyback item {i}",
+            f"2026-08-{i + 1:02d}T00:00:00+00:00",
+            entities=t,
+        )
+        for i, t in enumerate(tickers)
+    ]
+    tape_path = tmp_path / "items.parquet"
+    _write_tape_parquet(tape_path, tape_rows)
+    el_path = tmp_path / "event_log.parquet"
+    _write_event_log_parquet(el_path, [])
+    rej_path = tmp_path / "reject.parquet"
+    _write_reject_parquet(rej_path, [])
+    primary, fallback = _write_fallback_pair(tmp_path)
+    return (tape_path, el_path, rej_path, primary), fallback
+
+
+def _jsonl(path):
+    return [json.loads(l) for l in path.read_text().splitlines() if l.strip()]
+
+
+def test_fallback_ledger_off_leaves_every_output_unchanged(tmp_path):
+    paths, _ = _fallback_inputs(tmp_path)
+    assert _cli(paths, tmp_path / "a", "--candidates-out", str(tmp_path / "a.jsonl")) == 0
+    report = json.loads((tmp_path / "a" / "draw_report.json").read_text())
+    assert "fallback_ledger" not in report
+    assert "fallback_resolved" not in report["issuers"]
+    assert all("issuer_ledger" not in m for m in _jsonl(tmp_path / "a" / "candidates_meta.jsonl"))
+    assert _cli(paths, tmp_path / "b", "--candidates-out", str(tmp_path / "b.jsonl")) == 0
+    for name in ("cases.jsonl", "manifest.json", "draw_report.json", "candidates_meta.jsonl"):
+        assert (tmp_path / "a" / name).read_bytes() == (tmp_path / "b" / name).read_bytes()
+
+
+def test_fallback_ledger_fills_only_rows_the_primary_leaves_unresolved(tmp_path):
+    import hashlib
+
+    paths, fallback = _fallback_inputs(tmp_path)
+    assert _cli(paths, tmp_path / "off", "--candidates-out", str(tmp_path / "off.jsonl")) == 0
+    assert _cli(
+        paths, tmp_path / "on", "--candidates-out", str(tmp_path / "on.jsonl"),
+        "--fallback-ledger", str(fallback),
+    ) == 0
+    off = {r["item_id"]: r for r in _jsonl(tmp_path / "off.jsonl")}
+    on = {r["item_id"]: r for r in _jsonl(tmp_path / "on.jsonl")}
+    assert set(off) == set(on) and len(on) == 7
+
+    # rows the primary resolves keep their issuer and ticker exactly
+    for item_id, row in off.items():
+        if not row["issuer"].startswith("unresolved:"):
+            assert on[item_id]["issuer"] == row["issuer"]
+            assert on[item_id]["ticker"] == row["ticker"]
+            assert on[item_id]["tags"] == row["tags"]
+
+    by_ticker = {}
+    for i, t in enumerate(["F", "F", "NEWT", "NEWT", "DUP", "ZZZZ", "BRK.B"]):
+        by_ticker.setdefault(t, []).append(f"fb{i}")
+    for i in by_ticker["NEWT"]:
+        assert off[i]["issuer"] == "unresolved:unknown_ticker"
+        assert on[i]["issuer"] == "cik:0000000444"
+    assert on[by_ticker["BRK.B"][0]]["issuer"] == "cik:0001067983"
+    # a primary refusal stands: the fallback never overrides an ambiguous primary key
+    assert on[by_ticker["DUP"][0]]["issuer"] == "unresolved:ambiguous_ticker"
+    assert on[by_ticker["ZZZZ"][0]]["issuer"] == "unresolved:unknown_ticker"
+
+    r_off = json.loads((tmp_path / "off" / "draw_report.json").read_text())
+    r_on = json.loads((tmp_path / "on" / "draw_report.json").read_text())
+    assert r_on["issuers"]["fallback_resolved"] == 3
+    assert r_on["issuers"]["resolved"] == r_off["issuers"]["resolved"] + 3
+    assert r_on["issuers"]["unresolved"] == r_off["issuers"]["unresolved"] - 3
+    assert r_on["issuers"]["unresolved_by_reason"]["ambiguous_ticker"] == 1
+    assert r_on["fallback_ledger"] == {
+        "tickers": 4,
+        "fill_only_tickers": 2,
+        "primary_tickers": 2,
+        "sha256": hashlib.sha256(fallback.read_bytes()).hexdigest(),
+    }
+    ledgers = {m["item_id"]: m["issuer_ledger"] for m in _jsonl(tmp_path / "on" / "candidates_meta.jsonl")}
+    for i in by_ticker["F"]:
+        assert ledgers[i] == "primary"
+    for i in by_ticker["NEWT"] + by_ticker["BRK.B"]:
+        assert ledgers[i] == "fallback"
+    for i in by_ticker["DUP"] + by_ticker["ZZZZ"]:
+        assert ledgers[i] is None
+
+    # the on run replays byte-identically, from a byte-copy of the fallback ledger at
+    # another path: inputs are recorded by sha256, never by path
+    moved = tmp_path / "elsewhere" / "fb_copy.json"
+    moved.parent.mkdir()
+    moved.write_bytes(fallback.read_bytes())
+    assert _cli(paths, tmp_path / "on2", "--fallback-ledger", str(moved)) == 0
+    for name in ("cases.jsonl", "manifest.json", "draw_report.json", "candidates_meta.jsonl"):
+        assert (tmp_path / "on" / name).read_bytes() == (tmp_path / "on2" / name).read_bytes()
+
+
+def test_fallback_ledger_malformed_file_fails_before_any_output(tmp_path):
+    from engine.news_impact.issuer import LedgerError
+
+    paths, fallback = _fallback_inputs(tmp_path)
+    fallback.write_text('{"note": "no tickers"}')
+    with pytest.raises(LedgerError):
+        _cli(paths, tmp_path / "out", "--fallback-ledger", str(fallback))
+    assert not (tmp_path / "out" / "cases.jsonl").exists()

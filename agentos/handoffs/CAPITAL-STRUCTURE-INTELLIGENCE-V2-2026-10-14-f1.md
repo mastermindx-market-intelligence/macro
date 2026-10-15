@@ -114,6 +114,7 @@ danger_areas:
   - ITEM_RULES and CASH_BASIS_MEMBERS mirror the F0 config and feed RULE_DIGEST; a config change without the module change fails the parity test once F0 is on main.
   - The quarter-end period grid and inclusive operating-cash-flow day count are part of RULE_DIGEST; changing either changes every receipt.
   - A producer that omits available_at on a financial fact or covenant term makes it invisible at every as_of.
+prs: [9283]
 ---
 
 # Capital Structure V2 — F1 funding schedule handoff
