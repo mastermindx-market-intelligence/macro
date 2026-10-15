@@ -680,6 +680,7 @@ const fetch = (url, options) => {
   const isApi = String(url).indexOf('/api/prophet/daily-brief/v1') === 0;
   const failure = isApi ? ((scene.api || {}).failure || '200') : scene.failure;
   const code = failure === 'http500' ? 500 : Number(failure) || 200;
+  if (isApi && failure === 'pending') return new Promise(() => {});
   return Promise.resolve().then(() => {
     changeAuth(isApi ? 'response' : 'payload');
     if (failure === 'network') throw new TypeError('offline');
@@ -717,6 +718,7 @@ setImmediate(() => {
     nativeState: today && today.getAttribute('data-today-native-state'),
     nativeReasons: today && today.getAttribute('data-today-native-reasons'),
     nativeNote: note ? note.textContent : null,
+    nativeNoteRole: note ? note.getAttribute('role') : null,
     nativeNoteState: note ? note.getAttribute('data-today-native-state') : null}));
 });
 """
@@ -812,6 +814,36 @@ def test_native_available_status_discloses_available(tmp_path, loader_scene):
     assert out["nativeState"] == "available"
     assert "Evidence summary is linked to this board snapshot." in out["nativeNote"]
     assert "证据摘要已关联此榜单快照" in out["nativeNote"]
+
+
+@pytest.mark.parametrize('change', [None, 'logout', 'switch'])
+def test_pending_summary_is_loading_until_account_context_changes(tmp_path, loader_scene, change):
+    scene = copy.deepcopy(loader_scene)
+    scene['api'] = {'failure': 'pending'}
+    out = _run(tmp_path, scene, mode='today', auth_change_at='after', auth_change=change)
+    assert out['nativeState'] == 'unavailable', 'pending data must never become admitted evidence'
+    assert out['nativeNoteRole'] == 'status'
+    assert out['todayTickers'] == ['MSCI', 'ADSK', 'ABBV']
+    assert len(out['requests']) == 2
+    if change:
+        assert out['nativeReasons'] == 'NATIVE_SESSION_CHANGED'
+        assert 'Loading the evidence summary' not in out['nativeNote']
+        assert 'Evidence summary unavailable' in out['nativeNote']
+    else:
+        assert out['nativeReasons'] == 'NATIVE_CONTEXT_PENDING'
+        assert 'Loading the evidence summary' in out['nativeNote']
+        assert '正在加载证据摘要' in out['nativeNote']
+        assert 'Evidence summary unavailable' not in out['nativeNote']
+
+
+def test_completed_response_cannot_claim_a_pending_request_with_a_reason_code(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene['api'] = {'failure': '503', 'envelope': _brief_envelope(binding=scene['binding'],
+        status='UNAVAILABLE', candidates=[], reason_codes=['NATIVE_CONTEXT_PENDING'])}
+    out = _run(tmp_path, scene, mode='today')
+    assert out['nativeReasons'] == 'NATIVE_CONTEXT_PENDING'
+    assert 'Loading the evidence summary' not in out['nativeNote']
+    assert 'Evidence summary unavailable' in out['nativeNote']
 
 
 @pytest.mark.parametrize("failure", ["401", "403"])

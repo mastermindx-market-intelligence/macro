@@ -21119,7 +21119,12 @@ if (document.readyState === 'loading') {
       else root.appendChild(note);
     }
     note.setAttribute('data-today-native-state', state);
-    if (state === 'available'){
+    note.setAttribute('role', 'status');
+    if (outcome.loading === true){
+      note.innerHTML =
+        '<span class="l-en">Loading the evidence summary. Published setups remain available below.</span>' +
+        '<span class="l-zh">正在加载证据摘要。下方仍可查看已发布的形态。</span>';
+    } else if (state === 'available'){
       note.innerHTML =
         '<span class="l-en">Evidence summary is linked to this board snapshot.</span>' +
         '<span class="l-zh">证据摘要已关联此榜单快照。</span>';
@@ -21156,7 +21161,7 @@ if (document.readyState === 'loading') {
     if (!todayRequestCurrent(epoch, user)) return Promise.resolve();
     /* Withhold any prior native context while this exact full roster is checked.
        Ordinary cards and their selection/order remain untouched. */
-    applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'] });
+    applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'], loading: true });
     var pins = admission.pins;
     var url = '/api/prophet/daily-brief/v1' +
       '?source_sha256=' + encodeURIComponent(pins.source_sha256) +
