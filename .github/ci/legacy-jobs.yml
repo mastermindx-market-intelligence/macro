@@ -5906,6 +5906,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -17792,6 +17793,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -19343,6 +19345,13 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "tests/fixtures/government_program_ontology/builders.py"
+      - "tests/test_government_program_public_capacity.py"
+      - "tests/test_government_program_capacity_ui.py"
+      - "tests/test_government_program_oversight.py"
+      - "tests/test_government_program_oversight_ui.py"
+      - "tests/test_government_program_army_source_boundary.py"
+      - "tests/test_government_program_curator_clock_advance.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
@@ -19757,7 +19766,7 @@ jobs:
       - name: Canonical market owner and point-in-time joint producer
         run: python -m pytest tests/test_defense_market_context.py tests/test_defense_market_producer_integration.py -q
       - name: Six-theme official source and reviewed disclosure contracts
-        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py -q
+        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py tests/defense_o2_source_contracts/test_program_dossier_owner_validation.py tests/test_government_program_public_capacity.py tests/test_government_program_capacity_ui.py tests/test_government_program_oversight.py tests/test_government_program_oversight_ui.py tests/test_government_program_army_source_boundary.py tests/test_government_program_curator_clock_advance.py -q
       - name: Ownership and foreign listing source-context journeys
         run: python -m pytest tests/test_government_revenue_archetype_context.py tests/test_government_revenue_archetype_ui.py tests/test_government_revenue_identity_subject_journey.py tests/test_government_revenue_identity_context_clock.py -q
       - name: Government Revenue HTML packaging preserves content and runtime
@@ -25722,6 +25731,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py
@@ -28297,6 +28307,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
