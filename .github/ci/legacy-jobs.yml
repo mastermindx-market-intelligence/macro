@@ -12516,6 +12516,7 @@ jobs:
       - "engine/seasonality/contracts.py"
       - "engine/seasonality/multiplicity.py"
       - "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md"
+      - "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md"
       - "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md"
       - "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
       - "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
