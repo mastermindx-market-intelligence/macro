@@ -663,6 +663,16 @@ def observe_publication(
         except _ReadIssue as issue:
             failures["_prior"] = issue.as_dict()
             issues.append("invalid_prior_retention")
+        else:
+            # Reopening A must finish before the final observation that B is
+            # still current. A prior read can overlap a publisher advancing B.
+            # Already failed observations need no additional remote reads.
+            if not failures:
+                after_prior = _reread_heads(
+                    required, snapshots, output_dir, client, bucket, retention, limit)
+                failures.update(after_prior)
+                if after_prior and "unstable" not in issues:
+                    issues.append("unstable")
         if common_session is not None and prior_session is not None:
             if common_session < prior_session:
                 issues.append("older_than_prior")

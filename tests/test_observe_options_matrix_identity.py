@@ -17,6 +17,17 @@ from engine import options_matrix_retention as retention
 from engine.intelligence_workspace.entity import IdentityArtifactRead
 
 
+def _prior_for_current_fixture(s, *, session="2026-10-11"):
+    root, _, out, store, _, current = s
+    prior_ref = F._install(out, store, F._payload("SPY", session=session), "SPY")
+    prior = O.observe_publication(output_dir=out, client=store, bucket="fixture", roots=("SPY",))
+    path = root / "prior.json"
+    path.write_text(json.dumps(F._prior_from_result(prior)))
+    F._install(out, store, current, "SPY")
+    store.calls.clear()
+    return path, prior_ref
+
+
 def captured(body, at):
     return IdentityArtifactRead(body, hashlib.sha256(body).hexdigest(), at)
 
@@ -191,3 +202,70 @@ def test_receipt_includes_identity_and_keeps_exclusive_publication(setup):
     before=path.read_bytes()
     with pytest.raises(O.ObservationRefused):observe(setup,receipt_path=path)
     assert path.read_bytes()==before
+
+
+@pytest.mark.parametrize("change", ["remote", "local", "both", "remote_missing", "local_missing", "denied"])
+def test_prior_reopen_rechecks_current_heads_before_identity_success(setup, change):
+    prior, ref = _prior_for_current_fixture(setup)
+    _, _, out, store, _, _ = setup
+    head = retention.R2_PREFIX + "SPY.json"
+    original = store.get_object
+    fired = []
+
+    def during_prior(*, Bucket, Key):
+        response = original(Bucket=Bucket, Key=Key)
+        if Key == ref.key:
+            fired.append(Key)
+            changed = F._payload("SPY", session="2026-10-12", spot=125)
+            if change in {"remote", "both"}:
+                store.objects[head] = changed
+            if change in {"local", "both"}:
+                (out / "SPY.json").write_bytes(changed)
+            if change == "remote_missing":
+                del store.objects[head]
+            if change == "local_missing":
+                (out / "SPY.json").unlink()
+            if change == "denied":
+                store.get_faults[head] = F.S3Error("AccessDenied", 403)
+        return response
+
+    store.get_object = during_prior
+    result = observe(setup, prior_path=prior)
+    assert fired == [ref.key]
+    assert not result["complete"] and not result["stable"] and not result["advancing"]
+    assert result["issues"].count("unstable") == 1
+    expected = "denied" if change == "denied" else "concurrent_head_change"
+    assert result["failures"]["SPY"]["code"] == expected
+    assert not result["identity"]["complete"]
+    assert result["identity"]["roots"]["SPY"]["reason"] == "snapshot_not_verified"
+    assert all(stream.closed for stream in store.streams)
+
+
+@pytest.mark.parametrize("session,advancing", [("2026-10-11", True), ("2026-10-12", False)])
+def test_prior_reopen_stable_heads_keep_identity_and_session_semantics(setup, session, advancing):
+    prior, _ = _prior_for_current_fixture(setup, session=session)
+    result = observe(setup, prior_path=prior)
+    assert result["complete"] and result["stable"] and result["identity"]["complete"]
+    assert result["advancing"] is advancing
+    assert result["repeated_source_date"] is not advancing
+    assert not result["natural_invocation_verified"]
+    assert result["natural_session_count"] is None
+    head = retention.R2_PREFIX + "SPY.json"
+    assert setup[3].calls.count(("get", head)) == 3
+
+
+def test_prior_reopen_denial_does_not_add_post_failure_head_read(setup):
+    prior, ref = _prior_for_current_fixture(setup)
+    store = setup[3]
+    store.get_faults[ref.key] = F.S3Error("AccessDenied", 403)
+    result = observe(setup, prior_path=prior)
+    assert not result["complete"] and not result["identity"]["complete"]
+    assert result["failures"]["_prior"]["code"] == "denied_prior_history"
+    assert store.calls.count(("get", ref.key)) == 1
+    assert store.calls.count(("get", retention.R2_PREFIX + "SPY.json")) == 2
+
+
+def test_no_prior_observation_keeps_existing_head_read_count(setup):
+    result = observe(setup)
+    assert result["identity"]["complete"]
+    assert setup[3].calls.count(("get", retention.R2_PREFIX + "SPY.json")) == 2

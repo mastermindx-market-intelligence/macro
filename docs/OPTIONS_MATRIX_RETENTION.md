@@ -172,6 +172,13 @@ CLI exit0 requires both publication and identity success. Without it, the existi
 publication result and exit semantics stay unchanged. The observation remains
 read-only apart from its new exclusive local receipt.
 
+When `--prior` is supplied, a successful prior-history reopen is followed by a
+final read of the current local and remote heads. A head change, disappearance or
+denial at that boundary makes the observation unstable and prevents advancing or
+identity success. Failed prior reads do not trigger an additional head read.
+This proves the observed sequence only; it does not lock the publisher or promise
+that heads remain unchanged after their final read.
+
 Capture is a finite, non-atomic read using the incumbent bounded local reader.
 It does not authenticate HTTP source provenance, prove a natural invocation,
 extend the root relation's date interval, establish IDX identity or grant rights,
