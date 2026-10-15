@@ -37,13 +37,35 @@ The additional `supplied_input_first_knowable_ns` is a lower bound derived from 
 
 The result always declares `source_authenticated=false`, `calendar_qualified_by_this_function=false`, `actual_consumer_delivery_proven=false`, `simulated_execution_not_fill=true`, `prospective_promotion=false`, `predictive_rank_trading_alert_authority=false` and `forward_outcome_available_to_original_decision=false`. It writes no data or TrialLedger. Use the incumbent `engine.trial_ledger.TrialLedger` externally for actual preregistered challenger counts; nothing here mints a trial, validation result or registry.
 
+
+## Denominator-complete cohort accounting — no second TrialLedger
+
+The same pure module also exports:
+
+```python
+reconcile_frozen_candidate_cohort(
+    expected_candidates=original_frozen_candidate_manifest_rows,
+    supplied_evaluations=source_free_paired_results,
+    frozen_manifest_sha256=original_manifest_digest,
+)
+```
+
+The **incumbent candidate registry** supplies the previously frozen complete population. This function does not create, mutate, acquire or authorize that registry. Each expected row binds candidate ID, ticker, session, evidence mode, original decision, exact same-session horizon and supplied original source/calendar receipt digests. Evaluations must match each immutable identity and the source-independent research/false-authority schema; unknown, duplicate, cross-symbol, cross-session or later source-generation results are refused. The digest strings are internal consistency assertions, **not** cryptographically verified external source ownership.
+
+The output carries `n_expected`, `n_supplied`, `n_missing`, the exact missing IDs (private only), counts of `PAIRED_RESEARCH_UTILITY` / `NOT_MATURE` / `CENSORED` / `UNOBSERVABLE`, and the number of evaluable software pairs. Absent reports **remain in the frozen denominator**. A supplied result with a false source state, changed evidence mode, post-cutoff label, improperly formatted exact rational or `delta != challenger - baseline` is rejected. Mixing `FINAL_VINTAGE` with `ACTUAL_AS_SEEN` in one pooled mean is refused. Exact fractions and their display-only rounded strings are internally reconciled.
+
+The optional `observed_pair_subset_mean_bps` is **not the preregistered full-population estimand**. It computes only the observed synthetic/research-eligible pairs, even when all expected IDs are accounted for, and includes no block uncertainty, untouched confirmation or causal price-impact inference. `primary_population_mean_bps` stays **null by design** until the authentic source, consumer-availability, market-calendar, trial-count, weighting and missingness owners complete their existing admission and freeze. All cohort `source_authenticated`, `actual_consumer_delivery_proven`, `denominator_and_missingness_proven_by_this_function`, `empirical_source_qualified`, `inference_or_power_established`, `trial_ledger_written`, `prospective_promotion` and `predictive_rank_trading_alert_authority` flags remain false. Passing these fixtures does **not** turn a model-created manifest into actual historical data or a verified trial.
+
+This nonpersisting accountant is bounded to 1–1,000 frozen candidates per request; longer cohorts stay with the incumbent batch owners. It does not write the existing `engine.trial_ledger.TrialLedger`, choose policies, perform inference, create a new lifecycle, or let unobserved candidates disappear from coverage.
+
+
 ## Discriminating local synthetic verification
 
 Run from the isolated Macro workspace:
 
 ```sh
 PYTHONPATH=. python3 -m pytest -q tests/test_c15_paired_entry_utility.py
-python3 -m py_compile engine/market_microstructure/paired_entry_utility.py
+python3 -m py_compile engine/market_microstructure/paired_entry_utility.py tests/test_c15_paired_entry_utility.py
 ```
 
 Fixtures exercise known positive and negative same-candidate paired utilities, exact source-side cross prices, an independent **original midpoint quote denominator** with strictly prior native receipt and exact midpoint conservation, an identical **terminal quote vintage across both policies**, and exclusion of post-horizon quote receipts from simulated H fills. They retain full quantity/size, explicit currency fees, genuine abstain vs source-missing zero, future/late source clocks, immature receipt and market-health censoring, original challenger availability **strictly before** decision, wrong ticker/session, NYSE weekend/nominal-hours refusal, quote-age/stale/locked/same-nanosecond rejection, spread-cross and size constraints, huge/small fixed-point inputs, and **exact nonzero values whose 12-decimal display rounds to zero**.

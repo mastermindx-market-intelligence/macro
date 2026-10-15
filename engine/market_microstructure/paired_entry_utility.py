@@ -271,6 +271,8 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
     identity = dict(
         schema=SCHEMA, candidate_id=c["candidate_id"], ticker=c["ticker"],
         session=c["session"], source_mode=c["source_mode"],
+        candidate_source_receipt_sha256=c["source_receipt_sha256"],
+        calendar_receipt_sha256=c["calendar_receipt_sha256"],
         horizon_trading_minutes=30, original_decision_ns=decision,
         horizon_end_ns=endpoint, evaluation_cutoff_ns=cutoff,
         policy_count=2, forward_outcome_available_to_original_decision=False,
@@ -317,3 +319,199 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
             "supplied_input_first_knowable_ns":max(ready_times),
             "baseline_bps":_exact_bp(b),"challenger_bps":_exact_bp(h),
             "delta_bps":_exact_bp(h-b)}
+
+
+
+# C15's externally frozen candidate registry is the denominator owner.
+# This is a pure research-only reconciliation, NOT another trial ledger, source
+# registry, verification signature, causal estimator, or rank/trade control.
+COHORT_SCHEMA = "equity.c15_paired_utility_accounting_research/v0"
+MAX_COHORT_CANDIDATES = 1000
+COHORT_STATES = frozenset({
+    "PAIRED_RESEARCH_UTILITY", "NOT_MATURE", "CENSORED", "UNOBSERVABLE",
+})
+_CANON_SIGNED = re.compile(r"^(?:0|[1-9][0-9]*|-[1-9][0-9]*)$")
+
+
+def _frozen_paired_rational(value, label):
+    row = _dict(value, {
+        "numerator", "denominator", "display_bps_12dp",
+        "display_only_rounded",
+    }, label)
+    numerator, denominator = row["numerator"], row["denominator"]
+    if (type(numerator) is not str or type(denominator) is not str
+            or len(numerator) > 1024 or len(denominator) > 1024
+            or _CANON_SIGNED.fullmatch(numerator) is None
+            or not re.fullmatch(r"[1-9][0-9]*", denominator)):
+        raise ValueError(label + ": noncanonical bounded exact ratio")
+    ratio = Fraction(int(numerator), int(denominator))
+    if row != _exact_bp(ratio):
+        raise ValueError(label + ": ratio/display incompatible")
+    return ratio
+
+
+def reconcile_frozen_candidate_cohort(*, expected_candidates,
+                                      supplied_evaluations,
+                                      frozen_manifest_sha256):
+    """Account for EVERY externally frozen incumbent candidate.
+
+    Missing candidates and censored/immature/unknown paths remain in the
+    original denominator, never quietly discarded as favorable abstentions.
+    Completed-pair mean is *measured subset only*: no population inference,
+    trial ledger write, market/source authentication, or trading promotion.
+    """
+    _sha(frozen_manifest_sha256, "cohort.manifest")
+    if (type(expected_candidates) not in (tuple, list)
+            or not 1 <= len(expected_candidates) <= MAX_COHORT_CANDIDATES
+            or type(supplied_evaluations) not in (tuple, list)
+            or len(supplied_evaluations) > len(expected_candidates)):
+        raise ValueError("cohort: invalid frozen denominator or report budget")
+
+    expected = {}
+    modes = set()
+    for candidate in expected_candidates:
+        e = _dict(candidate, {
+            "candidate_id", "ticker", "session", "source_mode",
+            "original_decision_ns", "horizon_end_ns",
+            "source_receipt_sha256", "calendar_receipt_sha256",
+        }, "frozen_candidate")
+        key = e["candidate_id"]
+        if (type(key) is not str or not 0 < len(key) <= 128
+                or key in expected
+                or type(e["ticker"]) is not str or SYMBOL.fullmatch(e["ticker"]) is None
+                or type(e["session"]) is not str
+                or re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH", e["session"]) is None):
+            raise ValueError("cohort: duplicate/invalid original candidate")
+        _sha(e["source_receipt_sha256"], "candidate.source")
+        _sha(e["calendar_receipt_sha256"], "candidate.calendar")
+        start = _clock(e["original_decision_ns"], "candidate.decision")
+        end = _clock(e["horizon_end_ns"], "candidate.horizon")
+        if (end - start != 30 * MINUTE_NS
+                or type(e["source_mode"]) is not str
+                or e["source_mode"] not in MODES):
+            raise ValueError("cohort: original horizon or source mode inconsistent")
+        modes.add(e["source_mode"])
+        expected[key] = e
+    if len(modes) != 1:
+        # FINAL_VINTAGE and ACTUAL_AS_SEEN are fundamentally different evidence
+        # strata. A pooled research mean must not hide a mixed source mode.
+        raise ValueError("cohort: source modes must not be pooled")
+    mode = next(iter(modes))
+    matched = set()
+    counts = {state: 0 for state in sorted(COHORT_STATES)}
+    paired_exact = Fraction(0)
+    for evaluation in supplied_evaluations:
+        row = _dict(evaluation, {
+            "schema", "candidate_id", "ticker", "session", "source_mode",
+            "candidate_source_receipt_sha256", "calendar_receipt_sha256",
+            "horizon_trading_minutes", "original_decision_ns", "horizon_end_ns",
+            "evaluation_cutoff_ns", "policy_count",
+            "forward_outcome_available_to_original_decision",
+            "source_authenticated", "simulated_execution_not_fill",
+            "calendar_qualified_by_this_function",
+            "actual_consumer_delivery_proven",
+            "predictive_rank_trading_alert_authority", "prospective_promotion",
+            "supplied_input_first_knowable_ns",
+            "supplied_input_first_knowable_not_consumer_receipt",
+            "primary_policy_authority", "state", "reason",
+            "baseline_bps", "challenger_bps", "delta_bps",
+        }, "evaluation")
+        key = row["candidate_id"]
+        if type(key) is not str or key not in expected or key in matched:
+            raise ValueError("cohort: unknown, duplicate or unregistered result")
+        identity = expected[key]
+        if any((
+            row["schema"] != SCHEMA,
+            row["ticker"] != identity["ticker"],
+            row["session"] != identity["session"],
+            row["source_mode"] != mode,
+            row["candidate_source_receipt_sha256"] != identity["source_receipt_sha256"],
+            row["calendar_receipt_sha256"] != identity["calendar_receipt_sha256"],
+            row["original_decision_ns"] != identity["original_decision_ns"],
+            row["horizon_end_ns"] != identity["horizon_end_ns"],
+            row["horizon_trading_minutes"] != 30,
+            row["policy_count"] != 2,
+            row["primary_policy_authority"] != "RESEARCH_DIAGNOSTIC_ONLY",
+            row["forward_outcome_available_to_original_decision"] is not False,
+            row["source_authenticated"] is not False,
+            row["simulated_execution_not_fill"] is not True,
+            row["calendar_qualified_by_this_function"] is not False,
+            row["actual_consumer_delivery_proven"] is not False,
+            row["predictive_rank_trading_alert_authority"] is not False,
+            row["prospective_promotion"] is not False,
+            row["supplied_input_first_knowable_not_consumer_receipt"] is not True,
+        )):
+            raise ValueError("cohort: source identity or authority changed")
+        _clock(row["evaluation_cutoff_ns"], "evaluation.cutoff")
+        state = row["state"]
+        if type(state) is not str or state not in COHORT_STATES:
+            raise ValueError("cohort: unrecognized evaluation outcome")
+        if state == "PAIRED_RESEARCH_UTILITY":
+            if row["reason"] is not None:
+                raise ValueError("cohort: paired output cannot have refusal reason")
+            original = _frozen_paired_rational(row["baseline_bps"], "baseline")
+            new = _frozen_paired_rational(row["challenger_bps"], "challenger")
+            delta = _frozen_paired_rational(row["delta_bps"], "delta")
+            if new - original != delta:
+                raise ValueError("cohort: paired delta not conserved")
+            first_knowable = _clock(
+                row["supplied_input_first_knowable_ns"], "cohort.first_knowable"
+            )
+            if not (identity["horizon_end_ns"] <= first_knowable
+                    < row["evaluation_cutoff_ns"]):
+                raise ValueError("cohort: forward outcome chronologically impossible")
+            paired_exact += delta
+        elif (row["baseline_bps"] is not None
+              or row["challenger_bps"] is not None
+              or row["delta_bps"] is not None
+              or row["supplied_input_first_knowable_ns"] is not None
+              or row["reason"] is None):
+            raise ValueError("cohort: absent outcome dressed as measured utility")
+        if state == "NOT_MATURE" and row["reason"] != "HORIZON_OR_WATERMARK_NOT_KNOWABLE":
+            raise ValueError("cohort: false immature reason")
+        if state == "CENSORED" and row["reason"] != "HALTED_OR_UNKNOWN_MARKET":
+            raise ValueError("cohort: false market censorship")
+        if state == "UNOBSERVABLE":
+            r = _dict(row["reason"], {"baseline", "challenger"}, "cohort.unobservable")
+            allowed = REASONS | {
+                "OVERLAY_CONSUMER_AVAILABILITY_NOT_PROVEN",
+                "OVERLAY_ARRIVED_AFTER_ORIGINAL_DECISION",
+                "ENTRY_QUOTE_NOT_KNOWABLE_OR_STALE",
+                "EXIT_QUOTE_NOT_KNOWABLE_OR_STALE",
+                "INSUFFICIENT_DISPLAYED_TOP_SIZE",
+            }
+            if (r["baseline"] is None and r["challenger"] is None
+                    or any(reason is not None
+                           and (type(reason) is not str or reason not in allowed)
+                           for reason in r.values())):
+                raise ValueError("cohort: invalid typed unobservable reasons")
+        matched.add(key)
+        counts[state] += 1
+
+    missing = sorted(set(expected) - matched)
+    usable = counts["PAIRED_RESEARCH_UTILITY"]
+    return {
+        "schema": COHORT_SCHEMA,
+        "state": ("ALL_FROZEN_CANDIDATES_ACCOUNTED_SOFTWARE_ONLY" if not missing
+                  else "MISSING_EXPECTED_CANDIDATE_REPORTS"),
+        "frozen_manifest_sha256": frozen_manifest_sha256,
+        "source_mode": mode,
+        "n_expected": len(expected),
+        "n_supplied": len(matched),
+        "n_missing": len(missing),
+        "missing_candidate_ids_private_only": missing,
+        "by_state": counts,
+        "n_complete_software_pairs": usable,
+        "observed_pair_subset_mean_bps": (
+            _exact_bp(paired_exact / usable) if usable else None
+        ),
+        "primary_population_mean_bps": None,
+        "denominator_and_missingness_proven_by_this_function": False,
+        "source_authenticated": False,
+        "actual_consumer_delivery_proven": False,
+        "empirical_source_qualified": False,
+        "inference_or_power_established": False,
+        "trial_ledger_written": False,
+        "prospective_promotion": False,
+        "predictive_rank_trading_alert_authority": False,
+    }

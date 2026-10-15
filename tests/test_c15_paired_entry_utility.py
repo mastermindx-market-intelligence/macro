@@ -555,3 +555,213 @@ def test_valid_two_policy_shared_terminal_quote_is_reproducible():
     assert bps(result,"delta")==(100,1)
     assert result["supplied_input_first_knowable_ns"]==a["watermark_received_ns"]
     assert result["actual_consumer_delivery_proven"] is False
+
+
+from engine.market_microstructure.paired_entry_utility import (
+    COHORT_SCHEMA, reconcile_frozen_candidate_cohort,
+)
+
+
+def registered_row(args):
+    c=args["candidate"]
+    return {
+        "candidate_id":c["candidate_id"],"ticker":c["ticker"],
+        "session":c["session"],"source_mode":c["source_mode"],
+        "original_decision_ns":c["decision_ns"],
+        "horizon_end_ns":c["horizon_end_ns"],
+        "source_receipt_sha256":c["source_receipt_sha256"],
+        "calendar_receipt_sha256":c["calendar_receipt_sha256"],
+    }
+
+
+def second_candidate():
+    a=setup()
+    a["candidate"]["candidate_id"]="frozen-radar-candidate-9"
+    a["candidate"]["source_receipt_sha256"]=SHA("2")
+    a["baseline"]["candidate_id"]=a["candidate"]["candidate_id"]
+    a["challenger"]["candidate_id"]=a["candidate"]["candidate_id"]
+    return a
+
+
+def accounted(expected, reports):
+    return reconcile_frozen_candidate_cohort(
+        expected_candidates=expected,supplied_evaluations=reports,
+        frozen_manifest_sha256=SHA("a"),
+    )
+
+
+def test_cohort_exact_full_denominator_and_ratio_are_software_only():
+    a=setup()
+    b=second_candidate()
+    result=accounted([registered_row(a),registered_row(b)], [run(a),run(b)])
+    assert result["schema"]==COHORT_SCHEMA
+    assert result["state"]=="ALL_FROZEN_CANDIDATES_ACCOUNTED_SOFTWARE_ONLY"
+    assert result["n_expected"]==2 and result["n_supplied"]==2
+    assert result["n_missing"]==0 and result["n_complete_software_pairs"]==2
+    assert int(result["observed_pair_subset_mean_bps"]["numerator"])==100
+    assert int(result["observed_pair_subset_mean_bps"]["denominator"])==1
+    assert result["primary_population_mean_bps"] is None
+    for field in ("source_authenticated", "actual_consumer_delivery_proven",
+                  "empirical_source_qualified", "inference_or_power_established",
+                  "trial_ledger_written", "prospective_promotion",
+                  "predictive_rank_trading_alert_authority"):
+        assert result[field] is False
+
+
+def test_cohort_missing_candidate_cannot_be_excluded_from_denominator():
+    a=setup()
+    b=second_candidate()
+    result=accounted([registered_row(a),registered_row(b)], [run(a)])
+    assert result["state"]=="MISSING_EXPECTED_CANDIDATE_REPORTS"
+    assert result["n_expected"]==2 and result["n_supplied"]==1
+    assert result["n_missing"]==1
+    assert result["missing_candidate_ids_private_only"]==[b["candidate"]["candidate_id"]]
+    assert result["primary_population_mean_bps"] is None
+
+
+def test_cohort_zero_reports_is_not_zero_market_or_favorable_abstention():
+    a=setup()
+    result=accounted([registered_row(a)], [])
+    assert result["n_missing"]==1
+    assert result["n_complete_software_pairs"]==0
+    assert result["observed_pair_subset_mean_bps"] is None
+    assert result["primary_population_mean_bps"] is None
+
+
+def test_cohort_keeps_censored_immature_and_unobservable_in_original_counts():
+    a=setup()
+    b=second_candidate()
+    c=setup()
+    c["candidate"]["candidate_id"]="frozen-radar-candidate-10"
+    c["baseline"]["candidate_id"]="frozen-radar-candidate-10"
+    c["challenger"]["candidate_id"]="frozen-radar-candidate-10"
+    a["market_health"]="HALTED"
+    b["source_watermark_ns"]=T+30*MIN-1
+    c["challenger"]["consumer_receipt_sha256"]=None
+    result=accounted(
+        [registered_row(a),registered_row(b),registered_row(c)],
+        [run(a),run(b),run(c)],
+    )
+    assert result["n_expected"]==3
+    assert result["n_complete_software_pairs"]==0
+    assert result["by_state"]["CENSORED"]==1
+    assert result["by_state"]["NOT_MATURE"]==1
+    assert result["by_state"]["UNOBSERVABLE"]==1
+    assert result["observed_pair_subset_mean_bps"] is None
+
+
+@pytest.mark.parametrize("attack",[
+    "extra_candidate", "duplicate_report", "duplicate_expected",
+    "wrong_source", "wrong_calendar", "wrong_ticker", "wrong_directional_state",
+    "forged_delta", "forged_display", "extra_field", "fake_market_authority",
+])
+def test_cohort_rejects_candidate_or_result_tampering(attack):
+    a=setup()
+    expected=[registered_row(a)]
+    result=run(a)
+    rows=[result]
+    if attack=="extra_candidate":
+        rows[0]["candidate_id"]="unregistered-candidate"
+    elif attack=="duplicate_report":
+        rows.append(dict(result))
+    elif attack=="duplicate_expected":
+        expected.append(dict(expected[0]))
+    elif attack=="wrong_source":
+        rows[0]["candidate_source_receipt_sha256"]=SHA("c")
+    elif attack=="wrong_calendar":
+        rows[0]["calendar_receipt_sha256"]=SHA("c")
+    elif attack=="wrong_ticker":
+        rows[0]["ticker"]="SPY"
+    elif attack=="wrong_directional_state":
+        rows[0]["state"]="PAIRED_SHADOW"
+    elif attack=="forged_delta":
+        rows[0]["delta_bps"]["numerator"]="999"
+    elif attack=="forged_display":
+        rows[0]["delta_bps"]["display_bps_12dp"]="999.000000000000"
+    elif attack=="extra_field":
+        rows[0]["trading_signal"]="BUY"
+    elif attack=="fake_market_authority":
+        rows[0]["source_authenticated"]=True
+    with pytest.raises(ValueError):
+        accounted(expected, rows)
+
+
+def test_cohort_never_pools_final_vintage_with_actual_as_seen():
+    a=setup()
+    b=second_candidate()
+    b["candidate"]["source_mode"]="FINAL_VINTAGE"
+    with pytest.raises(ValueError,match="must not be pooled"):
+        accounted([registered_row(a),registered_row(b)],[run(a),run(b)])
+
+
+def test_cohort_cannot_make_unmeasured_result_a_success():
+    a=setup()
+    a["market_health"]="HALTED"
+    row=run(a)
+    row["delta_bps"]={"numerator":"0","denominator":"1",
+                      "display_bps_12dp":"0.000000000000",
+                      "display_only_rounded":True}
+    with pytest.raises(ValueError,match="dressed as measured"):
+        accounted([registered_row(a)],[row])
+
+
+def test_cohort_denominator_is_hard_bounded_not_an_unlimited_load():
+    a=setup()
+    expected=[registered_row(a)]*1001
+    with pytest.raises(ValueError,match="invalid frozen denominator"):
+        accounted(expected,[])
+
+
+
+@pytest.mark.parametrize(("which", "value", "error"), [
+    ("supplied_input_first_knowable_ns", T+30*MIN-1, "chronologically impossible"),
+    ("supplied_input_first_knowable_ns", T+30*MIN+3*D, "chronologically impossible"),
+    ("evaluation_cutoff_ns", T+30*MIN+D, "chronologically impossible"),
+])
+def test_cohort_paired_result_cannot_backdate_or_foredate_label(which,value,error):
+    a=setup()
+    result=run(a)
+    result[which]=value
+    with pytest.raises(ValueError,match=error):
+        accounted([registered_row(a)],[result])
+
+
+@pytest.mark.parametrize(("state", "reason"), [
+    ("CENSORED", "HORIZON_OR_WATERMARK_NOT_KNOWABLE"),
+    ("NOT_MATURE", "HALTED_OR_UNKNOWN_MARKET"),
+    ("UNOBSERVABLE", {"baseline":None,"challenger":None}),
+    ("UNOBSERVABLE", {"baseline":None,"challenger":"FAKE_WIN"}),
+])
+def test_cohort_rejects_false_nonpaired_reason(state,reason):
+    a=setup()
+    a["market_health"]="HALTED"
+    result=run(a)
+    result["state"]=state
+    result["reason"]=reason
+    with pytest.raises(ValueError,match="false|invalid typed"):
+        accounted([registered_row(a)],[result])
+
+
+def test_cohort_rejects_unhashable_source_mode_as_typed_refusal():
+    a=setup()
+    row=registered_row(a)
+    row["source_mode"]=["ACTUAL_AS_SEEN"]
+    with pytest.raises(ValueError,match="source mode inconsistent"):
+        accounted([row],[run(a)])
+
+
+def test_cohort_rejects_unhashable_state_as_typed_refusal():
+    a=setup()
+    result=run(a)
+    result["state"]={"state":"PAIRED_RESEARCH_UTILITY"}
+    with pytest.raises(ValueError,match="unrecognized evaluation outcome"):
+        accounted([registered_row(a)],[result])
+
+
+def test_cohort_paired_fraction_must_match_both_policy_utilities():
+    a=setup()
+    result=run(a)
+    result["baseline_bps"]["numerator"]="100"
+    result["baseline_bps"]["display_bps_12dp"]="100.000000000000"
+    with pytest.raises(ValueError,match="delta not conserved"):
+        accounted([registered_row(a)],[result])
