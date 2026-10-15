@@ -5010,8 +5010,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # to the exact head 5,602; preserve all job, pack, and other weight ceilings.
 # A further increase from this head remains a blocking packing regression.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_803),  # main current job count; measured weight unchanged
-    ("scripts/build_free_content.py", 134, 5_606),  # PR #7193 source-contract test weight
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — probe NAME, never opened by this suite; main current job count
+    ("scripts/build_free_content.py", 134, 5_606),  # ci-trigger-closure: data — probe NAME, never opened by this suite; #7193 measured weight
     ("engine/prophet/plan_book.py", 130, 5_600),  # main current job count
 )
 # Twelve packs per shape was the pre-curation measurement.

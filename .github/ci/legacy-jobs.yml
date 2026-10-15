@@ -20694,6 +20694,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
