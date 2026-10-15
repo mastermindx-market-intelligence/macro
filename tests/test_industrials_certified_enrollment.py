@@ -13,6 +13,8 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import date
 
+import pytest
+
 from engine.company_intelligence.industrials_certified_enrollment import (
     enroll_certified_comparison,
 )
@@ -102,6 +104,25 @@ def test_disagreed_labels_leave_certified_label_null() -> None:
         for document in enrolled["documents"]
     )
 
+
+def test_negative_tolerance_propagates_to_enroll_stated_period() -> None:
+    """``tolerance_days`` must reach ``enroll_stated_period`` verbatim.
+
+    ``enroll_stated_period`` runs ``check_tolerance_days`` first (engine/
+    company_intelligence/industrials_period_enrollment.py:55; the ValueError
+    is raised at engine/company_intelligence/industrials_fiscal.py:24), so
+    ``enroll_certified_comparison`` must surface ``tolerance_days=-1`` before
+    any record is built. Hard-coding the tolerance inside this join would
+    silently swallow it (mutant mE1).
+    """
+    loaded = case("same_number_two_headers")
+    with pytest.raises(ValueError, match="tolerance_days must be >= 0"):
+        enroll_certified_comparison(
+            loaded,
+            formula="margin_pct",
+            comparison_receipt=comparison("same_period", extract_case_cells(loaded)),
+            tolerance_days=-1,
+        )
 
 def _one_release(*, cells: list[dict]) -> dict:
     """One synthetic example.invalid release plus the cells under test."""
