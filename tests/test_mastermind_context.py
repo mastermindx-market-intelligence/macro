@@ -1726,6 +1726,50 @@ class TestMarketPlane:
         assert plane["asof"] == "2026-07-05"
         assert plane["stale"] is False
 
+    def test_ror1_native_verdict_clock_survives_world_processing_date(self, tmp_path):
+        """Preserve native verdict-as-issued date; processing date stays unchanged."""
+        _build_minimal_tree(tmp_path)
+        p = tmp_path / "data" / "neuralweb" / "world_state.json"
+        ws = json.loads(p.read_text())
+        ws["verdict"]["asof"] = "2026-07-03"
+        ws["verdict"]["freshness"] = {
+            "any_input_stale": True,
+            "data_asof": "2026-07-03",
+            "expected_asof": "2026-07-03",
+        }
+        p.write_text(json.dumps(ws))
+        plane = build_market_plane(root=tmp_path, now=_NOW)
+        assert plane["asof"] == "2026-07-05"
+        assert plane["verdict"]["score"] == 40
+        assert plane["verdict"]["source_session"] == "2026-07-03"
+        assert plane["verdict"]["source_freshness"] == {
+            "any_input_stale": True,
+            "data_asof": "2026-07-03",
+            "expected_asof": "2026-07-03",
+        }
+        assert plane["is_context_only"] is True
+
+    def test_ror1_unknown_or_invalid_native_verdict_clock_is_not_fresh(self, tmp_path):
+        """No fake 'today' date or healthy status from the missing native receipt."""
+        _build_minimal_tree(tmp_path)
+        p = tmp_path / "data" / "neuralweb" / "world_state.json"
+        ws = json.loads(p.read_text())
+        ws["verdict"]["asof"] = "2026-13-14"
+        ws["verdict"]["freshness"] = {
+            "any_input_stale": "false",
+            "data_asof": "bad-date",
+            "expected_asof": "2026-07-05T00:00:00Z",
+        }
+        p.write_text(json.dumps(ws))
+        plane = build_market_plane(root=tmp_path, now=_NOW)
+        assert plane["verdict"]["source_session"] is None
+        assert plane["verdict"]["source_freshness"] == {
+            "any_input_stale": None,
+            "data_asof": None,
+            "expected_asof": None,
+        }
+        assert plane["stale"] is False  # the old processing-date policy is separate
+
     def test_envelope_stamped(self, tmp_path):
         """Dual-write output must carry all five envelope keys as SIBLINGS
         (never a wrapper), even before synapse.yml registration lands."""
