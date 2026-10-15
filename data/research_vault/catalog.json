@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T03:56:51.471274+00:00",
-  "count": 2932,
+  "generated_at": "2026-10-15T04:26:55.789295+00:00",
+  "count": 2933,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -351,6 +351,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dkmnlupp8rm-ca51dd",
+      "title": "GS Abbas GS US Daily Download 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:25Z",
+      "summary_points": [
+        "AI Inflation Channels: AI drives core PCE via electronic inputs (+15bp), data center power (+5-10bp), industrial metals (+5bp); unresolved software pricing mismeasurement exaggerates impact.",
+        "Foreign Positioning: Foreign investors hold 18% of US equities vs hedge funds' 2%, positioned below 50th percentile since 2009—indicating underweight stance.",
+        "Payments Sector Outlook: Robust spending volumes, fading regulation, and Agentic commerce growth; payments sector insulated from interest rates/inflation/AI disruption (stocks V, MA, TOST, GLBE highlighted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
