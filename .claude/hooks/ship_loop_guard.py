@@ -672,6 +672,51 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     return True, ""
 
 
+# A Mastermind Fabric worker launched with `--new-macro-worktree` runs in a
+# dedicated sparse checkout the launcher minted for that one run:
+# `~/lanes/wt/<run-id>` on `lane/<run-id>`, with FABRIC_WORKSPACE_READY=1 and
+# FABRIC_WORKSPACE_RUN_ID=<run-id> exported only after the mint was verified.
+# That tree is not a shared checkout, so the root quarantine has nothing to
+# protect there -- but it is not a delivery session either: the parent run owns
+# commit/PR/merge/acceptance. Measured 2026-10-15 (run opus-sparse-w1-20261015,
+# glm via Claude CLI): every Bash call in a correctly minted lane was denied with
+# SESSION ROOT QUARANTINE. Admit exactly that shape for tool use only; the
+# session stays `root_admitted=False`, so Stop never runs the delivery chain.
+_FABRIC_LANE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")
+
+
+def _fabric_lane_admission(root: Path) -> str:
+    """Return the run id when ``root`` is this process's minted Fabric lane, else "".
+
+    Every condition must hold: the launcher's readiness env names a safe run id,
+    ``root`` is exactly ``~/lanes/wt/<run-id>`` and the worktree's top level, it
+    is a linked worktree (never the primary), and its branch is
+    ``lane/<run-id>``. Never raises; anything unknown is not a lane.
+    """
+    if os.environ.get("FABRIC_WORKSPACE_READY") != "1":
+        return ""
+    run_id = os.environ.get("FABRIC_WORKSPACE_RUN_ID") or ""
+    if not _FABRIC_LANE_RUN_ID.fullmatch(run_id):
+        return ""
+    try:
+        root = root.resolve()
+        if root != (Path.home() / "lanes" / "wt" / run_id).resolve():
+            return ""
+        if Path(_run(root, "git", "rev-parse", "--show-toplevel")).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _run(root, "git", "branch", "--show-current") != "lane/" + run_id:
+            return ""
+    except Exception:
+        return ""
+    return run_id
+
+
 # Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
 # older than its 2026-10-09 BRANCH NAME switch -- mints `.claude/worktrees/<name>`
 # on `worktree-<name>`. Hooks launch from $CLAUDE_PROJECT_DIR, so a host checkout
@@ -4694,7 +4739,29 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
     state["root_admitted"] = admitted
     state["root_admission_reason"] = admission_reason
+    lane_run_id = "" if admitted else _fabric_lane_admission(root)
+    if lane_run_id:
+        state["fabric_lane_run_id"] = lane_run_id
     _save(path, state)
+
+    if lane_run_id:
+        _emit(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": (
+                        "FABRIC LANE WORKER: this session runs in the dedicated Fabric "
+                        "checkout for run " + lane_run_id + " (branch lane/"
+                        + lane_run_id + "), minted by its parent run. Tools are "
+                        "admitted for the bounded packet only. The repository ship "
+                        "loop does not apply here: do exactly what the packet asks, "
+                        "return its result, and leave commit, push, pull request, "
+                        "merge and acceptance to the parent run."
+                    ),
+                }
+            }
+        )
+        return
 
     ship_loop_context = (
         "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
@@ -4763,6 +4830,10 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
+    if not admitted and _fabric_lane_admission(root):
+        # A minted Fabric lane: allow the tool, but seed no completion record --
+        # the parent run, not this session, owns delivery.
+        return
     if not admitted:
         # Recompute even when this call adopted nothing: a concurrent hook process
         # may have won the rename between the two probes, and its loser must not
