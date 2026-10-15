@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T03:56:51.471274+00:00",
-  "count": 2932,
+  "generated_at": "2026-10-15T05:43:48.775999+00:00",
+  "count": 2937,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -355,6 +355,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-dkmnlupp8rm-ca51dd",
+      "title": "GS Abbas GS US Daily Download 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:25Z",
+      "summary_points": [
+        "AI Inflation Channels: AI drives core PCE via electronic inputs (+15bp), data center power (+5-10bp), industrial metals (+5bp); unresolved software pricing mismeasurement exaggerates impact.",
+        "Foreign Positioning: Foreign investors hold 18% of US equities vs hedge funds' 2%, positioned below 50th percentile since 2009—indicating underweight stance.",
+        "Payments Sector Outlook: Robust spending volumes, fading regulation, and Agentic commerce growth; payments sector insulated from interest rates/inflation/AI disruption (stocks V, MA, TOST, GLBE highlighted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-hmlv6utzbiy-0241df",
       "title": "GS Novak GS U.S. Industrials & Materials CPI HVAC changes pickup analysis 14 Oct 2026",
       "institution": "S&T",
@@ -433,6 +452,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ukru6eiq3sm-ab503a",
+      "title": "GS Blekos Marketcolour + ASML BCP BNP RIO 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:06Z",
+      "summary_points": [
+        "AI Inflation Impact: AI demand boosts core PCE inflation by ~45bp (half genuine), peaking at 50bp by 2026 before declining to 10bp by 2027; mismeasurement drives significant current inflation.",
+        "ASML Capacity Shortfall: 30% capacity in 2027/2028 won’t meet demand, requiring extension beyond 2028 despite Q3 beat (57.4% gross margin).",
+        "Institutional Positioning Extremes: CFTC net futures at 100th percentile indicates overextension, posing reversal risk and demanding aggressive risk mitigation.",
+        "CPI Data Release: Core CPI forecast +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6%); CTA positioning in US equities at 27th percentile (1y)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-75qspjfpqxs-b7f945",
       "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
       "institution": "S&T",
@@ -473,6 +512,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rovjseanl6l-39c4b6",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:41:51Z",
+      "summary_points": [
+        "US CPI & Fed Policy Tension: Strong CPI print (headline +0.57%, YoY +2.4%) drives 24% market probability of Oct Fed rate hike (highest since Oct 2023), with Williams supporting 25bp move amid inflation data uncertainty.",
+        "Geopolitical Oil Pressure: Brent crude at $87.37/bbl (new high) fuels 9.6% monthly fuel price surge due to Iran conflict, amplifying inflation fears ahead of Fed meeting.",
+        "China Producer Inflation Surge: China’s producer inflation hit 5.0% YoY (vs 4.4% forecast), driven by AI input costs and Middle East supply disruptions, compounding global inflation risks.",
+        "Fed Policy & Inflation Dynamics: Persistent inflation underpins Fed’s tightening stance (Barkin), with 10yr yield falling to 5.21% (risk-off tone) as inflation expectations dominate yield moves."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ftuozl3okjq-c3d98f",
       "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
       "institution": "S&T",
@@ -489,6 +548,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xxjud4mu10p-f43e85",
+      "title": "GS Mello GS BRAZIL POSITIONING The Week After 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:42:55Z",
+      "summary_points": [
+        "Brazil Election Volatility & Foreign Flows: Record trading volume ($8.7bn/day) and foreign inflows ($2bn Monday) drove EWZ’s 12.5% single-day surge (5-sigma), with BZ 10YR-US 10YR spread at 7.2% (vs 6.5% pre-2020), signaling election-driven market compression.",
+        "EWZ Valuation Discount: Trading at 11-12x P/E (below pre-2020 14x) with EPS at ~$4.4/shr, offering significant valuation compression amid 150bps rate compression over two weeks.",
+        "Critical Political Checkpoint: Flavio must win Oct-25 runoff, appoint economic team, and enact fiscal plan with new congress to sustain market momentum; failure risks rate expansion.",
+        "Foreign Capital Divergence: Foreign inflows ($2.51bn 5-day) contrast sharply with net foreign outflow (-$0.126M USD) and institutional outflows (-$0.77bn), creating capital flow risk amid IBOV’s 13.98% surge.",
+        "ETF vs Index Disparity: IShares MSCI Brazil ETF (EWZ) outperformed Bovespa Index (IBOV) due to foreign capital inflows, highlighting ETF-specific dynamics critical for portfolio allocation timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
@@ -612,6 +692,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0l6mwmsetec-3714f5",
+      "title": "EW summary Oct 2026 (002)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:05:56Z",
+      "summary_points": [
+        "Divided Government Impact: Midterms likely to create divided government (50% Dem sweep, 40% split), delaying major legislation, prioritizing spending bills/debt-limit negotiations, and amplifying policy uncertainty.",
+        "Geopolitical Fiscal Risks: Regional vulnerabilities intensify (Asia-Pacific: tariffs/defense; Europe: US-China tensions; Canada: USMCA), with state-level elections driving Medicaid cuts and data center policies amid declining federal transfers to states.",
+        "State Fiscal Pressure: Federal transfers to state/local governments steady but expected to decline, heightening Medicaid and infrastructure funding risks at subnational levels.",
+        "Policy Uncertainty Amplification: Divided government and regional tensions converge to elevate near-term policy volatility, impacting sector allocations and risk positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },

@@ -984,6 +984,126 @@ def test_jinja_tier_less_row_defaults_to_shelf():
     )
 
 
+# ── W16-B-FOR: the hero verdict must never call a WATCH-stage heating theme "early" ─
+# The .fx-verdict sentence used to splice convergence.heating_up names into the claim
+# "N themes sit early in the cycle". heating_up items are frequently WATCH-stage themes,
+# so the sentence told the reader a WATCH theme is one of the N early themes — false.
+# Its zh half also interpolated English theme names into Chinese copy. Both are
+# display-only. Assert on the extracted div only: the heating grid further down the page
+# names heating themes legitimately.
+
+_HERO_ROW = {
+    "theme": "syn_base", "name": "SYN Base", "tier": "P", "stage": "WATCH",
+    "bottleneck_band": "TIGHT", "bottleneck_text_only": False, "tightness": 0.9,
+    "bottleneck_regime": True, "demand_band": None, "demand_strength": None,
+    "capex_yoy": None, "revision_breadth": 0.05, "revision_level": "FLAT_LOW",
+    "broadening_state": "FLAT_LOW", "est_drift_90d": None,
+    "guidance_band": None, "guidance_net": None, "guidance_raisers": None,
+    "guidance_cutters": None, "altdata_summary": None, "n_altdata_leading": 0,
+    "altdata_members": None, "glut_band": None, "glut_score": None,
+    "theme_feed_summary": None,
+    "rationale": "synthetic hero fixture", "entry_ready": False,
+    "entry_note": "synthetic", "score": 62,
+    "score_detail": {"verdict": "watch", "axes": {}, "caps": []},
+    "size_band": None, "size_note": None,
+}
+
+# A WATCH-stage theme that is heating up — the exact shape that used to leak into
+# the "sits early" sentence. No "ranked" key: the heating grid section stays closed,
+# so the only surface under test is the hero div.
+_HERO_HEATING = [{"name": "SYN Data Center Power", "theme": "syn_dcp",
+                  "stage": "WATCH", "heat": 1.0, "lit_sources": []}]
+
+
+def _fx_verdict_spans(themes, convergence):
+    """Render foresight.html.j2 and return (div_html, en_html, zh_html) for the hero
+    .fx-verdict block — the only place the "N themes sit early" count is claimed."""
+    import pathlib
+    import re
+    import sys
+
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+    from jinja2 import Environment, FileSystemLoader
+
+    repo = pathlib.Path(__file__).resolve().parent.parent
+    env = Environment(loader=FileSystemLoader(str(repo / "templates")), autoescape=True)
+    tmpl = env.get_template("foresight.html.j2")
+    html = tmpl.render(
+        cascade={"sizing": None, "demand_pool": None, "dislocation": None},
+        themes=themes,
+        stage_counts={"PRECIPICE": 0, "BROADENING": 0, "RE-RATING": 0,
+                      "GLUT-RISK": 0, "WATCH": len(themes), "UNKNOWN": 0},
+        stage_order=["PRECIPICE", "BROADENING", "RE-RATING", "GLUT-RISK", "WATCH",
+                     "UNKNOWN"],
+        demand_pool=None, dislocation=None,
+        track={"foresight": 0, "bottleneck": 0, "glut": 0, "revisions": 0,
+               "guidance": 0, "emergence": 0, "subsector": 0, "recent": []},
+        grade=None, emergence=None, subsectors=None,
+        convergence=convergence, power=None, analyst=None, monitor=None, health=None,
+        asof="2026-07-02", generated_utc="2026-07-02 00:00 UTC",
+        nav_prefix="", active_section="research", active_page="foresight",
+    )
+    m = re.search(r'<div class="fx-verdict">(.*?)</div>', html, re.S)
+    assert m, "hero .fx-verdict div missing from the rendered page"
+    div = m.group(1)
+    spans = {}
+    for cls in ("l-en", "l-zh"):
+        s = re.search(r'<span class="%s">(.*?)</span>' % cls, div, re.S)
+        assert s, f".fx-verdict has no {cls} span"
+        spans[cls] = s.group(1)
+    return div, spans["l-en"], spans["l-zh"]
+
+
+def test_hero_does_not_name_watch_heating_as_early():
+    """n_edge > 0 plus a WATCH heating theme => the hero states the count only."""
+    themes = [dict(_HERO_ROW, theme=f"syn_a{i}", name=f"SYN Early {i}",
+                   stage="PRECIPICE") for i in range(3)]
+    themes += [dict(_HERO_ROW, theme=f"syn_b{i}", name=f"SYN Confirming {i}",
+                    stage="BROADENING") for i in range(2)]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": list(_HERO_HEATING)})
+    assert "5 themes" in en, f"hero en lost the early count: {en!r}"
+    assert "sit early" in en, f"hero en lost the early claim: {en!r}"
+    assert "SYN Data Center Power" not in div, (
+        f"hero verdict named a WATCH heating theme as an early theme: {div!r}"
+    )
+
+
+def test_hero_zh_does_not_leak_english_heating_name():
+    """The zh half of the n_edge sentence carries no English theme name."""
+    themes = [dict(_HERO_ROW, theme=f"syn_a{i}", name=f"SYN Early {i}",
+                   stage="PRECIPICE") for i in range(3)]
+    themes += [dict(_HERO_ROW, theme=f"syn_b{i}", name=f"SYN Confirming {i}",
+                    stage="BROADENING") for i in range(2)]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": list(_HERO_HEATING)})
+    assert "5 个主题" in zh, f"hero zh lost the early count: {zh!r}"
+    assert "SYN Data Center Power" not in zh, (
+        f"English heating name leaked into zh hero copy: {zh!r}"
+    )
+
+
+def test_hero_watch_only_names_heating_in_en_not_zh():
+    """No early theme at all => the hot branch may name in en, never in zh."""
+    themes = [dict(_HERO_ROW, theme="syn_w0", name="SYN Watching", stage="WATCH")]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": list(_HERO_HEATING)})
+    assert "SYN Data Center Power" in en, f"hot branch stopped naming in en: {en!r}"
+    assert "Watch" in en, f"hot branch lost its watch caveat: {en!r}"
+    assert "1 个主题" in zh, f"hero zh lost the heating count: {zh!r}"
+    assert "开始升温" in zh, f"hero zh lost the heating clause: {zh!r}"
+    assert "SYN Data Center Power" not in zh, (
+        f"English heating name leaked into zh hero copy: {zh!r}"
+    )
+
+
+def test_hero_zh_heating_count_is_every_heating_theme():
+    """The zh hot sentence counts every heating theme; en names only the first two."""
+    themes = [dict(_HERO_ROW, theme="syn_w0", name="SYN Watching", stage="WATCH")]
+    heating = [dict(_HERO_HEATING[0], name=f"SYN Heat {i}", theme=f"syn_h{i}")
+               for i in range(3)]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": heating})
+    assert "3 个主题" in zh, f"hero zh heating count is not the full count: {zh!r}"
+    assert "SYN Heat 0" in en and "SYN Heat 1" in en, f"en lost a named theme: {en!r}"
+    assert "SYN Heat 2" not in en, f"en named more than two heating themes: {en!r}"
+
 # ── W5a: fingerprint sub-object passthrough (2026-08-04 health coherence) ────
 # The health surface counts t1_fingerprint liveness from CASCADE rows
 # (foresight_health._assess_t1_fingerprint reads t["fingerprint"]["n_legs_live"]);
