@@ -196,7 +196,7 @@ class ProvisionalObservationTests(unittest.TestCase):
     def test_quote_watermark_maturity_required(self):
         r=self.observed(source_complete_through_ns=(BASE+1)*1_000_000)
         self.assertEqual(r["reason"],"TRADE_WINDOW_NOT_COMPLETE")
- 
+
     def test_trade_condition_receipt_and_native_codes_must_match_source_trade(self):
         ver=condition_verdict(t())
         ver["native_trade_conditions"]=[12]
