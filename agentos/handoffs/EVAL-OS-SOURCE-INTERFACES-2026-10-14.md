@@ -153,10 +153,10 @@ unresolved:
   reachable current-main inputs. Source qualification passes; fresh hosted checks, protected
   merge and all production proof remain owed.
 next_actions:
-- Consume current A1 PR6651/head3f34040de3a5 original CI38738100398/attempt1 terminal
-  artifact and all binding checks. At13:18:13 plan+contract and packs1/2/6/9/10/11 PASS;
-  six packs remain running. Original critical pack6/9 artifacts canonically consumed,
-  including Chromium DOM and A1 steps. Incumbent alone refreshes/finalmerges.
+- A1 PR6651/head3f34040de3a5 original CI38738100398/attempt1 is terminal PASS.
+  Original final artifact11978754300 digest and canonical gate consumed:127jobs/350semantic
+  commandstepsPASS,0inherited/blocked. All binding checks clean at14:18:58; PR still OPEN.
+  Consume the incumbent refresh/merge decision; no duplicate controller or second base integration.
 - Follow-on qualified2d0e98bf6b7e resolves the new six-path manifest composition conflict;
   2controlsPASS/zero closure misses/strict134-134-128jobs. All314definitions and runtime3528080
   preserved; clean composition with A1 preserves319existing definitions/path memberships.
@@ -179,30 +179,23 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T13:20Z
+## Current checkpoint — 2026-10-15T14:23Z
 
-A1 PR6651 remains published3f34040de3a5. Current run38738100398/attempt1 at13:18:13 has plan+contract and packs1/2/6/9/10/11 PASS;0/3/4/5/7/8 remain running. Original pack6 and9 ZIP digests and canonical plan/execution identities were consumed:26jobs/59semantic commandsteps PASS, including the previously failing International Chromium DOM step and both A1 steps. These are command steps, not unit-test or zero-skip counts. See `research/evidence/eval-os-tier-query-20261014/a1-critical-packs-38738100398.json` and the two original ZIPs. Final artifact/all binding checks and incumbent final merge remain required; no rerun, second base integration or controller dispatch.
+A1 PR6651/head3f34040de3a5 has terminal hosted PASS on original CI38738100398/attempt1.
+Original final artifact11978754300 ZIP SHA4946408bca8d87d70db700c411238347d7dbdc3fa54c2503a8358099fe089eee
+matches GitHub. Canonical loader/gate and every planned execution/step identity validate:
+127logical jobs/350semantic commandstepsPASS, zero inherited/blocked/infrastructure failures.
+These are not unit-test or zero-skip counts. All binding checks are clean by the incumbent
+predicate at14:18:58; the inactive complementary pilot context retains its nonbinding red.
+PR remains OPEN at3f. Incumbent run38749757653 completed; safe annotations make no A1
+refusal or release claim. Keep its existing successor path; no manual refresh/merge.
+See a1-final-consumption-38738100398.json and original ZIP in the canonical evidence directory.
 
-Follow-on source2d0e98bf6b7e adds the same six A1 dependency paths to resolve a newly demonstrated manifest composition conflict. All314follow-on job definitions, prior paths, limits and runtime remain unchanged. Two affected controls pass, full dependency closure has zero misses, and strict packing remains134/134/128jobs within existing limits. Read-only composition with A1 is clean at tree077ffc7f and preserves319existing A1 execution definitions and path memberships; the existing follow-on QLedger exclusive-scope metadata remains intentional and predates this repair. See `research/evidence/eval-os-tier-query-20261014/followon-six-input-alignment-20261015.json`. Runtime remains3528080 with20supplied-textcases plus legacybear/T11/T5/T12/QLedger proof. After A1 landing, reconcile final source/capacity and release the same follow-on. No model/PIT/installed numeric/internal-log or adoption claim; original unknown/refused effects and all final flags remain unchanged.
-
-Native serving readiness at13:45-13:46Z is now resolved separately from admin: actual
-`macro-api` PID2796447 is active with cwd/WorkingDirectory `/opt/macro`, start13:30:21;
-actual `admin` PID2753549 is active, start12:21:37. The installed updater matches the
-previous verified updater and covers gateway/native-facts/log-writer changes in this
-follow-on. `response_eval.py` alone is not a restart trigger. The absent `macro-admin`
-alias was corrected to the canonical `admin` unit; it is not an outage. No restart,
-credential/corpus read or production mutation occurred. Final qualified files, both
-loaded processes and actual request/log consumption remain owed after release. See
-`research/evidence/eval-os-tier-query-20261014/t11-native-runtime-readiness-20261015.json`.
-
-Follow-on deployment closure repair: native_facts now lazily imports response_eval,
-which the current-main663dbf1 and installed updater did not match. The existing real
-grep-based positive test first failed for that exact path. The updater now adds only
-response_eval to the API module alternation, with lookalike/nightly-script negatives;
-169 affected restart controls PASS and bash syntax passes. Removing that one token
-and its comment exactly recovers the prior updater bytes, preserving all transactions,
-other service triggers, fences and limits. No service was restarted. Prior 2d0 CI-scope
-and native runtime proof remains valid; final hosted release/installed rule proof is owed.
+Follow-on source9cb includes the qualified native-checker normal-updater repair, with169affected
+controls and bashsyntaxPASS. CI scope2d0/core3528080 and all earlier T11/T5/T12/QLedger proof
+remain valid; no repeated qualification. Release this same follow-on after A1/final-base and
+capacity reconciliation. Actual A1 production and follow-on numeric/log/CLI/rights-qualified
+Discovery adoption remain open; original unknown/refused effects and all false flags persist.
 
 ## 2026-10-15 A1 repair published
 
