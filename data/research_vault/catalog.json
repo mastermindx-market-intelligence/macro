@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T10:28:01.101348+00:00",
-  "count": 2951,
+  "generated_at": "2026-10-15T11:13:09.276650+00:00",
+  "count": 2953,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -813,6 +813,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-q7fylwxyafm-58b881",
+      "title": "Dailyspark 2026 10 13 v2",
+      "institution": "Apollo",
+      "side": "buy",
+      "desk": "",
+      "published_at": "2026-10-14T02:37:02Z",
+      "summary_points": [
+        "Document Missing: Source document not provided for extraction; critical data unavailable for analysis Fundamentals Gap: No fundamental data (earnings, revenue, margins) included to assess company/sector health Risk Factor Omission: Key risk factors (geopolitical, policy shifts, flow data) absent from input list"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xeistvhtalj-a6a397",
       "title": "Bii global outlook in charts",
       "institution": "BlackRock",
@@ -1148,6 +1165,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-z3bmza4j1ih-92a919",
+      "title": "Euro Area Data Update GDP Tracking Unchanged",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:43Z",
+      "summary_points": [
+        "Euro Area Inflation Uptick: Headline inflation nearcast rose to 4.21% yoy (vs 4.11% previously), driven by energy prices and German HICP revisions; excludes policy impacts (e.g., German fuel tax discount), creating forecast risk for inflation-sensitive assets.",
+        "France Economic Contraction: BfF surveys show negative PMI Services and PMI Mfg Output, with declining Industry Production, signaling sustained contraction in manufacturing and services sectors.",
+        "Spain Tourism Shock: Nonresident overnight stays dropped sharply in Feb-25 (geopolitical/health event impact), with volatility in resident stays; potential rebound signals sector-specific risk/recovery for hospitality.",
+        "Food Price Inflation Pressure: EA21 food prices (ECB-weighted) spiked, while Germany’s HICP shows persistent inflation in ICT/Vehicles/food services, raising consumer spending risks and inflation expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
