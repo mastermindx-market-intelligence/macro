@@ -15,7 +15,7 @@
       "lag_days": 2,
       "state": "fresh"
     },
-    "JD": {
+    "BABA": {
       "asof": "2026-10-13",
       "lag_days": 2,
       "state": "fresh"
@@ -25,7 +25,7 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "BABA": {
+    "JD": {
       "asof": "2026-10-13",
       "lag_days": 2,
       "state": "fresh"
