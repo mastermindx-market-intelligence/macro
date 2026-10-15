@@ -77,3 +77,21 @@ reviewer PASS of unobserved final code. The integrity probe is now12groups (two
 additional Research desk/note attribution controls); other21groups retain their
 unchanged accepted evidence. Total installed acceptance is33groups, not31.
 The12groups and bad-writer-hash refusal pass locally; no production execution.
+
+
+October15 Research dossier composition: the planner retains explicit, well-formed
+catalog tickers and links only their existing canonical stock pages through the
+public-prefix filter. It does not infer issuers from prose or alter report ranking,
+held-source exclusions, primary-source identity or fact content. Six new tests
+reproduced two failures before repair; the affected planner/validator/writer checks
+passed244, and Research triage/run checks passed243 with1existing sparse-site skip.
+The real-data hygiene test initially failed on the omitted data tree, then passed
+unchanged against the preserved original artifacts; all6input hashes unchanged.
+Total488passed/1skip. Only the desk_planner hash changed in the24-source manifest.
+
+The existing Research pool installed probe now has11groups, including explicit
+dossier links, validator refusals and malformed/no-inferred ticker controls. All
+35portable groups (12integrity+5DOJ+11pool+7radar) passed locally with zero provider
+or publication effects. Local outputs: agent-evidence/mmx-public-intelligence-
+20261011/diagnostics/dossier-*.json. This remains uninstalled; actual CAT selection,
+rights/editorial approval and public article acceptance are separate requirements.

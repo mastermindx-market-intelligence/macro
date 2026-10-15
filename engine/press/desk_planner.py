@@ -1263,6 +1263,8 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
     # Otherwise eight held reports can permanently hide the entire ranked tail.
     candidates = [it for it in eligible
                   if f"research_vault:{it.get('id')}" not in blocked_refs]
+    from lib.pages import rendered_ticker_pages  # noqa: PLC0415
+    rendered_tickers = rendered_ticker_pages(repo_root(root) / "site")
     slots: list[dict] = []
     for it in candidates[: int(desk_cfg.get("candidate_pool") or 8)]:
         if len(slots) >= cap:
@@ -1274,6 +1276,13 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
         slug = vault_slug(it, items)
         url = _absolute(f"/research/{slug}.html") if slug else f"{_SITE_BASE}/research/"
         inst = str(it.get("institution") or "the desk")
+        # Preserve explicit catalog identities, never infer companies from prose.
+        # A source ticker may lack a dossier; only existing canonical pages link.
+        supplied_tickers = it.get("tickers")
+        tickers = list(dict.fromkeys(
+            ticker for ticker in (supplied_tickers if isinstance(supplied_tickers, list) else [])
+            if isinstance(ticker, str) and re.fullmatch(r"[A-Z0-9][A-Z0-9.-]*", ticker)
+        ))
 
         # The vault summary is OUR analyst summary of the report, so it is a
         # first-party ref — but the report itself is somebody else's document,
@@ -1328,14 +1337,17 @@ def _plan_research(cfg: dict, desk_cfg: dict, as_of: date, root,
             "min_anchored_receipts": int(desk_cfg.get("min_anchored_receipts") or 0),
             # /research/<slug>.html is our own PUBLIC coverage page (verified
             # 200 logged-out), so it is on the allowlist and may be linked.
-            "allowed_links": _allowed_links(cfg, [url]),
+            "allowed_links": _allowed_links(cfg, [url] + [
+                f"{_SITE_BASE}/stocks/{ticker}.html"
+                for ticker in tickers if ticker in rendered_tickers
+            ]),
             "story": {
                 "kind": "research_report",
                 "title_hint": it.get("title"),
                 "institution": inst,
                 "side": it.get("side"),
                 "published_at": it.get("published_at"),
-                "tickers": [],
+                "tickers": tickers,
                 "themes": [],
             },
             # First-party too: /research/<slug>.html is OUR coverage page and it

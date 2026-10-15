@@ -318,6 +318,69 @@ def test_research_slot_may_link_its_public_coverage_page(tmp_path):
     assert slot["allowed_links"] == [slot["primary_source"]["url"]]
 
 
+def test_research_preserves_source_tickers_and_links_only_their_existing_dossiers(tmp_path):
+    root = F.fixture_root(tmp_path)
+    baseline = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+    catalog_path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(catalog_path.read_text())
+    catalog["items"][0]["tickers"] = ["CAT", "MISSING", "CAT", "index", "../CAT", 3, None]
+    catalog_path.write_text(json.dumps(catalog))
+    before = catalog_path.read_bytes()
+    stocks = root / "site/stocks"
+    stocks.mkdir(parents=True)
+    for ticker in ("CAT", "UNRELATED", "index"):
+        (stocks / f"{ticker}.html").write_text("<html></html>")
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+
+    assert slot["story"]["tickers"] == ["CAT", "MISSING"]
+    assert slot["allowed_links"] == [
+        baseline["primary_source"]["url"], "https://www.mastermind-x.com/stocks/CAT.html"]
+    for key in ("id", "primary_source", "sources", "facts", "raw_documents"):
+        assert slot[key] == baseline[key]
+    assert catalog_path.read_bytes() == before
+    from engine.press import validators
+    good = {"body_html": '<p><a href="/stocks/CAT.html">Caterpillar</a></p>'}
+    bad = {"body_html": '<p><a href="/stocks/UNRELATED.html">Other company</a></p>'}
+    assert validators.check_link_allowlist(good, slot, _cfg(root))["ok"]
+    assert not validators.check_link_allowlist(bad, slot, _cfg(root))["ok"]
+
+
+@pytest.mark.parametrize("tickers", [None, "CAT", {"CAT": True}, []])
+def test_research_does_not_infer_tickers_from_title_or_malformed_metadata(tmp_path, tickers):
+    root = F.fixture_root(tmp_path)
+    path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(path.read_text())
+    catalog["items"][0].update(title="Caterpillar CAT research", tickers=tickers)
+    path.write_text(json.dumps(catalog))
+    page = root / "site/stocks/CAT.html"
+    page.parent.mkdir(parents=True)
+    page.write_text("<html></html>")
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root)[0]
+
+    assert slot["story"]["tickers"] == []
+    assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+
+
+def test_research_dossier_links_still_require_the_configured_public_prefix(tmp_path):
+    root = F.fixture_root(tmp_path)
+    path = root / "data/research_vault/catalog.json"
+    catalog = json.loads(path.read_text())
+    catalog["items"][0]["tickers"] = ["CAT"]
+    path.write_text(json.dumps(catalog))
+    page = root / "site/stocks/CAT.html"
+    page.parent.mkdir(parents=True)
+    page.write_text("<html></html>")
+    cfg = _cfg(root)
+    cfg["public_link_prefixes"] = ["/research/"]
+
+    slot = P.plan(["research_desk"], as_of="2026-07-26", root=root, cfg=cfg)[0]
+
+    assert slot["story"]["tickers"] == ["CAT"]
+    assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+
+
 def test_every_slot_carries_the_publication_from_the_registry(tmp_path):
     root = F.fixture_root(tmp_path)
     cfg = _cfg(root)

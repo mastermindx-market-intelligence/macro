@@ -127,6 +127,41 @@ with tempfile.TemporaryDirectory(prefix="mmx-research-pool-") as directory:
         assert plan(path, cfg) == []
         controls.append("future-and-out-of-window-refusal")
 
+        path, cfg = fixture("explicit-dossier")
+        row = dict(item(0), tickers=["CAT", "MISSING", "CAT", "index", "../CAT", None])
+        catalog = path / "data/research_vault/catalog.json"
+        catalog.write_text(json.dumps({"items": [row]}))
+        stocks = path / "site/stocks"
+        stocks.mkdir(parents=True)
+        for ticker in ("CAT", "UNRELATED", "index"):
+            (stocks / f"{ticker}.html").write_text("<html></html>")
+        initial_catalog = sha(catalog)
+        slot, = plan(path, cfg)
+        assert slot["story"]["tickers"] == ["CAT", "MISSING"]
+        assert slot["sources"] == ["research_vault:pool-00"]
+        assert slot["allowed_links"] == [slot["primary_source"]["url"],
+            "https://www.mastermind-x.com/stocks/CAT.html"]
+        assert sha(catalog) == initial_catalog
+        from engine.press import validators as V
+        for ticker, accepted in (("CAT", True), ("UNRELATED", False), ("MISSING", False)):
+            draft = {"body_html": f'<p><a href="/stocks/{ticker}.html">Company</a></p>'}
+            assert V.check_link_allowlist(draft, slot, cfg)["ok"] is accepted
+        controls.append("explicit-source-dossier-only-and-validator-refusals")
+
+        for raw in (None, "CAT", {"CAT": True}, []):
+            row.update(title="Caterpillar CAT research", tickers=raw)
+            catalog.write_text(json.dumps({"items": [row]}))
+            slot, = plan(path, cfg)
+            assert slot["story"]["tickers"] == []
+            assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+        row["tickers"] = ["CAT"]
+        catalog.write_text(json.dumps({"items": [row]}))
+        cfg["public_link_prefixes"] = ["/research/"]
+        slot, = plan(path, cfg)
+        assert slot["story"]["tickers"] == ["CAT"]
+        assert slot["allowed_links"] == [slot["primary_source"]["url"]]
+        controls.append("no-inferred-ticker-and-public-prefix-preserved")
+
         catalog.write_text(json.dumps({"items": [item(0)]}))
         cfg["desks"]["research_desk"]["cadence_per_day"] = 0
         assert plan(path, cfg) == []
