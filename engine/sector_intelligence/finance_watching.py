@@ -21,6 +21,15 @@ refusal propagates and the page is left as it was.
 
 The ZH strings live in this module, not in the page template, so the
 bilingual deck stays review-gated display copy. Dates stay ISO.
+
+W10-FIN-2 adds ``shell_hint_rows()``: the eleven R12 preflight witness
+symbols as ``RESEARCH_HINT_UNVALIDATED`` hint-roster rows for
+``#company-exposure``. Record ids come only from
+:func:`engine.sector_intelligence.finance_witness_hints.hint_binding`;
+a row carries symbol, record id and state and nothing else — no
+identity key, no stock route, no source_record. BNY keeps
+``fin-research-bk-2025``; ``BK`` is not a symbol. Same no-I/O law
+applies: the preflight JSON is never opened here.
 """
 
 from __future__ import annotations
@@ -28,6 +37,7 @@ from __future__ import annotations
 from typing import Any, Mapping, MutableMapping
 
 from engine.sector_intelligence.finance_page_signal import apply_page_signal
+from engine.sector_intelligence.finance_witness_hints import hint_binding
 
 
 # Frozen synthetic constants — byte-equal to the shared fixture at
@@ -164,3 +174,49 @@ def shell_watching_items() -> list[dict[str, str]]:
             placed.append(dict(item))
     _WATCHING_ITEMS = placed
     return [dict(item) for item in _WATCHING_ITEMS]
+
+
+# The hint roster is the R12 preflight witness symbol order, enumerated
+# in-module so this file never reaches into ``finance_witness_hints``
+# privates. ``hint_binding`` fails closed on an unknown symbol, and
+# ``tests/test_finance_watching.py`` pins the eleven-row roster, so a
+# drift between this tuple and the binding map is a loud test failure,
+# not a silent row loss.
+_HINT_ROSTER: tuple[str, ...] = (
+    "V",
+    "MA",
+    "FI",
+    "FIS",
+    "CME",
+    "ICE",
+    "NDAQ",
+    "BNY",
+    "STT",
+    "SPGI",
+    "MCO",
+)
+
+
+def shell_hint_rows() -> list[dict[str, str]]:
+    """Return the eleven RESEARCH_HINT_UNVALIDATED hint-roster rows.
+
+    Each row is ``{"symbol", "record_id", "state"}`` — the closed
+    research-hint citation the shell shows inside ``#company-exposure``
+    while the read-model route stays unwired. ``record_id`` is copied
+    verbatim from ``hint_binding(symbol)["record_id"]`` (BNY keeps
+    ``fin-research-bk-2025``); it is the binding's citation id, never an
+    identity key, and no other binding field is carried. ``BK`` and
+    ``GHOST`` are not roster symbols. No stock route, no
+    ``IDENTITY_VALIDATED``, no fetch, no research/finance read.
+    """
+    rows: list[dict[str, str]] = []
+    for symbol in _HINT_ROSTER:
+        binding = hint_binding(symbol)
+        rows.append(
+            {
+                "symbol": symbol,
+                "record_id": binding["record_id"],
+                "state": binding["state"],
+            }
+        )
+    return rows
