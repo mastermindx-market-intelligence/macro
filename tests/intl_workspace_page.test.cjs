@@ -127,6 +127,59 @@ for (const bootLanguage of ['en','zh']) {
   });
 }
 
+
+for (const lang of ['en','zh']) for (const width of [320,1440]) {
+  test(`Native Compare chart survives Overview evidence round trip ${lang} ${width}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(lang=>setTheme(lang==='en'?'dark':'light'),lang);
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      const before=await chart.innerHTML(),origin=page.url();
+      const generation=await panel.getAttribute('data-im-generation');
+      assert.match(generation,/^im-workspace-generation:[0-9a-f-]{36}$/);
+      const source=await panel.getAttribute('data-source');
+      assert.ok(source,'Compare must retain an actual disclosed source reference');
+      assert.deepEqual(await chart.locator('[data-im-chart-table-market]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort()),['AU','KR']);
+      assert.ok(await chart.locator('[data-im-chart-series]:not([hidden])').count()>0);
+      if(width===320) await page.selectOption('[data-im-controls] select[data-im-action="set_view"]','overview');
+      else await page.locator('[data-im-controls] button[data-im-view="overview"]').click();
+      const overview=page.locator('[data-im-panel][data-view="overview"]:visible');
+      await overview.locator('[data-im-expansion-trigger]').click();
+      const trigger=page.locator('[data-im-inspector-origin]:visible')
+        .filter({has:page.locator('[data-im-inspector-payload][data-market-id="KR"]')})
+        .locator('[data-im-inspector-trigger]');
+      await trigger.focus();await page.keyboard.press('Enter');
+      const dialog=page.locator('dialog:visible');
+      const article=dialog.locator('[data-im-inspector-payload]');
+      assert.equal(await article.getAttribute('data-market-id'),'KR');
+      assert.equal(await article.getAttribute('data-im-generation'),generation);
+      const evidenceSource=await article.getAttribute('data-source');
+      assert.ok(evidenceSource,'Inspector must retain its actual disclosed source');
+      assert.equal(evidenceSource,await overview.getAttribute('data-source'));
+      const tuple=await article.evaluate(n=>['data-horizon','data-basis','data-return-basis'].map(k=>n.getAttribute(k)));
+      const query=new URL(origin).searchParams;
+      assert.deepEqual(tuple,[query.get('horizon'),query.get('basis'),query.get('return_basis')]);
+      const facts=await article.locator('[data-im-inspector-metric]').allTextContents();
+      const evidence=dialog.locator('[data-im-inspector-action="evidence"]');
+      await evidence.focus();await page.keyboard.press('Enter');
+      assert.equal(await dialog.locator('[data-im-inspector-page="ledger"]').isVisible(),true);
+      await dialog.locator('[data-im-inspector-action="back"]').click();
+      assert.deepEqual(await article.locator('[data-im-inspector-metric]').allTextContents(),facts);
+      await page.keyboard.press('Escape');
+      assert.equal(await trigger.evaluate(n=>n===document.activeElement),true);
+      await page.goBack();await page.waitForURL(origin);
+      assert.equal(await panel.isVisible(),true);
+      assert.equal(await chart.innerHTML(),before,'chart identity, selection, data and accessible context survive the supported return path');
+      assert.equal(await panel.getAttribute('data-im-generation'),generation);
+      assert.equal(await panel.getAttribute('data-source'),source);
+      assert.equal(await page.locator('dialog:visible').count(),0);
+    },{htmlOverride:sourceChartFixture(),width,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
 test('Source chart endpoint symbols remain unclipped',async()=>{
   await pageFixture(async page=>{
     await page.emulateMedia({reducedMotion:'reduce'});
