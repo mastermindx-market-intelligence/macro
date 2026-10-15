@@ -6,6 +6,7 @@ let a three-day tolerance rewrite the cell end to 30 June.
 """
 from __future__ import annotations
 
+import builtins
 import re
 import sys
 from collections.abc import Callable
@@ -289,12 +290,19 @@ _PARSE_REFUSED_ENDS = [
 def _raw_end_of(param: object) -> str:
     """The end string carried by a ``_SHAPE_REFUSED_ENDS`` entry.
 
-    Entries are ``pytest.param`` objects today. A bare string is read too, so an
-    append of either shape joins the derived guard instead of dropping out when
-    the attribute probe misses.
+    Entries are ``pytest.param`` objects today (``object.values`` is a tuple);
+    bare strings are read too, so an append of either shape joins the derived
+    guard instead of dropping out when the attribute probe misses. An entry
+    exposing a non-sequence ``.values`` (e.g. a dict) is read as a bare entry;
+    the guard below keeps it from being subscripted. Without that guard the two
+    crash sites differ -- IN ``_SHAPE_REFUSED_ENDS`` the entry crashes module
+    collection at the ``_SHAPE_REFUSED_ENDS_PARSER_ADMITTED`` derivation, while
+    the direct call in the non-str test fails only that test.
     """
     values = getattr(param, "values", None)
-    return param if values is None else values[0]
+    if not isinstance(values, (tuple, list)):
+        return param
+    return values[0]
 
 
 def _parser_admits(raw_end: str) -> bool:
@@ -417,16 +425,83 @@ def test_parser_admitted_subset_of_shape_refused_forms_meets_the_floor() -> None
 
 
 def test_parser_admits_treats_non_str_entries_as_not_admitted() -> None:
-    """``_parser_admits`` must not crash collection on a non-str entry.
+    """Pin exactly the four forms asserted below.
 
-    ``_raw_end_of`` deliberately reads bare (non-``pytest.param``) entries, so a
-    future non-str entry -- ``None`` or the int ``20260703`` -- reaches
-    ``date.fromisoformat``, which raises ``TypeError`` (measured on this 3.12.3:
-    "fromisoformat: argument must be str"). ``except ValueError`` alone let that
-    TypeError escape and failed the whole module at import/collection time, so
-    both non-str forms are asserted ``False`` here. The compact form as a STR is
-    version-bound: 3.11+ admits ``20260703``, earlier interpreters refuse it.
+    ``None`` and the int ``20260703`` reach ``date.fromisoformat`` as non-str
+    and raise ``TypeError`` (measured on this 3.12.3: "fromisoformat: argument
+    must be str"). The dict-shaped entry ``{"a": 1}`` is read by ``_raw_end_of``
+    as a bare entry -- its ``.values`` is the bound method ``dict.values``, not
+    a sequence, so the guard in ``_raw_end_of`` returns the dict unchanged and
+    it reaches ``date.fromisoformat`` as a non-str. The compact form ``"20260703"``
+    as a STR is version-bound: 3.11+ admits it, earlier interpreters refuse it
+    with ``ValueError``. Each non-str form is asserted ``False`` here; the
+    version-bound str form surfaces whatever this interpreter's parser decides.
     """
     assert _parser_admits(None) is False
     assert _parser_admits(20260703) is False
+    assert _parser_admits(_raw_end_of({"a": 1})) is False
     assert _parser_admits("20260703") == (sys.version_info >= (3, 11))
+
+
+def _matches_probe(obj: object) -> bool:
+    """``obj`` is an ``Exception`` subclass outside ``(TypeError, ValueError)`` whose
+    ``obj("probe")`` constructs and renders ``"probe"`` in its ``str``."""
+    if not isinstance(obj, type):
+        return False
+    if not issubclass(obj, Exception):
+        return False
+    if issubclass(obj, (TypeError, ValueError)):
+        return False
+    try:
+        instance = obj("probe")
+    except Exception:
+        return False
+    return "probe" in str(instance)
+
+
+# Derived from ``builtins``: every public class X with
+# ``issubclass(X, Exception) and not issubclass(X, (TypeError, ValueError))``
+# such that ``X("probe")`` constructs and ``"probe" in str(X("probe"))``.
+# Sorted by ``X.__name__``; the id set follows the running interpreter's
+# builtins (CI pins 3.12.13 in ``.github/workflows/ci.yml``). Duplicates by
+# class object are coalesced (multiple builtin names alias to one class).
+_PROBE_EXCEPTIONS = tuple(
+    sorted(
+        {
+            obj
+            for name, obj in vars(builtins).items()
+            if not name.startswith("_") and _matches_probe(obj)
+        },
+        key=lambda cls: cls.__name__,
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "probe_exc",
+    _PROBE_EXCEPTIONS,
+    ids=[cls.__name__ for cls in _PROBE_EXCEPTIONS],
+)
+def test_parser_admits_does_not_swallow_exceptions_outside_type_or_value_errors(
+    monkeypatch: pytest.MonkeyPatch, probe_exc: type[Exception]
+) -> None:
+    """Every exception outside ``(TypeError, ValueError)`` escapes ``_parser_admits``.
+
+    The stub replaces the local ``date`` binding in THIS module and raises the
+    parameter's type from ``fromisoformat``. The probe is parametrized over
+    ``_PROBE_EXCEPTIONS`` -- every public builtin ``Exception`` subclass outside
+    ``(TypeError, ValueError)`` that this interpreter constructs with ``"probe"``.
+    Widening the handler to a type turns the ids of that type and of its probed
+    subclasses red, and ``except Exception:`` turns every id red. ``match="probe"``
+    binds the message: a handler that catches the probe and raises the same type
+    with a different message fails to match.
+    """
+    class _ProbeDate:
+        @staticmethod
+        def fromisoformat(value: object) -> object:
+            raise probe_exc("probe")
+
+    monkeypatch.setattr(sys.modules[__name__], "date", _ProbeDate)
+    with pytest.raises(probe_exc, match="probe") as excinfo:
+        _parser_admits("2026-07-03")
+    assert type(excinfo.value) is probe_exc

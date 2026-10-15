@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-15",
   "universe_coverage": {
-    "as_of": "2026-10-09",
+    "as_of": "2026-10-15",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -33,11 +33,11 @@
         "reason": "OLDER_SNAPSHOT"
       },
       {
-        "file": "market_dot.parquet",
-        "symbol": "DOT",
-        "id": "polkadot",
+        "file": "market_m.parquet",
+        "symbol": "M",
+        "id": "memecore",
         "source": "CoinGecko",
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-09",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,7 +170,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-09",
+      "as_of": "2026-10-15",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
@@ -188,7 +188,7 @@
     "stance": "Market cap is higher",
     "total_state": "Rising",
     "dominance_state": "Steady",
-    "fear_state": "Greedy",
+    "fear_state": "Neutral",
     "breadth_state": "Building history",
     "cap_move": "valuation",
     "cap_splices": [
@@ -412,12 +412,38 @@
         "support_after": 5,
         "level_ratio": 1.0039583043488778,
         "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-10",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 5,
+        "support_after": 5,
+        "level_ratio": 1.091698121099373,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-15",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 5,
+        "support_after": 1,
+        "level_ratio": 1.0704135543088684,
+        "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
     "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "stablecoins": "Steady",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
@@ -428,7 +454,7 @@
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -439,22 +465,22 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Unavailable",
-    "volatility": "Unavailable",
+    "open_interest": "Leverage light",
+    "volatility": "Volatility normal",
     "altseason": "Mixed relative trend"
   },
   "assets": {
     "ETH": {
       "trend": "Advancing",
       "risk": "Stressed",
-      "relative": "Leading Bitcoin",
-      "coverage": "3,783 daily observations from Coinbase daily OHLCV."
+      "relative": "Tracking Bitcoin",
+      "coverage": "3,789 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Advancing",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,941 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,947 daily observations from Coinbase daily OHLCV."
     }
   }
 }

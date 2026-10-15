@@ -49,7 +49,7 @@ from .projection import (
 # ---------------------------------------------------------------------------
 
 STATE_SCHEMA = "capital_structure.state.v2"
-STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.0.0"
+STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.2.0"
 STATE_SCHEMA_FILE = "capital_structure_state.v2.schema.json"
 STATE_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / STATE_SCHEMA_FILE
 
@@ -89,6 +89,19 @@ COMPATIBLE_INPUT_SCHEMAS: dict[str, tuple[str, ...]] = {
     "document_terms": ("capital_structure.document_term_observation.v1",),
     "covenant_terms": ("capital_structure.covenant_term_observation.v1",),
     "instrument_candidate_terms": ("capital_structure.instrument_candidate_term.v1",),
+    # I1 (DEC:CS-V2-SUPPLY-ECONOMIC-TERMS-I1): pre-instrument economic-term
+    # occurrences and their adjudicated-gold bindings.  Admitted as input
+    # families only; CapitalInputs does not carry them yet (S0 owns that).
+    "instrument_economic_terms": ("capital_structure.instrument_economic_term.v1",),
+    "instrument_term_bindings": ("capital_structure.instrument_term_binding.v1",),
+    # X0 (SPEC_X0 §1): what the issuer ALREADY did — priced/closed/exercised/
+    # converted/retired events, their bindings to a registration path or an
+    # instrument, and the filing-coverage attestations that make a usage history
+    # complete.  Admitted as input families only; CapitalInputs does not carry
+    # them (S0 owns that).
+    "transaction_observations": ("capital_structure.transaction_observation.v1",),
+    "transaction_bindings": ("capital_structure.transaction_binding.v1",),
+    "transaction_filing_coverage": ("capital_structure.transaction_filing_coverage.v1",),
     "share_count_observations": (
         "capital_structure.share_count_observation.v1",
         "capital_structure.share_count_observation.v2",
@@ -243,6 +256,85 @@ CASH_BASES = (
 )
 CASH_EFFECT_KINDS = ("proceeds", "no_cash", "repayment", "fee")
 PRICE_KINDS = ("fixed", "path")
+
+#: Economic terms an instrument may carry (C0 2.1.0, I1).  Every one is a
+#: retained-byte fact; none is a score, a capacity or a supply figure.
+ECONOMIC_TERM_NAMES = (
+    "exercise_price",  # usd per underlying share
+    "conversion_price",  # usd per underlying share
+    "prefunded_residual_price",  # usd per underlying share still payable
+    "shares_per_instrument",  # ratio: underlying shares per instrument
+    "instruments_outstanding",  # shares unit, basis assumed_as_converted, counted in instruments
+    "principal_outstanding",  # usd
+    "cash_exercise_permitted",  # flag
+    "cashless_exercise_permitted",  # flag
+    "beneficial_ownership_cap",  # percent
+    "notice_days",  # days
+    "expiry",  # date_value
+    "resale_registered_shares",  # shares, basis potentially_resalable_existing
+)
+ECONOMIC_TERM_STATUSES = ("admitted", "contradicted", "unknown")
+#: Only these origins may attach a term: model prose never mints one (A09, L120, L444).
+TERM_FACT_ORIGINS = ("canonical_extraction", "adjudicated_gold")
+#: Unit and share basis of each quantity-valued term.  ``instruments_outstanding``
+#: counts instruments, not underlying shares: it is multiplied by
+#: ``shares_per_instrument`` before it ever touches a share component.
+ECONOMIC_TERM_UNITS: dict[str, tuple[str, str | None]] = {
+    "exercise_price": ("usd", None),
+    "conversion_price": ("usd", None),
+    "prefunded_residual_price": ("usd", None),
+    "shares_per_instrument": ("ratio", None),
+    "instruments_outstanding": ("shares", "assumed_as_converted"),
+    "principal_outstanding": ("usd", None),
+    "beneficial_ownership_cap": ("percent", None),
+    "notice_days": ("days", None),
+    "resale_registered_shares": ("shares", "potentially_resalable_existing"),
+}
+ECONOMIC_TERM_FLAG_NAMES = ("cash_exercise_permitted", "cashless_exercise_permitted")
+ECONOMIC_TERM_DATE_NAMES = ("expiry",)
+#: Price and ratio terms must be dated when admitted (A19 split staleness needs it).
+ECONOMIC_TERM_EFFECTIVE_NAMES = (
+    "exercise_price",
+    "conversion_price",
+    "prefunded_residual_price",
+    "shares_per_instrument",
+)
+
+#: What one retained-filing transaction observation may say (C0 2.2.0, X0).
+#: ``outstanding_balance`` is a stock, every other kind is a flow; the split is
+#: what keeps an already-issued security from being counted again as future
+#: issuance (A27, review focus 2).
+TRANSACTION_KINDS = (
+    "registered_takedown",
+    "atm_sales",
+    "warrant_exercise",
+    "conversion",
+    "redemption",
+    "repurchase",
+    "cancellation",
+    "resale",
+    "outstanding_balance",
+    "instrument_issuance",
+)
+#: How a figure is reported.  ``point_in_time`` is reserved for a stock
+#: (``outstanding_balance``): a cumulative figure and the individual
+#: transactions explaining it must never both decrement (A15, L98).
+REPORTING_BASES = ("individual", "cumulative", "point_in_time")
+#: Only these origins may state a transaction: model prose never mints one
+#: (A09, L120).  ``canonical_extraction`` is the sealed X0b procedure,
+#: ``adjudicated_gold`` an owner decision over retained bytes.
+TRANSACTION_ORIGINS = ("canonical_extraction", "adjudicated_gold")
+#: A binding joins an observation to a target.  ``canonical_join`` is permitted
+#: only on an exact unique SEC file number for a registration path; an
+#: instrument binding is an owner adjudication and nothing else.
+BINDING_ORIGINS = ("canonical_join", "adjudicated_gold")
+BINDING_TARGET_KINDS = ("registration_path", "instrument")
+#: Which usage question a transaction answers.  ``resale`` is its own class
+#: because a resale by an existing holder normally does not itself fund the
+#: company (A23, L98) and never enters shelf or programme usage.
+USAGE_CLASSES = ("shelf_takedown", "programme_sale", "resale", "not_applicable")
+#: Historical cash facts, distinct from a scenario's C0 ``CashEffect``.
+REALIZED_CASH_KINDS = ("proceeds", "repayment", "no_cash")
 
 #: Property names no state record may carry (acceptance row A48 plus the
 #: projection's own public-safety list).  ``fully_diluted`` is a basis the
@@ -1668,6 +1760,99 @@ class Resolution:
 
 
 @dataclass(frozen=True)
+class EconomicTerm:
+    """One admitted, contradicted or unknown economic term of one instrument.
+
+    A term is a retained-byte fact (``canonical_extraction``) or an owner
+    adjudication (``adjudicated_gold``); model prose never mints one.  An
+    ``unknown`` term carries no known value and a ``contradicted`` one carries a
+    ``contradicted`` value, so a missing term is never ``0`` and never unbounded.
+    """
+
+    term_id: str
+    instrument_id: str
+    name: str
+    status: str
+    value: Quantity | None
+    flag: bool | None
+    expression: str | None
+    date_value: str | None
+    evidence: tuple[EvidenceRef, ...]
+    fact_origin: str
+    interpretation_version: str
+    available_at: str
+    effective_at: str | None = None
+
+    def __post_init__(self) -> None:
+        _identifier(self.term_id, "economic_term.term_id")
+        label = f"economic_term[{self.term_id}]"
+        _identifier(self.instrument_id, f"{label}.instrument_id")
+        _member(self.name, ECONOMIC_TERM_NAMES, f"{label}.name")
+        _member(self.status, ECONOMIC_TERM_STATUSES, f"{label}.status")
+        _member(self.fact_origin, TERM_FACT_ORIGINS, f"{label}.fact_origin")
+        _require(
+            isinstance(self.interpretation_version, str) and bool(self.interpretation_version.strip()),
+            f"{label}.interpretation_version: non-empty string required",
+        )
+        _timestamp(self.available_at, f"{label}.available_at")
+        if self.effective_at is not None:
+            _timestamp(self.effective_at, f"{label}.effective_at")
+        object.__setattr__(self, "evidence", _tuple(self.evidence, f"{label}.evidence"))
+        for item in self.evidence:
+            _require(isinstance(item, EvidenceRef), f"{label}.evidence: EvidenceRef required")
+        admitted = self.status == "admitted"
+        if self.status in ("admitted", "contradicted"):
+            _require(len(self.evidence) > 0, f"{label}: an {self.status} term carries evidence")
+        if self.name in ECONOMIC_TERM_UNITS:
+            _require(isinstance(self.value, Quantity), f"{label}.value: Quantity required for {self.name!r}")
+            unit, basis = ECONOMIC_TERM_UNITS[self.name]
+            _require(self.value.unit == unit, f"{label}.value: {self.name!r} is in {unit!r}, got {self.value.unit!r}")
+            _require(
+                self.value.share_basis == basis,
+                f"{label}.value: {self.name!r} basis must be {basis!r}, got {self.value.share_basis!r}",
+            )
+            if self.expression is not None:
+                _require(
+                    isinstance(self.expression, str) and bool(self.expression.strip()),
+                    f"{label}.expression: verbatim formula text required",
+                )
+                _require(self.value.status != "known", f"{label}: a formula term carries no known value")
+            if admitted:
+                _require(
+                    self.value.status == "known" or self.expression is not None,
+                    f"{label}: an admitted term carries a known value or its verbatim formula",
+                )
+            elif self.status == "contradicted":
+                _require(self.value.status == "contradicted", f"{label}: a contradicted term carries a contradicted value")
+            else:
+                _require(self.value.status != "known", f"{label}: an unknown term carries no known value")
+        else:
+            _require(self.value is None, f"{label}.value: {self.name!r} carries no quantity")
+            _require(self.expression is None, f"{label}.expression: only a quantity term carries a formula")
+        if self.flag is not None:
+            _require(isinstance(self.flag, bool), f"{label}.flag: boolean required")
+            _require(
+                self.name in ECONOMIC_TERM_FLAG_NAMES and admitted,
+                f"{label}.flag: only an admitted permission term carries a flag",
+            )
+        elif self.name in ECONOMIC_TERM_FLAG_NAMES and admitted:
+            raise ContractViolation(f"{label}.flag: an admitted permission term carries its flag")
+        if self.date_value is not None:
+            _date(self.date_value, f"{label}.date_value")
+            _require(
+                self.name in ECONOMIC_TERM_DATE_NAMES and admitted,
+                f"{label}.date_value: only an admitted expiry carries a date",
+            )
+        elif self.name in ECONOMIC_TERM_DATE_NAMES and admitted:
+            raise ContractViolation(f"{label}.date_value: an admitted expiry carries its date")
+        if admitted and self.name in ECONOMIC_TERM_EFFECTIVE_NAMES:
+            _require(self.effective_at is not None, f"{label}.effective_at: an admitted price or ratio term is dated")
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
 class Instrument:
     """A supported series/tranche identity grounded in candidate terms."""
 
@@ -1680,6 +1865,7 @@ class Instrument:
     amendments: tuple[str, ...] = ()
     outstanding: Quantity | None = None
     provenance: Provenance | None = None
+    economic_terms: tuple[EconomicTerm, ...] = ()
 
     def __post_init__(self) -> None:
         _identifier(self.instrument_id, "instrument.instrument_id")
@@ -1700,9 +1886,22 @@ class Instrument:
                 _require(self.outstanding.status != "known", f"instrument[{self.instrument_id}]: an unresolved candidate has no known outstanding amount")
         if self.provenance is not None:
             _require(isinstance(self.provenance, Provenance), "instrument.provenance: Provenance required")
+        label = f"instrument[{self.instrument_id}].economic_terms"
+        object.__setattr__(self, "economic_terms", _tuple(self.economic_terms, label))
+        if self.economic_terms:
+            _require(not unresolved, f"instrument[{self.instrument_id}]: an unresolved candidate carries no economic terms")
+        for term in self.economic_terms:
+            _require(isinstance(term, EconomicTerm), f"{label}: EconomicTerm required")
+            _require(term.instrument_id == self.instrument_id, f"{label}: term {term.term_id} belongs to {term.instrument_id}")
+        _unique([term.term_id for term in self.economic_terms], label)
+        _unique([term.name for term in self.economic_terms if term.status == "admitted"], f"{label} (admitted names)")
 
     def as_record(self) -> dict[str, Any]:
-        return _plain(self)
+        record = _plain(self)
+        if not self.economic_terms:
+            # C0 2.0.0 byte identity: an instrument without terms serialises as before.
+            del record["economic_terms"]
+        return record
 
 
 @dataclass(frozen=True)
@@ -1903,6 +2102,8 @@ __all__ = [
     "AUTHORITY",
     "ActionSelection",
     "Assumption",
+    "BINDING_ORIGINS",
+    "BINDING_TARGET_KINDS",
     "COMPATIBLE_INPUT_SCHEMAS",
     "CalculationReceipt",
     "CandidateBundle",
@@ -1916,6 +2117,9 @@ __all__ = [
     "ContractViolation",
     "CorporateActionBasis",
     "CorporateActionInputs",
+    "ECONOMIC_TERM_NAMES",
+    "ECONOMIC_TERM_STATUSES",
+    "EconomicTerm",
     "EvidenceRef",
     "FORBIDDEN_PROPERTY_PATTERN",
     "FamilyProvenance",
@@ -1936,7 +2140,9 @@ __all__ = [
     "PriceAssumption",
     "Provenance",
     "Quantity",
+    "REALIZED_CASH_KINDS",
     "RECORD_SCHEMAS",
+    "REPORTING_BASES",
     "REQUIRED_FUNDING_ASSUMPTIONS",
     "Resolution",
     "ResolutionInputs",
@@ -1954,6 +2160,10 @@ __all__ = [
     "ShareObservationRef",
     "StateRequest",
     "SupplyEnvelope",
+    "TERM_FACT_ORIGINS",
+    "TRANSACTION_KINDS",
+    "TRANSACTION_ORIGINS",
+    "USAGE_CLASSES",
     "Unknown",
     "UnknownResolution",
     "WitnessAllocation",
