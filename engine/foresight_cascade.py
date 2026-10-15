@@ -312,6 +312,36 @@ def _fda_molecule_lists(scarcity_row):
     return None
 
 
+def _fda_detail_lines(scarcity_row):
+    """Up to three producer-computed FDA record lines, or None.
+
+    The only producer, engine.fda_scarcity.compute_fda_scarcity, writes the
+    list at the row top level: one line per record, three at most, already in
+    display order. The lines restate the capture, so nothing is rewritten,
+    translated or reordered here. The freshness gate reads the same keys as
+    _fda_observation_inputs: an unqualified or unfinished capture publishes
+    no per-record line — the chip and the split already carry the withheld
+    form, and naming records from a source that did not answer would be a
+    claim the desk cannot vouch for.
+    """
+    if not isinstance(scarcity_row, dict):
+        return None
+    summary = scarcity_row.get("summary")
+    freshness = summary.get("freshness") if isinstance(summary, dict) else None
+    if not isinstance(freshness, dict):
+        return None
+    if (
+        freshness.get("capture_qualified") is not True
+        or freshness.get("capture_incomplete")
+    ):
+        return None
+    raw = scarcity_row.get("details")
+    if not isinstance(raw, list):
+        return None
+    items = [item for item in raw if isinstance(item, str) and item.strip()][:3]
+    return items or None
+
+
 def _fda_observation_inputs(scarcity_row):
     """(regulator_counts, manufacturer_counts, capture_incomplete), or None.
 
@@ -507,6 +537,7 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
         theme_feed_summary: dict | None = None
         molecule_gap = None
         observation_split = None
+        fda_details = None
         if fda_scarcity is not None:
             scarcity_row = fda_scarcity.get(k)
             if scarcity_row is not None:
@@ -548,6 +579,14 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
                         observation_split = split_module.observation_split_clause(*inputs)
                 except Exception as _e:  # noqa: BLE001
                     log.warning("fda_scarcity observation_split clause failed for %s: %s", k, _e)
+                # Sibling of the chip and of the clauses above: the producer's
+                # own per-record lines, published as text below the chips. It
+                # degrades the same way — fda_details stays None and the
+                # failure logs at WARNING, not debug.
+                try:
+                    fda_details = _fda_detail_lines(scarcity_row)
+                except Exception as _e:  # noqa: BLE001
+                    log.warning("fda_scarcity fda_details failed for %s: %s", k, _e)
 
         # W1b: Federal Register policy catalyst chip — fold into rationale only.
         # NEVER changes stage. policy_reg_chip is a display dict; summary folds into rationale.
@@ -613,6 +652,8 @@ def compute_foresight_cascade(bottleneck: dict | None = None,
             # Sibling of the chip: regulator status, manufacturer availability and
             # capacity kept as three clauses. Not a chip key, never in the chip title.
             "observation_split": observation_split,
+            # Sibling of the chip: the producer's record lines. Not a chip key, never in a title.
+            "fda_details": fda_details,
             # W2c: demand per-name divergence + bottleneck PPI for score de-circularization
             # (P1-C): passed through so foresight_score axes can read real inputs
             # without default-filling. One hunk addition only — does not touch stage logic.
