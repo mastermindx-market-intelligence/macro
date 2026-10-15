@@ -13331,6 +13331,7 @@ jobs:
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
       - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_witness_hints.py
       - engine/sector_intelligence/finance_page_signal.py
       - engine/sector_intelligence/finance_case_signal.py
       - engine/sector_intelligence/finance_projection.py
@@ -21378,6 +21379,7 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
@@ -22633,6 +22635,7 @@ jobs:
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
@@ -28928,6 +28931,7 @@ jobs:
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
       - "engine/sector_intelligence/finance_page_signal.py"
       - "engine/sector_intelligence/finance_case_signal.py"
       - "engine/sector_intelligence/finance_projection.py"
