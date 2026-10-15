@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T08:27:39.650036+00:00",
-  "count": 2945,
+  "generated_at": "2026-10-15T08:43:19.260787+00:00",
+  "count": 2946,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -508,6 +508,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lydnortbkxz-12ebb1",
+      "title": "GS Blekos CPI Preview AI & Inflation BCP (up) BNP Industrials Barometers LSE CTP US Digital Ads Preview 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:03Z",
+      "summary_points": [
+        "US CPI Data: Core CPI expected +0.24% (vs.",
+        "+0.2% consensus), headline CPI +0.59% (vs.",
+        "+0.6% consensus) - AI Inflation Mechanism: AI demand boosting core PCE inflation by 45bp (peaking at 50bp by end-2026), driven by energy prices and sector-specific cost pressures - BCP Upgrade: BCP upgraded to Buy due to underperformance creating entry point with above-sector EPS growth - BNP Profit Beat: BNP Paribas Q3’26 net profit estimated at €3.4bn (3% above consensus), driven by CIB/Retail top-line outperformance offsetting tax charge uptick"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
