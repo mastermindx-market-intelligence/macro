@@ -53,6 +53,146 @@
     });
   }
 
+  /* ── Chairman 2026-10-15 bounded foreground slice ──
+     The page carries ONE pre-gauge summary (#risk-response-summary) beside the
+     settled band. It reuses this module's existing contextView qualification and
+     the single existing poller — no new fetch, timer, storage or event plane, and
+     no second envelope in the copy JSON. Before the first foreground paint the
+     server-rendered text/hidden/data-state are snapshotted ONCE into these
+     ephemeral variables; unpaint() restores exactly that DOM. Pages without the
+     nodes no-op. */
+  var FG_IDS = ["risk-response-title", "risk-response-cause", "risk-response-action", "risk-response-date"];
+  var fgSaved = null, fgUnresolvedRisk = false;
+
+  function fgSave() {
+    if (fgSaved) return;
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) return;
+    fgSaved = {hidden: sec.hidden, state: sec.getAttribute("data-state"),
+      expectedSession: sec.getAttribute("data-expected-session") || "", text: {}};
+    FG_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      fgSaved.text[id] = el ? [".l-en", ".l-zh"].map(function (selector) {
+        var node = el.querySelector(selector);
+        return node ? node.textContent : null;
+      }) : null;
+    });
+  }
+
+  function restoreForeground() {
+    if (!fgSaved) return;
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) { fgSaved = null; return; }
+    sec.hidden = fgSaved.hidden;
+    if (fgSaved.state === null) sec.removeAttribute("data-state");
+    else sec.setAttribute("data-state", fgSaved.state);
+    FG_IDS.forEach(function (id) {
+      var el = document.getElementById(id), saved = fgSaved.text[id];
+      if (!el || !saved) return;
+      textPair(el, [saved[0] || "", saved[1] || ""]);
+    });
+    /* A failed/expired feed is not recovery. Never restore a prior quiet
+       snapshot as an all-clear after a qualified live warning. Retain only
+       the dated settled context; this is not a new alert-retention store. */
+    if (fgUnresolvedRisk && fgSaved.state === "quiet") {
+      var config = contextCopy(), copy = config && config.copy;
+      if (!copy) return;
+      var fg = copy.foreground || {};
+      sec.hidden = false; sec.setAttribute("data-state", "unavailable");
+      textPair(document.getElementById("risk-response-title"), fg.unavailable_title || copy.unknown);
+      textPair(document.getElementById("risk-response-cause"), ["", ""]);
+      textPair(document.getElementById("risk-response-action"), fg.unavailable_action || copy.unknown);
+      var savedDate = fgSaved.text["risk-response-date"];
+      if ((!savedDate || !savedDate[0]) && fgSaved.expectedSession) {
+        var label = fg.settled_label || ["Settled: ", "收盘："];
+        textPair(document.getElementById("risk-response-date"),
+          [label[0] + fgSaved.expectedSession, label[1] + fgSaved.expectedSession]);
+      }
+    }
+  }
+
+  /* Same cause qualification the settled band applies, tightened for the glance
+     tier: the source must own its date (as_of equals the feed's own source_session),
+     so carried prior-session leadership is never projected as a fresh current
+     warning. */
+  function fgCauses(d, copy) {
+    var hz = d.hazard_summary || {};
+    var contributing = Array.isArray(hz.contributing_sources) ? hz.contributing_sources : [];
+    var sources = (d.provenance || {}).sources || [];
+    var rows = [[], []];
+    if (!Array.isArray(sources) || typeof d.source_session !== "string" || !d.source_session) return rows;
+    sources.forEach(function (source) {
+      if (!source || source.role !== "hazard_evidence" || source.coverage !== "FRESH" ||
+          contributing.indexOf(source.source_id) < 0 ||
+          ["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(source.hazard_stage) < 0 ||
+          !Object.prototype.hasOwnProperty.call(copy.source_states, source.state) ||
+          typeof source.as_of !== "string" || !source.as_of || source.as_of !== d.source_session ||
+          sources.filter(function (other) { return other && other.source_id === source.source_id; }).length !== 1) return;
+      var detail = source.detail || {};
+      var name = [source.label_en || copy.source[0], source.label_zh || source.label_en || copy.source[1]];
+      if (detail.cohort_role === "tracked_ai_hardware_damage_monitor") name = copy.ai_leaders;
+      else if (source.source_id === "risk-radar-us") name = [detail.label_en || name[0], detail.label_zh || name[1]];
+      var word = copy.source_states[source.state];
+      rows[0].push(name[0] + ": " + word[0]); rows[1].push(name[1] + "：" + word[1]);
+    });
+    return rows;
+  }
+
+  /* Foreground presentation state from the already-qualified view plus the
+     source-owned source_session (never built/event time): checking while a
+     transition is unconfirmed; warning only on the engine's own stage WITH fully
+     qualified causes; quiet (hidden) only on a current NONE; partial-warning only
+     on the recognized coverage/mapping gap the band already accepts; anything
+     unknown, malformed or ungrounded renders unavailable — never an all-clear. */
+  function foregroundView(d, copy) {
+    var fgc = copy.foreground || {};
+    var hz = d.hazard_summary || {};
+    var view = contextView(d, copy);
+    var session = (typeof d.source_session === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.source_session)) ? d.source_session : "";
+    var partialGrounds = hz.stage === null && (hz.stage_reason === "required_coverage_unavailable" ||
+      hz.stage_reason === "required_source_state_unmapped");
+    var rows = fgCauses(d, copy);
+    var warningTitle = fgc.warning_title || copy.partial_warning;
+    var warningAction = fgc.warning_action || copy.partial_warning;
+    if (view.pending) return {state: "checking", title: fgc.checking_title || copy.checking,
+      cause: ["", ""], action: fgc.checking_action || copy.checking, date: session};
+    if (["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(view.stage) >= 0 && rows[0].length && session)
+      return {state: "warning", title: warningTitle, cause: [rows[0].join(" · "), rows[1].join(" · ")],
+        action: warningAction, date: session};
+    if (view.stage === "NONE" && session) return {state: "quiet"};
+    if (partialGrounds && rows[0].length && session)
+      return {state: "partial-warning", title: warningTitle,
+        cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · "),
+                (fgc.partial_prefix || copy.partial_hint)[1] + rows[1].join(" · ")],
+        action: warningAction, date: session};
+    return {state: "unavailable", title: fgc.unavailable_title || copy.unknown,
+      cause: ["", ""], action: fgc.unavailable_action || copy.unknown, date: ""};
+  }
+
+  function paintForeground(d) {
+    var sec = document.getElementById("risk-response-summary");
+    if (!sec) return;
+    fgSave();
+    var config = contextCopy();
+    if (!config || !config.copy) return;
+    var view = foregroundView(d, config.copy);
+    var fgc = config.copy.foreground || {};
+    if (view.state === "quiet") {
+      fgUnresolvedRisk = false;
+      sec.setAttribute("data-state", "quiet");
+      sec.hidden = true;
+      return;
+    }
+    if (["warning", "partial-warning", "checking"].indexOf(view.state) >= 0) fgUnresolvedRisk = true;
+    sec.hidden = false;
+    sec.setAttribute("data-state", view.state);
+    textPair(document.getElementById("risk-response-title"), view.title);
+    textPair(document.getElementById("risk-response-cause"), view.cause);
+    textPair(document.getElementById("risk-response-action"), view.action);
+    var label = fgc.source_label || ["Source session: ", "来源交易日："];
+    textPair(document.getElementById("risk-response-date"), view.date ? [label[0] + view.date, label[1] + view.date] : ["", ""]);
+  }
+
   // Present source-owned states; never compute a score, action or dwell threshold.
   function contextView(d, copy) {
     var hz = d.hazard_summary || {}, trans = d.live_transition || {};
@@ -163,6 +303,7 @@
 
   function unpaint(showFallback) {
     restoreContext(showFallback);
+    restoreForeground();
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");
@@ -178,6 +319,7 @@
   function paint(d, band) {
     lastLiveFeed = d; hadLive = true;
     paintContext(d);
+    paintForeground(d);
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");
@@ -226,6 +368,7 @@
   function paintDegraded(d) {
     lastLiveFeed = d; hadLive = true;
     paintContext(d);
+    paintForeground(d);
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
     var receipt = document.getElementById("gde-live-receipt");

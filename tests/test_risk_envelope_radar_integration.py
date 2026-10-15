@@ -666,3 +666,187 @@ def test_one_unqualified_partial_source_does_not_hide_a_different_qualified_warn
     causes = re.search(r'<p class="gde-causes">(.*?)</p>', html, re.S)[1]
     assert "Credit stress: building" in causes
     assert "AI-hardware leaders" not in causes
+
+
+# Oct15 Chairman foreground slice: the full evidence dialog stays in place,
+# but qualified risk must be visible before a user reads the slower score.
+def _foreground_render(e, expected_session=None):
+    vm = _vm(risk_envelope=e)
+    vm['market_state'].update(asof=expected_session or e.get('source_session'),
+                             score=50, color='yellow', label_en='Mixed', label_zh='混合')
+    return _render(vm)
+
+
+def _foreground_fragment(html):
+    import re
+    match = re.search(r'<section\b[^>]*id="risk-response-summary".*?</section>', html, re.S)
+    assert match, 'No foreground risk summary exists before the gauge'
+    return match[0]
+
+
+def test_qualified_risk_is_visible_before_the_unchanged_background_gauge():
+    e = source_envelope()
+    for source in e['provenance']['sources']: source['as_of'] = e['source_session']
+    html = _foreground_render(e)
+    summary = _foreground_fragment(html)
+    assert html.count('id="risk-response-summary"') == 1
+    assert html.index('id="risk-response-summary"') < html.index('class="mx5-sc-left"')
+    assert html.index('id="risk-response-summary"') < html.index('id="dlg-risk"')
+    assert 'Risk warning' in summary and '风险警告' in summary
+    assert 'Credit stress: building' in summary
+    assert 'Review exposure. Respect existing stops.' in summary
+    assert '2026-09-18' in summary
+    assert 'aria-controls="dlg-risk"' in summary
+    assert 'data-state="warning"' in summary
+    assert '<span class="mx5-big-score">50</span>' in html
+    assert '99' not in summary and 'EMERGENCY' not in summary
+
+
+def test_partial_foreground_warning_is_not_hidden_by_unknown_aggregate():
+    e = _partial_live_warning(); e.pop('live_transition', None)
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="partial-warning"' in summary
+    assert 'Credit stress: building' in summary
+    assert 'Partial' in summary or 'partial' in summary
+
+
+@pytest.mark.parametrize('case', ['missing', 'older_envelope', 'unqualified_sources'])
+def test_foreground_unknown_does_not_invent_a_current_warning_or_all_clear(case):
+    e = source_envelope()
+    expected = e['source_session']
+    if case == 'missing': e = {}
+    elif case == 'older_envelope': expected = '2026-09-21'
+    else:
+        e['hazard_summary'].update(stage=None, stage_reason='required_coverage_unavailable')
+        for source in e['provenance']['sources']: source['coverage'] = 'STALE'
+    summary = _foreground_fragment(_foreground_render(e, expected))
+    assert 'data-state="unavailable"' in summary
+    assert 'Risk read unavailable' in summary
+    assert 'Credit stress: building' not in summary
+    assert 'all-clear' not in summary.lower()
+
+
+def test_fully_qualified_quiet_read_does_not_create_a_foreground_alarm():
+    e = source_envelope(); e['hazard_summary']['stage'] = 'NONE'
+    for source in e['provenance']['sources']:
+        source['as_of'] = e['source_session']
+        if source['role'] == 'hazard_evidence': source.update(state='calm', hazard_stage='NONE')
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="quiet"' in summary
+    assert ' hidden' in summary.split('>')[0]
+
+
+_FOREGROUND_DOM = _LIVE_DOM + r'''
+['risk-response-summary','risk-response-title','risk-response-cause','risk-response-action','risk-response-date'].forEach(element);
+nodes['risk-response-summary'].hidden=false;
+nodes['risk-response-summary'].attrs={'data-state':'partial-warning','data-expected-session':'2026-09-18'};
+nodes['risk-response-title'].querySelector('.l-en').textContent='Risk warning';
+nodes['risk-response-title'].querySelector('.l-zh').textContent='风险警告';
+nodes['risk-response-cause'].querySelector('.l-en').textContent='Saved dated warning';
+nodes['risk-response-date'].querySelector('.l-en').textContent='Settled: 2026-09-18';
+function foregroundResult(){return {hidden:nodes['risk-response-summary'].hidden,
+ state:nodes['risk-response-summary'].getAttribute('data-state'),
+ title:nodes['risk-response-title'].querySelector('.l-en').textContent,
+ cause:nodes['risk-response-cause'].querySelector('.l-en').textContent,
+ action:nodes['risk-response-action'].querySelector('.l-en').textContent,
+ date:nodes['risk-response-date'].querySelector('.l-en').textContent};}
+'''
+
+
+def test_same_live_consumer_updates_foreground_without_opening_dialog():
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', _partial_live_warning())
+    assert out['state'] == 'partial-warning' and not out['hidden']
+    assert out['title'] == 'Risk warning'
+    assert 'Credit stress: building' in out['cause']
+    assert 'Review exposure' in out['action']
+    assert '2026-09-19' in out['date'] and '15:00' not in out['date']
+
+
+def test_live_failure_restores_foreground_original_dated_warning():
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);unpaint(true);console.log(JSON.stringify(foregroundResult()));')
+    assert out['state'] == 'partial-warning' and not out['hidden']
+    assert out['cause'] == 'Saved dated warning'
+    assert out['date'] == 'Settled: 2026-09-18'
+
+
+def test_pending_deescalation_does_not_clear_the_foreground_warning():
+    e = _live_fixture(); e['hazard_summary']['stage']='NONE'
+    e['live_transition'].update(candidate_stage='NONE', pending={'stage':'NONE','ticks':1,'needs':2})
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', e)
+    assert out['state'] == 'checking' and not out['hidden']
+    assert 'confirm' in out['title'].lower() or 'checking' in out['title'].lower()
+
+
+@pytest.mark.parametrize('mutation', ['old_source', 'duplicate', 'unknown_source_word'])
+def test_foreground_live_warning_requires_attributable_current_source(mutation):
+    e = _partial_live_warning()
+    radar = e['provenance']['sources'][2]
+    if mutation == 'old_source': radar['as_of']='2026-09-18'
+    elif mutation == 'duplicate': e['provenance']['sources'].append(deepcopy(radar))
+    else: radar['state']='UNRECOGNISED'
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));',e)
+    assert not out['hidden'] and out['state']=='unavailable'
+    assert 'Credit stress: building' not in out['cause']
+
+
+def test_failed_live_warning_cannot_restore_an_older_quiet_foreground_as_all_clear():
+    """No new warning-retention store: simply refuse an implied recovery on outage."""
+    command = _FOREGROUND_DOM + "nodes['risk-response-summary'].hidden=true;nodes['risk-response-summary'].attrs['data-state']='quiet';applyFeed(FEED);unpaint(true);console.log(JSON.stringify(foregroundResult()));"
+    out = _js_value(command,_partial_live_warning())
+    assert out['state']=='unavailable'
+    assert not out['hidden']
+    assert out['title']=='Risk read unavailable'
+    assert '2026-09-18' in out['date']
+
+
+@pytest.mark.parametrize('mutation', ['missing_stage', 'empty_session', 'foreign_market'])
+def test_foreground_does_not_promote_an_invalid_or_foreign_owner_read(mutation):
+    e = _partial_live_warning()
+    e.pop('live_transition', None)
+    if mutation == 'missing_stage': del e['hazard_summary']['stage']
+    elif mutation == 'empty_session':
+        e['source_session'] = ''
+        for s in e['provenance']['sources']: s['as_of'] = ''
+    else: e['market'] = 'CN'
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="unavailable"' in summary
+    assert 'Credit stress: building' not in summary
+
+
+@pytest.mark.parametrize('initial', ['quiet', 'unavailable'])
+def test_foreground_always_keeps_bilingual_date_nodes_for_later_live_paint(initial):
+    import re
+    e = source_envelope()
+    if initial == 'quiet':
+        e['hazard_summary']['stage'] = 'NONE'
+        for s in e['provenance']['sources']:
+            s['as_of'] = e['source_session']
+            if s['role'] == 'hazard_evidence': s.update(state='calm', hazard_stage='NONE')
+    else: e = {}
+    html = _foreground_fragment(_foreground_render(e))
+    date_node = re.search(r'<p[^>]*id="risk-response-date"[^>]*>(.*?)</p>', html, re.S)[1]
+    assert 'class="l-en"' in date_node and 'class="l-zh"' in date_node
+
+
+@pytest.mark.parametrize('expected', ['2026-09-21', None])
+def test_foreground_uses_independent_expected_session_not_the_old_parent_date(expected):
+    e = source_envelope()
+    for s in e['provenance']['sources']: s['as_of'] = e['source_session']
+    vm = _vm(risk_envelope=e)
+    vm['market_state'].update(asof=e['source_session'], score=50,
+        freshness={'data_asof': e['source_session'], 'expected_asof': expected, 'stale': True})
+    summary = _foreground_fragment(_render(vm))
+    assert 'data-state="unavailable"' in summary
+    assert 'Credit stress: building' not in summary
+
+
+@pytest.mark.parametrize('mutation', ['older_than_expected', 'foreign_market'])
+def test_live_foreground_checks_independent_session_floor_and_market(mutation):
+    e = _partial_live_warning()
+    setup = _FOREGROUND_DOM
+    if mutation == 'older_than_expected':
+        setup += "nodes['risk-response-summary'].attrs['data-expected-session']='2026-09-21';"
+    else: e['market'] = 'CN'
+    out = _js_value(setup+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', e)
+    assert out['state'] == 'unavailable' and not out['hidden']
+    assert 'Credit stress: building' not in out['cause']

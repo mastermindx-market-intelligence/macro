@@ -10,7 +10,19 @@
   'older_trend': ['Trend includes older inputs.', '趋势读数含较早数据。'],
   'live_missing': ['Live update unavailable; settled read shown.', '实时更新不可用，显示收盘读数。'],
   'source_missing': ['read unavailable', '暂无读数'],
-  'coverage': {'FRESH': ['current session', '本交易日'], 'STALE': ['older read', '较早读数'], 'MISSING': ['not available', '暂无数据']}
+  'coverage': {'FRESH': ['current session', '本交易日'], 'STALE': ['older read', '较早读数'], 'MISSING': ['not available', '暂无数据']},
+  'foreground': {
+    'warning_title': ['Risk warning', '风险警告'],
+    'warning_action': ['Review exposure. Respect existing stops.', '检查风险敞口，遵守既定止损。'],
+    'unavailable_title': ['Risk read unavailable', '暂无风险读数'],
+    'unavailable_action': ['Verify conditions before adding risk.', '加仓前核实条件。'],
+    'checking_title': ['Checking · change not confirmed', '确认中 · 变化未确认'],
+    'checking_action': ['Keep current protection until confirmed.', '确认前保持既有保护。'],
+    'partial_prefix': ['Partial read · ', '读数不全 · '],
+    'settled_label': ['Settled: ', '收盘：'],
+    'source_label': ['Source session: ', '来源交易日：'],
+    'open_details': ['Risk details', '风险详情']
+  }
 } %}
 {# Same partial-read eligibility the live consumer applies: only when the settled
    combined stage is null for a recognized coverage/mapping gap may a source-native
@@ -36,9 +48,63 @@
   <span class="gde-button-context" id="gde-button-context" data-gde-stage="{{ stage or 'UNKNOWN' }}"{% if stage == 'NONE' %} hidden{% endif %}><span class="l-en">{{ hint[0] }}</span><span class="l-zh">{{ hint[1] }}</span></span>
   {%- endif -%}
 {%- endmacro %}
+{# Chairman 2026-10-15 bounded foreground slice: ONE full-width summary above the
+   gauge, outside the dialog. Presentation states only (warning / partial-warning /
+   unavailable / quiet / checking) — no new engine stage, score, publisher or signal
+   authority, and the dialog evidence band is neither moved nor duplicated. A current
+   warning may be projected only from the engine's own owner stage plus causes that
+   are each attributed to a unique source, fresh this session, and carrying known
+   native state copy; anything unknown, malformed, off-session or missing evidence
+   renders as unavailable (never an all-clear). #}
+{% macro risk_foreground(envelope, expected_session) -%}
+{%- set _fg = _GDE_COPY.foreground -%}
+{%- set _re = envelope if (envelope is mapping and envelope.get('schema') == 'mastermind.risk_envelope/v1' and envelope.get('market', 'US') == 'US') else none -%}
+{%- set _expected = expected_session if (expected_session is string and expected_session) else none -%}
+{%- set _v = namespace(state='unavailable', hidden=false, title=_fg.unavailable_title, cause=['', ''], action=_fg.unavailable_action, date='') -%}
+{%- if _re -%}
+{%- set _hz = _re.get('hazard_summary') or {} -%}
+{%- set _stage = _hz.get('stage') -%}
+{%- set _session = _re.get('source_session') -%}
+{# _expected is the existing measured owner's session, not a build clock. #}
+{%- set _contrib = _hz.get('contributing_sources') or [] -%}
+{%- if _contrib is string or _contrib is mapping or _contrib is not sequence %}{% set _contrib = [] %}{% endif -%}
+{%- set _prov = (_re.get('provenance') or {}).get('sources') or [] -%}
+{%- if _prov is string or _prov is mapping or _prov is not sequence %}{% set _prov = [] %}{% endif -%}
+{%- set _rows = namespace(en=[], zh=[]) -%}
+{%- for s in _prov if s is mapping and s.get('source_id') is string and s.get('role') == 'hazard_evidence' and s.get('coverage') == 'FRESH' and s.get('source_id') in _contrib and s.get('hazard_stage') in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and s.get('state') in _GDE_COPY.source_states and s.get('as_of') is string and _session is string and s.get('as_of') == _session and (_prov | selectattr('source_id', 'defined') | selectattr('source_id', 'equalto', s.get('source_id')) | list | length) == 1 -%}
+{%- set _detail = s.get('detail') or {} -%}
+{%- if _detail.get('cohort_role') == 'tracked_ai_hardware_damage_monitor' %}{% set _name = _GDE_COPY.ai_leaders %}{% elif s.get('source_id') == 'risk-radar-us' %}{% set _name = [_detail.get('label_en') or s.get('label_en') or _GDE_COPY.source[0], _detail.get('label_zh') or s.get('label_zh') or s.get('label_en') or _GDE_COPY.source[1]] %}{% else %}{% set _name = [s.get('label_en') or _GDE_COPY.source[0], s.get('label_zh') or s.get('label_zh') or s.get('label_en') or _GDE_COPY.source[1]] %}{% endif -%}
+{%- set _word = _GDE_COPY.source_states[s.get('state')] -%}
+{%- if _rows.en.append(_name[0] ~ ': ' ~ _word[0]) %}{% endif -%}
+{%- if _rows.zh.append(_name[1] ~ '：' ~ _word[1]) %}{% endif -%}
+{%- endfor -%}
+{%- if _stage in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN') and _contrib and _expected is string and _expected == _session and _rows.en -%}
+{%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
+{%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
+{%- set _v.date = _session -%}
+{%- elif _stage == 'NONE' and _expected is string and _expected == _session -%}
+{%- set _v.state = 'quiet' %}{% set _v.hidden = true -%}
+{%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _expected is string and _expected == _session and _rows.en -%}
+{%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
+{%- set _v.cause = [_fg.partial_prefix[0] ~ (_rows.en | join(' · ')), _fg.partial_prefix[1] ~ (_rows.zh | join(' · '))] %}
+{%- set _v.date = _session -%}
+{%- endif -%}
+{%- endif -%}
+<section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} aria-labelledby="risk-response-title">
+  <div class="rr-head">
+    <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
+    <button type="button" class="rr-open" aria-controls="dlg-risk" onclick="mx5OpenDlg('dlg-risk')"><span class="l-en">{{ _fg.open_details[0] }}</span><span class="l-zh">{{ _fg.open_details[1] }}</span></button>
+  </div>
+  <p class="rr-line" id="risk-response-cause"><span class="l-en">{{ _v.cause[0] }}</span><span class="l-zh">{{ _v.cause[1] }}</span></p>
+  <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
+  <p class="rr-line" id="risk-response-date"><span class="l-en">{% if _v.date %}{{ _fg.settled_label[0] }}{{ _v.date }}{% endif %}</span><span class="l-zh">{% if _v.date %}{{ _fg.settled_label[1] }}{{ _v.date }}{% endif %}</span></p>
+</section>
+{%- endmacro %}
 {% macro risk_context(risk_envelope) -%}
 {# Chairman 2026-09-19: Risk Envelope belongs inside the existing Risk Radar.
-   One derived engine contract; no new score, policy authority or first-level panel.
+   One derived engine contract; no new score or policy authority. Chairman
+   2026-10-15 supersedes the earlier no-first-level-summary line for the single
+   bounded risk_foreground strip only; the evidence band stays inside the dialog.
    Keep the legacy id and live hooks so the accepted live consumer keeps its identity.
    W9: capital-policy copy names the restriction fact, not the Grey Deer program. #}
 {% set _re = risk_envelope %}

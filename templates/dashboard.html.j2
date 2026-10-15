@@ -8,7 +8,7 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
-{% from "_risk_envelope_band.html.j2" import risk_button_context %}
+{% from "_risk_envelope_band.html.j2" import risk_button_context, risk_foreground %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -7956,6 +7956,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _mx5_hist = ms_history if (ms_history is defined and ms_history and ms_history | length >= 2) else none %}
     {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
 
+    {# Prefer the existing calendar-qualified expectation. A source and its
+       enclosing snapshot being equally old cannot certify each other current. #}
+    {% set _risk_fg_fresh = market_state.get('freshness') if (market_state is mapping and market_state.get('freshness') is mapping) else {} %}
+    {% set _risk_fg_expected = _risk_fg_fresh.get('expected_asof') if _risk_fg_fresh else (market_state.get('asof') if market_state is mapping else none) %}
+    {{ risk_foreground(risk_envelope|default(none), _risk_fg_expected) }}
     <div class="mx5-sc-left">
 
       {# ── Gauge cluster ── #}
