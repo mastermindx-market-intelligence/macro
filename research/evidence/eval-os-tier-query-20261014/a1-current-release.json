@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T18:16:57.013662+00:00",
+  "updated_at": "2026-10-15T18:21:14.497779+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "parents": [
@@ -311,7 +311,8 @@
       "packing_probe_selection_unchanged": true,
       "runtime_unchanged": true,
       "a1_carrier_changed": false
-    }
+    },
+    "published_source_correction": "7f1dcf04176ccef68a4d82a20ca846cf95f57120"
   },
   "preserved_boundaries": [
     "incumbent-only A1 refresh/final merge",
@@ -451,7 +452,7 @@
   "source_refresh_requirement": {
     "prior_requirement_satisfied_by": "939b348451fc1e46b70eee2e55309e4e1756ab98",
     "current_freshness_decision": "incumbent-owned",
-    "newer_observed_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
+    "newer_observed_main": "e01a8aee7e5647af37805fa24c13f1f0feebca3c",
     "source_delta_from_current_proof_base": {
       "at": "2026-10-15T18:09:10.109527+00:00",
       "proof_base": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
@@ -493,13 +494,10 @@
       "scope": "Actual source delta only; incumbent alone adjudicates freshness/refresh/merge."
     },
     "current_lease": {
+      "observed_at": "2026-10-15T18:19:57.063243+00:00",
       "readable": true,
-      "owner": {
-        "number": 6651,
-        "state": "open",
-        "head": "939b348451fc1e46b70eee2e55309e4e1756ab98"
-      },
-      "active": 8,
+      "owner": null,
+      "active": 14,
       "unindexed_reservations": 0,
       "cap": 8
     },
@@ -576,5 +574,17 @@
         "status": "completed"
       }
     ]
+  },
+  "a1_prepared_source_correction": {
+    "at": "2026-10-15T18:20:40.799380+00:00",
+    "qualified_preview_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
+    "newer_main": "e01a8aee7e5647af37805fa24c13f1f0feebca3c",
+    "changed_source_paths": [],
+    "changed_generated_path_count": 3771,
+    "a1_patch_parent": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "a1_patch_file": "a1-yahoo-two-input-source.patch",
+    "application": "Fresh read actual A1 remote/main and canonical custody/capacity. Apply only the two eval-os-a1 input additions to the same carrier, preferably after incumbent base refresh; no manual main merge, no force push. Revalidate changed source and preview. Never copy the follow-on qledger-exclusive scope into A1.",
+    "qualification": "a1-yahoo-two-input-qualification.json: actual A1 closure1210, RED2 -> GREEN0,3controlsPASS, packing probe selection unchanged. All production/runtime files unchanged by this correction.",
+    "carrier_modified": false
   }
 }
