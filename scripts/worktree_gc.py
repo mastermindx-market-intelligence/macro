@@ -715,6 +715,7 @@ def apply_deletions(
     dry_run: bool = False,
     hosts: list[Path] | None = None,
     protected: list[Path] | None = None,
+    exact_single: bool = False,
 ) -> dict:
     summary = {"deleted": [], "pruned": False, "branches_deleted": [], "errors": [], "skipped_cap": 0}
     now_iso = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -763,7 +764,21 @@ def apply_deletions(
             except OSError as exc:
                 ok, err = False, str(exc)
         else:
-            rc, _, err = _git(primary, "worktree", "remove", "--force", str(wt.path), timeout=600)
+            if exact_single:
+                # Git worktree remove ALSO deletes ignored artifacts without
+                # --force on some Git versions. Preserve these explicitly.
+                # --directory bounds output for large build trees; unreadable
+                # or unknown means HOLD, never optimistic deletion.
+                rc_ignored, ignored, _ = _git(
+                    wt.path, "ls-files", "--others", "--ignored",
+                    "--exclude-standard", "--directory", "-z", timeout=90)
+                if rc_ignored != 0 or ignored:
+                    summary["errors"].append(
+                        f"{wt.path}: refused - ignored local content or unreadable ignore probe")
+                    continue
+            argv = (("worktree", "remove", str(wt.path)) if exact_single else
+                    ("worktree", "remove", "--force", str(wt.path)))
+            rc, _, err = _git(primary, *argv, timeout=600)
             ok = rc == 0
 
         _ledger_write({
@@ -793,7 +808,8 @@ def apply_deletions(
                 else:
                     log.info("branch -D %s refused: %s", wt.branch, err2.strip()[:120])
 
-    if not dry_run:
+    if not dry_run and not exact_single:
+        # Prune is repo-wide; an exact owner must not touch sibling metadata.
         rc, _, err = _git(primary, "worktree", "prune", timeout=120)
         summary["pruned"] = rc == 0
         if rc != 0:
@@ -999,6 +1015,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--repo-root", default=None, help="primary checkout (default: resolve from cwd)")
     ap.add_argument("--config", default=None, help=f"config path (default: <repo>/{DEFAULT_CONFIG_REL})")
     ap.add_argument("--min-age-days", type=float, default=None, help="override config min_age_days")
+    ap.add_argument("--only-worktree", default=None,
+                    help="one exact registered immediate-child worktree under a configured root; no force or prune")
     ap.add_argument("--pr-limit", type=int, default=None, help="gh pr list page depth per state")
     ap.add_argument("--pr-states-file", default=None, help="use this JSON map instead of gh")
     ap.add_argument("--emit-pr-states", default=None, help="write the fetched PR-state map here")
@@ -1033,6 +1051,25 @@ def main(argv: list[str] | None = None) -> int:
     roots = expand_roots(hosts, list(cfg["roots"]))
     protected = human_driven_protection(hosts, cfg)
 
+    only: Path | None = None
+    if args.only_worktree is not None:
+        raw = Path(args.only_worktree)
+        if not raw.is_absolute() or raw.is_symlink():
+            raise SystemExit("only-worktree refused: absolute nonsymlink directory required")
+        try:
+            only = raw.resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise SystemExit("only-worktree refused: target unavailable")
+        if not only.is_dir() or only == primary or not any(
+                only.parent == root.resolve() for root in roots):
+            raise SystemExit("only-worktree refused: not an immediate child of configured root")
+        # This narrows scope only; original Fabric acceptance is a separate
+        # required proof. Never infer acceptance from a safe Git verdict.
+        cfg["include_orphans"] = False
+        cfg["include_open_pr"] = False
+        cfg["delete_local_branches"] = False
+        cfg["max_delete_per_run"] = 1
+
     in_scope: list[Worktree] = []
     for w in registered:
         for r in roots:
@@ -1040,7 +1077,11 @@ def main(argv: list[str] | None = None) -> int:
                 w.root = str(r)
                 in_scope.append(w)
                 break
-    orphans = scan_orphans(hosts, roots, registered)
+    if only is not None:
+        in_scope = [w for w in in_scope if w.path.resolve() == only]
+        if len(in_scope) != 1:
+            raise SystemExit("only-worktree refused: exact Git registration missing")
+    orphans = [] if only is not None else scan_orphans(hosts, roots, registered)
 
     fetch_ok = False if args.no_fetch else fetch_origin(primary)
     pr_states: dict[str, dict] | None = None
@@ -1065,6 +1106,7 @@ def main(argv: list[str] | None = None) -> int:
         "host": socket.gethostname(),
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "apply" if do_apply else "report",
+        **({"only_worktree": str(only)} if only is not None else {}),
         "fetch_ok": fetch_ok,
         "proc_scan": procs is not None,
         "pr_states": "file" if args.pr_states_file else ("none" if pr_states is None else f"gh:{len(pr_states)}"),
@@ -1092,7 +1134,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             apply_summary = apply_deletions(primary, candidates, cfg, roots,
                                             dry_run=args.dry_run, hosts=hosts,
-                                            protected=protected)
+                                            protected=protected, exact_single=only is not None)
 
     payload = {
         "meta": meta,
@@ -1131,6 +1173,9 @@ def main(argv: list[str] | None = None) -> int:
             for row in group_refusals(apply_summary["errors"]):
                 print(row)
             return 1
+        if only is not None and not apply_summary["deleted"]:
+            print(f"exact worktree retained: {only} ({candidates[0].verdict})")
+            return 3
     return 0
 
 

@@ -654,3 +654,63 @@ def test_the_rendered_report_names_its_policy_source(repo, tmp_path, monkeypatch
     assert "policy source:" in blob
     assert str(cfg) in blob, blob[:400]
 
+
+
+# This opt-in is only a tool for the original Fabric acceptance owner.
+# A safe Git verdict does not independently establish worker acceptance.
+
+
+def test_only_worktree_exact_cleanup_preserves_sibling_branch_and_no_prune(repo, tmp_path, monkeypatch):
+    done = _add_worktree(repo, "done", branch="lane/done")
+    other = _add_worktree(repo, "other", branch="lane/other")
+    _age(repo, done)
+    _age(repo, other)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0, delete_local_branches=True)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(done), "--no-fetch"])
+    assert rc == 0
+    assert row["meta"]["only_worktree"] == str(done.resolve())
+    assert row["apply"]["deleted"] == [str(done)]
+    assert not row["apply"]["pruned"]
+    assert row["apply"]["branches_deleted"] == []
+    assert not done.exists() and other.exists()
+    assert _git(repo["primary"], "rev-parse", "refs/heads/lane/done")
+
+
+def test_only_worktree_unpushed_unique_head_retained(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "unique", branch="lane/unique")
+    head = _commit_in(target)
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc == 3
+    assert _verdict(row, "unique")["verdict"] == "UNPUSHED"
+    assert target.exists() and _git(target, "rev-parse", "HEAD") == head
+
+
+def test_only_worktree_bad_path_refused(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "target", branch="lane/target")
+    _age(repo, target)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    for path in (str(repo["root"]), str(outside), "relative/path"):
+        with pytest.raises(SystemExit, match="only-worktree refused"):
+            _run_main(repo, tmp_path, monkeypatch, extra=["--only-worktree", path])
+    assert target.exists()
+
+
+def test_only_worktree_never_force_removes_ignored_artifacts(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "ignored", branch="lane/ignored")
+    # Ignored local artifacts must not silently disappear on accepted cleanup.
+    _git(repo["primary"], "config", "core.excludesfile", str(tmp_path / "ignore"))
+    (tmp_path / "ignore").write_text("*.buildcache\n")
+    (target / "local.buildcache").write_text("private untracked artifact\n")
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc != 0
+    assert target.exists() and (target / "local.buildcache").exists()
+    assert row["apply"]["deleted"] == []
+    assert row["apply"]["pruned"] is False
