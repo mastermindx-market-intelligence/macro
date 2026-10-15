@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: CAT and Crop report files installed; CAT rank19/unheld16/pool8 NOT_SELECTED. Public524 traced to API stalls with concurrent full candidate normalization; existing9369 does not change captures. Preserve stack/holds; restore actual page/viewer acceptance through existing serving controls. 9209head99cc8729 admitted CI38695059724 running; admitted refresh/protected install then SAME follow-on33groups. Publication0of10.
+next_action: Release ready serving guard d59cf5d6 through one capacity-admitted PR; 47 API tests pass, no PR/install yet. CAT report/page and two-page viewer accepted after unassisted API recovery. 9209 exact99cc CI passed but controller38701423511 marks proof stale/capacity-deferred; consume admitted refresh and actual protected install, then SAME follow-on33groups. Pure35current Prophet events await existing live daily38661819472 Chronicle publication; actual Brief planner0slots. Preserve holds and publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
