@@ -9505,6 +9505,7 @@ jobs:
       # Wave-10 Build B — PLNT synthetic display card: page, builder, suite.
       - "templates/consumer_cyclical_plnt.html.j2"
       - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "scripts/__init__.py"
       - "tests/test_consumer_cyclical_plnt_page.py"
       # Read-only input of the PLNT suite: the public route list.
       - "config/site_access.yml"
@@ -13333,6 +13334,7 @@ jobs:
       - engine/sector_intelligence/consumer_cyclical_display.py
       - engine/sector_intelligence/consumer_cyclical_projection.py
       - engine/sector_intelligence/consumer_cyclical_shared_contract.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
@@ -21383,6 +21385,7 @@ jobs:
       - "engine/sector_intelligence/consumer_cyclical_display.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
       - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
       - "scripts/build_fundamental_forensics.py"
@@ -22636,6 +22639,7 @@ jobs:
       - "engine/sector_intelligence/consumer_cyclical_display.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
       - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_crossmarket.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
@@ -28932,6 +28936,7 @@ jobs:
       - "engine/sector_intelligence/consumer_cyclical_display.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
       - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
