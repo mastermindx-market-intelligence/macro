@@ -42,6 +42,31 @@ def _day(value):
         return None
 
 
+def _observation(p):
+    """The native management snapshot's dated close, never a live quote.
+
+    Older rows lack these two clocks. Their plan, publication and screen dates
+    cannot fill that gap. An absent freshness stamp also cannot mean "current".
+    No phase, entry instruction, confidence or position return is derived here.
+    """
+    available = p.get("management_status") == "available" and not p.get("management_error")
+    evaluated = _day(p.get("management_asof")) if available else None
+    close, observed = _amount(p.get("last_price")), _day(p.get("last_price_asof"))
+    frame = p.get("price_frame")
+    frame_state = "unknown"
+    coherent = frame is None or isinstance(frame, Mapping)
+    if isinstance(frame, Mapping):
+        native_state = frame.get("state")
+        if native_state in ("current", "stale", "unavailable"):
+            frame_state = native_state
+        if "last_close_date" in frame:
+            coherent = _day(frame.get("last_close_date")) == observed
+    if not (evaluated and observed and observed <= evaluated and coherent and close is not None):
+        close = observed = None
+    return {"close": close, "close_date": observed, "management_date": evaluated,
+            "price_frame_state": frame_state}
+
+
 def present_plan_record(plan, *, identity=None, episode=None):
     """Project one native row without selecting, joining or updating any records.
 
@@ -98,4 +123,5 @@ def present_plan_record(plan, *, identity=None, episode=None):
         "horizon_days": int(horizon) if horizon is not None else None,
         "pulse_en": _text(p.get("pulse")), "pulse_zh": _text(p.get("pulse_zh")),
         "newer_href": "#pv-" + newer if newer and _PLAN_ID.fullmatch(newer) else None,
+        "observation": _observation(p),
     }

@@ -77,3 +77,60 @@ def test_foreign_screen_does_not_supply_this_plan_identity_or_clock():
         identity={"name": "Bound ABC identity"})
     assert out["name"] == "Bound ABC identity" and out["screen_date"] is None
     assert out["entry"] == 100
+
+
+def _observed_plan(**changes):
+    row = {"id": "ABC-BULL-20260801", "asset": "ABC", "entry": 100,
+           "plan_asof": "2026-08-01", "price_basis_date": "2026-07-31",
+           "management_status": "available", "management_asof": "2026-10-14",
+           "last_price": 123.45, "last_price_asof": "2026-10-13",
+           "recommended_action": "enter", "management_confidence": 91,
+           "board_read": {"ticker": "ABC", "as_of": "2026-10-15"}}
+    row.update(changes)
+    return row
+
+
+def test_dated_management_close_is_separate_from_original_terms_and_screen():
+    row = _observed_plan()
+    before = copy.deepcopy(row)
+    out = present_plan_record(row)
+    observation = out["observation"]
+    assert observation == {"close": 123.45, "close_date": "2026-10-13",
+                           "management_date": "2026-10-14", "price_frame_state": "unknown"}
+    assert out["entry"] == 100
+    assert (out["created_date"], out["price_basis_date"], out["screen_date"]) == (
+        "2026-08-01", "2026-07-31", "2026-10-15")
+    assert not {"action", "quote", "return", "fill", "confidence"} & observation.keys()
+    assert row == before
+
+
+@pytest.mark.parametrize("changes", [
+    {"last_price_asof": None}, {"last_price_asof": "2026-02-30"},
+    {"management_asof": None}, {"management_asof": "2026-13-01"},
+    {"last_price_asof": "2026-10-15"},
+    {"management_status": "unavailable"}, {"management_error": "failed"},
+    {"last_price": float("nan")}, {"last_price": True}, {"last_price": 0},
+    {"price_frame": "stale"},
+    {"price_frame": {"state": "stale", "last_close_date": "2026-09-01"}},
+])
+def test_unqualified_close_stays_missing_instead_of_borrowing_another_clock(changes):
+    out = present_plan_record(_observed_plan(**changes))["observation"]
+    assert out["close"] is None and out["close_date"] is None
+
+
+def test_stale_close_keeps_its_own_date_and_native_freshness_disclosure():
+    observation = present_plan_record(_observed_plan(last_price_asof="2026-09-01",
+        price_frame={"state": "stale", "last_close_date": "2026-09-01"}))["observation"]
+    assert observation == {"close": 123.45, "close_date": "2026-09-01",
+                           "management_date": "2026-10-14", "price_frame_state": "stale"}
+    # Removing an optional freshness stamp never mints a current/live assertion.
+    assert present_plan_record(_observed_plan())["observation"]["price_frame_state"] == "unknown"
+
+
+def test_each_original_plan_keeps_its_own_observation_even_for_the_same_security():
+    first = _observed_plan()
+    second = _observed_plan(id="ABC-BULL-20260901", last_price=110,
+                            management_asof="2026-10-10", last_price_asof="2026-10-09")
+    assert [present_plan_record(p)["observation"]["close"] for p in (first, second)] == [123.45, 110]
+    assert [present_plan_record(p)["observation"]["close_date"] for p in (first, second)] == [
+        "2026-10-13", "2026-10-09"]

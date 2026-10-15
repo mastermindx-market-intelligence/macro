@@ -2393,6 +2393,14 @@ def test_index_entries_carry_last_price_and_state(tmp_path, last_print):
         assert entry.get("last_price") == pytest.approx(expected_last)
         assert entry.get('last_price_asof') == last_print
         assert entry.get('management_asof') == '2026-07-02'
+        # The Plan review consumer reads those exact row clocks. Neither the
+        # index publication date nor another screen supplies a quote date.
+        from engine.prophet_plan_presentation import present_plan_record
+        observed = present_plan_record(entry)["observation"]
+        assert observed["close"] == pytest.approx(expected_last)
+        assert observed["close_date"] == last_print
+        assert observed["management_date"] == "2026-07-02"
+        assert observed["price_frame_state"] == ("stale" if last_print == "2026-06-10" else "unknown")
         state = entry.get("state")
         assert isinstance(state, dict), "nested state block missing"
         for key in ("components", "geometry", "change_reason"):
