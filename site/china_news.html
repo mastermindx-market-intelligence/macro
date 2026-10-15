@@ -312,18 +312,690 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans supportive. <b>10</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏积极。其中 <b>10</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-supportive"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>10</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-supportive" style="--ac:#3bb277">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></div>
+        <div class="tg-z">+0.8</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="left:50%;width:16.0%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 124<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-14</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">11</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:73%"></i></span>
+          <span class="mx-n">8</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:18%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:9%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:9%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 19 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 3 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 2</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">1</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 16</span><span class="l-zh">10月16日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3179449" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="潘功胜：全球失衡不能依靠汇率调节，中国人民银行将继续实施好适度宽松的货币政策 pan gongsheng: global imbalances cannot be adjusted through exchange rates; the people's bank of china will continue to implement the moderately loose monetary policy well 潘功胜：全球失衡不能依靠汇率调节，中国人民银行将继续实施好适度宽松的货币政策 二十国集团（g20）在泰国曼谷召开今年第三次g20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。 潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全 the g20 held its third g20 finance ministers and central bank governors meeting of the year in bangkok, thailand. the meeting discussed the global economic situation and outlook, financial sector reform, and other topics. pboc governor pan gongsheng attended the meeting and delivered remarks, and pboc deputy governor xuan changneng also attended. pan gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in ai-related assets have exacerbated financial fragility. modernizing financial regulation does not mean loosening regulation, and it should not undermine the stability of the financial system and its capacity to withstand risks. all parties should make full use of the g20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges. on global imbalances, all parties should adopt a more comprehensive analytical perspective. it is not enough to look only at the current account; attention should also be paid to financial channels, especially as global 二十国集团（g20）在泰国曼谷召开今年第三次g20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。 潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全 华尔街见闻 pboc_liquidity yuan tech_policy pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 tech policy 科技政策 cny cbon 512800.ss">
+          <time class="tp-when" data-t="2026-10-15T11:03:22+00:00" datetime="2026-10-15T11:03:22+00:00">10-15<br>11:03</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T11:03:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Pan Gongsheng: Global imbalances cannot be adjusted through exchange rates; the People's Bank of China will continue to implement the moderately loose monetary policy well</span><span class="l-zh">潘功胜：全球失衡不能依靠汇率调节，中国人民银行将继续实施好适度宽松的货币政策</span></h2>
+            <p class="tp-sum"><span class="l-en">The G20 held its third G20 Finance Ministers and Central Bank Governors Meeting of the year in Bangkok, Thailand. The meeting discussed the global economic situation and outlook, financial sector reform, and other topics. PBOC Governor Pan Gongsheng attended the meeting and delivered remarks, and PBOC Deputy Governor Xuan Changneng also attended. Pan Gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. Sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in AI-related assets have exacerbated financial fragility. Modernizing financial regulation does not mean loosening regulation, and it should not undermine the stability of the financial system and its capacity to withstand risks. All parties should make full use of the G20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges. On global imbalances, all parties should adopt a more comprehensive analytical perspective. It is not enough to look only at the current account; attention should also be paid to financial channels, especially as global</span><span class="l-zh">二十国集团（G20）在泰国曼谷召开今年第三次G20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。 潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好G20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CBON</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/1001252604/pan-gongsheng-governor-of-the-people-s-bank-of-china" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行行长潘功胜出席二十国集团财长和央行行长会议 pboc governor pan gongsheng attends the g20 finance ministers and central bank governors meeting 中国人民银行行长潘功胜出席二十国集团财长和央行行长会议 潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。全球失衡不能依靠汇率调节。汇率受经济增长、货币政策、金融市场、地缘政治、突发风险事件等多种因素影响，与经常账户不存在简单线性关系。逆差 pan gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in ai-related assets have exacerbated financial fragility. modernizing financial regulation does not mean loosening regulation, and it should not undermine the stability of the financial system and its capacity to withstand risks. all parties should make full use of the g20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges. on global imbalances, all parties should adopt a more comprehensive analytical perspective. it is not enough to look only at the current account; attention should also be paid to financial channels. in particular, as global financial integration deepens, greater attention should be given to the impact of financial factors such as capital flows on imbalances. global imbalances cannot be adjusted through exchange rates. exchange rates are affected by many factors, including economic growth, monetary policy, financial markets, geopolitics, and sudden risk events, and do not have a simple linear relationship with the current account. deficit 潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。全球失衡不能依靠汇率调节。汇率受经济增长、货币政策、金融市场、地缘政治、突发风险事件等多种因素影响，与经常账户不存在简单线性关系。逆差 富途牛牛 pboc_liquidity yuan tech_policy pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 tech policy 科技政策 cny cbon 512800.ss">
+          <time class="tp-when" data-t="2026-10-15T11:01:54+00:00" datetime="2026-10-15T11:01:54+00:00">10-15<br>11:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T11:01:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Governor Pan Gongsheng attends the G20 Finance Ministers and Central Bank Governors Meeting</span><span class="l-zh">中国人民银行行长潘功胜出席二十国集团财长和央行行长会议</span></h2>
+            <p class="tp-sum"><span class="l-en">Pan Gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. Sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in AI-related assets have exacerbated financial fragility. Modernizing financial regulation does not mean loosening regulation, and it should not undermine the stability of the financial system and its capacity to withstand risks. All parties should make full use of the G20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges. On global imbalances, all parties should adopt a more comprehensive analytical perspective. It is not enough to look only at the current account; attention should also be paid to financial channels. In particular, as global financial integration deepens, greater attention should be given to the impact of financial factors such as capital flows on imbalances. Global imbalances cannot be adjusted through exchange rates. Exchange rates are affected by many factors, including economic growth, monetary policy, financial markets, geopolitics, and sudden risk events, and do not have a simple linear relationship with the current account. Deficit</span><span class="l-zh">潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。促进金融监管现代化不等于放松监管，不应损害金融体系稳定和风险抵御水平。各方应充分用好G20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。全球失衡不能依靠汇率调节。汇率受经济增长、货币政策、金融市场、地缘政治、突发风险事件等多种因素影响，与经常账户不存在简单线性关系。逆差</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CNY</span><span class="cn-tk">CBON</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/china-economy/article/3370796/growth-chinas-factory-gate-prices-accelerates-consumer-inflation-subdued?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="growth in china’s factory-gate prices accelerates, but consumer inflation subdued  中国工业生产者出厂价格涨幅加快，但消费者通胀低迷 growth in chinese factory-gate prices continued to accelerate last month, while consumer price growth remained subdued despite beijing’s efforts to shore up domestic demand and support the economy in meeting its annual growth target.
+the producer price index (ppi) rose 5 per cent year on year in september, the highest rate since mid-2022, according to data released by the national bureau of statistics on wednesday. it rose by 3.8 per cent in august.
+the reading beat a projection of 4.3 per cent...  中国出厂价格上月继续加速上涨，而尽管北京方面努力提振国内需求并支持经济实现年度增长目标，消费者价格涨幅仍保持低迷。
+数据显示，9月份生产者价格指数（ppi）同比上涨5%，为2022年年中以来的最高水平。 scmp - china economy consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-14T02:01:22+00:00" datetime="2026-10-14T02:01:22+00:00">10-14<br>02:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T02:01:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Growth in China’s factory-gate prices accelerates, but consumer inflation subdued</span><span class="l-zh">中国工业生产者出厂价格涨幅加快，但消费者通胀低迷</span></h2>
+            <p class="tp-sum"><span class="l-en">Growth in Chinese factory-gate prices continued to accelerate last month, while consumer price growth remained subdued despite Beijing’s efforts to shore up domestic demand and support the economy in meeting its annual growth target.
+The producer price index (PPI) rose 5 per cent year on year in September, the highest rate since mid-2022, according to data released by the National Bureau of Statistics on Wednesday. It rose by 3.8 per cent in August.
+The reading beat a projection of 4.3 per cent...</span><span class="l-zh">中国出厂价格上月继续加速上涨，而尽管北京方面努力提振国内需求并支持经济实现年度增长目标，消费者价格涨幅仍保持低迷。
+数据显示，9月份生产者价格指数（PPI）同比上涨5%，为2022年年中以来的最高水平。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261015194918590800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="金十期货热图 jinshi futures heat map 金十期货热图 中国央行连续23个月增持、全球89%央行仍要加仓！近日贵金属价格却持续走低，黄金真正害怕什么？央行购金到底能起到多大缓冲作用？一图查看。 the pboc has increased its holdings for 23 consecutive months, and 89% of central banks worldwide still plan to add to positions! yet precious metal prices have recently continued to decline. what is gold really afraid of? how much of a buffer can central bank gold purchases actually provide? see the chart. 中国央行连续23个月增持、全球89%央行仍要加仓！近日贵金属价格却持续走低，黄金真正害怕什么？央行购金到底能起到多大缓冲作用？一图查看。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-10-15T19:49:18+08:00" datetime="2026-10-15T19:49:18+08:00">10-15<br>19:49</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T19:49:18+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Jinshi Futures heat map</span><span class="l-zh">金十期货热图</span></h2>
+            <p class="tp-sum"><span class="l-en">The PBOC has increased its holdings for 23 consecutive months, and 89% of central banks worldwide still plan to add to positions! Yet precious metal prices have recently continued to decline. What is gold really afraid of? How much of a buffer can central bank gold purchases actually provide? See the chart.</span><span class="l-zh">中国央行连续23个月增持、全球89%央行仍要加仓！近日贵金属价格却持续走低，黄金真正害怕什么？央行购金到底能起到多大缓冲作用？一图查看。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3179472" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="中华人民共和国政府和多哥共和国政府关于构建新时代中多命运共同体的联合声明 joint statement of the government of the people's republic of china and the government of the togolese republic on building a china-togo community with a shared future in the new era 中华人民共和国政府和多哥共和国政府关于构建新时代中多命运共同体的联合声明 其中提到，多方赞赏中国对非洲建交国全面实施零关税，认为这彰显中方对非真实亲诚理念和正确义利观及扩大高水平对外开放的坚定决心。中方乐见多方立足本国区位优势，用好零关税和农产品输华“绿色通道”2.0等举措，并利用中国国际进口博览会、中非经贸博览会等平台，扩大对华出口。祝贺双方签署多哥大豆输华植物检疫要求议定书。双方愿以签署“经认证的经营者”（aeo）项目合作谅解备忘录为契机，进一步深化海关及检验检疫合作。（新华社） it was mentioned that various parties appreciated china's full implementation of zero tariffs on african countries with diplomatic relations with china, believing that this demonstrates china's sincere and genuine approach to africa, its correct approach to justice and interests, and its firm determination to expand high-level opening up. china is pleased to see various parties leverage their own geographical advantages, make good use of measures such as zero tariffs and the "green channel" 2.0 for agricultural products exported to china, and use platforms such as the china international import expo and the china-africa economic and trade expo to expand exports to china. congratulations were extended on the signing by both sides of the protocol on phytosanitary requirements for togo soybeans exported to china. both sides are willing to take the signing of the memorandum of understanding on authorized economic operator (aeo) cooperation as an opportunity to further deepen customs and inspection and quarantine cooperation. (xinhua news agency) 其中提到，多方赞赏中国对非洲建交国全面实施零关税，认为这彰显中方对非真实亲诚理念和正确义利观及扩大高水平对外开放的坚定决心。中方乐见多方立足本国区位优势，用好零关税和农产品输华“绿色通道”2.0等举措，并利用中国国际进口博览会、中非经贸博览会等平台，扩大对华出口。祝贺双方签署多哥大豆输华植物检疫要求议定书。双方愿以签署“经认证的经营者”（aeo）项目合作谅解备忘录为契机，进一步深化海关及检验检疫合作。（新华社） 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-15T11:42:20+00:00" datetime="2026-10-15T11:42:20+00:00">10-15<br>11:42</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T11:42:20+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>72</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Joint Statement of the Government of the People's Republic of China and the Government of the Togolese Republic on Building a China-Togo Community with a Shared Future in the New Era</span><span class="l-zh">中华人民共和国政府和多哥共和国政府关于构建新时代中多命运共同体的联合声明</span></h2>
+            <p class="tp-sum"><span class="l-en">It was mentioned that various parties appreciated China's full implementation of zero tariffs on African countries with diplomatic relations with China, believing that this demonstrates China's sincere and genuine approach to Africa, its correct approach to justice and interests, and its firm determination to expand high-level opening up. China is pleased to see various parties leverage their own geographical advantages, make good use of measures such as zero tariffs and the "green channel" 2.0 for agricultural products exported to China, and use platforms such as the China International Import Expo and the China-Africa Economic and Trade Expo to expand exports to China. Congratulations were extended on the signing by both sides of the protocol on phytosanitary requirements for Togo soybeans exported to China. Both sides are willing to take the signing of the memorandum of understanding on Authorized Economic Operator (AEO) cooperation as an opportunity to further deepen customs and inspection and quarantine cooperation. (Xinhua News Agency)</span><span class="l-zh">其中提到，多方赞赏中国对非洲建交国全面实施零关税，认为这彰显中方对非真实亲诚理念和正确义利观及扩大高水平对外开放的坚定决心。中方乐见多方立足本国区位优势，用好零关税和农产品输华“绿色通道”2.0等举措，并利用中国国际进口博览会、中非经贸博览会等平台，扩大对华出口。祝贺双方签署多哥大豆输华植物检疫要求议定书。双方愿以签署“经认证的经营者”（AEO）项目合作谅解备忘录为契机，进一步深化海关及检验检疫合作。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.eastmoney.com/a/202610153897078169.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="潘功胜：全球失衡不能依靠汇率调节 pan gongsheng: global imbalances cannot be adjusted through exchange rates 潘功胜：全球失衡不能依靠汇率调节 【潘功胜：全球失衡不能依靠汇率调节】10月15日，中国人民银行行长潘功胜在出席二十国集团（g20）财长和央行行长会议时表示，关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。 [pan gongsheng: global imbalances cannot be adjusted through exchange rates] on october 15, pboc governor pan gongsheng said while attending the g20 finance ministers and central bank governors meeting that on global imbalances, all parties should adopt a more comprehensive analytical perspective. it is not enough to look only at the current account; attention should also be paid to financial channels. in particular, as global financial integration deepens, greater attention should be given to the impact of financial factors such as capital flows on imbalances. 【潘功胜：全球失衡不能依靠汇率调节】10月15日，中国人民银行行长潘功胜在出席二十国集团（g20）财长和央行行长会议时表示，关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。 eastmoney pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny 512800.ss">
+          <time class="tp-when" data-t="2026-10-15 19:21:22" datetime="2026-10-15 19:21:22">10-15<br>19:21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15 19:21:22"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>65</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Pan Gongsheng: Global imbalances cannot be adjusted through exchange rates</span><span class="l-zh">潘功胜：全球失衡不能依靠汇率调节</span></h2>
+            <p class="tp-sum"><span class="l-en">[Pan Gongsheng: Global imbalances cannot be adjusted through exchange rates] On October 15, PBOC Governor Pan Gongsheng said while attending the G20 Finance Ministers and Central Bank Governors Meeting that on global imbalances, all parties should adopt a more comprehensive analytical perspective. It is not enough to look only at the current account; attention should also be paid to financial channels. In particular, as global financial integration deepens, greater attention should be given to the impact of financial factors such as capital flows on imbalances.</span><span class="l-zh">【潘功胜：全球失衡不能依靠汇率调节】10月15日，中国人民银行行长潘功胜在出席二十国集团（G20）财长和央行行长会议时表示，关于全球失衡，各方应有更全面的分析视角。不能只看经常账户，也要关注金融渠道，特别是随着全球金融一体化加深，应更加重视资本流动等金融因素对失衡的影响。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.eastmoney.com/a/202610153897044033.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="潘功胜：央行将继续实施好适度宽松的货币政策 pan gongsheng: the central bank will continue to implement the moderately loose monetary policy well 潘功胜：央行将继续实施好适度宽松的货币政策 【中国人民银行行长潘功胜出席二十国集团财长和央行行长会议】2026年10月15日，二十国集团（g20）在泰国曼谷召开今年第三次g20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。 [pboc governor pan gongsheng attends the g20 finance ministers and central bank governors meeting] on october 15, 2026, the g20 held its third g20 finance ministers and central bank governors meeting of the year in bangkok, thailand. the meeting discussed the global economic situation and outlook, financial sector reform, and other topics. pboc governor pan gongsheng attended the meeting and delivered remarks, and pboc deputy governor xuan changneng also attended. pan gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in ai-related assets have exacerbated financial fragility. 【中国人民银行行长潘功胜出席二十国集团财长和央行行长会议】2026年10月15日，二十国集团（g20）在泰国曼谷召开今年第三次g20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。 eastmoney pboc_liquidity tech_policy pboc & liquidity 央行与流动性 tech policy 科技政策 cbon 512800.ss">
+          <time class="tp-when" data-t="2026-10-15 19:02:33" datetime="2026-10-15 19:02:33">10-15<br>19:02</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15 19:02:33"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>65</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Pan Gongsheng: The central bank will continue to implement the moderately loose monetary policy well</span><span class="l-zh">潘功胜：央行将继续实施好适度宽松的货币政策</span></h2>
+            <p class="tp-sum"><span class="l-en">[PBOC Governor Pan Gongsheng attends the G20 Finance Ministers and Central Bank Governors Meeting] On October 15, 2026, the G20 held its third G20 Finance Ministers and Central Bank Governors Meeting of the year in Bangkok, Thailand. The meeting discussed the global economic situation and outlook, financial sector reform, and other topics. PBOC Governor Pan Gongsheng attended the meeting and delivered remarks, and PBOC Deputy Governor Xuan Changneng also attended. Pan Gongsheng pointed out that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. Sharp fluctuations in some countries' government bond markets and rising risk of valuation corrections in AI-related assets have exacerbated financial fragility.</span><span class="l-zh">【中国人民银行行长潘功胜出席二十国集团财长和央行行长会议】2026年10月15日，二十国集团（G20）在泰国曼谷召开今年第三次G20财长和央行行长会议。会议讨论了全球经济形势与展望、金融部门改革等议题。中国人民银行行长潘功胜出席会议并发言，中国人民银行副行长宣昌能参加会议。潘功胜指出，地缘政治冲突加剧仍是全球经济的最大不确定性。一些国家国债市场大幅波动、人工智能相关资产估值回调风险加剧了金融脆弱性。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CBON</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/1001250418/bank-of-zhengzhou-completion-of-rmb-10-billion-perpetual-capital" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="郑州银行：2026年100亿元无固定期限资本债券发行完毕 bank of zhengzhou: rmb 10 billion perpetual capital bonds issuance completed in 2026 郑州银行：2026年100亿元无固定期限资本债券发行完毕 郑州银行公告，经国家金融监督管理总局河南监管局和中国人民银行批准，本行发行的2026年无固定期限资本债券于2026年10月13日簿记建档，2026年10月15日完成缴款，发行规模为100亿元，前5年票面利率为1.88%。募集资金将用于补充本行其他一级资本。 bank of zhengzhou announced that, with approval from the henan regulatory bureau of the national financial regulatory administration and the people's bank of china, the bank's 2026 undated capital bonds were bookbuilt on october 13, 2026, and payment was completed on october 15, 2026. the issuance size was rmb 10 billion, with a coupon rate of 1.88% for the first five years. the proceeds will be used to replenish the bank's additional tier 1 capital. 郑州银行公告，经国家金融监督管理总局河南监管局和中国人民银行批准，本行发行的2026年无固定期限资本债券于2026年10月13日簿记建档，2026年10月15日完成缴款，发行规模为100亿元，前5年票面利率为1.88%。募集资金将用于补充本行其他一级资本。 富途牛牛 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="2026-10-15T10:41:55+00:00" datetime="2026-10-15T10:41:55+00:00">10-15<br>10:41</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:41:55+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Bank of Zhengzhou: RMB 10 billion perpetual capital bonds issuance completed in 2026</span><span class="l-zh">郑州银行：2026年100亿元无固定期限资本债券发行完毕</span></h2>
+            <p class="tp-sum"><span class="l-en">Bank of Zhengzhou announced that, with approval from the Henan Regulatory Bureau of the National Financial Regulatory Administration and the People's Bank of China, the bank's 2026 undated capital bonds were bookbuilt on October 13, 2026, and payment was completed on October 15, 2026. The issuance size was RMB 10 billion, with a coupon rate of 1.88% for the first five years. The proceeds will be used to replenish the bank's additional Tier 1 capital.</span><span class="l-zh">郑州银行公告，经国家金融监督管理总局河南监管局和中国人民银行批准，本行发行的2026年无固定期限资本债券于2026年10月13日簿记建档，2026年10月15日完成缴款，发行规模为100亿元，前5年票面利率为1.88%。募集资金将用于补充本行其他一级资本。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3179416" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="覆盖1000余个场景 工信部发布人工智能“产业导航图” covering more than 1,000 scenarios, miit releases ai 'industry navigation map' 覆盖1000余个场景 工信部发布人工智能“产业导航图” 从工业和信息化部了解到，我国将以制造业为主战场、以应用牵引为主线，推动人工智能产业高水平赋能新型工业化。 according to the ministry of industry and information technology, china will take manufacturing as the main battlefield and application-driven development as the main line to promote high-level empowerment of new industrialization by the artificial intelligence industry. 从工业和信息化部了解到，我国将以制造业为主战场、以应用牵引为主线，推动人工智能产业高水平赋能新型工业化。 华尔街见闻 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-15T10:33:31+00:00" datetime="2026-10-15T10:33:31+00:00">10-15<br>10:33</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:33:31+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Covering more than 1,000 scenarios, MIIT releases AI 'Industry Navigation Map'</span><span class="l-zh">覆盖1000余个场景 工信部发布人工智能“产业导航图”</span></h2>
+            <p class="tp-sum"><span class="l-en">According to the Ministry of Industry and Information Technology, China will take manufacturing as the main battlefield and application-driven development as the main line to promote high-level empowerment of new industrialization by the artificial intelligence industry.</span><span class="l-zh">从工业和信息化部了解到，我国将以制造业为主战场、以应用牵引为主线，推动人工智能产业高水平赋能新型工业化。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/1001247567/bai-xue-of-oriental-jincheng-high-probability-of-another-25" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="东方金诚白雪：美联储12月再加息25个基点的概率较大 dongfang jincheng's bai xue: the probability of the fed raising rates by another 25 basis points in december is relatively high 东方金诚白雪：美联储12月再加息25个基点的概率较大 美国劳工统计局最新数据显示，美国9月cpi同比上涨3.7%，较8月的3.4%明显反弹，为5月份以来最高水平；核心cpi同比上涨2.6%，较前值2.4%回升。对此，东方金诚研究副总监白雪表示，美国9月通胀明显反弹且涨价面明显扩散，能源冲击与核心通胀黏性形成共振，通胀回归2%目标的“最后一公里”仍不平坦。通胀反弹强化了美联储年内继续加息的必要性，但就业降温与金融条件收紧对加息节奏形成制约。预计10月按兵不动、12月再加息25个基点的概率上升。 the latest data from the u.s. bureau of labor statistics show that u.s. cpi rose 3.7% year on year in september, rebounding notably from 3.4% in august and reaching the highest level since may; core cpi rose 2.6% year on year, up from the previous 2.4%. in response, bai xue, deputy research director at oriental jincheng, said that u.s. inflation rebounded significantly in september and the breadth of price increases expanded markedly, with energy shocks and core inflation stickiness forming a resonance. the "last mile" back to the 2% inflation target remains uneven. the inflation rebound strengthens the necessity for the federal reserve to continue raising rates within the year, but cooling employment and tighter financial conditions constrain the pace of rate hikes. the probability is rising that the fed will stay put in october and raise rates by another 25 basis points in december. 美国劳工统计局最新数据显示，美国9月cpi同比上涨3.7%，较8月的3.4%明显反弹，为5月份以来最高水平；核心cpi同比上涨2.6%，较前值2.4%回升。对此，东方金诚研究副总监白雪表示，美国9月通胀明显反弹且涨价面明显扩散，能源冲击与核心通胀黏性形成共振，通胀回归2%目标的“最后一公里”仍不平坦。通胀反弹强化了美联储年内继续加息的必要性，但就业降温与金融条件收紧对加息节奏形成制约。预计10月按兵不动、12月再加息25个基点的概率上升。 富途牛牛 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-15T10:14:41+00:00" datetime="2026-10-15T10:14:41+00:00">10-15<br>10:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:14:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Dongfang Jincheng's Bai Xue: The probability of the Fed raising rates by another 25 basis points in December is relatively high</span><span class="l-zh">东方金诚白雪：美联储12月再加息25个基点的概率较大</span></h2>
+            <p class="tp-sum"><span class="l-en">The latest data from the U.S. Bureau of Labor Statistics show that U.S. CPI rose 3.7% year on year in September, rebounding notably from 3.4% in August and reaching the highest level since May; core CPI rose 2.6% year on year, up from the previous 2.4%. In response, Bai Xue, deputy research director at Oriental Jincheng, said that U.S. inflation rebounded significantly in September and the breadth of price increases expanded markedly, with energy shocks and core inflation stickiness forming a resonance. The "last mile" back to the 2% inflation target remains uneven. The inflation rebound strengthens the necessity for the Federal Reserve to continue raising rates within the year, but cooling employment and tighter financial conditions constrain the pace of rate hikes. The probability is rising that the Fed will stay put in October and raise rates by another 25 basis points in December.</span><span class="l-zh">美国劳工统计局最新数据显示，美国9月CPI同比上涨3.7%，较8月的3.4%明显反弹，为5月份以来最高水平；核心CPI同比上涨2.6%，较前值2.4%回升。对此，东方金诚研究副总监白雪表示，美国9月通胀明显反弹且涨价面明显扩散，能源冲击与核心通胀黏性形成共振，通胀回归2%目标的“最后一公里”仍不平坦。通胀反弹强化了美联储年内继续加息的必要性，但就业降温与金融条件收紧对加息节奏形成制约。预计10月按兵不动、12月再加息25个基点的概率上升。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.eastmoney.com/a/202610153897080226.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性 pan gongsheng: intensifying geopolitical conflicts remain the biggest uncertainty for the global economy 潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性 【潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性】中国人民银行行长潘功胜15日在出席二十国集团（g20）财长和央行行长会议时表示，地缘政治冲突加剧仍是全球经济的最大不确定性。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。 [pan gongsheng: intensifying geopolitical conflicts remain the biggest uncertainty for the global economy] pboc governor pan gongsheng said on the 15th while attending the g20 finance ministers and central bank governors meeting that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. all parties should make full use of the g20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges. 【潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性】中国人民银行行长潘功胜15日在出席二十国集团（g20）财长和央行行长会议时表示，地缘政治冲突加剧仍是全球经济的最大不确定性。各方应充分用好g20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。 eastmoney pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="2026-10-15 19:21:00" datetime="2026-10-15 19:21:00">10-15<br>19:21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15 19:21:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>65</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Pan Gongsheng: Intensifying geopolitical conflicts remain the biggest uncertainty for the global economy</span><span class="l-zh">潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性</span></h2>
+            <p class="tp-sum"><span class="l-en">[Pan Gongsheng: Intensifying geopolitical conflicts remain the biggest uncertainty for the global economy] PBOC Governor Pan Gongsheng said on the 15th while attending the G20 Finance Ministers and Central Bank Governors Meeting that intensifying geopolitical conflicts remain the biggest uncertainty for the global economy. All parties should make full use of the G20 finance and financial cooperation platform, strengthen macroeconomic policy coordination, and work together to address global risks and challenges.</span><span class="l-zh">【潘功胜：地缘政治冲突加剧仍是全球经济的最大不确定性】中国人民银行行长潘功胜15日在出席二十国集团（G20）财长和央行行长会议时表示，地缘政治冲突加剧仍是全球经济的最大不确定性。各方应充分用好G20财金合作平台，强化宏观经济政策协同，携手应对全球性风险挑战。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/newstock/2026-10-15/doc-inivhyai8065469.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="茶百道突遭停牌：卷入香港证监会ipo操纵调查 chapanda suddenly suspended: caught in hong kong sfc ipo manipulation investigation 茶百道突遭停牌：卷入香港证监会ipo操纵调查    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-15" datetime="2026-10-15">10-15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">ChaPanda suddenly suspended: caught in Hong Kong SFC IPO manipulation investigation</span><span class="l-zh">茶百道突遭停牌：卷入香港证监会IPO操纵调查</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://finance.sina.com.cn/roll/2026-10-15/doc-inivhawt8208321.shtml" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="美国9月cpi同比上涨3.7% u.s. september cpi rises 3.7% year-on-year 美国9月cpi同比上涨3.7%    新浪财经股票 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-15" datetime="2026-10-15">10-15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">U.S. September CPI rises 3.7% year-on-year</span><span class="l-zh">美国9月CPI同比上涨3.7%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179437" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="天孚通信：拟以人民币1亿元-1.5亿元回购公司股份 tianfu communication: plans to repurchase company shares for rmb 100 million to 150 million 天孚通信：拟以人民币1亿元-1.5亿元回购公司股份 天孚通信公告，控股股东苏州天孚仁和投资管理有限公司提议公司以自有或自筹资金通过集中竞价交易方式回购股份，回购资金总额不低于人民币1亿元（含）且不超过人民币1.5亿元（含），回购价格上限为人民币350元/股（含）。回购股份拟全部注销并减少公司注册资本，回购期限为股东会审议通过回购方案之日起六个月内。 tianfu communication announced that controlling shareholder suzhou tianfu renhe investment management co., ltd. proposed that the company repurchase shares through centralized bidding transactions using its own funds or self-raised funds, with the total repurchase amount no less than rmb 100 million (inclusive) and no more than rmb 150 million (inclusive), and a maximum repurchase price of rmb 350 per share (inclusive). the repurchased shares are intended to be fully cancelled and reduce the company's registered capital, and the repurchase period is within six months from the date the shareholders' meeting approves the repurchase plan. 天孚通信公告，控股股东苏州天孚仁和投资管理有限公司提议公司以自有或自筹资金通过集中竞价交易方式回购股份，回购资金总额不低于人民币1亿元（含）且不超过人民币1.5亿元（含），回购价格上限为人民币350元/股（含）。回购股份拟全部注销并减少公司注册资本，回购期限为股东会审议通过回购方案之日起六个月内。 华尔街见闻 yuan yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-15T10:46:50+00:00" datetime="2026-10-15T10:46:50+00:00">10-15<br>10:46</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:46:50+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tianfu Communication: plans to repurchase company shares for RMB 100 million to 150 million</span><span class="l-zh">天孚通信：拟以人民币1亿元-1.5亿元回购公司股份</span></h2>
+            <p class="tp-sum"><span class="l-en">Tianfu Communication announced that controlling shareholder Suzhou Tianfu Renhe Investment Management Co., Ltd. proposed that the company repurchase shares through centralized bidding transactions using its own funds or self-raised funds, with the total repurchase amount no less than RMB 100 million (inclusive) and no more than RMB 150 million (inclusive), and a maximum repurchase price of RMB 350 per share (inclusive). The repurchased shares are intended to be fully cancelled and reduce the company's registered capital, and the repurchase period is within six months from the date the shareholders' meeting approves the repurchase plan.</span><span class="l-zh">天孚通信公告，控股股东苏州天孚仁和投资管理有限公司提议公司以自有或自筹资金通过集中竞价交易方式回购股份，回购资金总额不低于人民币1亿元（含）且不超过人民币1.5亿元（含），回购价格上限为人民币350元/股（含）。回购股份拟全部注销并减少公司注册资本，回购期限为股东会审议通过回购方案之日起六个月内。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179403" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="新易盛：控股股东、实际控制人、董事长高光荣提议以人民币8亿元至10亿元回购股份 eoptolink: controlling shareholder, actual controller, and chairman gao guangrong proposes repurchasing shares for rmb 800 million to 1 billion 新易盛：控股股东、实际控制人、董事长高光荣提议以人民币8亿元至10亿元回购股份 新易盛：控股股东、实际控制人、董事长高光荣提议公司以集中竞价交易方式回购股份，回购资金总额不低于8亿元（含）且不超过10亿元（含），价格不高于董事会审议通过回购方案决议前30个交易日公司股票交易均价的150%，用于股权激励计划或员工持股计划，回购期限为自董事会审议通过回购方案之日起十二个月内。 eoptolink: controlling shareholder, actual controller and chairman gao guangrong proposed that the company repurchase shares through centralized bidding transactions, with the total repurchase amount no less than rmb 800 million (inclusive) and no more than rmb 1 billion (inclusive), at a price no higher than 150% of the average trading price of the company's shares in the 30 trading days before the board resolution approving the repurchase plan, for use in an equity incentive plan or employee stock ownership plan, with the repurchase period within twelve months from the date the board approves the repurchase plan. 新易盛：控股股东、实际控制人、董事长高光荣提议公司以集中竞价交易方式回购股份，回购资金总额不低于8亿元（含）且不超过10亿元（含），价格不高于董事会审议通过回购方案决议前30个交易日公司股票交易均价的150%，用于股权激励计划或员工持股计划，回购期限为自董事会审议通过回购方案之日起十二个月内。 华尔街见闻 yuan yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-15T10:20:30+00:00" datetime="2026-10-15T10:20:30+00:00">10-15<br>10:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:20:30+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Eoptolink: Controlling shareholder, actual controller, and Chairman Gao Guangrong proposes repurchasing shares for RMB 800 million to 1 billion</span><span class="l-zh">新易盛：控股股东、实际控制人、董事长高光荣提议以人民币8亿元至10亿元回购股份</span></h2>
+            <p class="tp-sum"><span class="l-en">Eoptolink: Controlling shareholder, actual controller and chairman Gao Guangrong proposed that the company repurchase shares through centralized bidding transactions, with the total repurchase amount no less than RMB 800 million (inclusive) and no more than RMB 1 billion (inclusive), at a price no higher than 150% of the average trading price of the company's shares in the 30 trading days before the board resolution approving the repurchase plan, for use in an equity incentive plan or employee stock ownership plan, with the repurchase period within twelve months from the date the board approves the repurchase plan.</span><span class="l-zh">新易盛：控股股东、实际控制人、董事长高光荣提议公司以集中竞价交易方式回购股份，回购资金总额不低于8亿元（含）且不超过10亿元（含），价格不高于董事会审议通过回购方案决议前30个交易日公司股票交易均价的150%，用于股权激励计划或员工持股计划，回购期限为自董事会审议通过回购方案之日起十二个月内。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179386" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景 jpmorgan said it maintains its baseline target for the csi 300 index at 5,200 points by the end of 2026, as the market is optimistic about corporate earnings growth prospects 摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景 摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景。 jpmorgan said it maintained its base-case target for the csi 300 index at 5,200 by the end of 2026, as the market is optimistic about corporate earnings growth prospects. 摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景。 华尔街见闻 markets equity market 股票市场 510300.ss ashr">
+          <time class="tp-when" data-t="2026-10-15T10:01:56+00:00" datetime="2026-10-15T10:01:56+00:00">10-15<br>10:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:01:56+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">JPMorgan said it maintains its baseline target for the CSI 300 Index at 5,200 points by the end of 2026, as the market is optimistic about corporate earnings growth prospects</span><span class="l-zh">摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景</span></h2>
+            <p class="tp-sum"><span class="l-en">JPMorgan said it maintained its base-case target for the CSI 300 Index at 5,200 by the end of 2026, as the market is optimistic about corporate earnings growth prospects.</span><span class="l-zh">摩根大通称，维持沪深300指数2026年底基准目标价5200点不变，因为市场看好企业盈利增长前景。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">ASHR</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179354" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="兆易创新：10月15日回购14.52万股a股股份 gigadevice: repurchased 145,200 a-shares on october 15 兆易创新：10月15日回购14.52万股a股股份 兆易创新公告称，公司于2026年10月15日通过上海证券交易所回购a股股份145,200股，占公司现有已发行股份（不含库存股）的0.02%，每股回购价区间为271.43元-281.29元，回购总金额为4003.43万元，所回购股份拟全部注销。截至2026年10月15日，公司已发行股份总数为670,718,327股，库存股数量为0。 gigadevice announced that on october 15, 2026, the company repurchased 145,200 a-shares through the shanghai stock exchange, accounting for 0.02% of the company's existing issued shares (excluding treasury shares), at a repurchase price range of rmb 271.43 to rmb 281.29 per share, with a total repurchase amount of rmb 40.0343 million. the repurchased shares are intended to be fully cancelled. as of october 15, 2026, the company's total issued shares were 670,718,327, and the number of treasury shares was 0. 兆易创新公告称，公司于2026年10月15日通过上海证券交易所回购a股股份145,200股，占公司现有已发行股份（不含库存股）的0.02%，每股回购价区间为271.43元-281.29元，回购总金额为4003.43万元，所回购股份拟全部注销。截至2026年10月15日，公司已发行股份总数为670,718,327股，库存股数量为0。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-15T09:18:27+00:00" datetime="2026-10-15T09:18:27+00:00">10-15<br>09:18</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T09:18:27+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">GigaDevice: repurchased 145,200 A-shares on October 15</span><span class="l-zh">兆易创新：10月15日回购14.52万股A股股份</span></h2>
+            <p class="tp-sum"><span class="l-en">GigaDevice announced that on October 15, 2026, the company repurchased 145,200 A-shares through the Shanghai Stock Exchange, accounting for 0.02% of the company's existing issued shares (excluding treasury shares), at a repurchase price range of RMB 271.43 to RMB 281.29 per share, with a total repurchase amount of RMB 40.0343 million. The repurchased shares are intended to be fully cancelled. As of October 15, 2026, the company's total issued shares were 670,718,327, and the number of treasury shares was 0.</span><span class="l-zh">兆易创新公告称，公司于2026年10月15日通过上海证券交易所回购A股股份145,200股，占公司现有已发行股份（不含库存股）的0.02%，每股回购价区间为271.43元-281.29元，回购总金额为4003.43万元，所回购股份拟全部注销。截至2026年10月15日，公司已发行股份总数为670,718,327股，库存股数量为0。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-15/doc-inivfmzh1298008.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="北向资金三季度调仓 银行、医药板块持仓市值增幅显著 northbound funds adjust positions in q3; market value of holdings in banking and pharmaceutical sectors increases significantly 北向资金三季度调仓 银行、医药板块持仓市值增幅显著    新浪财经股票 markets equity market 股票市场 512800.ss">
+          <time class="tp-when" data-t="2026-10-15" datetime="2026-10-15">10-15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Northbound funds adjust positions in Q3; market value of holdings in banking and pharmaceutical sectors increases significantly</span><span class="l-zh">北向资金三季度调仓 银行、医药板块持仓市值增幅显著</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179441" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="宁德时代：购回68.95万股a股，耗资1.92亿元 catl: repurchases 689,500 a-shares for rmb 192 million 宁德时代：购回68.95万股a股，耗资1.92亿元 宁德时代公告，2026年10月15日于深圳证券交易所购回a股68.95万股，每股购回价介乎人民币277.98元至280元，付出价格总额人民币1.92亿元。 catl announced that on october 15, 2026, it repurchased 689,500 a-shares on the shenzhen stock exchange at a repurchase price of between rmb 277.98 and rmb 280 per share, with a total payment of rmb 192 million. 宁德时代公告，2026年10月15日于深圳证券交易所购回a股68.95万股，每股购回价介乎人民币277.98元至280元，付出价格总额人民币1.92亿元。 华尔街见闻 markets yuan equity market 股票市场 yuan & fx 人民币与汇率 cny 512880.ss">
+          <time class="tp-when" data-t="2026-10-15T10:47:54+00:00" datetime="2026-10-15T10:47:54+00:00">10-15<br>10:47</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:47:54+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CATL: Repurchases 689,500 A-shares for RMB 192 million</span><span class="l-zh">宁德时代：购回68.95万股A股，耗资1.92亿元</span></h2>
+            <p class="tp-sum"><span class="l-en">CATL announced that on October 15, 2026, it repurchased 689,500 A-shares on the Shenzhen Stock Exchange at a repurchase price of between RMB 277.98 and RMB 280 per share, with a total payment of RMB 192 million.</span><span class="l-zh">宁德时代公告，2026年10月15日于深圳证券交易所购回A股68.95万股，每股购回价介乎人民币277.98元至280元，付出价格总额人民币1.92亿元。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.futunn.com/flash/1001249839/wens-group-chairman-proposes-share-repurchase-totaling-no-less-than" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="温氏股份：董事长提议拟以不低于人民币5000万元（含）且不超过人民币1亿元（含）回购公司股份 wens foodstuff group: chairman proposes share repurchase of no less than rmb 50 million (inclusive) and no more than rmb 100 million (inclusive) 温氏股份：董事长提议拟以不低于人民币5000万元（含）且不超过人民币1亿元（含）回购公司股份 温氏股份公告，公司实际控制人之一暨董事长温志芬于2026年10月15日提议公司以自有资金或自筹资金通过集中竞价方式回购a股，资金总额不低于人民币5000万元（含）且不超过人民币1亿元（含），回购价格不高于董事会审议通过回购股份方案决议前30个交易日公司股票交易均价的150%，回购股份用于实施股权激励。董事会将尽快研究并制定回购方案，具体以董事会审议通过的方案为准。 wens foodstuff group announced that wen zhifen, one of the company's actual controllers and chairman, proposed on october 15, 2026 that the company repurchase a-shares through centralized bidding using its own funds or self-raised funds, with the total amount no less than rmb 50 million (inclusive) and no more than rmb 100 million (inclusive), and the repurchase price no higher than 150% of the average trading price of the company's shares in the 30 trading days before the board resolution approving the share repurchase plan. the repurchased shares will be used to implement equity incentives. the board will study and formulate the repurchase plan as soon as possible, subject to the plan approved by the board. 温氏股份公告，公司实际控制人之一暨董事长温志芬于2026年10月15日提议公司以自有资金或自筹资金通过集中竞价方式回购a股，资金总额不低于人民币5000万元（含）且不超过人民币1亿元（含），回购价格不高于董事会审议通过回购股份方案决议前30个交易日公司股票交易均价的150%，回购股份用于实施股权激励。董事会将尽快研究并制定回购方案，具体以董事会审议通过的方案为准。 富途牛牛 markets yuan equity market 股票市场 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-15T10:36:42+00:00" datetime="2026-10-15T10:36:42+00:00">10-15<br>10:36</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T10:36:42+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wens Foodstuff Group: Chairman proposes share repurchase of no less than RMB 50 million (inclusive) and no more than RMB 100 million (inclusive)</span><span class="l-zh">温氏股份：董事长提议拟以不低于人民币5000万元（含）且不超过人民币1亿元（含）回购公司股份</span></h2>
+            <p class="tp-sum"><span class="l-en">Wens Foodstuff Group announced that Wen Zhifen, one of the company's actual controllers and chairman, proposed on October 15, 2026 that the company repurchase A-shares through centralized bidding using its own funds or self-raised funds, with the total amount no less than RMB 50 million (inclusive) and no more than RMB 100 million (inclusive), and the repurchase price no higher than 150% of the average trading price of the company's shares in the 30 trading days before the board resolution approving the share repurchase plan. The repurchased shares will be used to implement equity incentives. The board will study and formulate the repurchase plan as soon as possible, subject to the plan approved by the board.</span><span class="l-zh">温氏股份公告，公司实际控制人之一暨董事长温志芬于2026年10月15日提议公司以自有资金或自筹资金通过集中竞价方式回购A股，资金总额不低于人民币5000万元（含）且不超过人民币1亿元（含），回购价格不高于董事会审议通过回购股份方案决议前30个交易日公司股票交易均价的150%，回购股份用于实施股权激励。董事会将尽快研究并制定回购方案，具体以董事会审议通过的方案为准。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://news.futunn.com/flash/1001245754/luxshare-precision-as-of-october-15-2026-the-company-had" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="立讯精密：截至2026年10月15日，已回购1766.54万股，金额10亿元 luxshare precision: as of october 15, 2026, has repurchased 17.6654 million shares for rmb 1 billion 立讯精密：截至2026年10月15日，已回购1766.54万股，金额10亿元 立讯精密公告，截至2026年10月15日，公司通过股份回购专用证券账户以集中竞价方式回购a股股份1766.54万股，占公司总股本的比例为0.23%，占公司a股总股本的比例为0.24%，最高成交价65元/股，最低成交价50.14元/股，成交总金额10亿元（不含交易费用）。回购价格未超过86.66元/股，资金来源为公司自筹资金（含股票回购专项贷款资金等）。回购股份用于后期实施股权激励计划或员工持股计划。因回购期间实施权益分派，回购价格上限由86.96元/股先后调整为86.8元/股、86.66元/股。 luxshare precision announced that as of october 15, 2026, the company repurchased 17.6654 million a-shares through its dedicated securities account for share repurchases via centralized bidding, representing 0.23% of the company's total share capital and 0.24% of the company's total a-share capital, at a maximum transaction price of rmb 65 per share and a minimum transaction price of rmb 50.14 per share, with a total transaction amount of rmb 1 billion (excluding transaction fees). the repurchase price did not exceed rmb 86.66 per share, and the source of funds was the company's self-raised funds (including funds from special loans for share repurchases, etc.). the repurchased shares are to be used for implementing an equity incentive plan or employee stock ownership plan at a later stage. due to the implementation of equity distribution during the repurchase period, the upper limit of the repurchase price was adjusted from rmb 86.96 per share to rmb 86.8 per share and then to rmb 86.66 per share. 立讯精密公告，截至2026年10月15日，公司通过股份回购专用证券账户以集中竞价方式回购a股股份1766.54万股，占公司总股本的比例为0.23%，占公司a股总股本的比例为0.24%，最高成交价65元/股，最低成交价50.14元/股，成交总金额10亿元（不含交易费用）。回购价格未超过86.66元/股，资金来源为公司自筹资金（含股票回购专项贷款资金等）。回购股份用于后期实施股权激励计划或员工持股计划。因回购期间实施权益分派，回购价格上限由86.96元/股先后调整为86.8元/股、86.66元/股。 富途牛牛 credit_impulse markets credit & financing 信贷与社融 equity market 股票市场 512800.ss 512880.ss">
+          <time class="tp-when" data-t="2026-10-15T09:59:50+00:00" datetime="2026-10-15T09:59:50+00:00">10-15<br>09:59</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T09:59:50+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Luxshare Precision: As of October 15, 2026, has repurchased 17.6654 million shares for RMB 1 billion</span><span class="l-zh">立讯精密：截至2026年10月15日，已回购1766.54万股，金额10亿元</span></h2>
+            <p class="tp-sum"><span class="l-en">Luxshare Precision announced that as of October 15, 2026, the company repurchased 17.6654 million A-shares through its dedicated securities account for share repurchases via centralized bidding, representing 0.23% of the company's total share capital and 0.24% of the company's total A-share capital, at a maximum transaction price of RMB 65 per share and a minimum transaction price of RMB 50.14 per share, with a total transaction amount of RMB 1 billion (excluding transaction fees). The repurchase price did not exceed RMB 86.66 per share, and the source of funds was the company's self-raised funds (including funds from special loans for share repurchases, etc.). The repurchased shares are to be used for implementing an equity incentive plan or employee stock ownership plan at a later stage. Due to the implementation of equity distribution during the repurchase period, the upper limit of the repurchase price was adjusted from RMB 86.96 per share to RMB 86.8 per share and then to RMB 86.66 per share.</span><span class="l-zh">立讯精密公告，截至2026年10月15日，公司通过股份回购专用证券账户以集中竞价方式回购A股股份1766.54万股，占公司总股本的比例为0.23%，占公司A股总股本的比例为0.24%，最高成交价65元/股，最低成交价50.14元/股，成交总金额10亿元（不含交易费用）。回购价格未超过86.66元/股，资金来源为公司自筹资金（含股票回购专项贷款资金等）。回购股份用于后期实施股权激励计划或员工持股计划。因回购期间实施权益分派，回购价格上限由86.96元/股先后调整为86.8元/股、86.66元/股。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3179465" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="陈吉宁会见新加坡丰益国际董事局主席兼ceo郭孔丰 chen jining meets with kuok khoon hong, chairman and ceo of singapore's wilmar international 陈吉宁会见新加坡丰益国际董事局主席兼ceo郭孔丰 上海市委书记陈吉宁今天会见了新加坡丰益国际集团董事局主席兼首席执行官郭孔丰一行。陈吉宁说，刚刚召开的全国卫生与健康大会对健康中国作出系统部署，我们要树立和践行大食物观，为丰益国际等食品行业龙头企业提供新的发展机遇。欢迎把握中国市场消费结构变化和消费需求多样化趋势，持续加大在沪研发创新和业务布局力度，在健康食品、医疗服务、养老护理以及人才培养等方面深化对接合作。我们将持续营造市场化、法治化、国际化一流营商环境，常态化听取企业意见建议，提供优质高效服务，携手实现互利共赢发展。 shanghai party secretary chen jining met today with a delegation led by kuok khoon hong, chairman of the board and ceo of singapore's wilmar international. chen jining said that the recently concluded national health conference made systematic arrangements for healthy china, and that we should establish and practice the big food concept, providing new development opportunities for leading food industry enterprises such as wilmar international. he welcomed the company to grasp the trends of changing consumption structure and diversified consumer demand in the chinese market, continue to increase its r&d, innovation and business layout in shanghai, and deepen alignment and cooperation in areas such as health foods, medical services, elderly care and talent cultivation. we will continue to foster a market-oriented, law-based and internationalized first-class business environment, regularly listen to enterprises' opinions and suggestions, provide high-quality and efficient services, and work together to achieve mutually beneficial and win-win development. 上海市委书记陈吉宁今天会见了新加坡丰益国际集团董事局主席兼首席执行官郭孔丰一行。陈吉宁说，刚刚召开的全国卫生与健康大会对健康中国作出系统部署，我们要树立和践行大食物观，为丰益国际等食品行业龙头企业提供新的发展机遇。欢迎把握中国市场消费结构变化和消费需求多样化趋势，持续加大在沪研发创新和业务布局力度，在健康食品、医疗服务、养老护理以及人才培养等方面深化对接合作。我们将持续营造市场化、法治化、国际化一流营商环境，常态化听取企业意见建议，提供优质高效服务，携手实现互利共赢发展。 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-15T11:25:56+00:00" datetime="2026-10-15T11:25:56+00:00">10-15<br>11:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-15T11:25:56+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Chen Jining meets with Kuok Khoon Hong, Chairman and CEO of Singapore's Wilmar International</span><span class="l-zh">陈吉宁会见新加坡丰益国际董事局主席兼CEO郭孔丰</span></h2>
+            <p class="tp-sum"><span class="l-en">Shanghai Party Secretary Chen Jining met today with a delegation led by Kuok Khoon Hong, Chairman of the Board and CEO of Singapore's Wilmar International. Chen Jining said that the recently concluded National Health Conference made systematic arrangements for Healthy China, and that we should establish and practice the Big Food concept, providing new development opportunities for leading food industry enterprises such as Wilmar International. He welcomed the company to grasp the trends of changing consumption structure and diversified consumer demand in the Chinese market, continue to increase its R&D, innovation and business layout in Shanghai, and deepen alignment and cooperation in areas such as health foods, medical services, elderly care and talent cultivation. We will continue to foster a market-oriented, law-based and internationalized first-class business environment, regularly listen to enterprises' opinions and suggestions, provide high-quality and efficient services, and work together to achieve mutually beneficial and win-win development.</span><span class="l-zh">上海市委书记陈吉宁今天会见了新加坡丰益国际集团董事局主席兼首席执行官郭孔丰一行。陈吉宁说，刚刚召开的全国卫生与健康大会对健康中国作出系统部署，我们要树立和践行大食物观，为丰益国际等食品行业龙头企业提供新的发展机遇。欢迎把握中国市场消费结构变化和消费需求多样化趋势，持续加大在沪研发创新和业务布局力度，在健康食品、医疗服务、养老护理以及人才培养等方面深化对接合作。我们将持续营造市场化、法治化、国际化一流营商环境，常态化听取企业意见建议，提供优质高效服务，携手实现互利共赢发展。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3370889/how-jardine-mathesons-street-shop-sale-reflects-hong-kong-retail-propertys-struggles?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="how jardine matheson’s street-shop sale reflects hong kong retail property’s struggles  怡和集团出售街铺如何反映香港零售地产的困境 amid hong kong’s commercial property downturn, british conglomerate jardine matheson has sold a street shop in causeway bay for hk$80 million (us$10.2 million) after holding it for more than 50 years, accepting a price hk$10 million below its earlier valuation.
+the property, a ground-floor shop in h&s building at 36 leighton road, with a gross floor area of about 11,727 square feet, was acquired by uni investment development, according to land registry records.
+jardine matheson appointed an...  在香港商业地产低迷之际，英国企业集团怡和集团以8000万港元（1020万美元）出售了铜锣湾一处街铺，持有该铺位超过50年，成交价比此前估值低1000万港元。
+该物业为礼顿道36号恒生大厦地下商铺，总楼面面积 scmp - business property consumer property 房地产 consumer 消费 512200.ss">
+          <time class="tp-when" data-t="2026-10-14T23:00:06+00:00" datetime="2026-10-14T23:00:06+00:00">10-14<br>23:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T23:00:06+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">How Jardine Matheson’s street-shop sale reflects Hong Kong retail property’s struggles</span><span class="l-zh">怡和集团出售街铺如何反映香港零售地产的困境</span></h2>
+            <p class="tp-sum"><span class="l-en">Amid Hong Kong’s commercial property downturn, British conglomerate Jardine Matheson has sold a street shop in Causeway Bay for HK$80 million (US$10.2 million) after holding it for more than 50 years, accepting a price HK$10 million below its earlier valuation.
+The property, a ground-floor shop in H&S Building at 36 Leighton Road, with a gross floor area of about 11,727 square feet, was acquired by Uni Investment Development, according to Land Registry records.
+Jardine Matheson appointed an...</span><span class="l-zh">在香港商业地产低迷之际，英国企业集团怡和集团以8000万港元（1020万美元）出售了铜锣湾一处街铺，持有该铺位超过50年，成交价比此前估值低1000万港元。
+该物业为礼顿道36号恒生大厦地下商铺，总楼面面积</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">4</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">4</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">GDP</span><span class="l-en">GDP (quarterly)</span><span class="l-zh">GDP（季度）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×8</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×7</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×4</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
