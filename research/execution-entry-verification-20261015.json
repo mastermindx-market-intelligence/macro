@@ -1,0 +1,22 @@
+{
+  "schema": "mastermind.execution_entry_verification.v1",
+  "base_sha": "39d00535d992abc7b707b5b53695cbef0ae907ee",
+  "tests": 132,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": "84.937",
+  "source_sha256": {
+    "AGENTS.md": "3a81030742e1262b4f6f8c8b17f4dee7cc1d420ed2a635cdbbb90cba3587f7eb",
+    "CLAUDE.md": "5784c3b3cfd0a43013adf0bfc302c30d8827b22fa91454ba81b4b0b9ce9fbed6",
+    ".github/ci/legacy-jobs.yml": "ae8bc52dc2ec13ffbd4ddec7f34f106ac47a34c9f1a32e600472b64f2a541f1a",
+    "tests/test_execution_workspace_entry_contract.py": "5871f6e19f6399198ab405ac72bedc84826e5fcde06942adf05b4464fb8056c2"
+  },
+  "review_subject": "d63a5ad5bbe699af3ecdc57a2cb2e463f612b018",
+  "review_result_sha256": "2a654413a9c52131db9613d6b4a03a36da5e2b2a2b06701283159f51e692341f",
+  "review_findings": {
+    "P1_ci_execution_owner": "reproduced_and_repaired_with_regression",
+    "P2_adjacent_workspace_mandate": "open_correcting_edit_platform_refused"
+  },
+  "release_qualified": false
+}
