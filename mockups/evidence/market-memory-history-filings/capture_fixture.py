@@ -24,7 +24,7 @@ from tests.test_market_memory_history_macro import packet, resign
 
 def main():
     output = Path(__file__).resolve().parent
-    build = ROOT / '.test-tmp' / 'canonical-visual-filings-fixture'
+    build = ROOT / '.test-tmp' / 'canonical-visual-filings-zh-fixture'
     if build.exists() or (output / 'p0_evidence.json').exists():
         raise SystemExit('Original capture exists; preserve and reconcile it before any recapture.')
     build.mkdir()

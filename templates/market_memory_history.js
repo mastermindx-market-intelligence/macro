@@ -76,9 +76,9 @@
     const range=filings.metadata.source_date_range;
     const outside=!range.first||day<range.first||day>range.last;
     $('mmh-filings-status').textContent=all.length?
-      text(`${all.length} retained filings · showing ${filingsOffset+1}–${filingsOffset+page.length}.`,`${all.length} 条保留申报 · 显示第 ${filingsOffset+1}–${filingsOffset+page.length} 条。`):
-      outside?text(`No retained filing coverage for this date. Available source: ${range.first||'—'} to ${range.last||'—'}.`,`该日期没有保留的申报覆盖。来源范围：${range.first||'—'} 至 ${range.last||'—'}。`):
-      text('No retained filing record on this exact date. This does not mean no event occurred.','该确切日期没有保留的申报记录，并不意味着没有事件发生。');
+      text(`${all.length} retained filings · showing ${filingsOffset+1}–${filingsOffset+page.length}.`,`${all.length} 条保留披露 · 显示第 ${filingsOffset+1}–${filingsOffset+page.length} 条。`):
+      outside?text(`No retained filing coverage for this date. Available source: ${range.first||'—'} to ${range.last||'—'}.`,`该日期没有保留的披露覆盖。来源范围：${range.first||'—'} 至 ${range.last||'—'}。`):
+      text('No retained filing record on this exact date. This does not mean no event occurred.','该确切日期没有保留的披露记录，并不意味着没有事件发生。');
     const body=$('mmh-filings-table').tBodies[0];body.replaceChildren();
     for(const values of page){const row=Object.fromEntries(filings.columns.map((c,i)=>[c,values[i]]));const tr=document.createElement('tr');
       for(const value of [row.ticker_source_label,`${row.form} · ${row.filing_key}`,row.report_date,row.acceptance_datetime_utc]){
@@ -87,8 +87,8 @@
     }
     $('mmh-filings-prev').disabled=filingsOffset===0;
     $('mmh-filings-next').disabled=filingsOffset+page.length>=all.length;
-    $('mmh-filings-prev').textContent=text('Previous filings','上一页申报');
-    $('mmh-filings-next').textContent=text('Next filings','下一页申报');
+    $('mmh-filings-prev').textContent=text('Previous filings','上一页披露');
+    $('mmh-filings-next').textContent=text('Next filings','下一页披露');
   }
   function render() {
     if(!corpus)return;
