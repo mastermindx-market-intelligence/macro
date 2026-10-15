@@ -1,21 +1,21 @@
 {
-  "checked_at": "2026-10-15T10:04:13+00:00",
+  "checked_at": "2026-10-15T11:32:40+00:00",
   "expected_session": "2026-10-15",
   "stores": {
     "cache": {
-      "asof": "2026-10-14",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-15",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-10-14",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-15",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "standouts": {
@@ -27,17 +27,17 @@
       "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-10-14",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-10-15",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-10-13",
-      "lag_days": 2,
-      "lag_sessions": 2,
+      "asof": "2026-10-14",
+      "lag_days": 1,
+      "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true,
@@ -47,16 +47,16 @@
   "coherence": {
     "ok": true,
     "standouts_asof": "2026-10-14",
-    "regime_date": "2026-10-14",
-    "gap_sessions": 0,
+    "regime_date": "2026-10-15",
+    "gap_sessions": 1,
     "calendar_verified": true,
     "data_state": "current",
-    "note": null
+    "note": "regime read is one session behind the stock scan \u2014 catches up after the next Asia close"
   },
   "regression": {
     "ok": true,
     "prev_cache_max": "2026-10-14",
-    "curr_cache_max": "2026-10-14",
+    "curr_cache_max": "2026-10-15",
     "note": null
   },
   "verdict": "ok",
