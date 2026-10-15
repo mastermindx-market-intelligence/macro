@@ -59,7 +59,7 @@ affects:
   - "E3-FMT"
   - "TFG-1"
   - "E3-C"
-confidence: high for source label/refusal, pending independent review for method requalification
+confidence: high
 reversibility: costly
 decided_by: chairman-assigned-source-owner-session
 decided_at: 2026-10-14
