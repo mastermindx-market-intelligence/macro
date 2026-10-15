@@ -156,3 +156,63 @@ test('Hong Kong no-live view discloses insufficient daily return coverage',()=>{
  assert.match(d.en,/Daily returns unavailable.*0\/100.*2026-10-13/);
  assert.match(d.zh,/日线涨跌不可用/);
 });
+
+
+function postCloseDescriptor(meta, asof='2026-10-14') {
+ const raw=source();
+ const a=raw.indexOf('  function chinaLiveDescriptor(');
+ const b=raw.indexOf('  function sectorLabels(',a);
+ assert.ok(a>=0&&b>a,'shared China descriptor source region absent');
+ const ctx={
+  Date,Math,Number,Object,isFinite,
+  chinaLiveMeta:()=>meta,dailyIntegrityDescriptor:()=>null,
+ };
+ vm.createContext(ctx);
+ vm.runInContext(raw.slice(a,b)+'\nglobalThis.describe=chinaLiveDescriptor;',ctx);
+ return ctx.describe({market:'china',map_type:'stocks',asof});
+}
+
+test('post-close source on a prior baseline cannot pretend to be a settled EOD',()=>{
+ const meta={
+  usable:true,phase:'closed',source:'tencent',fallback:true,
+  source_observed_at:'2026-10-15T07:00:00+00:00',
+  baseline_asof:'2026-10-14',session_date:'2026-10-15',
+  requested:100,resolved:98,breadth:{n:98,adv:10,dec:88,flat:0},
+ };
+ const d=postCloseDescriptor(meta);
+ assert.equal(d.state,'closed');
+ assert.match(d.en,/Provisional post-close · not yet settled/);
+ assert.match(d.zh,/盘后临时行情 · 尚未确认收盘/);
+ assert.match(d.en,/fallback feed.*15:00 CST.*98\/100/);
+ assert.doesNotMatch(d.en,/Daily close|Market closed/);
+});
+
+test('current validated daily baseline returns the normal closed label',()=>{
+ const meta={
+  usable:true,phase:'closed',source:'tushare-rt-k',fallback:false,
+  source_observed_at:'2026-10-15T07:00:00+00:00',
+  baseline_asof:'2026-10-15',session_date:'2026-10-15',
+  requested:100,resolved:100,breadth:{n:100,adv:20,dec:80,flat:0},
+ };
+ const d=postCloseDescriptor(meta,'2026-10-15');
+ assert.equal(d.state,'closed');
+ assert.match(d.en,/Market closed.*15:00 CST.*100\/100/);
+ assert.match(d.zh,/已收盘/);
+ assert.doesNotMatch(d.en,/Provisional|fallback feed/);
+});
+
+test('unverified post-close quote heartbeat declares pending rather than settled',()=>{
+ const meta={
+  usable:false,phase:'closed',source:'tencent',fallback:true,
+  source_observed_at:null,baseline_asof:'2026-10-14',
+  session_date:'2026-10-15',requested:100,resolved:0,
+  breadth:{n:0,adv:0,dec:0,flat:0},
+ };
+ const d=postCloseDescriptor(meta);
+ assert.equal(d.state,'degraded');
+ assert.equal(d.dot,'degraded');
+ assert.match(d.en,/Post-close pending · quotes unverified · 0\/100/);
+ assert.match(d.en,/Last verified daily 2026-10-14/);
+ assert.match(d.zh,/收盘数据待确认 · 行情未经验证/);
+ assert.doesNotMatch(d.en,/Market closed|Daily close/);
+});

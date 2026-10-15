@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import copy
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 import math
 import re
 from typing import Any, Mapping
@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from engine.prophet_live import cn_clock
+from lib import cn_calendar
 
 SCHEMA = "china_heatmap_live.v1"
 MIN_COVERAGE = 0.95
@@ -413,6 +414,36 @@ def _source_contract(source: str | None, fallback: bool, quote_count: int) -> No
         raise LiveContractError("Tencent source must disclose fallback")
 
 
+def provisional_post_close_allowed(
+    baseline: BaselineHeatmap, phase: str, now: datetime,
+) -> bool:
+    """Display-only last traded close when the settled-close publisher lags.
+
+    After 17:00 CST the completed-session calendar demands today's verified
+    daily bar. The Asia collector/renderer may not have published that bar yet.
+    Permit ONLY the previous actual trading-day heatmap as membership/basis
+    with today's actual 15:00 source-stamped trades. This is PROVISIONAL,
+    never a statement that the canonical settled source is verified.
+
+    Exclude weekends/holidays, the next calendar day, two-session-old maps,
+    and trading phases. Source clock, per-name freshness and >=95% still apply.
+    """
+    instant = _utc(now)
+    local = instant.astimezone(CST)
+    session = local.date()
+    if (phase not in {"post_close", "closed"}
+        or local.time() < cn_clock.SESSION_CLOSE
+        or not cn_calendar.is_session(session)):
+        return False
+    expected = cn_clock.last_completed_session(instant)
+    if expected != session.isoformat():
+        return False
+    prior = cn_calendar.last_session_on_or_before(
+        session - timedelta(days=1)
+    )
+    return baseline.asof == prior.isoformat()
+
+
 def build_live_payload(
     baseline: BaselineHeatmap,
     quotes: Mapping[str, Mapping[str, Any]],
@@ -427,7 +458,8 @@ def build_live_payload(
         raise LiveContractError("unknown mainland phase")
     now_utc = _utc(now)
     completed = cn_clock.last_completed_session(now_utc)
-    if baseline.asof != completed:
+    if (baseline.asof != completed
+        and not provisional_post_close_allowed(baseline, phase, now_utc)):
         raise LiveContractError("daily heatmap is not the completed-session baseline")
     session = cn_clock.session_date(now_utc).isoformat()
     if baseline.asof > session:

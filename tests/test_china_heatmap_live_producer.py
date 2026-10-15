@@ -430,3 +430,52 @@ def test_tencent_snapshot_refuses_unbounded_recovery_or_unadmitted_keys(monkeypa
     # Duplicate/bogus symbols cannot multiply bounded attempts.
     assert len(calls) == 2
     assert calls[1] == ["600519.SS"]
+
+
+def test_pending_settled_close_uses_one_bounded_poll_lane_then_yields_to_daily(
+    tmp_path,
+) -> None:
+    from datetime import timedelta
+    at_1705 = datetime(2026, 10, 15, 9, 5, tzinfo=timezone.utc)
+    traded_at = datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc)
+    base = tmp_path / "china_heatmap.json"
+    out = tmp_path / "live/china_heatmap.json"
+    base.write_text(json.dumps(baseline_payload("2026-10-14")))
+    calls = []
+    def qualified(_baseline):
+        calls.append(True)
+        return live_quotes(traded_at)
+    publisher = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=qualified,
+        tencent_fetch=lambda _: pytest.fail("healthy primary never needs vendor fallback"),
+    )
+    assert producer.should_poll_pending_close(
+        contract.validate_baseline(baseline_payload("2026-10-14")),
+        at_1705, "closed",
+    )
+    first = publisher.step(at_1705, require_usable=True)
+    assert first["usable"] is True and first["baseline_asof"] == "2026-10-14"
+    assert first["session_date"] == "2026-10-15"
+    second = publisher.step(at_1705 + timedelta(seconds=60), require_usable=True)
+    assert second["source_observed_at"] == first["source_observed_at"]
+    assert len(calls) == 1  # no second full-universe request after one minute
+    publisher.step(at_1705 + timedelta(seconds=121), require_usable=True)
+    assert len(calls) == 2  # one new poll after two minutes
+
+    base.write_text(json.dumps(baseline_payload("2026-10-15")))
+    after_publish = publisher.step(at_1705 + timedelta(seconds=122))
+    assert after_publish["baseline_asof"] == "2026-10-15"
+    assert not after_publish["usable"] and after_publish["source"] is None
+    assert len(calls) == 2
+    assert json.loads(out.read_text())["baseline_asof"] == "2026-10-15"
+
+
+def test_pending_settled_close_expires_and_never_polls_on_weekends() -> None:
+    baseline = contract.validate_baseline(baseline_payload("2026-10-14"))
+    for time_value in [
+        datetime(2026, 10, 15, 11, 30, tzinfo=timezone.utc),
+        datetime(2026, 10, 17, 9, 5, tzinfo=timezone.utc),
+        datetime(2026, 10, 16, 9, 5, tzinfo=timezone.utc),
+    ]:
+        assert not producer.should_poll_pending_close(baseline, time_value, "closed")

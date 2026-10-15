@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, time as clock_time, timedelta, timezone
 import json
 import logging
 import os
@@ -22,7 +22,7 @@ from collectors import tushare_client
 from engine import china_heatmap_live as contract
 from engine import live_quotes
 from engine.prophet_live import cn_clock
-from lib import config
+from lib import cn_calendar, config
 
 log = logging.getLogger("china_heatmap_live")
 
@@ -97,6 +97,29 @@ def fetch_tencent_snapshot(
     return contract.normalize_tencent_quotes(raw, baseline)
 
 
+def should_poll_pending_close(
+    baseline: contract.BaselineHeatmap, now: datetime, phase: str,
+) -> bool:
+    """Only poll existing sources after close while today's EOD is unposted.
+
+    The live producer's ordinary closed phase extends all night; fetching
+    the entire China universe every heartbeat would be unnecessary provider
+    load. During a lawful Shanghai session between 15:15 and 19:30 CST, a
+    still-previous-session baseline may instead receive a bounded, slow
+    provisional close refresh. If the official daily map advances or it is a
+    holiday/non-session, this fetch path automatically shuts off.
+    """
+    if phase != "closed":
+        return False
+    local = cn_clock.cst_clock(now)
+    today = local.date()
+    if (not cn_calendar.is_session(today)
+        or not (cn_clock.POST_CLOSE_END <= local.time() < clock_time(19, 30))):
+        return False
+    previous = cn_calendar.last_session_on_or_before(today - timedelta(days=1))
+    return baseline.asof == previous.isoformat()
+
+
 def atomic_write_payload(path: Path, payload: dict[str, Any]) -> None:
     """Atomically replace a complete public JSON artifact with mode 0644."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -147,6 +170,7 @@ class ChinaHeatmapLiveProducer:
         self._last_good_source: str | None = None
         self._last_good_fallback = False
         self._last_fallback_at: datetime | None = None
+        self._last_pending_close_poll_at: datetime | None = None
         self._stopped = False
 
     @property
@@ -191,6 +215,7 @@ class ChinaHeatmapLiveProducer:
             self._last_good_source = None
             self._last_good_fallback = False
             self._last_fallback_at = None
+            self._last_pending_close_poll_at = None
         first_load = self._baseline is None
         self._baseline = baseline
         self._baseline_signature = signature
@@ -236,7 +261,14 @@ class ChinaHeatmapLiveProducer:
         fresh_quotes: dict[str, dict[str, Any]] | None = None
         fresh_source: str | None = None
         fresh_fallback = False
-        if phase in FETCH_PHASES:
+        pending_poll = should_poll_pending_close(baseline, instant, phase)
+        if pending_poll:
+            due = (self._last_pending_close_poll_at is None
+                   or (instant - self._last_pending_close_poll_at).total_seconds() >= 120)
+            pending_poll = due
+            if due:
+                self._last_pending_close_poll_at = instant
+        if phase in FETCH_PHASES or pending_poll:
             try:
                 fresh_quotes = self.tushare_fetch(baseline)
             except Exception as exc:  # noqa: BLE001 - do not echo request-bearing errors
@@ -254,7 +286,7 @@ class ChinaHeatmapLiveProducer:
                 fresh_source = "tushare-rt-k"
             else:
                 fresh_quotes = None
-        if not fresh_quotes and phase in FETCH_PHASES:
+        if not fresh_quotes and (phase in FETCH_PHASES or pending_poll):
             fallback_due = (
                 self._last_fallback_at is None
                 or (instant - self._last_fallback_at).total_seconds() >= self.fallback_interval

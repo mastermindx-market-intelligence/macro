@@ -395,3 +395,83 @@ def test_browser_phase_bounds_are_a_projection_of_the_canonical_clock() -> None:
         "post_close": [minute(c.SESSION_CLOSE), minute(c.POST_CLOSE_END)],
         "closed": [minute(c.POST_CLOSE_END), 1440],
     }
+
+
+# ── The canonical EOD publisher can lag the real 15:00 final trade. ───────────
+
+def test_post_close_old_baseline_admits_only_todays_source_stamped_provisional_close() -> None:
+    """An observed 15:00 trade is useful while the settled daily pair lags."""
+    baseline = validate_baseline({**BASELINE, "asof": "2026-10-14"})
+    at_1705 = datetime(2026, 10, 15, 9, 5, tzinfo=timezone.utc)
+    seen = datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc)
+    assert live.cn_clock.phase(at_1705) == "closed"
+    assert live.cn_clock.last_completed_session(at_1705) == "2026-10-15"
+    assert live.provisional_post_close_allowed(baseline, "closed", at_1705)
+    quotes = {
+        "600519.SS": {
+            "price": 1412.8, "prevClose": 1398.0,
+            "changePct": (1412.8 / 1398.0 - 1) * 100,
+            "ts": int(seen.timestamp() * 1000),
+            "open": 1399.5, "high": 1418.0, "low": 1390.1,
+            "vol": 100, "amount": 10000.0,
+        },
+        "000001.SZ": {
+            "price": 11.1, "prevClose": 11.2,
+            "changePct": (11.1 / 11.2 - 1) * 100,
+            "ts": int(seen.timestamp() * 1000),
+            "open": 11.2, "high": 11.25, "low": 11.0,
+            "vol": 100, "amount": 1000.0,
+        },
+    }
+    payload = build_live_payload(
+        baseline, quotes, source="tencent", fallback=True,
+        phase="closed", now=at_1705,
+    )
+    assert payload["usable"] is True
+    assert payload["status"] == "closed"
+    assert payload["baseline_asof"] == "2026-10-14"
+    assert payload["session_date"] == "2026-10-15"
+    assert payload["source_observed_at"] == seen.isoformat()
+    assert validate_live_payload(payload, baseline, now=at_1705) == payload
+
+    # A provider heartbeat stamped 17:05 is NOT a new exchange trade. Keep
+    # the exact 15:00 source-clock bound, not wall-clock restamping.
+    for row in quotes.values():
+        row["ts"] = int(at_1705.timestamp() * 1000)
+    heartbeat = build_live_payload(
+        baseline, quotes, source="tencent", fallback=True,
+        phase="closed", now=at_1705,
+    )
+    assert not heartbeat["usable"] and heartbeat["resolved"] == 0
+
+
+@pytest.mark.parametrize("baseline_asof,phase,now", [
+    ("2026-10-13", "closed", datetime(2026, 10, 15, 9, 5, tzinfo=timezone.utc)),
+    ("2026-10-14", "closed", datetime(2026, 10, 17, 9, 5, tzinfo=timezone.utc)),
+    ("2026-10-14", "closed", datetime(2026, 10, 16, 9, 5, tzinfo=timezone.utc)),
+    ("2026-10-14", "afternoon", datetime(2026, 10, 15, 6, 30, tzinfo=timezone.utc)),
+])
+def test_post_close_provisional_never_licenses_wrong_day_or_phase(
+    baseline_asof: str, phase: str, now: datetime,
+) -> None:
+    baseline = validate_baseline({**BASELINE, "asof": baseline_asof})
+    assert not live.provisional_post_close_allowed(baseline, phase, now)
+
+
+def test_current_completed_session_baseline_does_not_need_provisional_exception() -> None:
+    baseline = validate_baseline({**BASELINE, "asof": "2026-10-15"})
+    at_1705 = datetime(2026, 10, 15, 9, 5, tzinfo=timezone.utc)
+    assert not live.provisional_post_close_allowed(baseline, "closed", at_1705)
+    quotes = {
+        "600519.SS": {
+            "price": 1412.8, "prevClose": 1398.0,
+            "changePct": (1412.8 / 1398.0 - 1) * 100,
+            "ts": int(datetime(2026, 10, 15, 7, 0, tzinfo=timezone.utc).timestamp() * 1000),
+            "open": 1399.5, "high": 1418.0, "low": 1390.1, "vol": 100, "amount": 10000.0,
+        },
+    }
+    payload = build_live_payload(
+        baseline, quotes, source="tencent", fallback=True,
+        phase="closed", now=at_1705,
+    )
+    assert payload["baseline_asof"] == payload["session_date"] == "2026-10-15"

@@ -971,6 +971,18 @@
     var fallbackZh = meta.fallback ? ' · 备用行情源' : '';
     if (!meta.usable) {
       var dailyOK = !dailyIntegrityDescriptor(data);
+      // A vendor may emit an after-hours 16:14 heartbeat without a lawful
+      // 15:00 trade time. After filtering, zero source-current quotes must
+      // never look like a completed EOD; retain the last verified daily pair.
+      var pendingClose = (meta.phase === 'post_close' || meta.phase === 'closed')
+        && meta.baseline_asof !== meta.session_date;
+      if (pendingClose) return {
+        state: 'degraded', dot: 'degraded',
+        en: 'Post-close pending · quotes unverified · ' + coverage
+          + (dailyOK ? ' · Last verified daily ' : ' · Daily unavailable ') + (data.asof || '—'),
+        zh: '收盘数据待确认 · 行情未经验证 · ' + coverage
+          + (dailyOK ? ' · 上次已验证日线 ' : ' · 日线不可用 ') + (data.asof || '—'), breadth: null
+      };
       return {
         state: 'degraded', dot: 'degraded',
         en: 'Live feed degraded · ' + coverage
@@ -982,7 +994,16 @@
     var phase = meta.phase, state = 'live', enPhase = 'Live', zhPhase = '实时';
     if (phase === 'session_break') { state = 'break'; enPhase = 'Lunch break'; zhPhase = '午间休市'; }
     else if (phase === 'closing_auction') { state = 'auction'; enPhase = 'Closing auction'; zhPhase = '收盘集合竞价'; }
-    else if (phase === 'post_close' || phase === 'closed') { state = 'closed'; enPhase = 'Market closed'; zhPhase = '已收盘'; }
+    else if (phase === 'post_close' || phase === 'closed') {
+      state = 'closed';
+      // Source-stamped 15:00 prints may precede the canonical settled-close
+      // publisher. Do NOT describe a previous-session baseline as settled.
+      // Client trusts the server-attested session/phase/coverage and keeps
+      // using the single existing live overlay. No separate quote owner.
+      var provisional = meta.baseline_asof !== meta.session_date;
+      enPhase = provisional ? 'Provisional post-close · not yet settled' : 'Market closed';
+      zhPhase = provisional ? '盘后临时行情 · 尚未确认收盘' : '已收盘';
+    }
     else if (phase === 'morning') { enPhase = 'Live morning'; zhPhase = '上午实时'; }
     else if (phase === 'afternoon') { enPhase = 'Live afternoon'; zhPhase = '下午实时'; }
     return {
