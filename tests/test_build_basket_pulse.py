@@ -1462,3 +1462,17 @@ class TestClosingComparison:
         now = datetime(2026,11,27,18,16,tzinfo=timezone.utc)
         assert bp._session_close_utc(now) == datetime(2026,11,27,18,0,tzinfo=timezone.utc)
         assert bp._et_session(now) == "post"
+
+
+
+def test_closing_source_transition_is_not_silently_stitched(tmp_path, monkeypatch):
+    from datetime import timedelta
+    helper = TestMatchedIntradayComparison()
+    close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+    def before(qs):
+        for q in qs.values(): q.update(source="polygon",basis="minute")
+    helper.build(tmp_path,monkeypatch,{"A":102,"B":99,"SPY":100},close-timedelta(minutes=15),alter=before)
+    def after(qs):
+        for q in qs.values(): q.update(source="yahoo",basis="regular",ts=_now_ms(close)+1000)
+    _, rows = helper.build(tmp_path,monkeypatch,{"A":100,"B":100,"SPY":100},close+timedelta(minutes=16),alter=after)
+    assert all(row["intraday_comparison"]["status"] == "benchmark_basis_changed" for row in rows.values())
