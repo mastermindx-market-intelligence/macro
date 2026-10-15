@@ -1,0 +1,96 @@
+{
+  "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
+  "template_sha256": "8f0e8e861dabecd5c3dc52920c8b8fb10aa000ba2d382e9abfed286ac8638b4e",
+  "cases": [
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120,
+        "scroll": 1118
+      },
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "page_errors": [],
+      "pulse_requests": 3,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "language": "en",
+      "geometry": {
+        "viewport": 1440,
+        "page": 1440,
+        "panel": 1120,
+        "scroll": 1118
+      },
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "page_errors": [],
+      "pulse_requests": 3,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "language": "en",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "page_errors": [],
+      "pulse_requests": 3,
+      "denied_text": "Sign in with access to view these observations.",
+      "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "language": "zh",
+      "geometry": {
+        "viewport": 390,
+        "page": 390,
+        "panel": 354,
+        "scroll": 352
+      },
+      "new_view_ready": true,
+      "keyboard_details": true,
+      "focus_and_open_preserved": true,
+      "denied_hides_numbers": true,
+      "stale_hides_numbers": true,
+      "page_errors": [],
+      "pulse_requests": 3,
+      "denied_text": "请使用有权限的账户登录查看。",
+      "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
+    }
+  ],
+  "screenshots": {
+    "390-dark-en-page.png": "16175647c97b931532e5c672978f139943134010818c420e899095546ea8cf90",
+    "1440-dark-en-page.png": "d4d0574634921f9c3296938ba1f170aced52714ac1a1673faea4f44748dc8d12",
+    "1440-dark-en-panel.png": "601601715df65903cdd54b15697c1b527478fc1ccd0a812de99b1bc7d2bcee5c",
+    "390-dark-en-panel.png": "d2da5f28a15fd1086c8583f14590233191f6d7df6a4b550d77a81e3c7a7000bc",
+    "390-light-zh-panel.png": "a836cafdfb08ce92726ed0b6222be9ce458f592559d51738b8505ee7782d1389",
+    "390-light-zh-page.png": "7af507901c646a085de2859492dda9c25f4a816f241ac953ba79f2bf6b0c88c1",
+    "1440-light-en-panel.png": "d24aecb03b855b2cb689a1f852e3a901eae77b350daf39b3c1fa4d125292c128",
+    "1440-light-en-page.png": "fdf48c42d44d6b7edb0c131e7917b6fe54d6ddcafa27ca03b322ae87efeec162"
+  }
+}

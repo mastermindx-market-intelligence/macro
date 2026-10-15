@@ -1,0 +1,65 @@
+from pathlib import Path
+from urllib.parse import urlparse,unquote
+import json,mimetypes,hashlib
+from playwright.sync_api import sync_playwright
+import argparse
+from jinja2 import Environment,FileSystemLoader,Undefined
+ROOT=Path(__file__).resolve().parents[3]
+ap=argparse.ArgumentParser(description='Actual Sector Intelligence page, synthetic pulse only; no production network.')
+ap.add_argument('--out',required=True);args=ap.parse_args();OUT=Path(args.out);OUT.mkdir(parents=True,exist_ok=True)
+source=(ROOT/'templates/sector_central.html.j2').read_text()
+env=Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=False,undefined=Undefined)
+html=env.from_string(source).render(flows_html='',pgate=None,bottoming=None,theme_context=None,factor_season=None,flow=None,basket_member_syms=[],action_board={'total':0,'buy_now':[],'buy_soon':[],'on_the_run':[],'take_profits':[],'hold':[],'avoid':[]},accumulation=[],accumulation_universe_n=0,theme_tape=None,generated_utc='2026-10-13')
+replay=json.loads((ROOT/'research/rotation_intelligence/intraday_sessions_20261013/producer_grounding_replay_hardened.json').read_text())
+rows=[dict(id=r['id'],live_ew_chg_pct=r['daily_change_pct'],tape_rank=i+1,intraday_comparison=r['intraday_comparison']) for i,r in enumerate(replay['measured_rows'])]
+pulse={'schema':'basket_pulse.v1','market':'us','mode':'delayed','session':'rth','as_of_quotes':'2026-10-13T15:29:00+00:00','as_of_utc':'2026-10-13T15:30:00+00:00','baskets':rows}
+reports=[]
+names={'baskets':[{'id':'ai_semiconductors','name':'AI semiconductors','name_zh':'AI\u534a\u5bfc\u4f53'},{'id':'us_sector_health','name':'Health care','name_zh':'\u533b\u7597\u4fdd\u5065'}]}
+with sync_playwright() as pw:
+ browser=pw.chromium.launch(headless=True)
+ for width,theme,lang in [(1440,'dark','en'),(1440,'light','en'),(390,'dark','en'),(390,'light','zh')]:
+  context=browser.new_context(viewport={'width':width,'height':960 if width>500 else 844},device_scale_factor=1)
+  state={'status':200,'pulse':pulse,'reads':0};errors=[]
+  context.add_init_script("localStorage.setItem('theme',"+json.dumps(theme)+");localStorage.setItem('lang',"+json.dumps(lang)+");Date.now=()=>Date.parse('2026-10-13T15:30:00Z');")
+  def serve(route):
+   u=urlparse(route.request.url);path=unquote(u.path).lstrip('/')
+   if path=='sector_central.html':return route.fulfill(status=200,body=html,content_type='text/html')
+   if path=='live/basket_pulse.json':
+    state['reads']+=1;return route.fulfill(status=state['status'],body=json.dumps(state['pulse']),content_type='application/json')
+   if path=='basketdata/baskets.json':return route.fulfill(status=200,body=json.dumps(names),content_type='application/json')
+   if path.endswith('data.js') or path.endswith('.json'):return route.fulfill(status=200,body='{}' if path.endswith('.json') else '',content_type='application/json' if path.endswith('.json') else 'text/javascript')
+   if u.hostname=='rotation.test' and path.endswith(('.css','.js','.svg')) and '..' not in Path(path).parts:
+    f=ROOT/'templates'/path
+    if f.is_file():return route.fulfill(status=200,body=f.read_bytes(),content_type=mimetypes.guess_type(path)[0] or 'text/plain')
+   return route.fulfill(status=200,body='',content_type='text/javascript' if path.endswith('.js') else 'text/plain')
+  context.route('**/*',serve)
+  page=context.new_page();page.on('pageerror',lambda exc:errors.append(str(exc)))
+  page.goto('http://rotation.test/sector_central.html#moving',wait_until='domcontentloaded')
+  page.evaluate("window.BASKETS="+json.dumps(names)+";window.__ftrTapeNamesReady();")
+  page.locator('a.si-view-btn[data-view="moving"]').click()
+  page.locator('#si-intraday').wait_for(state='visible')
+  page.locator('#si-intraday .si-intra-row').first.wait_for(state='visible')
+  row=page.locator('#si-intraday .si-intra-row summary').first;row.focus();page.keyboard.press('Enter')
+  assert page.locator('#si-intraday details[open]').count()==1
+  page.evaluate('window.__ftrTapeNamesReady()')
+  assert page.locator('#si-intraday details[open]').count()==1
+  assert page.evaluate("document.activeElement.tagName")=='SUMMARY'
+  bounds=page.evaluate("({viewport:innerWidth,page:document.documentElement.scrollWidth,panel:document.getElementById('si-intraday').getBoundingClientRect().width,scroll:document.getElementById('si-intraday').scrollWidth})")
+  slug=f'{width}-{theme}-{lang}'
+  page.locator('#si-intraday').screenshot(path=str(OUT/(slug+'-panel.png')))
+  page.screenshot(path=str(OUT/(slug+'-page.png')))
+  rendered=page.locator('#si-intraday-body').inner_text()
+  assert '-1.96%' in rendered or '\u22121.96%' in rendered
+  assert '+1.01%' in rendered and '0.00%' in rendered
+  assert bounds['scroll']<=bounds['panel']+1
+  state['status']=403;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===0")
+  denied=page.locator('#si-intraday-body').inner_text()
+  state['status']=200;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===2")
+  page.evaluate("Date.now=()=>Date.parse('2026-10-13T16:15:00Z');window.__ftrTapeNamesReady()")
+  assert page.locator('#si-intraday .si-intra-row').count()==0
+  stale=page.locator('#si-intraday-body').inner_text()
+  reports.append({'viewport':width,'theme':theme,'language':lang,'geometry':bounds,'new_view_ready':True,'keyboard_details':True,'focus_and_open_preserved':True,'denied_hides_numbers':True,'stale_hides_numbers':True,'page_errors':errors,'pulse_requests':state['reads'],'denied_text':denied,'stale_text':stale})
+  context.close()
+ browser.close()
+(OUT/'browser-preview-report.json').write_text(json.dumps({'proof_kind':'actual_candidate_jinja_page_synthetic_pulse_no_production','template_sha256':hashlib.sha256(source.encode()).hexdigest(),'cases':reports},indent=2,ensure_ascii=False))
+print(json.dumps({'cases':len(reports),'all_checks_passed':True,'page_errors':sum(len(r['page_errors']) for r in reports),'source_sha256':hashlib.sha256(source.encode()).hexdigest()}))
