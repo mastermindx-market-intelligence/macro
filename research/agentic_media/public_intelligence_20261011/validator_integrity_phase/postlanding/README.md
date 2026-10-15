@@ -1,97 +1,18 @@
-# Reviewed validator, writer, DOJ source and Research intake acceptance
+# Press follow-on installed acceptance
 
-Prepared only; no production acceptance claimed. The active manifest binds24
-sources. Relative to the earlier558ca bundle,21 hashes remain unchanged. The
-official planner/staging entrypoint use exact bytes independently accepted at
-70d9b7e08337, and desk_planner uses the accepted Research intake repair. All four
-DOJ source/test hashes still match their retained review binding. See
-`../../doj_source_phase/release_scope_binding.json` and
-`../../research_intake_phase/review_binding.json`.
-The same three reviewed page hashes remain byte-identical.
+Current application: `cb54d3e9766973271a3d7964bb1f0be52779766a`. Prepared only: no follow-on PR or installation exists. The manifest binds26sources and the same3reviewed pages. Earlier accepted validator/writer/DOJ/Research-pool/radar source reviews remain applicable to their unchanged bytes; the October15 planner composition and receipt repairs have the affected self-checks described in the current checkpoint. Do not label those independent review.
 
-The optional historical issuer-context implementation is deferred, retained at
-1989dd890273 and in a hash-bound patch with its original unaccepted review run.
-It contributes no active code or tests to this release. Its candidate28-source
-manifest and portable issuer probe are historical and must not be used here.
-Beyond reviewed70d9, the existing CI dependency list adds beautifulsoup4 and the
-independently accepted Research intake repair filters held sources before its
-unchanged candidate-pool limit. See ../../research_intake_phase/review_binding.json.
-The24-source manifest changes only the desk_planner hash relative to9ab1cf7.
+Original #9209 must finish protected landing and installed/browser acceptance first. Then merge actual landed main into the SAME follow-on, review any changed dependencies/pages, and create one protected PR. Preserve5held drafts/44source exclusions and all accounting. The withdrawn parser and deferred issuer prototype are outside this release.
 
-After the follow-on protected PR actually lands, supply its verified merge SHA
-and stable observed installed HEAD to prepare-ancestry.py using full canonical
-Git objects. Run mmx-current-install-check.py against that actual merge, never a
-candidate. Require all24 source hashes, source/site/site.served page checks,
-stable HEAD/ancestry and cutover=false. Use the normal VPS updater, no production
-Git mutation or unrelated service restart.
+After the follow-on actually lands, supply its verified protected squashSHA and stable installed HEAD to prepare-ancestry.py using canonical Git objects. Run mmx-current-install-check.py with that actual mergeSHA; require all26source hashes, source/site/site.served page checks, stable ancestry and cutover=false. Use the normal VPS updater, no production Git mutation or unrelated restart.
 
-Run ../installed_integrity_probe.py (10groups) and
-../../doj_source_phase/installed_doj_source_probe.py (5groups) through the existing
-SSH transport with `/opt/macro/.venv/bin/python -B`, `/opt/macro` and this manifest.
-Both use isolated historical fixtures; zero real provider/producer/public effects.
-Do not install pytest. They passed locally with exact current reviewed hashes;
-a separate wrong-hash control refuses before imports. Run read-only staging
-inspection and HTTP checks afterward. Matching pages permit reuse of prior
-scoped browser proof, never a new article, signup/follow write or D14 credit.
+Run these committed probes over existing SSH into `/opt/macro/.venv/bin/python -B`, with `/opt/macro` and the current manifest. Use isolated historical fixtures; do not install pytest or call a provider:
 
-Current local validation:335 affected tests passed,1 existing sparse-site skip;
-305-job manifest valid, packing totals5435/5435; trigger closure0gaps. Those local
-checks do not replace fresh protected-PR CI or installed verification.
+- `../installed_integrity_probe.py`:14groups.
+- `../../doj_source_phase/installed_doj_source_probe.py`:5groups.
+- `../../research_intake_phase/installed_research_pool_probe.py`:19groups, including native plan date/identity/correction/quarantine/race guards and historical-threshold limits.
+- `../../radar_receipt_phase/installed_radar_receipt_probe.py`:7groups.
 
+Total45groups. This turn's19planner groups ran locally with zero provider/staging/public effects;26unchanged groups retain accepted evidence.148affected planner/writer tests pass,369unchanged checks reused,517total/1existing sparse-site skip. These are local checks, not branch CI or installed acceptance. Source/receipt guards do not confer editorial approval or D14 credit.
 
-October14 intake acceptance addition: run
-../../research_intake_phase/installed_research_pool_probe.py with the same root
-and24-source manifest. Its9historical groups preserve the inspection/cadence,
-clock and held-record boundaries. Together with10integrity+5DOJ controls this is
-24portable groups, all locally passed. A wrong-manifest control fails before
-imports. No probe has been run against production for this unmerged follow-on.
-
-October14 radar receipt addition (application8eb467112b83): desk_planner also
-preserves the current radar loss target and calibration limits, omitting
-probabilities from unqualified legacy rows. See ../../radar_receipt_phase/
-review_binding.json for the exact independently accepted runtime hash. Only this
-source hash changes from the previous accepted Research-pool bundle;23 remain
-unchanged and all3 reviewed page hashes match. The older tests/counts above are
-historical. Current affected proof is429 passed/1 sparse-site skip plus1 separately
-passed unchanged real-data hygiene test. Runtime is still uninstalled.
-
-After actual protected landing also run
-../../radar_receipt_phase/installed_radar_receipt_probe.py against this same
-24-source manifest. It adds7 groups for target/calibration/advisory fidelity,
-legacy/malformed/nonfinite/mismatched refusals and valid zero. Total portable
-acceptance is31 groups (10+5+9+7), all passed locally with zero real provider or
-production writes; a wrong hash refuses before import. Do not mistake a fixture
-probe for a model-quality, source-rights or public-story approval.
-
-
-October14 selected-USDA prompt correction (applicationf9ffebd74ed5): only writer
-changes to c8027347e46b4ba36e40ae65b3b1c5f7218dd169a1735e1bd015fe86112111af.
-The other23source hashes and3page bindings are unchanged. Exact slot inspection
-found external USDA forecasts called our own measurements and a forced comparison
-with unrelated equity data. Four regression cases failed;432affected tests pass
-with1existing sparse skip after the Research-only correction. Brief/externalBrief/
-admittedearnings prompts remain byte-identical. See ../../usda_research_intake_phase/
-planner_preflight_20261014_1507/review_binding.json for accepted independent diagnosis
-and parent review of final source; never present the old-prompt NOT PASS as a
-reviewer PASS of unobserved final code. The integrity probe is now12groups (two
-additional Research desk/note attribution controls); other21groups retain their
-unchanged accepted evidence. Total installed acceptance is33groups, not31.
-The12groups and bad-writer-hash refusal pass locally; no production execution.
-
-
-October15 Research dossier composition: the planner retains explicit, well-formed
-catalog tickers and links only their existing canonical stock pages through the
-public-prefix filter. It does not infer issuers from prose or alter report ranking,
-held-source exclusions, primary-source identity or fact content. Six new tests
-reproduced two failures before repair; the affected planner/validator/writer checks
-passed244, and Research triage/run checks passed243 with1existing sparse-site skip.
-The real-data hygiene test initially failed on the omitted data tree, then passed
-unchanged against the preserved original artifacts; all6input hashes unchanged.
-Total488passed/1skip. Only the desk_planner hash changed in the24-source manifest.
-
-The existing Research pool installed probe now has11groups, including explicit
-dossier links, validator refusals and malformed/no-inferred ticker controls. All
-35portable groups (12integrity+5DOJ+11pool+7radar) passed locally with zero provider
-or publication effects. Local outputs: agent-evidence/mmx-public-intelligence-
-20261011/diagnostics/dossier-*.json. This remains uninstalled; actual CAT selection,
-rights/editorial approval and public article acceptance are separate requirements.
+After installed probes, run read-only staging inspection and public HTTP checks. Matching page hashes may reuse the separately accepted functional browser proof. Run the44-ref CAT planner inspector and inspect the current dated POWI/VNO packet before any one-shot writer attempt. Planned targets/trigger/entry are historical parameters, not observed outcomes, executed trades or investment instructions. Do not pad receipts with unrelated context. Actual publication still requires the existing rights/editorial and ten unedited mixed-desk gates.

@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume9209 exact233e383c CI38711581616/protected installation; controller38711757901 waits. Then SAME follow-on280fd2a3 with499affected checks/40portable groups/26sources, including repeated-number receipt repair. Native corrected POWI/VNO plans/ledgers agree at installed774dd525 but both display-only bounce_wait; bind historical parameters and limits before any writer attempt. Fabric receipt-audit-001 consumed/PARTIAL_NOT_ACCEPTED,no retry. CAT firstunheld/44refs still needs installed pool repair. Servingguardd5ad51d0 awaits capacity (09:33 8/cap8,9196lease). Preserve five held drafts,publication0of10 and all unknown effects.
+next_action: Consume9209 exact66df70f0 CI38716037896/protected installation using actual squashSHA. Then SAME follow-oncb54d3e9 with517checks/45portable groups/26sources; native corrected-plan parameters now locally bound with original dates/display-only limits, not publication approval. CAT firstunheld/44refs still needs installed pool repair. Servingguardd5ad51d0 awaits capacity (8/cap8,9209lease). Preserve five held drafts,publication0of10 and all unknown effects.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
