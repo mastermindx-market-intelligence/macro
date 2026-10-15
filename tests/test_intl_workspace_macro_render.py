@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from test_intl_workspace_macro import cycle, inputs, measure
+from test_intl_workspace_macro import components, cycle, inputs, measure
 
 
 SOURCE_NOTICE = {
@@ -210,6 +210,71 @@ def test_supplied_composite_keeps_its_original_components_and_clock():
         for component in section["cycle_rows"][0]["components"][axis]:
             assert component["key"] in text
     assert section["cycle_rows"][0]["components"]["asof"] in text
+
+
+def component_values_fixture(score, weight, *, zero_inflation=False):
+    from lib.intl_workspace_macro import build_macro_section
+    supplied = components()
+    supplied["growth"] = [{"key": "gdp_trend", "score": score, "weight": weight}]
+    supplied["inflation"] = [{"key": "cpi_direction", "score": score, "weight": weight}]
+    if zero_inflation:
+        supplied["inflation"][0].update(score=0, weight=0)
+    for axis in ("growth", "inflation"):
+        supplied[f"{axis}_score"] = supplied[axis][0]["score"]
+        supplied[f"{axis}_n_components"] = int(supplied[axis][0]["score"] is not None)
+    packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
+        method_kind="mixed_composite", economic_support=None, components=supplied,
+    )})
+    return build_macro_section(**packet), packet["registry"]
+
+
+@pytest.mark.parametrize("axis_index", [0, 1])
+@pytest.mark.parametrize("score,weight", [(None, None), (0, 0), (-1.0, 0.75), (None, 1.0)])
+def test_component_readings_distinguish_missing_from_zero(axis_index, score, weight):
+    section, registry = component_values_fixture(score, weight)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, registry), "html.parser")
+    for translation in soup.select(".l-zh"):
+        translation.decompose()
+    reading = soup.select(".intl-macro__composite dd")[axis_index].get_text(" ", strip=True)
+    assert "None" not in reading
+    expected_score = "Not supplied" if score is None else str(score)
+    expected_weight = "Not supplied" if weight is None else str(weight)
+    assert re.search(r"Score\s*:\s*" + re.escape(expected_score) + r"(?:\s|$)", reading)
+    assert re.search(r"Weight\s*:\s*" + re.escape(expected_weight) + r"(?:\s|$)", reading)
+    assert section == before
+
+
+def component_workspace_fixture(*, missing_components=False):
+    """Native mount and full page with explicitly synthetic component inputs."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(
+        None, workspace_generation=f"im-workspace-generation:{uuid4()}",
+    )
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"],
+        "bases": workspace["config"]["bases"],
+    }
+    supplied = components()
+    supplied.update(growth=[{"key": "gdp_trend", "score": None, "weight": None}],
+                    inflation=[{"key": "cpi_direction", "score": 0, "weight": 0}],
+                    growth_score=None, growth_n_components=0,
+                    inflation_score=0, inflation_n_components=1)
+    evidence = cycle(method_kind="mixed_composite", economic_support=None,
+                     components=supplied, method_ref="synthetic:component-reading")
+    if missing_components:
+        evidence.update(quality="stale", reason="source_stale", components=None,
+                        method_ref=None, asof=None)
+    workspace = attach_macros(workspace, registry=registry, measures={},
+                              cycle_evidence={"EZ": evidence}, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
 
 
 def test_actual_projection_positive_zero_stale_and_denied_render():

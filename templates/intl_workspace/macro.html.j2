@@ -38,6 +38,11 @@
 {% macro not_supplied() -%}
 <span class="l-en">Not supplied</span><span class="l-zh" lang="zh">未提供</span>
 {%- endmacro %}
+{% macro component_readings(components) -%}
+{% for component in components %}
+  <span>{{ component.key|e }} · <span class="l-en">Score:</span><span class="l-zh" lang="zh">评分：</span> {% if component.score is none %}{{ not_supplied() }}{% else %}{{ component.score|e }}{% endif %} · <span class="l-en">Weight:</span><span class="l-zh" lang="zh">权重：</span> {% if component.weight is none %}{{ not_supplied() }}{% else %}{{ component.weight|e }}{% endif %}</span>{% if not loop.last %} · {% endif %}
+{% endfor %}
+{%- endmacro %}
 {% macro reason_text(reason) -%}
 {% if reason is none %}{{ not_supplied() }}{% elif reason in reason_labels %}<span class="l-en">{{ reason_labels[reason].en|e }}</span><span class="l-zh" lang="zh">{{ reason_labels[reason].zh|e }}</span>{% else %}{{ reason|e }}{% endif %}
 {%- endmacro %}
@@ -173,8 +178,8 @@
           <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {% if composite.reported_method_ref is none %}{{ not_supplied() }}{% else %}{{ composite.reported_method_ref|e }}{% endif %} · {% set composite_quality = quality_labels.get(composite.presentation_quality, quality_labels.unknown) %}<span class="l-en">{{ composite_quality.en|e }}</span><span class="l-zh" lang="zh">{{ composite_quality.zh|e }}</span></p>
           {% if composite.components is not none %}
           <dl>
-            <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{% for component in composite.components.growth %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
-            <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{% for component in composite.components.inflation %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
+            <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{{ component_readings(composite.components.growth) }}</dd></div>
+            <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{{ component_readings(composite.components.inflation) }}</dd></div>
             <div><dt><span class="l-en">As of</span><span class="l-zh" lang="zh">截至</span></dt><dd>{{ composite.components.asof|e }}</dd></div>
           </dl>
           {% else %}

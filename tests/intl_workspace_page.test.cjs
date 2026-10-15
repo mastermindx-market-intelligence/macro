@@ -72,11 +72,8 @@ const sourceChartHtml = new Map();
 let staleMacroComponentHtml;
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
-from tests.test_intl_workspace_macro_render import stale_component_fixture, render
-section, registry = stale_component_fixture(None)
-print('<!doctype html><html lang="en" data-lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/intl_workspace_macro.css"><script src="/theme.js"></script></head><body>')
-print(render(section, registry))
-print('</body></html>')
+from tests.test_intl_workspace_macro_render import component_workspace_fixture
+print(component_workspace_fixture(missing_components=True))
 `],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
   return staleMacroComponentHtml;
 }
@@ -85,7 +82,10 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   test(`Macro stale missing components remain readable ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{
       await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
-      const composite=page.locator('.intl-macro__composite');
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const panel=page.locator('[data-view="macro"]:not([hidden])');
+      const composite=panel.locator('.intl-macro__composite');
       const summary=composite.locator(':scope > summary');
       await summary.focus();await summary.press('Enter');
       assert.equal(await composite.evaluate(n=>n.open),true);
@@ -94,19 +94,66 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
       assert.match(text,lang==='zh'?/数据过期/:/Stale data/);
       assert.match(text,lang==='zh'?/未提供方法/:/Method not supplied/);
       assert.doesNotMatch(text,/None|2026-09-10|Goldilocks|Q1/);
-      assert.equal(await page.locator('.intl-macro__table').isVisible(),true);
+      assert.equal(await panel.locator('.intl-macro__table').isVisible(),true);
       for(const width of [320,1440]) {
         await page.setViewportSize({width,height:900});
         assert.equal(await composite.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
         if(process.env.INTL_BROWSER_EVIDENCE_DIR) {
           fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
           await page.evaluate(()=>document.fonts.ready);
-          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-components-absent-${theme}-${lang}-${width}.png`)});
+          await composite.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-components-absent-integrated-${theme}-${lang}-${width}.png`)});
         }
       }
       await summary.focus();await summary.press('Enter');
       assert.equal(await composite.evaluate(n=>n.open),false);
-    },{htmlOverride:staleMacroComponentFixture(),width:320,bootLanguage:lang});
+    },{htmlOverride:staleMacroComponentFixture(),width:320,bootLanguage:lang,initialSearch:'?view=macro'});
+  });
+}
+
+let macroComponentValuesHtml;
+function macroComponentValuesFixture() {
+  if(!macroComponentValuesHtml) macroComponentValuesHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+from tests.test_intl_workspace_macro_render import component_workspace_fixture
+print(component_workspace_fixture())
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+  return macroComponentValuesHtml;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Macro component readings distinguish absent and zero ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const panel=page.locator('[data-view="macro"]:not([hidden])');
+      const composite=panel.locator('.intl-macro__composite');
+      const summary=composite.locator(':scope > summary');
+      await summary.focus();await summary.press('Enter');
+      assert.equal(await composite.evaluate(n=>n.open),true);
+      const readings=composite.locator('dd');
+      const missing=await readings.nth(0).innerText();
+      assert.match(missing,lang==='zh'?/评分：\s*未提供/:/Score:\s*Not supplied/);
+      assert.match(missing,lang==='zh'?/权重：\s*未提供/:/Weight:\s*Not supplied/);
+      const zero=await readings.nth(1).innerText();
+      assert.match(zero,lang==='zh'?/评分：\s*0/:/Score:\s*0/);
+      assert.match(zero,lang==='zh'?/权重：\s*0/:/Weight:\s*0/);
+      assert.doesNotMatch(zero,/Not supplied|未提供|None/);
+      assert.equal(await readings.nth(2).innerText(),'2026-09-10T09:00:00Z');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        assert.equal(await composite.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+        assert.equal(await readings.evaluateAll(ns=>ns.every(n=>n.scrollWidth<=n.clientWidth+1)),true);
+        if(width===320&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+          fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+          await page.evaluate(()=>document.fonts.ready);
+          await composite.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-component-values-settled-${theme}-${lang}-320.png`)});
+        }
+      }
+      await summary.focus();await summary.press('Enter');
+      assert.equal(await composite.evaluate(n=>n.open),false);
+    },{htmlOverride:macroComponentValuesFixture(),width:320,bootLanguage:lang,initialSearch:'?view=macro'});
   });
 }
 
