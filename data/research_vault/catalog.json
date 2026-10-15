@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T06:27:22.831751+00:00",
-  "count": 2939,
+  "generated_at": "2026-10-15T06:38:54.149092+00:00",
+  "count": 2940,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -733,6 +733,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wjr1ib9ugjy-308ce9",
+      "title": "Cosmos Pharmaceutical (3349)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T01:53:11Z",
+      "summary_points": [
+        "Earnings Beat & Personnel Cost Risk: Gross profit beat (+¥0.3 bn) on pricing (21.7% margin), but personnel costs rose 12.3% yoy, requiring Q2 cost control monitoring amid store expansion.",
+        "Valuation Downgrade & Target Cut: 12-month target reduced to ¥7,800 (from ¥8,000) due to Kanto/Kyushu margin risks, slower store openings, and competitive pressures; sales forecasts cut 2% each for FY5/27E-28E.",
+        "Technical Outperformance & Cash Flow: Price outperformed TOPIX 12m (26.5% vs 42.8% decline), with free cash flow rising from ¥11.7M to ¥17.6M, signaling operational strength.",
+        "Narrowing Undervaluation Gap: Target vs. closing price gap shrank from ¥7,090 to ¥1,546, indicating eroded upside confidence despite mid-single-digit profit growth prospects."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
