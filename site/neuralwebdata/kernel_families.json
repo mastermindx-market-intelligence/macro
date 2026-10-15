@@ -2,122 +2,122 @@
   "families": {
     "altdata": {
       "horizon_curve": {
-        "5": -0.003841,
-        "21": -0.011558,
-        "63": -0.015079
+        "5": -0.005204,
+        "21": -0.013546,
+        "63": -0.019164
       },
       "horizon_detail": {
         "5": {
-          "ic": -0.003841,
-          "n_eff": 1466,
-          "sd": 0.000238
+          "ic": -0.005204,
+          "n_eff": 1495,
+          "sd": 0.000232
         },
         "21": {
-          "ic": -0.011558,
-          "n_eff": 1237,
-          "sd": 0.000212
+          "ic": -0.013546,
+          "n_eff": 1293,
+          "sd": 0.000202
         },
         "63": {
-          "ic": -0.015079,
-          "n_eff": 493,
-          "sd": 0.000941
+          "ic": -0.019164,
+          "n_eff": 548,
+          "sd": 0.000831
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 86,
-          "mean": -0.007548,
-          "wilson_ci_low": 0.288013
+          "n_eff": 88,
+          "mean": -0.00489,
+          "wilson_ci_low": 0.301816
         },
         "63d": {
-          "n_eff": 604,
-          "mean": -0.004329,
-          "wilson_ci_low": 0.378537
+          "n_eff": 505,
+          "mean": -0.006919,
+          "wilson_ci_low": 0.344686
         },
         "252d": {
-          "n_eff": 1466,
-          "mean": 0.000611,
-          "wilson_ci_low": 0.470357
+          "n_eff": 1495,
+          "mean": 0.00041,
+          "wilson_ci_low": 0.467684
         },
         "756d": {
-          "n_eff": 1466,
-          "mean": 0.000611,
-          "wilson_ci_low": 0.470357
+          "n_eff": 1495,
+          "mean": 0.00041,
+          "wilson_ci_low": 0.467684
         },
         "all": {
-          "n_eff": 1466,
-          "mean": 0.000611,
-          "wilson_ci_low": 0.470357
+          "n_eff": 1495,
+          "mean": 0.00041,
+          "wilson_ci_low": 0.467684
         }
       },
       "staleness": {
-        "date_last": "2026-09-26",
-        "days_since_last_fire": 11
+        "date_last": "2026-09-28",
+        "days_since_last_fire": 16
       },
       "armed": false,
-      "armed_reason": "held: pooled loses out-of-sample (-0.01384) — losing less than equal-weight (-0.01386) is not an edge",
+      "armed_reason": "held: pooled loses out-of-sample (-0.01778) — losing less than equal-weight (-0.01780) is not an edge",
       "outcome_unit": "signed_excess",
       "regime_coverage": 1.0
     },
     "ca_board": {
       "horizon_curve": {
-        "5": 0.039603,
-        "10": 0.048571,
-        "21": 0.065976,
-        "63": 0.108118
+        "5": 0.03935,
+        "10": 0.047823,
+        "21": 0.065027,
+        "63": 0.107855
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.039603,
-          "n_eff": 761,
-          "sd": 0.000143
+          "ic": 0.03935,
+          "n_eff": 779,
+          "sd": 0.000139
         },
         "10": {
-          "ic": 0.048571,
-          "n_eff": 715,
-          "sd": 0.000212
+          "ic": 0.047823,
+          "n_eff": 738,
+          "sd": 0.000203
         },
         "21": {
-          "ic": 0.065976,
-          "n_eff": 570,
-          "sd": 0.000475
+          "ic": 0.065027,
+          "n_eff": 610,
+          "sd": 0.000437
         },
         "63": {
-          "ic": 0.108118,
+          "ic": 0.107855,
           "n_eff": 56,
           "sd": 0.005661
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 95,
-          "mean": 0.019667,
+          "n_eff": 64,
+          "mean": 0.016439,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 471,
-          "mean": 0.022526,
+          "n_eff": 451,
+          "mean": 0.020957,
           "wilson_ci_low": null
         },
         "252d": {
-          "n_eff": 761,
-          "mean": 0.027923,
+          "n_eff": 779,
+          "mean": 0.027934,
           "wilson_ci_low": null
         },
         "756d": {
-          "n_eff": 761,
-          "mean": 0.027923,
+          "n_eff": 779,
+          "mean": 0.027934,
           "wilson_ci_low": null
         },
         "all": {
-          "n_eff": 761,
-          "mean": 0.027923,
+          "n_eff": 779,
+          "mean": 0.027934,
           "wilson_ci_low": null
         }
       },
       "staleness": {
-        "date_last": "2026-09-25",
-        "days_since_last_fire": 12
+        "date_last": "2026-09-30",
+        "days_since_last_fire": 14
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -126,78 +126,84 @@
     },
     "cn_board": {
       "horizon_curve": {
-        "5": 0.020649,
-        "10": 0.027824
+        "5": 0.033719,
+        "10": 0.041019,
+        "21": 0.050219
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.020649,
-          "n_eff": 326,
-          "sd": 0.000317
+          "ic": 0.033719,
+          "n_eff": 611,
+          "sd": 0.000206
         },
         "10": {
-          "ic": 0.027824,
-          "n_eff": 230,
-          "sd": 0.000629
+          "ic": 0.041019,
+          "n_eff": 519,
+          "sd": 0.000289
+        },
+        "21": {
+          "ic": 0.050219,
+          "n_eff": 309,
+          "sd": 0.000723
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 86,
-          "mean": 0.016644,
+          "n_eff": 67,
+          "mean": 0.029707,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 326,
-          "mean": 0.020018,
+          "n_eff": 611,
+          "mean": 0.031029,
           "wilson_ci_low": null
         },
         "252d": {
-          "n_eff": 326,
-          "mean": 0.020018,
+          "n_eff": 611,
+          "mean": 0.031029,
           "wilson_ci_low": null
         },
         "756d": {
-          "n_eff": 326,
-          "mean": 0.020018,
+          "n_eff": 611,
+          "mean": 0.031029,
           "wilson_ci_low": null
         },
         "all": {
-          "n_eff": 326,
-          "mean": 0.020018,
+          "n_eff": 611,
+          "mean": 0.031029,
           "wilson_ci_low": null
         }
       },
       "staleness": {
-        "date_last": "2026-09-21",
-        "days_since_last_fire": 16
+        "date_last": "2026-09-29",
+        "days_since_last_fire": 15
       },
       "armed": false,
-      "armed_reason": "held: pooled clears equal-weight by +0.000112, under the pre-registered 0.000804 bar",
+      "armed_reason": "held: pooled clears equal-weight by +0.000019, under the pre-registered 0.001153 bar",
       "outcome_unit": "magnitude_nonneg",
       "regime_coverage": 1.0
     },
     "demand_chain": {
       "horizon_curve": {
-        "5": 0.004721,
-        "21": -0.021712
+        "5": 0.010659,
+        "21": -0.005109
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.004721,
+          "ic": 0.010659,
           "n_eff": 9,
           "sd": 0.018116
         },
         "21": {
-          "ic": -0.021712,
-          "n_eff": 4,
-          "sd": 0.033459
+          "ic": -0.005109,
+          "n_eff": 6,
+          "sd": 0.05155
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 3,
-          "mean": 0.045932,
+          "n_eff": 1,
+          "mean": 0.135501,
           "wilson_ci_low": null
         },
         "63d": {
@@ -223,7 +229,7 @@
       },
       "staleness": {
         "date_last": "2026-09-26",
-        "days_since_last_fire": 11
+        "days_since_last_fire": 18
       },
       "armed": false,
       "armed_reason": "accruing: 9/12 effective events",
@@ -248,9 +254,9 @@
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 33,
-          "mean": -0.012839,
-          "wilson_ci_low": 0.22187
+          "n_eff": 25,
+          "mean": -0.0144,
+          "wilson_ci_low": 0.234031
         },
         "252d": {
           "n_eff": 60,
@@ -270,7 +276,7 @@
       },
       "staleness": {
         "date_last": "2026-10-02",
-        "days_since_last_fire": 5
+        "days_since_last_fire": 12
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -290,9 +296,9 @@
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 30,
-          "mean": -0.01688,
-          "wilson_ci_low": 0.218737
+          "n_eff": 20,
+          "mean": -0.01834,
+          "wilson_ci_low": 0.18119
         },
         "63d": {
           "n_eff": 41,
@@ -317,7 +323,7 @@
       },
       "staleness": {
         "date_last": "2026-10-05",
-        "days_since_last_fire": 2
+        "days_since_last_fire": 9
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -326,44 +332,44 @@
     },
     "desk:policy_intent": {
       "horizon_curve": {
-        "63": -0.024393
+        "63": -0.02226
       },
       "horizon_detail": {
         "63": {
-          "ic": -0.024393,
-          "n_eff": 13,
-          "sd": 0.01328
+          "ic": -0.02226,
+          "n_eff": 15,
+          "sd": 0.012554
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 8,
-          "mean": -0.048162,
+          "n_eff": 9,
+          "mean": -0.041544,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 13,
-          "mean": -0.039162,
-          "wilson_ci_low": 0.232058
+          "n_eff": 15,
+          "mean": -0.034133,
+          "wilson_ci_low": 0.248092
         },
         "252d": {
-          "n_eff": 13,
-          "mean": -0.039162,
-          "wilson_ci_low": 0.232058
+          "n_eff": 15,
+          "mean": -0.034133,
+          "wilson_ci_low": 0.248092
         },
         "756d": {
-          "n_eff": 13,
-          "mean": -0.039162,
-          "wilson_ci_low": 0.232058
+          "n_eff": 15,
+          "mean": -0.034133,
+          "wilson_ci_low": 0.248092
         },
         "all": {
-          "n_eff": 13,
-          "mean": -0.039162,
-          "wilson_ci_low": 0.232058
+          "n_eff": 15,
+          "mean": -0.034133,
+          "wilson_ci_low": 0.248092
         }
       },
       "staleness": {
-        "date_last": "2026-10-02",
+        "date_last": "2026-10-09",
         "days_since_last_fire": 5
       },
       "armed": false,
@@ -384,9 +390,9 @@
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 112,
-          "mean": -0.033201,
-          "wilson_ci_low": 0.210247
+          "n_eff": 78,
+          "mean": -0.033897,
+          "wilson_ci_low": 0.205241
         },
         "63d": {
           "n_eff": 112,
@@ -411,7 +417,7 @@
       },
       "staleness": {
         "date_last": "2026-10-05",
-        "days_since_last_fire": 2
+        "days_since_last_fire": 9
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -420,45 +426,45 @@
     },
     "desk:stock_desk": {
       "horizon_curve": {
-        "63": -0.055223
+        "63": -0.05656
       },
       "horizon_detail": {
         "63": {
-          "ic": -0.055223,
-          "n_eff": 173,
-          "sd": 0.00166
+          "ic": -0.05656,
+          "n_eff": 176,
+          "sd": 0.001644
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 18,
-          "mean": -0.088611,
-          "wilson_ci_low": 0.009875
+          "n_eff": 21,
+          "mean": -0.10191,
+          "wilson_ci_low": 0.008456
         },
         "63d": {
-          "n_eff": 102,
-          "mean": -0.084453,
-          "wilson_ci_low": 0.054127
+          "n_eff": 86,
+          "mean": -0.091201,
+          "wilson_ci_low": 0.05604
         },
         "252d": {
-          "n_eff": 173,
-          "mean": -0.060972,
-          "wilson_ci_low": 0.159335
+          "n_eff": 176,
+          "mean": -0.06303,
+          "wilson_ci_low": 0.156543
         },
         "756d": {
-          "n_eff": 173,
-          "mean": -0.060972,
-          "wilson_ci_low": 0.159335
+          "n_eff": 176,
+          "mean": -0.06303,
+          "wilson_ci_low": 0.156543
         },
         "all": {
-          "n_eff": 173,
-          "mean": -0.060972,
-          "wilson_ci_low": 0.159335
+          "n_eff": 176,
+          "mean": -0.06303,
+          "wilson_ci_low": 0.156543
         }
       },
       "staleness": {
-        "date_last": "2026-10-02",
-        "days_since_last_fire": 5
+        "date_last": "2026-10-06",
+        "days_since_last_fire": 8
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -467,45 +473,45 @@
     },
     "desk:thematic_desk": {
       "horizon_curve": {
-        "63": -0.033824
+        "63": -0.034197
       },
       "horizon_detail": {
         "63": {
-          "ic": -0.033824,
-          "n_eff": 231,
-          "sd": 0.000905
+          "ic": -0.034197,
+          "n_eff": 252,
+          "sd": 0.000823
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 40,
-          "mean": -0.015287,
-          "wilson_ci_low": 0.180747
+          "n_eff": 48,
+          "mean": -0.034898,
+          "wilson_ci_low": 0.149205
         },
         "63d": {
-          "n_eff": 174,
-          "mean": -0.032502,
-          "wilson_ci_low": 0.199268
+          "n_eff": 173,
+          "mean": -0.029428,
+          "wilson_ci_low": 0.22137
         },
         "252d": {
-          "n_eff": 231,
-          "mean": -0.041389,
-          "wilson_ci_low": 0.1956
+          "n_eff": 252,
+          "mean": -0.041416,
+          "wilson_ci_low": 0.200561
         },
         "756d": {
-          "n_eff": 231,
-          "mean": -0.041389,
-          "wilson_ci_low": 0.1956
+          "n_eff": 252,
+          "mean": -0.041416,
+          "wilson_ci_low": 0.200561
         },
         "all": {
-          "n_eff": 231,
-          "mean": -0.041389,
-          "wilson_ci_low": 0.1956
+          "n_eff": 252,
+          "mean": -0.041416,
+          "wilson_ci_low": 0.200561
         }
       },
       "staleness": {
-        "date_last": "2026-10-02",
-        "days_since_last_fire": 5
+        "date_last": "2026-10-13",
+        "days_since_last_fire": 1
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -514,63 +520,63 @@
     },
     "hk_board": {
       "horizon_curve": {
-        "5": 0.037346,
-        "10": 0.045973,
-        "21": 0.056367,
-        "63": 0.09777
+        "5": 0.037169,
+        "10": 0.045167,
+        "21": 0.054008,
+        "63": 0.112491
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.037346,
-          "n_eff": 879,
-          "sd": 0.000103
+          "ic": 0.037169,
+          "n_eff": 996,
+          "sd": 8.9e-05
         },
         "10": {
-          "ic": 0.045973,
-          "n_eff": 801,
-          "sd": 0.00016
+          "ic": 0.045167,
+          "n_eff": 879,
+          "sd": 0.000143
         },
         "21": {
-          "ic": 0.056367,
-          "n_eff": 657,
-          "sd": 0.000245
+          "ic": 0.054008,
+          "n_eff": 753,
+          "sd": 0.000212
         },
         "63": {
-          "ic": 0.09777,
-          "n_eff": 17,
-          "sd": 0.021844
+          "ic": 0.112491,
+          "n_eff": 62,
+          "sd": 0.006433
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 99,
-          "mean": 0.016988,
+          "n_eff": 168,
+          "mean": 0.024088,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 509,
-          "mean": 0.021761,
+          "n_eff": 573,
+          "mean": 0.022452,
           "wilson_ci_low": null
         },
         "252d": {
-          "n_eff": 879,
-          "mean": 0.027683,
+          "n_eff": 996,
+          "mean": 0.027313,
           "wilson_ci_low": null
         },
         "756d": {
-          "n_eff": 879,
-          "mean": 0.027683,
+          "n_eff": 996,
+          "mean": 0.027313,
           "wilson_ci_low": null
         },
         "all": {
-          "n_eff": 879,
-          "mean": 0.027683,
+          "n_eff": 996,
+          "mean": 0.027313,
           "wilson_ci_low": null
         }
       },
       "staleness": {
-        "date_last": "2026-09-25",
-        "days_since_last_fire": 12
+        "date_last": "2026-10-06",
+        "days_since_last_fire": 8
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -579,50 +585,50 @@
     },
     "intel_hub": {
       "horizon_curve": {
-        "5": 0.00285,
-        "21": 0.002354
+        "5": 0.00234,
+        "21": 0.001085
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.00285,
-          "n_eff": 2330,
-          "sd": 7e-05
+          "ic": 0.00234,
+          "n_eff": 2487,
+          "sd": 6.6e-05
         },
         "21": {
-          "ic": 0.002354,
-          "n_eff": 1739,
-          "sd": 0.000183
+          "ic": 0.001085,
+          "n_eff": 1925,
+          "sd": 0.000167
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 285,
-          "mean": -0.004732,
-          "wilson_ci_low": 0.475354
+          "n_eff": 318,
+          "mean": -0.001445,
+          "wilson_ci_low": 0.457819
         },
         "63d": {
-          "n_eff": 1448,
-          "mean": -0.001175,
-          "wilson_ci_low": 0.479792
+          "n_eff": 1372,
+          "mean": -0.003818,
+          "wilson_ci_low": 0.462683
         },
         "252d": {
-          "n_eff": 2330,
-          "mean": 0.003151,
-          "wilson_ci_low": 0.511463
+          "n_eff": 2487,
+          "mean": 0.002484,
+          "wilson_ci_low": 0.50709
         },
         "756d": {
-          "n_eff": 2330,
-          "mean": 0.003151,
-          "wilson_ci_low": 0.511463
+          "n_eff": 2487,
+          "mean": 0.002484,
+          "wilson_ci_low": 0.50709
         },
         "all": {
-          "n_eff": 2330,
-          "mean": 0.003151,
-          "wilson_ci_low": 0.511463
+          "n_eff": 2487,
+          "mean": 0.002484,
+          "wilson_ci_low": 0.50709
         }
       },
       "staleness": {
-        "date_last": "2026-09-28",
+        "date_last": "2026-10-05",
         "days_since_last_fire": 9
       },
       "armed": false,
@@ -632,57 +638,57 @@
     },
     "policy": {
       "horizon_curve": {
-        "5": -0.018952,
-        "21": -0.026382,
-        "63": -0.044268
+        "5": -0.021066,
+        "21": -0.032213,
+        "63": -0.055138
       },
       "horizon_detail": {
         "5": {
-          "ic": -0.018952,
-          "n_eff": 33,
-          "sd": 0.004136
+          "ic": -0.021066,
+          "n_eff": 43,
+          "sd": 0.003017
         },
         "21": {
-          "ic": -0.026382,
-          "n_eff": 30,
-          "sd": 0.007041
+          "ic": -0.032213,
+          "n_eff": 33,
+          "sd": 0.006473
         },
         "63": {
-          "ic": -0.044268,
-          "n_eff": 11,
-          "sd": 0.020646
+          "ic": -0.055138,
+          "n_eff": 13,
+          "sd": 0.02031
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 0,
-          "mean": null,
+          "n_eff": 3,
+          "mean": 0.0046,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 7,
-          "mean": -0.027814,
-          "wilson_ci_low": null
+          "n_eff": 14,
+          "mean": -0.014342,
+          "wilson_ci_low": 0.325903
         },
         "252d": {
-          "n_eff": 33,
-          "mean": -0.014285,
-          "wilson_ci_low": 0.272354
+          "n_eff": 43,
+          "mean": -0.01241,
+          "wilson_ci_low": 0.325108
         },
         "756d": {
-          "n_eff": 33,
-          "mean": -0.014285,
-          "wilson_ci_low": 0.272354
+          "n_eff": 43,
+          "mean": -0.01241,
+          "wilson_ci_low": 0.325108
         },
         "all": {
-          "n_eff": 33,
-          "mean": -0.014285,
-          "wilson_ci_low": 0.272354
+          "n_eff": 43,
+          "mean": -0.01241,
+          "wilson_ci_low": 0.325108
         }
       },
       "staleness": {
-        "date_last": "2026-09-04",
-        "days_since_last_fire": 33
+        "date_last": "2026-09-30",
+        "days_since_last_fire": 14
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -691,57 +697,57 @@
     },
     "radar": {
       "horizon_curve": {
-        "5": -0.000771,
-        "21": -0.002226,
-        "63": -0.00526
+        "5": 0.000472,
+        "21": -0.00014,
+        "63": -0.003401
       },
       "horizon_detail": {
         "5": {
-          "ic": -0.000771,
-          "n_eff": 12976,
-          "sd": 9.9e-05
+          "ic": 0.000472,
+          "n_eff": 13344,
+          "sd": 9.7e-05
         },
         "21": {
-          "ic": -0.002226,
-          "n_eff": 12019,
-          "sd": 3.5e-05
+          "ic": -0.00014,
+          "n_eff": 12688,
+          "sd": 3.4e-05
         },
         "63": {
-          "ic": -0.00526,
-          "n_eff": 8441,
-          "sd": 7e-05
+          "ic": -0.003401,
+          "n_eff": 8912,
+          "sd": 6.9e-05
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 209,
-          "mean": -0.017832,
-          "wilson_ci_low": 0.278912
+          "n_eff": 343,
+          "mean": 0.00465,
+          "wilson_ci_low": 0.454592
         },
         "63d": {
-          "n_eff": 4123,
-          "mean": -0.004876,
-          "wilson_ci_low": 0.470575
+          "n_eff": 4017,
+          "mean": -0.004138,
+          "wilson_ci_low": 0.470748
         },
         "252d": {
-          "n_eff": 12099,
-          "mean": -0.00037,
-          "wilson_ci_low": 0.495513
+          "n_eff": 12442,
+          "mean": -0.000232,
+          "wilson_ci_low": 0.495715
         },
         "756d": {
-          "n_eff": 12099,
-          "mean": -0.00037,
-          "wilson_ci_low": 0.495513
+          "n_eff": 12442,
+          "mean": -0.000232,
+          "wilson_ci_low": 0.495715
         },
         "all": {
-          "n_eff": 12099,
-          "mean": -0.00037,
-          "wilson_ci_low": 0.495513
+          "n_eff": 12442,
+          "mean": -0.000232,
+          "wilson_ci_low": 0.495715
         }
       },
       "staleness": {
-        "date_last": "2026-09-16",
-        "days_since_last_fire": 21
+        "date_last": "2026-10-05",
+        "days_since_last_fire": 9
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -794,7 +800,7 @@
       },
       "staleness": {
         "date_last": "2026-09-26",
-        "days_since_last_fire": 11
+        "days_since_last_fire": 18
       },
       "armed": false,
       "armed_reason": "accruing: 2/12 effective events",
@@ -803,45 +809,51 @@
     },
     "stock_desk": {
       "horizon_curve": {
-        "5": 0.008961
+        "5": -0.000211,
+        "21": -0.015862
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.008961,
-          "n_eff": 91,
-          "sd": 0.001586
+          "ic": -0.000211,
+          "n_eff": 101,
+          "sd": 0.001415
+        },
+        "21": {
+          "ic": -0.015862,
+          "n_eff": 4,
+          "sd": 0.062461
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 40,
-          "mean": 0.01849,
-          "wilson_ci_low": 0.520175
+          "n_eff": 26,
+          "mean": 0.005056,
+          "wilson_ci_low": 0.354576
         },
         "63d": {
-          "n_eff": 91,
-          "mean": 0.009549,
-          "wilson_ci_low": 0.501664
+          "n_eff": 101,
+          "mean": 0.006103,
+          "wilson_ci_low": 0.476848
         },
         "252d": {
-          "n_eff": 91,
-          "mean": 0.009549,
-          "wilson_ci_low": 0.501664
+          "n_eff": 101,
+          "mean": 0.006103,
+          "wilson_ci_low": 0.476848
         },
         "756d": {
-          "n_eff": 91,
-          "mean": 0.009549,
-          "wilson_ci_low": 0.501664
+          "n_eff": 101,
+          "mean": 0.006103,
+          "wilson_ci_low": 0.476848
         },
         "all": {
-          "n_eff": 91,
-          "mean": 0.009549,
-          "wilson_ci_low": 0.501664
+          "n_eff": 101,
+          "mean": 0.006103,
+          "wilson_ci_low": 0.476848
         }
       },
       "staleness": {
-        "date_last": "2026-09-28",
-        "days_since_last_fire": 9
+        "date_last": "2026-10-02",
+        "days_since_last_fire": 12
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -850,50 +862,56 @@
     },
     "thematic_desk": {
       "horizon_curve": {
-        "5": -0.007375,
-        "10": -0.010107
+        "5": -0.016848,
+        "10": -0.024838,
+        "21": -0.031614
       },
       "horizon_detail": {
         "5": {
-          "ic": -0.007375,
-          "n_eff": 43,
-          "sd": 0.002104
+          "ic": -0.016848,
+          "n_eff": 48,
+          "sd": 0.002011
         },
         "10": {
-          "ic": -0.010107,
+          "ic": -0.024838,
           "n_eff": 1,
           "sd": 0.942809
+        },
+        "21": {
+          "ic": -0.031614,
+          "n_eff": 3,
+          "sd": 0.014086
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 26,
-          "mean": -0.001759,
-          "wilson_ci_low": 0.320603
+          "n_eff": 22,
+          "mean": -0.007703,
+          "wilson_ci_low": 0.346595
         },
         "63d": {
-          "n_eff": 43,
-          "mean": -0.005784,
-          "wilson_ci_low": 0.263651
+          "n_eff": 48,
+          "mean": -0.010539,
+          "wilson_ci_low": 0.252151
         },
         "252d": {
-          "n_eff": 43,
-          "mean": -0.005784,
-          "wilson_ci_low": 0.263651
+          "n_eff": 48,
+          "mean": -0.010539,
+          "wilson_ci_low": 0.252151
         },
         "756d": {
-          "n_eff": 43,
-          "mean": -0.005784,
-          "wilson_ci_low": 0.263651
+          "n_eff": 48,
+          "mean": -0.010539,
+          "wilson_ci_low": 0.252151
         },
         "all": {
-          "n_eff": 43,
-          "mean": -0.005784,
-          "wilson_ci_low": 0.263651
+          "n_eff": 48,
+          "mean": -0.010539,
+          "wilson_ci_low": 0.252151
         }
       },
       "staleness": {
-        "date_last": "2026-09-28",
+        "date_last": "2026-10-05",
         "days_since_last_fire": 9
       },
       "armed": false,
@@ -903,74 +921,74 @@
     },
     "track_record": {
       "horizon_curve": {
-        "5": 0.050349,
-        "10": 0.059002,
-        "21": 0.073589,
-        "63": 0.113679,
-        "126": 0.161133
+        "5": 0.050343,
+        "10": 0.058997,
+        "21": 0.073578,
+        "63": 0.113661,
+        "126": 0.16111
       },
       "horizon_detail": {
         "5": {
-          "ic": 0.050349,
-          "n_eff": 60502,
+          "ic": 0.050343,
+          "n_eff": 60611,
           "sd": 5e-06
         },
         "10": {
-          "ic": 0.059002,
-          "n_eff": 60422,
+          "ic": 0.058997,
+          "n_eff": 60541,
           "sd": 6e-06
         },
         "21": {
-          "ic": 0.073589,
-          "n_eff": 60317,
+          "ic": 0.073578,
+          "n_eff": 60412,
           "sd": 1e-05
         },
         "63": {
-          "ic": 0.113679,
-          "n_eff": 59919,
+          "ic": 0.113661,
+          "n_eff": 60025,
           "sd": 1.9e-05
         },
         "126": {
-          "ic": 0.161133,
-          "n_eff": 59533,
+          "ic": 0.16111,
+          "n_eff": 59648,
           "sd": 3.2e-05
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 77,
-          "mean": 0.027286,
+          "n_eff": 57,
+          "mean": 0.029756,
           "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 284,
-          "mean": 0.021652,
+          "n_eff": 269,
+          "mean": 0.021953,
           "wilson_ci_low": null
         },
         "252d": {
-          "n_eff": 1198,
-          "mean": 0.026519,
+          "n_eff": 1182,
+          "mean": 0.026334,
           "wilson_ci_low": null
         },
         "756d": {
-          "n_eff": 3417,
-          "mean": 0.026071,
+          "n_eff": 3403,
+          "mean": 0.025998,
           "wilson_ci_low": null
         },
         "all": {
-          "n_eff": 60502,
-          "mean": 0.025077,
+          "n_eff": 60611,
+          "mean": 0.025076,
           "wilson_ci_low": null
         }
       },
       "staleness": {
-        "date_last": "2026-09-25",
-        "days_since_last_fire": 12
+        "date_last": "2026-09-30",
+        "days_since_last_fire": 14
       },
       "armed": false,
-      "armed_reason": "held: pooled clears equal-weight by +0.000171, under the pre-registered 0.002679 bar",
+      "armed_reason": "held: pooled clears equal-weight by +0.000171, under the pre-registered 0.002681 bar",
       "outcome_unit": "magnitude_nonneg",
-      "regime_coverage": 0.9886
+      "regime_coverage": 0.9887
     },
     "us_board": {
       "horizon_curve": {
@@ -997,14 +1015,14 @@
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 260,
-          "mean": -0.004223,
-          "wilson_ci_low": 0.349725
+          "n_eff": 0,
+          "mean": null,
+          "wilson_ci_low": null
         },
         "63d": {
-          "n_eff": 3470,
-          "mean": -0.007689,
-          "wilson_ci_low": 0.393543
+          "n_eff": 3305,
+          "mean": -0.00817,
+          "wilson_ci_low": 0.388826
         },
         "252d": {
           "n_eff": 5740,
@@ -1024,7 +1042,7 @@
       },
       "staleness": {
         "date_last": "2026-09-17",
-        "days_since_last_fire": 20
+        "days_since_last_fire": 27
       },
       "armed": false,
       "armed_reason": "held: pooled loses out-of-sample (-0.01634) — losing less than equal-weight (-0.01650) is not an edge",
@@ -1033,45 +1051,45 @@
     },
     "whitehouse": {
       "horizon_curve": {
-        "5": -0.00869
+        "5": -0.00845
       },
       "horizon_detail": {
         "5": {
-          "ic": -0.00869,
-          "n_eff": 109,
-          "sd": 0.001081
+          "ic": -0.00845,
+          "n_eff": 113,
+          "sd": 0.001029
         }
       },
       "recency_trend": {
         "21d": {
-          "n_eff": 32,
-          "mean": -0.00198,
-          "wilson_ci_low": 0.364492
+          "n_eff": 61,
+          "mean": -0.002634,
+          "wilson_ci_low": 0.401569
         },
         "63d": {
-          "n_eff": 147,
-          "mean": -0.00554,
-          "wilson_ci_low": 0.397092
+          "n_eff": 156,
+          "mean": -0.007374,
+          "wilson_ci_low": 0.397561
         },
         "252d": {
-          "n_eff": 202,
-          "mean": -0.007024,
-          "wilson_ci_low": 0.39304
+          "n_eff": 237,
+          "mean": -0.006946,
+          "wilson_ci_low": 0.401719
         },
         "756d": {
-          "n_eff": 202,
-          "mean": -0.007024,
-          "wilson_ci_low": 0.39304
+          "n_eff": 237,
+          "mean": -0.006946,
+          "wilson_ci_low": 0.401719
         },
         "all": {
-          "n_eff": 202,
-          "mean": -0.007024,
-          "wilson_ci_low": 0.39304
+          "n_eff": 237,
+          "mean": -0.006946,
+          "wilson_ci_low": 0.401719
         }
       },
       "staleness": {
-        "date_last": "2026-09-28",
-        "days_since_last_fire": 9
+        "date_last": "2026-10-01",
+        "days_since_last_fire": 13
       },
       "armed": false,
       "armed_reason": "vacuous: the held-out tail carries one contributing member, so pooled and equal weighting are the SAME allocation — no test was run",
@@ -1079,10 +1097,10 @@
       "regime_coverage": 1.0
     }
   },
-  "generated_from": "sha256:1c377bfa5c92946c7d68fc490505775c1848fed6d79282845bd6a6487a97a891",
+  "generated_from": "sha256:eb458fa585b9cd61a2f25c0a838b720da3a95a6ecc1cb363872cea7545b06bd9",
   "schema_version": 1,
   "produced_by": "engine/neuralweb/decay.py",
-  "produced_at": "2026-10-07T09:53:21Z",
-  "inputs_hash": "sha256:721f7d3d1511cb5795d2473db2c1cd6a8a968a03059afbf0d67bc538a2fad80c",
+  "produced_at": "2026-10-14T19:28:17Z",
+  "inputs_hash": "sha256:76c3ac5b2c550a94c4f1402d4f12592c4fdf4bebc440a31239057cc4dd66382e",
   "tier": "infrastructure"
 }

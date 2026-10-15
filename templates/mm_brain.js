@@ -848,6 +848,8 @@
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
     /* mobile is compact-only: no large mode (the overlay isn't responsive there) */
     .mmb-icon[data-act="max"]{display:none!important}
+    .mmb-head .mmb-icon,.mmb-abtn,.mmb-ti-act,.mmb-ti-yes,.mmb-ti-no{min-width:44px;min-height:44px}
+    .mmb-actions{height:auto;min-height:44px}
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads{display:none}
     /* iOS: composer font MUST be ≥16px or Safari zooms the viewport on focus */
     .mmb-ta{font-size:16px}
@@ -2990,14 +2992,101 @@
   function insertBeforeActions(bub, node) { var act = bub.querySelector('.mmb-actions'); if (act) bub.insertBefore(node, act); else bub.appendChild(node); }
   function addCites(bub, cites) {
     var wrap = DOC.createElement('div'); wrap.className = 'mmb-cites';
-    cites.slice(0, 8).forEach(function (c) {
-      var a = DOC.createElement('a'); a.className = 'mmb-cite'; a.textContent = String(c).replace(/\.(json|parquet)$/, '').split('/').pop();
+    var retained = cites.filter(function (c) { return !!retainedSourceCitation(c); });
+    var other = cites.filter(function (c) { return !retainedSourceCitation(c); });
+    retained.concat(other).slice(0, Math.max(8, Math.min(9, retained.length))).forEach(function (c) {
+      var source = retainedSourceCitation(c);
+      var a = DOC.createElement('a'); a.className = 'mmb-cite';
+      a.textContent = source ? L(source.labelEn, source.labelZh) : String(c).replace(/\.(json|parquet)$/, '').split('/').pop();
+      if (source) {
+        a.className += ' mmb-l';
+        a.setAttribute('data-en', source.labelEn); a.setAttribute('data-zh', source.labelZh);
+      }
       var page = citeToPage(c); if (page) { a.href = page; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
       wrap.appendChild(a);
     });
     insertBeforeActions(bub, wrap); stickAfter();
   }
+  /* BEGIN retained source citation parser (pure URL validation). */
+
+  var EXACT_PREFIX = 'https://www.mastermind-x.com/market_memory.html?';
+  var TOKEN_PATTERNS = {
+    mm_mode: /^(historical|current)$/,
+    mm_query: /^mmquery_[0-9a-f]{64}$/,
+    mm_subject: /^mmsecurity_[0-9a-f]{64}$/,
+    mm_gen: /^mmgeneration_[0-9a-f]{64}$/,
+    mm_gen_sha: /^[0-9a-f]{64}$/,
+    mm_cutoff: null,
+    mm_method: /^mmretainedmethod_[0-9a-f]{64}$/,
+    mm_context: /^mmctx_[0-9a-f]{64}$/,
+    mm_source_context: /^mmctx_[0-9a-f]{64}$/
+  };
+  var KEY_ORDER = ['mm_mode', 'mm_query', 'mm_subject', 'mm_gen', 'mm_gen_sha',
+    'mm_cutoff', 'mm_method', 'mm_context', 'mm_source_context'];
+  var UTC_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z$/;
+
+  function isUtc(value) {
+    if (!UTC_RE.test(value)) return false;
+    var parts = [
+      Number(value.slice(0, 4)), Number(value.slice(5, 7)), Number(value.slice(8, 10)),
+      Number(value.slice(11, 13)), Number(value.slice(14, 16)), Number(value.slice(17, 19))
+    ];
+    var year = parts[0], month = parts[1], day = parts[2];
+    var hour = parts[3], minute = parts[4], second = parts[5];
+    if (year < 2000 || year > 2100 || month < 1 || month > 12) return false;
+    var monthDays = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28,
+      31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (day < 1 || day > monthDays[month - 1]) return false;
+    return hour < 24 && minute < 60 && second < 60;
+  }
+
+  function retainedSourceCitation(c) {
+    if (typeof c !== 'string' || c.length > 1024) return null;
+    if (c.lastIndexOf(EXACT_PREFIX, 0) !== 0) return null;
+    var query = c.slice(EXACT_PREFIX.length);
+    // Encoded confusion, fragments, credentials, ports and whitespace are
+    // impossible in the canonical form; reject them outright.
+    if (!query || /[ #%+\\\u0000-\u001f\u007f]/.test(query) || query.indexOf('@') !== -1) return null;
+    var pairs = query.split('&');
+    var values = {};
+    for (var index = 0; index < pairs.length; index += 1) {
+      var pair = pairs[index];
+      var eq = pair.indexOf('=');
+      if (eq === -1) return null;
+      var key = pair.slice(0, eq);
+      var value = pair.slice(eq + 1);
+      if (!Object.prototype.hasOwnProperty.call(TOKEN_PATTERNS, key)) return null;
+      if (Object.prototype.hasOwnProperty.call(values, key)) return null; // duplicate key
+      values[key] = value;
+    }
+    for (var keyIndex = 0; keyIndex < KEY_ORDER.length; keyIndex += 1) {
+      var required = KEY_ORDER[keyIndex];
+      if (!Object.prototype.hasOwnProperty.call(values, required)) return null;
+      var token = values[required];
+      if (required === 'mm_cutoff') {
+        if (!isUtc(token)) return null;
+      } else if (!TOKEN_PATTERNS[required].test(token)) {
+        return null;
+      }
+    }
+    var href = EXACT_PREFIX;
+    for (var buildIndex = 0; buildIndex < KEY_ORDER.length; buildIndex += 1) {
+      var name = KEY_ORDER[buildIndex];
+      if (buildIndex > 0) href += '&';
+      href += name + '=' + values[name];
+    }
+    var shortContext = values.mm_source_context.slice(0, 6 + 8); // mmctx_ + 8 hex
+    return {
+      href: href,
+      labelEn: 'Market memory source ' + shortContext,
+      labelZh: '\u5e02\u573a\u8bb0\u5fc6\u6765\u6e90 ' + shortContext
+    };
+  }
+
+  /* END retained source citation parser. */
   function citeToPage(c) {
+    var source = retainedSourceCitation(c);
+    if (source) return source.href;
     c = String(c);
     if (/master_brief|world_state|regime/.test(c)) return (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
     if (/options|gex|flow/.test(c)) return (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'options_hub.html';
@@ -3116,6 +3205,9 @@
      into the chat they opened. Take the composer when it is live, the gate's own primary
      action when it is not, and the first thing the panel is actually showing otherwise. */
   function focusPanel() {
+    /* The entry delay must not steal a control the user has already focused,
+       or move focus back into a panel they closed before the callback ran. */
+    if (!panel.classList.contains('open') || panel.contains(DOC.activeElement)) return;
     var cands = [ta, $('.mmb-signin')].concat(
       [].slice.call(panel.querySelectorAll('button:not([disabled]),a[href],textarea,[tabindex="0"]')));
     for (var i = 0; i < cands.length; i++) {
@@ -3810,6 +3902,20 @@
     var pair = CTX_STATUS_WORDS[status];
     return pair ? L(pair[0], pair[1]) : L('unavailable', '暂缺');
   }
+  /* Closed W1-A freshness vocabulary (fresh/stale/unknown/not_applicable).
+     Canonical `fresh` is the only state painted as current. Aliases such as
+     current/future are not granted as fresh. Missing/null/malformed/
+     unsupported states collapse to unknown — never to current. */
+  var CTX_FRESHNESS_WORDS = {
+    fresh: ['current', '最新'],
+    stale: ['stale', '较早'],
+    unknown: ['unknown', '未知'],
+    not_applicable: ['not applicable', '不适用']
+  };
+  function ctxFreshnessWord(state) {
+    var pair = (typeof state === 'string') ? Object.prototype.hasOwnProperty.call(CTX_FRESHNESS_WORDS, state) ? CTX_FRESHNESS_WORDS[state] : null : null;
+    return pair ? L(pair[0], pair[1]) : L('unknown', '未知');
+  }
   function ctxFactValue(f) {
     if (!f) return '—';
     if (f.status && f.status !== 'available') return ctxStatusWord(f.status);
@@ -3862,7 +3968,7 @@
       nf.facts.forEach(function (f) {
         var lbl = CTX_FIELD_LABELS[f.field_id]; var label = lbl ? L(lbl[0], lbl[1]) : f.field_id;
         var freshState = f.freshness && f.freshness.state;
-        var freshWord = freshState === 'stale' ? L('stale', '较早') : L('current', '最新');
+        var freshWord = ctxFreshnessWord(freshState);
         /* Review repair (NB-7): source_family only — `owner` is an internal
            label, not the plain-word "source family name" the design spec asks
            for, so it is never shown even as a fallback. */

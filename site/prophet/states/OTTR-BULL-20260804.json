@@ -1,42 +1,42 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OTTR-BULL-20260804",
-  "asof": "2026-10-08",
+  "asof": "2026-10-14",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 60.0,
-  "raw_confidence": 57.0,
-  "delta_vs_base": -0.0,
-  "recommended_action": "wait",
+  "management_confidence": 56.4,
+  "raw_confidence": 52.0,
+  "delta_vs_base": -3.6,
+  "recommended_action": null,
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 79.8,
+    "validity": 83.8,
     "progress": 0.0,
-    "pace": 58.8,
+    "pace": 24.9,
     "retention": 50.0,
-    "overlay": 47.0
+    "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.846,
+    "dist_to_stop_r": 0.877,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 28.9,
-    "p1": -0.1029,
-    "p2": -0.0514,
+    "horizon_pct_used": 42.2,
+    "p1": -0.0818,
+    "p2": -0.0409,
     "p3": null,
-    "move_r": -0.154,
+    "move_r": -0.123,
     "mfe_r": 0.0,
     "mae_r": -0.158
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
@@ -45,6 +45,14 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 13,
-  "tau": 0.2889
+  "days_elapsed": 19,
+  "tau": 0.4222,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-08",
+    "run_asof": "2026-10-14",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  }
 }

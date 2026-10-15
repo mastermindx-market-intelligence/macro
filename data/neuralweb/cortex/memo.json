@@ -1,35 +1,34 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-07T10:22:47+00:00",
-  "summary": "Context-only committee read: the world state is mixed, with growth stress receding but no all-clear because the dominant rates/inflation pressure remains elevated. The confirmed Q2/Reflation label has only 0.02 confidence and its own raw axes point toward Q1; restrictive rising real yields, a bear steepener, confirmed credit stress, neutral-hollow liquidity, poor breadth and a safety-driven dollar conflict with the benign interpretation. Leadership remains intact, volatility is normalizing and the measured caution-state 21-day drawdown rate is not above base, so this is a contradiction-rich attention regime rather than a directional forecast. No signal, ranking, sizing instruction or trade is originated.",
+  "as_of": "2026-10-14T19:55:17+00:00",
+  "summary": "Context-only committee read: the US backdrop is MIXED, with trend and calm volatility offset by exceptionally weak breadth, contracting liquidity, widening credit, and zero bonds/FX agreement. The confirmed Q2 label is one session from a possible Q1 transition because its current growth/inflation signs no longer support Q2. Risk Radar remains an advisory early-warning state, not a measured edge: its exact caution cell shows a 16.0% 21-day pullback rate versus a 17.8% base rate, and several underlying inputs are stale. No ranking, sizing, escalation, or trade inference is made.",
   "what_fired": [
-    "Rates/inflation scare remains elevated at 84.8; credit stress remains elevated at 80.7.",
-    "Breadth is weak: 29.3% of S&P 500 members are above the 50-day average, 47.3% above the 200-day average, and breadth divergence is present.",
-    "Cross-asset confirmation diverges from the equity regime; FX dollar and rates-credit both contradict Q2.",
-    "Real 10-year yield is 2.95%, rising and at a five-year extreme; the curve is bear-steepening.",
-    "Liquidity is neutral-hollow: RRP buffer is exhausted, composition is mechanical and stress confirmation remains present.",
-    "Factor panel is immature with only 11 dates; Pair G is dormant and no factor-attention history exists.",
-    "A conditional-regime hypothesis was submitted for formal metabolism testing: breadth below 30% with intact leadership and subsequent 21-day RSP-minus-SPY excess return."
+    "Market-state breadth score is 0; only 48.3% of members are above the 200-day average and breadth divergence is present.",
+    "Liquidity quality is contracting with stress confirmation; the RRP buffer is exhausted and HY spreads have widened.",
+    "Rates and term-premium pressure remain elevated: real 10-year yield 2.92%, restrictive/rising, with a bear steepener.",
+    "Cross-asset confirmation diverges: bonds and FX have 0% agreement with the equity regime.",
+    "Factor weather is mixed; profitability leads, growth/technology ratios are positive, and small caps lag. Pair G is dormant because the panel has only seven dates.",
+    "Systematic positioning is split: volatility-control is adding while CTAs are cutting."
   ],
-  "contradictions_review": "Five graph contradictions were reviewed. The central macro tension is that the low-confidence Q2/Reflation label conflicts with safety-driven dollar behavior and rates-credit evidence. Internally, weak participation and 32 demand-versus-supply ticker divergences coexist with intact leadership and concentrated technology strength. Options skew contradictions are old display-only context and cannot support a directional conclusion. Factor Pair G contains no records because the panel has not reached its 60-date activation floor. Open Master Brain theses are also inconsistent with current evidence: long-Treasury theses face their own real-yield/bear-steepener falsifier; semiconductor-underweight and growth-over-value-underweight theses conflict with current relative-strength evidence; China theses are mutually opposed while the China state is stale.",
+  "contradictions_review": "Six display-only contradictions are active. The important macro tensions are Q2 versus the caution/rates backdrop, FX and rates-credit versus Q2, and bonds/FX versus equities. These do not establish a trade direction. Pair G has no records because the factor panel has not reached 60 dates. The open-thesis review adds three operator-level conflicts: semiconductor underweights are stale against intact leadership and positive recent growth/technology relative performance; China overweight conflicts with grinding-bear/risk-off context; and long-Treasury overweights conflict with real yields above 2.5%, rising term premium, and bear steepening. The thesis ledger also reuses id mb-2026-07-01-1 for different subjects.",
   "decaying_families": [
-    "Altdata: negative shrunken IC across pooled 5-, 21- and 63-day horizons; held and unarmed.",
-    "Policy and policy-intent: negative signed excess estimates, thin samples and unarmed status.",
-    "Narrative, radar, stock-desk and thematic-desk 63-day families: negative signed-excess estimates and unarmed/vacuous validation states.",
-    "Factor composite: not tradeable; investment, low-vol, low-beta and composite legs have negative historical IC, with survivorship-biased evidence.",
-    "Risk Radar attention interpretation: 44 graded observations but no alerts and zero realized hits in logged caution/watch/calm rows; its present caution state is an early watch, not a measured edge."
+    "Altdata remains unarmed and has negative shrunken IC across pooled 5/21/63-day horizons.",
+    "Policy and policy-intent families remain unarmed, negative on signed excess, or too thin for a decision.",
+    "AI, narrative, radar, stock, and thematic desk 63-day families show negative signed excess and remain unarmed or vacuous under held-out testing.",
+    "CA/HK board positive MFE summaries are not directional evidence: their outcome basis is unsigned MFE and their held-out test is vacuous.",
+    "Factor composite is non-tradeable; investment, low-volatility, low-beta, and composite scorecard legs have negative IC."
   ],
   "deserves_operator": [
-    "Reconcile the low-confidence Q2 label with current FX and rates-credit contradictions. Clear only after five sessions without cross-asset divergence and either real 10-year yield below 2.75% or HY OAS below 2.90%.",
-    "Score or close the overdue long-Treasury thesis: its registered falsifier appears met with real 10-year yield at 2.95% and a bear-steepening curve.",
-    "Score or close overdue semiconductor-underweight theses; current semiconductors/technology leadership conflicts with them. Clear the attention item only if SMH relative strength falls below its 20-day average and stays negative for five sessions.",
-    "Score or close overdue growth-over-value-underweight theses; IWF/IWD is currently +6.23% over 20 days. Clear only if that relative performance is non-positive for five sessions.",
-    "Reconcile mutually opposed and overdue China-equity theses after the China state refreshes within SLA; current dollar-to-EM pathway context remains adverse.",
-    "Treat weak breadth with intact leadership as a formal test candidate only; do not convert it into a signal before the pre-committed sample and excess-return gate are met."
+    "Resolve the Q2-to-Q1 transition after the next confirmation session; do not treat the pending label as complete early.",
+    "Refresh HY OAS, OFR FSI, and US10Y before relying on the risk-radar/rates conjunction.",
+    "Review and close, score, or explicitly renew open theses whose check-by dates have passed\u2014especially semiconductors, China equities, long Treasuries, growth/value, Bitcoin, high yield, and US equities.",
+    "Resolve duplicate thesis id mb-2026-07-01-1, which currently refers to both Long Treasuries and China equities.",
+    "Treat the current caution banner as advisory only unless refreshed evidence moves its calibrated state above base rate with a confirmed validated leg.",
+    "Do not infer absence of factor contradiction from the empty Pair G ledger; coverage is insufficient, not clean."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-14",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -41,8 +40,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 101,
-      "total_rows": 109
+      "ungradeable": 127,
+      "total_rows": 135
     },
     "is_context_only": true
   },
@@ -55,7 +54,6 @@
     "read_kernel": 1,
     "read_master_brain_theses": 1,
     "flag_attention": 1,
-    "stake_hypothesis": 2,
     "write_memo": 1
   },
   "is_context_only": true,
@@ -96,20 +94,12 @@
         "ok": true,
         "error_type": null,
         "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 11,
+    "tool_call_batches": 3,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-07T10:11:04Z"
+    "context_as_of": "2026-10-14T19:32:19Z"
   }
 }

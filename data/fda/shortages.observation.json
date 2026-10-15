@@ -8,34 +8,37 @@
       "2026-10-01",
       "2026-10-02",
       "2026-10-05",
-      "2026-10-07"
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-13"
     ]
   },
   "last_refresh": {
-    "attempted_at": "2026-10-07T07:28:20.400019+00:00",
+    "attempted_at": "2026-10-14T18:01:03.280455+00:00",
     "failure_code": null,
     "partial_rows_observed": 0,
     "qualified": true
   },
-  "parquet_sha256": "0d2d488cf4c06bbd8e5c1d8dc55d42cabd80ff43e922530130a24f16f7e06950",
-  "predecessor": "c182de1572e9e9de37b7841b9e7f0c70d2a192e3102ac1e5b16a27320351e6ed",
+  "parquet_sha256": "90c5efa7502fc5b9609c8019b1cacc88d3447c13933b5649aae55305fb547789",
+  "predecessor": "2068c47768881f1cf720e0bb85ca593bafa6444d46e602b6061bafda55877bfd",
   "retention": {
     "absent_generations_kept": 90,
     "dropped_absent_rows": 0
   },
   "schema": "fda_shortages_observation.v1",
   "selected_capture": {
-    "acquisition_interval_s": 9.458501,
+    "acquisition_interval_s": 10.559207,
     "atomic_snapshot_proven": false,
     "complete": true,
-    "finished_at": "2026-10-07T07:28:20.400019+00:00",
+    "finished_at": "2026-10-14T18:01:03.280455+00:00",
     "max_pages": 25,
     "page_size": 100,
     "pages": 16,
-    "raw_count": 1590,
-    "reported_total": 1590,
-    "source_generation": "2026-10-07",
-    "started_at": "2026-10-07T07:28:10.941518+00:00",
-    "unique_count": 1586
+    "raw_count": 1580,
+    "reported_total": 1580,
+    "source_generation": "2026-10-13",
+    "started_at": "2026-10-14T18:00:52.721248+00:00",
+    "unique_count": 1576
   }
 }

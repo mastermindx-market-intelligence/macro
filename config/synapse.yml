@@ -798,10 +798,17 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/neuralweb/rotation_risk_context.py
+      - engine/neuralweb/world_state.py
+      - engine/neuralweb/brain_gateway.py
+      - engine/neuralweb/mastermind_context.py
+      - scripts/build_world_state.py
       - scripts/build_site.py
-    external_consumers: []
+    external_consumers:
+      - mastermind:brain/neural_web_context.py
+      - mastermind-terminal:ingest/pull_macro_risk.py
     qual_ladder_ref: null
-    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. Live provisional lane (site/live/risk_envelope.json) is GD-3, not yet built."
+    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. The live provisional lane is owned by scripts/build_live_risk_envelope.py at site/live/risk_envelope.json. Early rotation and lineage are descriptive context only; all capital authority remains separate."
 
   cycle-ontology-falsifiers:
     path: data/cycle_ontology/falsifiers.json
@@ -1927,11 +1934,14 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/market_state_audit.py
       - engine/market_state_tune.py
       - scripts/build_site.py
     external_consumers: []
     notes: "Producer: engine/market_state_audit.py append, idempotent by as-of."
+    # Risk Envelope carries only qualified first-writer logged_at receipts for recorded transitions; current snapshots remain separately qualified and are not reconstructed onset evidence.
 
   vol-regime-gate:
     path: data/vol_regime/gate.json
@@ -5912,6 +5922,59 @@ artifacts:
       (pin behavior). Grading targets are VOL/PATH objects — never directional return
       (RO-3/F-21). Graded field set when maturity arrives (horizon: 10d post-expiry).
       Accruing from 2026-07; maturity_date 2026-09-30. Sole writer: scripts/build_vol_regime.py.
+
+  grey-deer-pullback-forward-log:
+    path: data/grey_deer_pullback/forward_log.jsonl
+    format: jsonl
+    producer: engine/grey_deer_pullback_forward.py
+    known_extra_writers:
+      - "scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the writer; holds no model, label, gate or clock logic"
+    owner_program: grey-deer-risk-intelligence
+    cadence: daily-engine
+    storage: git
+    asof_field: asof
+    freshness_sla_hours: 96
+    schema: grey_deer_pullback_forward_issue.v1
+    tier: shadow
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/grey_deer_pullback_forward_grade.py
+    external_consumers: []
+    notes: >
+      Grey Deer pullback prospective lane (O7/W5). Append-only issue log: one
+      immutable row per (asof, ticker, horizon, config_id) for SPY at h5/h10/h21,
+      written by the frozen writer under COLLECT_LANE=nightly and the
+      daily.yml:engine identity pin. Research tier only: never displayed, never
+      ranks, sizes or gates; no trial_ledger append. Stage-1b confirmatory claims
+      were 0 of 12 (PR #9122), so this log measures prospectively and promotes
+      nothing.
+
+  grey-deer-pullback-forward-graded:
+    path: data/grey_deer_pullback/forward_log_graded.jsonl
+    format: jsonl
+    producer: engine/grey_deer_pullback_forward_grade.py
+    known_extra_writers:
+      - "scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the grader"
+    owner_program: grey-deer-risk-intelligence
+    cadence: daily-engine
+    storage: git
+    asof_field: graded_at
+    freshness_sla_hours: 96
+    schema: grey_deer_pullback_forward_grade.v1
+    tier: shadow
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - scripts/audit_grading_closure.py
+    external_consumers: []
+    notes: >
+      Grade sidecar for grey-deer-pullback-forward-log. One row per matured issue
+      key with realized outcome, revision_flag (inputs digest recomputed over the
+      grade-time prefix) and grader provenance. Same lane and identity gates as
+      the writer. Research tier only; authority all-false.
 
   options-flow-index:
     path: site/flow/index.json
@@ -15848,6 +15911,8 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/neuralweb/world_state.py
     external_consumers: []
     notes: >
@@ -15867,6 +15932,7 @@ artifacts:
       inline); coldstart replay seeds data/rotation_events/coldstart_seed.jsonl
       (EXCLUDED from the graded census — see ROTATION_UNIVERSE_EXTENSION_PREREG).
       Display-only; authority.may_rank/gate/size/escalate=false.
+    # early_context.as_of is the actual price session; legacy as_of retains confirmed-event semantics. No early-state ledger, severity vote, or capital authority is added.
 
   data-rotation-events-ledger:
     path: data/rotation_events/events.jsonl
@@ -18182,6 +18248,12 @@ artifacts:
       namespace, while the compact provenance ledger is git-retained. Filing metadata
       records legacy/modern/EFFECT XML file-number provenance and each new bundle
       retains EX-1 underwriting and EX-FILING FEES children when present.
+      Sharded byte-exactly since 2026-10-13 (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY):
+      this path is part 1 and is never rewritten once sealed; continuation parts
+      source_manifest.part-NNNN.jsonl (contiguous from 0002, each under GitHub's
+      100 MiB blob limit) hold later rows, and the logical ledger is the ordered
+      byte concatenation read by engine.capital_structure.source_ledger_io. The
+      daily.yml handoff receipt and the push fence judge that logical stream.
 
   capital-structure-companyfacts-source-manifest:
     path: data/capital_structure/companyfacts/generations/*/source_manifest.parquet

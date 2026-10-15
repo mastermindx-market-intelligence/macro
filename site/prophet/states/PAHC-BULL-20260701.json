@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PAHC-BULL-20260701",
-  "asof": "2026-10-08",
+  "asof": "2026-10-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.0,
   "raw_confidence": 46.0,
   "delta_vs_base": -15.0,
-  "recommended_action": "trim",
+  "recommended_action": null,
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 45.0,
+    "progress": 42.7,
     "pace": 0.0,
-    "retention": 68.2,
-    "overlay": 59.0
+    "retention": 63.6,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.866,
-    "dist_to_t1_r": 0.634,
-    "dist_to_t2_r": 2.134,
-    "horizon_pct_used": 191.1,
-    "p1": 0.5774,
-    "p2": 0.2887,
+    "dist_to_stop_r": 1.807,
+    "dist_to_t1_r": 0.693,
+    "dist_to_t2_r": 2.193,
+    "horizon_pct_used": 204.4,
+    "p1": 0.5382,
+    "p2": 0.2691,
     "p3": null,
-    "move_r": 0.866,
+    "move_r": 0.807,
     "mfe_r": 1.27,
     "mae_r": 0.0
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.9199981689453125,
@@ -45,6 +45,14 @@
   "_first_trigger_ts": "2026-07-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111
+  "days_elapsed": 92,
+  "tau": 2.0444,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-08",
+    "run_asof": "2026-10-14",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  }
 }

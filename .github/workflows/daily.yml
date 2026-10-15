@@ -849,17 +849,19 @@ jobs:
           # sound input (#4600's restore-a-clean-ledger self-heal) but it is a
           # DIFFERENT ledger, so the receipt must describe whatever actually survived
           # rather than what the collectors wrote 20 minutes earlier.
-          if command -v shasum >/dev/null 2>&1; then
-            sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          # JSONL, newline-terminated by contract (decode_source_ledger rejects a
-          # partial final line), so `wc -l` IS the row count.
-          rows="$(wc -l < "$ledger" | tr -d ' ')"
-          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "rows=$rows" >> "$GITHUB_OUTPUT"
-          echo "capital-structure handoff stamped: $rows rows, sha256 $sha"
+          #
+          # The ledger is SHARDED byte-exactly: $ledger is part 1 (never rewritten
+          # once sealed) and source_manifest.part-NNNN.jsonl continuation parts hold
+          # later rows, each under GitHub's 100 MiB blob limit -- the single file
+          # crossed it on 2026-09-27 and every nightly through 10-09 compiled a
+          # generation and lost it at push (GH001). The receipt therefore describes
+          # the LOGICAL ledger, the ordered concatenation of every part: `rows` is
+          # still its newline count and `sha256` still its digest (byte-for-byte the
+          # old shasum/wc receipt while no continuation part exists), and ONE script
+          # owns that arithmetic on both sides of the handoff. Appends to
+          # $GITHUB_OUTPUT itself; a part listing it cannot read stamps nothing, so
+          # the verify step refuses as "no ledger receipt".
+          python scripts/capital_structure_ledger_receipt.py stamp --root data/capital_structure
       - name: hand the capital-structure workspace to its own job
         continue-on-error: true
         # actions/upload-artifact v4.6.2 — the pin already used by the diagnostics
@@ -892,6 +894,7 @@ jobs:
             !data/capital_structure/source_objects
             !data/capital_structure/share_counts
             !data/capital_structure/*.tmp.parquet
+            !data/capital_structure/*.tmp.jsonl
           # An empty handoff is a real defect, not a quiet no-op: fail the upload so
           # the receipt is absent and the other job refuses to compile.
           if-no-files-found: error
@@ -1082,17 +1085,12 @@ jobs:
             echo "::error title=capital-structure-handoff::$ledger is absent after the artifact download."
             exit 1
           fi
-          if command -v shasum >/dev/null 2>&1; then
-            actual_sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            actual_sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          actual_rows="$(wc -l < "$ledger" | tr -d ' ')"
-          if [ "$actual_sha" != "$EXPECTED_SHA" ]; then
-            echo "::error title=capital-structure-handoff::ledger mismatch — collect stamped ${EXPECTED_ROWS} rows / ${EXPECTED_SHA}, this tree holds ${actual_rows} rows / ${actual_sha}. The likeliest cause is that the artifact did not land ON TOP of the checkout, leaving the last COMMITTED ledger in place; compiling that would reproduce yesterday byte-for-byte, commit nothing, and freeze the lane green."
-            exit 1
-          fi
-          echo "capital-structure handoff verified: $actual_rows rows, sha256 $actual_sha"
+          # The ledger is sharded byte-exactly across $ledger and its
+          # source_manifest.part-NNNN.jsonl continuation parts; the receipt covers
+          # their ordered concatenation, and the SAME script that stamped it in
+          # `collect` verifies it here, exiting 1 on a mismatch, a missing part, or a
+          # part listing it cannot read (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY).
+          python scripts/capital_structure_ledger_receipt.py verify --root data/capital_structure --expect-sha256 "$EXPECTED_SHA" --expect-rows "$EXPECTED_ROWS"
       - name: timings band — capital-structure (W2)
         run: python3 scripts/nightly_timings.py mark --band capital-structure || echo "::warning::timings band mark failed (non-fatal)"
       - name: materialize authenticated capital-structure share counts (context-only)
@@ -1271,6 +1269,7 @@ jobs:
           name: capital-structure-ledger-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             data/capital_structure/source_manifest.jsonl
+            data/capital_structure/source_manifest.part-*.jsonl
             data/capital_structure/source_manifest.parquet
             data/capital_structure/telemetry.json
             data/capital_structure/ingestion_run.json
@@ -3189,6 +3188,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
@@ -3236,12 +3236,24 @@ jobs:
           COLLECT_LANE: nightly  # lane sentinel: basket_turn_watch.stamp_ledger + other engine
                                  # nightly-only ledger writers check COLLECT_LANE==nightly before
                                  # writing; render/earlyclose/asia-close lanes leave it unset → no-op.
+          # Grey Deer pullback lane: writer + grader refuse unless these pin this job.
+          GREY_DEER_PULLBACK_WRITER_IDENTITY: daily.yml:engine
+          GREY_DEER_PULLBACK_GRADER_IDENTITY: daily.yml:engine
           # FTR W10: build_baskets.py calls notify_turn_events at the end of main().
           # Without these env vars the hook hits dark mode (no webhook → exit 0).
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      - name: retain this run's Theme Graph generation witness (advisory)
+        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
+          if-no-files-found: warn
+          retention-days: 14
       # Durable core checkpoint (incident run 35547644919): the coherent builder
       # band completed, but a later best-effort tail exhausted the 300-minute job
       # cap before the sole broad publisher. Persist the core public tree here;
@@ -4305,6 +4317,27 @@ jobs:
         # Fail-open: missing source → gaps[] + null block, always exits 0.
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
+      - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
+        # The frozen v1 producer (#6296) had NO production caller: no workflow ran
+        # it, it was absent from config/dag.yml, and its only .github reference was
+        # the `paths:` filter of the pack-executed CI test lane
+        # `global-liquidity-transmission` (.github/ci/legacy-jobs.yml), which tests
+        # the producer and never publishes. The served state therefore sat at
+        # evidence_available_at 2026-08-28 after the 2026-09-04 manual regeneration
+        # (research/GLOBAL_LIQUIDITY_TRANSMISSION_LIVENESS_2026-10-13.md).
+        # Pure local reads, no network: data/fred/{BUSLOANS,WALCL,ECBASSETSW,
+        # JPNASSETS,DTWEXBGS,DFII10,BAMLH0A0HYM2} + yahoo EURUSD=X/USDJPY=X from
+        # the collect job; data/china_credit/tsf.parquet from the asia lane
+        # (asia-close.yml); data/regime/latest.json from this job (already
+        # consumed by the plumbing step above). Measured 2026-10-13 on the M2:
+        # 2.54 s wall, ~136 MiB peak RSS. Writes site/liquiditydata/
+        # global_liquidity_transmission.json + data/global_liquidity_transmission/
+        # {state_history.parquet,state_history_meta.json,factor_comparison_btc_4w.json};
+        # covered by 'git add data/ site/' in 'commit engine outputs' below.
+        # Display tier, validated=False; this step changes WHEN the producer runs,
+        # never its semantics. A failure leaves the last committed artifact, whose
+        # own evidence clock then ages it stale in every reader.
+        run: python -m scripts.build_global_liquidity_transmission || echo "::warning::build_global_liquidity_transmission failed (non-fatal — last committed artifact stands)"
       - name: Price Pressure lobe (DRL W1, display-tier, non-fatal)
         # Single-name residual shocks: the Dislocation & Recovery lobe's nightly
         # increment. Pure aggregation over committed stores, NO network calls.
@@ -4900,6 +4933,45 @@ jobs:
         # continue-on-error above lets unrelated rendering finish; this terminal gate
         # makes any missing/failed build or exact-path publication fail the engine job.
         run: bash scripts/ci/options_signal_nightly.sh assert-integrity
+      - name: fif saved research notifications (X2-n — enqueues only; never sends)
+        # Reads the designated "Filing Forensics" Supabase watchlist (the
+        # subscription surface, R2) service-side and LOCAL FIF trigger inputs,
+        # then enqueues public.alert_outbox rows for users watching an issuer
+        # that changed. Enqueue-only: delivery is F08's drain, never this step.
+        # The broad-sec receipt and the production generation pointer exist
+        # only in the private R2 research vault today (census C6) — the
+        # producer never reads R2, so both triggers are "no event" (R5) until
+        # a local mirror is wired; only engine priority=high findings (the FIF
+        # private state written earlier in this job) can fire.
+        # Fail-soft: absent creds/tables/inputs -> typed unavailable, 0 rows,
+        # exit 0. Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported).
+        # Placed after every render/publish step of the engine job (census
+        # C5) and immediately AHEAD of the W2 timings finish step, which
+        # tests/test_nightly_timings.py requires to stay the job's last
+        # step. A wedged step can never land ahead of the render/publish
+        # path. `if: always()` is the engine delivery-tail law
+        # (tests/test_push_retry.py: every step after "commit engine
+        # outputs" runs even when that push is lost). On a timeout-cancel
+        # night it therefore runs inside the runner's ~5-min post-cancel
+        # grace ahead of the finish step: dormant (the default) it exits in
+        # well under a second; enabled, timeout-minutes: 3 caps it so it can
+        # never consume the whole grace, and a kill mid-run is safe because
+        # every enqueue is deduped by its frozen key (re-minted next night).
+        # timeout-minutes + continue-on-error are load-bearing: a timeout
+        # kill is a step FAILURE the `||` shape cannot absorb, so
+        # continue-on-error is what keeps it non-fatal.
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # Recurring-briefs precedent (daily.yml:4248-4253): reuse the
+          # incumbent repo service-role secret; the producer's SUPABASE_URL
+          # has a reviewed project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FIF_SAVED_RESEARCH_ENABLE: ${{ secrets.FIF_SAVED_RESEARCH_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "fif saved research notifications: job cancelled, skipping"; exit 0; }; python -m scripts.run_fif_saved_research_notifications || echo "::warning::fif saved research notifications failed (non-fatal)"'
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()   # DELIBERATELY AHEAD of the two delivery steps below — this is the ONLY job where the finish step is not last, and the exception is load-bearing. `if: always()` steps DO run after a timeout-cancel, but only inside the runner's ~5-minute force-termination grace, and this job's tail is the most expensive always() tail in the workflow. Evidence, run 31067383446 (2026-08-06): engine started 10:05:45Z, completed 13:30:46Z = 205.0m = the 200m cap + exactly 5m of grace; steps 117-121 (commit engine outputs → feeds → R2 publish → verify → strip) all ran post-cancel, step 122 "upload pages artifact" burned what was left and ended `failure`, and step 123 — this one — WAS NEVER SCHEDULED AT ALL (the GH jobs API step list jumps straight from 122 to the Post steps). Result: data/ops/nightly_timings/engine.jsonl carried ONE row, source `backfill-gh-api`, while all 15 sibling jobs had native rows — the 85% tripwire was structurally dark for the ONE job whose creep caused the Jul31-Aug6 outage, and dark on exactly the nights it existed to pre-announce. Ordering it here costs a healthy night nothing (both steps still run to completion) and on a cancel night trades an artifact upload that is already failing for the telemetry that explains WHY the night died. The row + the ::warning land in this step's first second; only its bounded commit/push can be cut short. Pinned by tests/test_nightly_timings.py::test_finish_step_is_not_stranded_behind_the_pages_artifact_upload — do not move it back below the upload.
         run: bash scripts/ci/nightly_timings_finish.sh 300

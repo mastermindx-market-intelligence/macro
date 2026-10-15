@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MMS-BULL-20260414",
-  "asof": "2026-10-08",
+  "asof": "2026-10-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -11,20 +11,20 @@
   "human_state": "Invalidated",
   "components": {
     "validity": 0.0,
-    "progress": 0.0,
+    "progress": 19.3,
     "pace": 0.0,
-    "retention": 0.0,
+    "retention": 35.9,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -2.311,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 106.7,
-    "p1": -0.8741,
-    "p2": -0.4371,
+    "dist_to_stop_r": -0.719,
+    "dist_to_t1_r": 1.219,
+    "dist_to_t2_r": 2.719,
+    "horizon_pct_used": 120.0,
+    "p1": 0.1871,
+    "p2": 0.0935,
     "p3": null,
-    "move_r": -1.311,
+    "move_r": 0.281,
     "mfe_r": 0.781,
     "mae_r": -2.867
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5300000000000011,
@@ -45,6 +45,14 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667
+  "days_elapsed": 54,
+  "tau": 1.2,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-08",
+    "run_asof": "2026-10-14",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  }
 }

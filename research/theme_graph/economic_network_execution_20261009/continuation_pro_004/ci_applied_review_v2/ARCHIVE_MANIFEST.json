@@ -1,0 +1,109 @@
+{
+  "schema": "research.gmi.wp02.independent_ci_review_archive/v1",
+  "status": "FROZEN_BOUNDED_INDEPENDENT_REVIEW",
+  "archive": {
+    "path": "WP02_INDEPENDENT_CI_INTEGRATION_REVIEW.tar.gz",
+    "byte_length": 23925,
+    "sha256": "2567157e56833211d8743878f3f9b5b5d3ffcef4ddf76fa13e6d972250df9bba"
+  },
+  "file_count": 16,
+  "uncompressed_bytes": 105089,
+  "files": [
+    {
+      "path": "ACCEPTED_STOCK_CLOCK_CI_DELTA.json",
+      "byte_length": 1967,
+      "sha256": "8e4dad0c02fcb6c13c5e5b2302dad40471323203c7b164fef2b63b98d3322b41"
+    },
+    {
+      "path": "DELIVERY_PREPARATION_RECEIPT.json",
+      "byte_length": 3282,
+      "sha256": "070ace6b1034f82b797ee9e1949cd5bb09e534b15debc6eb36dd7a8b0efe112d"
+    },
+    {
+      "path": "PREPARATION_MANIFEST.json",
+      "byte_length": 741,
+      "sha256": "69788a65a74a3bcc391358c364f5cde2f535e90a92f758a542a5a7fd75ff0d56"
+    },
+    {
+      "path": "PREPARATION_REVIEW.md",
+      "byte_length": 6122,
+      "sha256": "b81085fdd0aaca09d9bed92974345a8f22d98b06a1f9bf07e87451b524eeed7b"
+    },
+    {
+      "path": "revision_2/APPLIED_CI_REVIEW_V2.md",
+      "byte_length": 7985,
+      "sha256": "73cb1f337d3199c98853fdb14d7a6a7c9f6f597ac03e612e95f717833a730566"
+    },
+    {
+      "path": "revision_2/APPLIED_INVERSE_NATIVE_OUTPUT.txt",
+      "byte_length": 12472,
+      "sha256": "af780890ff3e9e4093073d10857a5cf4d6f016009f97f5b971813e05c9517cbf"
+    },
+    {
+      "path": "revision_2/APPLIED_INVERSE_RECEIPT_V2.json",
+      "byte_length": 12746,
+      "sha256": "df8872234155adedf5b4eec80909ba47cd3e6b2a697fbab00dc3665455256d0e"
+    },
+    {
+      "path": "revision_2/APPLIED_REVIEW_MANIFEST_V2.json",
+      "byte_length": 2117,
+      "sha256": "7ab241eb675d9b3d921581c30340d7fb504d229c26bab028f11479b879fe6e24"
+    },
+    {
+      "path": "revision_2/DELIVERY_PREPARATION_RECEIPT_V2.json",
+      "byte_length": 15093,
+      "sha256": "0700226612f6738562e95d603824b5b4670dabed78a8a62b2157048b6a23cce9"
+    },
+    {
+      "path": "revision_2/EXISTING_SELECTOR_PROBE.py",
+      "byte_length": 2988,
+      "sha256": "2734c656da48e22ebdecdd0c257d488d5694a19b78674cb4949e6e832a682af0"
+    },
+    {
+      "path": "revision_2/PREPARATION_MANIFEST_V2.json",
+      "byte_length": 897,
+      "sha256": "8032fa9eb306abca982fbb78fe7bf57c7436b00aa7261ad62873c7ec1e9985a7"
+    },
+    {
+      "path": "revision_2/PREPARATION_REVIEW_V2.md",
+      "byte_length": 4525,
+      "sha256": "aad26f0725cff2a1fe17d9c90c9325f9c2c06ccb418131d7349f14c2ace02575"
+    },
+    {
+      "path": "revision_2/PRINCIPAL_VALIDATION_CONTEXT.json",
+      "byte_length": 1578,
+      "sha256": "906946c2caec7867fbb3ba66f8f30d93d9afa01e13997eb77b6e8d0287c5f1b2"
+    },
+    {
+      "path": "revision_2/PRINCIPAL_VALIDATION_CONTEXT.md",
+      "byte_length": 2056,
+      "sha256": "63f5f93f9134e7aa6f74a95459c9acf2c7b24cb41e5eeaa7f957a32aa635a26b"
+    },
+    {
+      "path": "revision_2/verify_applied_ci_delta_v2.py",
+      "byte_length": 15376,
+      "sha256": "46b324400f86eddf68f74b8804b7ec4defc88d4ad8b34636f364be7018dcb704"
+    },
+    {
+      "path": "verify_applied_ci_delta.py",
+      "byte_length": 15144,
+      "sha256": "0711eb6b4c9fd252d462867f597a3349b2792a23e054772c5b115a723755cb94"
+    }
+  ],
+  "all_members_verified_without_extraction": true,
+  "deterministic_second_encoding_equal": true,
+  "independent_actual_native_processes": [
+    {
+      "pid": 47856,
+      "exit_code": 0
+    },
+    {
+      "pid": 48797,
+      "exit_code": 0
+    }
+  ],
+  "native_kernel_or_pytest_execution_by_reviewer": false,
+  "native_mutation_by_reviewer": false,
+  "principal_followup_validation": "PENDING_SEPARATE_PRINCIPAL_RECEIPT",
+  "created_at_utc": "2026-10-09T13:57:28.513367+00:00"
+}

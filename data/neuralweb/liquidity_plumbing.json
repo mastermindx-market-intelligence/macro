@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.liquidity_plumbing.v1",
-  "asof": "2026-10-06",
+  "asof": "2026-10-08",
   "phase_status": {
     "p0_p1_quantity_quality": "integrated",
     "p3_funding_spreads": "integrated",
@@ -23,101 +23,93 @@
     "summary": "Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
   },
   "fed": {
-    "assets_bn": 6743.031,
-    "assets_chg_20d_bn": 5.827,
-    "reserve_balances_bn": 2948.09,
-    "walcl_stale_days": 4,
+    "assets_bn": 6747.56,
+    "assets_chg_20d_bn": 6.941,
+    "reserve_balances_bn": 3029.659,
+    "walcl_stale_days": 1,
     "policy_stance": "hawkish",
     "administered_rate_posture": "tightening",
-    "asof": "2026-10-06"
+    "asof": "2026-10-08"
   },
   "treasury": {
-    "tga_bn": 883.335,
-    "tga_chg_20d_bn": -5.588,
-    "net_issuance_20d_bn": 16.881,
+    "tga_bn": 885.783,
+    "tga_chg_20d_bn": 42.078,
+    "net_issuance_20d_bn": 50.923,
     "expected_tga_pressure": "unknown_until_financing_estimates_parser",
     "coupon_supply_pressure": "context_only",
     "tga_impulse": {
-      "active": true,
-      "direction": "drawdown",
-      "magnitude_bn": 121.1,
-      "days": 10,
-      "since": "2026-09-21",
+      "active": false,
+      "direction": null,
+      "magnitude_bn": null,
+      "days": null,
+      "since": null,
       "quarter_end_adjacent": false,
-      "summary_en": "Treasury spent down $121B of its cash account since Sep 21 — that cash re-enters the financial system (supportive while it lasts).",
-      "summary_zh": "自9月21日起，美国财政部已动用现金账户中的$121B — 这部分资金重新流入金融体系（短期内具支撑性）。"
+      "summary_en": "No TGA impulse detected.",
+      "summary_zh": "未检测到TGA冲量。"
     },
-    "asof": "2026-10-05"
+    "asof": "2026-10-07"
   },
   "rrp": {
-    "rrp_bn": 0.414,
-    "rrp_chg_20d_bn": -0.212,
+    "rrp_bn": 0.335,
+    "rrp_chg_20d_bn": -4.401,
     "buffer_state": "exhausted"
   },
   "quantity": {
-    "netliq_bn": 5859.282,
-    "netliq_chg_20d_bn": 2.723,
-    "netliq_chg_65d_bn": -79.456,
-    "netliq_pctile_expanding": 0.785229,
+    "netliq_bn": 5861.442,
+    "netliq_chg_20d_bn": -56.331,
+    "netliq_chg_65d_bn": -121.576,
+    "netliq_pctile_expanding": 0.786042,
     "overlay": "neutral"
   },
   "quality": {
     "label": "neutral-hollow",
-    "fed_share": 0.35,
+    "fed_share": 0.5,
     "mechanical": true,
     "stress_confirming": true,
     "stress_overlay": {
-      "hy_oas_pct": 3.12,
-      "hy_oas_z": 2.23,
-      "nfci": -0.548,
+      "hy_oas_pct": 3.09,
+      "hy_oas_z": 1.93,
+      "nfci": -0.494,
       "nfci_trend": "tightening",
       "confirming_stress": true
     },
-    "walcl_stale_days": 4
+    "walcl_stale_days": 1
   },
   "funding": {
     "effr_minus_iorb_bp": -2.0,
     "effr_minus_iorb_d20_bp": 0.0,
-    "effr_minus_iorb_pctile": 0.9154,
-    "sofr_minus_iorb_bp": -1.0,
+    "effr_minus_iorb_pctile": 0.9156,
+    "sofr_minus_iorb_bp": -2.0,
     "sofr_minus_iorb_d20_bp": -1.0,
-    "sofr_minus_iorb_pctile": 0.8702,
-    "sofr_99pctl_minus_iorb_bp": 7.0,
+    "sofr_minus_iorb_pctile": 0.8326,
+    "sofr_99pctl_minus_iorb_bp": 6.0,
     "sofr_99pctl_minus_iorb_d20_bp": -1.0,
-    "sofr_99pctl_minus_iorb_pctile": 0.8051,
+    "sofr_99pctl_minus_iorb_pctile": 0.7653,
     "srf_takeup_bn": null,
     "discount_window_primary_credit_bn": null,
     "reserve_scarcity_state": "tightening",
-    "asof": "2026-10-05"
+    "asof": "2026-10-07"
   },
   "components": {
     "walcl": {
-      "level_bn": 6743.0,
-      "d20_bn": 5.8,
-      "d65_bn": 18.5,
-      "pctile": 0.7698
+      "level_bn": 6747.6,
+      "d20_bn": 6.9,
+      "d65_bn": 12.0,
+      "pctile": 0.7726
     },
     "rrp": {
-      "level_bn": 0.4,
-      "d20_bn": -0.2,
-      "d65_bn": -2.3,
-      "pctile": 0.1284
+      "level_bn": 0.3,
+      "d20_bn": -4.4,
+      "d65_bn": -3.0,
+      "pctile": 0.1245
     },
     "tga": {
-      "level_bn": 883.3,
-      "d20_bn": 3.3,
-      "d65_bn": 100.2,
-      "pctile": 0.9197
+      "level_bn": 885.8,
+      "d20_bn": 67.7,
+      "d65_bn": 136.5,
+      "pctile": 0.9201
     },
     "netliq_sparkline_90d": [
-      {
-        "d": "2026-07-08",
-        "v": 5983.0
-      },
-      {
-        "d": "2026-07-09",
-        "v": 5985.2
-      },
       {
         "d": "2026-07-10",
         "v": 5996.8
@@ -364,23 +356,31 @@
       },
       {
         "d": "2026-10-06",
-        "v": 5859.3
+        "v": 5857.2
+      },
+      {
+        "d": "2026-10-07",
+        "v": 5859.4
+      },
+      {
+        "d": "2026-10-08",
+        "v": 5861.4
       }
     ],
     "reserves": {
-      "level_bn": 2948.1,
-      "d20_bn": -154.7,
-      "d65_bn": -277.9,
-      "pctile": 0.7601
+      "level_bn": 3029.7,
+      "d20_bn": -99.9,
+      "d65_bn": -300.6,
+      "pctile": 0.7852
     }
   },
   "foreign_dollar": {
     "swap_lines_bn": 0.207,
-    "facility_loans_bn": 8.804,
+    "facility_loans_bn": 10.006,
     "fima_repo_bn": null,
     "state": "quiescent",
     "note": "IRD-R5: swap-line levels are confirmation tier — they grade severity after price signals fire, never trigger alerts. FIMA repo: no free per-facility breakout; aggregate rides H.4.1 repo line.",
-    "asof": "2026-09-30"
+    "asof": "2026-10-07"
   },
   "entry_effect": {
     "direction": "neutral",
@@ -394,7 +394,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-10-07T10:05:51Z",
-  "inputs_hash": "sha256:3ae523d33cdacf515c00d39769871dc6f40f47263e18189b9f59e86b6dee6dc7",
+  "produced_at": "2026-10-09T15:15:09Z",
+  "inputs_hash": "sha256:cc9c4e2b0645e17acb14480cb8cabb85c4629a6602d8d9ab280783436ee29055",
   "tier": "shadow"
 }

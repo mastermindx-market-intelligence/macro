@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WHR-BULL-20260609",
-  "asof": "2026-10-08",
+  "asof": "2026-10-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.8,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.569,
+    "dist_to_stop_r": -3.58,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -3.0458,
-    "p2": -1.5229,
+    "horizon_pct_used": 97.8,
+    "p1": -3.0536,
+    "p2": -1.5268,
     "p3": null,
-    "move_r": -4.569,
+    "move_r": -4.58,
     "mfe_r": 0.0,
-    "mae_r": -4.569
+    "mae_r": -4.58
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,23 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "paused \u2014 no closing print since 2026-10-08; a stale price frame carries no current action authority",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5258788721439487e-07,
-  "_mae": -11.649999465942386,
+  "_mae": -11.680000152587894,
   "_max_p1": 3.9892258095266676e-08,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444
+  "days_elapsed": 44,
+  "tau": 0.9778,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-10-08",
+    "run_asof": "2026-10-14",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  }
 }
