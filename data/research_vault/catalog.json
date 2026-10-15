@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T04:26:55.789295+00:00",
-  "count": 2933,
+  "generated_at": "2026-10-15T04:41:57.843607+00:00",
+  "count": 2934,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -448,6 +448,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ukru6eiq3sm-ab503a",
+      "title": "GS Blekos Marketcolour + ASML BCP BNP RIO 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:06Z",
+      "summary_points": [
+        "AI Inflation Impact: AI demand boosts core PCE inflation by ~45bp (half genuine), peaking at 50bp by 2026 before declining to 10bp by 2027; mismeasurement drives significant current inflation.",
+        "ASML Capacity Shortfall: 30% capacity in 2027/2028 won’t meet demand, requiring extension beyond 2028 despite Q3 beat (57.4% gross margin).",
+        "Institutional Positioning Extremes: CFTC net futures at 100th percentile indicates overextension, posing reversal risk and demanding aggressive risk mitigation.",
+        "CPI Data Release: Core CPI forecast +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6%); CTA positioning in US equities at 27th percentile (1y)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
