@@ -2131,10 +2131,12 @@ def _degraded_index_entry(
         "pulse": pulse_en,
         "pulse_zh": pulse_zh,
         "management_status": "unavailable",
+        "management_asof": None,
         "management_error": reason,
         "management_confidence": None,
         "recommended_action": None,
         "last_price": None,
+        "last_price_asof": None,
         "state": {
             "phase": phase,
             "management_confidence": None,
@@ -2845,11 +2847,17 @@ def main() -> None:
             "management_confidence": state.get("management_confidence"),
             "recommended_action": state.get("recommended_action"),
             "management_status": "available",
+            "management_asof": state.get("asof"),
             "management_error": None,
             # R0.7 — last close the management engine saw (same PIT frame).
             # The Terminal's GAINERS sort and T1-progress/P&L bars render only
             # when last_price is present.
             "last_price": round(_last_close, 4) if _last_close is not None else None,
+            # The actual closing bar and the management evaluation keep distinct
+            # clocks even when the freshness detector accepts a one-day lag.
+            # Plan review may show this observed close, never relabel it as live.
+            "last_price_asof": (pd.Timestamp(ph_pit.index[-1]).date().isoformat()
+                                if _last_close is not None else None),
             # Stale-frame disclosure (conditional stamp, house precedent: degraded
             # rows disclose while a clean population stays byte-for-byte
             # unchanged).  When present, last_price is the LAST REAL close — its
