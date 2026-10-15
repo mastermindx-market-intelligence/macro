@@ -202,3 +202,15 @@ for(const lang of ['en','zh']) test(`stock search exposes its keyboard selection
   assert.equal(await search.getAttribute('aria-expanded'),'false');
   assert.equal(await list.isVisible(),false);
 });
+
+for(const lang of ['en','zh']) test(`a malformed stock link leaves search usable ${lang}`,async t=>{
+  const {page,requested,reply}=await setup(t,lang,{initialHash:'BAD%'});
+  await page.waitForLoadState('networkidle');
+  assert.match(await page.locator('#lookup_status').innerText(),lang==='zh'?/链接无效/:/Invalid stock link/);
+  assert.equal(await page.locator('#result').isVisible(),false);
+  const loaded=requested('NEW');
+  await page.locator('#q').fill('NEW'); await page.locator('#q').press('Enter');
+  await page.waitForFunction(()=>location.hash==='#NEW');
+  await loaded; await reply('NEW');
+  await page.waitForFunction(()=>document.getElementById('r_name').textContent==='NEW fixture (NEW)');
+});

@@ -283,6 +283,7 @@
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { asof: 'data through', notlib: 'NOT IN LIBRARY',
+          invalidlink: 'Invalid stock link. Search for a stock to continue.',
           loading: 'Loading stock analysis…', unavailable: 'Stock analysis could not be loaded. Try this stock again.',
           notlibmsg: 'Not in the nightly library (curated JP/KR/TW/UK/EU large-caps + sector ETFs + indices). Add it in config.yml → intl.constituents.',
           season: 'Seasonality', failed: '⚠ Failed cycle — price is below the low that started this cycle; the larger trend is usually rolling over.',
@@ -299,6 +300,7 @@
           cb_oil: 'Oil β', cb_gold: 'Gold β', cb_cad: 'CAD β', cb_primary: 'primary driver',
           cb_fit: 'fit R²', cb_none: 'market-driven · no commodity tilt' },
     zh: { asof: '数据截至', notlib: '不在库中',
+          invalidlink: '个股链接无效。请搜索股票以继续。',
           loading: '正在加载个股分析…', unavailable: '暂时无法加载个股分析。请重新选择该股票。',
           notlibmsg: '不在每晚更新的标的库中（精选 日/韩/台/英/欧 大盘股 ＋ 板块 ETF ＋ 指数）。可在 config.yml → intl.constituents 添加。',
           season: '季节性', failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点；此时更大的趋势通常正在转向下行。',
@@ -359,7 +361,9 @@
     .then(d => { cal = d; }).catch(() => {});
 
   function fromHash() {
-    var t = decodeURIComponent((location.hash || '').slice(1));
+    var t;
+    try { t = decodeURIComponent((location.hash || '').slice(1)); }
+    catch (error) { lookupSerial += 1; showLookupStatus(L('invalidlink')); return; }
     if (t) load(t);
     else { lookupSerial += 1; showLookupStatus(''); }
   }
@@ -777,10 +781,10 @@
     });
   }
   document.addEventListener('themechange', function () {
-    var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
+    fromHash();
   });
   document.addEventListener('langchange', function () {
-    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果')); var h = (location.hash || '').slice(1); if (h) load(decodeURIComponent(h));
+    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果')); fromHash();
   });
 })();
 </script>
