@@ -2161,6 +2161,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   // ── Fetch all three data sources (tolerant, fail-silent per FT-R8) ───────
   /* intraday-observation:start */
   var intradayExpanded=false, intradayExpiry=null;
+  var intradayDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'});
   function readIntradayView(raw, nowMs){
     function finite(v){return typeof v==='number'&&Number.isFinite(v);}
     if(!raw||raw.schema!=='basket_intraday_comparison.v1'||raw.status!=='observed'||raw.benchmark!=='SPY'||raw.method!=='matched_member_equal_weight')return null;
@@ -2180,13 +2181,15 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     var kind=raw.observation_kind||'regular';
     if(kind!=='regular'&&kind!=='settled_regular')return null;
     if(kind==='settled_regular'&&raw.settlement_tolerance_seconds!==90)return null;
-    var day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(end));
+    var day=intradayDateFormatter.format(new Date(end));
     if(raw.session_date!==day)return null;
     return {relative:raw.relative_change_pct,absolute:raw.absolute_change_pct,benchmark:raw.benchmark_change_pct,n:n,total:total,start:start,end:end,seconds:(end-start)/1000,skew:raw.max_clock_skew_seconds,closing:kind==='settled_regular'};
   }
   function intradayPlainReason(raw, nowMs){
     var status=raw&&raw.status;
+    if(status==='observed'&&Date.parse(raw.source_asof)>nowMs)return L('Source and device clocks disagree.','\u884c\u60c5\u4e0e\u8bbe\u5907\u65f6\u949f\u4e0d\u4e00\u81f4\u3002');
     if(status==='observed'&&Date.parse(raw.source_asof)<nowMs-45*60000)return L('Observation is no longer current.','\u89c2\u6d4b\u5df2\u8fc7\u671f\u3002');
+    if(status==='observed')return L('Observation could not be verified.','\u65e0\u6cd5\u786e\u8ba4\u6b64\u89c2\u6d4b\u3002');
     if(status==='baseline_missing'||status==='baseline_nonadvancing'||status==='benchmark_nonadvancing')return L('Waiting for another observation.','\u7b49\u5f85\u65b0\u7684\u89c2\u6d4b\u3002');
     if(status==='membership_changed'||status==='session_boundary'||status==='benchmark_basis_changed'||status==='baseline_corrected')return L('Comparison reset after a source change.','\u6570\u636e\u53d8\u66f4\u540e\uff0c\u6b63\u5728\u91cd\u65b0\u5efa\u7acb\u6bd4\u8f83\u3002');
     if(status==='unsupported_session'||status==='outside_regular_session')return L('No comparable regular-session interval.','\u6682\u65e0\u53ef\u6bd4\u8f83\u7684\u5e38\u89c4\u65f6\u6bb5\u533a\u95f4\u3002');
@@ -2194,21 +2197,30 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   }
   function renderIntradayComparisons(pulse,state){
     var host=document.getElementById('si-intraday-body');if(!host)return;
+    var focused=null,active=document.activeElement;
+    if(active&&active.tagName==='SUMMARY'&&host.contains(active))focused=active.parentElement.getAttribute('data-group');
+    function paint(html){
+      if(host._intradayHTML===html)return;
+      host.innerHTML=html;host._intradayHTML=html;
+      if(focused){
+        var target=null;host.querySelectorAll('details').forEach(function(el){if(el.getAttribute('data-group')===focused)target=el.querySelector('summary');});
+        (target||host).focus({preventScroll:true});
+      }
+    }
     if(intradayExpiry!==null){clearTimeout(intradayExpiry);intradayExpiry=null;}
     var labels={loading:L('Loading interval observations...','\u6b63\u5728\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u2026'),denied:L('Sign in with access to view these observations.','\u8bf7\u4f7f\u7528\u6709\u6743\u9650\u7684\u8d26\u6237\u767b\u5f55\u67e5\u770b\u3002'),unavailable:L('Interval observations could not be loaded.','\u6682\u65f6\u65e0\u6cd5\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u3002'),invalid:L('Interval observations could not be verified.','\u6682\u65f6\u65e0\u6cd5\u786e\u8ba4\u533a\u95f4\u89c2\u6d4b\u3002')};
     var more=document.getElementById('si-intraday-more');
     if(state!=='ready'||!pulse||!Array.isArray(pulse.baskets)){
-      host.innerHTML='<p class="si-intra-empty">'+(labels[state]||labels.invalid)+'</p>';if(more)more.hidden=true;return;
+      paint('<p class="si-intra-empty">'+(Object.prototype.hasOwnProperty.call(labels,state)?labels[state]:labels.invalid)+'</p>');if(more)more.hidden=true;return;
     }
     var now=Date.now(), seen=Object.create(null), rows=[];
     pulse.baskets.forEach(function(b){
       if(!b||typeof b.id!=='string'||!b.id||seen[b.id])return;
-      seen[b.id]=true;rows.push({id:b.id,day:typeof b.live_ew_chg_pct==='number'&&Number.isFinite(b.live_ew_chg_pct)?b.live_ew_chg_pct:null,view:readIntradayView(b.intraday_comparison,now),raw:b.intraday_comparison});
+      seen[b.id]=true;rows.push({id:b.id,day:typeof b.live_ew_chg_pct==='number'&&Number.isFinite(b.live_ew_chg_pct)&&Math.abs(b.live_ew_chg_pct)<=40?b.live_ew_chg_pct:null,view:readIntradayView(b.intraday_comparison,now),raw:b.intraday_comparison});
     });
     rows.sort(function(a,b){if(!!a.view!==!!b.view)return a.view?-1:1;return a.view?Math.abs(b.view.relative)-Math.abs(a.view.relative):a.id.localeCompare(b.id);});
-    var open=Object.create(null), focused=null, active=document.activeElement;
+    var open=Object.create(null);
     host.querySelectorAll('details[open]').forEach(function(el){open[el.getAttribute('data-group')]=true;});
-    if(active&&active.tagName==='SUMMARY'&&host.contains(active))focused=active.parentElement.getAttribute('data-group');
     function pct(value){if(value===null)return '\u2014';return (value>0?'+':value<0?'\u2212':'')+Math.abs(value).toFixed(2)+'%';}
     function number(value,en,zh){return '<span class="si-intra-value '+(value>0?'up':value<0?'dn':'')+'"><span class="si-intra-sr">'+L(en,zh)+': </span>'+pct(value)+'</span>';}
     function utc(ms){return new Date(ms).toISOString().replace('T',' ').replace('.000Z','Z');}
@@ -2225,11 +2237,10 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         +'<p>'+L(v.closing?'Regular-session close, not an after-hours trade.':'Observed price interval, not a forecast.',v.closing?'\u5e38\u89c4\u65f6\u6bb5\u6536\u76d8\u89c2\u6d4b\uff0c\u975e\u76d8\u540e\u4ea4\u6613\u3002':'\u5df2\u89c2\u6d4b\u7684\u4ef7\u683c\u533a\u95f4\uff0c\u975e\u9884\u6d4b\u3002')+'</p></div></details>';
     });
     if(!rows.length)html='<p class="si-intra-empty">'+L('No interval observations yet.','\u6682\u65e0\u533a\u95f4\u89c2\u6d4b\u3002')+'</p>';
-    host.innerHTML=html;
-    if(focused)host.querySelectorAll('details').forEach(function(el){if(el.getAttribute('data-group')===focused)el.querySelector('summary').focus();});
+    paint(html);
     if(more){more.hidden=rows.length<=6;more.setAttribute('aria-expanded',intradayExpanded?'true':'false');more.innerHTML=intradayExpanded?L('Show fewer','\u6536\u8d77'):L('Show all groups','\u67e5\u770b\u5168\u90e8\u7ec4\u522b');more.onclick=function(){intradayExpanded=!intradayExpanded;tryRender();};}
     var next=rows.filter(function(r){return !!r.view;}).map(function(r){return r.view.end+45*60000-now+1;});
-    if(next.length)intradayExpiry=setTimeout(function(){tryRender();},Math.max(1,Math.min.apply(null,next)));
+    if(next.length)intradayExpiry=setTimeout(function(){renderIntradayComparisons(pulse,pulseState);},Math.max(1,Math.min.apply(null,next)));
   }
   /* intraday-observation:end */
 
@@ -2244,10 +2255,11 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   function refreshPulse(){
     if(pulseInFlight)return;pulseInFlight=true;
     var button=document.getElementById('si-intraday-refresh');if(button)button.disabled=true;
+    var host=document.getElementById('si-intraday-body');if(host)host.setAttribute('aria-busy','true');
     fetchJson('live/basket_pulse.json',function(d,state){
       pulseInFlight=false;pulseState=state;
       if(state==='ready'&&(!d||d.schema!=='basket_pulse.v1'||!Array.isArray(d.baskets)||d.baskets.length>1000||(d.market&&d.market!=='us'))){pulseState='invalid';d=null;}
-      pulse=d;if(button)button.disabled=false;tryRender();
+      pulse=d;if(button)button.disabled=false;if(host)host.setAttribute('aria-busy','false');tryRender();
     });
   }
   function bindIntradayRefresh(){
@@ -2565,9 +2577,9 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   <section class="si-view" data-view="moving">
   <!-- intraday-observation:markup-start -->
   <section id="si-intraday" class="si-intra" aria-labelledby="si-intraday-title">
-    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday leadership</span><span class="l-zh">&#30424;&#20013;&#39046;&#28072;&#21464;&#21270;</span></h2><p><span class="l-en">Recent relative moves can differ from today's returns.</span><span class="l-zh">&#36817;&#26399;&#30456;&#23545;&#24378;&#24369;&#65292;&#21487;&#33021;&#19982;&#20840;&#22825;&#28072;&#36300;&#19981;&#21516;&#12290;</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
-    <div id="si-intraday-body" aria-live="polite"></div>
-    <button id="si-intraday-more" type="button" aria-expanded="false" hidden></button>
+    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday relative moves</span><span class="l-zh">&#30424;&#20013;&#30456;&#23545;&#24378;&#24369;&#21464;&#21270;</span></h2><p><span class="l-en">Recent relative moves can differ from today's returns.</span><span class="l-zh">&#36817;&#26399;&#30456;&#23545;&#24378;&#24369;&#65292;&#21487;&#33021;&#19982;&#20840;&#22825;&#28072;&#36300;&#19981;&#21516;&#12290;</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
+    <div id="si-intraday-body" tabindex="-1" aria-live="polite"></div>
+    <button id="si-intraday-more" type="button" aria-controls="si-intraday-body" aria-expanded="false" hidden></button>
     <p class="si-intra-foot"><span class="l-en">Watch, don't chase; measured price changes are not fund flows.</span><span class="l-zh">&#20808;&#35266;&#23519;&#65292;&#21247;&#36861;&#28072;&#65307;&#20215;&#26684;&#21464;&#21270;&#19981;&#31561;&#20110;&#36164;&#37329;&#27969;&#20837;&#12290;</span></p>
   </section>
   <!-- intraday-observation:markup-end -->

@@ -117,3 +117,33 @@ def test_view_is_in_existing_moving_workspace_with_one_pulse_fetch():
     assert source.index('data-view="moving">') < source.index('id="si-intraday"')
     assert source.count("fetchJson('live/basket_pulse.json'") == 1
     assert 'pulseInFlight' in source and 'aria-labelledby="si-intraday-title"' in source
+
+
+def test_future_clock_disagreement_has_explicit_copy_without_accepting_it():
+    raw=comparison(reference_asof='2026-10-13T15:00:00+00:00',source_asof='2026-10-13T15:30:01+00:00',elapsed_minutes=30+1/60)
+    assert run_js('readIntradayView(payload,now)',raw) is None
+    text=run_js('intradayPlainReason(payload,now)',raw)
+    assert 'clock' in text.lower()
+
+
+def test_malformed_observed_row_says_verification_not_missing_data():
+    text=run_js('intradayPlainReason(payload,now)',comparison(coverage_pct=25))
+    assert 'verified' in text.lower()
+
+
+def test_unknown_failure_state_does_not_render_object_prototype():
+    html=run_js("renderIntradayComparisons(payload,'constructor');host.innerHTML",pulse())
+    assert 'function Object' not in html and 'verified' in html
+
+
+def test_unbounded_day_number_does_not_overrun_the_cell():
+    p=pulse();p['baskets'][0]['live_ew_chg_pct']=1e100
+    html=run_js("renderIntradayComparisons(payload,'ready');host.innerHTML",p)
+    assert 'e+100' not in html and '\u2014' in html
+
+
+def test_relative_moves_heading_is_direction_neutral_and_focus_landing_exists():
+    source=PAGE.read_text()
+    assert 'Intraday relative moves' in source
+    assert 'id="si-intraday-body" tabindex="-1"' in source
+    assert 'id="si-intraday-more" type="button" aria-controls="si-intraday-body"' in source

@@ -1,6 +1,6 @@
 {
   "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
-  "template_sha256": "8f0e8e861dabecd5c3dc52920c8b8fb10aa000ba2d382e9abfed286ac8638b4e",
+  "template_sha256": "3efe45caf4c63b7f031630837bd287ed748a10eb96a8360901e7934868dcb174",
   "cases": [
     {
       "viewport": 1440,
@@ -12,15 +12,104 @@
         "panel": 1120,
         "scroll": 1118
       },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
       "new_view_ready": true,
       "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 4,
+      "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -34,15 +123,104 @@
         "panel": 1120,
         "scroll": 1118
       },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
       "new_view_ready": true,
       "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 4,
+      "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -56,15 +234,104 @@
         "panel": 354,
         "scroll": 352
       },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(200, 208, 220)",
+          "ratio": 11.41771587896029
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "rgb(224, 100, 100)",
+          "ratio": 5.219170386726632
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "rgb(69, 184, 115)",
+          "ratio": 7.061707171416122
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "P",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(139, 147, 161)",
+          "ratio": 5.7342770734687685
+        }
+      ],
       "new_view_ready": true,
       "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 4,
+      "pulse_requests": 5,
       "denied_text": "Sign in with access to view these observations.",
       "stale_text": "Group\nDay\nInterval\nvs SPY\nAI semiconductors\nObservation is no longer current.\nHealth care\nObservation is no longer current."
     },
@@ -78,27 +345,116 @@
         "panel": 354,
         "scroll": 352
       },
+      "text_contrast": [
+        {
+          "class": "H2",
+          "color": "rgb(46, 57, 80)",
+          "ratio": 11.55587898887883
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "si-intra-value dn",
+          "color": "color(srgb 0.143922 0.459373 0.325882)",
+          "ratio": 20.951329771313556
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value ",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "si-intra-value up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)",
+          "ratio": 20.955944586168698
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "P",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        },
+        {
+          "class": "si-intra-foot",
+          "color": "rgb(76, 90, 108)",
+          "ratio": 7.032095431287493
+        }
+      ],
       "new_view_ready": true,
       "keyboard_details": true,
+      "unchanged_refresh_preserves_node": true,
+      "denied_focus_has_landing": true,
       "focus_and_open_preserved": true,
       "denied_hides_numbers": true,
       "stale_hides_numbers": true,
       "show_all_without_refetch": true,
       "expansion_survives_repaint": true,
       "page_errors": [],
-      "pulse_requests": 4,
+      "pulse_requests": 5,
       "denied_text": "请使用有权限的账户登录查看。",
       "stale_text": "组别\n全天\n区间\n相对SPY\nAI半导体\n观测已过期。\n医疗保健\n观测已过期。"
     }
   ],
   "screenshots": {
-    "390-dark-en-page.png": "16175647c97b931532e5c672978f139943134010818c420e899095546ea8cf90",
-    "1440-dark-en-page.png": "d4d0574634921f9c3296938ba1f170aced52714ac1a1673faea4f44748dc8d12",
-    "1440-dark-en-panel.png": "601601715df65903cdd54b15697c1b527478fc1ccd0a812de99b1bc7d2bcee5c",
-    "390-dark-en-panel.png": "d2da5f28a15fd1086c8583f14590233191f6d7df6a4b550d77a81e3c7a7000bc",
-    "390-light-zh-panel.png": "a836cafdfb08ce92726ed0b6222be9ce458f592559d51738b8505ee7782d1389",
-    "390-light-zh-page.png": "7af507901c646a085de2859492dda9c25f4a816f241ac953ba79f2bf6b0c88c1",
-    "1440-light-en-panel.png": "d24aecb03b855b2cb689a1f852e3a901eae77b350daf39b3c1fa4d125292c128",
-    "1440-light-en-page.png": "fdf48c42d44d6b7edb0c131e7917b6fe54d6ddcafa27ca03b322ae87efeec162"
+    "390-dark-en-page.png": "043747c5dd411f0a7337ea03301bafe7f303cbe0fdd35c3103a6e246e0e49cac",
+    "1440-dark-en-page.png": "6cbd449eada28db9ecaaf3d7f65dec5637ed145260b5ffc41ff8fba0554e836e",
+    "1440-dark-en-panel.png": "61c9f9fc2f8c551b9af248f046405bdcedea6299e30a363efc926cb638ad7304",
+    "390-dark-en-panel.png": "47dbc4026a5280f29498922c1dd59714f9f8d377d1299ef04bfab56d74e9b3e3",
+    "390-light-zh-panel.png": "e3faedf87d3ac72abc7a457d3a4811c5a8af5d2c57a58dd3082422286c6d9298",
+    "390-light-zh-page.png": "5890c52af9de3482ca457384f755a2f3ad9f3412cb528bc9bbde80cb5d6c0ade",
+    "1440-light-en-panel.png": "fb2cc20f57a88c4e4963c3672e0cd68608d2c429ce2abcf2e309bc4044b3fa2f",
+    "1440-light-en-page.png": "ad9156c373093915ec91ab03aeee537c8a4f246d0281bc8610d0845dae128823"
   }
 }

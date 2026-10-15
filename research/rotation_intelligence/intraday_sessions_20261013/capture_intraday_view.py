@@ -45,6 +45,12 @@ with sync_playwright() as pw:
   assert page.locator('#si-intraday details[open]').count()==1
   assert page.evaluate("document.activeElement.tagName")=='SUMMARY'
   bounds=page.evaluate("({viewport:innerWidth,page:document.documentElement.scrollWidth,panel:document.getElementById('si-intraday').getBoundingClientRect().width,scroll:document.getElementById('si-intraday').scrollWidth})")
+  contrast=page.evaluate("""() => {
+    function rgb(value){return (value.match(/[0-9.]+/g)||[]).slice(0,3).map(Number);}
+    function luminance(c){return c.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);}
+    const panel=document.getElementById('si-intraday');const bg=rgb(getComputedStyle(panel).backgroundColor);
+    return [...panel.querySelectorAll('h2,.si-intra-head p,.si-intra-value,.si-intra-detail p,.si-intra-foot')].filter(e=>e.getClientRects().length).map(e=>{const color=getComputedStyle(e).color;const a=luminance(rgb(color)),b=luminance(bg);return {class:e.className||e.tagName,color,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};});
+  }""")
   slug=f'{width}-{theme}-{lang}'
   page.locator('#si-intraday').screenshot(path=str(OUT/(slug+'-panel.png')))
   page.screenshot(path=str(OUT/(slug+'-page.png')))
@@ -52,7 +58,17 @@ with sync_playwright() as pw:
   assert '-1.96%' in rendered or '\u22121.96%' in rendered
   assert '+1.01%' in rendered and '0.00%' in rendered
   assert bounds['scroll']<=bounds['panel']+1
-  state['status']=403;page.locator('#si-intraday-refresh').click();page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===0")
+  page.evaluate("window.__heldSummary=document.activeElement")
+  with page.expect_response(lambda response:response.url.endswith('/live/basket_pulse.json')):
+   page.evaluate("window.dispatchEvent(new Event('focus'))")
+  page.wait_for_function("!document.getElementById('si-intraday-refresh').disabled")
+  assert page.evaluate("window.__heldSummary===document.activeElement && window.__heldSummary.isConnected"), 'An unchanged refresh replaced the focused node'
+  state['status']=403
+  with page.expect_response(lambda response:response.url.endswith('/live/basket_pulse.json')):
+   page.evaluate("window.dispatchEvent(new Event('focus'))")
+  page.wait_for_function("document.querySelectorAll('#si-intraday .si-intra-row').length===0")
+  assert page.evaluate("document.activeElement.id==='si-intraday-body'"), 'Automatic denial lost keyboard focus'
+
   denied=page.locator('#si-intraday-body').inner_text()
   page.locator('a.si-view-btn[data-view="overview"]').click()
   assert not page.locator('#ftr-tape-strip').is_visible(), 'Denied refresh left the previous overview tape visible'
@@ -71,7 +87,7 @@ with sync_playwright() as pw:
   assert page.locator('#si-intraday .si-intra-row').count()==9
   page.locator('#si-intraday-more').click();assert page.locator('#si-intraday .si-intra-row').count()==6
 
-  reports.append({'viewport':width,'theme':theme,'language':lang,'geometry':bounds,'new_view_ready':True,'keyboard_details':True,'focus_and_open_preserved':True,'denied_hides_numbers':True,'stale_hides_numbers':True,'show_all_without_refetch':True,'expansion_survives_repaint':True,'page_errors':errors,'pulse_requests':state['reads'],'denied_text':denied,'stale_text':stale})
+  reports.append({'viewport':width,'theme':theme,'language':lang,'geometry':bounds,'text_contrast':contrast,'new_view_ready':True,'keyboard_details':True,'unchanged_refresh_preserves_node':True,'denied_focus_has_landing':True,'focus_and_open_preserved':True,'denied_hides_numbers':True,'stale_hides_numbers':True,'show_all_without_refetch':True,'expansion_survives_repaint':True,'page_errors':errors,'pulse_requests':state['reads'],'denied_text':denied,'stale_text':stale})
   context.close()
  browser.close()
 (OUT/'browser-preview-report.json').write_text(json.dumps({'proof_kind':'actual_candidate_jinja_page_synthetic_pulse_no_production','template_sha256':hashlib.sha256(source.encode()).hexdigest(),'cases':reports},indent=2,ensure_ascii=False))
