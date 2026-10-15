@@ -122,6 +122,35 @@ test('pending lookup hides prior analysis without moving input focus', async t =
   assert.equal(await page.locator('#result').isVisible(), true);
 });
 
+for(const lang of ['en','zh']) for(const limited of [false,true]) {
+  test(`stock lookup refuses a record for another identity ${lang} limited=${limited}`,async t=>{
+    const {page,select,reply,requested}=await setup(t,lang);
+    await select('OLD');await reply('OLD');await renderedStock(page,'OLD');
+    await page.evaluate(()=>{
+      const mount=StockChart.mount;
+      window.identityChartMounts=[];
+      StockChart.mount=function(host,ticker){identityChartMounts.push(ticker);return mount.apply(this,arguments);};
+    });
+    const search=page.locator('#q');await search.focus();
+    await select('NEW');
+    await reply('NEW',record('OTHER',{limited,name:'Wrong identity'}));
+    await page.waitForFunction(()=>document.getElementById('lookup_status').textContent==='' || /could not be loaded|暂时无法加载/.test(document.getElementById('lookup_status').textContent));
+    assert.equal(await page.locator('#result').isVisible(),false,'a current request must not publish analysis for a different ticker');
+    assert.match(await page.locator('#lookup_status').innerText(),lang==='zh'?/NEW.*暂时无法加载/:/NEW.*could not be loaded/);
+    assert.doesNotMatch(await page.locator('#lookup_status').innerText(),/NOT IN LIBRARY|不在库中/);
+    assert.doesNotMatch(await page.locator('#r_name').textContent(),/OTHER|Wrong identity/,'reject before touching analysis content');
+    assert.deepEqual(await page.evaluate(()=>identityChartMounts),[],'wrong-identity data must not mount a chart');
+    assert.equal(await search.evaluate(n=>n===document.activeElement),true);
+    assert.equal(new URL(page.url()).hash,'#NEW');
+    // Recovery keeps the requested identity and uses the existing same-ticker retry.
+    const retried=requested('NEW');
+    await search.fill('NEW');await search.press('Enter');await retried;
+    await reply('NEW',record('NEW',{limited}));await renderedStock(page,'NEW');
+    assert.deepEqual(await page.evaluate(()=>identityChartMounts),['NEW']);
+    assert.equal(new URL(page.url()).hash,'#NEW');
+  });
+}
+
 test('clearing the route invalidates a pending stock response', async t => {
   const {page, select, reply}=await setup(t);
   await select('OLD'); await page.evaluate(() => { location.hash=''; });

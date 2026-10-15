@@ -448,6 +448,11 @@
       return r.json();
     }).then(function (d) {
       if (serial !== lookupSerial) return;
+      // The publisher preserves the exact ticker inside each record. A current
+      // response can still contain the wrong file; reject it before any render.
+      if (!d || typeof d !== 'object' || Array.isArray(d) || d.ticker !== t) {
+        throw new Error('stock record identity mismatch');
+      }
       render(d);
       document.getElementById('lookup_status').textContent = '';
     }).catch(function (error) {
