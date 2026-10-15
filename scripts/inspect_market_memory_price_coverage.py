@@ -39,8 +39,8 @@ from typing import Any
 
 sys.dont_write_bytecode = True
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.neuralweb import market_memory_pit as pit  # noqa: E402
 from engine.neuralweb import (  # noqa: E402
