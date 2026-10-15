@@ -22,9 +22,10 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Repair the actual PR9077 workstream conflict and PR9099 import-closure omissions
-  on their original branches. Consume the two original Fabric reviews through
-  same-operation recovery, then run the prepared v4 canary through normal admission.
+  Consume original archive and mount reviews after the existing Fabric owner
+  completes qualified collector installation. Integrate the fixed workload plan
+  leaf and verify its single-attempt frontend. Land fence/capture through the
+  existing merge controller, then publish the combined carrier.
 artifacts:
   - research/research_factory_codegen/2026-10-14/CONTRACTS_SOURCE_ACCEPTANCE.md
   - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -46,22 +47,41 @@ landmines:
 
 Current checkpoint — 2026-10-15 (Vancouver).
 
-Strict transport cleanup #9190 merged at d99c8f129f2d559db814fb6059f7eade03bd40d5;
-static validation #9100 merged at f94050a358c3665a8a1b8cf97b87dc8eab4acaf6.
-Fence #9077 remains on its original branch; its prior CI lost its hosted runner.
-Capture #9099 now has a concrete eight-job import-closure omission to repair.
+Strict transport #9190 and structural validation #9100 are merged. Fence #9077
+was refreshed by its controller to a2be6964461f. Capture #9099 now includes
+main at 12da71edd753: the import-closure check passes and all118committed asset
+pairs agree. Its initial local sync test refused the sparse checkout; full-tree
+CI remains required. The carrier is rearmed after the push. The fence contract-delta
+check has passed. No new runner was requested for the previous infrastructure
+failure. Normal merge controls remain in force.
 
-Combined source is pushed at f70550addb18da7a43c50f82164c5a5a4e8f2378 on the existing
-rf-contracts-fresh carrier. Cgroup corrections passed 64 affected checks; the joined
-runtime suite passed 617 tests and 67 subtests with three Linux-only skips. Mount-table
-source passed 80 checks; its original worker output remains unaccepted. The archive
-scanner repair passed the actual pinned archive scan and private staging verification.
-V4 is prepared but undispatched. Its privileged installer has one existing scoped
-review pending recovery; neither stale controller logs nor missing local processes
-prove remote termination. Fabric Integration received one batched same-operation
-recovery request for that review and the mount-table review. No workers were replayed.
+Combined source at 7b9a969e1fac includes actual main and the landed strict
+transport. The changed deploy composition passed 270 checks; its capsule bytes
+remain unchanged. The actual local admin server, existing login/session flow,
+API and browser display were exercised with the retained synthetic fixture:
+unsigned diagnostics return401, authenticated good/refused rows preserve their
+values and coverage, language/theme controls work, and logout closes the view.
+This is local authenticated integration, not installed production proof. Evidence:
+/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
 
-Use the existing programme evidence under
-/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c for retained
-results. Historical receipts remain history; this short checkpoint owns the current
-next action. The programme is incomplete and has no current Chris-only gate.
+V4 remains prepared and undispatched. The existing Fabric owner has reviewed the
+missing same-operation plaintext collector source in Mastermind PR1520 and is
+continuing normal release/install. Only the actual assigning root may collect
+and adjudicate the original archive and mount reviews afterward. No replay,
+lease release or refused observer reopening is authorized by that source work.
+
+The original Fabric leaf rf-fixed-workload-plans-01a1333c-v1 still owns the
+seven-workload factory and its tests. Its single collection refused the remote
+directory ownership/mode; the local controller has no current process handle.
+Fabric Integration confirmed the refusal remains closed, with no termination
+proof or replacement authority. Root's separate frontend passed14component
+checks using an explicit plan fixture and fake Docker responses. It is preserved
+under containment-acceptance/workloads/root-frontend-prototype-v1 in programme
+evidence, outside the committed build and frozen v4 capsule. Factory integration
+and scoped review remain outstanding. Trusted host/resource mapping, helper
+census, cleanup qualification and candidate admission remain unfinished. The
+general engine still has no qualification issuer; enrollment alone cannot enable it.
+
+Reuse prior accepted source, visual and scientific-mechanics checks until their
+relevant inputs change. Original contracts EFFECT_UNKNOWN remains quarantined
+under Chris's decision. The programme is incomplete with no current Chris-only gate.
