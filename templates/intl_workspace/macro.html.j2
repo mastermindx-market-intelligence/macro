@@ -162,16 +162,24 @@
         <section>
           <h3>{{ composite.market_id|e }} · {{ composite.method_kind|e }}</h3>
           {% if composite.supported_heading is none %}
-            <p><span class="l-en">Original method retained; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">保留原方法；不声称经济周期诊断。</span></p>
+            {% if composite.reported_method_ref is none %}
+              <p><span class="l-en">Method not supplied; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">未提供方法；不声称经济周期诊断。</span></p>
+            {% else %}
+              <p><span class="l-en">Original method retained; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">保留原方法；不声称经济周期诊断。</span></p>
+            {% endif %}
           {% else %}
             <p>{{ composite.supported_heading|e }}</p>
           {% endif %}
-          <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {{ composite.reported_method_ref|e }} · {{ composite.presentation_quality|e }}</p>
+          <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {% if composite.reported_method_ref is none %}{{ not_supplied() }}{% else %}{{ composite.reported_method_ref|e }}{% endif %} · {% set composite_quality = quality_labels.get(composite.presentation_quality, quality_labels.unknown) %}<span class="l-en">{{ composite_quality.en|e }}</span><span class="l-zh" lang="zh">{{ composite_quality.zh|e }}</span></p>
+          {% if composite.components is not none %}
           <dl>
             <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{% for component in composite.components.growth %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
             <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{% for component in composite.components.inflation %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
             <div><dt><span class="l-en">As of</span><span class="l-zh" lang="zh">截至</span></dt><dd>{{ composite.components.asof|e }}</dd></div>
           </dl>
+          {% else %}
+            <p data-im-macro-components-unavailable><span class="l-en">Component evidence not supplied.</span><span class="l-zh" lang="zh">未提供分项依据。</span></p>
+          {% endif %}
         </section>
       {% endfor %}
     </details>

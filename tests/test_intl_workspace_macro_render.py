@@ -9,6 +9,8 @@ from html import unescape
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from bs4 import BeautifulSoup
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_intl_workspace_macro import cycle, inputs, measure
@@ -170,6 +172,44 @@ def collect(html):
     collector = Collector()
     collector.feed(html)
     return collector
+
+
+def stale_component_fixture(method_ref="owner/mixed@7"):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
+        quality="stale", reason="source_stale", method_kind="mixed_composite",
+        method_ref=method_ref, asof=None, components=None, economic_support=None,
+    )})
+    return build_macro_section(**packet), packet["registry"]
+
+
+@pytest.mark.parametrize("method_ref", ["owner/mixed@7", None])
+def test_stale_composite_without_components_keeps_panel_readable(method_ref):
+    section, registry = stale_component_fixture(method_ref)
+    before = copy.deepcopy(section)
+    html = render(section, registry)
+    composite = BeautifulSoup(html, "html.parser").select_one(".intl-macro__composite")
+    text = composite.get_text(" ", strip=True)
+    assert "Component evidence not supplied." in text
+    assert "未提供分项依据。" in text
+    assert "Stale data" in text and "数据过期" in text
+    assert "None" not in text
+    assert "As of" not in text and "2026-09-10" not in text
+    assert ("owner/mixed@7" in text) == (method_ref is not None)
+    assert "Available macro observations" in html
+    assert section == before
+
+
+def test_supplied_composite_keeps_its_original_components_and_clock():
+    section, registry = build_fixture()
+    html = render(section, registry)
+    composite = BeautifulSoup(html, "html.parser").select_one(".intl-macro__composite")
+    text = composite.get_text(" ", strip=True)
+    assert "Component evidence not supplied." not in text
+    for axis in ("growth", "inflation"):
+        for component in section["cycle_rows"][0]["components"][axis]:
+            assert component["key"] in text
+    assert section["cycle_rows"][0]["components"]["asof"] in text
 
 
 def test_actual_projection_positive_zero_stale_and_denied_render():

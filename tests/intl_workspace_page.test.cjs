@@ -69,6 +69,47 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 const sourceChartHtml = new Map();
+let staleMacroComponentHtml;
+function staleMacroComponentFixture() {
+  if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+from tests.test_intl_workspace_macro_render import stale_component_fixture, render
+section, registry = stale_component_fixture(None)
+print('<!doctype html><html lang="en" data-lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/intl_workspace_macro.css"><script src="/theme.js"></script></head><body>')
+print(render(section, registry))
+print('</body></html>')
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+  return staleMacroComponentHtml;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Macro stale missing components remain readable ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const composite=page.locator('.intl-macro__composite');
+      const summary=composite.locator(':scope > summary');
+      await summary.focus();await summary.press('Enter');
+      assert.equal(await composite.evaluate(n=>n.open),true);
+      const text=await composite.innerText();
+      assert.match(text,lang==='zh'?/未提供分项依据。/:/Component evidence not supplied\./);
+      assert.match(text,lang==='zh'?/数据过期/:/Stale data/);
+      assert.match(text,lang==='zh'?/未提供方法/:/Method not supplied/);
+      assert.doesNotMatch(text,/None|2026-09-10|Goldilocks|Q1/);
+      assert.equal(await page.locator('.intl-macro__table').isVisible(),true);
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        assert.equal(await composite.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+        if(process.env.INTL_BROWSER_EVIDENCE_DIR) {
+          fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+          await page.evaluate(()=>document.fonts.ready);
+          await composite.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`macro-components-absent-${theme}-${lang}-${width}.png`)});
+        }
+      }
+      await summary.focus();await summary.press('Enter');
+      assert.equal(await composite.evaluate(n=>n.open),false);
+    },{htmlOverride:staleMacroComponentFixture(),width:320,bootLanguage:lang});
+  });
+}
+
 function sourceChartFixture(isolated=false) {
   // Actual publisher/renderer with existing synthetic parquet inputs. This is
   // source composition evidence, never live data or a new disclosure grant.
