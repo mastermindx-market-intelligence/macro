@@ -53,3 +53,19 @@ def test_recovery_shortcut_does_not_waive_real_custody_or_permission_gates(path)
     text = normalized(path)
     assert "live writer, permission denial and unresolved effect remain real action-scoped gates" in text
     assert "a new workspace does not transfer a started operation" in text
+
+
+def test_entry_contract_has_an_existing_ci_execution_owner():
+    from scripts import audit_unrun_tests
+
+    relative = "tests/test_execution_workspace_entry_contract.py"
+    assert audit_unrun_tests._named_by_a_run_step(
+        relative, audit_unrun_tests._workflow_blob(), frozenset()
+    ), "The regression suite must execute in CI, not merely exist in the repository."
+
+    import yaml
+
+    document = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())
+    job = document["jobs"]["self-mod-fence"]
+    assert relative in job["paths"]
+    assert {"AGENTS.md", "CLAUDE.md"}.issubset(set(job["paths"]))
