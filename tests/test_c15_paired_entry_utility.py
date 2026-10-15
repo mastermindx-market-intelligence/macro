@@ -1032,3 +1032,73 @@ def test_missing_source_stays_unobservable_with_independent_frozen_cost_schedule
     assert observed["by_state"]["UNOBSERVABLE"]==1
     assert observed["observed_pair_subset_mean_bps"] is None
     assert observed["primary_population_mean_bps"] is None
+
+
+# Exact local-session boundary must be tested at nanosecond resolution.
+# Old nominal_rth() truncated native ns -> UTC whole seconds, admitting
+# 16:00:00.000000001 after the actual 16:00 NYSE close.
+def _relocate_frozen_candidate_clock(args, new_t):
+    old_t=args["candidate"]["decision_ns"]
+    shift=new_t-old_t
+    for holder in (args["candidate"],args["baseline"],args["challenger"],args):
+        for name,value in list(holder.items()):
+            if name.endswith("_ns") and name!="max_quote_age_ns" and type(value) is int:
+                holder[name]=value+shift
+    return args
+
+
+def test_exact_close_horizon_uses_last_valid_30min_clock():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    at_1530=int(datetime(2026,10,8,15,30,tzinfo=ZoneInfo(
+        "America/New_York")).timestamp())*D
+    a=_relocate_frozen_candidate_clock(setup(),at_1530)
+    output=run(a)
+    assert output["state"]=="PAIRED_RESEARCH_UTILITY"
+    assert bps(output,"delta")==(100,1)
+
+
+def test_one_nanosecond_past_exchange_close_refused_even_if_utc_second_same():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    at_1530=int(datetime(2026,10,8,15,30,tzinfo=ZoneInfo(
+        "America/New_York")).timestamp())*D
+    a=_relocate_frozen_candidate_clock(setup(),at_1530+1)
+    with pytest.raises(ValueError,match="outside nominal NYSE RTH"):
+        run(a)
+
+
+def test_cohort_unreported_original_candidate_cannot_pass_post_close():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    at_1530=int(datetime(2026,10,8,15,30,tzinfo=ZoneInfo(
+        "America/New_York")).timestamp())*D
+    a=_relocate_frozen_candidate_clock(setup(),at_1530+1)
+    with pytest.raises(ValueError,match="outside nominal NYSE RTH"):
+        accounted([registered_row(a)],[])
+
+
+@pytest.mark.parametrize("late_ns", [1, 10, 999_999, 999_999_999])
+def test_fractional_ns_after_nominal_close_never_becomes_valid_horizon(late_ns):
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    at_1530=int(datetime(2026,10,8,15,30,tzinfo=ZoneInfo(
+        "America/New_York")).timestamp())*D
+    shifted=_relocate_frozen_candidate_clock(setup(),at_1530+late_ns)
+    with pytest.raises(ValueError,match="outside nominal NYSE RTH"):
+        run(shifted)
+    with pytest.raises(ValueError,match="outside nominal NYSE RTH"):
+        accounted([registered_row(shifted)],[])
+
+
+def test_one_ns_before_nyse_close_still_eligible_same_original_horizon():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    at_1530=int(datetime(2026,10,8,15,30,tzinfo=ZoneInfo(
+        "America/New_York")).timestamp())*D
+    shifted=_relocate_frozen_candidate_clock(setup(),at_1530-1)
+    observed=run(shifted)
+    assert observed["state"]=="PAIRED_RESEARCH_UTILITY"
+    reconciled=accounted([registered_row(shifted)],[observed])
+    assert reconciled["n_complete_software_pairs"]==1
+    assert reconciled["empirical_source_qualified"] is False

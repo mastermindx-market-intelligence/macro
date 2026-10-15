@@ -266,6 +266,37 @@ def _policy_freeze_snapshot(policy, role, candidate):
     return result
 
 
+def _nominal_rth_window_ns(decision_ns, horizon_ns, session):
+    """Check full-session NYSE nominal window with *native nanosecond* edges.
+
+    This uses the incumbent session/holiday reference, not a second calendar.
+    It does NOT certify exchange early closes, unscheduled halts, or actual
+    30-trading-minute availability; those original source/calendar receipts
+    must still be qualified by their authoritative owners.
+    """
+    zone = ZoneInfo("America/New_York")
+    decision_local = datetime.fromtimestamp(
+        decision_ns // 1_000_000_000, timezone.utc
+    ).astimezone(zone)
+    end_local = datetime.fromtimestamp(
+        horizon_ns // 1_000_000_000, timezone.utc
+    ).astimezone(zone)
+    day = decision_local.date()
+    if (not is_session(day) or end_local.date() != day
+            or session != day.isoformat() + ":RTH"):
+        raise ValueError("candidate: outside nominal NYSE RTH session")
+    # The prior second-grain local-clock comparison silently accepted e.g.
+    # 16:00:00.000000001 ET because floor-to-second became "16:00:00".
+    # Compare original integer source clocks to exact session boundaries.
+    start = datetime.combine(day, time(9, 30), tzinfo=zone)
+    finish = datetime.combine(day, time(16, 0), tzinfo=zone)
+    opening_ns = int(start.timestamp()) * 1_000_000_000
+    closing_ns = int(finish.timestamp()) * 1_000_000_000
+    if not (opening_ns <= decision_ns < closing_ns
+            and opening_ns < horizon_ns <= closing_ns):
+        raise ValueError("candidate: outside nominal NYSE RTH session")
+
+
 def evaluate_same_candidate(*, candidate, baseline, challenger,
                             evaluation_cutoff_ns, source_watermark_ns,
                             watermark_received_ns, market_health,
@@ -307,19 +338,9 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         raise ValueError("candidate: invalid entry deadline/horizon")
     if endpoint - decision != 30 * MINUTE_NS:
         raise ValueError("candidate: nominal same-session 30-minute horizon mismatch")
-    # Reuse incumbent full-session holiday reference (no duplicate calendar).
-    # Its early-close/one-off coverage is deliberately NOT source certification.
-    et = ZoneInfo("America/New_York")
-    def nominal_rth(ns):
-        local = datetime.fromtimestamp(ns // 1_000_000_000, timezone.utc).astimezone(et)
-        return local, local.timetz().replace(tzinfo=None)
-    opened, from_time = nominal_rth(decision)
-    closed, to_time = nominal_rth(endpoint)
-    if (not is_session(opened.date()) or opened.date() != closed.date()
-            or c["session"] != opened.date().isoformat() + ":RTH"
-            or not time(9, 30) <= from_time < time(16, 0)
-            or not time(9, 30) < to_time <= time(16, 0)):
-        raise ValueError("candidate: outside nominal NYSE RTH session")
+    # The exact-nanosecond local window is shared with frozen cohort admission.
+    # It does not replace original-owner actual calendar/early-close evidence.
+    _nominal_rth_window_ns(decision, endpoint, c["session"])
     # This is an external calendar assertion, NOT a verified 30-min horizon.
     if type(c["horizon_trading_minutes"]) is not int or c["horizon_trading_minutes"] != 30:
         raise ValueError("candidate: unexpected trading-minute horizon")
@@ -479,6 +500,7 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
                 or type(e["source_mode"]) is not str
                 or e["source_mode"] not in MODES):
             raise ValueError("cohort: original horizon or source mode inconsistent")
+        _nominal_rth_window_ns(start, end, e["session"])
         source_available = _clock(
             e["candidate_source_available_ns"], "frozen_candidate.source_available"
         )
