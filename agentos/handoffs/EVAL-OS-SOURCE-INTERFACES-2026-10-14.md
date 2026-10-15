@@ -143,22 +143,22 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 publishedba848 has a known terminal closure failure; localff791 repair is qualified and awaits
-  real capacity admission. Protected merge and all production proof remain owed.
+- Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
+  Protected merge and all production proof remain owed.
 next_actions:
-- A1 PR6651 remote ba848 has terminal known-closure failure. Qualified clean local ff791 remains unpublished.
-  Last canonical census09:10 was8active/cap8. Actual lease-owner run38708601211/head27c876 remained running09:30;
-  consume its real completion at an eligible boundary, then fresh canonical admission/source/main preview,
-  ordinary same-carrier push and fresh binding checks. Incumbent alone owns final merge and next refresh.
-- Publish qualified T11 caller composition on the same follow-on branch. Original sanitizer worker consumed
-  and accepted with substantial strictness corrections; this is parent review, not independent review.
-  Source has416 caller regression passes across initial/identity-repair runs,36 sink tests and actual local
-  caller-to-operator-reader controls,14 probe selftests,3CIcontrols,zero closure misses and strict134/134/128jobs.
-  All314 execution definitions/prior paths/limits remain;27 actual dependencies added to one existing job.
-- After qualified A1 merge bind both installation and served-asset probes, verify normal deployment/API/DOM/
-  eight visual states/natural owner progression/comprehension. Release the same follow-on through its normal PR;
-  prove installed numeric execution plus same-request internal log, installed CLI and rights-qualified Discovery use.
-  Prior native request64992.109 proves one API/DOM path only. Preserve all unknown/refused original effects.
+- A1 PR6651 repair ff7912003742 was ordinarily published and read back09:55 after canonical admission09:53
+  showed7 active proofs/cap8 with0 live reservations. Current-main fb596 preview passed. No base integration
+  was performed. Consume fresh exact-head hosted plan, terminal artifact and binding checks; repair an actual
+  failure or continue incumbent final merge. The old ba848 failure is not a verdict on ff791.
+- Existing admission helper now uses incumbent prepare_refresh_lease under GET-only transport; a stale
+  generation register is not ownership. Four focused controls retain genuine reservations and fail closed
+  on unreadable or cleanup-required state. Source/proof is admission-helper-correction-20261015.json in
+  research/evidence/eval-os-tier-query-20261014. No duplicate controller or observer was created.
+- Follow-on T11 caller composition is published as5bd584e31778. Reuse accepted caller/sink/probe/CI proof.
+  After qualified A1 merge bind installation/asset probes; prove deployment/API/DOM/eight visual states,
+  natural owner progression and comprehension. Release this same follow-on through one lawful PR; prove
+  installed numeric execution/internal log, CLI and rights-qualified Discovery use. Preserve unknown/refused
+  original effects and false completion flags. Incumbent alone owns A1 final merge and next refresh.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -174,7 +174,7 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-T11's bounded verifier is now composed with the actual native executor, both gateway modes and existing internal response-log/operator-reader path. Same-request values remain ephemeral; strict verdict projection cannot normalize malformed evidence into success. Caller, sink, probe and affected CI checks pass; final closure has zero misses and packing stays within the existing limits. Original worker construction is accepted with corrections, not independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. A1's qualified repair still waits for real capacity; protected releases, installed execution, general narrative verification and real follow-on adoption remain open. Final completion flags remain false.
+T11's bounded verifier is now composed with the actual native executor, both gateway modes and existing internal response-log/operator-reader path. Same-request values remain ephemeral; strict verdict projection cannot normalize malformed evidence into success. Caller, sink, probe and affected CI checks pass; final closure has zero misses and packing stays within the existing limits. Original worker construction is accepted with corrections, not independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. A1's ff791 repair is now published on PR6651 after fresh canonical admission and clean current-main preview. The existing admission helper resolves the retained generation register through incumbent read-only lease preparation; four focused controls preserve live reservations and fail-closed paths. The fresh observation proved7 active proofs and0 live reservations, while the stale register had previously been miscounted. Fresh exact-head hosted checks remain owed. Protected releases, installed execution, general narrative verification and real follow-on adoption remain open. Final completion flags remain false.
 
 ## 2026-10-15 A1 repair published
 
