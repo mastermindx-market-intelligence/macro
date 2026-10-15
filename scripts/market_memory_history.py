@@ -192,12 +192,25 @@ def _macro_binding(args: argparse.Namespace) -> dict:
             "expected_macro_sha256":args.macro_sha256}
 
 
+def _filing_binding(args: argparse.Namespace) -> dict:
+    if (args.filings is None) != (args.filings_sha256 is None):
+        raise CliError("filing path and exact source digest must be supplied together")
+    if args.filings is None:
+        if getattr(args, "filings_offset", 0) != 0:
+            raise CliError("a filing offset requires the selected filing source")
+        return {}
+    result = {"filings_path": Path(args.filings), "expected_filings_sha256": args.filings_sha256}
+    if hasattr(args, "filings_offset"):
+        result["filings_offset"] = args.filings_offset
+    return result
+
+
 def _run_dossier(args: argparse.Namespace) -> dict:
     _require_archive_module()
     binding=_macro_binding(args)
     return build_daily_dossier(Path(args.archive),args.date,
         expected_manifest_sha256=args.manifest_sha256,
-        reveal_outcomes=args.reveal_outcomes,**binding)
+        reveal_outcomes=args.reveal_outcomes,**binding,**_filing_binding(args))
 
 
 def _run_export(args: argparse.Namespace) -> dict:
@@ -205,7 +218,7 @@ def _run_export(args: argparse.Namespace) -> dict:
     binding=_macro_binding(args)
     return export_browser(Path(args.archive),Path(args.output),
         expected_manifest_sha256=args.manifest_sha256,
-        include_outcomes=args.include_outcomes,**binding)
+        include_outcomes=args.include_outcomes,**binding,**_filing_binding(args))
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -271,8 +284,11 @@ def make_parser() -> argparse.ArgumentParser:
         consumer.add_argument("--manifest-sha256",required=True,type=_sha256_argument,metavar="EXACT64")
         consumer.add_argument("--macro",metavar="PATH",help="optional retained first-print chronology")
         consumer.add_argument("--macro-sha256",type=_sha256_argument,metavar="EXACT64")
+        consumer.add_argument("--filings",metavar="PATH",help="optional retained earnings_8k_dates.parquet")
+        consumer.add_argument("--filings-sha256",type=_sha256_argument,metavar="EXACT64")
         if name=="dossier":
             consumer.add_argument("--date",required=True,type=_date_argument,metavar="YYYY-MM-DD")
+            consumer.add_argument("--filings-offset",type=int,default=0,help="matched filing-record offset")
             consumer.add_argument("--reveal-outcomes",action="store_true")
         else:
             consumer.add_argument("--output",required=True,metavar="NEW_HTML")
