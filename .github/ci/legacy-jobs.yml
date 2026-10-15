@@ -5853,6 +5853,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -16818,6 +16820,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -19551,6 +19554,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -27053,6 +27058,30 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
+      - collectors/biocatalyst/__init__.py
+      - engine/biocatalyst/__init__.py
+      - engine/capital_structure/__init__.py
+      - engine/close_pass/__init__.py
+      - engine/codex_lane/__init__.py
+      - engine/context_index/__init__.py
+      - engine/earnings_narrative/__init__.py
+      - engine/earnings_release/__init__.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/intelligence_workspace/adapters/__init__.py
+      - engine/marketing/__init__.py
+      - engine/oracle/__init__.py
+      - engine/press/__init__.py
+      - engine/seasonality/__init__.py
+      # R15: the existing phase1 tests now reach both native 30m pivot families.
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
+      - "engine/entry_radar/replay/leader_pivot_descriptor.py"
+      - "tests/test_entry_radar_first_green_descriptor.py"
+      - "tests/test_entry_radar_leader_pivot_descriptor.py"
+      - "tests/test_entry_radar_leader_pivot_progress.py"
+      - "tests/test_entry_radar_leader_pivot_progress_edges.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -27940,14 +27969,14 @@ jobs:
       - "tests/test_ptse_prospective_readiness.py"
       - "tests/test_ptse_pullback_buy_context.py"
       - "tests/test_ptse_shadow_enrollment.py"
-      - "tests/test_ptse_shadow_integrity.py"
-      - "tests/test_ptse_shadow_outcome.py"
-      - "tests/test_ptse_w3_publication.py"
-      - "tests/test_research_price_panel.py"
       # Recorded-readiness import closure required by the Intelligence OS consumer.
       - engine/k3e_eval1_forward.py
       - engine/pick_forward_dist.py
       - engine/seasonality/multiplicity.py
+      - "tests/test_ptse_shadow_integrity.py"
+      - "tests/test_ptse_shadow_outcome.py"
+      - "tests/test_ptse_w3_publication.py"
+      - "tests/test_research_price_panel.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29161,6 +29190,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
