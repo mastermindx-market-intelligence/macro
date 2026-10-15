@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T03:41:59.217597+00:00",
-  "count": 2931,
+  "generated_at": "2026-10-15T03:56:51.471274+00:00",
+  "count": 2932,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -891,6 +891,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pxoz8rr2riq-42043b",
+      "title": "Entain MGM BetMGM 3Q26 Reiterating FY guidance after solid 3Q",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:43:40Z",
+      "summary_points": [
+        "Q3 EBITDA Collapse: Q3 EBITDA $86m (100%+ YoY drop from Q2), signaling severe operational deterioration despite revenue growth; FY26 EBITDA guidance at lower end of $300-350m vs. consensus $275m.",
+        "UK Tax Resolution Catalyst: UK gambling tax overhang resolved, enabling BetMGM’s profitability turnaround (Q4 2025: Online revenue $481m, EBITDA $71m), critical for near-term margin recovery.",
+        "Valuation Gap & Bullish Thesis: Goldman Sachs Buy rating (ENT: £1,040 target vs.",
+        "£575 current price) driven by BetMGM’s online momentum (18% yoy revenue growth, 12% EBITDA margin), indicating significant upside potential."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
