@@ -390,7 +390,11 @@
           a.prefs.theme !== curTheme() && window.setTheme) window.setTheme(a.prefs.theme);
       var lg = document.documentElement.getAttribute('data-lang') || 'en';
       if (a.prefs.lang && (a.prefs.lang === 'en' || a.prefs.lang === 'zh') &&
-          a.prefs.lang !== lg && window.setLang) window.setLang(a.prefs.lang);
+          a.prefs.lang !== lg && window.setLang) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(a.prefs.lang, window.setLang);
+        } else window.setLang(a.prefs.lang);
+      }
     } catch (e) {}
     _hydrating = false;
   }
@@ -1249,7 +1253,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261011-account-identity';
+    s.src = pfx + 'nav_market.js?v=20261015-mm-return-language';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();
