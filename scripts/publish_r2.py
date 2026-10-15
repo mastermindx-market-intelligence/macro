@@ -582,6 +582,8 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
     original_anchor = local.get("anchor")
     if not isinstance(original_anchor, dict):
         return False, "SOURCE_ANCHOR_UNVERIFIED: missing original SPY price-data anchor"
+    if original_anchor.get("ticker") != "SPY":
+        return False, "SOURCE_ANCHOR_MISMATCH: original local price anchor is not SPY"
     anchored = _read_date(original_anchor.get("last"))
     if anchored is None or not is_session(anchored) or anchored > expected:
         return False, "SOURCE_ANCHOR_UNVERIFIED: invalid original SPY price-data anchor"
@@ -628,6 +630,8 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
         remote_anchor = recorded.get("anchor")
         if not isinstance(remote_anchor, dict):
             return False, "REMOTE_ANCHOR_MISMATCH: missing original remote SPY price anchor"
+        if remote_anchor.get("ticker") != "SPY":
+            return False, "REMOTE_ANCHOR_MISMATCH: original remote price anchor is not SPY"
         remote_anchor_day = _read_date(remote_anchor.get("last"))
         if remote_anchor_day != older or not is_session(remote_anchor_day):
             return False, "REMOTE_ANCHOR_MISMATCH: remote source latest lacks its SPY price rows"

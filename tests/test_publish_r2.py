@@ -1468,3 +1468,51 @@ def test_massive_publisher_refuses_unsupported_remote_anchor_before_upload(
     assert pr2.publish(["massive_stock_day"], workers=1) == 1
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+
+# The Massive collector's price-derived anchor is specifically SPY, not merely
+# any symbol with the claimed last date. No publisher or coverage clock is a
+# substitute for the canonical original SPY anchor identity.
+@pytest.mark.parametrize("anchor_ticker", ["AAPL", None])
+def test_massive_publisher_refuses_bad_local_anchor_ticker(anchor_ticker):
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local["updated_at"] = "2026-10-15T02:00:00+00:00"
+    if anchor_ticker is None:
+        local["anchor"].pop("ticker")
+    else:
+        local["anchor"]["ticker"] = anchor_ticker
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_MISMATCH" in reason
+
+
+@pytest.mark.parametrize("anchor_ticker", ["NVDA", None])
+def test_massive_publisher_refuses_bad_remote_anchor_ticker(anchor_ticker):
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local["updated_at"] = "2026-10-15T02:00:00+00:00"
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    if anchor_ticker is None:
+        remote["store"]["anchor"].pop("ticker")
+    else:
+        remote["store"]["anchor"]["ticker"] = anchor_ticker
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REMOTE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_refuses_wrong_spy_ticker_before_file_upload(tmp_path, monkeypatch):
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["anchor"]["ticker"] = "AAPL"
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []

@@ -504,7 +504,8 @@ def test_legacy_manifest_without_recent_key_keeps_full_history_behaviour():
 # underlying per-ticker stores still end on Friday. The ordinary 6-calendar-
 # day age and interior-hole checks do not see a missing Monday+Tuesday tip.
 def _massive_tip_at(now: datetime, latest: str, *, store: str = "massive_stock_day",
-                    anchor_last: str | None = None, include_anchor: bool = True) -> dict:
+                    anchor_last: str | None = None, include_anchor: bool = True,
+                    anchor_ticker: str | None = "SPY") -> dict:
     published = {
         "dir": store, "count": 21712, "files": ["AAPL.parquet", "NVDA.parquet"],
         "store": {
@@ -517,6 +518,10 @@ def _massive_tip_at(now: datetime, latest: str, *, store: str = "massive_stock_d
     }
     if not include_anchor:
         published["store"].pop("anchor")
+    elif anchor_ticker is None:
+        published["store"]["anchor"].pop("ticker")
+    else:
+        published["store"]["anchor"]["ticker"] = anchor_ticker
     source = {
         f"{store}/_manifest.json": (
             200, {"Last-Modified": format_datetime(now - timedelta(hours=4), usegmt=True)},
@@ -665,3 +670,20 @@ def test_massive_audit_refuses_raw_collector_document_at_publisher_key():
               fetch=_fetcher(fake), retries=0)
     assert r["ok"] is False
     assert any("R2 SOURCE TIP INVALID" in s for s in r["fail_reasons"])
+
+
+
+def test_massive_audit_refuses_wrong_anchor_ticker_despite_valid_session():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    good = _massive_tip_at(now, "2026-10-14", anchor_ticker="SPY")
+    bad = _massive_tip_at(now, "2026-10-14", anchor_ticker="AAPL")
+    assert good["ok"] is True
+    assert bad["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in reason for reason in bad["fail_reasons"])
+
+
+def test_massive_audit_refuses_missing_anchor_ticker_despite_valid_session():
+    now = datetime(2026, 10, 15, 17, 0, tzinfo=timezone.utc)
+    bad = _massive_tip_at(now, "2026-10-14", anchor_ticker=None)
+    assert bad["ok"] is False
+    assert any("R2 SOURCE ANCHOR MISMATCH" in reason for reason in bad["fail_reasons"])

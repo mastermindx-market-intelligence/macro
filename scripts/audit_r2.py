@@ -384,6 +384,8 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
             # session. Only the incumbent SPY price anchor can substantiate
             # a claim that the source has actually advanced. Neither the
             # publisher timestamp nor coverage.last_day proves price rows.
+            if anchor_blk.get("ticker") != "SPY":
+                fail.append(f"R2 SOURCE ANCHOR MISMATCH: {d} price anchor ticker is not SPY")
             claimed = store.get("latest_date")
             actual = anchor_blk.get("last")
 
