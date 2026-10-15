@@ -1,0 +1,300 @@
+{
+  "fixture_only": true,
+  "provider_calls": 0,
+  "fixture_writer_calls": 1,
+  "stable_slot_id": "press-official-cd2747adeed2",
+  "guard_detected": false,
+  "fixture_emit_result": {
+    "emitted": 1,
+    "items": [
+      {
+        "id": "press-official-cd2747adeed2",
+        "ts": "2026-10-14T02:00:17Z",
+        "desk": "brief",
+        "publication": "mastermind_news",
+        "slug": "an-enforcement-test-against-a-mixed-backdrop",
+        "title": "An enforcement test against a mixed backdrop",
+        "url": "https://www.mastermind-x.com/blog/an-enforcement-test-against-a-mixed-backdrop.html",
+        "sources": [],
+        "source_revisions": {},
+        "seed_refs": [],
+        "validator_report": {
+          "ok": true,
+          "failed": [],
+          "checks": [
+            {
+              "name": "markup_safety",
+              "ok": true,
+              "detail": "static article fragment with allowed tags and attributes",
+              "metrics": {}
+            },
+            {
+              "name": "fact_anchor",
+              "ok": true,
+              "detail": "every number and quote resolves to a source fact",
+              "metrics": {
+                "numbers_checked": 9,
+                "unanchored": [],
+                "source_pool_size": 21,
+                "unsourced_quotes": []
+              }
+            },
+            {
+              "name": "claim_scope",
+              "ok": true,
+              "detail": "not a canonical claim-scoped slot",
+              "metrics": {
+                "active": false
+              }
+            },
+            {
+              "name": "close_paraphrase",
+              "ok": true,
+              "detail": "max block/source overlap 0.053 <= 0.18",
+              "metrics": {
+                "max_block_jaccard": 0.0526,
+                "doc_jaccard": 0.0086,
+                "threshold": 0.18,
+                "shingle_n": 5,
+                "worst_source": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+                "worst_block": " Office of the Comptroller of the Currency  moved against one of the largest American bank holding companies this week, "
+              }
+            },
+            {
+              "name": "our_value",
+              "ok": true,
+              "detail": "our-value share 42.2% (>= floor 40%) over 9 sentence(s); 6 distinct receipt(s)",
+              "metrics": {
+                "our_value_share": 0.4215,
+                "floor": 0.4,
+                "our_words": 137,
+                "total_words": 325,
+                "granularity": "sentence",
+                "receipts": 6,
+                "receipt_values": [
+                  56.0,
+                  100.0,
+                  62.0,
+                  70.0,
+                  68.0,
+                  76.0
+                ],
+                "sentences": [
+                  {
+                    "words": 35,
+                    "tier": "first_party"
+                  },
+                  {
+                    "words": 35,
+                    "tier": "first_party"
+                  },
+                  {
+                    "words": 33,
+                    "tier": "first_party"
+                  },
+                  {
+                    "words": 32,
+                    "tier": "other"
+                  },
+                  {
+                    "words": 39,
+                    "tier": "neutral"
+                  },
+                  {
+                    "words": 39,
+                    "tier": "neutral"
+                  },
+                  {
+                    "words": 34,
+                    "tier": "first_party"
+                  },
+                  {
+                    "words": 37,
+                    "tier": "neutral"
+                  },
+                  {
+                    "words": 41,
+                    "tier": "neutral"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "receipts",
+              "ok": true,
+              "detail": "6 distinct anchored receipt(s) (>= minimum 5)",
+              "metrics": {
+                "receipts": 6,
+                "minimum": 5,
+                "values": [
+                  56.0,
+                  100.0,
+                  62.0,
+                  70.0,
+                  68.0,
+                  76.0
+                ]
+              }
+            },
+            {
+              "name": "quote_lint",
+              "ok": true,
+              "detail": "0 quote(s), longest 0 words",
+              "metrics": {
+                "quotes": 0,
+                "max_quotes": 2,
+                "max_quote_words": 25,
+                "oversized": []
+              }
+            },
+            {
+              "name": "banned_lexicon",
+              "ok": true,
+              "detail": "clean",
+              "metrics": {
+                "hits": []
+              }
+            },
+            {
+              "name": "advice_lexicon",
+              "ok": true,
+              "detail": "clean",
+              "metrics": {
+                "hits": []
+              }
+            },
+            {
+              "name": "cheese_test",
+              "ok": true,
+              "detail": "clean",
+              "metrics": {
+                "hits": []
+              }
+            },
+            {
+              "name": "ai_tells",
+              "ok": true,
+              "detail": "clean",
+              "metrics": {
+                "hits": [],
+                "not_only_but_also": 0,
+                "budget": 1
+              }
+            },
+            {
+              "name": "primary_source",
+              "ok": true,
+              "detail": "external source named in full and linked above the fold",
+              "metrics": {
+                "kind": "external",
+                "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+                "named": true,
+                "linked": true,
+                "accepted_names": [
+                  "Office of the Comptroller of the Currency"
+                ]
+              }
+            },
+            {
+              "name": "link_allowlist",
+              "ok": true,
+              "detail": "0 internal link(s), all public",
+              "metrics": {
+                "internal_links": 0,
+                "offenders": [],
+                "prefixes": [
+                  "/research/",
+                  "/blog/",
+                  "/stocks/"
+                ]
+              }
+            },
+            {
+              "name": "byline",
+              "ok": true,
+              "detail": "desk byline present",
+              "metrics": {
+                "byline": "The Brief \u2014 Mastermind News desk",
+                "block": true,
+                "text": true
+              }
+            },
+            {
+              "name": "footer",
+              "ok": true,
+              "detail": "standing footer present",
+              "metrics": {
+                "block": true,
+                "text": true,
+                "required_text": "Educational content \u2014 not investment advice. Markets involve risk."
+              }
+            },
+            {
+              "name": "frontmatter",
+              "ok": true,
+              "detail": "frontmatter matches the free-estate contract",
+              "metrics": {
+                "title_len": 44,
+                "description_len": 129,
+                "slug": "an-enforcement-test-against-a-mixed-backdrop",
+                "problems": [],
+                "upstream": ""
+              }
+            },
+            {
+              "name": "length",
+              "ok": true,
+              "detail": "325 words (budget 300\u2013600)",
+              "metrics": {
+                "words": 325,
+                "min_words": 300,
+                "max_words": 600
+              }
+            },
+            {
+              "name": "self_similarity",
+              "ok": true,
+              "detail": "no own posts in the last 30 days and nothing staged \u2014 nothing to compare",
+              "metrics": {
+                "max_jaccard": 0.0,
+                "threshold": 0.18,
+                "peers": 0
+              }
+            }
+          ],
+          "our_value_share": 0.4215,
+          "our_value_granularity": "sentence",
+          "receipts": 6,
+          "max_block_jaccard": 0.0526,
+          "doc_jaccard": 0.0086,
+          "words": 325,
+          "slug": "an-enforcement-test-against-a-mixed-backdrop",
+          "desk": "brief",
+          "publication": "mastermind_news"
+        },
+        "urls": [
+          "https://www.mastermind-x.com/blog/an-enforcement-test-against-a-mixed-backdrop.html"
+        ]
+      }
+    ],
+    "site_files": [
+      "blog/compound-growth-for-traders.html",
+      "blog/congress-trades-are-not-realtime-signals.html",
+      "blog/feed.xml",
+      "blog/how-to-keep-a-trading-journal.html",
+      "blog/index.html",
+      "blog/the-math-of-losing-streaks.html",
+      "blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
+      "blog/win-rate-is-overrated.html"
+    ],
+    "properties": [],
+    "revision_reconciliation": {
+      "current_sources": 0,
+      "superseded": 0,
+      "resolved": 0,
+      "correction_required": 0,
+      "published_mismatches": 0
+    }
+  },
+  "real_inputs_written": false
+}
