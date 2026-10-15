@@ -202,3 +202,55 @@ def test_fabric_mint_cli_requires_explicit_new_workspace_owner(
     assert ws.main(["fabric-mint", "lane-beta", "not-a-commit"]) == 1
     assert not (home / "lanes" / "wt" / "lane-beta").exists()
     assert _git(repo, "branch", "--list", "lane/lane-beta") == ""
+
+def test_inconsistent_sparse_config_does_not_silently_pass(checkouts, monkeypatch, capsys):
+    """A true config bit with no sparse rules is NOT a real sparse checkout."""
+    repo, lane, _, home = checkouts
+    before = _git(lane, "rev-parse", "HEAD")
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    # Mirrors live Ubuntu1 false-success: setting the config bit without
+    # materializing the sparse-checkout pattern file.
+    _git(lane, "config", "core.sparseCheckout", "true")
+    rules_path = _git(lane, "rev-parse", "--git-path", "info/sparse-checkout")
+    assert not Path(rules_path).exists()
+    probe = subprocess.run(
+        ["git", "-C", str(lane), "sparse-checkout", "list"],
+        capture_output=True, text=True, timeout=10,
+    )
+    assert not probe.stdout.strip()
+    assert ws.is_session_worktree(lane)
+    assert ws.auto_profile(lane) == 1
+    err = capsys.readouterr().err
+    assert "inconsistent sparse state" in err
+    assert _git(lane, "rev-parse", "HEAD") == before
+    assert _git(lane, "status", "--porcelain=v1", "-uall") == ""
+    assert (lane / "data" / "tracked.txt").is_file()
+    assert (lane / "site" / "tracked.txt").is_file()
+
+
+def test_true_sparse_rules_preserve_explicit_materialization(checkouts, monkeypatch):
+    """A user-requested sparse add data is intentionally NOT reset by auto."""
+    _, lane, _, _ = checkouts
+    before = _git(lane, "rev-parse", "HEAD")
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    _git(lane, "sparse-checkout", "init", "--cone")
+    _git(lane, "sparse-checkout", "set", "scripts")
+    _git(lane, "sparse-checkout", "add", "data")
+    assert (lane / "data" / "tracked.txt").is_file()
+    assert _git(lane, "sparse-checkout", "list")
+    assert ws.auto_profile(lane) == 0
+    assert (lane / "data" / "tracked.txt").is_file()
+    assert not (lane / "site" / "tracked.txt").exists()
+    assert _git(lane, "status", "--porcelain=v1", "-uall") == ""
+    assert _git(lane, "rev-parse", "HEAD") == before
+
+
+def test_inconsistent_primary_checkout_is_never_rewritten(checkouts, monkeypatch):
+    """An operator's primary checkout remains a protected non-session root."""
+    repo, _, _, _ = checkouts
+    sha = _git(repo, "rev-parse", "HEAD")
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    _git(repo, "config", "core.sparseCheckout", "true")
+    assert ws.auto_profile(repo) == 0
+    assert _git(repo, "rev-parse", "HEAD") == sha
+    assert (repo / "data" / "tracked.txt").exists()
