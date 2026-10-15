@@ -25170,6 +25170,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # R15: the existing phase1 tests now reach both native 30m pivot families.
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
+      - "engine/entry_radar/replay/leader_pivot_descriptor.py"
+      - "tests/test_entry_radar_first_green_descriptor.py"
+      - "tests/test_entry_radar_leader_pivot_descriptor.py"
+      - "tests/test_entry_radar_leader_pivot_progress.py"
+      - "tests/test_entry_radar_leader_pivot_progress_edges.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
