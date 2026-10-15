@@ -420,6 +420,37 @@ for (const lang of ['en','zh']) {
   });
 }
 
+for (const bootLanguage of ['en','zh']) {
+  test(`Native Compare remove names identify the localized market ${bootLanguage}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('0');await picker.selectOption('1');
+      const bookmark=page.url();
+      const removeKorea=panel.locator('[data-im-compare-remove="1"]');
+      await removeKorea.focus();
+      for(const lang of [bootLanguage,bootLanguage==='en'?'zh':'en',bootLanguage]) {
+        await page.evaluate(lang=>setLang(lang),lang);
+        const marketNames=[];
+        for(const slot of ['0','1']) {
+          const name=await picker.locator(`option[value="${slot}"]`).getAttribute(`data-im-label-${lang}`);
+          marketNames.push(name);
+          const label=(lang==='zh'?'移除选择':'Remove selection')+' '+name;
+          assert.equal(await panel.getByRole('button',{name:label,exact:true}).count(),1,label);
+        }
+        assert.equal(new Set(marketNames).size,2);
+        assert.equal(page.url(),bookmark);
+        assert.equal(await removeKorea.evaluate(n=>document.activeElement===n),true);
+      }
+      await removeKorea.press('Enter');
+      assert.equal(new URL(page.url()).searchParams.get('pins'),'JP');
+      assert.equal(await picker.evaluate(n=>document.activeElement===n),true);
+      assert.equal(await panel.locator('[data-im-compare-remove="0"]').isVisible(),true);
+      assert.equal(await removeKorea.isVisible(),false);
+    },{htmlOverride:sourceChartFixture(),width:bootLanguage==='zh'?320:1440,bootLanguage,initialSearch:'?view=compare'});
+  });
+}
+
 for (const lang of ['en','zh']) {
   test(`Native Compare refused additions preserve chart and recover ${lang}`,async()=>{
     await pageFixture(async page=>{
