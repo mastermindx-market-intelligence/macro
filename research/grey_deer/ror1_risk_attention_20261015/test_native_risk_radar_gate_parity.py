@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-MACRO = Path(os.environ.get("ROR1_MACRO_ROOT") or Path(__file__).resolve().parents[2])
+MACRO = Path(os.environ.get("ROR1_MACRO_ROOT") or Path(__file__).resolve().parents[3])
 sys.path.insert(0, str(MACRO))
 from engine import risk_radar as rr  # noqa: E402
 
