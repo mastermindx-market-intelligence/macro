@@ -162,6 +162,37 @@ def test_receipts_floor_comes_from_the_desk():
     assert cfg["desks"]["research_desk"]["min_anchored_receipts"] == 4
 
 
+@pytest.mark.parametrize("values", [(14, 14.46), (14.46, 14)])
+def test_repeated_receipt_cannot_spend_a_nearby_unused_source_value(values):
+    slot = F.slot(facts=F.facts(first_party_values=values, third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The plan lasted 14 days; still 14 days; again 14 days.", fold=False)
+    result = V.check_receipts(draft, slot, F.config())
+    assert result["ok"] is False
+    assert result["metrics"]["values"] == [14.0]
+    assert V.check_our_value(draft, slot, F.config())["metrics"]["receipts"] == 1
+
+
+def test_receipt_rounding_selects_one_stable_nearest_anchor():
+    slot = F.slot(facts=F.facts(first_party_values=(13.55, 13.6), third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The paper plan fell 13.6%; its result was minus 13.6%.", fold=False)
+    result = V.check_receipts(draft, slot, F.config())
+    assert result["ok"] is False
+    assert result["metrics"]["values"] == [13.6]
+
+
+def test_nearby_distinct_receipts_and_honest_rounding_still_count():
+    slot = F.slot(facts=F.facts(first_party_values=(14, 14.46), third_party_values=()),
+                  min_anchored_receipts=2)
+    draft = F.draft("The plan lasted 14 days; the separate index rose 14.46%.", fold=False)
+    assert V.check_receipts(draft, slot, F.config())["metrics"]["receipts"] == 2
+    slot["facts"] = [{"id": "paper", "tier": "first_party", "values": [13.55],
+                      "text": "The paper plan result was minus 13.55%."}]
+    draft = F.draft("The paper plan fell 13.6%.", fold=False)
+    assert V.check_receipts(draft, slot, F.config())["metrics"]["values"] == [13.55]
+
+
 def test_our_value_is_always_printed_into_the_report():
     report = V.validate(F.draft(_OURS), F.slot(), F.config(), root=_REPO)
     assert report["our_value_share"] is not None

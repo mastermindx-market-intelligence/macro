@@ -930,10 +930,14 @@ def _anchored_values(text: str, pool: list[float], generic_max: int) -> list[flo
             continue
         if nm.is_bare_int and 1900 <= nm.value <= 2100:
             continue
-        for s in pool:
-            if _anchors(nm, [s]) and s not in hits:
-                hits.append(s)
-                break
+        # Resolve the anchor before deduplication. Skipping already-used values
+        # here lets repeated prose consume nearby unused values in the rounding
+        # window, so saying "14" twice can claim both 14 and 14.46 as receipts.
+        matches = [s for s in pool if _anchors(nm, [s])]
+        if matches:
+            source = min(matches, key=lambda s: (abs(abs(nm.value) - abs(s)), s))
+            if source not in hits:
+                hits.append(source)
     return hits
 
 

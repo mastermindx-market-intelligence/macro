@@ -134,6 +134,24 @@ with tempfile.TemporaryDirectory(prefix='mmx-official-staging-') as temporary:
     finally:
         W.write = original_writer
 cfg = P.load_config(root)
+for values in ((14, 14.46), (14.46, 14)):
+    slot = F.slot(facts=F.facts(first_party_values=values, third_party_values=()),
+                  min_anchored_receipts=2)
+    repeated = F.draft('The plan lasted 14 days; still 14 days; again 14 days.', fold=False)
+    result = V.check_receipts(repeated, slot, cfg)
+    assert not result['ok'] and result['metrics']['values'] == [14.0]
+    assert V.check_our_value(repeated, slot, cfg)['metrics']['receipts'] == 1
+    distinct = F.draft('The plan lasted 14 days; a separate measure rose 14.46%.', fold=False)
+    assert V.check_receipts(distinct, slot, cfg)['metrics']['receipts'] == 2
+controls.append('repeated-number-cannot-spend-nearby-unused-values')
+slot = F.slot(facts=F.facts(first_party_values=(13.55, 13.6), third_party_values=()),
+              min_anchored_receipts=2)
+rounded = F.draft('The paper plan fell 13.6%; its result was minus 13.6%.', fold=False)
+assert V.check_receipts(rounded, slot, cfg)['metrics']['values'] == [13.6]
+slot['facts'] = [{'id':'paper','tier':'first_party','values':[13.55],
+                  'text':'The paper plan result was minus 13.55%.'}]
+assert V.check_receipts(rounded, slot, cfg)['metrics']['values'] == [13.55]
+controls.append('stable-nearest-anchor-and-legitimate-rounding')
 quantity = F.slot(facts=[{'id':'amount','ref':'official_feed:fixture','tier':'third_party',
                          'text':'$750 million civil money penalty','values':['750']}])
 for text, expected_ok in [('$750 billion',False),('750 trillion dollars',False),
