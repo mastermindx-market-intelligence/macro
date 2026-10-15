@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T11:58:47.969148+00:00",
-  "count": 2955,
+  "generated_at": "2026-10-15T12:13:08.360078+00:00",
+  "count": 2956,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -209,6 +209,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kgnykp6nskn-b06237",
+      "title": "Ulta Beauty Inc. (ULTA) Takeaways from our meeting with management and store tour",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:39Z",
+      "summary_points": [
+        "Beauty Demand & Loyalty Strength: 95% of sales driven by 47m loyalty members (47m), with 80% experiential store sales and K-beauty (52% exclusive brands) fueling category demand (80-85% basket new items).",
+        "Margin Strategy Shift: Management prioritizes operating profit growth over gross margin/SG&A targets, leveraging distribution centers to offset freight costs and balancing merchandising margin with promotional investments.",
+        "Wellness Category Expansion: Dedicated wellness sections with enhanced signage capitalize on health-focused demand, positioning ULTA for margin expansion in higher-value categories.",
+        "Critical Downside Risks: Market share deterioration, moderating loyalty growth, supply chain disruptions (freight/port), and distribution pressure from prestige beauty threaten near-term performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
