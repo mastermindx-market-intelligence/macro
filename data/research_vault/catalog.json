@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T08:14:41.380674+00:00",
-  "count": 2944,
+  "generated_at": "2026-10-15T08:27:39.650036+00:00",
+  "count": 2945,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -934,6 +934,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-isrz9m7ekso-96f07f",
+      "title": "UMT (3491)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:46:22Z",
+      "summary_points": [
+        "LEO Satellite Dominance: LEO satellite segment to drive 93% of revenue by 2028E (74% CAGR 2026-28E), with Q3 2026 revenue up 74% YoY (NT$843m) and sequential MoM growth expected (Oct/Nov +17%/19%).",
+        "Extreme Valuation Premium: 2029E P/E of 37.1x vs. peers' average 13x, reflecting aggressive growth assumptions; target price implies 67.1% upside (NT$2,549 vs. current NT$1,525).",
+        "Critical Growth Catalysts: Waveguide dollar content expansion (more bands), AI data center demand for high-speed interconnection, and serving leading LEO operators (satellites/payloads)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
