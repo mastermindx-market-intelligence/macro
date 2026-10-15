@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T01:03:10.218069+00:00",
-  "count": 2921,
+  "generated_at": "2026-10-15T04:57:07.619466+00:00",
+  "count": 2935,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,125 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vbqdfjznzri-6b7442",
+      "title": "VON32629798",
+      "institution": "Vontobel",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T01:46:51Z",
+      "summary_points": [
+        "GIVAUDAN Earnings & Target Revision: Confirms 13.5% fragrance growth (perfumery at 30%+), raises FY26 org.",
+        "growth estimate to 5.9% (from 4.4%), new PT CHF 4,500 (from CHF 4,100) driven by resilient model and US tariff refunds.",
+        "GALDERMA ZO Acquisition: $1.5bn deal (4.5x EV/sales) to expand physician-dispensed skincare, strategically aligns with industry M&A averages (3.6x), EPS neutral Year 1, closes Q4 2026.",
+        "LONZA FY26 Outlook Upgrade: Confirms 11-12% sales growth (VTE 11.2%), CORE EBITDA margin 33-34% (VTE 33.7%); mid-term outlook upgraded with low-teens organic growth and margin expansion to 37-39% by 2030.",
+        "Earnings Concentration Risk: Late October (15–28 Oct) features 15+ companies (healthcare: Roche, Sandoz; industrials: Kühne + Nagel; tech: Logitech) driving flow volatility and requiring sector-specific rebalancing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zmrhikkus0p-9386f4",
+      "title": "BNZ Markets Today 14 October 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-15T01:18:19Z",
+      "summary_points": [
+        "Geopolitical Oil Shock: Middle East tensions (Houthi attacks, Strait of Hormuz) driving oil prices to ~$106, critical risk for energy markets and global trade flows.",
+        "US CPI Data Catalyst: Core CPI +0.2% m/m as key data point; potential to moderate Fed policy but risk of surprise rate hike pricing impacting rates and equities.",
+        "NZD Structural Weakness: Sustained 12-month depreciation (NZD/USD: 0.62→0.54; NZD/AUD: 0.88→0.76) confirmed by forward points, with rising swap yields (3mth: 4.85) increasing carry trade risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lwkandnfoii-15c76e",
+      "title": "4Q 2026 Equity Market Outlook Final for Posting 10 12 26",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-15T00:41:38Z",
+      "summary_points": [
+        "Rising Rates Shift Risk Balance: Higher yields, earnings pressure, and market fragility demand heightened caution in equity allocations despite strong fundamentals.",
+        "Yield-Infection Point Shift: Current high-earnings-growth regime elevates the yield-infection point above 5% (to >6%), allowing equities to coexist with higher yields unlike historical norms.",
+        "Hyperscalers Capex Strain Peak: Capex intensity peaks at 115% in 2027, requiring $300B/year AI revenue to break even; negative FCF expected, driving debt/equity issuance.",
+        "China's Credit Impulse Roll-Over: Declining China Credit Impulse signals weakening global manufacturing, potentially broadening into economic slowdown and weighing on equities.",
+        "Corporate Cash Flow Catalyst: Tax rate cut (5.4 pts to 7.9% of profits) + $155B tariff refunds = ~1% of GDP stealth stimulus, boosting corporate cash for capex/asset markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cse4plzdtfm-c88f69",
+      "title": "GS Kaplan A few observations from today 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T23:31:26Z",
+      "summary_points": [
+        "Fed Hike Mispricing: Market underpricing Dec 2027 Fed hikes (88% odds), critical macro risk for positioning.",
+        "Semis Sector Stress: 6 consecutive down sessions (Semis Red Streak), highest tech sell skew in >4 weeks (LO supply + HF flows).",
+        "Mag7 Volatility Risk: Implied vol near multi-year lows, signaling low hedging costs and underhedged portfolios ahead of earnings/Year End.",
+        "SOX Oversold Signal: RSI at 38.33 (oversold zone), 6-day down streak indicating potential reversal or continued weakness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-u7f0r6gxsnm-7c726f",
+      "title": "GS Milhous Mark to Market for Wednesday 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T23:31:24Z",
+      "summary_points": [
+        "CPI-Driven Risk Surge: Hotter CPI triggered broad market selloff (S&P -1%, 8/11 sectors down), widened credit spreads, and forced defensive sector rotation amid \"flight to safety\" flows.",
+        "Rates & Credit Volatility: CPI-driven curve flattening, 2y note spike, and significant credit spread widening (CDX IG +1.86bp, HY -43cts) intensified market stress and pressured AI-related trades."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fjzb62imsu6-9fb7fc",
+      "title": "GS Vol Views GS Vol Views 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T20:53:24Z",
+      "summary_points": [
+        "SPX Implied Correlation: Multi-year low at 0.15 vs 0.39 avg, signaling reduced market correlation and low volatility regime critical for risk assessment.",
+        "AI/Memory Sector Outflows: Consecutive Generalist/LO outflows triggering bullish options roll-downs (e.g., SKHY call spreads), indicating sector-specific capital flight and tactical restructuring.",
+        "Flight to Quality Flows: GSP1QUAL +18% since mid-August, PB exposure at 10y highs—key driver for quality tilt in portfolio allocation.",
+        "Catalyst-Driven Volatility: Low implied move (0.76%) ahead of PPI/Retail Sales, 3Q earnings, FOMC, and Midterms; Vol Panic Index at 2.7/10 amid defensive positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-uob7dsnax0l-8bd6eb",
       "title": "GS Hafif GS Flow of Funds Witching Hour 13 Oct 2026",
@@ -236,6 +355,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-dkmnlupp8rm-ca51dd",
+      "title": "GS Abbas GS US Daily Download 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:25Z",
+      "summary_points": [
+        "AI Inflation Channels: AI drives core PCE via electronic inputs (+15bp), data center power (+5-10bp), industrial metals (+5bp); unresolved software pricing mismeasurement exaggerates impact.",
+        "Foreign Positioning: Foreign investors hold 18% of US equities vs hedge funds' 2%, positioned below 50th percentile since 2009—indicating underweight stance.",
+        "Payments Sector Outlook: Robust spending volumes, fading regulation, and Agentic commerce growth; payments sector insulated from interest rates/inflation/AI disruption (stocks V, MA, TOST, GLBE highlighted)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-hmlv6utzbiy-0241df",
       "title": "GS Novak GS U.S. Industrials & Materials CPI HVAC changes pickup analysis 14 Oct 2026",
       "institution": "S&T",
@@ -314,6 +452,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ukru6eiq3sm-ab503a",
+      "title": "GS Blekos Marketcolour + ASML BCP BNP RIO 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:06Z",
+      "summary_points": [
+        "AI Inflation Impact: AI demand boosts core PCE inflation by ~45bp (half genuine), peaking at 50bp by 2026 before declining to 10bp by 2027; mismeasurement drives significant current inflation.",
+        "ASML Capacity Shortfall: 30% capacity in 2027/2028 won’t meet demand, requiring extension beyond 2028 despite Q3 beat (57.4% gross margin).",
+        "Institutional Positioning Extremes: CFTC net futures at 100th percentile indicates overextension, posing reversal risk and demanding aggressive risk mitigation.",
+        "CPI Data Release: Core CPI forecast +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6%); CTA positioning in US equities at 27th percentile (1y)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-75qspjfpqxs-b7f945",
       "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
       "institution": "S&T",
@@ -335,6 +493,45 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-f1neslo932p-263073",
+      "title": "GS Johnstone GS TMT SPEC SALES ASML beats & looking to build more; Semis AI sentiment is poor; VOD appeals to Brussels against Satellites; BT 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:43:53Z",
+      "summary_points": [
+        "ASML Capacity Constraints & AI Bottleneck Sentiment: ASML raised 2026 revenue guidance but faces 30% capacity shortfall in 2027/2028; bearish sentiment on AI bottlenecks and China (CXMT, custom silicon reducing GPU reliance) drives sector-wide concerns.",
+        "AI/Semis Power Bottleneck: Power availability for US data centers by 2028 is a tangible, non-negotiable constraint per Nvidia and investors, threatening sector growth amid funding uncertainty and competition (Meta/Google/Chinese models).",
+        "EU Regulatory Pushback on US Tech: EU regulators warn against SpaceX’s $8B spectrum acquisition and vertical integration risks (SpaceX/Amazon dominance), with Vodafone urging curbs on US satellite rivals over digital sovereignty (geopolitical policy risk)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rovjseanl6l-39c4b6",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T09:41:51Z",
+      "summary_points": [
+        "US CPI & Fed Policy Tension: Strong CPI print (headline +0.57%, YoY +2.4%) drives 24% market probability of Oct Fed rate hike (highest since Oct 2023), with Williams supporting 25bp move amid inflation data uncertainty.",
+        "Geopolitical Oil Pressure: Brent crude at $87.37/bbl (new high) fuels 9.6% monthly fuel price surge due to Iran conflict, amplifying inflation fears ahead of Fed meeting.",
+        "China Producer Inflation Surge: China’s producer inflation hit 5.0% YoY (vs 4.4% forecast), driven by AI input costs and Middle East supply disruptions, compounding global inflation risks.",
+        "Fed Policy & Inflation Dynamics: Persistent inflation underpins Fed’s tightening stance (Barkin), with 10yr yield falling to 5.21% (risk-off tone) as inflation expectations dominate yield moves."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ftuozl3okjq-c3d98f",
       "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
       "institution": "S&T",
@@ -351,6 +548,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wqbnhz2cytv-8f0b4b",
+      "title": "Goldman Sachs Prime Services Hedge Fund Performance Report September 2026",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T02:41:49Z",
+      "summary_points": [
+        "Fed Policy Shift: First rate hike since 2023 (Chair signals year-end hike), real yields surge (10Y UST +53bp), equity breadth narrows to 16% below 52-week high (S&P 500 near record).",
+        "Macro/CTA Leadership: Systematic Macro/CTA leads YTD with 12.6% return, critical fundamental for allocation focus; Quant lags.",
+        "Extreme Dispersion Risk: 16.3% YTD strategy dispersion signals extreme divergence, key risk factor demanding immediate portfolio rebalancing.",
+        "Market Divergence: Index divergence (Nasdaq +1.9% vs.",
+        "S&P 500 -0.4% vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -560,6 +778,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-qgjrwbf6wj6-d7588d",
+      "title": "Microsoft Oct 13",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T22:04:24Z",
+      "summary_points": [
+        "Azure/M365 Commercial Cloud Acceleration: F1Q27 revenue guidance $90.4bn (+17% y/y) driven by Agents & Infra segment +23% y/y (Azure 38%, M365 Cloud 37%); M365 Commercial Cloud revenue guided +17% y/y (vs prior +15%) due to GitHub Copilot adoption and pricing shifts.",
+        "Compute Constraints & Growth Risks: Persistent Azure capacity constraints limit near-term growth (net adds ~$2.8bn, below $3.4bn high-water mark); Devices & Consumer segment declining -6.5% y/y (Windows/Gaming) tempers overall growth despite high-teens acceleration.",
+        "Pricing Power & Margin Expansion: Price increases across SKUs (Business Basic +16.7%, Enterprise F1 +33.3%) signal strong pricing power; gross margin guidance maintained at <1pt y/y decline with potential upside to 67.1% due to Azure AI monetization (OpenAI revenue share removal, GitHub Copilot pricing).",
+        "AI Monetization Catalysts: GitHub Copilot (50m users, 140k orgs), M365 Copilot (80% MAU growth, 75% y/y paid seats), and Azure AI Foundry (4x y/y token run rate) drive revenue streams; Agent 365 (400M agents) and Copilot Consumer App (+3x y/d users) expand monetization.",
+        "Segment Re-structuring Impact: Agents & Infra (80% of FY26 revenue) dominates growth (98% of segment growth), with Azure/M365 Commercial driving 75% of segment revenue; Devices & Consumer decline (-6.5% y/y) offset by Search/Ads (16% y/y growth, 85% gross margin) post-reclassification."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mpkigavygok-1da158",
       "title": "Last Man Standing",
       "institution": "BTIG",
@@ -637,6 +876,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-gjmkzjcbou3-ae1296",
+      "title": "MENA Banks The repricing ladder, not the franchise, decides who earns from higher interest rates",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:29Z",
+      "summary_points": [
+        "Qatar/UAE Lead on Rate Sensitivity: Qatar (short-reset sovereign/GRE mix, Sharia constraints) and UAE (lowest LDRs, resilient CASA) benefit from higher-for-longer rates via asset-side repricing; Saudi Arabia constrained by subsidized mortgages and duration mismatches (21-22 months).",
+        "Volume Dominates NII, Not Spreads: GCC banks’ net interest income growth (e.g., Al Rajhi’s 11% CAGR) driven by loan volume, not spread expansion; Saudi/UAE asset-sensitive (floating-rate books), Qatar deposit-heavy.",
+        "Critical Risk: Saudi Duration Mismatch: Longest asset durations (commercial mortgages) vs. liability-side credit growth divergence creates basis risk (SAIBOR decoupling from SOFR) and funding squeeze; Kuwait insulated by policy caps.",
+        "Qatar’s Structural Vulnerability: High Gross LDRs (CBQ: 121%, QIB: 105%) and low CASA (QNB: 21%) elevate funding risk; Sharia constraints prevent capital smoothing, making it least arbitrageable."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 41,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-na3aw28nwyx-8f1249",
       "title": "GCC Energy Mapping export strength into year end earnings delivery",
       "institution": "Goldman Sachs",
@@ -691,6 +950,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pxoz8rr2riq-42043b",
+      "title": "Entain MGM BetMGM 3Q26 Reiterating FY guidance after solid 3Q",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:43:40Z",
+      "summary_points": [
+        "Q3 EBITDA Collapse: Q3 EBITDA $86m (100%+ YoY drop from Q2), signaling severe operational deterioration despite revenue growth; FY26 EBITDA guidance at lower end of $300-350m vs. consensus $275m.",
+        "UK Tax Resolution Catalyst: UK gambling tax overhang resolved, enabling BetMGM’s profitability turnaround (Q4 2025: Online revenue $481m, EBITDA $71m), critical for near-term margin recovery.",
+        "Valuation Gap & Bullish Thesis: Goldman Sachs Buy rating (ENT: £1,040 target vs.",
+        "£575 current price) driven by BetMGM’s online momentum (18% yoy revenue growth, 12% EBITDA margin), indicating significant upside potential."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
