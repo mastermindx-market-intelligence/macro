@@ -69,7 +69,7 @@ import os
 import re
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -738,7 +738,15 @@ def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> d
         if raw.get("session_date") != day.isoformat() or not is_session(day):
             return None
         opened, closed = session_window_et(day)
-        if not opened <= start < end <= closed:
+        kind = raw.get("observation_kind", "regular")
+        if kind == "settled_regular":
+            # v1 settlement envelope: the existing producer's 90-second
+            # settlement tolerance, explicitly declared, never an AH session.
+            grace = _f(raw.get("settlement_tolerance_seconds"))
+            if (grace != 90 or evaluated < closed or end < closed - timedelta(minutes=1)
+                    or not opened <= start < end <= closed + timedelta(seconds=grace)):
+                return None
+        elif kind != "regular" or not opened <= start < end <= closed:
             return None
         skew = _f(raw.get("max_clock_skew_seconds"))
         if skew is None or not 0 <= skew <= min(60, elapsed / 10):
@@ -753,6 +761,7 @@ def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> d
         return None
     # Explicit allowlist: scores, trade directions, confidence and targets never ride.
     return {**values, "matched_members": count, "total_members": total,
+            "observation_kind": kind,
             "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
 
 
@@ -1919,8 +1928,9 @@ def _render_leaders(p: dict) -> str:
         value = _signed(row.get("relative_change_pct"), 2, "%")
         window = f"{_stamp(row.get('reference_asof'))} to {_stamp(row.get('source_asof'))}"
         absolute = _signed(row.get("absolute_change_pct"), 2, "%")
+        closing_note = "regular-session close; " if row.get("observation_kind") == "settled_regular" else ""
         comparisons.append(f"{row['label']} {absolute} price, {value} vs SPY ({window}; "
-                           f"{row['matched_members']}/{row['total_members']} matched)")
+                           f"{closing_note}{row['matched_members']}/{row['total_members']} matched)")
     if comparisons:
         halves.append("since prior observation vs SPY (not fund flows) - " + _SEP.join(comparisons))
     if not halves:

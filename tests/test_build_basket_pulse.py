@@ -1263,7 +1263,12 @@ class TestMatchedIntradayComparison:
         late = datetime(2026,11,27,18,30,tzinfo=timezone.utc)
         self.build(tmp_path, monkeypatch, {'A':102,'B':99,'SPY':100}, first)
         _, rows = self.build(tmp_path, monkeypatch, {'A':100,'B':100,'SPY':100}, late)
-        assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'outside_regular_session'
+        # The early close now correctly routes to the settled-session branch,
+        # but quotes 29 minutes after the bell still cannot form a comparison.
+        assert rows['ai_semiconductors']['intraday_comparison']['status'] == 'benchmark_unavailable'
+        retained = json.loads((tmp_path / bp.LASTGOOD_FILENAME).read_text())["observation_baseline"]
+        assert all(q["ts"] < _now_ms(datetime(2026,11,27,18,0,tzinfo=timezone.utc))
+                   for q in retained["quotes"].values())
 
 
     def test_short_intervals_require_tighter_source_alignment(self, tmp_path, monkeypatch):
@@ -1390,3 +1395,70 @@ def test_atomic_lastgood_new_file_respects_normal_creation_umask(tmp_path):
     control.write_text('{}')
     bp._save_lastgood({"baskets":[]}, tmp_path, observation_baseline={})
     assert (tmp_path / bp.LASTGOOD_FILENAME).stat().st_mode & 0o777 == control.stat().st_mode & 0o777
+
+
+
+class TestClosingComparison:
+    """Late-arriving closing prices are not generic after-hours performance."""
+
+    @pytest.mark.parametrize("early_close", [False, True])
+    def test_final_regular_interval_survives_post_close_delivery(self, tmp_path, monkeypatch, early_close):
+        from datetime import timedelta
+        from engine.neuralweb import market_packet as mp
+        helper = TestMatchedIntradayComparison()
+        close = (datetime(2026,11,27,18,0,tzinfo=timezone.utc) if early_close
+                 else datetime(2026,10,13,20,0,tzinfo=timezone.utc))
+        helper.build(tmp_path, monkeypatch, {"A":102,"B":99,"SPY":100}, close-timedelta(minutes=15))
+        def closing(qs):
+            for q in qs.values(): q["ts"] = _now_ms(close)+1000
+        delivered = close+timedelta(minutes=16)
+        result, rows = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100},
+                                    delivered, alter=closing)
+        assert result["mode"] == "last_rth" and result["settled_close"] is True
+        comparison = rows["ai_semiconductors"]["intraday_comparison"]
+        assert comparison["status"] == "observed"
+        assert comparison["observation_kind"] == "settled_regular"
+        assert comparison["source_asof"] == (close+timedelta(seconds=1)).isoformat()
+        assert comparison["relative_change_pct"] == pytest.approx(-1.960784, abs=1e-6)
+        assert "observation_baseline" not in result
+        block = mp._leaders_block(result, [], now=delivered)
+        assert block["intraday"] and all(r["observation_kind"] == "settled_regular" for r in block["intraday"])
+        assert "regular-session close" in mp._render_leaders({"leaders":block})
+        _, repeated = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100},
+                                     delivered+timedelta(minutes=5), alter=closing)
+        assert all(r["intraday_comparison"]["status"] != "observed" for r in repeated.values())
+
+    @pytest.mark.parametrize("basis,seconds,accepted", [
+        ("regular",1,True), ("regular",90,True), ("regular",91,False),
+        ("day",2,True), ("minute",1,False), ("trade",1,False),
+        ("regular",-61,False), ("regular",-60,True),
+    ])
+    def test_closing_point_requires_bounded_explicit_regular_price(self, basis, seconds, accepted):
+        from datetime import timedelta
+        from engine.session_digest import session_window_et
+        opened, close = session_window_et("2026-10-13")
+        now = close+timedelta(minutes=15)
+        q = _make_quote(1, now=now)
+        q.update(basis=basis, ts=_now_ms(close)+seconds*1000)
+        point = bp._comparison_point(q, now, opened, close, settled_close=True)
+        assert (point is not None) is accepted
+        if point is not None:
+            assert point["ts"] == q["ts"]  # no clamp or backdating to the bell
+        if seconds > 0:
+            assert bp._comparison_point(q, now, opened, close) is None
+
+    def test_true_afterhours_price_cannot_become_final_regular_interval(self, tmp_path, monkeypatch):
+        from datetime import timedelta
+        helper = TestMatchedIntradayComparison()
+        close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+        helper.build(tmp_path, monkeypatch, {"A":102,"B":99,"SPY":100}, close-timedelta(minutes=15))
+        def late(qs):
+            for q in qs.values(): q["ts"] = _now_ms(close)+5*60000
+        result, rows = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100},
+                                    close+timedelta(minutes=16), alter=late)
+        assert all(row.get("intraday_comparison",{}).get("status") != "observed" for row in rows.values())
+
+    def test_half_day_source_close_comes_from_shared_calendar(self):
+        now = datetime(2026,11,27,18,16,tzinfo=timezone.utc)
+        assert bp._session_close_utc(now) == datetime(2026,11,27,18,0,tzinfo=timezone.utc)
+        assert bp._et_session(now) == "post"

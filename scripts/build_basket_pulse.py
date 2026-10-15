@@ -193,9 +193,8 @@ def _hk_session(now_utc: datetime) -> str:
 def _et_session(now_utc: datetime) -> str:
     """Return pre|rth|post|closed from the UTC clock.
 
-    Uses simple hour/minute arithmetic in ET (UTC-4 summer / UTC-5 winter).
-    lib.nyse_calendar.is_session() tells us if it's a trading day; if it's a
-    weekend/holiday the market never opens → always 'closed'.
+    Uses the existing US calendar and actual session close, including half days.
+    A weekend/holiday never opens; no second holiday or DST calendar is added.
     """
     from zoneinfo import ZoneInfo
     from lib import nyse_calendar
@@ -209,7 +208,9 @@ def _et_session(now_utc: datetime) -> str:
         return "closed"
     if h < _RTH_START_ET or (h == _RTH_START_ET and m < _RTH_START_MINUTE):
         return "pre"
-    if h < _RTH_END_ET:
+    from engine.session_digest import session_window_et
+    _, actual_close = session_window_et(et.date())
+    if et < actual_close:
         return "rth"
     if h < _POST_CLOSE_END_ET:
         return "post"
@@ -647,12 +648,21 @@ _COMPARISON_MAX_SKEW_MS = 60_000  # explicit sampling tolerance, not a fitted si
 
 
 def _comparison_point(quote: Any, observed_at: datetime,
-                      opened: datetime, closed: datetime) -> dict[str, Any] | None:
+                      opened: datetime, closed: datetime, *,
+                      settled_close: bool = False) -> dict[str, Any] | None:
     stamp = _quote_source_ms(quote, int(observed_at.timestamp() * 1000))
     if stamp is None:
         return None
     source_time = datetime.fromtimestamp(stamp / 1000, timezone.utc)
-    if not opened <= source_time <= closed:
+    if settled_close:
+        # Explicit regular/day-price evidence at settlement, not arbitrary AH
+        # prints. Retain the true source stamp; never clamp it to the bell.
+        close_ms = int(closed.timestamp() * 1000)
+        if (quote.get("basis") not in ("regular", "day")
+                or not close_ms - 60_000 <= stamp <= close_ms + _SETTLE_TOL_MS
+                or not _settle_quote_ok(quote, close_ms)):
+            return None
+    elif not opened <= source_time <= closed:
         return None
     if quote.get("currency") != "USD":
         return None
@@ -681,7 +691,7 @@ def _comparison_signature(point: dict[str, Any]) -> tuple:
 
 def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
                          previous: dict | None, *, now: datetime, market: str,
-                         session: str) -> tuple[dict[str, dict], dict | None]:
+                         session: str, settled_close: bool = False) -> tuple[dict[str, dict], dict | None]:
     """Matched-member returns between two observed regular-session snapshots.
 
     The interval is named by benchmark source clocks, never by polling cadence.
@@ -692,13 +702,17 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
     A subset mean is explicitly identified and never presented as the full basket.
     """
     memberships = {key: _active_members(value) for key, value in baskets.items()}
+    observation_kind = "settled_regular" if settled_close else "regular"
     common = {"schema": _COMPARISON_SCHEMA, "benchmark": "SPY",
-              "method": "matched_member_equal_weight", "max_clock_skew_seconds": 60}
+              "method": "matched_member_equal_weight", "max_clock_skew_seconds": 60,
+              "observation_kind": observation_kind,
+              "settlement_tolerance_seconds": _SETTLE_TOL_MS / 1000 if settled_close else 0}
 
     def unavailable(reason: str) -> dict[str, dict]:
         return {key: {**common, "status": reason} for key in memberships}
 
-    if market != "us" or session != "rth":
+    expected_session = "post" if settled_close else "rth"
+    if market != "us" or session != expected_session:
         return unavailable("unsupported_session"), None
     if now.tzinfo is None:
         return unavailable("invalid_evaluation_clock"), None
@@ -707,15 +721,18 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
     from zoneinfo import ZoneInfo
     session_date = now.astimezone(ZoneInfo("America/New_York")).date()
     opened, closed = session_window_et(session_date)
-    if not opened <= now <= closed:
+    if ((settled_close and now < closed)
+            or (not settled_close and not opened <= now <= closed)):
         return unavailable("outside_regular_session"), None
     tickers = sorted({"SPY"}.union(*(set(v) for v in memberships.values())))
     points = {}
     for ticker in tickers:
-        point = _comparison_point(quotes.get(ticker), now, opened, closed)
+        point = _comparison_point(quotes.get(ticker), now, opened, closed,
+                                  settled_close=settled_close)
         if point is not None:
             points[ticker] = point
-    baseline = {"schema": _BASELINE_SCHEMA, "market": market, "session": session,
+    baseline = {"schema": _BASELINE_SCHEMA, "market": market, "session": "rth",
+                "observation_kind": observation_kind,
                 "session_date": session_date.isoformat(), "observed_at": now.isoformat(),
                 "memberships": memberships, "quotes": points}
     prior = previous.get("observation_baseline") if isinstance(previous, dict) else None
@@ -737,8 +754,14 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
     prior_quotes, prior_members = prior.get("quotes"), prior.get("memberships")
     if not isinstance(prior_quotes, dict) or not isinstance(prior_members, dict):
         return unavailable("baseline_invalid"), baseline
+    prior_kind = prior.get("observation_kind", "regular")
+    if prior_kind not in ("regular", "settled_regular"):
+        return unavailable("baseline_invalid"), baseline
+    def prior_point(ticker: str) -> dict[str, Any] | None:
+        return _comparison_point(prior_quotes.get(ticker), prior_observed, opened, closed,
+                                 settled_close=prior_kind == "settled_regular")
     bench = points.get("SPY")
-    prior_bench = _comparison_point(prior_quotes.get("SPY"), prior_observed, opened, closed)
+    prior_bench = prior_point("SPY")
     if bench is None or prior_bench is None:
         return unavailable("benchmark_unavailable"), prior if prior_bench is not None else baseline
     if bench["ts"] < prior_bench["ts"]:
@@ -749,7 +772,7 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
         # retain the prior baseline on a byte-equivalent market observation.
         corrected = False
         for ticker, point in points.items():
-            old = _comparison_point(prior_quotes.get(ticker), prior_observed, opened, closed)
+            old = prior_point(ticker)
             if old is not None and point["ts"] == old["ts"] and point != old:
                 corrected = True
         if corrected:
@@ -781,7 +804,7 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
         excluded: dict[str, int] = {}
         for ticker in members:
             point = points.get(ticker)
-            old = _comparison_point(prior_quotes.get(ticker), prior_observed, opened, closed)
+            old = prior_point(ticker)
             reason = None
             if point is None or old is None:
                 reason = "missing_observation"
@@ -1051,13 +1074,10 @@ def _detect_mode(quotes: dict[str, Any], session: str, now_ms: int,
 # ── main build ─────────────────────────────────────────────────────────────────
 
 def _session_close_utc(now: datetime, market: str = "us") -> datetime | None:
-    """16:00 local of the current market date as UTC, if it is a session day.
+    """Existing US actual close as UTC; preserve the incumbent HK fallback.
 
-    Both NYSE and HKEX close the regular session at 16:00 local. Half-day
-    sessions close earlier (13:00 ET / 12:00 HKT); their settle stamps then
-    never reach the 16:00 gate, so the settled recompute simply declines and
-    the sidecar serve (which by then already holds the early close) stands —
-    honest degrade.
+    US half days reuse engine.session_digest. HK's existing 16:00-local
+    behavior is unchanged by the US closing-comparison increment.
     """
     from zoneinfo import ZoneInfo
 
@@ -1065,7 +1085,11 @@ def _session_close_utc(now: datetime, market: str = "us") -> datetime | None:
     local = now.astimezone(ZoneInfo(MARKETS[market]["tz"]))
     if not cal.is_session(local.date()):
         return None
-    close_local = local.replace(hour=16, minute=0, second=0, microsecond=0)
+    if market == "us":
+        from engine.session_digest import session_window_et
+        _, close_local = session_window_et(local.date())
+    else:
+        close_local = local.replace(hour=16, minute=0, second=0, microsecond=0)
     return close_local.astimezone(timezone.utc)
 
 
@@ -1296,8 +1320,16 @@ def build(
             settled = _settled_build(now, session, quotes, resolved_path,
                                      baskets_meta, stale_min, now_ms, market)
             if settled is not None:
+                baseline = None
+                if market == "us":
+                    previous = _load_lastgood(out_dir, lastgood_name) if out_dir is not None else None
+                    comparisons, baseline = _intraday_comparisons(
+                        baskets_meta, quotes, previous, now=now, market=market,
+                        session=session, settled_close=True)
+                    for row in settled["baskets"]:
+                        row["intraday_comparison"] = comparisons.get(row["id"])
                 if out_dir is not None:
-                    _save_lastgood(settled, out_dir, lastgood_name)
+                    _save_lastgood(settled, out_dir, lastgood_name, observation_baseline=baseline)
                 _attach_day_flow(settled, market)
                 return settled
 

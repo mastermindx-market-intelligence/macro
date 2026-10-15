@@ -1855,3 +1855,21 @@ def test_intraday_consumer_freshness_budget_boundary():
 
 def test_intraday_consumer_rejects_naive_evaluation_clock():
     assert mp._intraday_comparison_block(_observation_comparison(), now=datetime(2026,10,13,15,30)) is None
+
+
+
+@pytest.mark.parametrize("kind,seconds,accepted", [
+    ("settled_regular",1,True), ("settled_regular",90,True),
+    ("settled_regular",91,False), ("regular",1,False), ("overnight",1,False),
+])
+def test_closing_comparison_consumer_keeps_real_source_time(kind, seconds, accepted):
+    close = datetime(2026,10,13,20,0,tzinfo=timezone.utc)
+    start = close-timedelta(minutes=15)
+    end = close+timedelta(seconds=seconds)
+    raw = _observation_comparison(reference_asof=start.isoformat(),source_asof=end.isoformat(),
+        elapsed_minutes=(end-start).total_seconds()/60, observation_kind=kind,
+        settlement_tolerance_seconds=90)
+    result = mp._intraday_comparison_block(raw, now=close+timedelta(minutes=16))
+    assert (result is not None) is accepted
+    if result is not None:
+        assert result["source_asof"] == end.isoformat() and result["observation_kind"] == kind
