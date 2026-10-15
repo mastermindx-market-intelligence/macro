@@ -3052,13 +3052,20 @@ def test_preflight_never_hydrates_real_blob_none_partial_clone(tmp_path):
     got = run_sh(
         """
         push_retry_init "real partial-clone read-only guard"
-        _push_qledger_committed_size_preflight HEAD
+        git() {
+          printf '%s\\n' "$*" >> "$PREFLIGHT_TRACE"
+          command git "$@"
+        }
+        _push_qledger_committed_size_preflight origin HEAD:refs/heads/main
         printf 'STATUS=%s TERMINAL=%s\\n' "$?" "$PUSH_TERMINAL_RC"
-        """, cwd=dst, env=env,
+        """, cwd=dst, env={**env, "PREFLIGHT_TRACE": str(tmp_path / "preflight-commands.txt")},
     )
     assert got.returncode == 0, (got.stdout, got.stderr)
     assert "STATUS=0 TERMINAL=0" in got.stdout
     assert not available_locally(), "optional guard fetched a promised QLedger blob"
+    trace = tmp_path / "preflight-commands.txt"
+    assert trace.exists(), "the no-hydration witness must actually inspect the candidate"
+    assert trace.read_text().splitlines() == ["ls-tree -l HEAD -- data/qledger/claims.jsonl"]
 
 
 @pytest.mark.parametrize("invocation", ["push_do", "push_do origin"])
@@ -3083,3 +3090,125 @@ def test_qledger_preflight_never_guesses_implicit_default_push_ref(tmp_path, inv
     assert r.returncode == 0, (r.stdout, r.stderr)
     assert "EXPLICITLY_UNBOUND_DEFAULT_PUSH" in r.stdout
     assert "local QLedger Git-tree blob" not in r.stderr
+
+
+# Actual caller integration: do not infer the source of a bare/default push.
+def _run_collect_tail_publication_fixture(tmp_path, size, *, working_claims=False,
+                                          candidate_available=True, branch="main"):
+    """Run the real YAML step + shared helper, with synthetic Git and legacy admission.
+
+    No collector, real repository, remote transport or source ledger is invoked.
+    The shim replaces only the canonical binding result with an admitted legacy
+    fixture; the size guard, retry control and parsed caller execute unchanged.
+    """
+    import json
+
+    workflow = yaml.safe_load((REPO_ROOT / ".github/workflows/daily.yml").read_text())
+    job = workflow["jobs"]["collect_tail"]
+    step = next(s for s in job["steps"] if s.get("name") == "commit tail data")
+    assert job["steps"][1]["with"]["ref"] == "main"
+    root = tmp_path / "synthetic-caller"
+    root.mkdir()
+    (root / ".git").mkdir()
+    shim = root / "scripts/ci/push_retry.sh"
+    shim.parent.mkdir(parents=True)
+    shim.write_text(f'. "{LIB}"\npush_qledger_guard() {{ return 0; }}\n')
+    if working_claims:
+        claims = root / "data/qledger/claims.jsonl"
+        claims.parent.mkdir(parents=True)
+        claims.write_text("synthetic working bytes; metadata remains authoritative\n")
+    fake_bin = root / "fake-bin"
+    fake_bin.mkdir()
+    fake_git = fake_bin / "git"
+    fake_git.write_text(textwrap.dedent('''\
+        #!/usr/bin/env python3
+        import json, os, sys
+        a = sys.argv[1:]
+        with open(os.environ["TAIL_GIT_LOG"], "a") as out:
+            out.write(json.dumps({"args": a, "lazy": os.environ.get("GIT_NO_LAZY_FETCH")}) + "\\n")
+        if a[:2] == ["ls-tree", "-l"]:
+            if os.environ["TAIL_SIZE"] != "absent":
+                print("100644 blob " + "f" * 40 + " " + os.environ["TAIL_SIZE"] + "\\tdata/qledger/claims.jsonl")
+        elif a[:2] == ["rev-parse", "--abbrev-ref"]:
+            print(os.environ["TAIL_BRANCH"])
+        elif a and a[0] == "rev-parse":
+            if os.environ["TAIL_CANDIDATE_AVAILABLE"] != "1":
+                sys.exit(128)
+            print(os.environ["TAIL_CANDIDATE"])
+        elif a[:3] == ["diff", "--cached", "--quiet"]:
+            sys.exit(1)
+        elif a and a[0] in ("config", "add", "commit", "fetch", "pull", "log", "ls-files", "ls-tree", "push"):
+            pass
+        else:
+            print("unexpected synthetic Git operation: " + repr(a), file=sys.stderr)
+            sys.exit(97)
+        '''))
+    fake_git.chmod(0o755)
+    log = root / "git-calls.jsonl"
+    env = {
+        **os.environ,
+        "PATH": str(fake_bin) + os.pathsep + os.environ["PATH"],
+        "GITHUB_WORKSPACE": str(root),
+        "GITHUB_STEP_SUMMARY": str(root / "summary.md"),
+        "TAIL_GIT_LOG": str(log),
+        "TAIL_CANDIDATE": "1" * 40,
+        "TAIL_BRANCH": branch,
+        "TAIL_CANDIDATE_AVAILABLE": "1" if candidate_available else "0",
+        "TAIL_SIZE": "absent" if size is None else str(size),
+    }
+    before = (root / "data/qledger/claims.jsonl").read_bytes() if working_claims else None
+    result = subprocess.run(["bash", "-eo", "pipefail", "-c", step["run"]],
+                            cwd=root, env=env, text=True, capture_output=True, timeout=15)
+    calls = [json.loads(line) for line in log.read_text().splitlines()]
+    if working_claims:
+        assert (root / "data/qledger/claims.jsonl").read_bytes() == before
+    return result, calls
+
+
+@pytest.mark.parametrize(("size", "working_claims", "blocked"), [
+    (136_152_822, False, True), (104_857_601, True, True),
+    (104_857_600, False, False), (104_770_713, True, False),
+    ("-", False, False), (None, False, False),
+])
+def test_collect_tail_real_caller_binds_checked_commit_before_network(
+    tmp_path, size, working_claims, blocked
+):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, size, working_claims=working_claims
+    )
+    inspections = [c for c in calls if c["args"][:2] == ["ls-tree", "-l"]]
+    pushes = [c for c in calls if c["args"][:1] == ["push"]]
+    assert len(inspections) == 1, (result.stdout, result.stderr, calls)
+    assert inspections[0] == {
+        "args": ["ls-tree", "-l", "1" * 40, "--", "data/qledger/claims.jsonl"],
+        "lazy": "1",
+    }
+    if blocked:
+        assert result.returncode == 73, (result.stdout, result.stderr)
+        assert pushes == []
+        assert calls[-1] == inspections[0], "terminal failure must not rebase, clean, inspect or push again"
+        assert "local QLedger GH001 size preflight" in result.stderr
+    else:
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        assert [c["args"] for c in pushes] == [["push", "origin", "1" * 40 + ":refs/heads/main"]]
+        assert "pushed tail data on attempt 1" in result.stdout
+
+
+def test_collect_tail_cannot_push_when_its_exact_commit_cannot_be_resolved(tmp_path):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, 104_770_713, candidate_available=False
+    )
+    assert result.returncode != 0
+    assert not any(c["args"][:1] == ["push"] for c in calls)
+    assert not any(c["args"][:2] == ["ls-tree", "-l"] for c in calls)
+
+
+@pytest.mark.parametrize("branch", ["feature/synthetic", "HEAD"])
+def test_collect_tail_named_commit_still_requires_the_existing_main_guard(tmp_path, branch):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, 104_770_713, branch=branch
+    )
+    assert result.returncode != 0
+    assert "not on main" in result.stdout
+    assert not any(c["args"][:1] == ["push"] for c in calls)
+    assert not any(c["args"][:2] == ["ls-tree", "-l"] for c in calls)
