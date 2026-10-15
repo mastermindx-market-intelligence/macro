@@ -138,3 +138,41 @@ test('a later daily timeframe choice wins over a pending 4H request',async t=>{
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bchart.prefs')).tf),'1W');
   assert.equal(await page.locator('[data-tf="1W"]').getAttribute('class'),'on');
 });
+
+for (const language of ['en','zh']) test(`chart controls expose committed selection to accessibility APIs ${language}`,async t=>{
+  const {page,mount,reply,waitRequest}=await setup(t,true);
+  await page.evaluate(language=>document.documentElement.setAttribute('data-lang',language),language);
+  await waitRequest('/signals/CURRENT.json',()=>mount('CURRENT'));
+  await reply('/signals/CURRENT.json',{markers:[{date:'2026-01-20',type:'buy',quality:'take'}]});
+  const weekly=page.locator('[data-tf="1W"]'),dailyButton=page.locator('[data-tf="1D"]');
+  assert.equal(await dailyButton.getAttribute('aria-pressed'),'true');
+  assert.equal(await weekly.getAttribute('aria-pressed'),'false');
+  await weekly.focus();await page.keyboard.press('Enter');
+  assert.equal(await weekly.getAttribute('aria-pressed'),'true');
+  assert.equal(await dailyButton.getAttribute('aria-pressed'),'false');
+  assert.equal(await page.getByRole('button',{name:language==='zh'?'周':'1W',exact:true,pressed:true}).count(),1);
+  for(const selector of ['[data-k="ema"]','[data-k="rsi"]','[data-sig]']) {
+    const button=page.locator(selector);assert.equal(await button.getAttribute('aria-pressed'),'true');
+    await button.focus();await page.keyboard.press('Space');
+    assert.equal(await button.getAttribute('aria-pressed'),'false');
+    assert.equal(await button.evaluate(n=>n.classList.contains('on')),false);
+  }
+  await waitRequest('/intraday/CURRENT.json',()=>page.locator('[data-tf="4H"]').click());
+  await reply('/intraday/CURRENT.json',{},503);
+  assert.equal(await weekly.getAttribute('aria-pressed'),'true','failed request cannot announce an uncommitted timeframe');
+  assert.equal(await page.locator('[data-tf="4H"]').getAttribute('aria-pressed'),'false');
+  await page.evaluate(()=>document.dispatchEvent(new Event('langchange')));
+  assert.equal(await weekly.getAttribute('aria-pressed'),'true');
+  for(const selector of ['[data-k="ema"]','[data-k="rsi"]','[data-sig]']) assert.equal(await page.locator(selector).getAttribute('aria-pressed'),'false');
+});
+
+for (const language of ['en','zh']) test(`fullscreen exit keeps its truthful name after a language rebuild ${language}`,async t=>{
+  const {page,mount}=await setup(t);await mount('CURRENT');
+  await page.locator('.bchart-fsbtn').click();
+  await page.evaluate(language=>{document.documentElement.setAttribute('data-lang',language);document.dispatchEvent(new Event('langchange'));},language);
+  assert.equal(await page.locator('.bchart-fsbtn').getAttribute('aria-label'),language==='zh'?'退出全屏':'Exit full screen');
+  assert.equal(await page.locator('.bchart').evaluate(n=>n.classList.contains('bchart-full')),true);
+  await page.locator('.bchart-fsbtn').focus();await page.keyboard.press('Enter');
+  assert.equal(await page.locator('.bchart-fsbtn').getAttribute('aria-label'),language==='zh'?'全屏':'Full screen');
+  assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),false);
+});

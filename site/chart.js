@@ -345,6 +345,7 @@
     TFS.forEach(function (tfp) {
       var b = document.createElement('button'); b.textContent = tfp[1]; b.dataset.tf = tfp[0];
       if (self.tf === tfp[0]) b.className = 'on';
+      b.setAttribute('aria-pressed', String(self.tf === tfp[0]));
       b.onclick = function () { self.setTimeframe(tfp[0]); };
       seg.appendChild(b);
     });
@@ -359,6 +360,7 @@
       b.dataset.k = d[0];
       var on = d[0] === 'ema' ? self.ema : self.inds.has(d[0]);
       if (on) b.classList.add('on');
+      b.setAttribute('aria-pressed', String(!!on));
       b.onclick = function () {
         if (d[0] === 'ema') self.ema = !self.ema;
         else { if (self.inds.has(d[0])) self.inds.delete(d[0]); else self.inds.add(d[0]); }
@@ -379,7 +381,7 @@
     this.fsbtn.className = 'bchart-fsbtn';
     var isFull = this.wrap.classList.contains('bchart-full');
     this.fsbtn.innerHTML = isFull ? FS_COLLAPSE : FS_EXPAND;
-    this.fsbtn.setAttribute('aria-label', tt('Full screen', '全屏'));
+    this.fsbtn.setAttribute('aria-label', isFull ? tt('Exit full screen', '退出全屏') : tt('Full screen', '全屏'));
     this.fsbtn.onclick = function () { self.toggleFull(); };
     canvas.appendChild(this.legend); canvas.appendChild(this.plot); canvas.appendChild(this.fsbtn);
     this.wrap.appendChild(canvas);
@@ -429,10 +431,15 @@
   };
   Instance.prototype.syncBar = function () {
     if (!this.bar) return; var self = this;
-    this.bar.querySelectorAll('[data-tf]').forEach(function (b) { b.className = (self.tf === b.dataset.tf) ? 'on' : ''; });
+    this.bar.querySelectorAll('[data-tf]').forEach(function (b) {
+      var on = self.tf === b.dataset.tf;
+      b.className = on ? 'on' : '';
+      b.setAttribute('aria-pressed', String(on));
+    });
     this.bar.querySelectorAll('[data-k]').forEach(function (b) {
       var on = b.dataset.k === 'ema' ? self.ema : self.inds.has(b.dataset.k);
       b.classList.toggle('on', !!on);
+      b.setAttribute('aria-pressed', String(!!on));
     });
   };
   Instance.prototype.persist = function () {
@@ -796,12 +803,14 @@
     var self = this;
     var b = document.createElement('button');
     b.className = 'bchart-chip' + (this.showSig ? ' on' : '');
+    b.setAttribute('aria-pressed', String(this.showSig));
     b.dataset.sig = '1';
     b.textContent = tt('Signals', '信号');
     b.title = tt('Buy / sell / cut signal markers (display-only)', '买/卖/止损信号标记（仅供参考）');
     b.onclick = function () {
       self.showSig = !self.showSig; self.persist();
       b.classList.toggle('on', self.showSig);
+      b.setAttribute('aria-pressed', String(self.showSig));
       self.renderSignals();
     };
     this.chips.appendChild(b);
