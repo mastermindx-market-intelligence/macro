@@ -449,11 +449,11 @@
   /* zh 红涨绿跌 (operator ruling 2026-07-21): heat-pill.heating = bullish momentum → red bg in zh */
   html[data-lang="zh"] .heat-pill.heating { background:rgba(211,11,11,.09); }
   /* intraday-observation:style-start */
-  .si-intra { margin:12px 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text); }
+  .si-intra { margin:12px 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text); }
   .si-intra-head { display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px; }
   .si-intra h2 { font-size:18px;line-height:1.3;margin:0 0 4px;letter-spacing:-.02em; }
   .si-intra-head p,.si-intra-foot,.si-intra-empty { font-size:12px;line-height:1.5;margin:0;color:var(--muted); }
-  .si-intra button { min-height:40px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--text);padding:8px 12px;font:inherit;font-size:12px;cursor:pointer; }
+  .si-intra button { min-height:40px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);padding:8px 12px;font:inherit;font-size:12px;cursor:pointer; }
   .si-intra-cols,.si-intra-row summary { display:grid;grid-template-columns:minmax(130px,1fr) repeat(3,minmax(72px,96px));align-items:center;gap:12px; }
   .si-intra-cols { color:var(--muted);font-size:11px;padding:0 6px 8px; }
   .si-intra-cols>span:not(:first-child) { text-align:right; }

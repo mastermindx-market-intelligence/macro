@@ -1,7 +1,7 @@
 {
   "browser": "webkit",
   "proof_kind": "actual_candidate_jinja_page_synthetic_pulse_no_production",
-  "template_sha256": "c48128c0086ddf710f346c5922e133a592d66f7c31b2f20634ab45fbd63778ed",
+  "template_sha256": "733d59a85c0d3390cf4dd2c6d0b60a4415a01ce33f17ff52b9e9bdaa18a10802",
   "cases": [
     {
       "viewport": 1440,
@@ -503,13 +503,13 @@
     }
   ],
   "screenshots": {
-    "390-dark-en-page.png": "43c29ab4b1790f90d7d244d31e52f3d26221db35500b1f94a0daf4065c419fd4",
-    "1440-dark-en-page.png": "8c19532824785fee8f919be24829cc2d0b610ba2460ec869c7d6f2bda15d701e",
-    "1440-dark-en-panel.png": "6da15bc0a6c5d4b9347fedc3a917336af3afeff8a75c3b6154ccd13b52dd5569",
-    "390-dark-en-panel.png": "334df3a32565bb28c4ebe7ffd60f0b5284adac862062cb569eb65fa372130bd5",
-    "390-light-zh-panel.png": "6e8bb79f53f5cda1541ba4d58c1861170b078a9e1398e41ec659b68da74ce5e0",
-    "390-light-zh-page.png": "9d9f8f750d343c019bba8663b376bd7492754a8652f1bde3bbba66e89f72a771",
-    "1440-light-en-panel.png": "625563fda018d4eeefb851461c46b3c0c4578b2970e64262eaf0de781c119b9f",
-    "1440-light-en-page.png": "2f72b116056edadcd427f87fe5ab0ccdb1e215d8faa8b31ed6541e0520693705"
+    "1440-dark-en-page.png": "13cd0c50edcce1d0309dff5c4ae18f5dcdd7667bd7ce5912e85f2d02b62da206",
+    "1440-dark-en-panel.png": "e91dffca95393133e015ef535372a5ea19ceded065aedd681138958589c3d0b9",
+    "1440-light-en-page.png": "83d2dcfeaa9db379477a7fe07d9463d2baf44f10f674b1cbaa5cd035f642b605",
+    "1440-light-en-panel.png": "1e4ee68151e8ec6b3dcb7fed9c5dfd6258bd2c92d628dbc045a87daa365463bb",
+    "390-dark-en-page.png": "ea555052b179f91523da0cd7c9a96c7a401d6a1ba8d6b17b267550c919334e0e",
+    "390-dark-en-panel.png": "0da31c9df985b61bcb7a4858ba704920f52bdd38ef99e2d19527d2c4302aa127",
+    "390-light-zh-page.png": "4ffa44ed065cef49b01a3875208497a9033aaa511c56a9b5c20aa0322fb5ad3a",
+    "390-light-zh-panel.png": "f306a064e9428fa7abbf02bfd03a6c2de34716fcdc13b40ecf0b6ee3b829cb83"
   }
 }
