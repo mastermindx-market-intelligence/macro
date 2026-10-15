@@ -1596,10 +1596,9 @@ def _realized_cash(transaction: Mapping[str, Any], unknowns: _Unknowns) -> dict[
     elif cash_kind is None:
         gross, net = None, None
     else:
-        if cash_kind == "repayment" and transaction["gross_proceeds_usd"] is None:
-            gross = transaction["principal_usd"]
-        else:
-            gross = transaction["gross_proceeds_usd"]
+        # Reported cash only.  A redemption or repurchase can pay a premium or a
+        # discount, so its principal is never taken as the cash paid.
+        gross = transaction["gross_proceeds_usd"]
         net = transaction["net_proceeds_usd"]
         if gross is None or net is None:
             status = "unknown"

@@ -57,7 +57,10 @@ answer: >
   interval after a balance is counted when it closes. Two balances for one
   instrument on one day that disagree are contradicted, never chosen between.
   Only plain decimal text is an exact amount, and apply_outstanding refuses a
-  ledger dated after the instrument set it updates.
+  ledger dated after the instrument set it updates. The cash paid on a
+  redemption or repurchase is the reported amount only; its principal is
+  never taken as the cash paid, because a redemption can carry a premium or
+  a discount.
 rationale: >
   The two failure modes the masterplan names for this task are additive.
   Deducting a cumulative usage figure and the individual sales it already

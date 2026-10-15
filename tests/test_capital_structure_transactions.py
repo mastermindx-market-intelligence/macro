@@ -1690,6 +1690,32 @@ def test_versions_a_convertible_note_is_tracked_in_principal_usd():
     assert cash_of(ledger, transaction_id_for(events[1]))["realized_cash_kind"] == "no_cash"
 
 
+def test_realized_cash_of_a_redemption_is_never_its_principal():
+    """§7: a redemption can pay a premium or a discount, so principal is not cash paid."""
+    events = [balance("2026-03-31", "2000000", unit="principal_usd", security_class_id=CLASS),
+              flow("redemption", "2026-05-01", "500000", unit="principal_usd",
+                   security_class_id=CLASS)]
+    ledger, instrument_id, _ = version_ledger(events, note=True)
+    cash = cash_of(ledger, transaction_id_for(events[1]))
+    assert cash["realized_cash_kind"] == "repayment"
+    assert cash["gross_usd"] is None
+    assert cash["net_usd"] is None
+    assert cash["status"] == "unknown"
+    # The principal still decrements the note; only the cash claim is withheld.
+    assert [item["outstanding"] for item in versions_of(ledger, instrument_id)] == ["2000000", "1500000"]
+
+
+def test_realized_cash_of_a_redemption_is_the_reported_cash_paid():
+    paid = observation(kind="redemption", event_date="2026-05-01", principal="500000",
+                       gross="510000", net="510000", security_class_id=CLASS, form="8-K",
+                       accepted="2026-05-01", accession="0001-26-000041")
+    events = [balance("2026-03-31", "2000000", unit="principal_usd", security_class_id=CLASS), paid]
+    ledger, _, _ = version_ledger(events, note=True)
+    cash = cash_of(ledger, transaction_id_for(paid))
+    assert cash["realized_cash_kind"] == "repayment"
+    assert (cash["gross_usd"], cash["net_usd"], cash["status"]) == ("510000", "510000", "known")
+
+
 def test_versions_apply_outstanding_leaves_an_unbound_instrument_byte_identical():
     bound_id, warrant = warrant_set("series_u_cash_warrants")
     other_id, other = warrant_set("series_untouched_warrants")
