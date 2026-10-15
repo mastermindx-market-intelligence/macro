@@ -185,6 +185,16 @@ A1 PR6651 remains published3f34040de3a5. Current run38738100398/attempt1 at13:18
 
 Follow-on source2d0e98bf6b7e adds the same six A1 dependency paths to resolve a newly demonstrated manifest composition conflict. All314follow-on job definitions, prior paths, limits and runtime remain unchanged. Two affected controls pass, full dependency closure has zero misses, and strict packing remains134/134/128jobs within existing limits. Read-only composition with A1 is clean at tree077ffc7f and preserves319existing A1 execution definitions and path memberships; the existing follow-on QLedger exclusive-scope metadata remains intentional and predates this repair. See `research/evidence/eval-os-tier-query-20261014/followon-six-input-alignment-20261015.json`. Runtime remains3528080 with20supplied-textcases plus legacybear/T11/T5/T12/QLedger proof. After A1 landing, reconcile final source/capacity and release the same follow-on. No model/PIT/installed numeric/internal-log or adoption claim; original unknown/refused effects and all final flags remain unchanged.
 
+Native serving readiness at13:45-13:46Z is now resolved separately from admin: actual
+`macro-api` PID2796447 is active with cwd/WorkingDirectory `/opt/macro`, start13:30:21;
+actual `admin` PID2753549 is active, start12:21:37. The installed updater matches the
+previous verified updater and covers gateway/native-facts/log-writer changes in this
+follow-on. `response_eval.py` alone is not a restart trigger. The absent `macro-admin`
+alias was corrected to the canonical `admin` unit; it is not an outage. No restart,
+credential/corpus read or production mutation occurred. Final qualified files, both
+loaded processes and actual request/log consumption remain owed after release. See
+`research/evidence/eval-os-tier-query-20261014/t11-native-runtime-readiness-20261015.json`.
+
 ## 2026-10-15 A1 repair published
 
 A1ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17 ordinarypush/readback06:54:58 aftercanonical6/cap8admission. Parentfea exactremote/custody/ancestry verified and read-onlypreviewagainstactualmain3f62 clean/tree1e6ba68177e4a60af5e5d3c0f6071ee693262043. No secondbaseintegration or forcepush. ExistingPRbody updated06:55:38. Follow-on sourcead03 and containing7104 publishedclean; nofollow-onPR/CIproducer. FreshA1checks/merge/production remainopen. Sixoriginalpublicationrecords retained, allfinalflagsfalse.

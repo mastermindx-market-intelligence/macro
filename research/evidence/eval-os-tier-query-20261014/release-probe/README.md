@@ -52,7 +52,13 @@ consumer use remain separate obligations; this probe cannot fabricate them. Its 
 completion/adoption flags always remain false.
 
 The eleven-file binding includes the native checker, executor, gateway and internal
-log writer. The two CLI invocations do not execute that numeric path. After release,
+log writer. Native answers execute in `macro-api.service`; the operator reader executes
+in `admin.service`. After the normal updater installs the qualified follow-on, verify
+both actual service processes and the native API process's source directory/start time.
+The admin PID alone cannot establish that the native caller loaded the new source.
+The current release changes gateway/native-facts/log-writer paths that the installed
+API restart trigger covers. A checker-only `response_eval.py` change is not covered by
+that trigger, so do not infer restart readiness for a later isolated checker repair. The two CLI invocations do not execute that numeric path. After release,
 use the authenticated native numeric request and preserve its actual request ID.
 Both gateway modes write that ID as the response-log row ID. Observe the corresponding
 row through the existing operator log reader and its
