@@ -84,6 +84,7 @@ def test_direct_composition_refuses_macro_qualification_upgrade(monkeypatch, tmp
 
 
 def test_cli_dossier_composes_identical_filing_metadata(monkeypatch,tmp_path):
+    import hashlib
     from tests.test_market_memory_history_archive import make_archive
     from tests.test_market_memory_history_filings import row, payload, read
     from engine.neuralweb.market_memory_history_dossier import build_daily_dossier

@@ -25259,6 +25259,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_history_filings.py
+      - tests/test_market_memory_history_filings.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py

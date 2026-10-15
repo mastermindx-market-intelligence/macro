@@ -5,6 +5,7 @@
   const ui = { ready:false, outcomesDecoded:false, outcomesVisible:false, error:null };
   const text = (en,zh) => document.documentElement.dataset.lang === 'zh' ? zh : en;
   let corpus=null, outcomes=null, macro=null, macroIndex=null, dayIndex=new Map(), outcomeIndex=null, dates=[];
+  let filings=null,filingsIndex=null,filingsOffset=0,filingsDay=null;
   const names={SPY:['US large caps','美国大盘'],QQQ:['Nasdaq-100 proxy','纳斯达克100代理'],IWM:['US small caps','美国小盘'],RSP:['Equal-weight US stocks','等权重美股'],DIA:['US blue chips','美国蓝筹'],XLB:['Materials','原材料'],XLC:['Communication services','通信服务'],XLE:['Energy','能源'],XLF:['Financials','金融'],XLI:['Industrials','工业'],XLK:['Technology','科技'],XLP:['Consumer staples','必需消费'],XLRE:['Real estate','房地产'],XLU:['Utilities','公用事业'],XLV:['Health care','医疗'],XLY:['Consumer discretionary','可选消费'],TLT:['Long Treasury bonds','长期美国国债'],IEF:['Intermediate Treasuries','中期美国国债'],SHY:['Short Treasury bonds','短期美国国债'],HYG:['High-yield credit','高收益信用'],LQD:['Investment-grade credit','投资级信用'],UUP:['US dollar proxy','美元代理'],GLD:['Gold proxy','黄金代理'],USO:['Oil futures proxy','原油期货代理'],SLV:['Silver proxy','白银代理']};
   const fmt = (v,unit='%') => v===null || v===undefined ? '—' : (v>0?'+':'')+v.toFixed(2)+unit;
   const reason = (r,key) => r.missing && r.missing[key] || '';
@@ -67,12 +68,34 @@
       for(const value of [row.series,row.period,row.value===null?'—':Number(row.value).toLocaleString(undefined,{maximumFractionDigits:6})]){const td=document.createElement('td');td.textContent=value;tr.append(td);}body.append(tr);}
     if(rows.length>100)$('mmh-macro-status').textContent+=text(' Showing 100; all records remain in the source artifact.',' 显示前100条；所有记录仍保留在来源文件中。');
   }
+  function renderFilings(day) {
+    if(!filings)return;
+    $('mmh-filings').hidden=false;
+    if(filingsDay!==day){filingsDay=day;filingsOffset=0;}
+    const all=filingsIndex.get(day)||[],page=all.slice(filingsOffset,filingsOffset+50);
+    const range=filings.metadata.source_date_range;
+    const outside=!range.first||day<range.first||day>range.last;
+    $('mmh-filings-status').textContent=all.length?
+      text(`${all.length} retained filings · showing ${filingsOffset+1}–${filingsOffset+page.length}.`,`${all.length} 条保留申报 · 显示第 ${filingsOffset+1}–${filingsOffset+page.length} 条。`):
+      outside?text(`No retained filing coverage for this date. Available source: ${range.first||'—'} to ${range.last||'—'}.`,`该日期没有保留的申报覆盖。来源范围：${range.first||'—'} 至 ${range.last||'—'}。`):
+      text('No retained filing record on this exact date. This does not mean no event occurred.','该确切日期没有保留的申报记录，并不意味着没有事件发生。');
+    const body=$('mmh-filings-table').tBodies[0];body.replaceChildren();
+    for(const values of page){const row=Object.fromEntries(filings.columns.map((c,i)=>[c,values[i]]));const tr=document.createElement('tr');
+      for(const value of [row.ticker_source_label,`${row.form} · ${row.filing_key}`,row.report_date,row.acceptance_datetime_utc]){
+        const td=document.createElement('td');td.textContent=value===null?'—':String(value);tr.append(td);
+      }body.append(tr);
+    }
+    $('mmh-filings-prev').disabled=filingsOffset===0;
+    $('mmh-filings-next').disabled=filingsOffset+page.length>=all.length;
+    $('mmh-filings-prev').textContent=text('Previous filings','上一页申报');
+    $('mmh-filings-next').textContent=text('Next filings','下一页申报');
+  }
   function render() {
     if(!corpus)return;
     const day=$('mmh-date').value, rows=objects(corpus,dayIndex,day), total=corpus.metadata.coverage.selected_proxy_count;
     $('mmh-selected-date').textContent=day||'—';
     $('mmh-benchmark-heading').textContent=text('vs. '+corpus.metadata.request.benchmark+' · 21 bars','较'+corpus.metadata.request.benchmark+' · 21条');
-    renderMacro(day);
+    renderMacro(day);renderFilings(day);
     $('mmh-status').textContent=rows.length?text(`${rows.length} selected proxies observed`, `已观测 ${rows.length} 个选定代理资产`):text('No observation for this exact date','该确切日期没有观测数据');
     $('mmh-empty').hidden=rows.length!==0;$('mmh-state-wrap').hidden=rows.length===0;
     const i=dates.indexOf(day);$('mmh-prev').disabled=!dates.some(d=>d<day);$('mmh-next').disabled=!dates.some(d=>d>day);
@@ -85,6 +108,7 @@
     $('mmh-coverage-note').textContent=coverage.requested_end_after_last_observation?text(`Requested through ${meta.request.end}; the source ends earlier. Missing dates are not filled.`,`请求截至 ${meta.request.end}；来源数据更早结束，缺失日期不会填补。`):text('Coverage follows retained observations, not an asserted full exchange calendar.','覆盖范围取决于保留的观测记录，并非声称完整交易日历。');
     const evidence={artifact_id:meta.artifact_id,manifest_sha256:corpus.manifest_sha256,mode:corpus.mode,source_references:meta.sources,selected_day_missing:rows.filter(r=>Object.keys(r.missing||{}).length).map(r=>({vendor_symbol:r.vendor_symbol,missing:r.missing}))};
     if(macro)evidence.macro={sha256:macro.macro_sha256,metadata:macro.metadata};
+    if(filings)evidence.filings={sha256:filings.filings_sha256,metadata:filings.metadata};
     $('mmh-provenance').textContent=JSON.stringify(evidence,null,2);
     $('mmh-prev').textContent=text('Previous','上一个');$('mmh-next').textContent=text('Next','下一个');
     $('mmh-symbol').options[0].textContent=text('All selected proxies','全部选定代理资产');
@@ -97,6 +121,8 @@
   $('mmh-prev').addEventListener('click',()=>step(-1));$('mmh-next').addEventListener('click',()=>step(1));
   $('mmh-theme').addEventListener('click',()=>{const html=document.documentElement;html.dataset.theme=html.dataset.theme==='light'?'dark':'light';$('mmh-theme').textContent=html.dataset.theme==='light'?text('Dark','深色'):text('Light','浅色');});
   $('mmh-language').addEventListener('click',()=>{const html=document.documentElement;html.dataset.lang=html.dataset.lang==='zh'?'en':'zh';html.lang=html.dataset.lang; $('mmh-language').textContent=html.lang==='zh'?'English':'中文';$('mmh-theme').textContent=html.dataset.theme==='light'?text('Dark','深色'):text('Light','浅色');render();});
+  $('mmh-filings-prev').addEventListener('click',()=>{filingsOffset=Math.max(0,filingsOffset-50);renderFilings($('mmh-date').value);});
+  $('mmh-filings-next').addEventListener('click',()=>{const day=$('mmh-date').value;if(filings&&filingsOffset+50<(filingsIndex.get(day)||[]).length){filingsOffset+=50;renderFilings(day);}});
   $('mmh-reveal').addEventListener('click',async()=>{if(ui.outcomesVisible){hideOutcomes();return;}const day=$('mmh-date').value;try{
     if(!outcomes){outcomes=await decode('mmh-outcomes-data');if(outcomes.manifest_sha256!==corpus.manifest_sha256)throw new Error('Outcomes belong to another archive');outcomeIndex=index(outcomes);ui.outcomesDecoded=true;}
     if(day!==$('mmh-date').value)return;ui.outcomesVisible=true;$('mmh-outcomes').hidden=false;render();
@@ -104,6 +130,9 @@
   window.__MM_HISTORY_VIEW__=Object.freeze({status:()=>({...ui,marketDate:$('mmh-date').value,visibleRows:$('mmh-table').tBodies[0].rows.length})});
   (async()=>{try{corpus=await decode('mmh-data');dayIndex=index(corpus);dates=Array.from(dayIndex.keys()).sort();
     if($('mmh-macro-data')){macro=await decode('mmh-macro-data');if(macro.manifest_sha256!==corpus.manifest_sha256)throw new Error('Macro projection belongs to another archive');macroIndex=index(macro,'calendar_date','series');}
+    if($('mmh-filings-data')){filings=await decode('mmh-filings-data');
+      if(filings.manifest_sha256!==corpus.manifest_sha256||filings.metadata.point_in_time_eligible!==false)throw new Error('Filing projection binding or qualification mismatch');
+      filingsIndex=index(filings,'filing_date','filing_key');}
     for(const symbol of corpus.metadata.request.symbols.map(s=>s.vendor_symbol)){const o=document.createElement('option');o.value=symbol;o.textContent=symbol;$('mmh-symbol').append(o);}
     $('mmh-date').value=dates[dates.length-1]||corpus.metadata.request.end;
     $('mmh-date').min=corpus.metadata.request.start;$('mmh-date').max=corpus.metadata.request.end;

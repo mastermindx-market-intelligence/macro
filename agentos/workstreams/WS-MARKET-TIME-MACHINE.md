@@ -1,9 +1,9 @@
 ---
 key: MARKET-TIME-MACHINE
 title: Market Memory daily historical experience
-objective: 'Let a user or machine inspect any sufficiently covered historical date
-  before Mastermind existed, with source-bound market observations, first-print macro
-  chronology, explicit unavailable evidence and separately revealed outcomes.
+objective: 'Let a user or machine inspect any sufficiently covered historical date before Mastermind existed,
+  with source-bound market observations, first-print macro chronology, explicit unavailable evidence and
+  separately revealed outcomes.
 
   '
 status: active
@@ -23,31 +23,33 @@ owns_paths:
 - scripts/market_memory_history.py
 - templates/market_memory_history.*
 - engine/neuralweb/market_memory_history_extend.py
+- engine/neuralweb/market_memory_history_filings.py
 waves:
 - id: H0
   title: Qualified retrospective archive and independent numerical proof
   status: done
   pr: 9445
-  next_action: Merged PR9445, installed c223bd38 private Data & Lab, source/browser/installed-reader
-    proofs retained; no public/PIT claim.
+  next_action: PR9445 merged; c223bd38 installed and original consumers verified. Prior evidence retained,
+    not whole-program/PIT/public-site completion.
 - id: H1
   title: Exact-date machine and browser consumers with first-print chronology
   status: done
   pr: 9445
   depends_on:
   - H0
-  next_action: Merged PR9445, installed c223bd38 private Data & Lab, source/browser/installed-reader
-    proofs retained; no public/PIT claim.
+  next_action: PR9445 merged; c223bd38 installed and original consumers verified. Prior evidence retained,
+    not whole-program/PIT/public-site completion.
 - id: H2
   title: Broader historical information and independently evaluated consumer value
   status: in_progress
   depends_on:
   - H1
-  next_action: Qualify immutable accrual and richer historical evidence; preserve
-    source-specific scheduling and publication holds.
-next_action: Complete immutable-extension source qualification, consume original bounded
-  review, and publish through normal CI. Existing private installed history lookup
-  is live; daily scheduling remains held.
+  next_action: PR9462 merged at63779f5d; immutable price extensions throughOct14 and MU revision study
+    are retained. Complete filing-context source/install; deeper news/consensus/PIT/value remain separate
+    obligations.
+next_action: Publish and qualify the completed filing-context source/CLI/browser, then verify accepted
+  installed Data & Lab consumption; retain completed immutable extensions and all actual source/publication
+  holds.
 ---
 
 # Cumulative frontier — 2026-10-15
@@ -99,3 +101,20 @@ Persistent Tiingo scheduling/publisher change was previously explicitly refused 
 Next: consume exact final review03, qualify matching PR9462 hosted CI and verify landing. Core/code/post-capture work uses one original branch/carrier; no duplicate review or vendor request. Extend the selected stock archive through the same preserved-state mechanism where eligible new receipts exist. Broader news/earnings/filing context, full macro revisions, true intraday history, historical universe and measured predictive value remain separate program obligations. Keep one frontier; no repeated original corpus acquisition or legacy numeric/browser tests absent relevant change.
 
 Current source PR9462 is draft at the original operation branch pending exact final review/CI. Prior candidate ee4afcd31f28367a4d11df696c3ea7277585d319 is superseded only by the real APFS-alias guard correction; no empty push or unrelated rebase. Newstudy/browser proofs are source evidence and installed-reader acceptance, not periodic scheduling or all-account adoption.
+
+
+## 2026-10-15 — recovered and completed historical filing context
+
+Recovery readback: PR9462 already merged63779f5d11a65f7b055d654ebd527c79678d2d22; all prior EOD captures/stock extensions and final accrual review were complete. None was repeated. Current installed reader still c223bd38 with selectorSHA532f34f2ee0cb5574cd758e43282553a6010e2d71e609b5f2111ec61edc2f10c. Studio Direct gateway timed out on read-only diagnosis and ping; independently connected Remote Desktop Commander on the verified sameM2host is this phase's carrier. No account/settings/permissions changed and no uncertain mutation was replayed.
+
+Recovered filing workspace market-time-machine-context-20261015 under originalroot/parent market-time-machine-20261015. Existing173495Item2.02filings (2004-08-23..2026-10-02) are pinned by a byte-identical4.18MBcaptureSHA5309ece0cd66b33d69abb8055afa05333d00bcfb43ace87d7997b3655946446f in the existing web_test_runs output root. Original source was not modified. A source range endingOct2 is not silently treated as currentOct14filingcoverage. CIK/accession identity is the existing Earnings filing-key owner; source ticker, reportdate, filingdate and unverified acceptanceclock staydistinct. NoEPS/consensus/fulltext/cause is manufactured.
+
+New shared batched validator supports exact-date read-only Data & Lab, CLI dossier and columnar private-browser export. Actual Arrow logical bytes are checked in2048rowbatches in addition to Parquet footer bounds; two ordinary dictionary-encoding regressions failedbefore/passafter. There is no whole-source Pythonrowcopy for datequeries and no claim the32MiBlogicalarraybudget is peakprocessRAM. Browser date-scoped filingpanel has50recordpagination, retains whole-sourcefilinguniverse independent of pricefilter, and declares sourcecoveragegaps.
+
+Proof: ten realAPIcases,27filings onMarch16,2020 andall7pages/336uniquefilings onNov6,2025. Eight realChromium desktop/mobile×EN/ZH×dark/lightcases plus corruptedfilingblock refusal passed, with noHTTPrequests/pageerrors/overflow and correct outcome/date resets. Private browser history-with-filings.html SHA618b13abef5ec02d939ae0872bd8b68c41dd130d0cfc3b613e044085938e02d3 contains153055price states,16518macrofirstprints and173495filings in42.25MB. Sixteen committed canonical screenshots use explicit synthetic-onlydata; no licensed prices or filings copied intoGit.
+
+Selected full qualification:520tests pass; one unchanged legacy symlink-specific test hit the earlier .test-tmp hidden-component refusal. Its exact rerun in a nonhidden temporaryroot passed; the hostguard was not changed or waived. All521selectedcases therefore have passing evidence. All3affectedcanonicalCIscopes cover inferred dependencies; canonicalvisualguardpasses. Local integration merged currentmain9b255a53 to preserve the already-mergedextendCLI; both independent CIpathadditions and testfamilies were kept at the two conflicts. No unrelatedmainwhitespace cleanup.
+
+Original filingreview01 returnedPASSwithfindings and was acceptedonce after the actualmemoryfix. Complete-source review02 terminalrc1/provider403/QWEN_FINAL_RESPONSE_UNCONFIRMED, originalproviderthread01a140b4-3bce-7521-a0c9-340edefeec20; retained694bytesSHA057274559c20228a6a5e0008b07e30e89e184cbb463073a3a44811778d4fa198. No finalexternalqualityverdict exists; no retry/account/providerbypass was attempted. Parent direct review plus realtests and consumeroracles are retained without inventing a finalPASS. No worker remains active. See HISTORY_FILING_REVIEW_ADJUDICATION_20261015.json.
+
+Next: finish sourcepublication/currentCI, verify exact landing and accepted immutable runtime, then installedfilingAPI plus existing consumers; update existing personalworkflow release only after sourceacceptance. Candidate is not installedyet and no publicsite is deployed. PersistentTiingoscheduling/publisherhold staysheld. Fullhistory/consensus/news/PIT/predictivevalue remain separate incomplete programobligations. Preserve all originalstudy and newerrevision choices; no latest-pointer authority added.

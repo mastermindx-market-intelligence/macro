@@ -76,12 +76,12 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
             chronology=read_macro_chronology_bytes(read_bound(macro_ref,MAX_BYTES),expected_sha256=macro_sha256)
             macro=select_macro_date(chronology,date)
             macro.update(status='OBSERVED' if macro['total_events'] else 'NO_OBSERVATION',sha256=macro_sha256)
-        result=compose_daily_dossier(market,macro)
+        filings = None
         if filings_ref is not None:
             from engine.neuralweb.market_memory_history_filings import MAX_SOURCE_BYTES, read_filing_date
-            result['filings'] = read_filing_date(read_bound(filings_ref, MAX_SOURCE_BYTES), date,
+            filings = read_filing_date(read_bound(filings_ref, MAX_SOURCE_BYTES), date,
                 expected_sha256=filings_sha256, offset=filings_offset)
-            result['coverage']['issuer_filings_and_earnings_context'] = 'SELECTED_ITEM_202_FILING_METADATA_ONLY'
+        result=compose_daily_dossier(market,macro,filings=filings)
     except HistoricalExperienceError:
         raise WorkspaceError('HISTORY_SOURCE_OR_CONTRACT_INVALID') from None
     request={'ref':ref,'manifest_sha256':manifest_sha256,'date':date,

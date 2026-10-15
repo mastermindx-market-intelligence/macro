@@ -123,3 +123,9 @@ Use the returned artifact alias and run ID to inspect saved evidence:
 ```
 
 Keep source versions, mapping, date bounds, limits, ledger receipts and the full canonical Trial attached to the interpretation. The request/result artifacts establish what actually ran; file creation alone does not establish a successful result.
+
+## Private CLI consumers of the same filing source
+
+`market_memory_history dossier` and `market_memory_history export` accept `--filings PATH --filings-sha256 EXACT64` together. The selected file must be named `earnings_8k_dates.parquet`; the existing file owner still enforces regular-file, source-hash and byte limits. `dossier --filings-offset N` paginates matched filing records. No filing offset is accepted for an offline export because its source-bound timeline is exported once and the browser paginates locally.
+
+No option implicitly selects a source, updates a provider, installs a schedule or changes an existing archive. Export requires a new output path. Without an explicit filing binding the old market/macro view remains unchanged and no filing source is opened. Default machine reads still never open outcomes. A browser requested with `--include-outcomes` is explicitly educational, not a blind-evaluation security boundary.
