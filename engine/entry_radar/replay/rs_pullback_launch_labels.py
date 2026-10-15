@@ -37,9 +37,16 @@ def _require_lossless_owner_clocks(value: Any, key: str = "") -> None:
         for child in value:
             _require_lossless_owner_clocks(child, key)
     elif key in _CLOCK_FIELDS and isinstance(value, str):
-        fraction = re.search(r"T[0-9]{2}:[0-9]{2}:[0-9]{2}\.([0-9]+)", value)
-        if fraction and any(d != "0" for d in fraction.group(1)[6:]):
-            raise inputs.InputContractError("submicrosecond clock unsupported by native Phase1")
+        try:
+            inputs._clock(value)
+        except inputs.InputContractError:
+            # Malformed/non-clock payloads remain with the original input owner.
+            return
+        # fromisoformat accepts space/lowercase/basic/comma spellings and
+        # fractional UTC offsets too; checking only a literal T misses them.
+        for fraction in re.finditer(r"[.,]([0-9]+)", value):
+            if any(d != "0" for d in fraction.group(1)[6:]):
+                raise inputs.InputContractError("submicrosecond clock unsupported by native Phase1")
 
 
 def _base(frame: Mapping[str, Any], cutoff: datetime) -> dict[str, Any]:

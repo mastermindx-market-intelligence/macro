@@ -310,3 +310,40 @@ def test_submicrosecond_clock_is_refused_instead_of_rounded_into_availability(lo
     else: s["earlier"]["known_at"]="2026-10-06T13:58:00.000000001Z"
     with pytest.raises(owner.InputContractError,match="submicrosecond"):
         labels.build_label_panel(b,s,evaluation)
+
+
+@pytest.mark.parametrize("stamp",[
+    "2026-10-06 16:02:00.000000001Z",
+    "2026-10-06t16:02:00.000000001Z",
+    "20261006T160200.000000001Z",
+    "2026-10-06T16:02:00,000000001Z",
+    "2026-10-06T16:02:00+00:00:00.000000001",
+])
+def test_every_owner_accepted_clock_spelling_refuses_precision_loss(stamp):
+    # These are actually parsed as aware instants by the unchanged native owner.
+    assert owner._clock(stamp).utcoffset() is not None
+    b,s=fixture()
+    with pytest.raises(owner.InputContractError,match="submicrosecond"):
+        labels.build_label_panel(b,s,stamp)
+
+
+def test_issue_refusals_reach_output_and_never_reach_path_attachment():
+    b,s=fixture();b["contexts"]=[x for x in b["contexts"] if x["kind"]!="daily"]
+    original=owner.build_input_panel(b)["frames"][0]
+    assert original["availability"]=="unavailable" and original["refusals"]
+    o=read(b,s)
+    assert o["refusals"]==original["refusals"] and o["path_snapshot_sha256"] is None
+
+
+@pytest.mark.parametrize("stamp",["2026-10-06 16:02:00.000001Z","2026-10-06t16:02:00.000001Z",
+    "20261006T160200.000001Z","2026-10-06T16:02:00,000001Z"])
+def test_losslessly_representable_owner_clock_spellings_stay_supported(stamp):
+    b,s=fixture();o=read(b,s,stamp)
+    assert o["evaluation_at"]=="2026-10-06T16:02:00.000001Z" and o["launch"] is False
+
+
+def test_invalid_numeric_price_string_does_not_become_a_clock_format_error():
+    b,s=fixture();at(b,1)["open"]="100.123456789"
+    o=read(b,s)
+    assert o["path_state"]=="PATH_UNKNOWN"
+    assert "INVALID_OHLCV" in o["refusals"]
