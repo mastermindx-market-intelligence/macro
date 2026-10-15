@@ -20694,6 +20694,16 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
+      - "templates/_prophet_opportunity_card.html.j2"
+      - "templates/_prophet_opportunity.css.j2"
+      - "templates/_prophet_workspace.css.j2"
+      - "tests/test_prophet_opportunity_card.py"
+      - "tests/test_prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
+      - "tests/test_prophet_table_opportunity_parity.py"
+      - "tests/test_prophet_memory_handoff.py"
+      - "tests/test_prophet_setup_list_navigation.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -21620,7 +21630,7 @@ jobs:
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
       - name: Prophet source, lifecycle and presentation contracts (one native process)
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+        run: python -m pytest tests/test_prophet_opportunity_card.py tests/test_prophet_opportunity_presentation.py tests/test_prophet_opportunity_integration.py tests/test_prophet_table_opportunity_parity.py tests/test_prophet_memory_handoff.py tests/test_prophet_setup_list_navigation.py tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
@@ -21948,6 +21958,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"

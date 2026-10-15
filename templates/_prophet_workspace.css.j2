@@ -156,3 +156,27 @@ html[data-theme="light"] #us-standouts .pvs-study-pick[aria-pressed="true"] { ba
 .pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions h3 { color: var(--ink-warn); }
 .pv-setup-body[data-opportunity-detail] .pvs-opportunity-cautions ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 8px; font-size: var(--fs-sm); line-height: 1.55; }
 @media (max-width: 639px) { .pv-setup-body[data-opportunity-detail] .pvs-opportunity-identity { flex-wrap: wrap; } }
+
+/* Setup-list browsing: one dialog, the reader's current view, no second navigation. */
+.pv-setup-dialog .pvs-browse-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+}
+.pv-setup-dialog .pvs-browse-bar[hidden] { display: none; }
+.pv-setup-dialog .pvs-browse-position {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pv-setup-dialog .pvs-browse-btn { min-height: 44px; min-width: 44px; white-space: nowrap; }
+.pv-setup-dialog .pvs-browse-btn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+@media (max-width: 639px) {
+  .pv-setup-dialog .pvs-browse-bar { padding: 8px 12px; gap: 6px 10px; }
+  .pv-setup-dialog .pvs-browse-btn { flex: 1 1 120px; }
+}
