@@ -61,4 +61,9 @@ request, rendered answer, native receipt and internal `native_numeric_verificati
 do not substitute a different successful row or infer a verdict from the public
 receipt. A missing row or non-verified verdict remains an unproved obligation.
 The internal verdict must remain absent from public responses and stream events.
-This observation does not require a log refresh, model-judge run or source-clock reset.
+The list route only reads its host's local ledger; it does not ingest R2 objects.
+The weekly `brain-eval` workflow refreshes a ledger on its own Mac Studio runner,
+which does not establish ingestion on the admin host. Verify the actual ingestion
+path and host before relying on the list route. Keep sink publication and operator
+consumption separate if that path is absent. Do not dispatch a model judge, force
+the normal owner or reset source clocks to manufacture this evidence.
