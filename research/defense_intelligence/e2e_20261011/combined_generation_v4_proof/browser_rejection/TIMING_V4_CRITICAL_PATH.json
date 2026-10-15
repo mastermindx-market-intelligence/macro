@@ -1,0 +1,253 @@
+{
+  "state": "V4_TIMING_RED_CRITICAL_PATH",
+  "batch": {
+    "measurement_complete": true,
+    "all_pass": false,
+    "median_ms": 3438.5500000044703,
+    "p95_ms": 3482.300000011921,
+    "max_ms": 3482.300000011921,
+    "failed_samples_n": 0
+  },
+  "samples": {
+    "first": {
+      "sample": 1,
+      "paint_ms": 3453.4000000059605,
+      "first_ready_mutation_ms": 3446.4000000059605,
+      "mutation_to_second_paint_ms": 7.0,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 532.8000000119209,
+          "request_ms": 534.3000000119209,
+          "response_ms": 572.6000000089407,
+          "end_ms": 2609.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 119665,
+          "transferSize": 119965
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 533,
+          "request_ms": 534.4000000059605,
+          "response_ms": 572.9000000059605,
+          "end_ms": 1634,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28994,
+          "transferSize": 29294
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 533.1000000089407,
+          "request_ms": 534.4000000059605,
+          "response_ms": 582,
+          "end_ms": 1101.800000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1467,
+          "transferSize": 1767
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 533.1000000089407,
+          "request_ms": 534.4000000059605,
+          "response_ms": 579.4000000059605,
+          "end_ms": 1334,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 533.2000000029802,
+          "request_ms": 534.4000000059605,
+          "response_ms": 582.5,
+          "end_ms": 1498.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20228,
+          "transferSize": 20528
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 540.2000000029802,
+          "request_ms": 696.1000000089407,
+          "response_ms": 759.2000000029802,
+          "end_ms": 2331.7000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 73830,
+          "transferSize": 74130
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2677.800000011921,
+          "request_ms": 2678.9000000059605,
+          "response_ms": 2695.4000000059605,
+          "end_ms": 3434.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "html_navigation_timing": "NOT_CAPTURED_BY_ACCEPTED_HARNESS; no inferrednavigationentry fromsubresources",
+      "all_resource_transfer_bytes": 379929
+    },
+    "near_median": {
+      "sample": 2,
+      "paint_ms": 3441.5,
+      "first_ready_mutation_ms": 3423.7000000029802,
+      "mutation_to_second_paint_ms": 17.799999997019768,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 519.1000000089407,
+          "request_ms": 520.9000000059605,
+          "response_ms": 548,
+          "end_ms": 2596.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 119665,
+          "transferSize": 119965
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 519.3000000119209,
+          "request_ms": 521.1000000089407,
+          "response_ms": 546.5,
+          "end_ms": 1081.300000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1467,
+          "transferSize": 1767
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 519.3000000119209,
+          "request_ms": 521,
+          "response_ms": 545.6000000089407,
+          "end_ms": 1313.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 519.3000000119209,
+          "request_ms": 520.9000000059605,
+          "response_ms": 536.4000000059605,
+          "end_ms": 1462.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20228,
+          "transferSize": 20528
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 519.3000000119209,
+          "request_ms": 521,
+          "response_ms": 548.9000000059605,
+          "end_ms": 1629,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28994,
+          "transferSize": 29294
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 529,
+          "request_ms": 684.6000000089407,
+          "response_ms": 698.6000000089407,
+          "end_ms": 2319.1000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 73830,
+          "transferSize": 74130
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2652,
+          "request_ms": 2652.4000000059605,
+          "response_ms": 2692.4000000059605,
+          "end_ms": 3413.6000000089407,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "html_navigation_timing": "NOT_CAPTURED_BY_ACCEPTED_HARNESS; no inferrednavigationentry fromsubresources",
+      "all_resource_transfer_bytes": 379929
+    },
+    "worst": {
+      "sample": 9,
+      "paint_ms": 3482.300000011921,
+      "first_ready_mutation_ms": 3446.7000000029802,
+      "mutation_to_second_paint_ms": 35.6000000089407,
+      "resources": [
+        {
+          "path": "/theme.js",
+          "start_ms": 521,
+          "request_ms": 523.4000000059605,
+          "response_ms": 543.9000000059605,
+          "end_ms": 2598.300000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 119665,
+          "transferSize": 119965
+        },
+        {
+          "path": "/supabase.js",
+          "start_ms": 521.1000000089407,
+          "request_ms": 523.5,
+          "response_ms": 545.9000000059605,
+          "end_ms": 1615.800000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 28994,
+          "transferSize": 29294
+        },
+        {
+          "path": "/government-revenue-investor-start.js",
+          "start_ms": 521.2000000029802,
+          "request_ms": 523.5,
+          "response_ms": 549.5,
+          "end_ms": 1098.300000011921,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 1467,
+          "transferSize": 1767
+        },
+        {
+          "path": "/government-revenue-investor.js",
+          "start_ms": 521.2000000029802,
+          "request_ms": 523.5,
+          "response_ms": 549,
+          "end_ms": 1338.2000000029802,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 12748,
+          "transferSize": 13048
+        },
+        {
+          "path": "/navigation-refresh.css",
+          "start_ms": 521.2000000029802,
+          "request_ms": 523.5,
+          "response_ms": 547.5,
+          "end_ms": 1481.4000000059605,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 20228,
+          "transferSize": 20528
+        },
+        {
+          "path": "/government-revenue-critical-theme.css",
+          "start_ms": 532.8000000119209,
+          "request_ms": 685.9000000059605,
+          "response_ms": 693.1000000089407,
+          "end_ms": 2321.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 73830,
+          "transferSize": 74130
+        },
+        {
+          "path": "/api/government-revenue/defense-economics",
+          "start_ms": 2652.5,
+          "request_ms": 2652.9000000059605,
+          "response_ms": 2675.7000000029802,
+          "end_ms": 3438.5,
+          "nextHopProtocol": "http/1.1",
+          "encodedBodySize": 23955,
+          "transferSize": 24255
+        }
+      ],
+      "html_navigation_timing": "NOT_CAPTURED_BY_ACCEPTED_HARNESS; no inferrednavigationentry fromsubresources",
+      "all_resource_transfer_bytes": 379929
+    }
+  }
+}

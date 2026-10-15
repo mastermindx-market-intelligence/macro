@@ -376,6 +376,18 @@ MUST_RESTART = [
     "engine/government_revenue/candidates.py",
     "engine/government_revenue/idv_dossiers.py",
     "engine/government_revenue/subaward_dossiers.py",
+    "engine/government_revenue/sbir_progression.py",
+    "engine/government_revenue/defense_economics.py",
+    "engine/government_revenue/defense_interpretation.py",
+    "engine/government_revenue/research_state.py",
+    "engine/government_revenue/candidate_grader.py",
+    "engine/government_revenue/program_theme_publication.py",
+    "engine/government_revenue/program_theme_context.py",
+    "engine/government_revenue/program_theme_disclosure.py",
+    "engine/government_revenue/program_ontology.py",
+    "engine/government_revenue/budget_allocation_context.py",
+    "engine/government_revenue/identity_atlas.py",
+    "contracts/government_revenue/government_revenue_identity_atlas.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_historical_suppressions.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json",
@@ -509,6 +521,12 @@ MUST_NOT_RESTART = [
     # schemas read WITHOUT lru_cache re-read the file per call and self-heal
     # without a restart; the v1 procurement generation is nightly-only
     "contracts/government_revenue/government_budget_program_graph.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_context.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_public_disclosure.v1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1.schema.json",
+    "contracts/government_revenue/government_budget_program_graph.v1_1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1_1.schema.json",
+    "contracts/government_revenue/defense_economics.v1.schema.json",
     "contracts/government_revenue/government_procurement_event.v1.schema.json",
     # API candidate cache includes this exact path's mtime/size and re-hashes
     # the manifest on every cache miss; config review does not need a restart.
