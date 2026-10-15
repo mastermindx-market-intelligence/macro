@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume9209 controller decision after exact66df70f0 CI38716037896 SUCCESS; new mainc223 changed checks, so no manual refresh. Require protected squash/normal installation/24sources/4probes; unchanged three public pages now have fresh1440/390functional proof. Then SAME follow-oncb54d3e9 (517checks/45groups). ServingPR9455 is armed931d584d/CI38720752519 after admitted7of8capacity and47fresh API tests; finish protected install and process-commit verification. Preserve CAT44refs/five held drafts,publication0of10 and unknown effects.
+next_action: Consume admitted9209 refresh (66df proof stale under controller38725237483) and protected install24sources/4probes, then SAME follow-oncb54d3e9 (517checks/45groups). Serving9455 remains931d584d with11packs/contract passed and pack2 running; finish protected install/process-commit verification. Terminal recovery c3909a50 is pushed with52affected tests,6runtime groups,contract0/0 and local stalled-browser proof; create one PR only after capacity admits (last14of8). Further Chrome verification requires dismissing its open extension UI. Preserve unresolved same-carrier Fabric regression001, CAT44refs/five drafts,publication0of10 and all unknown effects.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
