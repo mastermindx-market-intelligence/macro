@@ -25,9 +25,10 @@ FILES = (
     "scripts/agentos.py",
     "engine/neuralweb/response_eval.py", "engine/neuralweb/native_facts.py",
     "engine/neuralweb/brain_gateway.py", "lib/mastermind_response_log.py",
+    "app/deploy/update.sh",
 )
 LIMIT = 16 * 1024 * 1024
-SCOPE = ("Observed CLI invocations and eleven direct source files only. This does not "
+SCOPE = ("Observed CLI invocations and twelve direct source files only. This does not "
          "prove dependency closure, atomic data snapshots, production acceptance, "
          "model performance, live numeric-verifier execution, earned tiers, rights, Discovery adoption or natural "
          "owner progression. Qualification and authorization belong to the caller.")

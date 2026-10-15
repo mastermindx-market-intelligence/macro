@@ -94,6 +94,20 @@ class ObservationTests(unittest.TestCase):
                     self.assertEqual(self.observe()["reason"], "source_binding_mismatch")
                 (self.root / source).write_text(original)
 
+    def test_stale_updater_refuses_before_cli_execution(self):
+        updater = self.root / "app/deploy/update.sh"
+        updater.parent.mkdir(parents=True, exist_ok=True)
+        updater.write_text("# stale updater missing the numeric-checker restart rule\n")
+        with mock.patch.object(probe, "capture", side_effect=AssertionError("child called")):
+            self.assertEqual(self.observe()["reason"], "source_binding_mismatch")
+
+    def test_older_binding_without_updater_refuses_before_cli_execution(self):
+        binding = json.loads(self.binding.read_text())
+        binding["files"].pop("app/deploy/update.sh", None)
+        self.binding.write_text(json.dumps(binding))
+        with mock.patch.object(probe, "capture", side_effect=AssertionError("child called")):
+            self.assertEqual(self.observe()["reason"], "invalid_binding")
+
     def test_symlink_file_and_parent_stop_before_any_child(self):
         target = self.root / probe.FILES[0]
         original = self.root / "saved.py"

@@ -1,4 +1,4 @@
-"""Emit eleven direct file hashes from an explicitly qualified follow-on commit.
+"""Emit twelve direct file hashes from an explicitly qualified follow-on commit.
 
 This offline binding neither qualifies source nor connects to production.
 """

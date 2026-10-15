@@ -23,7 +23,7 @@ The canonical execution frontier remains `/Volumes/Mastermind/evidence/intellige
 
 The follow-on has a different source identity and delivery obligation. After its final
 source passes the applicable checks, `bind_followon_adoption_probe.py --repo REPO
---source-commit FULL_SHA --destination NEW_BINDING_JSON` binds eleven direct files from
+--source-commit FULL_SHA --destination NEW_BINDING_JSON` binds twelve direct files from
 that commit. It does not substitute for the A1 seventeen-file or served-asset bindings.
 The new destination must not exist. A symbolic revision or Git symlink is refused.
 
@@ -32,7 +32,7 @@ After lawful follow-on landing and normal installation, the original parent can 
 --producer EXACT_REGISTERED_PRODUCER_PATH --python INSTALLED_PYTHON`. Repeat `--producer`
 for the actual planned change being assessed. This invokes only the existing T12
 required-tier CLI and T5 source-findings CLI, without overrides of clocks or artifacts.
-It records the eleven file hashes and installed HEAD before and after observation.
+It records the twelve file hashes and installed HEAD before and after observation.
 The installed HEAD may differ from the qualified branch SHA because of squash merge;
 direct file hashes, not commit-name equality, are the stated identity check.
 
@@ -51,8 +51,13 @@ The rights-qualified QLedger packet, real Agent OS Discovery admission and subse
 consumer use remain separate obligations; this probe cannot fabricate them. Its three
 completion/adoption flags always remain false.
 
-The eleven-file binding includes the native checker, executor, gateway and internal
-log writer. Native answers execute in `macro-api.service`; the operator reader executes
+The twelve-file binding includes the native checker, executor, gateway, internal
+log writer and `app/deploy/update.sh`. A stale updater or an older binding that omits
+it is refused before either CLI runs. Create a new binding from the final qualified
+follow-on revision; do not reuse the earlier eleven-file binding. This observes the
+updater source in the installed checkout, not the separately installed updater copy
+or loaded services. Compare that actual updater copy to the bound hash as well.
+Native answers execute in `macro-api.service`; the operator reader executes
 in `admin.service`. After the normal updater installs the qualified follow-on, verify
 both actual service processes and the native API process's source directory/start time.
 The admin PID alone cannot establish that the native caller loaded the new source.
