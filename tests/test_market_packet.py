@@ -1767,7 +1767,7 @@ def test_china_undated_content_never_binds_to_exchange_session_alone(tmp_path):
 def _observation_comparison(relative=1.010101, **overrides):
     return {
         'schema':'basket_intraday_comparison.v1', 'status':'observed',
-        'benchmark':'SPY', 'method':'matched_member_equal_weight',
+        'benchmark':'SPY', 'method':'matched_member_equal_weight', 'session_date':'2026-10-13',
         'reference_asof':'2026-10-13T14:59:00+00:00',
         'source_asof':'2026-10-13T15:29:00+00:00', 'elapsed_minutes':30,
         'matched_members':1, 'total_members':1, 'coverage_pct':100,
@@ -1785,7 +1785,7 @@ def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
          'intraday_comparison':_observation_comparison(1.010101)},
     ]}
     root = make_root(tmp_path, basket_pulse=pulse)
-    packet = mp.build_packet(root)
+    packet = mp.build_packet(root, now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
     assert packet['leaders']['up'] == [] and packet['leaders']['down'] == []
     assert len(packet['leaders']['intraday']) == 2
     text = mp.render_digest(packet)
@@ -1809,7 +1809,7 @@ def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
 def test_unqualified_intraday_comparison_does_not_enter_grounding(tmp_path, change):
     pulse = {'mode':'live', 'baskets':[{'id':'ai_semiconductors', 'live_ew_chg_pct':0,
              'intraday_comparison':_observation_comparison(**change)}]}
-    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
     assert 'leaders' not in packet
 
 
@@ -1818,7 +1818,7 @@ def test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority(tmp
     pulse = {'mode':'delayed','baskets':[
         {'id':f'group_{i}', 'live_ew_chg_pct':0,'intraday_comparison':comparison}
         for i in range(20)]}
-    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+    packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
     assert len(packet['leaders']['intraday']) <= 2 * mp.LEADERS_PER_SIDE
     line = mp._render_leaders(packet)
     assert 'delayed' in line
@@ -1831,4 +1831,27 @@ def test_future_intraday_evidence_is_not_grounding(tmp_path):
         reference_asof="2100-10-13T14:59:00+00:00", source_asof="2100-10-13T15:29:00+00:00")
     pulse = {"mode":"live", "baskets":[{"id":"ai_semiconductors", "live_ew_chg_pct":0,
              "intraday_comparison":comparison}]}
-    assert "leaders" not in mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+    assert "leaders" not in mp.build_packet(make_root(tmp_path, basket_pulse=pulse), now=datetime(2026,10,13,15,30,tzinfo=timezone.utc))
+
+
+@pytest.mark.parametrize("change", [
+    {"session_date":"2026-10-12"},
+    {"reference_asof":"2026-10-12T15:29:00+00:00", "elapsed_minutes":1440},
+    {"reference_asof":"2026-10-13T13:00:00+00:00", "elapsed_minutes":149},
+    {"relative_change_pct":5.0},
+    {"max_clock_skew_seconds":600},
+])
+def test_intraday_consumer_rejects_inconsistent_session_or_arithmetic(change):
+    now = datetime(2026,10,13,15,30,tzinfo=timezone.utc)
+    assert mp._intraday_comparison_block(_observation_comparison(**change), now=now) is None
+
+
+def test_intraday_consumer_freshness_budget_boundary():
+    end = datetime(2026,10,13,15,29,tzinfo=timezone.utc)
+    payload = _observation_comparison()
+    assert mp._intraday_comparison_block(payload, now=end+timedelta(minutes=mp.QUOTES_STALE_MIN)) is not None
+    assert mp._intraday_comparison_block(payload, now=end+timedelta(minutes=mp.QUOTES_STALE_MIN, seconds=1)) is None
+
+
+def test_intraday_consumer_rejects_naive_evaluation_clock():
+    assert mp._intraday_comparison_block(_observation_comparison(), now=datetime(2026,10,13,15,30)) is None

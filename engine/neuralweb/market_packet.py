@@ -720,11 +720,36 @@ def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> d
         end = datetime.fromisoformat(raw["source_asof"])
         if start.tzinfo is None or end.tzinfo is None or end <= start:
             return None
-        if end > (now or datetime.now(timezone.utc)):
+        evaluated = now or datetime.now(timezone.utc)
+        if evaluated.tzinfo is None or evaluated.utcoffset() is None:
             return None
-        if abs(values["elapsed_minutes"] - (end - start).total_seconds() / 60) > 1e-6:
+        age_minutes = (evaluated - end).total_seconds() / 60
+        if not 0 <= age_minutes <= QUOTES_STALE_MIN:
             return None
-    except (KeyError, TypeError, ValueError):
+        elapsed = (end - start).total_seconds()
+        if abs(values["elapsed_minutes"] - elapsed / 60) > 1e-6:
+            return None
+        # Reuse the same session owner as the producer. Calendar date strings
+        # and a current build stamp cannot validate an overnight or holiday path.
+        from engine.session_digest import session_window_et
+        from lib.nyse_calendar import is_session
+        from zoneinfo import ZoneInfo
+        day = end.astimezone(ZoneInfo("America/New_York")).date()
+        if raw.get("session_date") != day.isoformat() or not is_session(day):
+            return None
+        opened, closed = session_window_et(day)
+        if not opened <= start < end <= closed:
+            return None
+        skew = _f(raw.get("max_clock_skew_seconds"))
+        if skew is None or not 0 <= skew <= min(60, elapsed / 10):
+            return None
+        expected_relative = 100 * ((1 + values["absolute_change_pct"] / 100)
+                                   / (1 + values["benchmark_change_pct"] / 100) - 1)
+        # Producer rounds each return to 6 decimals; allow rounding, not a
+        # separately authored relative-performance value.
+        if abs(values["relative_change_pct"] - expected_relative) > 3e-6:
+            return None
+    except (KeyError, TypeError, ValueError, OverflowError):
         return None
     # Explicit allowlist: scores, trade directions, confidence and targets never ride.
     return {**values, "matched_members": count, "total_members": total,

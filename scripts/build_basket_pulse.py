@@ -60,6 +60,7 @@ import math
 import os
 import statistics
 import sys
+import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -731,16 +732,29 @@ def _intraday_comparisons(baskets: dict[str, Any], quotes: dict[str, Any],
     except (KeyError, TypeError, ValueError):
         return unavailable("baseline_invalid"), baseline
     if prior_observed >= now:
-        return unavailable("baseline_nonadvancing"), baseline
+        # A delayed/reordered build cannot rewind a retained newer baseline.
+        return unavailable("baseline_nonadvancing"), prior
     prior_quotes, prior_members = prior.get("quotes"), prior.get("memberships")
     if not isinstance(prior_quotes, dict) or not isinstance(prior_members, dict):
         return unavailable("baseline_invalid"), baseline
     bench = points.get("SPY")
     prior_bench = _comparison_point(prior_quotes.get("SPY"), prior_observed, opened, closed)
     if bench is None or prior_bench is None:
-        return unavailable("benchmark_unavailable"), baseline
-    if bench["ts"] <= prior_bench["ts"]:
-        return unavailable("benchmark_nonadvancing"), baseline
+        return unavailable("benchmark_unavailable"), prior if prior_bench is not None else baseline
+    if bench["ts"] < prior_bench["ts"]:
+        return unavailable("benchmark_nonadvancing"), prior
+    if bench["ts"] == prior_bench["ts"]:
+        # A vendor correction is not a new interval, but future comparisons
+        # must not use the superseded price. Reset on an equal-time revision;
+        # retain the prior baseline on a byte-equivalent market observation.
+        corrected = False
+        for ticker, point in points.items():
+            old = _comparison_point(prior_quotes.get(ticker), prior_observed, opened, closed)
+            if old is not None and point["ts"] == old["ts"] and point != old:
+                corrected = True
+        if corrected:
+            return unavailable("baseline_corrected"), baseline
+        return unavailable("benchmark_nonadvancing"), prior
     if _comparison_signature(bench) != _comparison_signature(prior_bench):
         return unavailable("benchmark_basis_changed"), baseline
     bench_return = bench["price"] / prior_bench["price"] - 1
@@ -825,14 +839,28 @@ def _save_lastgood(result: dict[str, Any], out_dir: Path,
                    observation_baseline: dict | None = None) -> None:
     """Persist a live/delayed pulse result as the lastgood sidecar."""
     p = out_dir / name
+    temporary: Path | None = None
     try:
         retained = dict(result)
         if observation_baseline is not None:
             retained["observation_baseline"] = observation_baseline
-        p.write_text(json.dumps(retained, separators=(",", ":"), allow_nan=False) + "\n")
+        encoded = json.dumps(retained, separators=(",", ":"), allow_nan=False) + "\n"
+        # The sole existing sidecar is replaced atomically: readers must see
+        # either the old complete baseline or the new one, never partial JSON.
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=out_dir,
+                                         prefix=f".{name}.", suffix=".tmp", delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, p)
+        temporary = None
         log.info("saved lastgood sidecar → %s", p)
     except Exception as e:
         print(f"::warning::could not save lastgood sidecar: {e}", flush=True)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 # ── shock-day relative bid ─────────────────────────────────────────────────────

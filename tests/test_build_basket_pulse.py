@@ -1301,3 +1301,76 @@ class TestMatchedIntradayComparison:
         assert result['absolute_change_pct'] == 0
         assert result['relative_change_pct'] == pytest.approx(-0.990099, abs=1e-6)
         assert result['positive_relative_breadth_pct'] == 50
+
+
+@pytest.mark.parametrize("kind", ["older_source", "older_build", "missing_benchmark"])
+def test_rejected_observation_cannot_roll_back_the_comparison_baseline(tmp_path, monkeypatch, kind):
+    from datetime import timedelta
+    helper = TestMatchedIntradayComparison()
+    prices = {"A":102, "B":99, "SPY":100}
+    helper.build(tmp_path, monkeypatch, prices, helper.FIRST)
+    helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100}, helper.SECOND)
+    path = tmp_path / bp.LASTGOOD_FILENAME
+    before = json.loads(path.read_text())["observation_baseline"]
+    now = helper.SECOND + timedelta(minutes=5)
+    alter = None
+    if kind == "older_source":
+        def alter(qs):
+            for q in qs.values(): q["ts"] = _now_ms(helper.FIRST) - 60000
+    elif kind == "older_build":
+        now = helper.FIRST + timedelta(minutes=5)
+    else:
+        prices.pop("SPY")
+    helper.build(tmp_path, monkeypatch, prices, now, alter=alter)
+    after = json.loads(path.read_text())["observation_baseline"]
+    assert after == before
+    def repeated(qs):
+        for q in qs.values(): q["ts"] = _now_ms(helper.SECOND) - 60000
+    _, rows = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100},
+                            helper.SECOND + timedelta(minutes=10), alter=repeated)
+    assert all(row["intraday_comparison"]["status"] != "observed" for row in rows.values())
+
+
+def test_stale_comparison_has_source_age_not_a_live_signal(tmp_path, monkeypatch):
+    from datetime import timedelta
+    from engine.neuralweb import market_packet as mp
+    helper = TestMatchedIntradayComparison()
+    helper.build(tmp_path, monkeypatch, {"A":102,"B":99,"SPY":100}, helper.FIRST)
+    result, _ = helper.build(tmp_path, monkeypatch, {"A":100,"B":100,"SPY":100}, helper.SECOND)
+    later = helper.SECOND + timedelta(minutes=46)
+    block = mp._leaders_block(result, [], now=later)
+    assert block is None or not block.get("intraday")
+
+
+@pytest.mark.parametrize("corrected_ticker", ["A", "SPY"])
+def test_equal_timestamp_correction_resets_baseline_without_inventing_interval(tmp_path, monkeypatch, corrected_ticker):
+    from datetime import timedelta
+    helper = TestMatchedIntradayComparison()
+    prices = {"A":100, "B":100, "SPY":100}
+    helper.build(tmp_path, monkeypatch, prices, helper.FIRST)
+    corrected = {**prices, corrected_ticker:101}
+    def same_clock(qs):
+        for q in qs.values(): q["ts"] = _now_ms(helper.FIRST) - 60000
+    _, corrected_rows = helper.build(tmp_path, monkeypatch, corrected,
+                                      helper.FIRST + timedelta(minutes=2), alter=same_clock)
+    assert corrected_rows["ai_semiconductors"]["intraday_comparison"]["status"] == "baseline_corrected"
+    _, rows = helper.build(tmp_path, monkeypatch, corrected, helper.SECOND)
+    c = rows["ai_semiconductors"]["intraday_comparison"]
+    assert c["status"] == "observed"
+    assert c["absolute_change_pct"] == 0 and c["benchmark_change_pct"] == 0
+    assert c["relative_change_pct"] == 0
+
+
+
+def test_lastgood_replace_failure_keeps_complete_prior_baseline(tmp_path, monkeypatch):
+    original = {"schema":"basket_pulse.v1", "baskets":[], "observation_baseline":{"marker":"old"}}
+    path = tmp_path / bp.LASTGOOD_FILENAME
+    path.write_text(json.dumps(original))
+    before = path.read_bytes()
+    def fail_replace(*args, **kwargs):
+        raise OSError("synthetic atomic replacement failure")
+    monkeypatch.setattr(bp.os, "replace", fail_replace)
+    bp._save_lastgood({"schema":"basket_pulse.v1","baskets":[]}, tmp_path,
+                     observation_baseline={"marker":"new"})
+    assert path.read_bytes() == before
+    assert sorted(p.name for p in tmp_path.iterdir()) == [bp.LASTGOOD_FILENAME]
