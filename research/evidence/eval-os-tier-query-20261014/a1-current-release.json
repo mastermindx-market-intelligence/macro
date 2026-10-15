@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T16:26:04.533060+00:00",
+  "updated_at": "2026-10-15T16:47:21.989542+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "old": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
@@ -15,11 +15,11 @@
     "changed_production_paths": [],
     "all_7_asset_source_paths_covered_by_17_unchanged_files": true
   },
-  "source_and_plan_only": true,
-  "terminal_binding_checks_pending": true,
+  "source_and_plan_only": false,
+  "terminal_binding_checks_pending": false,
   "production_verified": false,
   "programme_complete": false,
-  "next": "Consume original current-head CI38764340141/attempt1 terminal evidence and all binding checks at the next eligible useful boundary; repair actual failure or incumbent-only merge. Do not replay prior run38757206381.",
+  "next": "Incumbent-only admitted source refresh after mainbe18 changed CI definitions, then new exact-head checks and merge. No duplicate controller or manual base integration.",
   "followon": {
     "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
@@ -214,6 +214,32 @@
       ],
       "unchanged": "Product/runtime/updater bytes, CI manifest/execution and CLI command definitions are unchanged; reuse their accepted checks.",
       "limit": "Local fake-consumer proof only. Bind final follow-on source after qualification; separately verify actual installed updater copy and API/admin processes. No production execution or acceptance."
+    },
+    "latest_prepared_composition": {
+      "at": "2026-10-15T16:41:06.204986+00:00",
+      "qualified_preparation": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+      "latest_followon": "2522d3d36672c448b0e4f09c7844cf191f710349",
+      "new_base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+      "conflict_paths": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "resolution": "Retain exact qualified0add manifest after proving all314 latest branch path multisets are covered; the conflict is duplicated15-input declaration order, not missing input or changed execution.",
+      "resolved_tree": "8e271f7a5d12322f32ca311a456af3d65552596b",
+      "unreferenced_preview_commit": "1c3ac9746c24bd525f58ee2794693813df2a8fea",
+      "newer_base_preview_tree": "9883075f0654657210791639ce429797fd13e550",
+      "current_a1_execution_definitions_preserved": 320,
+      "latest_nonmanifest_files_preserved": [
+        "agentos/handoffs/EVAL-OS-SOURCE-INTERFACES-2026-10-14.md",
+        "research/evidence/eval-os-tier-query-20261014/a1-current-release.json",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/README.md",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/bind_followon_adoption_probe.py",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py",
+        "research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py"
+      ],
+      "product_runtime_and_updater_unchanged_from_qualified_preparation": true,
+      "qualification_reused": "No runtime/probe test rerun: final probe bytes equal qualified2ed/latest2522; currentmain definitions/older closure retain source identities. Final actual landing integration/qualification still required.",
+      "no_carrier_integration": true,
+      "production_proven": false
     }
   },
   "preserved_boundaries": [
@@ -306,31 +332,30 @@
     ]
   },
   "latest_ci_observation": {
-    "observed_at": "2026-10-15T16:20:58.761915+00:00",
+    "observed_at": "2026-10-15T16:43:48.914516+00:00",
     "pr_state": "open",
     "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
     "workflow_run_id": 38764340141,
     "attempt": 1,
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "ci_plan": "success",
     "contract_delta": "success",
     "packs_passed": [
+      0,
       1,
       2,
+      3,
       4,
+      5,
       6,
+      7,
       8,
       9,
+      10,
       11
     ],
-    "packs_in_progress": [
-      0,
-      3,
-      5,
-      7,
-      10
-    ]
+    "packs_in_progress": []
   },
   "original_plan": {
     "verified_at": "2026-10-15T16:02:07.433839+00:00",
@@ -366,7 +391,70 @@
       ]
     },
     "a1_execution_identity_unchanged": true,
-    "binding_checks_pending": true,
-    "scope": "Original current-head plan/source identity only; terminal original semantic evidence and binding checks remain owed."
+    "binding_checks_pending": false,
+    "scope": "Original plan bound to consumed terminal semantic proof; incumbent source freshness/release and production remain separate."
+  },
+  "terminal_semantic_ci": {
+    "consumed_at": "2026-10-15T16:42:25.522217+00:00",
+    "workflow_run_id": 38764340141,
+    "attempt": 1,
+    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+    "artifact_id": 11990733639,
+    "zip_sha256": "93d8b85342aaf886d8c646c148e5bbae770b572c5c80b60d3cc5f6c9c23a9856",
+    "canonical_mode": "semantic",
+    "plan_sha256": "0f6decce7d529033d114c473738abe48f6c527cbd55f8a9e7b49055236fdaf8c",
+    "base_sha": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+    "tested_commit": "75ca7699a5658c28319347d81457478d79a7a20f",
+    "jobs": 127,
+    "semantic_command_steps_passed": 351,
+    "blocked": 0,
+    "inherited": 0,
+    "infrastructure_blocking": false,
+    "clear": true,
+    "plan_execution_and_step_identities_match": true,
+    "scope": "Original624465 terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
+  },
+  "binding_checks": {
+    "observed_at": "2026-10-15T16:43:48.914516+00:00",
+    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
+    "verdict": "clean",
+    "binding_problem_names": [],
+    "check_run_count": 26,
+    "status_count": 0,
+    "non_binding": [
+      {
+        "name": "ci-authority/codex/merge-queue-pilot",
+        "conclusion": "failure",
+        "status": "completed"
+      }
+    ]
+  },
+  "incumbent_release_pending": true,
+  "source_refresh_requirement": {
+    "at": "2026-10-15T16:44:56.322741+00:00",
+    "proof_base": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
+    "observed_main": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+    "changed_source_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "agentos/workstreams/WS-RESEARCH-FACTORY-CODEGEN.md",
+      "engine/research_factory/codegen_boundary.py",
+      "engine/research_factory/ledger.py",
+      "engine/research_factory/schema.py",
+      "research/EXECUTION_CI_FALSE_FAILURE_REPAIR_20261015.md",
+      "research/execution-ci-contract-verification-20261015.json",
+      "research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md",
+      "research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.json",
+      "research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md",
+      "research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md",
+      "scripts/research_factory_run.py",
+      "tests/test_gh_quota_guard.py",
+      "tests/test_prophet_rescue.py",
+      "tests/test_research_codegen_factory_fence.py"
+    ],
+    "changed_generated_path_count": 0,
+    "ci_definition_commits": [
+      "be18b1428a5d252227f0628c342b9b67b9f04052 fix(research-factory): fence reserved codegen records before routing and writes (#9077)"
+    ],
+    "note": "Source-only diagnosis, no refresh/merge or controller execution."
   }
 }
