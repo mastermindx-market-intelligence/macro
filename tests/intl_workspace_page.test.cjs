@@ -128,6 +128,36 @@ for (const bootLanguage of ['en','zh']) {
 }
 
 
+for (const theme of ['dark','light']) {
+  test(`Native Compare reference stroke keeps its weight at phone width ${theme}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(theme=>setTheme(theme),theme);
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const group=panel.locator('[data-im-chart-cohort]:not([hidden])');
+      const rule=group.locator('figure > svg > line');
+      const original=await rule.evaluate(n=>[n.getAttribute('x1'),n.getAttribute('y1'),n.getAttribute('x2'),n.getAttribute('y2')]);
+      for(const width of [320,390,1440]) {
+        await page.setViewportSize({width,height:900});
+        const reading=await rule.evaluate(n=>{
+          const s=getComputedStyle(n),m=n.getScreenCTM(),scale=Math.hypot(m.c,m.d);
+          return {declared:parseFloat(s.strokeWidth),rendered:parseFloat(s.strokeWidth)*(s.vectorEffect==='non-scaling-stroke'?1:scale),scale,
+            coordinates:[n.getAttribute('x1'),n.getAttribute('y1'),n.getAttribute('x2'),n.getAttribute('y2')]};
+        });
+        assert.ok(Math.abs(reading.rendered-reading.declared)<.01,JSON.stringify({width,...reading}));
+        assert.deepEqual(reading.coordinates,original);
+        if(width===320&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+          fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+          await page.evaluate(()=>document.fonts.ready);
+          await group.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`reference-stroke-${theme}-320.png`)});
+        }
+      }
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage:'en',initialSearch:'?view=compare'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Native Compare reference label stays readable at phone width ${theme} ${lang}`,async()=>{
     await pageFixture(async page=>{

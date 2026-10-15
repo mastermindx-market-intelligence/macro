@@ -47,7 +47,7 @@
              preserveAspectRatio="xMidYMid meet">
           <line x1="0" y1="{{ cohort.baseline_y|e }}" x2="{{ cohort.width|e }}"
                 y2="{{ cohort.baseline_y|e }}" stroke="var(--muted)" stroke-width="1"
-                stroke-dasharray="5 5" />
+                stroke-dasharray="5 5" vector-effect="non-scaling-stroke" />
           {% for line in cohort.paths %}
             {% set stroke = palette[(loop.index0) % (palette|length)] %}
             {% set pattern = patterns[(loop.index0) % (patterns|length)] %}
