@@ -1,11 +1,11 @@
 {
-  "fetched_at": "2026-10-14T14:55:01.245979+00:00",
-  "n_events": 830,
+  "fetched_at": "2026-10-15T11:33:11.825885+00:00",
+  "n_events": 834,
   "earliest": "2026-03-05",
-  "latest": "2026-10-14",
-  "n_new": 8,
+  "latest": "2026-10-15",
+  "n_new": 4,
   "by_category": {
-    "placing": 631,
-    "rights_issue": 199
+    "placing": 633,
+    "rights_issue": 201
   }
 }
