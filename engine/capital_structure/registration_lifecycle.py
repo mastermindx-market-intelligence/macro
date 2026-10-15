@@ -29,7 +29,11 @@ from pathlib import Path
 import re
 from typing import Any
 
-from engine.capital_structure.event_spine import normalize_form, route_form
+from engine.capital_structure.event_spine import (
+    compute_event_id,
+    normalize_form,
+    route_form,
+)
 
 
 BUNDLE_SCHEMA = "capital_structure.registration_lifecycle_bundle.v1"
@@ -427,12 +431,15 @@ def compile_registration_lifecycles(
             raise ValueError(f"event {event_id} has an unsupported schema")
         if (event.get("version") or {}).get("immutable_record") is not True:
             raise ValueError(f"event {event_id} is not immutable")
-        _validate_immutable_identity(
-            event,
-            id_field="event_id",
-            prefix="event:cs:",
-            kind="event",
-        )
+        # Events carry their own identity format (identity_format 2 hashes the
+        # W1 identity preimage, not the full body), so the event spine owns
+        # the check; a full-body hash rejects every post-W1 event.
+        expected_event_id = compute_event_id(event)
+        if event_id != expected_event_id:
+            raise ValueError(
+                "event immutable identity digest mismatch: "
+                f"{event_id!r} != {expected_event_id!r}"
+            )
         _logical_key(event)
         _parse_time(
             (event.get("point_in_time") or {}).get("available_at"),

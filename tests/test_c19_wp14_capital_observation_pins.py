@@ -212,7 +212,11 @@ def test_share_count_metric_kind_rejects_weighted_average():
     s = _v2_schema()
     metric = s["$defs"]["metric"]
     assert metric["properties"]["kind"]["enum"] == [
-        "common_shares_outstanding", "public_float",
+        "common_shares_outstanding",
+        "public_float",
+        "common_shares_authorized",
+        "common_shares_issued",
+        "common_shares_reserved_for_future_issuance",
     ]
     assert metric["properties"]["scope"] == {
         "const": "direct_sec_companyfacts_fact",
@@ -241,11 +245,14 @@ def test_share_count_metric_kind_rejects_weighted_average():
 
 
 def test_share_count_truth_supported_facts_exclude_weighted_average():
-    """The truth surface carries only the three point-in-time facts."""
+    """The truth surface carries only the six point-in-time facts."""
     keys = sorted(sct.SUPPORTED_FACTS)
     assert keys == [
         ("dei", "EntityCommonStockSharesOutstanding"),
         ("dei", "EntityPublicFloat"),
+        ("us-gaap", "CommonStockCapitalSharesReservedForFutureIssuance"),
+        ("us-gaap", "CommonStockSharesAuthorized"),
+        ("us-gaap", "CommonStockSharesIssued"),
         ("us-gaap", "CommonStockSharesOutstanding"),
     ]
     assert not any("weightedaverage" in name.lower() for _, name in keys)

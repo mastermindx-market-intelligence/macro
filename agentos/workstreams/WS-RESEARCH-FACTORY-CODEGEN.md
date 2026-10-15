@@ -1,149 +1,67 @@
 ---
 key: RESEARCH-FACTORY-CODEGEN
 title: Research Factory bounded codegen delivery
-objective: 'Deliver the commissioned generated-feature research workflow end to end:
-  isolated execution, original accounting, causal inputs, trusted evaluation, advisory
-  review, protected release, authenticated product proof and prospective evidence.
-  Source-only checkpoints do not complete the programme.'
+objective: >
+  Deliver isolated original research features through causal inputs, existing Trial
+  and Vault accounting, trusted evaluation, authenticated review and prospective
+  evidence. Source checks and merges do not complete the programme.
 status: active
 program: research-factory
-repos:
-- macro
-- mastermind
+repos: [macro, mastermind]
 owner: Chairman-assigned Fable Meta-CEO, root 01a1333c-a475-7052-95a8-72a88eb8c17b
 class: build
 blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
-- engine/research_codegen/
-- research/research_factory_codegen/
-- scripts/research_codegen_qualification/runtime/
+  - engine/research_codegen/
+  - research/research_factory_codegen/
+  - scripts/research_codegen_qualification/runtime/
 waves:
-- id: SOURCE
-  title: Contracts, Trial/Vault, prefix, diagnostic review and admin integration
-  status: in_progress
-- id: RUNTIME
-  title: One qualified Linux runtime and trusted canary, then bounded candidate workflow
-  status: in_progress
-- id: RELEASE
-  title: Existing protected carriers, installation and authenticated consumer proof
-  status: in_progress
-- id: ACCEPTANCE
-  title: Physical, scientific and prospective acceptance with original limits
-  status: todo
-next_action: Consume and adjudicate the exact archive-order source review, verify the
-  installed delivery contract, then finalize the distinct corrected v4 commission
-  through normal Fabric admission. Original v3 recovery is closed. CI9077 has a
-  recorded hosted-runner communication failure and missing pack-0 evidence; retain
-  its failed proof and use the existing release controller and capacity limits.
-  Cgroup review is consumed, its root repairs pass source checks, and host
-  qualification remains unproven. Preserve original effects and continue delivery.
+  - {id: SOURCE, title: "Contracts and connected source on original carriers", status: in_progress}
+  - {id: RUNTIME, title: "Fixed Linux canary and actual containment qualification", status: in_progress}
+  - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
+  - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
+next_action: >
+  Repair the actual PR9077 workstream conflict and PR9099 import-closure omissions
+  on their original branches. Consume the two original Fabric reviews through
+  same-operation recovery, then run the prepared v4 canary through normal admission.
 artifacts:
-- research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
-- research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
-- research/research_factory_codegen/2026-10-14/US_CALENDAR_NOTICE_EVIDENCE.md
-- research/research_factory_codegen/2026-10-14/PROC_OBSERVER_SOURCE_CONTRACT.md
-- research/research_factory_codegen/2026-10-14/CGROUP_OBSERVER_SOURCE_CONTRACT.md
-- research/research_factory_codegen/2026-10-14/MOUNTINFO_SOURCE_CONTRACT.md
+  - research/research_factory_codegen/2026-10-14/CONTRACTS_SOURCE_ACCEPTANCE.md
+  - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
+  - research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md
+  - engine/research_codegen/static_checks.py
 do_not_redo:
-- Original rf-codegen-contracts-impl-01a1333c-v1 remains EFFECT_UNKNOWN; its refused
-  artifact read stays closed. Chris authorized quarantining eventual output and a
-  fresh seven-path implementation, not replay or lease release.
-- Reuse accepted source/test evidence unless its source or acceptance requirement
-  changes. Do not promote old-head CI to a new head.
-- Do not change repo controls or credentials, invent a scheduler, bypass CI capacity,
-  force a Fabric host, or turn the synthetic diagnostic into a lifecycle decision.
+  - Reuse accepted checks and reviews until their relevant source or requirements change.
+  - Original contracts operation remains EFFECT_UNKNOWN. Chris authorized quarantine
+    and a fresh seven-path implementation, not replay, refused reads or lease release.
+  - Static worker rc65 remains unaccepted; its recovered derived source has separate acceptance.
+  - Preserve original Fabric operations, current writers, capacity limits and release controls.
+  - Keep the capacity cleanup request here and preserve Yahoo basis-refresh PR8066 HOLD.
 landmines:
-- Native runtime/programme coordinators became notLoaded/interrupted; do not claim
-  they remain running. Root retains integration ownership and uses existing admitted
-  Fabric for new bounded labor.
-- Review process success is not acceptance. Root reproduced focused installer
-  findings and repaired the new join failure-retention path; the installed canary
-  source package and tests still do not prove physical execution or containment.
-- G00 administrator identity is Chris-supplied collaborator evidence; earlier settings
-  denial remains closed. User directed continuation with a documented gap and actual
-  execution/publisher separation.
+  - Mutable Yahoo history does not establish original availability; future capture cannot repair it.
+  - Host isolation, candidate admission, holdout authority and scientific inference remain unqualified.
+  - Chris identified himself as repository administrator and directed continuation with
+    the documented protection-read gap. Do not change repository controls or credentials.
 ---
 
-## Current continuation — 2026-10-14 17:39 UTC
+Current checkpoint — 2026-10-15 (Vancouver).
 
-The original cgroup review returned 128761 bytes (SHA256 `376f7167e6e3baf0d0710f558c3190268c6b8497158b160a7d8fb2608301b6b6`). Root adjudicated all seven findings, preserved the original REJECT_REPAIRS_REQUIRED verdict, and accepted the bounded review through its existing Fabric owner. Version 2 reports explicit units and source depths and makes incomplete hierarchy and mid-read stability limits explicit. Missing-control traceback context is suppressed. Three reproduced failures are repaired; 64 affected checks pass. The integrated runtime suite passes 617 tests and 67 subtests with three Linux-only skips in 4.27 seconds. This is source verification, not independent approval of the successor or live host qualification.
+Strict transport cleanup #9190 merged at d99c8f129f2d559db814fb6059f7eade03bd40d5;
+static validation #9100 merged at f94050a358c3665a8a1b8cf97b87dc8eab4acaf6.
+Fence #9077 remains on its original branch; its prior CI lost its hosted runner.
+Capture #9099 now has a concrete eight-job import-closure omission to repair.
 
-The mount-table helper and calendar compatibility record were committed and pushed at `210e2a632cca` on the existing combined carrier. Original mount-table worker output remains unaccepted; its separate root repair passed 80 inert checks. The external US-calendar candidate composes with PR8721 head `1f93cf99d4cfabaec91c4646c8856e6d242b6f04` while preserving CN provenance and every non-US behavior. No held branch or canonical calendar source was edited. Complete 2010–2013 annual notice coverage remains missing.
+Combined source is pushed at f70550addb18da7a43c50f82164c5a5a4e8f2378 on the existing
+rf-contracts-fresh carrier. Cgroup corrections passed 64 affected checks; the joined
+runtime suite passed 617 tests and 67 subtests with three Linux-only skips. Mount-table
+source passed 80 checks; its original worker output remains unaccepted. The archive
+scanner repair passed the actual pinned archive scan and private staging verification.
+V4 is prepared but undispatched. Its privileged installer has one existing scoped
+review pending recovery; neither stale controller logs nor missing local processes
+prove remote termination. Fabric Integration received one batched same-operation
+recovery request for that review and the mount-table review. No workers were replayed.
 
-PR9077 CI38590887162 at exact head `9c9189d933e2d376a2c650cfbdd597d0e7fefbef` ended in runner communication loss during ci-pack-0 execution, according to GitHub's job annotation. Its fragment and job log are absent; 11 other packs passed. The retained gate classifies 277 steps as passed and 16 as unknown. No failing source assertion, source exoneration or CI acceptance follows. The first log read hit a 300-second anti-waste guard. After source inspection and substantive independent work, one unchanged same-CLI read was admitted and returned the ordinary missing-log error; local cache analysis and targeted job metadata established this frontier. No guard/state edit, alternate refused-log route, manual rerun, artificial push or capacity override occurred. Earlier permanent-freeze wording was overbroad and is corrected here. Genuine refusals on other operations remain closed.
-
-The archive-order repair passes extraction and on-disk verification of all six actual pinned release members in a private local fixture without command or binary execution, bundle publication or Docker changes. The first fixture's UID/GID callback assumption failure remains retained. Original independent archive review `rf-archive-order-review-01a1333c-v1` is pending on its original carrier. The distinct v4 draft contains 25 bound files and nine precheck tests; no dispatch has occurred. Capsule SHA256 remains `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`; process, cgroup and mount helpers remain excluded. Finalization must verify the current installed artifact framing contract and consume the original archive review.
-
-Fresh main `b337ad670065d6d75967bbaf4745e10055dc33ad` combined without conflicts with pre-mountinfo head `6f0a8aec46853c42e4c05349ba04b6d868a851dc` in a non-checkout merge-tree. Actual dependency landing and integration remain pending under the existing release controller. The programme remains active under Chairman Chris's end-to-end commission and original root `01a1333c-a475-7052-95a8-72a88eb8c17b`; root retains sole Git integration ownership. This checkpoint is continuity, not completion or an execution grant. Historical sections below preserve earlier observations and do not supersede this current frontier.
-
-## V3 recovery closed; archive repair prepared — 2026-10-14
-
-The original parent recovered both v3 files once through the installed reviewed profile. Recovery receipt SHA256 `d2041a1de4782ed5f3455d3b197aae852f45b95aec1387df67861c6b248360ad`; carrier SHA256 `c32c2c9961427af8d859214c15893a9bb954ba8f14e118ebcaf485d9399ed5bb`. The carrier settled rc0 in21.082seconds, but the complete inner result is STOPPED_NO_RETRY at BLOCKED_ARCHIVE_ARCHIVE_MEMBER_UNEXPECTED. The repaired Docker29.1.3 runtime projection and systemd HUP preflight passed. Bundle/staging creation, config commit, reload, image and smoke did not occur; unknowns are empty. Own source/scratch/intent/archive/failure receipt remain. Original Fabricrc65 remains unaccepted. This closes recovery, not runtime qualification.
-
-The pinned archive receipt lists shim,runsc,gvisor-bin directory,then five sidecars. Scanner code incorrectly required the directory to be first; old fixtures concealed that ordering defect. Root reproduced10 failures in17 new cases, repaired the canonical directory duplicate check, and verified the actual166822039-byte public archive locally without extracting or executing it. Original source reproduces ARCHIVE_MEMBER_UNEXPECTED; repaired source verifies all8entries and6requiredmemberhashes. Installer candidate SHA256 `4bb6ed6187444d11b26c339da434bb475f0cce7df9e957ee95bbe393d9b6777f`. Scoped independent review `rf-archive-order-review-01a1333c-v1` is running on the original normal Fabric carrier.
-
-The distinct v4 source package is prepared only, not dispatched. Capsule SHA256 `e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1`. Affected suite:473PASS,3Linux-onlySKIP,67subtests;15pytest warnings refer to old temporary cleanup. The flat precheck was corrected with the existing relocation seam after an initial fixture import failure; final142PASS,2LinuxSKIP,2subtests. Actual Linux must pass144tests and2subtests with zero skips before privilege. No budget, resource, privilege or runtime guard was loosened. The future delivery packet must honor Qwen STATUS plus exactly one final artifact manifest; installed duplicate validation remains unchanged.
-
-The separate cgroup observer source commission ended rc75 at host lane admission before worker implementation. No alternate host/provider or retry was used; direct source work is deferred behind the concrete archive repair. Candidate generation/execution, containment, scientific inference and product activation remain unqualified.
-
-## V3 dispatched and recovery owned — 2026-10-14 16:25 UTC
-
-The original `rf-fixed-smoke-runsc-01a1333c-v3` was admitted through the installed Fabric adapter on Ubuntu1 and executed its one commissioned carrier call. All127 Linux prechecks and2subtests passed with zero skips. The worker sealed a19164-byte carrier return and197-byte test log, but three repeated manifest lines failed the delivery contract; original Fabric rc65 remains unaccepted. Root consumed the28464-byte retained stdout, SHA256 `4630b08a03d2e437a8050b34f8badac2510b7a9856189ff22cc3654a5d575d1d`. Its full physical outcome is UNADJUDICATED. Do not dispatch v3 again, normalize its transcript, clean its scratch or create v4 to work around delivery.
-
-Chris's programme cross-chat permission covers the exact same-operation retrieval request. Fabric Integration received it, ACKed it, prepared the narrow two-file profile and sent it to the existing independent reviewer. The original root will make the supported installed read once after the qualified installation receipt arrives, verify both current-file hashes, and adjudicate the complete carrier. Known expected hashes and the new permitted destination are in `runtime-release/physical-qualification/CORRECTED_CANARY_V3_SAME_RUN_RECOVERY_REQUEST.json`. No ordinary artifact read was attempted on the ineligible run. There is no Chris-only gate.
-
-Root also diagnosed a caller packet defect: asking for only a final manifest conflicts with Qwen's installed STATUS terminal contract, triggering a further response. The existing Fabric owner separately owns the tool-output manifest repair on its existing release carrier. Future newly commissioned packets must honor both contracts; current v3 bytes stay immutable. This is source diagnosis, not installed repair or acceptance.
-
-Host-resource source preparation is committed at `c3b6e1233ef4731744c92a9d9e6f4427d7d8a9e3`. The original census remains unaccepted; root corrected its false prewarmer claim and documented conditional FD-parking placement, ancestor-limit and helper-cleanup observation requirements. No host observation or stress campaign follows from that document. Fence9077 CI at9c9189 remains in progress, with11 of12 test packs green at16:20UTC; normal release controls remain in force.
-
-The next action is recovery and physical adjudication of the exact original v3. Earlier pre-dispatch and pending-v2 statements below are historical and must not be used as current execution instructions.
-
-## Current adjudicated frontier — 2026-10-14 15:54 UTC
-
-The original projection review has returned and been consumed through the installed Fabric adapter:101123bytes, SHA256 `b6cd1a56d0b9a3ad15516896f4f013def14f613780aecf69262ec5185fe396c6`. Root reproduced its missing-runtime-map finding, added the explicit empty-map refusal, and checked the nil/empty cases through the actual local CLI against an owned fake API. The speculative Path-field concern is disproved by the pinned Docker29.1.3 source (`json:"path,omitempty"`). The bounded review is accepted on its original carrier; it does not cover unrelated installer changes or physical behavior. The systemd parser is separately reviewed and accepted.
-
-Final v3 installer SHA256 `538b28ce06ef5f5285a33553cf73f870f552873c35221d3dad2c1c3726b41e5c`; capsule SHA256 `99a7c0845e75b854d154c23aabd8c1a3505ccc9f637800168a38565dd784cb6e`. Runtime checks pass456 tests and67subtests with3Linux-only skips in3.27seconds. The fixed physical precheck now has127tests and must have zero skips on the admitted Linux host. No v3 physical request has yet been issued. The next act is to finalize the exact commission and dispatch once through normal admission, preserving original v2 and all limits. Receipt: `runtime-release/physical-qualification/ROOT_RUNTIME_PROJECTION_REVIEW_ADJUDICATION.json` under the programme evidence root.
-
-The original fence PR9077's one real CI-manifest conflict was repaired on its own carrier, preserving the five main-side Market Memory tests and the fence test. Head `9c9189d933e2d376a2c650cfbdd597d0e7fefbef` is pushed and current CI is running;690 affected tests,317manifestjobs and4authority selftests passed locally. This is not a merge or current-head CI acceptance. Capture9099 and cleanup9190 remain under the normal release controller. The combined branch has no merge-tree conflict with pinned main `a07b1c3005ef83416ad3be1bbb69d91ab7c40a70`, but no integration or dependency landing is claimed.
-
-The chronological sections below preserve earlier observations. Current statements in this section supersede their pending-review/recovery wording; recovery is complete, no Chris-only gate remains, and candidate/containment admission stays false.
-
-
-## V2 recovery and bounded preflight repair — 2026-10-14
-
-Chris authorized the v2 cross-chat recovery request. It was sent to Fabric Integration, independently reviewed by Mastermind OS, and installed by its existing owner. The original assigning parent then used the installed adapter once to recover both requested files. Receipt SHA256 `bbfc887d9762bf126d11354b00997de4134957ed0f46d1215a9c638345077711`; parent adjudication `runtime-release/physical-qualification/ROOT_CORRECTED_CANARY_V2_RECOVERY_ADJUDICATION.json`, SHA256 `72e977b8205707f158768ed823eb0d6adc4b3af68d96d9ece5d77705fbcdef14`. This supersedes the earlier authorization-pending statements below. No Chris-only gate remains for this recovery.
-
-The complete inner return is `STOPPED_NO_RETRY`: CLI isolation and pinned archive acquisition completed; installer preflight's tenth Docker query exhausted the unchanged 8192-byte main output allowance. The bounded collector terminated its own query, and the installer froze before bundle creation, daemon-config commit or reload. Image and smoke phases did not run. Known owned scratch, intent, client config and archive remain preserved. The outer carrier settled rc0; the original Fabric delivery remains rc65/unaccepted. Current recovered bytes are not a historical producer attestation. The structural verifier correctly refused phase settlement.
-
-Root repaired the full-runtime query by projecting Docker's complete embedded Runtime configuration before CLI capture, excluding volatile status. Local Docker29.7.2 against an owned fake Unix API produced a 20319-byte legacy response versus a 280-byte configuration projection; the complete affected suite passed72 tests and2subtests with2Linux-only skips. This is not Docker29.1.3 physical proof. Independent Fabric review `rf-runtime-projection-review-01a1333c-v1` is running on the normal admitted route.
-
-A second source mismatch was found before another physical commission: actual systemd255 renders `argv[]=...`, while inherited fixtures/parser use synthetic `argv=[...]`. A separate Fabric source-only parser leaf `rf-systemd-reload-parser-01a1333c-v1` is running. Root's integration regressions reproduced9 failures in13 cases; five duplicate-property failures are already repaired, preventing multiple ExecReload commands from being silently overwritten. No physical retry or new canary has been dispatched.
-
-The archival calendar leaf returned no newly qualified dates and remains unaccepted; complete2010–2013 annual tables remain missing. The same previously unstarted Linux pidfd commission was ordinarily readmitted after a material admission change, then terminated on provider quota429 with no qualifying test artifact. That refusal is final for the operation: no provider/carrier fallback or retry. Both existing release dependencies9099/9190 remain OPEN/UNSTABLE at their exact prior heads under the normal controller.
-
-### Prepared v3 source qualification
-
-The delegated parser was consumed as15925bytes, SHA256 `86e2064daaa66e489b57cf69ad7f0f83a2eeac5f053d75ce9ce2e44ecae0f6e6`. Root inspected its source and reran all65 tests successfully. The exact parser AST was integrated into the existing installer; existing synthetic service fixtures now use systemd's actual `argv[]=` rendering. Root accepted the bounded parser through its original Fabric result owner. The integrated preflight tests pass85 with2Linux-only skips and2subtests. The parser checks only rendered command text; it does not authenticate argv or prove reload settlement.
-
-The prepared v3 identity uses fresh `/var/lib/mastermind/rf-canary-01a1333c-v3` and `rf-fixed-smoke-runsc-01a1333c-v3`. The new source capsule SHA256 is `9b27615877fdca1a3a7c463b4092e4904a3576e764a38cb1b7b5f9621b543d71`. Full local runtime checks passed455 tests and67subtests with3Linux-only skips in4.16seconds; XML SHA256 `3b9fb61a4a31424396b1e495818955bf7ab134d9207060f31b14eb8fd8702538`. The physical precheck package collects126tests and must pass without skips on the admitted Linux host, including the actual installed CLI against an owned fake API. This is package preparation only: no new physical operation has been requested. The existing independent projection review remains pending, and original v2 keeps its terminal failure and preserved artifacts.
-
-
-This record carries work identity and continuity only. Existing source, runtime and release owners retain their actual authority. It neither dispatches work nor grants execution.
-
-Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; runtime source checkpoint `f6e8a8e56116e3639c3c00bd078c4d83bf9df82d`; PR #9099 current repaired head `944790254d1caa6e41f8ea19f6b5e738706a769f` passed its CI, then the controller deferred newly required proof refresh at shared capacity. Runtime capsule `e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809` is bound to its original physical commission. Exact local receipts and limits are indexed in the programme continuation.
-
-Current physical limit: v1 recovery complete, originalrc65unaccepted. V2 passed107Linuxprechecks/2subtests andonecarrierreturned after17seconds; completeinnerreceiptunread because decorated/repeatedmanifest causedrc65deliveryfailure. New retrieval-only cross-chat authorization pending. No physicalphase/installation/cleanup acceptance inferred. The separateCLIleafsummary remainsunaccepted. Purehostidentitydecoder independentreview accepted and36checks passed; nohostread orcurrentcapsule inclusion.
-
-Adjacent qualification: root corrected the unaccepted calendar census using complete official 2014–2023 notices. Regular closures match the immutable legacy calendar; 20 early closes and annual verification remain absent from the live adapter. A tested external patch preserves the shared calendar source while PR #8721 owns its CN extension. 2010–2013 primary annual notice gaps remain. The PID-observer Fabric implementation ended quota429 without source; root implemented directly and verified 52 hermetic tests with one opt-in Linux skip. Independent review `rf-proc-observer-review-01a1333c-v1` returned no actionable findings and root accepted its bounded source verdict. Neither helper is in the current canary capsule.
-
-Linux helper qualification limit: `rf-proc-observer-linux-01a1333c-v1` returned UNQUALIFIED on a Mac before creating files or a child. Its supplied hashes were not execution verification. Root prepared `rf-proc-observer-linux-01a1333c-v2` with a retained result artifact, using the installed artifact path's explicit Linux admission. The router refused before launch with Ubuntu0 disk, Ubuntu1 load, Ubuntu2/3 lane-ceiling and telemetry-source constraints. No worker/test/child launched and no threshold or host was forced. This preserves source-only acceptance. The earlier capacity request stays here as Chris directed.
-
-
-### Retained review reconciliation and supplementary calendar facts — 2026-10-14 13:08 UTC
-
-The root Stop hook returned the already-consumed `rf-runtime-derived-review-01a1333c-v1` (6776 bytes, SHA256 `4535fbe76e87d6fedb4b0a1591b028ac65a6665246e9bf2fb679a0b4460120f6`). The exact installed-adapter read confirms the same incomplete review; prior rejection remains, with no relaunch or acceptance. The reconciliation receipt is `runtime-release/physical-qualification/ROOT_RUNTIME_DERIVED_REVIEW_HOOK_RECONCILIATION_20261014.json` under programme evidence.
-
-NYSE-authored SEC releases 34-68137 and 34-68243 now support the two 2012 Sandy closures and six early closes across 2012–2013. `US_CALENDAR_NOTICE_FACTS.json` separates these partial facts from the ten complete 2014–2023 annual tables. Complete annual coverage for 2010–2013 remains unqualified, and neither a historical receipt nor advance knowledge is asserted. Runtime calendar hashes and the prepared patch are unchanged. Direct PDF capture returned403 and was not retried; public web-tool reads had already supplied the primary evidence.
-
-The stalled continuity commit completed and was pushed as `233d5b2d88f482fdc4c240c8ccc0a09aa1896e4d`. This settles that save/push only, not host-wide storage health. The corrected-canary v2 recovery message still awaits the existing explicit messaging authorization; no v2 replay, artifact read or capacity message occurred.
+Use the existing programme evidence under
+/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c for retained
+results. Historical receipts remain history; this short checkpoint owns the current
+next action. The programme is incomplete and has no current Chris-only gate.

@@ -6227,6 +6227,8 @@ def main() -> int:
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
                   "account.js",
+                  "market_memory.css", "market_memory.js", "market_memory_intent.js",
+                  "market_memory_retained.css", "market_memory_retained.js",
                   # landing onboarding sheet (paired templates/ -> site/ byte copy)
                   "onboard.js", "onboard.css",
                   "stockdata.js", "logo_config.js", "stock-logos.js", "watchlist.js", "factor_exposure.js", "auth.js",
@@ -8402,6 +8404,18 @@ def main() -> int:
         log.info("wrote %s", _fi_page)
     except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
         log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
+
+    # Consumer Cyclical PLNT synthetic display card — one static card mounting
+    # display_packet over the committed synthetic fixture. It writes no data,
+    # fetches nothing, and a native-admitted refusal raises before any page
+    # exists; this hook only keeps a full-site rebuild from leaving the card
+    # behind the templates.
+    try:
+        from scripts.build_consumer_cyclical_plnt_page import render as _render_plnt
+        _plnt_page = _render_plnt(config.ROOT)
+        log.info("wrote %s", _plnt_page)
+    except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
 
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder

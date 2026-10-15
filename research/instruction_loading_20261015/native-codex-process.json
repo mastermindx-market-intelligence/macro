@@ -1,0 +1,15 @@
+{
+  "purpose": "Fresh Macro entrypoint instruction qualification, not a worker or production task",
+  "cwd": "/Volumes/Mastermind 2/agent-workspaces/macro/web/execution-bureaucracy-macro-context-20261015-astra-001",
+  "source_base": "9df20a3ac37d1f33d616d871abfd9857f8cd5d26",
+  "instructions": {
+    "AGENTS.md": "275ff641af43605a5e49f4d89f6cd9e7c33d2213d415ec678df912bb38598c41",
+    "CLAUDE.md": "4d985d05a8d0209be23c55eaf395b461d25ad2229526cd7527c57e92ae227b92"
+  },
+  "scenario_sha256": "210550f84a96c084a5679474d0493e8d382f826c19131ac1dfee51433ed54569",
+  "default_model_used": true,
+  "sandbox": "read-only",
+  "pid": 62623,
+  "exit_code": 0,
+  "elapsed_seconds": 40.36
+}
