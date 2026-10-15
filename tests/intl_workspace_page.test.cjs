@@ -371,6 +371,56 @@ for (const lang of ['en','zh']) {
 }
 
 for (const lang of ['en','zh']) {
+  test(`Native Compare bookmark reload adopts the served source and recovers ${lang}`,async()=>{
+    const originalHtml=sourceChartFixture(),missingFxHtml=sourceChartFixture('missing-fx');
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('0');await picker.selectOption('1');
+      await page.selectOption('[data-im-action="set_horizon"]','3m');
+      const bookmark=page.url();
+      const original={source:await panel.getAttribute('data-source'),generation:await panel.getAttribute('data-im-generation'),
+        chart:await panel.locator('[data-im-chart-model]').innerHTML()};
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'comparable');
+      const expected=await page.evaluate(html=>{
+        const doc=new DOMParser().parseFromString(html,'text/html');
+        const p=doc.querySelector('[data-im-compare-panel][data-horizon="3m"][data-basis="usd_unhedged"]');
+        return {source:p.dataset.source,generation:p.dataset.imGeneration};
+      },missingFxHtml);
+      assert.notEqual(expected.source,original.source,'the next native publication must have a different source binding');
+      // Replace only the local document response. Reload the actual bookmark:
+      // no dispatch, invented admission, or source identity in URL state.
+      let servedHtml=missingFxHtml;
+      await page.route('http://intl.test/intl.html*',route=>route.fulfill({contentType:'text/html',body:servedHtml}));
+      await page.reload({waitUntil:'load'});
+      assert.equal(page.url(),bookmark);
+      assert.equal(await page.locator('[data-im-enhanced]').count(),1);
+      assert.equal(await page.locator('[data-im-panel]:visible').count(),1);
+      assert.equal(await panel.getAttribute('data-source'),expected.source);
+      assert.equal(await panel.getAttribute('data-im-generation'),expected.generation);
+      assert.equal(await panel.getAttribute('data-horizon'),'3m');
+      assert.equal(await panel.getAttribute('data-basis'),'usd_unhedged');
+      assert.equal(new URL(page.url()).searchParams.get('pins'),'JP,KR');
+      assert.equal(await panel.getAttribute('data-im-compare-reason'),'selection_unqualified');
+      assert.equal(await panel.locator('[data-im-chart-cohort]:visible').count(),0);
+      assert.deepEqual(await panel.locator('[data-im-compare-slot]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imCompareSlot)),['0','1']);
+      const japan=panel.locator('[data-im-compare-slot="0"]');
+      assert.equal(await japan.locator('[data-im-compare-metric="usd"] [data-im-compare-value]').innerText(),lang==='zh'?'不可用':'Unavailable');
+      assert.doesNotMatch(await japan.locator('[data-im-compare-metric="local"] [data-im-compare-value]').innerText(),/Unavailable|不可用/);
+      servedHtml=originalHtml;
+      await page.reload({waitUntil:'load'});
+      assert.equal(page.url(),bookmark);
+      assert.equal(await page.locator('[data-im-enhanced]').count(),1);
+      assert.equal(await page.locator('[data-im-panel]:visible').count(),1);
+      assert.equal(await panel.getAttribute('data-source'),original.source);
+      assert.equal(await panel.getAttribute('data-im-generation'),original.generation);
+      assert.equal(await panel.getAttribute('data-im-compare-state'),'comparable');
+      assert.equal(await panel.locator('[data-im-chart-model]').innerHTML(),original.chart);
+    },{htmlOverride:originalHtml,width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
+for (const lang of ['en','zh']) {
   test(`Native Compare refused additions preserve chart and recover ${lang}`,async()=>{
     await pageFixture(async page=>{
       const panel=page.locator('[data-im-compare-panel]:not([hidden])');
