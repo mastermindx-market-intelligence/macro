@@ -30,6 +30,12 @@ sys.path.insert(0, str(_ROOT))
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
+from engine.sector_intelligence.finance_watching import (  # noqa: E402
+    SHELL_STATEMENT_ZH,
+    SHELL_WINDOW_ZH,
+    shell_watching_items,
+)
+
 
 def _temp_sibling(path: Path) -> Path:
     return path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -59,6 +65,13 @@ def render_shell(root: Path) -> Path:
         generated_utc="runtime-api",
         active_section="research",
         active_page="finance_intelligence",
+        # W10-FIN-1: the live not-connected shell ships two NOT_YET_EVALUABLE
+        # watching items in ul.fi-falsifiers, produced by apply_page_signal
+        # against in-module synthetic constants. With FI_READ_URL="" there is
+        # no fetch, no WATCHING, no research/finance read.
+        watching_items=shell_watching_items(),
+        shell_statement_zh=SHELL_STATEMENT_ZH,
+        shell_window_zh=SHELL_WINDOW_ZH,
         # Bound at integration only (Chairman directive 2026-09-24): an empty
         # value renders the shell in its "not connected" state with no fetch.
         fi_read_url=FI_READ_URL,
