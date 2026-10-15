@@ -5842,6 +5842,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/theme_graph/economic_context.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -17316,7 +17318,7 @@ jobs:
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_gmi_issuer_economic_context_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -17657,6 +17659,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/economic_context.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -25170,6 +25174,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/theme_graph/economic_context.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -27488,6 +27494,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/economic_context.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
