@@ -84,3 +84,15 @@ def test_ror1_market_plane_native_source_date_has_paired_display_contract():
     assert "d.stale === true" in template_renderer  # original whole-plane signal
     assert "new Date(sourceDay" in template_renderer  # closed date validation
     assert "var VERDICT_COL" in template_renderer  # original score/color path untouched
+
+def test_ror1_committee_renderer_js_behavior_runs_in_ci():
+    """Exercise original JS function semantics, not only a source substring."""
+    import subprocess
+    js_test = TEMPLATE.parent.parent / "tests" / "test_ror1_committee_market_plane.js"
+    result = subprocess.run(
+        ["node", str(js_test)],
+        cwd=str(TEMPLATE.parent.parent),
+        text=True, capture_output=True, timeout=12, check=False,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert "COMMITTEE_RENDERER_CHARACTERIZATION_TESTS=6" in result.stdout
