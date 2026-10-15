@@ -399,7 +399,12 @@ Claude-compatible MiniMax harness may use the separate `minimax` / `api_key`
 source vocabulary. Both retain `subscription` / `native_cli`. This vocabulary
 does not grant an authentication method, enroll a realm, or establish readiness.
 
-The registry contains no registered domain. The pure parser accepts only supplied
+The registry now defines one source-issued MiniMax domain at generation 1 for the
+existing finite native proof. Its opaque company identifier carries no host,
+principal, Worker, provider-account or credential identity. Registration is a
+source fact; real realm enrollment, auth, availability and admission remain
+unproven. No Claude.ai domain or additional provider supply is inferred.
+The pure parser accepts only supplied
 source documents. `engine/provider_native_capability_source.py` adds fixed source
 acquisition and a separate V2 material census, reusing the V1 identity primitives
 without changing V1 files or its census. Its no-override entry derives HEAD, requires

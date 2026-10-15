@@ -45,6 +45,9 @@ def repo():
             target = root / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes((actual / rel).read_bytes())
+        # Disposable history starts before any registration regardless of the
+        # current company's registry. Never remove a real domain as test setup.
+        (root / source.REGISTRY_PATH).write_text(json.dumps({**registry(), "capabilities": []}))
         commit(root)
         yield root
 
