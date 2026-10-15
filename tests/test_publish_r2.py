@@ -425,10 +425,16 @@ def _wire_fake_store(tmp_path, monkeypatch, s3, d, n_data_files=140):
     (base / "eod" / "SPY").mkdir(parents=True)
     for i in range(n_data_files):
         (base / "eod" / "SPY" / f"{2000 + i}.parquet").write_bytes(b"x" * 64)
-    (base / "_manifest.json").write_text(json.dumps(
-        {"store": d, "n_roots": 1, "per_root": {"SPY": {"n_years": n_data_files}},
-         "latest_date": expected_last_session(datetime.now(timezone.utc)).isoformat(),
-         "updated_at": "2026-07-30T05:00:00+00:00"}))
+    source_day = expected_last_session(datetime.now(timezone.utc)).isoformat()
+    source = {"store": d, "n_roots": 1,
+              "per_root": {"SPY": {"n_years": n_data_files}},
+              "latest_date": source_day,
+              "updated_at": "2026-07-30T05:00:00+00:00"}
+    if d == "massive_stock_day":
+        # Synthetic SPY anchor must be explicit: other data-dir stores have
+        # different original collector schemas and must not inherit this law.
+        source["anchor"] = {"ticker": "SPY", "last": source_day}
+    (base / "_manifest.json").write_text(json.dumps(source))
     monkeypatch.setattr(config, "ROOT", tmp_path)
     monkeypatch.setattr(config, "load",
                         lambda: {"storage": {"site_dir": "site", "data_dir": "data"}})
@@ -1086,7 +1092,8 @@ def test_symlinked_store_under_the_min_files_floor_is_still_refused(tmp_path, mo
 # R2 embedded the EXACT October 7 Git collector manifest, despite new Parquet
 # object Last-Modified values. Publication must gate BEFORE the delta uploads.
 def _tip(date_str: str) -> dict:
-    return {"store": "massive_stock_day", "latest_date": date_str}
+    return {"store": "massive_stock_day", "latest_date": date_str,
+            "anchor": {"ticker": "SPY", "last": date_str}}
 
 
 def _remote_tip(date_str: str) -> dict:
@@ -1351,3 +1358,113 @@ def test_massive_publisher_blocks_same_session_remote_revision_race_before_put(
     assert pr2.publish(["massive_stock_day"], workers=1) == 1
     assert s3.uploaded  # a non-atomic file PUT was attempted
     assert s3.manifest_puts == []  # newer revision descriptor is preserved
+
+
+# --- Daily source semantic, revision and anchor falsifiers -------------------
+def test_massive_publisher_refuses_non_session_sunday_tip():
+    now = datetime(2026, 10, 20, 14, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(_tip("2026-10-18"), None, now=now)
+    assert ok is False
+    assert "SOURCE_NON_SESSION" in reason
+
+
+def test_massive_publisher_refuses_future_local_revision_clock():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2099-01-01T00:00:00+00:00"}
+    remote = _remote_tip("2026-10-14")
+    remote["store"]["updated_at"] = "2026-10-14T22:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_FUTURE" in reason
+
+
+def test_massive_publisher_refuses_future_revision_even_without_remote():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2099-01-01T00:00:00+00:00"}
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is False
+    assert "SOURCE_REVISION_FUTURE" in reason
+
+
+def test_massive_publisher_refuses_claimed_latest_without_real_price_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    local["anchor"]["last"] = "2026-10-09"
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_refuses_missing_original_price_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = _tip("2026-10-14")
+    local.pop("anchor")
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_UNVERIFIED" in reason
+
+
+def test_massive_publisher_refuses_remote_manifest_with_bad_original_anchor():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["anchor"]["last"] = "2026-10-09"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is False
+    assert "REMOTE_ANCHOR_MISMATCH" in reason
+
+
+def test_massive_publisher_accepts_current_source_and_anchor_with_valid_revision():
+    now = datetime(2026, 10, 15, 5, 20, tzinfo=timezone.utc)
+    local = {**_tip("2026-10-14"), "updated_at": "2026-10-15T02:00:00+00:00"}
+    remote = _remote_tip("2026-10-13")
+    remote["store"]["updated_at"] = "2026-10-15T01:00:00+00:00"
+    ok, reason = _massive_publish_tip_ok(local, remote, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_allows_normal_nyse_session_before_holiday():
+    now = datetime(2026, 11, 30, 14, 0, tzinfo=timezone.utc)
+    local = _tip("2026-11-27")  # shortened NYSE Black Friday session
+    ok, reason = _massive_publish_tip_ok(local, None, now=now)
+    assert ok is True
+    assert reason == "source tip admitted"
+
+
+def test_massive_publisher_refuses_false_processed_tip_before_any_file_upload(
+    tmp_path, monkeypatch,
+):
+    # Collector can mark raw.empty weekday as processed without writing a bar.
+    # The original SPY Parquet anchor must block uploads in that scenario.
+    import scripts.publish_r2 as pr2
+    s3 = _FakeS3()
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    original = json.loads((base / "_manifest.json").read_text())
+    original["anchor"]["last"] = "2026-10-09"
+    (base / "_manifest.json").write_text(json.dumps(original))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
+
+
+def test_massive_publisher_refuses_unsupported_remote_anchor_before_upload(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    session = expected_last_session(now)
+    remote = _remote_tip(session.isoformat())
+    remote["store"]["anchor"]["last"] = "2026-10-09"
+    key = "massive_stock_day/_manifest.json"
+    s3 = _FakeS3(objects={key: json.dumps(remote).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["latest_date"] = session.isoformat()
+    local["updated_at"] = (now - timedelta(minutes=2)).isoformat()
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []

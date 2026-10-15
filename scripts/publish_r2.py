@@ -53,7 +53,7 @@ import logging
 import os
 import sys
 import time
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -552,7 +552,7 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
     # Keep publish_r2's credential import order and non-Massive bootstrap
     # independent of this specialized check. The original calendar and audit
     # policy are loaded only for the Massive daily source.
-    from lib.nyse_calendar import expected_last_session, sessions_behind  # noqa: PLC0415
+    from lib.nyse_calendar import expected_last_session, is_session, sessions_behind  # noqa: PLC0415
     from scripts.audit_r2 import DEFAULT_MASSIVE_TIP_MAX_MISSING_SESSIONS  # noqa: PLC0415
     now = now or datetime.now(timezone.utc)
     if max_missing_sessions is None:
@@ -575,12 +575,46 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
     if latest is None:
         return False, "SOURCE_UNVERIFIED: invalid local latest_date"
     expected = expected_last_session(now)
+    if not is_session(latest):
+        return False, "SOURCE_NON_SESSION: local daily latest_date is not an NYSE session"
     if latest > expected:
         return False, "SOURCE_UNVERIFIED: local daily bar is later than the completed NYSE session"
+    original_anchor = local.get("anchor")
+    if not isinstance(original_anchor, dict):
+        return False, "SOURCE_ANCHOR_UNVERIFIED: missing original SPY price-data anchor"
+    anchored = _read_date(original_anchor.get("last"))
+    if anchored is None or not is_session(anchored) or anchored > expected:
+        return False, "SOURCE_ANCHOR_UNVERIFIED: invalid original SPY price-data anchor"
+    if anchored != latest:
+        return False, (f"SOURCE_ANCHOR_MISMATCH: local source claims {latest} "
+                       f"but original SPY price rows end {anchored}")
     missing = sessions_behind(latest, now)
     if missing > max_missing_sessions:
         return False, (f"SOURCE_STALE: local latest {latest} is {missing} completed "
                        f"NYSE sessions behind {expected} (limit {max_missing_sessions})")
+
+    def _collector_update(record: dict) -> datetime | None:
+        value = record.get("updated_at")
+        if not isinstance(value, str):
+            return None
+        try:
+            stamp = datetime.fromisoformat(value)
+        except ValueError:
+            return None
+        if stamp.tzinfo is None or stamp.utcoffset() is None:
+            return None
+        return stamp.astimezone(timezone.utc)
+
+    # A date-only source claim is not a provenance revision. If a collector
+    # timestamp is supplied, it must be a genuine timezone-aware observation,
+    # never an impossible future value that could dominate every real revision.
+    # Five minutes tolerates small host-clock skew; it cannot justify years
+    # or days ahead of the publishing clock.
+    latest_update = _collector_update(local)
+    if local.get("updated_at") is not None and latest_update is None:
+        return False, "SOURCE_REVISION_UNVERIFIED: invalid local collector UTC clock"
+    if latest_update is not None and latest_update > now + timedelta(minutes=5):
+        return False, "SOURCE_REVISION_FUTURE: local collector clock is after observation time"
 
     if remote is not None:
         if not isinstance(remote, dict) or remote.get("dir") != "massive_stock_day":
@@ -589,34 +623,29 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
         if not isinstance(recorded, dict) or recorded.get("store") != "massive_stock_day":
             return False, "REMOTE_UNVERIFIED: missing original remote collector metadata"
         older = _read_date(recorded.get("latest_date"))
-        if older is None:
-            return False, "REMOTE_UNVERIFIED: invalid remote latest_date"
+        if older is None or not is_session(older) or older > expected:
+            return False, "REMOTE_UNVERIFIED: invalid remote completed NYSE session"
+        remote_anchor = recorded.get("anchor")
+        if not isinstance(remote_anchor, dict):
+            return False, "REMOTE_ANCHOR_MISMATCH: missing original remote SPY price anchor"
+        remote_anchor_day = _read_date(remote_anchor.get("last"))
+        if remote_anchor_day != older or not is_session(remote_anchor_day):
+            return False, "REMOTE_ANCHOR_MISMATCH: remote source latest lacks its SPY price rows"
+        remote_update = _collector_update(recorded)
+        if recorded.get("updated_at") is not None and remote_update is None:
+            return False, "REMOTE_REVISION_UNVERIFIED: invalid original remote collector clock"
+        if remote_update is not None and remote_update > now + timedelta(minutes=5):
+            return False, "REMOTE_REVISION_FUTURE: remote collector clock is after observation time"
         if latest < older:
             return False, (f"SOURCE_REGRESSION: local latest {latest} predates "
                            f"remote source latest {older}")
         if latest == older:
-            # The daily session alone is NOT a revision identifier. A prior
-            # collector revision can overwrite a corrected remote file while
-            # claiming the same latest session; the original updated_at clocks
-            # must be comparable before a same-session replacement is allowed.
-            def _collector_update(record: dict) -> datetime | None:
-                value = record.get("updated_at")
-                if not isinstance(value, str):
-                    return None
-                try:
-                    stamp = datetime.fromisoformat(value)
-                except ValueError:
-                    return None
-                if stamp.tzinfo is None or stamp.utcoffset() is None:
-                    return None
-                return stamp.astimezone(timezone.utc)
-
-            local_update = _collector_update(local)
-            remote_update = _collector_update(recorded)
-            if local_update is None or remote_update is None:
+            # Source session dates are not revision IDs. Any same-day
+            # correction must retain newer original collector evidence.
+            if latest_update is None or remote_update is None:
                 return False, ("SOURCE_REVISION_UNVERIFIED: same-session source "
                                "revisions lack comparable UTC collector clocks")
-            if local_update < remote_update:
+            if latest_update < remote_update:
                 return False, ("SOURCE_REVISION_REGRESSION: local collector "
                                "revision predates the remote source revision")
     return True, "source tip admitted"

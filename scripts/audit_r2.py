@@ -49,7 +49,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
-from lib.nyse_calendar import expected_last_session, sessions_behind  # noqa: E402
+from lib.nyse_calendar import expected_last_session, is_session, sessions_behind  # noqa: E402
 
 # Cloudflare's WAF 403s python-default User-Agents on the public r2.dev host.
 UA = "macro-audit/1.0"
@@ -340,6 +340,9 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
             continue
         store = doc.get("store")
         if store is not None and not isinstance(store, dict):
+            if d == "massive_stock_day" and doc.get("latest_date") is not None:
+                fail.append(f"R2 SOURCE TIP INVALID: {d} has a raw collector document "
+                            "at the publish-side manifest key, not verified source metadata")
             # `store` present but scalar == the RAW collector doc, whose own top-level
             # "store" is the store NAME. Distinct from `store` merely ABSENT, which is a
             # legitimate pre-coverage publisher doc and falls through to the softer
@@ -355,6 +358,9 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
         cov = cov if isinstance(cov, dict) else {}
         anchor_blk = anchor_blk if isinstance(anchor_blk, dict) else {}
         if not cov and not anchor_blk:
+            if d == "massive_stock_day" and store.get("latest_date") is not None:
+                fail.append(f"R2 SOURCE ANCHOR MISMATCH: {d} has no original "
+                            "SPY price-data anchor or coverage to validate its source tip")
             warn.append(f"coverage probe {d}: manifest carries no store coverage yet "
                         "(pre-coverage publish?) — content continuity unverifiable")
             continue
@@ -373,6 +379,37 @@ def probe(now: datetime, base: str = DEFAULT_BASE, anchors: list[str] | None = N
         run_bd = run_full if run_recent is None else run_recent
         latest = anchor_blk.get("last") or store.get("latest_date") or cov.get("last_day")
         rec: dict = {}
+        if d == "massive_stock_day":
+            # The collector's processed-day clock may advance on an empty trading
+            # session. Only the incumbent SPY price anchor can substantiate
+            # a claim that the source has actually advanced. Neither the
+            # publisher timestamp nor coverage.last_day proves price rows.
+            claimed = store.get("latest_date")
+            actual = anchor_blk.get("last")
+
+            def _source_session(value: object) -> date | None:
+                if not isinstance(value, str) or len(value) != 10:
+                    return None
+                try:
+                    parsed = date.fromisoformat(value)
+                except ValueError:
+                    return None
+                return parsed if parsed.isoformat() == value else None
+
+            claimed_day = _source_session(claimed)
+            anchor_day = _source_session(actual)
+            expected = expected_last_session(now)
+            if claimed_day is None or not is_session(claimed_day) or claimed_day > expected:
+                fail.append(f"R2 SOURCE TIP INVALID: {d} claimed latest {claimed!r} "
+                            f"is not a completed NYSE session (expected <= {expected})")
+            if anchor_day is None or not is_session(anchor_day) or anchor_day > expected:
+                fail.append(f"R2 SOURCE ANCHOR MISMATCH: {d} price anchor {actual!r} "
+                            "is missing or not an observed completed NYSE session")
+            elif claimed_day is not None and anchor_day != claimed_day:
+                fail.append(f"R2 SOURCE ANCHOR MISMATCH: {d} claimed latest {claimed!r} "
+                            f"but original SPY price anchor ends {actual!r}")
+            if anchor_day is not None:
+                rec["anchor_last"] = anchor_day.isoformat()
 
         # EVERY coercion here is guarded. A published manifest is untrusted input, and
         # healthcheck.check_r2_freshness wraps run() in `except Exception -> {"ok": True}`
