@@ -5360,7 +5360,9 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
       - "templates/intl_workspace/macro.html.j2"
-    timeout-minutes: 8
+    # Full-page closure now includes 43 render suites and 11 browser suites.
+    # One bounded job retains every check; the former 8m cap expired in Python.
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

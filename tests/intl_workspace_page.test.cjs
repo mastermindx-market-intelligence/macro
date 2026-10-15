@@ -883,7 +883,13 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
           assert.ok(await scroll.evaluate(n=>n.scrollWidth>n.clientWidth),'narrow table needs scrolling');
           // Let native smooth scrolling advance between real key events; never set scrollLeft.
           for(let i=0;i<40 && !(await scroll.evaluate(n=>n.scrollLeft>=n.scrollWidth-n.clientWidth-2));i++){await page.keyboard.press('ArrowRight');await page.waitForTimeout(50);}
-          await page.waitForFunction(()=>{const n=document.querySelector('.ird-cb-scroll');return n.scrollLeft>=n.scrollWidth-n.clientWidth-2});
+          // Native smooth scrolling may still be moving inside the 2px distance
+          // allowance. Wait for the actual 1px visibility contract below.
+          await page.waitForFunction(()=>{
+            const n=document.querySelector('.ird-cb tbody tr:first-child td:last-child');
+            const r=n.getBoundingClientRect(),s=n.closest('.ird-cb-scroll').getBoundingClientRect();
+            return r.right<=s.right+1 && r.left>=s.left-1;
+          });
           assert.ok(await cells.nth(5).evaluate(n=>{const r=n.getBoundingClientRect(),s=n.closest('.ird-cb-scroll').getBoundingClientRect();return r.right<=s.right+1 && r.left>=s.left-1}),'last column is reachable');
           for(let i=0;i<40 && !(await scroll.evaluate(n=>n.scrollLeft<1));i++){await page.keyboard.press('ArrowLeft');await page.waitForTimeout(50);}
           console.log('Central-bank keyboard return',await scroll.evaluate(n=>({left:n.scrollLeft,max:n.scrollWidth-n.clientWidth,focused:n===document.activeElement})));
