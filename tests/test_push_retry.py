@@ -2901,6 +2901,7 @@ def test_committed_qledger_oversize_refuses_network_before_git_push(
           case "$1" in
             ls-tree)
               [ "$2" = "-l" ] || return 80
+              [ "$GIT_NO_LAZY_FETCH" = 1 ] || return 79
               [ "$3" = "$SIMULATED_REF" ] || return 81
               [ "$4" = "--" ] || return 82
               [ "$5" = "data/qledger/claims.jsonl" ] || return 83
@@ -2928,6 +2929,30 @@ def test_committed_qledger_oversize_refuses_network_before_git_push(
         assert "NETWORK_PUSH_WOULD_EXECUTE" in r.stdout
         assert "RESULT=0" in r.stdout
 
+
+
+def test_missing_promisor_blob_size_does_not_authorize_download_or_false_oversize(tmp_path):
+    """Missing objects in blob:none clones must never be lazily hydrated."""
+    r = run_sh(
+        r"""
+        push_retry_init "missing promisor QLedger"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then
+            test "$GIT_NO_LAZY_FETCH" = 1 || { echo BUG_LAZY_FETCH_ALLOWED; return 79; }
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd -\tdata/qledger/claims.jsonl\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo ORIGINAL_REMOTE_GH001_REMAINS_AUTHORITATIVE; return 0; fi
+          return 89
+        }
+        push_do origin HEAD:refs/heads/main
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "BUG_LAZY_FETCH_ALLOWED" not in r.stdout + r.stderr
+    assert "ORIGINAL_REMOTE_GH001_REMAINS_AUTHORITATIVE" in r.stdout
 
 def test_legacy_qledger_preflight_does_not_block_missing_native_base(tmp_path):
     r = run_sh(
@@ -2971,3 +2996,66 @@ def test_qledger_size_preflight_terminal_sticky_without_second_push(tmp_path):
     assert "first=73 second=73" in r.stdout
     assert "other=1" in r.stdout
     assert "stop=local QLedger GH001 size preflight" in r.stdout
+
+
+def test_preflight_never_hydrates_real_blob_none_partial_clone(tmp_path):
+    """The real macstudio runner's blob:none state is a safety precondition.
+
+    Git can lazily download a missing 100MiB QLedger blob when ls-tree -l
+    computes its size. This local-file-only partial-clone witness proves the
+    optional guard does NOT hydrate that missing promised blob. Unavailable
+    local size retains the original remote GH001 fallback. No GitHub remote.
+    """
+    src = tmp_path / "local-full"
+    dst = tmp_path / "local-promisor"
+    src.mkdir()
+    env = {
+        **os.environ,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_TERMINAL_PROMPT": "0",
+    }
+    for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
+                "GIT_OBJECT_DIRECTORY", "GIT_NO_LAZY_FETCH"):
+        env.pop(key, None)
+
+    def git(*args: str, cwd: Path | None = None, check: bool = True):
+        return subprocess.run(
+            ["git", *args], cwd=cwd, env=env, capture_output=True, text=True,
+            check=check, timeout=12,
+        )
+
+    git("init", "-q", "-b", "main", str(src))
+    git("config", "user.email", "nobody@local.invalid", cwd=src)
+    git("config", "uploadpack.allowFilter", "true", cwd=src)
+    # Configure the local source itself, not any user's global Git settings.
+    git("config", "user.name", "local fake evidence", cwd=src)
+    target = src / "data" / "qledger" / "claims.jsonl"
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"synthetic-small-source\\n")
+    git("add", "--", "data/qledger/claims.jsonl", cwd=src)
+    git("-c", "commit.gpgsign=false", "commit", "-qm", "synthetic", cwd=src)
+    blob = git("rev-parse", "HEAD:data/qledger/claims.jsonl", cwd=src).stdout.strip()
+    git("clone", "-q", "--filter=blob:none", "--no-checkout",
+        src.as_uri(), str(dst))
+    assert git("config", "--get", "remote.origin.promisor", cwd=dst).stdout.strip() == "true"
+
+    missing_env = {**env, "GIT_NO_LAZY_FETCH": "1"}
+    def available_locally() -> bool:
+        got = subprocess.run(
+            ["git", "cat-file", "-e", blob], cwd=dst, env=missing_env,
+            capture_output=True, text=True, timeout=10,
+        )
+        return got.returncode == 0
+
+    assert not available_locally(), "fixture must start with a promised missing blob"
+    got = run_sh(
+        """
+        push_retry_init "real partial-clone read-only guard"
+        _push_qledger_committed_size_preflight HEAD
+        printf 'STATUS=%s TERMINAL=%s\\n' "$?" "$PUSH_TERMINAL_RC"
+        """, cwd=dst, env=env,
+    )
+    assert got.returncode == 0, (got.stdout, got.stderr)
+    assert "STATUS=0 TERMINAL=0" in got.stdout
+    assert not available_locally(), "optional guard fetched a promised QLedger blob"

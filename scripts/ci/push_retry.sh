@@ -381,7 +381,12 @@ _push_qledger_committed_size_preflight() {
   esac
 
   # Inspect one committed path, not the dirty worktree or native claims.
-  metadata=$(git ls-tree -l "$source_ref" -- data/qledger/claims.jsonl 2>/dev/null) || return 0
+  # macstudio Actions clones use blob:none promisor repositories. Obtaining
+  # a missing blob size can otherwise trigger an implicit >100MiB network
+  # lazy fetch BEFORE the explicit Git push. Do not hydrate missing objects
+  # merely to perform optional local preflight. Unknown size preserves the
+  # incumbent GitHub GH001 remote guard.
+  metadata=$(GIT_NO_LAZY_FETCH=1 git ls-tree -l "$source_ref" -- data/qledger/claims.jsonl 2>/dev/null) || return 0
   case "$metadata" in
     *$'\tdata/qledger/claims.jsonl') ;;
     *) return 0 ;;
