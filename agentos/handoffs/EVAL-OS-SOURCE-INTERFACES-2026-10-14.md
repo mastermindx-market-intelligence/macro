@@ -147,11 +147,11 @@ unresolved:
   owed.
 next_actions:
 - A1 remote ba848 remains on PR6651; clean local ff791 nine-input repair is qualified but capacity-gated.
-  Contract-delta and pack0 share the same missing-input failure. At07:53:56 packs4/6/9 still run; next CI
-  observation>=07:59:03. After two capacity deferrals, consume the same original run completion before another
+  Contract-delta and pack0 share the same missing-input failure. At08:00:14 A1pack9PASS, packs4/6 still run; next CI
+  observation>=08:05:21. After two capacity deferrals, consume the same original run completion before another
   broad census; then fresh canonical admission, ordinary same-carrier push and incumbent final merge.
-- BLS fifteenth supplied-text case passes123 affected response checks; finish the affected CI-scope check,
-  then publish this same follow-on branch. Original Fabric eval-t6-bls-fixture-01a1333d-c1 is consumed;
+- BLS fifteenth supplied-text case passes123 affected response checks; three CI controls, zero closure misses and strict134/134/128jobs also pass;
+  publish this same follow-on branch. Original Fabric eval-t6-bls-fixture-01a1333d-c1 is consumed;
   root corrected a gold-sentence ambiguity. Do not replay the refused blind-model operation.
 - T11 real native request64992.109 returned a subscriber receipt; fingerprint, rendered clause and DOM matched.
   Retain reference-only t11-native-consumer-20261015.json. This is one current native path, not A1 integration,
@@ -174,7 +174,7 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-The A1 repair is qualified locally and waits for real CI capacity. The new BLS case adds a distinct survey/revision diagnostic;123 response checks pass. A real authenticated product request also supplied the first observed current native-fact receipt, with fingerprint/API/DOM agreement on one field. The receipt's raw value is not retained. Final deployment, general numeric verification, model acceptance and follow-on adoption remain open. Reuse existing qualification; no routine review or recursive evidence pack is required.
+The A1 repair is qualified locally and waits for real CI capacity. The new BLS case adds a distinct survey/revision diagnostic;123 response checks pass. A real authenticated product request also supplied the first observed current native-fact receipt, with fingerprint/API/DOM agreement on one field. The JSON record retains references and verdicts; a local screenshot records the observed UI for review. Final deployment, general numeric verification, model acceptance and follow-on adoption remain open. Reuse existing qualification; no routine review or recursive evidence pack is required.
 
 ## 2026-10-15 A1 repair published
 
