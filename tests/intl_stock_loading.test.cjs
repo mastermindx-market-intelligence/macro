@@ -33,7 +33,7 @@ async function renderedStock(page, ticker, name = ticker + ' fixture') {
     document.getElementById('result').style.display !== 'none' &&
     document.getElementById('lookup_status').textContent === '', name + ' (' + ticker + ')');
 }
-async function setup(t, lang = 'en', {initialHash='', indexStatus=200, realChart=false} = {}) {
+async function setup(t, lang = 'en', {initialHash='', indexStatus=200, indexOverrides={}, realChart=false} = {}) {
   const context = await browser.newContext();
   t.after(() => context.close());
   await context.addInitScript(({lang,realChart}) => {
@@ -48,6 +48,7 @@ async function setup(t, lang = 'en', {initialHash='', indexStatus=200, realChart
     const url = new URL(route.request().url());
     if (url.hostname !== 'stock.test') return route.abort();
     if (url.pathname === '/intl_stock.html') return route.fulfill({contentType:'text/html', body:html});
+    if (indexOverrides[url.pathname]) return route.fulfill(indexOverrides[url.pathname]);
     if (url.pathname.endsWith('/index.json')) return route.fulfill({status:indexStatus, json:indexStatus!==200 ? {error:'fixture unavailable'} :
       url.pathname.startsWith('/intlstockdata/') ? ['OLD','NEW','RETRY'].map(t=>({t,n:t+' fixture',s:'fixture sector',st:'LIMITED'})) : []});
     if (realChart && ['/chart.js','/lightweight-charts-v5.js'].includes(url.pathname))
@@ -194,6 +195,32 @@ for (const lang of ['en','zh']) test(`deep-linked record can load when the optio
   await renderedStock(page,'DIRECT');
   assert.equal(await page.locator('#r_name').innerText(), 'DIRECT fixture (DIRECT)');
   assert.equal(await page.locator('#result').isVisible(), true);
+});
+
+for(const lang of ['en','zh']) test(`foreign stock search survives an unavailable home index ${lang}`,async t=>{
+  const {page}=await setup(t,lang,{indexStatus:503,indexOverrides:{
+    '/stockdata/index.json':{status:200,json:[{t:'USONLY',n:'US fixture',s:'Fixture sector',st:'LIMITED'}]}
+  }});
+  const search=page.locator('#q');await search.fill('USONLY');
+  assert.equal(await search.getAttribute('aria-expanded'),'true','the failed International index must not suppress a supplied US result');
+  const option=page.getByRole('option');
+  assert.equal(await option.count(),1);assert.match(await option.innerText(),/USONLY/);
+  await search.press('ArrowDown');
+  assert.equal(await search.getAttribute('aria-activedescendant'),await option.getAttribute('id'));
+  await search.press('Enter');
+  await page.waitForURL('http://stock.test/stock.html#USONLY');
+  assert.equal(page.url(),'http://stock.test/stock.html#USONLY');
+});
+
+test('home and foreign stock indexes both remain searchable when supplied',async t=>{
+  const {page,requested,reply}=await setup(t,'en',{indexOverrides:{
+    '/stockdata/index.json':{status:200,json:[{t:'USONLY',n:'US fixture',s:'Fixture sector',st:'LIMITED'}]}
+  }});
+  const search=page.locator('#q');
+  await search.fill('USONLY');assert.match(await page.getByRole('option').innerText(),/USONLY/);
+  await search.fill('NEW');assert.match(await page.getByRole('option').innerText(),/NEW/);
+  const loaded=requested('NEW');await search.press('Enter');await loaded;await reply('NEW');
+  await renderedStock(page,'NEW');assert.equal(new URL(page.url()).hash,'#NEW');
 });
 
 

@@ -328,9 +328,9 @@
   }
   q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
 
-  // one unified universe — load THIS market first so a deep-linked #TICKER resolves
-  // immediately, then fold in every other market so the box can find ANY stock and
-  // route cross-market picks to the analyzer that owns them (US→stock.html, …).
+  // One unified universe: independent indexes feed the existing market routes.
+  // A missing home index must not prevent another market's index from loading;
+  // direct #TICKER lookup remains independent of all search indexes.
   var STOCK_MKTS = [
     ['stockdata/', 'stock.html', '🇺🇸', 'US'],
     ['chinastockdata/', 'china_lookup.html', '🇨🇳', 'China'],
@@ -349,13 +349,14 @@
       if (!r.ok) throw new Error('search index unavailable');
       return r.json();
     }).then(function (d) {
-      idx = tagMkt(d, home);
-      STOCK_MKTS.forEach(function (m) {
-        if (m[1] === STOCK_HOME) return;
-        fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
-          .then(function (e) { idx = idx.concat(tagMkt(e, m)); }).catch(function () {});
-      });
+      // Retain foreign records that settled before this response.
+      idx = tagMkt(d, home).concat(idx);
     }).catch(function () { /* Search is optional for a direct stock link. */ });
+    STOCK_MKTS.forEach(function (m) {
+      if (m[1] === STOCK_HOME) return;
+      fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
+        .then(function (e) { idx = idx.concat(tagMkt(e, m)); }).catch(function () {});
+    });
   })();
   fetch('intlstockdata/calibration.json').then(r => r.ok ? r.json() : null)
     .then(d => { cal = d; }).catch(() => {});
