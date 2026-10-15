@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T09:58:01.028832+00:00",
-  "count": 2949,
+  "generated_at": "2026-10-15T10:12:52.848654+00:00",
+  "count": 2950,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -169,6 +169,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zpvhg1f3ibd-f84fe4",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T08:43:13Z",
+      "summary_points": [
+        "US CPI Catalyst: Strong CPI (0.649% m/m, +3.7% YoY) triggered 10yr yield spike (5.33% → 5.10%), S&P 500 drop (-1.11%), and KOSPI circuit breaker, amplifying AI trade fears and credit stress.",
+        "AI Credit Stress: Credit investors sold AI-linked names (CoreWeave CDS +136bps, Oracle -8.83%), driving semiconductor index down 11.6% and Asian markets into freefall amid capex concerns.",
+        "Fed Rate & Credit Tightening: CPI pushed Fed rate hike chance to 27% for October, while US HY spreads widened to 324bps (widest since March), reflecting acute credit tightening fears.",
+        "Market Liquidity Impact: Risk-off tone caused US Treasury volatility (10yr +5.33% → -5.19%), Russell 2000 correction (-1.93%), and mixed European equities with widening sovereign spreads (Franco-German +4.1bps)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
