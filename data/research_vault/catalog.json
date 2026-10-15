@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T07:27:31.392687+00:00",
-  "count": 2942,
+  "generated_at": "2026-10-15T08:27:39.650036+00:00",
+  "count": 2945,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-m1cncqqs1za-46f41b",
+      "title": "Turkiye Garanti Bankasi (GARAN.IS) Data update Changes to estimates",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:36Z",
+      "summary_points": [
+        "Fundamental Upside: Net income estimates for 2026-27 raised 7% (higher NII, lower OPEX offset by fees/credit costs); COE increased to 30% (inflation-driven); price target raised to TL170 (from TL155).",
+        "Critical Risks: Funding cost pressures (weaker margins), new card/fee regulations, deteriorating asset quality (lower risk growth), and market share erosion.",
+        "Technical Momentum: Recent price targets (TL155 on 15-Jul-26, TL161 on 20-May-26) consistently exceed closing prices, signaling strong institutional bullishness in Turkish banking."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-sraykmat2bm-fbe300",
       "title": "Rio Tinto Ltd. (RIO)",
@@ -514,6 +533,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rb3aigmqanf-121257",
+      "title": "GS McGeoch GS Materials Oct 14...GLEN's Aussie win, RIO inline (portfolio unpack...hmmm), AAL diamonds, Orsted 's US headache, Copper into LME as Escondida drags 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:43:55Z",
+      "summary_points": [
+        "Copper Supply-Squeeze Risk: Chile supply constraints (Escondida down >15% y/y, Sept supply impaired) and 800k-1.2mt conc shortage amid LME Oct/Nov spread signaling squeeze; M&A uncertainty (ANTO/TECK) and weather disruptions compound risk.",
+        "China Policy Shift & Trade Acceleration: PBOC added 740k oz gold (77.47M oz total), pivot from USD, PPI surge (5% YoY); trade growth beats estimates (+36.3% exports, +31.0% imports), with 62% of exports to key partners (US/EU/Japan/ASEAN/LatAm/Africa) accelerating flows.",
+        "Commodity Supply Strength: Key metals show QoQ growth (Pilbara +4%, Bauxite +11%, Copper +4%), signaling supply-side resilience amid China-driven demand; copper shipments elevated to 1.10mt pressuring prices."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-f1neslo932p-263073",
       "title": "GS Johnstone GS TMT SPEC SALES ASML beats & looking to build more; Semis AI sentiment is poor; VOD appeals to Brussels against Satellites; BT 14 Oct 2026",
       "institution": "S&T",
@@ -896,6 +934,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-isrz9m7ekso-96f07f",
+      "title": "UMT (3491)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:46:22Z",
+      "summary_points": [
+        "LEO Satellite Dominance: LEO satellite segment to drive 93% of revenue by 2028E (74% CAGR 2026-28E), with Q3 2026 revenue up 74% YoY (NT$843m) and sequential MoM growth expected (Oct/Nov +17%/19%).",
+        "Extreme Valuation Premium: 2029E P/E of 37.1x vs. peers' average 13x, reflecting aggressive growth assumptions; target price implies 67.1% upside (NT$2,549 vs. current NT$1,525).",
+        "Critical Growth Catalysts: Waveguide dollar content expansion (more bands), AI data center demand for high-speed interconnection, and serving leading LEO operators (satellites/payloads)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
