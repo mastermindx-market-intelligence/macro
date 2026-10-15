@@ -1950,7 +1950,7 @@ def _fixed_endpoint_price(index, source_problem, stamp, *, source_id, venue_scop
 def fixed_minute_horizons(
     *, bars_by_symbol, memberships, membership_version, endpoint, knowledge_cutoff,
     session_id, source_id, venue_scope, price_basis, rights, venue_admitted=False,
-    use="display", benchmark="SPY", horizons=(5, 15, 30, 60),
+    benchmark="SPY", horizons=(5, 15, 30, 60),
 ):
     """Read-only EW group vs benchmark at EXACT common one-minute endpoints.
 
@@ -1987,7 +1987,9 @@ def fixed_minute_horizons(
         raise ValueError("fixed minute group identities must be nonempty strings")
 
     source_state = None
-    permission = admit_use(rights, use)
+    # This API emits display-only data. Research-only rights are never a way
+    # to re-label a retrospective source as an admitted customer display.
+    permission = admit_use(rights, "display")
     if permission != "permitted":
         source_state = "rights_" + permission
     elif venue_admitted is not True:

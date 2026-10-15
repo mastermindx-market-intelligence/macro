@@ -1708,7 +1708,7 @@ def _fixed_case():
             "knowledge_cutoff": end + _td(minutes=2), "session_id": "2026-10-09:RTH",
             "source_id": "massive-rest", "venue_scope": "ct_us_rth",
             "price_basis": "adjusted", "venue_admitted": True,
-            "rights": {"display": "permitted"}, "use": "display"}
+            "rights": {"display": "permitted"}}
     return args
 
 
@@ -1919,3 +1919,14 @@ def test_fixed_minute_denied_or_unknown_has_no_observable_clock():
     assert all(r["measurement_available_at"] is None and r["source_lag_seconds"] is None
                for w in out["windows"] for r in w["groups"])
     assert all(w["benchmark_available_at"] is None for w in out["windows"])
+
+
+def test_fixed_minute_research_rights_cannot_relabel_data_as_display():
+    args = _fixed_case()
+    args["rights"] = {"research": "permitted"}
+    out = fixed_minute_horizons(**args)
+    assert all(r["state"] == "unmeasured" and r["measurement_available_at"] is None
+               for window in out["windows"] for r in window["groups"])
+    args["rights"] = {"research": "permitted", "display": "permitted"}
+    with pytest.raises(TypeError):
+        fixed_minute_horizons(**args, use="research")
