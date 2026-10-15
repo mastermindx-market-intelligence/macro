@@ -4132,6 +4132,18 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 12;}
 }
 
+/* Mobile Alerts Centre: reserve the top-right card action slot.
+   The status pill must wrap rather than sit beneath the sparkle at 320px. */
+@media(max-width:700px){
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title-row{
+    padding-right:64px;flex-wrap:wrap;row-gap:8px;
+  }
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title{margin-bottom:0;}
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-badge{
+    max-width:100%;white-space:normal;
+  }
+}
+
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
