@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-14T21:43:33.068199+00:00",
+  "generated_utc": "2026-10-14T23:14:12.692347+00:00",
   "as_of": "2026-10-14",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28528,10 +28528,10 @@
         {
           "ticker": "ANET",
           "buy_usd": 0.0,
-          "sell_usd": 877665013.0,
-          "net_usd": -877665013.0,
+          "sell_usd": 823433614.0,
+          "net_usd": -823433614.0,
           "buyers": 0,
-          "sellers": 267
+          "sellers": 257
         },
         {
           "ticker": "ILMN",
@@ -29596,14 +29596,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",
