@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume9209 exact b4b65190 CI38729755961 and serving9455 exact a02f0d44 CI38731621436 through protected release/normal install. Follow-on preflight preserves26sources/319jobs with only3owned continuity conflicts. Retained POWI/VNO relevance check passes8controls with5anchors each, not installed/editorial proof. Actual9209 install precedes SAME follow-oncb54d3e9 PR and45installed groups. Terminal0b6407bf awaits capacity (12:08 count8of8). Preserve browser human step, unresolved Fabric001, five drafts/44refs and publication0of10.
+next_action: Consume protected controller refresh for9209 b4b65190 (CI38729755961 green but stale after6e3ab92f), serving9455 a02f0d44 CI38731621436, and new Terminal9464 exact317c2174 CI38735311827. Actual squash/normal updater/source plus running-process or dossier-selected-bundle verification required. Terminal public-render owns restamping, no heavy-render wait/dispatch. Original9209 install precedes SAME follow-oncb54d3e9 PR/install45groups. Retained receipt8controls PASS; no article. Preserve Chrome human step, unresolved Fabric001,44refs/five drafts and publication0of10.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
