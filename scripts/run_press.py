@@ -150,6 +150,44 @@ def _is_unverified_earnings_story_stage(item: object) -> bool:
     )
 
 
+# `scripts/stage_official_feed_press.py` stages one qualified official-feed
+# candidate as an ordinary Brief draft.  Its staged record carries an explicit
+# private-official provenance receipt with public-article approval false: the
+# qualification is candidate-only and conveys no release grant.  The receipt
+# lives in a mutable staging file, so — exactly as for the earnings guard
+# above — the refusal keeps an independent identity trail: the `official_feed:`
+# source ref IS the story's source, so it survives any provenance strip that
+# leaves the record recognisable as this story at all.
+_OFFICIAL_STAGE_RAIL = "private_official_feed"
+_OFFICIAL_SOURCE_PREFIX = "official_feed:"
+
+
+def _is_private_official_stage(item: object) -> bool:
+    """Detect a privately staged official-feed candidate — never emittable."""
+    if not isinstance(item, dict):
+        return False
+    slot = item.get("slot")
+    holders = [item] + ([slot] if isinstance(slot, dict) else [])
+    for holder in holders:
+        if str(holder.get("id") or "").startswith("press-official-"):
+            return True
+        provenance = holder.get("provenance")
+        if not isinstance(provenance, dict):
+            continue
+        receipt = provenance.get("admission_receipt")
+        if (isinstance(receipt, dict)
+                and str(receipt.get("rail") or "") == _OFFICIAL_STAGE_RAIL):
+            return True
+    refs: set[str] = set()
+    for holder in holders:
+        for key in ("sources", "seed_refs"):
+            refs.update(str(r) for r in (holder.get(key) or []) if isinstance(r, str))
+        revisions = holder.get("source_revisions")
+        if isinstance(revisions, dict):
+            refs.update(str(r) for r in revisions)
+    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Paths
 # ─────────────────────────────────────────────────────────────────────────────
@@ -370,7 +408,12 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
     for path, obj in stage_rows:
         revisions = _source_revisions(obj)
         tracked_refs = [ref for ref in revisions if ref in current]
-        missing_refs = [ref for ref in revisions if ref not in current]
+        # Only a ref THIS reconciliation owns can go missing from it.  Other
+        # rails' revision receipts (official_feed:, whitehouse:, artifact:) sit
+        # in the same map but were never transcript revisions; treating them as
+        # vanished earnings refs would falsely supersede their records.
+        missing_refs = [ref for ref in revisions
+                        if ref not in current and ref.startswith("chronicle:")]
 
         if obj.get("status") == "correction_required":
             active = [
@@ -590,6 +633,7 @@ def _stage_preplanned_slots(
             checkpoint.update(draft=draft, slug=draft["slug"],
                               provider=res.get("provider"), model=res.get("model"),
                               retained_draft_attempt=attempt,
+                              validator_report=None,
                               writer_state=res.get("state"),
                               progress={"phase": "validation_pending", "attempt": attempt})
             for key in ("token_cap", "provider_usage"):
@@ -597,6 +641,7 @@ def _stage_preplanned_slots(
                     checkpoint[key] = res[key]
             _write_stage_checkpoint(out, checkpoint)
             report = validators.validate(draft, slot, cfg, root=root)
+            checkpoint["validator_report"] = report
             attempt_row = {"attempt": attempt, "ok": bool(report["ok"]),
                            "failed": report["failed"],
                            "our_value_share": report.get("our_value_share"),
@@ -619,6 +664,18 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
+        if passed_payload is None and checkpoint.get("draft") is not None:
+            # A failed validator verdict is evidence, not permission to erase
+            # the returned prose. Retain its exact last draft/report while
+            # keeping the terminal status and quarantine reason unchanged.
+            # A later provider failure may follow this draft; its own attempt
+            # remains in attempts, and retained_draft_attempt identifies which
+            # response these fields describe.
+            for key in ("draft", "slug", "provider", "model", "writer_state",
+                        "retained_draft_attempt", "validator_report",
+                        "token_cap", "provider_usage"):
+                if key in checkpoint:
+                    item[key] = checkpoint[key]
         _write_stage_checkpoint(out, item)
         summary["items"].append({"id": slot["id"], "desk": slot["desk"],
                                  "status": item["status"],
@@ -986,6 +1043,26 @@ def run_emit(root: Path, cfg: dict) -> dict:
                 _annotate(
                     "warning", "press_emit_canonical_approval",
                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                )
+                continue
+            if _is_private_official_stage(obj):
+                # Candidate-only qualification: staging proved the source, not
+                # a release grant.  A passed deterministic suite changes no
+                # approval state, so this refuses BEFORE any revalidation or
+                # content/site/ledger write.
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "privately staged official-feed candidate: the candidate-only "
+                    "qualification conveys no public-article approval"
+                )
+                path.write_text(
+                    json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                    encoding="utf-8",
+                )
+                _annotate(
+                    "warning", "press_emit_official_approval",
+                    f"press emit: official candidate {obj.get('id')} requires "
+                    f"public-article approval — not emitted",
                 )
                 continue
             # Staging is mutable: its saved report describes the earlier draft,

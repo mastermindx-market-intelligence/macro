@@ -1077,6 +1077,10 @@
       ui.cutoffSelect.setAttribute('disabled', 'disabled');
       ui.loadMoreButton.hidden = true;
       ui.scopeLine.textContent = copy('Saved house macro readings associated with SPY.', '与 SPY 关联的已保存内部宏观解读。');
+      /* No catalog is presented: a prior current-mode explanation must not
+       * survive sign-out, refusal or an invalid selection in any locale. */
+      ui.cutoffNote.hidden = true;
+      ui.cutoffNote.textContent = '';
       return;
     }
     var options = catalog.entries.map(function (entry) {
