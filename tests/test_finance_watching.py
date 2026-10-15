@@ -28,6 +28,10 @@ from engine.sector_intelligence.finance_page_signal import (
     SynthesisAdmissionRefusal,
     apply_page_signal,
 )
+from engine.sector_intelligence.finance_witness_hints import (
+    FinanceWitnessHintRefusal,
+    hint_binding,
+)
 from scripts.build_finance_intelligence_page import (
     FI_READ_URL,
     render_shell,
@@ -447,3 +451,156 @@ def test_no_io_in_finance_watching_module() -> None:
         and isinstance(node.func, ast.Attribute)
         and node.func.attr == "open"
     ]
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W10-FIN-2 — hint roster with record-id citations (no source_record)
+# ──────────────────────────────────────────────────────────────────────────
+
+# Plain strings transcribed from refs/grok/pr/7786 preflight witnesses
+# (FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json lines 266-318).
+# Same table as tests/test_finance_witness_hints.py:33-45; this test does
+# not open the preflight file. BNY keeps fin-research-bk-2025; BK is not a
+# symbol.
+_PREFLIGHT_RECORD_IDS = {
+    "V": "fin-research-v-2025",
+    "MA": "fin-research-ma-2025",
+    "FI": "fin-research-fi-2025",
+    "FIS": "fin-research-fis-2025",
+    "CME": "fin-research-cme-2025",
+    "ICE": "fin-research-ice-2025",
+    "NDAQ": "fin-research-ndaq-2025",
+    "BNY": "fin-research-bk-2025",
+    "STT": "fin-research-stt-2025",
+    "SPGI": "fin-research-spgi-2025",
+    "MCO": "fin-research-mco-2025",
+}
+
+
+def test_shell_hint_rows_match_transcribed_preflight() -> None:
+    """``shell_hint_rows()`` returns the eleven roster rows, ids verbatim.
+
+    The row dict's ``record_id`` is the binding's id (``hint_binding``'s
+    ``record_id``), not an identity key: the row carries exactly
+    ``symbol``/``record_id``/``state`` — no ``href``, no identity fields,
+    nothing copied from measurement JSON. State is
+    ``RESEARCH_HINT_UNVALIDATED``; ``BK`` and ``GHOST`` are not rows.
+    """
+    rows = finance_watching.shell_hint_rows()
+    assert isinstance(rows, list)
+    assert len(rows) == 11
+    assert [row["symbol"] for row in rows] == list(_PREFLIGHT_RECORD_IDS)
+    for row in rows:
+        assert set(row) == {"symbol", "record_id", "state"}
+        assert row["record_id"] == _PREFLIGHT_RECORD_IDS[row["symbol"]]
+        assert row["record_id"] == hint_binding(row["symbol"])["record_id"]
+        assert row["state"] == "RESEARCH_HINT_UNVALIDATED"
+    assert not any(row["symbol"] in ("BK", "GHOST") for row in rows)
+    # BK is not an alias/symbol of the roster — the binding refuses it.
+    with pytest.raises(FinanceWitnessHintRefusal):
+        hint_binding("BK")
+
+
+def test_hint_roster_html_has_no_stock_route(tmp_path: Path) -> None:
+    """The builder temp render shows the roster inside #company-exposure.
+
+    Eleven ``fi-hint-row`` items carry ``data-record-id`` equal to the
+    transcribed preflight ids and ``data-state-identity=
+    "RESEARCH_HINT_UNVALIDATED"``. The roster emits no stock route
+    (``company_route.href`` is not rendered; no href at all) and no
+    ``IDENTITY_VALIDATED``. As in the FIN-1 render test, the worktree
+    ``site/`` is never written.
+    """
+    worktree_site = ROOT / "site" / "finance_intelligence.html"
+    backup = worktree_site.read_bytes() if worktree_site.exists() else None
+    try:
+        (tmp_path / "templates").symlink_to(TEMPLATES, target_is_directory=True)
+        page = render_shell(tmp_path)
+        html = page.read_text(encoding="utf-8")
+
+        if backup is not None:
+            assert worktree_site.read_bytes() == backup
+        else:
+            assert not worktree_site.exists()
+
+        section_match = re.search(
+            r'<section id="company-exposure".*?</section>', html, re.S
+        )
+        assert section_match, "#company-exposure section missing from render"
+        block = section_match.group(0)
+
+        roster_match = re.search(
+            r'<ul class="fi-hint-roster".*?</ul>', block, re.S
+        )
+        assert roster_match, "no ul.fi-hint-roster inside #company-exposure"
+        roster = roster_match.group(0)
+
+        row_tags = re.findall(r'<li class="fi-hint-row"[^>]*>', roster)
+        assert len(row_tags) == 11, f"expected 11 hint rows, got {len(row_tags)}"
+
+        # The binding's ids are copied into HTML attributes …
+        assert 'data-record-id="fin-research-v-2025"' in block
+        assert 'data-state-identity="RESEARCH_HINT_UNVALIDATED"' in block
+        for symbol, record_id in _PREFLIGHT_RECORD_IDS.items():
+            assert f'data-record-id="{record_id}"' in block, symbol
+        # … and into visible citation text (each id appears in its row body).
+        for symbol, record_id in _PREFLIGHT_RECORD_IDS.items():
+            assert f">{record_id}<" in roster, symbol
+
+        # No stock route, no validated identity on those rows.
+        assert "href=" not in roster
+        assert "https://example.invalid/stock.html" not in block
+        assert "stock.html" not in block
+        assert "IDENTITY_VALIDATED" not in block
+    finally:
+        pass
+
+
+def _assert_ast_no_research_reads(module) -> None:
+    """AST pin for one engine module: no research/finance reads at runtime.
+
+    Forbidden: a call whose function name is ``open``, ``Path`` or
+    ``read_text`` (Name or Attribute form), and any import whose root is
+    ``pathlib``, ``os``, ``socket`` or ``subprocess``. The substring
+    ``research/finance`` is NOT banned — the module docstrings legitimately
+    name it as a promise.
+    """
+    source = Path(module.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    forbidden_import_roots = {"pathlib", "os", "socket", "subprocess"}
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported.add(node.module)
+    offenders = sorted(
+        name for name in imported if name.split(".")[0] in forbidden_import_roots
+    )
+    assert not offenders, f"{module.__name__} imports {offenders}"
+    bad_calls = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if isinstance(node.func, ast.Name):
+            name = node.func.id
+        elif isinstance(node.func, ast.Attribute):
+            name = node.func.attr
+        else:
+            continue
+        if name in {"open", "Path", "read_text"}:
+            bad_calls.append(f"{module.__name__}:{node.lineno}:{name}")
+    assert not bad_calls, bad_calls
+
+
+def test_watching_and_hint_modules_do_not_read_research() -> None:
+    """``finance_watching`` and ``finance_witness_hints`` are AST-clean.
+
+    Closes the W8-B / W9-V proposal-6 pin: the two engine modules that
+    carry the shell constants never open ``research/finance`` (no
+    ``open``/``Path``/``read_text`` call, no filesystem/network import).
+    """
+    import engine.sector_intelligence.finance_witness_hints as finance_witness_hints
+
+    _assert_ast_no_research_reads(finance_watching)
+    _assert_ast_no_research_reads(finance_witness_hints)
