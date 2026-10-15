@@ -129,6 +129,48 @@ for (const bootLanguage of ['en','zh']) {
 
 
 for (const lang of ['en','zh']) {
+  test(`Native Compare context round trip keeps its own source geometry ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      const baseline=await page.locator('[data-im-compare-panel]').evaluateAll(panels=>Object.fromEntries(panels.map(p=>[
+        p.dataset.horizon+'/'+p.dataset.basis,{
+          source:p.dataset.source,generation:p.dataset.imGeneration,
+          marks:Array.from(p.querySelectorAll('[data-im-chart-series]')).filter(n=>['AU','KR'].includes(n.dataset.imChartSeries)).map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')]),
+          windows:Array.from(p.querySelectorAll('[data-im-chart-cohort] > summary time')).map(n=>n.dateTime)
+        }
+      ])));
+      await picker.selectOption('1');await picker.selectOption('4');
+      const origin=page.url(),first=await panel.locator('[data-im-chart-model]').innerHTML();
+      async function matches(horizon,basis) {
+        const expected=baseline[horizon+'/'+basis];assert.ok(expected.marks.length>0);
+        assert.equal(await panel.getAttribute('data-horizon'),horizon);
+        assert.equal(await panel.getAttribute('data-basis'),basis);
+        assert.equal(await panel.getAttribute('data-source'),expected.source);
+        assert.equal(await panel.getAttribute('data-im-generation'),expected.generation);
+        assert.equal(await page.locator('[data-im-panel]:visible').count(),1);
+        const query=new URL(page.url()).searchParams;
+        assert.equal(query.get('horizon'),horizon);assert.equal(query.get('basis'),basis);assert.equal(query.get('pins'),'KR,AU');
+        const group=panel.locator('[data-im-chart-cohort]:not([hidden])');
+        assert.equal(await group.count(),1);
+        assert.deepEqual(await group.locator('[data-im-chart-series]:not([hidden])').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')])),expected.marks);
+        assert.deepEqual(await group.locator('summary time').evaluateAll(ns=>ns.map(n=>n.dateTime)),expected.windows);
+        assert.deepEqual(await group.locator('[data-im-chart-table-market]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort()),['AU','KR']);
+        assert.equal(await panel.locator('[data-im-chart-benchmark-unavailable]').isVisible(),true);
+      }
+      await matches('1m','usd_unhedged');
+      assert.notDeepEqual(baseline['1m/usd_unhedged'].windows,baseline['3m/usd_unhedged'].windows,'fixture must discriminate horizons');
+      assert.notDeepEqual(baseline['3m/usd_unhedged'].marks,baseline['3m/local'].marks,'fixture must discriminate currency bases');
+      await page.selectOption('[data-im-action="set_horizon"]','3m');await matches('3m','usd_unhedged');
+      await page.selectOption('[data-im-action="set_basis"]','local');await matches('3m','local');
+      await page.goBack();await matches('3m','usd_unhedged');
+      await page.goBack();await matches('1m','usd_unhedged');
+      assert.equal(page.url(),origin);assert.equal(await panel.locator('[data-im-chart-model]').innerHTML(),first);
+    },{htmlOverride:sourceChartFixture(),width:lang==='zh'?320:1440,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
+for (const lang of ['en','zh']) {
   test(`Native Compare refused additions preserve chart and recover ${lang}`,async()=>{
     await pageFixture(async page=>{
       const panel=page.locator('[data-im-compare-panel]:not([hidden])');
