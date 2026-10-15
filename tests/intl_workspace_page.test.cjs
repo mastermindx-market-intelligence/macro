@@ -128,6 +128,49 @@ for (const bootLanguage of ['en','zh']) {
 }
 
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Native Compare chart remains readable with enlarged spaced text ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      const group=chart.locator('[data-im-chart-cohort]:not([hidden])');
+      const summary=group.locator('summary');
+      const before={url:page.url(),marks:await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')]))};
+      await page.evaluate(theme=>{
+        setTheme(theme);
+        const nodes=Array.from(document.querySelectorAll('[data-im-workspace], [data-im-workspace] *')).filter(n=>n instanceof HTMLElement);
+        const sizes=nodes.map(n=>[n,parseFloat(getComputedStyle(n).fontSize)]);
+        sizes.forEach(([n,size])=>{n.style.fontSize=size*2+'px';n.style.lineHeight='1.5';n.style.letterSpacing='.12em';n.style.wordSpacing='.16em';});
+        nodes.filter(n=>n.tagName==='P').forEach(n=>n.style.marginBottom='2em');
+      },theme);
+      // Text adjustment is a local reflow check, not native browser zoom.
+      const layout=await panel.evaluate(panel=>{
+        const root=panel.closest('[data-im-workspace]');
+        const table=panel.querySelector('[data-im-chart-cohort]:not([hidden]) [data-im-chart-data-table]');
+        return {width:root.clientWidth,scroll:root.scrollWidth,
+          cells:Array.from(table.querySelectorAll('th,td')).filter(n=>n.getClientRects().length).map(n=>({text:n.innerText,width:n.clientWidth,scroll:n.scrollWidth})),
+          controls:Array.from(panel.querySelectorAll('button,select,summary,a')).filter(n=>n.getClientRects().length).map(n=>({text:n.innerText,height:n.getBoundingClientRect().height}))};
+      });
+      assert.ok(layout.scroll<=layout.width+1,JSON.stringify(layout));
+      assert.ok(layout.cells.length>0);
+      for(const cell of layout.cells) assert.ok(cell.scroll<=cell.width+1,JSON.stringify(cell));
+      for(const control of layout.controls) assert.ok(control.height>=44,JSON.stringify(control));
+      await summary.focus();await page.keyboard.press('Space');
+      assert.equal(await group.evaluate(n=>n.open),false);
+      assert.equal(await group.locator('figure').isVisible(),false);
+      await page.keyboard.press('Enter');
+      assert.equal(await group.evaluate(n=>n.open),true);
+      assert.equal(await group.locator('figure').isVisible(),true);
+      assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+      assert.equal(page.url(),before.url);
+      assert.deepEqual(await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.dataset.imChartSeries,n.getAttribute('d'),n.getAttribute('transform')])),before.marks);
+      assert.deepEqual(await group.locator('[data-im-chart-table-market]:not([hidden])').evaluateAll(ns=>ns.map(n=>n.dataset.imChartTableMarket).sort()),['AU','KR']);
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
 for (const lang of ['en','zh']) {
   test(`Native Compare context round trip keeps its own source geometry ${lang}`,async()=>{
     await pageFixture(async page=>{
