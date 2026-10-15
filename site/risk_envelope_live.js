@@ -83,6 +83,28 @@
     });
   }
 
+  // Mirror the already-qualified foreground action into the existing action
+  // card. Base copy stays on that DOM node so either existing reader may update
+  // first. No added source, listener, timer, persistence or trading authority.
+  function syncPrimaryAction() {
+    if (typeof document.querySelector !== "function") return;
+    var label = document.querySelector("[data-wtd-primary] .mx5-action-label");
+    if (!label) return;
+    var base = [label.getAttribute("data-wtd-base-en"), label.getAttribute("data-wtd-base-zh")];
+    var verdict = label.getAttribute("data-wtd-base-verdict");
+    if (!base[0] || !base[1] || !verdict) return;
+    var selected = base, summary = document.getElementById("risk-response-summary");
+    if (verdict !== "RISK_OFF" && summary && !summary.hidden &&
+        ["warning", "partial-warning", "checking", "unavailable"].indexOf(summary.getAttribute("data-state")) >= 0) {
+      var action = document.getElementById("risk-response-action");
+      var en = action && action.querySelector(".l-en"), zh = action && action.querySelector(".l-zh");
+      if (en && zh && en.textContent && zh.textContent) selected = [en.textContent, zh.textContent];
+    }
+    textPair(label, selected);
+    var icon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
+    if (icon && icon.style) icon.style.display = selected === base ? "" : "none";
+  }
+
   function restoreForeground() {
     if (!fgSaved) return;
     var sec = document.getElementById("risk-response-summary");
@@ -113,6 +135,7 @@
           [label[0] + fgSaved.expectedSession, label[1] + fgSaved.expectedSession]);
       }
     }
+    syncPrimaryAction();
   }
 
   /* Same cause qualification the settled band applies, tightened for the glance
@@ -210,6 +233,7 @@
       fgUnresolvedRisk = false;
       sec.setAttribute("data-state", "quiet");
       sec.hidden = true;
+      syncPrimaryAction();
       return;
     }
     if (["warning", "partial-warning", "checking"].indexOf(view.state) >= 0) fgUnresolvedRisk = true;
@@ -221,6 +245,7 @@
     var label = fgc.source_label || ["Source session: ", "来源交易日："];
     if (view.date || !preserveSettledDate)
       textPair(document.getElementById("risk-response-date"), view.date ? [label[0] + view.date, label[1] + view.date] : ["", ""]);
+    syncPrimaryAction();
   }
 
   // Present source-owned states; never compute a score, action or dwell threshold.
@@ -498,6 +523,7 @@
 
   function tick() {
     relocateLegacyEnvelope();
+    syncPrimaryAction();
     if (!document.getElementById("risk-envelope-band")) return;   // no wasted fetch
     var band = document.getElementById("risk-envelope-band");
     if (lastLiveFeed && !active(lastLiveFeed, band)) unpaint(true);

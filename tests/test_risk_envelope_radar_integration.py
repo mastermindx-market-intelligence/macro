@@ -991,3 +991,158 @@ def test_foreign_read_keeps_the_original_settled_date_as_unavailable_context():
     assert out['state'] == 'unavailable'
     assert '2026-09-18' in out['date']
     assert '2026-09-19' not in out['date']
+
+
+# R6: a second display writer must not restore an add-risk instruction while
+# the existing source-qualified foreground warning is visible. No new signals.
+def _wtd_action_fragment(html):
+    import re
+    found = re.search(r'data-wtd-primary.*?<div class="mx5-action-label"[^>]*>(.*?)</div>', html, re.S)
+    assert found, 'Existing primary action row is missing'
+    return found[1]
+
+
+@pytest.mark.parametrize('base,foreground,expected', [
+    ('RISK_ON', 'warning', 'Review exposure. Respect existing stops.'),
+    ('MIXED', 'warning', 'Review exposure. Respect existing stops.'),
+    ('RISK_ON', 'unavailable', 'Verify conditions before adding risk.'),
+    ('RISK_ON', 'quiet', 'Stay selective. Add where setups confirm.'),
+    ('RISK_OFF', 'warning', 'Reduce risk. Protect capital.'),
+    ('RISK_OFF', 'unavailable', 'Reduce risk. Protect capital.'),
+])
+def test_primary_action_agrees_with_qualified_warning_without_weakening_risk_off(base, foreground, expected):
+    e = source_envelope()
+    for source in e['provenance']['sources']:
+        source['as_of'] = e['source_session']
+    if foreground == 'unavailable':
+        e['hazard_summary'].update(stage=None, stage_reason='required_coverage_unavailable', contributing_sources=[])
+        for source in e['provenance']['sources']: source['coverage'] = 'MISSING'
+    elif foreground == 'quiet':
+        e['hazard_summary'].update(stage='NONE', contributing_sources=[])
+        for source in e['provenance']['sources']:
+            if source['role'] == 'hazard_evidence': source.update(state='calm', hazard_stage='NONE')
+    vm = _vm(risk_envelope=e)
+    color = {'RISK_ON':'green','MIXED':'yellow','RISK_OFF':'red'}[base]
+    vm['market_state'].update(asof=e['source_session'], verdict=base, color=color,
+                             participation_scope=None)
+    before = deepcopy(vm)
+    html = _render(vm)
+    assert expected in _wtd_action_fragment(html)
+    assert vm == before
+    assert html.count('id="risk-response-summary"') == 1
+
+
+_WTD_DOM = _FOREGROUND_DOM + r'''
+var label=element('wtd-label');
+label.attrs={'data-wtd-base-en':'Stay selective. Add where setups confirm.',
+ 'data-wtd-base-zh':'保持精选，仅在入场条件确认时加仓。','data-wtd-base-verdict':'RISK_ON'};
+label.querySelector('.l-en').textContent=label.attrs['data-wtd-base-en'];
+label.querySelector('.l-zh').textContent=label.attrs['data-wtd-base-zh'];
+var wtdIcon={style:{display:''}};
+document.querySelector=function(selector){
+ if(selector==='[data-wtd-primary] .mx5-action-label')return label;
+ if(selector==='[data-wtd-primary] .mx5-action-icon')return wtdIcon;
+ return null;
+};
+function actionResult(){return {en:label.querySelector('.l-en').textContent,
+ zh:label.querySelector('.l-zh').textContent,icon:wtdIcon.style.display,
+ base:label.getAttribute('data-wtd-base-en')};}
+'''
+
+
+def test_live_warning_updates_the_existing_primary_action_immediately():
+    out = _js_value(_WTD_DOM+'applyFeed(FEED);console.log(JSON.stringify(actionResult()));', _partial_live_warning())
+    assert out['en'] == 'Review exposure. Respect existing stops.'
+    assert out['zh'] == '检查风险敞口，遵守既定止损。'
+    assert out['base'] == 'Stay selective. Add where setups confirm.'
+    assert out['icon'] == 'none'
+
+
+def test_live_warning_outage_does_not_restore_add_risk_in_primary_action():
+    setup = _WTD_DOM+"nodes['risk-response-summary'].hidden=true;nodes['risk-response-summary'].attrs['data-state']='quiet';"
+    out = _js_value(setup+'applyFeed(FEED);unpaint(true);console.log(JSON.stringify(actionResult()));', _partial_live_warning())
+    assert out['en'] == 'Verify conditions before adding risk.'
+
+
+def test_action_projection_never_weakens_existing_risk_off_response():
+    setup = _WTD_DOM+"label.attrs['data-wtd-base-verdict']='RISK_OFF';label.attrs['data-wtd-base-en']='Reduce risk. Protect capital.';label.attrs['data-wtd-base-zh']='降低风险，保护本金。';"
+    out = _js_value(setup+'applyFeed(FEED);console.log(JSON.stringify(actionResult()));', _partial_live_warning())
+    assert out['en'] == 'Reduce risk. Protect capital.'
+    assert out['icon'] == ''
+
+
+def test_newer_quiet_read_restores_the_latest_measured_action_not_the_initial_one():
+    quiet = _partial_live_warning()
+    quiet['built'] = '2026-09-19 15:01:00 UTC'
+    quiet['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    quiet['live_transition'].update(candidate_stage='NONE', stable_stage='NONE', pending=None)
+    quiet['measured_state']['usable'] = True
+    command = _WTD_DOM+'applyFeed(FEED);'+"label.attrs['data-wtd-base-verdict']='MIXED';label.attrs['data-wtd-base-en']='Trade small. Stay selective.';label.attrs['data-wtd-base-zh']='缩小仓位，精选标的。';"+'applyFeed('+json.dumps(quiet)+');console.log(JSON.stringify(actionResult()));'
+    out = _js_value(command, _partial_live_warning())
+    assert out['en'] == 'Trade small. Stay selective.'
+    assert out['icon'] == ''
+
+
+@pytest.mark.parametrize('verdict,base,expected', [
+    ('RISK_ON', ['Stay selective. Add where setups confirm.', '保持精选，仅在入场条件确认时加仓。'], 'Review exposure. Respect existing stops.'),
+    ('MIXED', ['Trade small. Stay selective.', '缩小仓位，精选标的。'], 'Review exposure. Respect existing stops.'),
+    ('RISK_OFF', ['Reduce risk. Protect capital.', '降低风险，保护本金。'], 'Reduce risk. Protect capital.'),
+])
+def test_market_state_action_selector_cannot_overwrite_a_visible_warning(verdict, base, expected):
+    source = (ROOT/'templates/risk_state_live.js').read_text()
+    source = source[:source.index('  if (document.readyState !== "loading") tick();')]
+    source += '\nglobalThis.__selectMarketAction=actionForRiskResponse;\n})();'
+    command = _WTD_DOM+'applyFeed(FEED);'+source+'console.log(JSON.stringify(globalThis.__selectMarketAction('+json.dumps(base)+','+json.dumps(verdict)+')));'
+    result = _js_value(command, _partial_live_warning())
+    assert result[0] == expected
+
+
+def test_old_pages_without_foreground_keep_existing_market_action_selection():
+    source = (ROOT/'templates/risk_state_live.js').read_text()
+    source = source[:source.index('  if (document.readyState !== "loading") tick();')]
+    source += '\nglobalThis.__selectMarketAction=actionForRiskResponse;\n})();'
+    command = _LIVE_DOM+source+'console.log(JSON.stringify(globalThis.__selectMarketAction(["base en","base zh"],"RISK_ON")));'
+    assert _js_value(command) == ['base en','base zh']
+
+
+def test_primary_action_missing_envelope_remains_explicitly_unavailable():
+    vm = _vm(risk_envelope=None)
+    vm['market_state'].update(asof='2026-09-18', verdict='RISK_ON', color='green', participation_scope=None)
+    html = _render(vm)
+    assert 'Verify conditions before adding risk.' in _wtd_action_fragment(html)
+    assert 'Add where setups confirm.' not in _wtd_action_fragment(html)
+    assert 'data-state="unavailable"' in _foreground_fragment(html)
+
+
+def test_risk_off_primary_action_survives_a_warning_then_live_outage():
+    command = _WTD_DOM+"nodes['risk-response-summary'].hidden=true;nodes['risk-response-summary'].attrs['data-state']='quiet';applyFeed(FEED);label.attrs['data-wtd-base-verdict']='RISK_OFF';label.attrs['data-wtd-base-en']='Reduce risk. Protect capital.';label.attrs['data-wtd-base-zh']='降低风险，保护本金。';unpaint(true);console.log(JSON.stringify({action:actionResult(),foreground:foregroundResult()}));"
+    out = _js_value(command, _partial_live_warning())
+    assert out['foreground']['state'] == 'unavailable'
+    assert out['action']['en'] == 'Reduce risk. Protect capital.'
+    assert out['action']['icon'] == ''
+
+
+@pytest.mark.parametrize('verdict,foreground,expected', [
+    ('RISK_ON','warning','Review exposure. Respect existing stops.'),
+    ('MIXED','unavailable','Verify conditions before adding risk.'),
+    ('RISK_OFF','warning','Reduce risk. Protect capital.'),
+    ('MIXED','quiet','Trade small. Stay selective.'),
+])
+def test_actual_market_state_patcher_preserves_warning_and_updates_recovery_baseline(verdict, foreground, expected):
+    from tests.test_risk_state_live_session_floor import _harness, _us_feed, BAKED_SESSION
+    action = ('Verify conditions before adding risk.' if foreground == 'unavailable'
+              else 'Review exposure. Respect existing stops.')
+    setup = "var fg=reg('#risk-response-summary',new El('risk-response-summary'));fg.hidden="+('true' if foreground=='quiet' else 'false')+";fg.setAttribute('data-state',"+json.dumps(foreground)+");var fgAction=reg('#risk-response-action',new El('risk-response-action'));fgAction.appendChild(new El('','l-en',"+json.dumps(action)+"));fgAction.appendChild(new El('','l-zh','风险说明'));\n"
+    # The older stub always returns null for descendant selectors; this new
+    # node needs the real DOM's class lookup for its bilingual action spans.
+    setup += "fgAction.querySelector=function(selector){return this.children.find(function(child){return child.hasClass(selector.slice(1));})||null;};\n"
+    source = setup + (ROOT/'templates/risk_state_live.js').read_text()
+    source += "\nout.baseAction=action.getAttribute('data-wtd-base-en');out.baseVerdict=action.getAttribute('data-wtd-base-verdict');"
+    result = _harness(source, _us_feed(BAKED_SESSION, 44, verdict, live=False), 'us')
+    assert 'error' not in result
+    assert result['action'] == expected
+    assert result['baseVerdict'] == verdict
+    assert result['baseAction'] == {'RISK_ON':'Stay selective. Add where setups confirm.',
+                                    'MIXED':'Trade small. Stay selective.',
+                                    'RISK_OFF':'Reduce risk. Protect capital.'}[verdict]
+    assert result['score'] == result['big'] == '44'

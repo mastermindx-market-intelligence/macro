@@ -56,7 +56,7 @@
    are each attributed to a unique source, fresh this session, and carrying known
    native state copy; anything unknown, malformed, off-session or missing evidence
    renders as unavailable (never an all-clear). #}
-{% macro risk_foreground(envelope, expected_session) -%}
+{% macro risk_foreground(envelope, expected_session, action_only=false) -%}
 {%- set _fg = _GDE_COPY.foreground -%}
 {%- set _re = envelope if (envelope is mapping and envelope.get('schema') == 'mastermind.risk_envelope/v1' and envelope.get('market', 'US') == 'US') else none -%}
 {%- set _expected = expected_session if (expected_session is string and expected_session|length == 10 and expected_session[4] == '-' and expected_session[7] == '-' and expected_session.replace('-', '').isdigit()) else none -%}
@@ -90,6 +90,9 @@
 {%- set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}
+{%- if action_only -%}
+{%- if not _v.hidden -%}<span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span>{%- endif -%}
+{%- else -%}
 <section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} role="status" aria-live="polite" aria-atomic="true" aria-labelledby="risk-response-title">
   <div class="rr-head">
     <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
@@ -99,6 +102,7 @@
   <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
   <p class="rr-line" id="risk-response-date"><span class="l-en">{% if _v.date %}{{ _fg.settled_label[0] }}{{ _v.date }}{% endif %}</span><span class="l-zh">{% if _v.date %}{{ _fg.settled_label[1] }}{{ _v.date }}{% endif %}</span></p>
 </section>
+{%- endif -%}
 {%- endmacro %}
 {% macro risk_context(risk_envelope) -%}
 {# Chairman 2026-09-19: Risk Envelope belongs inside the existing Risk Radar.
