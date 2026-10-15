@@ -1,38 +1,37 @@
 ---
 key: NEWS-IMPACT-ADAPTER-RANGE-BOUND
 claim: >
-  engine/news_impact/prophet_adapter.py cannot project a quantity_range that satisfies
-  the frozen news_impact_event.v1 contract. The v1 quantity_range shape requires form,
-  low, high, unit, currency, basis, period, negated and evidence and forbids any other
-  field, so it has no bound. The adapter's _project_quantity reads raw["bound"] on its
-  range branch, so adapt_batch raises a bare KeyError, not a ProphetAdapterError, for
-  every contract-valid event that carries a range quantity in a field the adapter
-  projects. On the W3 shadow events this is 34 of 127 graded fam_a events, 27 of 88
-  graded fam_b events, and 1 event in each queue run. The adapter's own tests carry no
-  range quantity at all, which is why it was not caught.
+  The frozen news_impact_event.v1 quantity_range has no bound field and forbids extra
+  fields, while prophet_evidence.v1 display_quantity requires a bound on a range, so the
+  two contracts do not meet on their own. Up to ni-prophet-adapter-1 the owner adapter
+  read raw["bound"] on its range branch and raised a bare KeyError on every
+  contract-valid range: 34 of 127 graded fam_a events, 27 of 88 graded fam_b events and
+  1 event in each queue run of the W3 shadow data. From ni-prophet-adapter-2 the adapter
+  projects a range with bound "exact" unless the input carries one, and a quantity
+  missing a key it reads raises ProphetAdapterError MISSING_REQUIRED_FIELD with the slot
+  and key only (DEC:NEWS-IMPACT-ADAPTER-RANGE-BOUND).
 falsifier: >
-  Build a T1 event with incremental_amount as a quantity_range without bound, confirm
-  validate.validate_event accepts it, and call prophet_adapter.adapt_batch on it with
-  novelty and cluster_grain set. A ProphetAdapterError or a successful projection
-  instead of a KeyError would refute the claim. tests/test_news_impact_producer_facts.py
-  pins the current behaviour through the producer.
+  PYTHONPATH=. python3.12 -m pytest tests/test_news_impact_prophet_adapter.py -q -k
+  "range or missing_key" builds T1 events whose incremental_amount is a v1 range,
+  confirms validate.validate_event accepts them, and asserts adapt_batch projects bound
+  "exact" and codes every missing key. A KeyError, a SCHEMA_VIOLATION or any other bound
+  on a bound-less range would refute the claim; so would a v1 schema that now admits a
+  bound on quantity_range.
 so_what: >
-  (1) Until the adapter is repaired, Prophet evidence is missing for every event whose
-  amount is a range, about a quarter of the shadow events, and the producer report counts
-  them as adapter_crash:KeyError. (2) The repair belongs in the owner module through a
-  W1C-style repair lane with its own review, reading the range bound as absent; it must
-  not be fixed by adding a bound to events, because the v1 contract is byte-frozen
-  (DEC:NEWS-IMPACT-PHASE0-FREEZE). (3) The adapter raising a bare KeyError means its
-  error contract is incomplete: input it cannot handle should raise ProphetAdapterError
-  with a code.
-kind: landmine
-verified_at: 2026-10-14
+  (1) Never add a bound to range events to suit the adapter; the v1 event contract is
+  byte-frozen (DEC:NEWS-IMPACT-PHASE0-FREEZE) and the gap is closed in the adapter.
+  (2) A rendered range carries no hedge word; where a filing hedged a range, that hedge
+  was lost upstream in the v1 shape, and restoring it is an event-contract question for
+  a later version. (3) The stage-two producer counts any owner adapter crash as
+  adapter_crash:<class>; on the shadow events that count is now zero, so a non-zero value
+  is a new defect, not this one.
+kind: constraint
+verified_at: 2026-10-15
 verified_by: >
-  PYTHONPATH=. python3.12 -m engine.news_impact.producer_facts --events
-  <stage-one shadow events> --out <scratch> on the four shadow files. Before the
-  producer containment every run exited 1 with a KeyError traceback ending in
-  prophet_adapter._project_quantity; after it, the reports count adapter_crash:KeyError
-  34, 27, 1 and 1, and leaf_range_carried 35, 27, 1 and 1.
+  tests/test_news_impact_prophet_adapter.py (90 passed; 12 of the 13 range and
+  missing-key tests fail on ni-prophet-adapter-1) and stage two on the four W3 shadow
+  event files: adapter_crash:KeyError 34, 27, 1 and 1 before the repair and 0 after,
+  with 34, 27, 1 and 1 range quantities projected with bound exact.
 scope:
   - "engine/news_impact/prophet_adapter.py"
   - "engine/news_impact/producer_facts.py"
@@ -40,9 +39,9 @@ scope:
 confidence: verified
 ---
 
-# The Prophet adapter crashes on contract-valid range quantities
+# The event range has no bound; the Prophet adapter supplies "exact"
 
-The owner adapter reads a bound field on range quantities that the frozen v1 contract
-forbids, so every contract-valid range amount raises a bare KeyError. Stage two of the
-producer counts these by class and continues. The repair is an owner change in its own
-lane.
+The two frozen contracts disagree about a range's bound. The adapter used to crash on
+every contract-valid range; it now projects bound "exact", carries one if present, and
+codes a missing key instead of raising a KeyError. The stage-two producer's crash count
+on the shadow events is zero.
