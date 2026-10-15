@@ -761,7 +761,7 @@ def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> d
         return None
     # Explicit allowlist: scores, trade directions, confidence and targets never ride.
     return {**values, "matched_members": count, "total_members": total,
-            "observation_kind": kind,
+            "observation_kind": kind, "max_clock_skew_seconds": skew,
             "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
 
 
@@ -1926,11 +1926,21 @@ def _render_leaders(p: dict) -> str:
     comparisons = []
     for row in ld.get("intraday") or []:
         value = _signed(row.get("relative_change_pct"), 2, "%")
-        window = f"{_stamp(row.get('reference_asof'))} to {_stamp(row.get('source_asof'))}"
+        # These are source intervals, not a display-only minute stamp. Retain
+        # seconds/fractions so a 40-second observation never looks zero-length.
+        def source_stamp(key: str) -> str:
+            return (datetime.fromisoformat(row[key]).astimezone(timezone.utc)
+                    .isoformat(sep=" ").replace("+00:00", "Z"))
+        window = (f"SPY window {source_stamp('reference_asof')} to {source_stamp('source_asof')}; "
+                  f"{row['elapsed_minutes'] * 60:g}s")
         absolute = _signed(row.get("absolute_change_pct"), 2, "%")
+        benchmark = _signed(row.get("benchmark_change_pct"), 2, "%")
         closing_note = "regular-session close; " if row.get("observation_kind") == "settled_regular" else ""
-        comparisons.append(f"{row['label']} {absolute} price, {value} vs SPY ({window}; "
-                           f"{closing_note}{row['matched_members']}/{row['total_members']} matched)")
+        # A matched member may differ from the SPY clock within the producer's
+        # disclosed tolerance at EACH endpoint; never imply exact synchrony.
+        tolerance = f"member clocks within {row['max_clock_skew_seconds']:g}s/endpoint"
+        comparisons.append(f"{row['label']} {absolute} price, SPY {benchmark}, {value} vs SPY ({window}; "
+                           f"{tolerance}; {closing_note}{row['matched_members']}/{row['total_members']} matched)")
     if comparisons:
         halves.append("since prior observation vs SPY (not fund flows) - " + _SEP.join(comparisons))
     if not halves:

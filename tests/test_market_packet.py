@@ -1793,7 +1793,7 @@ def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
     assert 'not fund flows' in text
     assert '+1.01%' in text and '\u22121.96%' in text
     assert '1/1 matched' in text
-    assert '14:59Z' in text and '15:29Z' in text
+    assert '14:59:00Z' in text and '15:29:00Z' in text
     assert len(text) <= mp.DEFAULT_CHAR_BUDGET
     assert 'intraday_comparison' not in text
 
@@ -1873,3 +1873,37 @@ def test_closing_comparison_consumer_keeps_real_source_time(kind, seconds, accep
     assert (result is not None) is accepted
     if result is not None:
         assert result["source_asof"] == end.isoformat() and result["observation_kind"] == kind
+
+
+@pytest.mark.parametrize("end,seconds,expected", [
+    ("2026-10-13T14:00:40+00:00", 40, "14:00:40Z"),
+    ("2026-10-13T14:00:00.001000+00:00", 0.001, "14:00:00.001000Z"),
+])
+def test_intraday_render_preserves_subminute_source_duration(end, seconds, expected):
+    raw = _observation_comparison(
+        reference_asof="2026-10-13T14:00:00+00:00", source_asof=end,
+        elapsed_minutes=seconds / 60, max_clock_skew_seconds=seconds / 10)
+    block = mp._leaders_block({"mode":"live", "baskets":[{
+        "id":"ai_semiconductors", "live_ew_chg_pct":0,
+        "intraday_comparison":raw}]}, [], now=datetime.fromisoformat(end))
+    rendered = mp._render_leaders({"leaders":block})
+    assert "2026-10-13 14:00:00Z" in rendered
+    assert expected in rendered
+    assert f"{seconds:g}s" in rendered
+
+
+def test_intraday_render_discloses_benchmark_window_and_member_tolerance():
+    raw = _observation_comparison(
+        relative=-0.990099, absolute_change_pct=0, benchmark_change_pct=1,
+        reference_asof="2026-10-13T14:00:00+00:00",
+        source_asof="2026-10-13T14:05:00+00:00", elapsed_minutes=5,
+        matched_members=4, total_members=4, max_clock_skew_seconds=30)
+    block = mp._leaders_block({"mode":"live", "baskets":[{
+        "id":"ai_semiconductors", "live_ew_chg_pct":0,
+        "intraday_comparison":raw}]}, [], now=datetime(2026,10,13,14,6,tzinfo=timezone.utc))
+    assert block["intraday"][0]["max_clock_skew_seconds"] == 30
+    rendered = mp._render_leaders({"leaders":block})
+    assert "SPY window" in rendered
+    assert "SPY +1%" in rendered
+    assert "member clocks within" in rendered and "30s/endpoint" in rendered
+    assert "300s" in rendered and "4/4 matched" in rendered
