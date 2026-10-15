@@ -10,6 +10,20 @@ const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   [path.join(__dirname, 'test_intl_workspace_integration.py')],
   {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
+// LENS deliberately closes on resize and fragment navigation. Wait for the
+// native event's handlers before opening a new disclosure: viewport/URL changes
+// can be observable before those queued events have been delivered.
+async function afterWindowEvent(page, event, action) {
+  await page.evaluate(event => {
+    window.__intlTestWindowEventDone = false;
+    window.addEventListener(event, () => requestAnimationFrame(() => {
+      window.__intlTestWindowEventDone = true;
+    }), {once:true});
+  }, event);
+  await action();
+  await page.waitForFunction(() => window.__intlTestWindowEventDone === true);
+}
+
 async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown", htmlOverride=null, published=false, bootLanguage=null, browserLocale='en-US', initialSearch=''}={}) {
   let fixtureHtml = htmlOverride || (state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname,'test_intl_workspace_integration.py'),'macro',state],
@@ -601,7 +615,7 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
       await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
       const boot=page.locator('#mmb-boot');assert.ok(await boot.isVisible(),'real resting launcher exists');
       for(const width of [320,390]) {
-        await page.setViewportSize({width,height:900});
+        await afterWindowEvent(page,'resize',()=>page.setViewportSize({width,height:900}));
         const help=page.locator('#intl-dollar-conditions .help.help-upgraded');
         await help.focus();await help.press('Enter');
         const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});
@@ -1018,8 +1032,8 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
       const input=page.locator('[data-im-library-search]:visible');await input.fill(query);
       const link=page.locator('[data-im-library-tool="market_turns"] a');const origin=page.url();
       for(const width of [320,1440]) {
-        await page.setViewportSize({width,height:900});
-        await link.focus();await page.keyboard.press('Enter');
+        await afterWindowEvent(page,'resize',()=>page.setViewportSize({width,height:900}));
+        await link.focus();await afterWindowEvent(page,'hashchange',()=>page.keyboard.press('Enter'));
         assert.equal(new URL(page.url()).hash,'#intl-market-turns');
         const heading=page.locator('#intl-market-turns');
         await heading.locator('.help').focus();await page.keyboard.press('Escape');
