@@ -56,6 +56,19 @@ answer: >
   fact, a floor or a contradiction, with no identity bump) and C2c (the
   authorized-unreserved share pool). The split supersedes nothing accepted;
   it only orders C2 so that each part lands on a merged dependency.
+  (6) C2c-A (SPEC_C2C_A): the authorized-unreserved common-share headroom
+  that C2c-P selects at its instant becomes one more stock pool
+  (authorized_unreserved, kind reserved_authorized_shares). Share-issuing
+  routes draw on it at a coefficient of one over the horizon-start price, with
+  per-route coefficients under path pricing exactly as for the Nasdaq 20
+  percent pool. A known headroom binds in shares; a shortfall is a zero bound
+  with a condition; a ceiling-only answer (reserved count not reported) feeds
+  the ceiling solve only; an unknown, contradicted or invalid answer is an
+  unknown pool or a named blocker, never zero. With no price in effect at the
+  horizon start the pool is unknown and no ceiling is offered. A split
+  recorded after the headroom instant turns the headroom unknown; it is never
+  rescaled. With no authorized-capital records the output is byte-identical
+  to C2b.
 rationale: >
   The masterplan's worked example (L92-94) is a joint answer: an 8 and a 7
   million dollar route sharing a 10 million dollar pool give 10 million with
@@ -114,11 +127,13 @@ evidence:
   - SPEC_C2 §4 fixtures, computed exactly with Fraction on 2026-10-14 (A21 10,000,000 / 6,000,000 / unknown; path bracket 6,000,000.00 to 6,666,666.66)
   - Opus review of head 73c05f6a (findings F1-F5) and the five test_review_* regression tests in tests/test_capital_structure_capacity_c2.py (fix commit bea60cb4)
   - Opus re-review of bea60cb4 (PASS, one minor finding R1 on the floor of an infeasible pessimistic branch, closed by the follow-up fix commit)
+  - SPEC_C2C_A §0 items 1-13 and tests/test_capital_structure_capacity_c2c_a.py (lane commits cec2edaa and 1e8d37ef; known-headroom worked example 2,000,000 authorized, 1,000,000 issued, 500,000 reserved at $2.00 binds at 1,000,000.00 USD)
 affects:
   - WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2
   - engine/capital_structure/capacity.py
   - tests/test_capital_structure_capacity.py
   - tests/test_capital_structure_capacity_c2.py
+  - tests/test_capital_structure_capacity_c2c_a.py
   - masterplan tasks C2b, C2c and S0 (consume the joint envelope; never re-derive it)
 confidence: high
 reversibility: costly
