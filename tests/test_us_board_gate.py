@@ -53,7 +53,7 @@ from tests.test_dashboard_template_render import _env, _board_row, _base_vm  # n
 # coincide here — but keying on the full body is still what
 # docs/TIER_PREVIEW_PATTERN.md's checklist step 7 requires, and it is what
 # actually catches a markup regression that keys the wrong span.
-CARD_ROW = re.compile(r'<(?:a|article) class="pvcard.*?</(?:a|article)>', re.S)
+CARD_ROW = re.compile(r'<(?P<card_tag>a|article) class="pvcard.*?</(?P=card_tag)>', re.S)
 TICKER_ATTR = re.compile(r'data-ticker="([^"]*)"')
 SCRIPT_TAG = re.compile(r'<script\b.*?</script>', re.S)
 
@@ -68,8 +68,22 @@ def _strip_scripts(html: str) -> str:
     return SCRIPT_TAG.sub("", html)
 
 
+def _card_content_key(html: str) -> str:
+    # A row can occur in Today, Screener and their paid payloads. Normalize only
+    # caller-owned DOM occurrence IDs; retain every fact, action and source ID.
+    html = re.sub(r' (?:id|data-po-id)="(?:po-)?(?:board|today|screener)(?:-paid)?-\d+(?:-setup)?"', '', html)
+    return " ".join(html.split())
+
+
 def _keys(html: str) -> list[str]:
-    return [" ".join(m.group(0).split()) for m in CARD_ROW.finditer(_strip_scripts(html))]
+    return [_card_content_key(m.group(0)) for m in CARD_ROW.finditer(_strip_scripts(html))]
+
+
+def test_card_identity_keeps_nested_link_tail_but_ignores_dom_occurrence():
+    first = '<article class="pvcard po-card" id="po-today-0" data-po-id="today-0"><a href="stock.html#ABC">ABC</a><p>risk A</p><details id="today-0-setup">terms</details></article>'
+    paid = first.replace('today-0', 'screener-paid-6')
+    assert _keys(first) == _keys(paid), "a new DOM occurrence must not hide a leaked row"
+    assert _keys(first) != _keys(paid.replace('risk A', 'risk B')), "content after the stock link must remain in the identity"
 
 
 def _candidate_card_surface(html: str) -> str:
@@ -471,7 +485,7 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
                     if tag == "article":
                         self.depth -= 1
                         if not self.depth:
-                            self.cards.append(" ".join("".join(self.parts).split()))
+                            self.cards.append(_card_content_key("".join(self.parts)))
                             self.parts = []
 
             def handle_data(self, data):
@@ -496,8 +510,8 @@ def test_mixed_live_group_copy_preserves_near_buy_and_lossless_tier_split(previe
     public_cards = card_bodies(public)
     assert whole_cards == public_cards + card_bodies(tail)
     assert [TICKER_ATTR.search(card).group(1) for card in whole_cards] == ["MSCI", "ADSK", "ABBV"]
-    assert [re.search(r'class="pv-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
-            for card in whole_cards] == ["Near", "Buy", "Buy"]
+    assert [re.search(r'class="po-chip"[^>]*>\s*<span class="l-en">([^<]+)', card).group(1)
+            for card in whole_cards] == ["Near", "Buy · partial", "Buy"]
     assert gate["stage_counts"]["live"] == 3
     assert len(public_cards) == preview_rows
     assert source == before
@@ -640,7 +654,7 @@ def _shell_board_blocks():
     start = shell.find('id="us-stocktable-data"')
     table = (re.findall(r'"ticker":\s*"([^"]+)"', shell[start:shell.find("</script>", start)])
              if start >= 0 else [])
-    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join(CARD_ROW.findall(_candidate_card_surface(shell))))]
+    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join([m.group(0) for m in CARD_ROW.finditer(_candidate_card_surface(shell))]))]
     return payload, cards, table
 
 
@@ -1236,7 +1250,7 @@ def test_candidate_membership_detector_preserves_real_plan_population():
     """The fix is structural scoping, not deleting the distinct plan fixture."""
     html = _render_shell({"buy": _rows(3), "eligible": 3}, None)
     assert _tickers_in(html) == {"TIC0", "TIC1", "TIC2"}
-    all_cards = "\n".join(CARD_ROW.findall(_strip_scripts(html)))
+    all_cards = "\n".join([m.group(0) for m in CARD_ROW.finditer(_strip_scripts(html))])
     assert 'data-ticker="ACME"' in all_cards and 'data-ticker="ZEUS"' in all_cards
     assert set(TICKER_ATTR.findall(_candidate_card_surface(html))) == {"TIC0", "TIC1", "TIC2"}
 

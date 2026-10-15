@@ -20,7 +20,8 @@ def present(data, **kwargs):
 
 def test_preserves_independent_dates_and_missing_fields_without_renewal():
     v = present(row(), board_asof="2026-09-29", setup_href="#setup-DEMO")
-    assert v["assessment_asof"] == "2026-09-25"
+    assert v["assessment_asof"] is None
+    assert v["signal_asof"] == "2026-09-25"
     assert v["quote"]["asof"] == "2026-09-28T16:00:00-04:00"
     assert v["terms"]["asof"] == "2026-09-29"
     assert v["chart"]["asof"] is None
@@ -40,6 +41,14 @@ def test_unknown_status_is_not_silently_wait_or_buy():
     assert present(source)["stance"] == "unknown"
 
 
+def test_original_missing_reason_is_retained_without_becoming_bearish():
+    source = row(); source["entry_signal"] = None
+    source["entry_signal_null_reason"] = "lane_not_stamped"
+    v = present(source)
+    assert v["assessment_missing_reason"] == "lane_not_stamped"
+    assert v["stance"] == "unknown"
+
+
 def test_no_mutation_alias_or_ticker_only_plan_join():
     source = row(); original = deepcopy(source)
     v = present(source, folded_cautions=[("Existing caution", "原有提醒")], marks=[{"en": "Featured", "zh": "精选"}])
@@ -54,6 +63,33 @@ def test_score_fallback_keeps_label_and_meaning_together():
     v = present(source)
     assert v["priority"]["label"]["en"] == "Edge"
     assert v["source_fields"]["priority"] == "conviction.score_edge"
+
+
+def test_v3_score_explains_actual_family_basis_without_recomputing_it():
+    source = row(); source['prophet'] = {'version': 'us_prophet_v3', 'score': 41.7,
+        'fusion': {'definition': 'us_prophet_v3', 'families_active': ['F1_TECHNICAL_CONFLUENCE', 'F4_CATALYST_EVENT'],
+                   'family_contribution': {'F1_TECHNICAL_CONFLUENCE': 0, 'F4_CATALYST_EVENT': 83.4},
+                   'families_abstaining': ['F7_QUALITY_FUNDAMENTAL']}}
+    original = deepcopy(source)
+    v = present(source)
+    assert 'evidence-family' in v['priority']['meaning']['en']
+    assert v['priority']['value'] == '42'
+    assert [f['value'] for f in v['evidence_profile']['scores']] == [0, 83.4]
+    assert v['evidence_profile']['abstaining'][0]['en'] == 'Business quality'
+    assert source == original
+    for bad in (True, -1, 101, float('nan')):
+        source['prophet']['fusion']['family_contribution']['F4_CATALYST_EVENT'] = bad
+        assert present(source)['evidence_profile'] is None
+    source = original; source['prophet']['version'] = 'us_prophet_v2_fallback'
+    assert present(source)['evidence_profile'] is None
+    assert 'evidence-family' not in present(source)['priority']['meaning']['en']
+
+
+def test_published_assessment_is_preserved_as_text_not_regenerated_from_price():
+    source = row(); source['entry_signal'].update(action='Wait for weekly confirmation.', action_zh='等待周线确认。')
+    v = present(source)
+    assert v['assessment_detail'] == {'en': 'Wait for weekly confirmation.', 'zh': '等待周线确认。'}
+    assert v['assessment_asof'] is None
 
 
 @pytest.mark.parametrize("value", [None, True, float("nan"), float("inf"), "99", 10 ** 400])
@@ -81,10 +117,36 @@ def test_accepts_the_existing_native_spark_renderer(count, zone_state):
     values = [100 + (i % 5) for i in range(count)]
     svg = scope["_spark_svg"](values, zone_lo=101, zone_hi=103, zone_state=zone_state)
     source = row(); source["spark_svg"] = svg
-    points = present(source)["chart"]["points"]
+    chart = present(source)["chart"]
+    points = chart["points"]
     assert len(points) == count
     assert points[0]["x"] == 0 and points[-1]["x"] == 100
     assert all(0 <= p["y"] <= 100 for p in points)
+    if count > 2:
+        assert len(chart["zone_edges"]) == 2
+        assert (chart["zone_fill"] is not None) == (zone_state == "active")
+        assert chart["zone_edges"][0]["x1"] == 60
+
+
+def test_chart_color_is_published_tape_not_assessment_color():
+    source = row()
+    source["spark_svg"] = source["spark_svg"].replace('fill="none"', 'fill="none" stroke="var(--down)"')
+    v = present(source)
+    assert v["stance"] == "buy" and v["chart"]["direction"] == "down"
+
+
+def test_mark_explanation_and_membership_date_survive_display():
+    source = row(); source["added_date"] = "2026-09-01"
+    v = present(source, marks=[{"en": "Blow-off risk", "zh": "冲顶风险",
+                              "tip_en": "Measured context, not a sell signal."}])
+    assert v["marks"][0]["explanation"]["en"] == "Measured context, not a sell signal."
+    assert v["added_date"] == "2026-09-01"
+
+
+@pytest.mark.parametrize("bad", ["2026-9-1", "2026-02-30", "2026-10-01T12:00:00Z", "not-a-date", 1])
+def test_membership_date_cannot_be_a_malformed_or_different_clock(bad):
+    source = row(); source["added_date"] = bad
+    assert present(source)["added_date"] is None
 
 
 @pytest.mark.parametrize("svg", [
@@ -118,3 +180,11 @@ def test_ids_are_supplied_occurrences_not_ticker_deduplication():
     assert a["id"] != b["id"]
     with pytest.raises(ValueError):
         present_us_candidate(row(), occurrence_id='bad" onclick="x')
+
+
+@pytest.mark.parametrize("status", ["watch", "wait_pullback", "bounce_wait"])
+def test_native_wait_states_are_named_without_becoming_unknown(status):
+    source = row(); source["entry_signal"]["status"] = status
+    v = present(source)
+    assert v["stance"] == "wait"
+    assert v["stance_label"]["en"] != "Assessment unavailable"

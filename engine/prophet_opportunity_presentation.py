@@ -8,6 +8,7 @@ owners and must supply an occurrence id and the real originating view's links.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import date
 from math import isfinite
 import re
 from xml.etree import ElementTree
@@ -25,10 +26,23 @@ _ENTRY = {
     "extended": ("wait", "Wait · extended", "等待 · 已延伸"),
     "blocked": ("wait", "Wait · blocked", "等待 · 受阻"),
     "wait": ("wait", "Wait", "等待"),
+    "watch": ("wait", "Watch", "观察"),
+    "wait_pullback": ("wait", "Wait · pullback", "等待 · 回调"),
+    "bounce_wait": ("wait", "Wait · countertrend", "等待 · 逆势反弹"),
 }
 _LANE = {"bottoming": 0, "recovery": 1, "continuation": 2, "trend": 3}
 _STAGES = (("Bottoming", "筑底"), ("Turning", "转折"),
            ("Ready", "就绪"), ("Trend", "趋势"))
+_FAMILY_LABELS = {
+    "F1_TECHNICAL_CONFLUENCE": ("Technical agreement", "技术共振"),
+    "F2_MOMENTUM_EXTENSION": ("Momentum & extension", "动量与延伸"),
+    "F3_THEME_STRUCTURE": ("Theme structure", "主题结构"),
+    "F4_CATALYST_EVENT": ("Catalysts & events", "催化与事件"),
+    "F5_FLOW_POSITIONING": ("Flows & positioning", "资金流与仓位"),
+    "F6_MACRO_REGIME": ("Macro conditions", "宏观环境"),
+    "F7_QUALITY_FUNDAMENTAL": ("Business quality", "基本面质量"),
+    "F8_ATTENTION_CROWDING": ("Attention & crowding", "关注度与拥挤度"),
+}
 
 
 def _mapping(value):
@@ -45,6 +59,15 @@ def _number(value):
     try:
         return value if isfinite(value) else None
     except OverflowError:
+        return None
+
+
+def _session_date(value):
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return None
+    try:
+        return date.fromisoformat(value).isoformat()
+    except ValueError:
         return None
 
 
@@ -65,39 +88,80 @@ def _href(value):
     return value if value.startswith("#") or (value.startswith("/") and not value.startswith("//")) else None
 
 
+def _evidence_profile(prophet):
+    """Show the incumbent v3 producer's contributions without recomputing a score."""
+    fusion = _mapping(prophet.get("fusion"))
+    if prophet.get("version") != "us_prophet_v3" or fusion.get("definition") != "us_prophet_v3":
+        return None
+    active, absent = fusion.get("families_active"), fusion.get("families_abstaining")
+    scores = _mapping(fusion.get("family_contribution"))
+    if (not isinstance(active, list) or not isinstance(absent, list)
+            or any(not isinstance(k, str) or k not in _FAMILY_LABELS for k in active + absent)
+            or len(set(active)) != len(active) or set(active) & set(absent)
+            or set(scores) != set(active) or not active
+            or any(_number(v) is None or not 0 <= v <= 100 for v in scores.values())):
+        return None
+    return {"scores": [{"key": k, "label": _words(*_FAMILY_LABELS[k]), "value": scores[k]}
+                       for k in active],
+            "abstaining": [_words(*_FAMILY_LABELS[k]) for k in absent]}
+
+
 def _chart_geometry(svg):
     """Extract only numeric geometry from the existing owned spark renderer.
 
     No source markup is returned or trusted. A malformed drawing is unavailable;
     we never substitute a flat chart or infer a quote/assessment clock from it.
     """
+    empty = {"points": [], "zone_edges": [], "zone_fill": None, "direction": "neutral"}
     if not isinstance(svg, str) or len(svg) > 65536 or "<!" in svg:
-        return []
+        return empty
     try:
         root = ElementTree.fromstring(svg)
         if root.tag != "svg" or root.get("class") != "nch":
-            return []
+            return empty
         if any(e.tag not in {"svg", "polyline", "line", "rect", "circle"}
                or any(k.lower().startswith("on") or k in {"href", "style"} for k in e.attrib)
                for e in root.iter()):
-            return []
+            return empty
         box = [float(n) for n in (root.get("viewBox") or "").split()]
         if len(box) != 4 or box[:2] != [0, 0] or not all(isfinite(n) for n in box) or min(box[2:]) <= 0:
-            return []
+            return empty
         lines = [e for e in root if e.tag == "polyline" and e.get("fill") == "none"]
         if len(lines) != 1:
-            return []
+            return empty
         pairs = [p.split(",") for p in (lines[0].get("points") or "").split()]
         if not 2 <= len(pairs) <= 512 or any(len(p) != 2 for p in pairs):
-            return []
+            return empty
         points = [{"x": float(p[0]) / box[2] * 100, "y": float(p[1]) / box[3] * 100} for p in pairs]
         if any(not isfinite(v) or not 0 <= v <= 100 for p in points for v in p.values()):
-            return []
+            return empty
         if any(a["x"] >= b["x"] for a, b in zip(points, points[1:])):
-            return []
-        return points
+            return empty
+        # Preserve the publisher's plotted zone, including an off-chart absence.
+        # Recomputing it from the current quote would move the historical drawing.
+        edges, fill = [], None
+        for element in root:
+            if element.tag == "line":
+                edge = {k: float(element.get(k)) / box[2 if k[0] == "x" else 3] * 100
+                        for k in ("x1", "x2", "y1", "y2")}
+                if (any(not isfinite(v) or not 0 <= v <= 100 for v in edge.values())
+                        or edge["x1"] > edge["x2"] or edge["y1"] != edge["y2"]):
+                    return empty
+                edges.append(edge)
+            elif element.tag == "rect":
+                if fill is not None:
+                    return empty
+                fill = {k: float(element.get(k)) / box[2 if k in ("x", "width") else 3] * 100
+                        for k in ("x", "y", "width", "height")}
+                if (any(not isfinite(v) or not 0 <= v <= 100 for v in fill.values())
+                        or fill["x"] + fill["width"] > 100.01 or fill["y"] + fill["height"] > 100.01):
+                    return empty
+        if len(edges) not in (0, 2):
+            return empty
+        direction = {"var(--up)": "up", "var(--down)": "down"}.get(lines[0].get("stroke"), "neutral")
+        return {"points": points, "zone_edges": edges, "zone_fill": fill, "direction": direction}
     except (ElementTree.ParseError, TypeError, ValueError, OverflowError):
-        return []
+        return empty
 
 
 def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None,
@@ -116,7 +180,8 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
     es, conviction = _mapping(row.get("entry_signal")), _mapping(row.get("conviction"))
     status = _text(es.get("status"))
     stance, label, label_zh = _ENTRY.get(status, ("unknown", "Assessment unavailable", "暂无评估"))
-    score = _number(_mapping(row.get("prophet")).get("score"))
+    prophet = _mapping(row.get("prophet"))
+    score = _number(prophet.get("score"))
     priority_label = _words("Priority", "优先级")
     priority_path = "prophet.score"
     if score is None:
@@ -125,7 +190,8 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
         priority_path = "conviction.score_edge"
     priority = None if score is None else {
         "value": f"{score:.0f}", "label": priority_label,
-        "meaning": _words("Relative setup readiness, not a win probability.", "相对形态就绪程度，并非胜率。") if priority_path == "prophet.score" else
+        "meaning": _words("Relative evidence-family strength, not entry permission, a return forecast or a win probability.", "证据类别的相对强度，并非入场许可、回报预测或胜率。") if priority_path == "prophet.score" and prophet.get("version") == "us_prophet_v3" else
+                   _words("Relative setup readiness, not a win probability.", "相对形态就绪程度，并非胜率。") if priority_path == "prophet.score" else
                    _words("Relative stock selection, entry and quality, not a win probability.", "相对选股、入场与质量强度，并非胜率。"),
     }
     caution_rows = []
@@ -151,30 +217,42 @@ def present_us_candidate(row, *, occurrence_id, board_asof=None, setup_href=None
     }
     context = _mapping(context)
     link = _href(context.get("href"))
-    supplied_marks = [_words(m.get("en"), m.get("zh")) for m in marks if isinstance(m, Mapping)]
-    points = _chart_geometry(row.get("spark_svg"))
+    supplied_marks = []
+    for mark in marks:
+        if isinstance(mark, Mapping):
+            words = _words(mark.get("en"), mark.get("zh"))
+            if words:
+                words["explanation"] = None if mark.get("k") in {"feat", "new"} else _words(mark.get("tip_en"), mark.get("tip_zh"))
+                supplied_marks.append(words)
+    chart = _chart_geometry(row.get("spark_svg"))
     ticker = _text(row.get("ticker"))
     return {
         "id": occurrence_id, "stance": stance, "stance_label": _words(label, label_zh),
-        "assessment_asof": _text(row.get("signal_asof")),
+        "assessment_asof": None,
+        "signal_asof": _text(row.get("signal_asof")),
+        "assessment_missing_reason": _text(row.get("entry_signal_null_reason")) if stance == "unknown" else None,
         "strategy": None, "horizon": None,
         "quote": {"price": _money(row.get("price")), "change": None, "direction": "neutral",
                   "asof": _text(row.get("price_as_of")), "currency": "USD"},
-        "chart": {"points": points, "label": _words("Daily closes", "每日收盘"),
-                  "asof": None, "direction": "neutral"},
+        "chart": {**chart, "label": _words("Daily closes", "每日收盘"),
+                  "asof": _text(row.get("spark_as_of")) if chart["points"] else None},
         "identity": {"ticker": ticker, "name": _words(row.get("name"), row.get("name_zh")),
                      "industry": _words(row.get("industry"), row.get("industry_zh")),
                      "sector": _words(row.get("sector"), row.get("sector_zh"))},
         "priority": priority, "observation": _words(es.get("headline"), es.get("headline_zh")),
+        "assessment_detail": _words(es.get("action"), es.get("action_zh")),
+        "evidence_profile": _evidence_profile(prophet),
         "cautions": caution_rows, "stages": stages,
-        "marks": [m for m in supplied_marks if m],
+        "marks": supplied_marks, "added_date": _session_date(row.get("added_date")),
         "context": {"href": link, "label": _words(context.get("en"), context.get("zh"))} if link else None,
         "terms": terms, "setup_href": _href(setup_href),
         "compare_enabled": compare_enabled is True and bool(ticker),
-        "source_fields": {"stance": "entry_signal.status", "assessment_asof": "signal_asof",
+        "source_fields": {"stance": "entry_signal.status", "assessment_asof": None, "signal_asof": "signal_asof",
                           "quote.price": "price", "quote.asof": "price_as_of", "chart.points": "spark_svg numeric geometry",
-                          "chart.asof": None, "priority": priority_path if priority else None,
+                          "chart.asof": "spark_as_of" if chart["points"] and _text(row.get("spark_as_of")) else None,
+                          "priority": priority_path if priority else None,
                           "terms.value": "entry_signal.buy_zone" if valid_zone else None,
                           "terms.asof": "board envelope as_of" if valid_zone and _text(board_asof) else None,
-                          "observation": "entry_signal.headline", "strategy": None, "horizon": None},
+                          "observation": "entry_signal.headline", "assessment_detail": "entry_signal.action",
+                          "evidence_profile": "prophet.fusion", "strategy": None, "horizon": None},
     }

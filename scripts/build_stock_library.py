@@ -1505,6 +1505,32 @@ def _spark_zone(es) -> dict:
 _SPARK_COLOR = {"up": "var(--up)", "down": "var(--down)", "caution": "var(--warn)"}
 
 
+def _board_display_snapshot(tech: dict, close: pd.Series, entry_signal, direction) -> dict:
+    """Carry each existing display value with its own observation date.
+
+    tech.price_asof was bound by _bind_price_clock to the price's actual bar.
+    The spark may use a different close series; its date comes only from that
+    series. Neither date is the entry assessment, zone snapshot or build time.
+    """
+    import math
+
+    values = list(close.tail(64).values)
+    spark = _spark_svg(values, color=_SPARK_COLOR.get(direction, "var(--link)"),
+                       **_spark_zone(entry_signal))
+    spark_asof = None
+    if (spark and isinstance(close.index, pd.DatetimeIndex)
+            and close.index.is_monotonic_increasing and close.index.is_unique):
+        observed = pd.to_numeric(close.tail(64), errors="coerce").dropna()
+        if (len(observed) >= 2 and all(math.isfinite(float(v)) for v in observed)
+                and not pd.isna(observed.index[-1])):
+            spark_asof = observed.index[-1].date().isoformat()
+    return {
+        "price": tech.get("price"), "off_high": tech.get("off_52w_high_pct"),
+        "price_as_of": tech.get("price_asof") if tech.get("price") is not None else None,
+        "spark_svg": spark, "spark_as_of": spark_asof,
+    }
+
+
 def _basket_tailwind_map() -> dict[str, dict]:
     """Per-ticker thematic-basket TAILWIND for the Conviction "upside" axis (§2 Axis
     C): the strongest theme a name belongs to, scored by that basket's 20d return
@@ -4781,11 +4807,8 @@ def main(now: datetime | None = None) -> int:
                 log.debug("personality pass for %s skipped (%s: %s)",
                           ticker, type(_sp_e).__name__, _sp_e)
         _tech = rec.get("tech") or {}
-        disp_map[ticker] = {
-            "price": _tech.get("price"), "off_high": _tech.get("off_52w_high_pct"),
-            "spark_svg": _spark_svg(list(close.tail(64).values),
-                                    color=_SPARK_COLOR.get((rec.get("ladder") or {}).get("dir"), "var(--link)"),
-                                    **_spark_zone(rec.get("entry_signal")))}
+        disp_map[ticker] = _board_display_snapshot(
+            _tech, close, rec.get("entry_signal"), (rec.get("ladder") or {}).get("dir"))
         ladder_rows.append(ticker_alerts.ladder_row(ticker, rec.get("ladder"), rec.get("asof")))
         # W6-C HOLD: attach per-name basing state to the stockdata JSON (BLOCKED names get it too)
         if _hold_state.get(ticker):
@@ -6068,6 +6091,9 @@ def main(now: datetime | None = None) -> int:
                 r["risk_sizing"] = risk_sig[t]       # the vol-managed sizing for the card / bot
             if composite_pt.get(t):
                 r["composite"] = composite_pt[t]     # the decorrelated cross-sectional composite
+            # A replacement value cannot inherit a prior or unrelated clock.
+            r.pop("price_as_of", None)
+            r.pop("spark_as_of", None)
             r.update({k: v for k, v in (disp_map.get(t) or {}).items() if v is not None})
             if demand_chip.get(t):                 # L2 demand-divergence flag for the board chip
                 r["demand"] = demand_chip[t]

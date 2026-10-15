@@ -61,7 +61,7 @@ Opportunity card anatomy, in order:
 - A concise supplied setup observation plus the most consequential caution. Do not repeat the badge in a sentence. Detailed cautions expand from a labelled control.
 - Maturity/evidence progress, with strategy-native labels. Early maturity cannot be reused as an Earnings or Cycle lifecycle.
 - A context link when actually available.
-- A structured terms band: dated zone or milestone and its own publication information. Quote freshness must not rewrite it.
+- A structured terms band: dated zone or milestone and its own publication information. Quote freshness must not rewrite it. The native signal_asof field is the signal session, not an entry-assessment clock; label it as such, and leave the assessment date absent until its producer supplies one.
 - A quiet action footer: compare on the left, View setup on the right; secondary save on detail. No floating isolated button and no full-card link covering other controls.
 
 Content controls height. No minimum-height spacer to force alignment, no blank 100px body reserve, no auto-growing chart that pushes the actions offscreen. Align semantic rows within a rendered grid using actual structure. Four rich cards at wide desktop; three/two/one as space requires. Dense Screener may offer a separate compact variant preserving the same information through deliberate disclosure. Mobile is a complete usable card, not desktop text clipped into a narrow column.
@@ -95,12 +95,12 @@ Research systems retained from the master plan:
 
 ## Implementation sequence and acceptance
 
-A. Build the additive opportunity component against this frozen anatomy and exact Paper references; test complete/missing/long-label/caution/bilingual variants. Do not connect it to production before its data adapter and visual review.
+A. Build the additive opportunity component against this frozen anatomy and exact Paper references; test complete/missing/long-label/caution/bilingual variants. Do not connect it to production before its data adapter and visual self-check are complete.
 B. Map real producer fields and implement the adapter at the existing consumer boundary: dashboard.html.j2 -> _us_board_cards.html.j2, with scripts/build_site.py rendering the same partial into the premium payload. The unrelated us_stocks_v2.html.j2 is an old unlinked preview, not this delivery target. Preserve old useful fields and all entitlement/selection behavior. Integrate Today and Screener on the same component.
 C. Complete the setup/evidence/compare/return slice using existing unfinished carriers where their ownership and effects are clear; do not duplicate lost reviews or overwrite held work.
 D. Connect Plans, changes, saved return, Connections and Market Memory; each control must accomplish the advertised task.
 E. Complete research-source gaps and actual native runtime adoption. Parallelize nonconflicting Fabric leaves; parent owns composition, visual judgment and integration.
-F. Ordinary CI/review/release, actual covering publication, authenticated real-data workflow and explicit visual comparison to selected Paper references. Keep the legacy useful experience until replacement capability is demonstrated.
+F. Affected checks and ordinary required CI/release, actual covering publication, authenticated real-data workflow and explicit visual comparison to selected Paper references. Keep the legacy useful experience until replacement capability is demonstrated.
 
 Required visual matrix: EN/ZH × dark/light × 1440/390, plus 320px stress. Inspect content-rich, missing quote, missing assessment, caution expansion, invalidated/history, empty/filter-empty, loading/error/access, long price/name, comparison selection and return. Desktop 1440×900 shows an immediate answer and at most two supporting modules; no horizontal page scroll; keyboard focus and touch controls work.
 
@@ -113,3 +113,9 @@ Paper reads work. Paper writes are blocked by UPSTREAM_SCHEMA_UNREVIEWED: actual
 The recorded Chrome-extension consent gate remains unresolved; no unchanged retry or alternate automation. Build/test/source work proceeds, while native visual/customer verification retains that precise gate.
 
 PR9369's canonical CI has one blocking timeout; its original review is lost/worker-unknown. Existing PR9272/9294 and original ATR recovery retain their exact unresolved review/effect boundaries. They are dependencies to integrate lawfully, not evidence that this entire product must wait.
+
+## Working implementation
+
+The native Today/Screener partial and paid payload now share the new component and pure row presenter. The old oversized-card overrides are removed. Native quote updates, setup dialog, comparison and candidate-to-Plan return use existing owners. Setup detail carries the source assessment, full cautions, separate chart/quote/signal clocks, price levels and the supplied v3 evidence-family breakdown; it neither reconstructs a Plan nor computes a probability. The producer now carries its already-bound price bar and actual spark-series date into the display snapshot. The retained 14 October board has 105 valid source charts but no per-row quote/chart timestamps, so those dates stay unavailable until an actual new producer run supplies them.
+
+Current verification: affected presentation, producer-clock, quote, dialog/return and paid-hydration checks pass after the documented repairs. One unchanged shipped-data test reports four same-symbol hits in the existing research candidate/leader populations; its failure is retained, not waived or attributed to new UI source. Browser visual acceptance, new-source production publication and connected live journeys remain open. Static HTML variants are preparation only.

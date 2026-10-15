@@ -767,8 +767,8 @@ def test_native_query_fires_once_with_exact_pins_and_discloses_partial(tmp_path,
     assert out["nativeReasons"] == "DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"
     assert out["nativeNoteState"] == "partial"
     assert out["nativeNote"] is not None
-    assert "Native candidate binding is available for 3 of 3 shown names" in out["nativeNote"]
-    assert "原生候选绑定" in out["nativeNote"]
+    assert "Additional context is available for 3 of 3 shown setups" in out["nativeNote"]
+    assert "所显示 3 个名字中已有 3 个附有补充背景" in out["nativeNote"]
     # the hydrated cards are NOT dropped by the native disclosure
     assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
 
@@ -780,8 +780,8 @@ def test_native_available_status_discloses_available(tmp_path, loader_scene):
                                                 reason_codes=[])}
     out = _run(tmp_path, scene, mode="today")
     assert out["nativeState"] == "available"
-    assert "Native candidate context is attached" in out["nativeNote"]
-    assert "已附加此精确来源的原生候选上下文" in out["nativeNote"]
+    assert "Evidence summary is linked to this board snapshot." in out["nativeNote"]
+    assert "证据摘要已关联此榜单快照" in out["nativeNote"]
 
 
 @pytest.mark.parametrize("failure", ["401", "403"])
@@ -806,8 +806,8 @@ def test_native_409_conflict_discloses_typed_reason_without_retry(tmp_path, load
     assert out["nativeState"] == "unavailable"
     assert out["nativeReasons"] == "SOURCE_BINDING_MISMATCH"
     assert out["nativeNoteState"] == "unavailable"
-    assert "Native candidate context is unavailable" in out["nativeNote"]
-    assert "此精确来源的原生候选上下文不可用" in out["nativeNote"]
+    assert "Evidence summary unavailable. Published setups remain available below." in out["nativeNote"]
+    assert "证据摘要暂不可用。下方仍可查看已发布的形态" in out["nativeNote"]
     assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"], "incumbent shell cards are never dropped"
 
 

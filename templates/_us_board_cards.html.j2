@@ -37,9 +37,9 @@
                      wall — computed once and passed through rather than
                      recomputed per card.
 -#}
-{% import "_prophet_card.html.j2" as pv %}
-{%- set _pri_en = ' Higher Priority means the setup is more ready today, not more likely to win.' -%}
-{%- set _pri_zh = ' 优先级越高，表示今天越接近可操作，并不代表更容易获胜。' -%}
+{% import "_prophet_opportunity_card.html.j2" as po %}
+{%- set _pri_en = ' Priority is the published ordering score, not entry permission or a win probability. The card explains its scoring basis.' -%}
+{%- set _pri_zh = ' 优先级是已发布的排序分数，并非入场许可或胜率；评分依据见卡片说明。' -%}
 {%- set _stage_en  = {'live':'Active setups','setting_up':'Setting up','ran':'Ran — don’t chase','basing':'Basing','blocked':'Blocked'} -%}
 {%- set _stage_zh  = {'live':'活跃形态','setting_up':'形成中','ran':'已启动 — 勿追','basing':'筑底中','blocked':'受阻'} -%}
 {%- set _stage_sub_en = {'live':'Check each card’s dated entry read','setting_up':'not there yet — get ready','ran':'the move already started','basing':'no entry signal yet — watch, don’t chase','blocked':'stand aside for now'} -%}
@@ -80,24 +80,11 @@
           <span class="l-zh">{{ _lane_labels_zh.get(n.lane, n.lane) }} · {{ n.count }}</span>
         </div>
         {% else %}
-        {# ═══ PROPHET CARD (flagship redesign, operator-ratified 2026-07-21) ═══
-           The old multi-chip standout card is retired; every prior at-rest disclosure
-           survives DEMOTED, not deleted: verdict sentence + entry headline → verb-chip
-           tooltip; cautions / sector-stance / anti-chase / extension / earnings-window /
-           base-broken → the single ⚠N popover; Edge %ile meaning → Edge tooltip; tier/sig
-           badge + cycle detail → stock.html analyzer (one click). Builder fields consumed
-           unchanged — display-tier change only; lane grouping (R7) untouched. #}
+        {# Retain the existing source disclosures and native related-plan reader.
+           The Python presenter alone maps the row's published entry status; no
+           fallback infers an assessment from price direction. #}
         {% set c = n.conviction %}
         {% set es = n.entry_signal %}
-        {% set _is_triage = (c and c.get('score_edge') is not none and c.score_edge >= 80) and (es and es.get('status') in ['buy_now','partial']) %}
-        {% set _st = es.status if es else none %}
-        {% set _verb = 'buy' if _st in ('buy_now','partial')
-                 else ('near' if _st in ('buy_soon','await_confluence')
-                 else ('hold' if _st in ('hold','topping')
-                 else ('avoid' if _st in ('exit','avoid')
-                 else ('wait' if _st
-                 else ('near' if n.dir == 'up' else ('avoid' if n.dir == 'down' else 'wait')))))) %}
-        {% set _stage = {'bottoming':1,'recovery':2,'continuation':3,'trend':4}.get(n.get('lane') or '', 0) %}
         {% set _vs = c.vol_squeeze if c else none %}
         {% set _vs_fired = _vs and _vs.state in ['FIRED_UP','EXPANSION'] %}
         {% set _entry_ok = not (es and es.get('status') in ['extended','topping','exit','avoid','blocked']) %}
@@ -225,18 +212,7 @@
             'tip_en':'This stock belongs to a theme that is strengthening. Use it to understand the story; it does not change this card’s Priority.',
             'tip_zh':'该股属于正在转强的主题。可用来理解背景，但不会改变卡片的优先级。'}] %}{% endif %}
         {% endif %}
-        {# ── Priority score in the Edge slot (CN cn_prophet_v2 precedent, china.html.j2).
-             Rows without prophet.score keep today's conviction-percentile "Edge" display
-             exactly as-is — the label, the value and the tooltip all fall back together,
-             so a mixed artifact never shows a Priority label over an Edge number. #}
-        {% set _prs = (n.get('prophet') or {}).get('score') %}
-        {% set _prs = _prs if (_prs is number) else none %}
-        {# `none` on the legacy path so an old artifact renders byte-identically;
-           `[]` on the priority path so even an unmarked card reserves its slot and the
-           tracker/zone rows stay aligned across a grid row. #}
         {% set _mk_slot = _mk.rows if sg_any else none %}
-        {% set _bz = es.buy_zone if es else none %}
-        {% set _zk = ('readd' if _verb == 'hold' else ('active' if _verb in ('buy','near') else 'muted')) if (_bz and _bz.high is not none) else ('confirm' if _verb in ('wait','near') else 'none') %}
         {# ⚡ fresh-trigger chip: kind from the setups row's own signal tier (T3 = imminent,
            else fired). Tips are plain strings (attribute-safe — no t() in attrs). The verb
            stays the ruling stance; the tip says so for the Wait+⚡ case. #}
@@ -247,69 +223,20 @@
         {% set _trg_prov_zh = '（暂定：基于未完成的K线推算 — 约十分之一会在K线完成后消失。）' if (_trg_kind == 'imminent' and _tsg.get('provisional')) else '' %}
         {% set _trg_tip_en = ('Fresh entry trigger — it fired in the last few days and momentum is still building. A conviction card plus a fresh trigger is the strongest read on this board — but the main chip still rules: if this card says Wait, price has already run past the zone; don\'t chase.') if _trg_kind == 'fired' else ('Entry trigger is close — it should fire within the next day or two.' ~ _trg_prov ~ ' The main chip still rules the stance.') %}
         {% set _trg_tip_zh = ('新的入场触发 — 最近几天刚刚触发，动量还在往上走。信念卡片加上新触发，是本板最强的组合 — 但主标签仍然是最终判断：如果卡片写的是「等待」，说明价格已经冲过买点区，不要追。') if _trg_kind == 'fired' else ('入场触发快到了 — 预计一两天内触发。' ~ _trg_prov_zh ~ '主标签仍然是最终判断。') %}
-        {#- ── NO DATE IN THE ZONE ROW (2026-08-26, PR-2 of the US permanence program).
-             The `date` slot below used to carry `(n.signal or {}).get('asof')`, which put
-             a bare date immediately after the buy-zone numbers — and a date pinned against
-             numbers reads as the vintage OF those numbers. It is not. Two measurements,
-             two clocks, and the shipped artifacts settle which is which:
-
-               · buy_zone is recomputed EVERY session. Comparing the 2026-08-24 board
-                 (be061c6d49e9) against the 2026-08-25 board, 101 of 101 common tickers
-                 carrying a zone had `low`/`high` MOVE overnight; zero held still.
-               · signal.asof is a 3-session bucket clock and is BOARD-WIDE, not per-card:
-                 on the 2026-08-25 board all 133 carded rows (buy + watch + leaders +
-                 laggards) read the identical `2026-08-21`.
-
-             So the chip printed ONE board constant, 133 times, against numbers four days
-             newer than it — and on 2026-08-26 it was read off the board as proof the board
-             was five days stale. It was not: `as_of` had advanced nightly throughout.
-
-             Two doctrine rules land on the same answer (DESIGN_DOCTRINE Law 4): "one as-of
-             stamp per panel", and "no per-row repetition of a constant — a constant belongs
-             in the footer, once". Nothing per-card is lost by removing it, because nothing
-             per-card was ever in it. The board's real vintage is now stated ONCE, in plain
-             words, on the page header (#stocks-header .stk-status, dashboard.html.j2),
-             whose Tier-2 hover also carries this signal-bucket date — at board level,
-             where it is true.
-
-             DO NOT restore signal.asof / setups.as_of here. `added_date` (below) is
-             the labelled per-candidate current-continuous-membership-start chip
-             (engine/prophet_board_since.py, "Added <date>" / "入榜 <date>") — it is
-             NOT a revert of this removal, it answers a different question (how long
-             has this name been on the board, not what date is this zone from), and it
-             is null (no chip) whenever the ledger cannot prove a start date. `date`
-             stays an explicit `none`. The shared macro keeps full `date` support for
-             _us_prophet_plan_cards.html.j2, whose dates ARE per-plan and honest. -#}
+        {# Signal session, board/zone snapshot and continuous membership are
+           separate clocks. The presenter never relabels one as another. #}
         {% set _card_ticker = (n.get('ticker') or '')|string|trim|upper %}
         {% set _card_plans = (plan_rel_by_ticker or {}).get(_card_ticker, []) if plan_rel_by_ticker is defined else [] %}
         {% set _card_plan_rel = {'state': 'unknown', 'plans': []} if plan_rel is defined and plan_rel is mapping and plan_rel.get('state') == 'unknown' else {'state': 'related_security' if _card_plans else 'none', 'plans': _card_plans} %}
-        {{ pv.pv_card({
-          'href': 'stock.html#' ~ n.ticker, 'tk': n.ticker, 'mkt': 'us',
-          'setup_detail': psd.body(n, 'board', setup_as_of if setup_as_of is defined else (us_standouts.get('as_of') if us_standouts is defined and us_standouts is mapping else none), _card_plan_rel),
-          'name': n.name, 'sec': n.sector, 'sec_zh': tr(n.sector),
-          'price_txt': ('$' ~ ('%.2f'|format(n.price))) if n.get('price') is not none else none,
-          'show_change': true,
-          'verb': _verb,
-          'edge': (('%.0f'|format(_prs)) if _prs is not none
-                   else (c.score_edge if (c and c.score_edge is defined and c.score_edge is not none) else none)),
-          'edge_label_en': ('Priority' if _prs is not none else 'Edge'),
-          'edge_label_zh': ('优先级' if _prs is not none else '优势'),
-          'edge_tip_en': ('Priority (0–100) ranks how ready this setup is today. Higher combines a fresher signal, a better entry, room to run and stronger stock quality. It is not a win probability.' ~ rw_en
-                          if _prs is not none
-                          else 'Edge (0–100) compares this stock with the rest of the market using stock selection, entry and quality. Higher is stronger; it is not a win rate.'),
-          'edge_tip_zh': ('优先级（0–100）表示这个形态今天有多接近可操作。数值越高，通常意味着信号更新、入场更好、上行空间更大、个股质量更强。它不是胜率。' ~ rw_zh
-                          if _prs is not none
-                          else '强度（0–100）用选股、入场和质量与全市场比较。数值越高越强，但不是胜率。'),
-          'stage': _stage, 'spark': n.get('spark_svg'),
-          'zone_kind': _zk,
-          'zone_lo': ('$' ~ ('%.2f'|format(_bz.low))) if (_bz and _bz.low is not none) else none,
-          'zone_hi': ('$' ~ ('%.2f'|format(_bz.high))) if (_bz and _bz.high is not none) else none,
-          'date': none,
-          'added_date': n.get('added_date'),
-          'flags': _fl.rows, 'triage': (_is_triage and not _feat),
-          'featured': _feat, 'stage_key': (n.get('stage') if sg_any else none),
-          'marks': _mk_slot,
-          'trigger': ({'kind': _trg_kind, 'tip_en': _trg_tip_en, 'tip_zh': _trg_tip_zh} if _trg_kind else none)
+        {% set _occurrence = (opportunity_prefix if opportunity_prefix is defined else 'board') ~ '-' ~ loop.index0 %}
+        {% set _asof = setup_as_of if setup_as_of is defined else (us_standouts.get('as_of') if us_standouts is defined and us_standouts is mapping else none) %}
+        {% set _view = present_us_candidate(n, occurrence_id=_occurrence, board_asof=_asof,
+            setup_href='#' ~ _occurrence ~ '-setup', folded_cautions=_fl.rows, marks=_mk_slot or []) %}
+        {{ po.opportunity_card(_view, native={
+          'ticker': n.ticker, 'market': 'us', 'href': 'stock.html#' ~ n.ticker,
+          'setup_detail': psd.body(n, 'board', _asof, _card_plan_rel, display=_view),
+          'featured': _feat, 'stage_key': n.get('stage') if sg_any else none,
+          'trigger': {'kind': _trg_kind, 'tip_en': _trg_tip_en, 'tip_zh': _trg_tip_zh} if _trg_kind else none
         }) }}
         {% endif %}{# end if not heading #}
       {% endfor %}{# end for n in items #}

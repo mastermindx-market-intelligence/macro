@@ -1,0 +1,380 @@
+{# ═══ PROPHET OPPORTUNITY CARD — additive Paper-informed opportunity component ═══
+   Spec: research/PROPHET_PRODUCT_IMPLEMENTATION_20261015.md §"Opportunity card
+   anatomy" (frozen). This is PRESENTATION ONLY — step A of the implementation
+   sequence. It receives an already-resolved display read model `v` and renders
+   it. It owns NO selection, ranking, policy, quote, chart or lifecycle logic and
+   derives no field from any other field. Every fact on the card arrives through
+   `v`; every absence is labelled short and specific; nothing is defaulted to a
+   number, a date or a chart.
+
+   Public surface — one macro:
+     {% from "_prophet_opportunity_card.html.j2" import opportunity_card %}
+     {{ opportunity_card(v) }}
+   Styles live in _prophet_opportunity.css.j2 (include once per page inside a
+   <style> block). This file ships no <style>, no <script>, no runtime style
+   injection, no network call, no user state.
+
+   `v` read model (all keys optional; missing keys render the labelled missing
+   state of the affected anatomy slot — never a guessed value):
+     id               stable caller identity → DOM id "po-<id>" and the compare
+                      checkbox id "po-<id>-compare". Sanitized to [a-z0-9_-] and
+                      capped at 48 chars; an id-less card falls back to a
+                      per-render sequence, so a page of id-less cards still
+                      emits no duplicate DOM id.
+     stance           one of buy / near / wait / hold / avoid / unknown.
+                      Anything else (or absent) renders as unknown — the one
+                      default this macro owns, and it is a LACK of a read, not a
+                      cautious read.
+     stance_label     optional bilingual override for the chip. Absent → the
+                      canonical bilingual word for the supplied enum (the enum
+                      is the contract; translating it is presentation, not an
+                      invented fact).
+     strategy/horizon optional separate supplied facts (bilingual or string).
+                      Missing → "Strategy/Horizon unavailable", never inferred
+                      from the stance or the ticker.
+     quote            {price, change, direction, asof, currency} — every field
+                      optional and rendered independently. price/change accept
+                      the supplied display number or string (booleans are not
+                      display values). direction (up/down) drives ink only, via
+                      the site's --ink-up/--ink-down pair, so the EN/ZH red/green
+                      convention comes from theme.css, not from this file.
+                      asof is the QUOTE clock and is never reused elsewhere.
+     chart            {points:[{x,y}], label, asof, direction}. A point renders
+                      only if both x and y are real numbers (bools rejected),
+                      finite, and inside 0..100. Fewer than 2 surviving points →
+                      the neutral "History unavailable" state — never a fake
+                      flat line, never a derived series. Surviving points are
+                      plotted VERBATIM in the supplied order into
+                      viewBox="0 0 100 100" preserveAspectRatio="none": this
+                      component performs no inversion, scaling or smoothing —
+                      the read model owns the mapping. asof is the CHART clock,
+                      independent of the quote clock. Chart ink follows the
+                      chart's own direction, NEVER the stance.
+     identity         {ticker, name, industry, sector}. ticker anchors the
+                      block; the other three are refinements rendered when
+                      supplied. Whole record missing → "Identity unavailable".
+     priority         {value, meaning}. value renders VERBATIM — 0 is a real
+                      priority and must survive (no truthiness shortcut).
+                      meaning missing → "Meaning unavailable".
+     observation      supplied setup observation, or "Observation unavailable".
+     cautions         list of bilingual records. The most consequential (first
+                      supplied) caution is visible at rest. With 2+ cautions the
+                      rest expand from a native <details>/<summary> — no JS.
+                      A single caution has nothing to expand, so it renders as
+                      plain visible text instead of a fake disclosure control.
+                      No cautions → no block at all (an absent list is not a
+                      claim that no risks exist).
+     stages           strategy-native maturity: a list of {label, active} in
+                      caller order. Labels and count are whatever the strategy
+                      supplies — this component hard-codes no Early/Earnings/
+                      Cycle lifecycle. active is strict boolean.
+     marks            optional list of bilingual chips with an optional tone
+                      ("info" | "warn"; anything else → neutral).
+     context          {href, label}. href renders as a link ONLY if it is a
+                      safe site-relative reference: a single leading "/" (not
+                      "//"), or a "#fragment". javascript:, data:, scheme
+                      relative (//), protocol and backslash forms are rejected —
+                      a rejected or missing href renders no anchor, ever.
+     terms            {label, value, asof, currency} — the dated entry-zone or
+                      milestone band. It carries its OWN asof publication clock
+                      and its OWN currency; quote freshness never rewrites it.
+     setup_href       "View setup" target under the same href law as context.
+                      Missing/rejected → "Setup unavailable" text, never an
+                      enabled button that pretends to operate.
+     compare_enabled  strict true → the compare checkbox renders. It is enabled
+                      only when a comparable identity (identity.ticker) is
+                      present; otherwise it renders DISABLED — a real, honest
+                      form control either way.
+
+   Autoescaping: rendered under Environment(autoescape=True). No `|safe`
+   anywhere; every supplied string passes through autoescape, including every
+   attribute (href, ids, values). Class names and stance values are whitelisted
+   server-side, so data can never author a class name. #}
+
+{#- Per-render fallback-id sequence: imported modules are created once per
+    environment, so this counter advances monotonically; within any single page
+    render the fallback ids are unique, which is the only scope where duplicate
+    DOM ids can collide. -#}
+{% set _po_seq = namespace(n=0) %}
+
+{#- The estate's absence glyph. Used only for refinements whose absence is
+    already stated by the surrounding slot label — never as a number. -#}
+{% set _DASH = '—' %}
+
+{#- Canonical bilingual stance words. The ENUM is the caller's contract; these
+    are its translations, not invented reads. -#}
+{% set _PO_STANCES = ('buy', 'near', 'wait', 'hold', 'avoid', 'unknown') -%}
+{% set _PO_STANCE_EN = {'buy':'Buy','near':'Near','wait':'Wait','hold':'Hold','avoid':'Avoid','unknown':'No read yet'} -%}
+{% set _PO_STANCE_ZH = {'buy':'买入','near':'临近','wait':'等待','hold':'持有','avoid':'回避','unknown':'暂无读数'} -%}
+
+{#- ── bilingual text ──────────────────────────────────────────────────────────
+    Renders the site's .l-en/.l-zh span pair (theme.css picks the language).
+    Accepts a bilingual record {en, zh?}, a plain string, or a supplied number;
+    anything else renders the caller's specific missing-state wording. A record
+    with no zh falls back to its English — the bilingual convention is never
+    allowed to blank a slot. -#}
+{% macro _po_text(rec, miss_en, miss_zh) -%}
+{%- if rec is mapping and rec.get('en') is string and rec.get('en') -%}
+<span class="l-en">{{ rec.get('en') }}</span><span class="l-zh">{{ rec.get('zh') if rec.get('zh') is string and rec.get('zh') else rec.get('en') }}</span>
+{%- elif rec is string and rec -%}
+<span class="l-en">{{ rec }}</span><span class="l-zh">{{ rec }}</span>
+{%- elif rec is number and rec is not boolean -%}
+<span class="l-en">{{ rec }}</span><span class="l-zh">{{ rec }}</span>
+{%- else -%}
+<span class="l-en">{{ miss_en }}</span><span class="l-zh">{{ miss_zh }}</span>
+{%- endif -%}
+{%- endmacro %}
+
+{#- A display number/amount: the supplied number (booleans are not display
+    values) or the supplied non-empty string. 0 is a real value and survives. -#}
+{% macro _po_has_amount(val) -%}
+{{ ((val is number and val is not boolean) or (val is string and val|length > 0)) and '1' or '' }}
+{%- endmacro %}
+
+{#- The one clock wording, reused by all three independent clocks. A missing
+    publication date is stated, never papered over with a build date. -#}
+{% macro _po_asof(asof) -%}
+{%- if asof is string and asof -%}
+<span class="po-asof-label"><span class="l-en">As of</span><span class="l-zh">截至</span></span> <span class="po-asof-value">{{ asof }}</span>
+{%- else -%}
+<span class="po-asof-label"><span class="l-en">As of</span><span class="l-zh">截至</span></span> <span class="po-asof-value po-missing"><span class="l-en">Date unverified</span><span class="l-zh">日期未核实</span></span>
+{%- endif -%}
+{%- endmacro %}
+
+{#- Safe site-relative href law, shared by context and setup. Accepts exactly:
+    a single-leading-slash path (never "//", never "/\"), or a "#fragment".
+    Everything else — javascript:, data:, //cdn, http(s):, backslash tricks,
+    tab/newline smuggling, whitespace-prefixed strings, empties — is rejected.
+    The backslash ban is load-bearing, not cosmetic: browsers normalize "\" to
+    "/" in URLs, so a "/\evil.com" href would parse as the scheme-relative
+    "//evil.com" and leave the site. -#}
+{% macro _po_href_ok(href) -%}
+{{ '1' if (href is string and href|length > 0 and '\\' not in href and '\t' not in href and '\n' not in href and '\r' not in href and (href[0] == '#' or (href[0] == '/' and (href|length < 2 or (href[1] != '/' and href[1] != '\\'))))) else '' }}
+{%- endmacro %}
+
+{% macro opportunity_card(v, native=none) %}
+{%- set _po_seq.n = _po_seq.n + 1 -%}
+{#- ── resolve the read model ─────────────────────────────────────────────────
+    Every nested record is taken only if it is actually a mapping; a mistyped
+    field degrades to the missing state instead of raising or rendering junk. -#}
+{%- set _stance = v.get('stance') if v.get('stance') in _PO_STANCES else 'unknown' -%}
+{%- set _idmap = v.get('identity') if v.get('identity') is mapping else none -%}
+{%- set _quote = v.get('quote') if v.get('quote') is mapping else none -%}
+{%- set _chart = v.get('chart') if v.get('chart') is mapping else none -%}
+{%- set _prio = v.get('priority') if v.get('priority') is mapping else none -%}
+{%- set _terms = v.get('terms') if v.get('terms') is mapping else none -%}
+{%- set _ctx = v.get('context') if v.get('context') is mapping else none -%}
+{%- set _cautions = v.get('cautions') if (v.get('cautions') is sequence and v.get('cautions') is not string) else none -%}
+{%- set _stages = v.get('stages') if (v.get('stages') is sequence and v.get('stages') is not string) else none -%}
+{%- set _marks = v.get('marks') if (v.get('marks') is sequence and v.get('marks') is not string) else none -%}
+{#- Stable DOM id: the caller's supplied id, sanitized to [a-z0-9_-] and capped
+    at 48 chars, so data can never author an id that breaks out of an attribute
+    or collides with another component's namespace. An id-less card falls back
+    to the per-render sequence — NEVER to the ticker, which is not page-unique
+    and would duplicate DOM ids the first time a name appears in two sections. -#}
+{%- set _ID_OK = 'abcdefghijklmnopqrstuvwxyz0123456789-_' -%}
+{%- set _raw_id = v.get('id') if v.get('id') is string and v.get('id') else '' -%}
+{%- set _cid = ((_raw_id|lower)|select('in', _ID_OK)|join)[:48] -%}
+{%- if not _cid %}{% set _cid = 'card-' ~ _po_seq.n %}{% endif -%}
+{#- Comparable identity: a real ticker. Only this enables the compare box. -#}
+{%- set _comparable = _idmap is not none and _idmap.get('ticker') is string and _idmap.get('ticker')|length > 0 -%}
+<article class="{% if native %}pvcard pv-has-setup {% endif %}po-card po-{{ _stance }}" id="po-{{ _cid }}" data-po-stance="{{ _stance }}"{% if native %} data-ticker="{{ native.ticker }}" data-stance="{{ _stance }}"{% if native.get("stage_key") %} data-stage="{{ native.stage_key }}"{% endif %}{% endif %}{% if _raw_id %} data-po-id="{{ _raw_id }}"{% endif %}>
+  {#- ── 1. status and quote ────────────────────────────────────────────────── #}
+  <header class="po-head" data-po-field="status">
+    <div class="po-head-main">
+      {#- The chip displays the RESOLVED stance. A supplied stance_label is an
+          override for a real read (buy/near/wait/hold/avoid); when the stance
+          resolves to unknown — absent, mistyped or off-enum — the label is
+          deliberately ignored, because a bespoke word over the neutral rail
+          would claim a read that is not there. -#}
+      <span class="po-chip">{%- if _stance == 'unknown' -%}<span class="l-en">{{ "Assessment unavailable" if native else _PO_STANCE_EN.unknown }}</span><span class="l-zh">{{ "暂无评估" if native else _PO_STANCE_ZH.unknown }}</span>{%- else -%}{%- set _sl = v.get('stance_label') -%}{%- if _sl is mapping and _sl.get('en') is string and _sl.get('en') or _sl is string and _sl -%}{{ _po_text(_sl, _PO_STANCE_EN[_stance], _PO_STANCE_ZH[_stance]) }}{%- else -%}<span class="l-en">{{ _PO_STANCE_EN[_stance] }}</span><span class="l-zh">{{ _PO_STANCE_ZH[_stance] }}</span>{%- endif -%}{%- endif -%}</span>
+      {% if not native or v.get("strategy") %}<span class="po-meta" data-po-field="strategy">{{ _po_text(v.get('strategy'), 'Strategy unavailable', '策略暂缺') }}</span>{% endif %}
+      {% if not native or v.get("horizon") %}<span class="po-meta" data-po-field="horizon">{{ _po_text(v.get('horizon'), 'Horizon unavailable', '周期暂缺') }}</span>{% endif %}
+      {% if native %}<span class="po-live-slots pv-ov pv-ovl">
+        {% set _tg = native.get('trigger') %}{% if _tg and _tg.get('kind') in ('fired','imminent') %}<span class="po-trigger{% if _tg.kind == 'imminent' %} po-trigger-soon{% endif %}" tabindex="0" data-tip-en="{{ _tg.get('tip_en') or '' }}" data-tip-zh="{{ _tg.get('tip_zh') or _tg.get('tip_en') or '' }}">{{ _po_text({'en':'Triggered' if _tg.kind == 'fired' else 'Imminent', 'zh':'已触发' if _tg.kind == 'fired' else '即将触发'}, '', '') }}</span>{% endif %}
+        <span class="pv-live" hidden></span>
+      </span>{% endif %}
+    </div>
+    <div class="po-quote" data-po-field="quote" data-po-clock="quote"{% if native %} data-quote-container{% endif %}>
+      {%- if _quote -%}
+        {%- if native or _po_has_amount(_quote.get('price')) -%}
+        {% if native %}
+        <span class="po-price fig nb-px" data-sym="{{ native.ticker }}" data-mkt="{{ native.market }}"{% if _quote.get('asof') %} data-through="{{ _quote.asof[:10] }}"{% endif %}>{% if _po_has_amount(_quote.get("price")) %}{{ _quote.price }}{% else %}<span class="po-missing"><span class="l-en">Quote unavailable</span><span class="l-zh">报价暂缺</span></span>{% endif %}</span><span class="po-chg nb-chg" data-sym="{{ native.ticker }}" data-mkt="{{ native.market }}">{% if _po_has_amount(_quote.get('change')) %}{{ _quote.change }}{% else %}—{% endif %}</span>
+        {% else %}<span class="po-price fig">{{ _quote.get('price') }}{% if _quote.get('currency') is string and _quote.get('currency') %} <span class="po-currency">{{ _quote.get('currency') }}</span>{% endif %}</span>{% endif %}
+        {%- else -%}
+        <span class="po-price-missing po-missing"><span class="l-en">Quote unavailable</span><span class="l-zh">报价暂缺</span></span>
+        {%- endif -%}
+        {%- if not native -%}{%- if _po_has_amount(_quote.get('change')) -%}
+        {%- set _qd = _quote.get('direction') -%}
+        <span class="po-chg fig po-dir-{{ 'up' if _qd == 'up' else ('down' if _qd == 'down' else 'flat') }}">{{ _quote.get('change') }}</span>
+        {%- else -%}
+        <span class="po-chg-missing po-missing"><span class="l-en">Change unavailable</span><span class="l-zh">涨跌暂缺</span></span>
+        {%- endif -%}
+        {% endif %}<span class="po-asof"{% if native %} data-quote-clock{% endif %}>{{ _po_asof(_quote.get('asof')) }}</span>
+      {%- else -%}
+        <span class="po-missing"><span class="l-en">Quote unavailable</span><span class="l-zh">报价暂缺</span></span>
+      {%- endif -%}
+    </div>
+  </header>
+  {#- ── 2. chart — its own observation label and its own clock ──────────────── #}
+  {%- set _cns = namespace(n=0, pts='') -%}
+  {%- set _pts = _chart.get('points') if (_chart and _chart.get('points') is sequence and _chart.get('points') is not string) else none -%}
+  {%- if _pts -%}
+    {%- for _p in _pts if _p is mapping -%}
+      {%- set _px = _p.get('x') -%}
+      {%- set _py = _p.get('y') -%}
+      {%- if _px is number and _px is not boolean and _py is number and _py is not boolean -%}
+        {#- The 0..100 chained range is the finite gate: NaN fails every
+            comparison, +inf fails the top bound, -inf the bottom, and an
+            integer too large for a float fails the same way — no separate
+            is-finite arithmetic needed, and nothing coerced. -#}
+        {%- if 0 <= _px <= 100 and 0 <= _py <= 100 -%}
+          {%- set _cns.n = _cns.n + 1 -%}
+          {%- set _cns.pts = _cns.pts ~ (_px|round(2))|string ~ ',' ~ (_py|round(2))|string ~ ' ' -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if _cns.n >= 2 -%}
+  {%- set _cd = _chart.get('direction') -%}
+  <figure class="po-chart" data-po-field="chart" data-direction="{{ _cd }}">
+    <div class="po-chart-plot{% if native %} pv-chart{% endif %} po-dir-{{ 'up' if _cd == 'up' else ('down' if _cd == 'down' else 'flat') }}">
+      <svg class="po-dir-{{ _cd if _cd in ('up', 'down') else 'flat' }}" viewBox="0 0 100 100" preserveAspectRatio="none"{% if not native %} aria-hidden="true"{% endif %}>
+        {% if native and _chart.get('zone_fill') %}{% set _zf = _chart.zone_fill %}<rect class="po-zone-fill" x="{{ _zf.x }}" y="{{ _zf.y }}" width="{{ _zf.width }}" height="{{ _zf.height }}" fill="currentColor" opacity=".08"/>{% endif %}
+        {% if native %}{% for _ze in _chart.get('zone_edges', []) %}<line class="po-zone-edge" x1="{{ _ze.x1 }}" x2="{{ _ze.x2 }}" y1="{{ _ze.y1 }}" y2="{{ _ze.y2 }}" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>{% endfor %}{% endif %}
+        <polyline class="po-series" points="{{ _cns.pts }}" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+    <figcaption class="po-chart-cap" data-po-clock="chart">
+      <span class="po-chart-label">{{ _po_text(_chart.get('label'), _DASH, _DASH) }}</span>
+      <span class="po-chart-asof">{{ _po_asof(_chart.get('asof')) }}</span>
+    </figcaption>
+  </figure>
+  {%- else -%}
+  <div class="po-chart po-chart-unavailable" data-po-field="chart">
+    <div class="po-nochart"><span class="l-en">History unavailable</span><span class="l-zh">历史暂缺</span></div>
+  </div>
+  {%- endif -%}
+  {#- ── 3. identity: ticker/company, industry/sector, priority ─────────────── #}
+  <div class="po-id" data-po-field="identity">
+    {%- if _idmap -%}
+      {%- set _tk = _idmap.get('ticker') -%}
+      {%- if _tk is string and _tk -%}
+      {% if native %}<a class="po-ticker fig pv-setup-stock-link" href="stock.html#{{ native.ticker|urlencode }}">{{ _tk }}</a>{% else %}<span class="po-ticker fig">{{ _tk }}</span>{% endif %}
+      {%- else -%}
+      <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
+      {%- endif -%}
+      {%- if _idmap.get('name') -%}<span class="po-name">{{ _po_text(_idmap.get('name'), _DASH, _DASH) }}</span>{%- endif -%}
+      {%- if _idmap.get('industry') or _idmap.get('sector') -%}
+      <span class="po-class">{% if _idmap.get('industry') %}{{ _po_text(_idmap.get('industry'), _DASH, _DASH) }}{% endif %}{%- if _idmap.get('industry') and _idmap.get('sector') %}<span class="po-sep" aria-hidden="true">·</span>{%- endif %}{% if _idmap.get('sector') %}{{ _po_text(_idmap.get('sector'), _DASH, _DASH) }}{% endif %}</span>
+      {%- endif -%}
+    {%- else -%}
+      <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
+    {%- endif -%}
+    <span class="po-priority" data-po-field="priority"{% if native and _prio and _prio.get('meaning') %} tabindex="0" data-tip-en="{{ _prio.meaning.en }}" data-tip-zh="{{ _prio.meaning.zh }}"{% endif %}>
+      {%- if _prio -%}
+      <span class="po-priority-label">{{ _po_text(_prio.get("label"), "Priority", "优先级") }}</span>
+      {%- if _po_has_amount(_prio.get('value')) -%}
+      <span class="po-priority-value fig">{{ _prio.get('value') }}</span>
+      {%- else -%}
+      <span class="po-missing">{{ _DASH }}</span>
+      {%- endif -%}
+      {% if not native %}{{ _po_text(_prio.get('meaning'), 'Meaning unavailable', '含义暂缺') }}{% else %}<span aria-hidden="true">ⓘ</span>{% endif %}
+      {%- else -%}
+      <span class="po-missing"><span class="l-en">Priority unavailable</span><span class="l-zh">优先级暂缺</span></span>
+      {%- endif -%}
+    </span>
+    {%- if _marks -%}
+    <ul class="po-marks" data-po-field="marks">
+      {%- for _m in _marks if _m -%}
+      {%- set _tone = _m.get('tone') if _m is mapping else '' -%}
+      <li class="po-mark po-mark-{{ 'warn' if _tone == 'warn' else ('info' if _tone == 'info' else 'neutral') }}"{% if _m is mapping and _m.get('explanation') %} tabindex="0" data-tip-en="{{ _m.explanation.en }}" data-tip-zh="{{ _m.explanation.zh }}"{% endif %}>{{ _po_text(_m, _DASH, _DASH) }}</li>
+      {%- endfor -%}
+    </ul>
+    {%- endif -%}
+  </div>
+  {#- ── 4. observation + cautions ───────────────────────────────────────────── #}
+  <p class="po-obs" data-po-field="observation">{{ _po_text(v.get('observation'), 'Observation unavailable', '观察暂缺') }}</p>
+  {%- if _cautions -%}
+    {%- set _n_cau = _cautions|length -%}
+    {%- if _n_cau > 1 -%}
+    <details class="po-cautions" data-po-field="cautions">
+      <summary>
+        <span class="po-caution-key"><span class="l-en">Key caution</span><span class="l-zh">关键注意</span></span>
+        <span class="po-caution-top">{{ _po_text(_cautions[0], _DASH, _DASH) }}</span>
+        <span class="po-caution-more fig"><span class="l-en">+{{ _n_cau - 1 }} more</span><span class="l-zh">+{{ _n_cau - 1 }} 条</span></span>
+      </summary>
+      <ul class="po-caution-list">
+        {%- for _ci in _cautions[1:] -%}
+        <li>{{ _po_text(_ci, _DASH, _DASH) }}</li>
+        {%- endfor -%}
+      </ul>
+    </details>
+    {%- else -%}
+    <p class="po-cautions po-caution-single" data-po-field="cautions">
+      <span class="po-caution-key"><span class="l-en">Key caution</span><span class="l-zh">关键注意</span></span>
+      {{ _po_text(_cautions[0], _DASH, _DASH) }}
+    </p>
+    {%- endif -%}
+  {%- endif -%}
+  {#- ── 5. strategy-native maturity stages ─────────────────────────────────── #}
+  {%- if _stages -%}
+  <ol class="po-stages" data-po-field="stages">
+    {%- for _s in _stages if _s is mapping -%}
+    <li class="po-stage{% if _s.get('active') is sameas true %} po-stage-on{% endif %}"{% if _s.get('active') is sameas true %} aria-current="step"{% endif %}>
+      <span class="po-stage-dot" aria-hidden="true"></span>
+      <span class="po-stage-label">{{ _po_text(_s.get('label'), _DASH, _DASH) }}</span>
+    </li>
+    {%- endfor -%}
+  </ol>
+  {%- else -%}
+  <p class="po-missing po-stages-missing" data-po-field="stages"><span class="l-en">Stage information unavailable</span><span class="l-zh">阶段信息暂缺</span></p>
+  {%- endif -%}
+  {#- ── 6. context link — only when a safe real target exists ──────────────── #}
+  {#- A context key that is absent means "no link offered" and renders no row;
+      a context that was supplied but unusable (wrong shape or an unsafe href)
+      states its absence instead of vanishing. -#}
+  {%- if _ctx -%}
+    {%- if _po_href_ok(_ctx.get('href')) -%}
+    <a class="po-context" data-po-field="context" href="{{ _ctx.get('href') }}">{{ _po_text(_ctx.get('label'), 'More context', '更多背景') }}</a>
+    {%- else -%}
+    <p class="po-missing po-context-missing" data-po-field="context"><span class="l-en">Context link unavailable</span><span class="l-zh">背景链接暂缺</span></p>
+    {%- endif -%}
+  {%- elif v.get('context') -%}
+  <p class="po-missing po-context-missing" data-po-field="context"><span class="l-en">Context link unavailable</span><span class="l-zh">背景链接暂缺</span></p>
+  {%- endif -%}
+  {% if native and v.get('signal_asof') %}<p class="po-signal-date"><span class="l-en">Signal session</span><span class="l-zh">信号日期</span> · {{ v.signal_asof }}</p>{% endif %}
+  {#- ── 7. dated entry/milestone band — its own clock, its own currency ────── #}
+  {%- if _terms -%}
+  <div class="po-terms" data-po-field="terms" data-po-clock="terms">
+    <span class="po-terms-label">{{ _po_text(_terms.get('label'), 'Terms', '条款') }}</span>
+    {%- if _po_has_amount(_terms.get('value')) -%}
+    <span class="po-terms-value fig">{{ _terms.get('value') }}</span>
+    {%- else -%}
+    <span class="po-missing"><span class="l-en">Terms unavailable</span><span class="l-zh">条款暂缺</span></span>
+    {%- endif -%}
+    {%- if _terms.get('currency') is string and _terms.get('currency') %}<span class="po-currency">{{ _terms.get('currency') }}</span>{% endif -%}
+    <span class="po-terms-asof">{{ _po_asof(_terms.get('asof')) }}</span>
+    {% if native and v.get('added_date') %}<span class="pv-added" data-added="{{ v.added_date }}" tabindex="0" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。"><span class="l-en">Added</span><span class="l-zh">入榜</span> {{ v.added_date }}</span>{% endif %}
+  </div>
+  {%- else -%}
+  <p class="po-missing po-terms-missing" data-po-field="terms"><span class="l-en">Terms unavailable</span><span class="l-zh">条款暂缺</span></p>
+  {%- endif -%}
+  {#- ── 8. quiet action footer: compare left, View setup right ─────────────── #}
+  <footer class="po-foot{% if native %} po-footer{% endif %}" data-po-field="actions">
+    {%- if v.get('compare_enabled') is sameas true -%}
+    <span class="po-compare">
+      <input type="checkbox" class="po-compare-box" id="po-{{ _cid }}-compare" name="po-compare" value="{{ _cid }}"{% if not _comparable %} disabled{% endif %}>
+      <label class="po-compare-label" for="po-{{ _cid }}-compare"><span class="l-en">Compare</span><span class="l-zh">对比</span></label>
+    </span>
+    {%- endif -%}
+    {%- if native and native.get('setup_detail') -%}
+    <details class="pv-setup-inline" id="{{ _cid }}-setup"><summary class="po-setup"><span class="l-en">View setup →</span><span class="l-zh">查看形态 →</span></summary>{{ native.setup_detail }}</details>
+    {%- elif _po_href_ok(v.get('setup_href')) -%}
+    <a class="po-setup" href="{{ v.get('setup_href') }}"><span class="l-en">View setup</span><span class="l-zh">查看形态</span></a>
+    {%- else -%}
+    <span class="po-missing po-setup-missing"><span class="l-en">Setup unavailable</span><span class="l-zh">形态暂缺</span></span>
+    {%- endif -%}
+  </footer>
+</article>
+{%- endmacro %}
