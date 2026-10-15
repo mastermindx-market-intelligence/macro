@@ -98,9 +98,12 @@ test('current chart can still load daily, change to 4H and dispose fullscreen tw
   const {page,mount,reply,waitRequest}=await setup(t);
   await waitRequest('/ohlc/CURRENT.json',()=>mount('CURRENT',false));
   await reply('/ohlc/CURRENT.json',daily);
+  await page.waitForFunction(() => CURRENT.chart !== null);
   assert.equal(await page.evaluate(()=>CURRENT.chart!==null),true);
   await waitRequest('/intraday/CURRENT.json',()=>page.locator('[data-tf="4H"]').click());
   await reply('/intraday/CURRENT.json',intra);
+  // The requested timeframe commits after its response body has been consumed.
+  await page.waitForFunction(() => CURRENT.tf === '4H');
   assert.equal(await page.evaluate(()=>CURRENT.tf),'4H');
   assert.equal(await page.evaluate(()=>CURRENT.view.length),6);
   await page.locator('.bchart-fsbtn').click();

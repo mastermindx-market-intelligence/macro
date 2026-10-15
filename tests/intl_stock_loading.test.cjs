@@ -84,16 +84,20 @@ for (const oldStatus of [200, 404, 503]) test(`obsolete lookup ${oldStatus} cann
 
 for (const lang of ['en','zh']) for (const status of [404, 503]) test(`current lookup ${status} hides prior analysis ${lang}`, async t => {
   const {page, select, reply}=await setup(t,lang);
-  await select('OLD'); await reply('OLD'); await page.waitForLoadState('networkidle');
+  await select('OLD'); await reply('OLD');
+  await page.waitForFunction(() => document.getElementById('r_name').textContent === 'OLD fixture (OLD)');
   assert.equal(await page.locator('#result').isVisible(), true);
   assert.match(await page.locator('#tvbox').innerText(), /OLD/);
-  await select('MISSING'); await reply('MISSING', {}, status); await page.waitForLoadState('networkidle');
+  await select('MISSING'); await reply('MISSING', {}, status);
+  await page.waitForFunction(() => /NOT IN LIBRARY|不在库中|could not be loaded|暂时无法加载/.test(document.getElementById('lookup_status').textContent));
   assert.equal(await page.locator('#result').isVisible(), false, 'old analysis and chart must not be attributed to the failed selection');
   const message=await page.locator('#lookup_status').innerText();
   assert.match(message, /MISSING/);
   assert.match(message, status===404 ? (lang==='zh'?/不在库中/:/NOT IN LIBRARY/) : (lang==='zh'?/暂时无法加载/:/could not be loaded/));
   if (status!==404) assert.doesNotMatch(message, /NOT IN LIBRARY|不在库中/);
-  await select('RECOVERED'); await reply('RECOVERED'); await page.waitForLoadState('networkidle');
+  await select('RECOVERED'); await reply('RECOVERED');
+  // Network idle does not imply that response.json() and render() have settled.
+  await page.waitForFunction(() => document.getElementById('r_name').textContent === 'RECOVERED fixture (RECOVERED)');
   assert.equal(await page.locator('#result').isVisible(), true);
   assert.equal(await page.locator('#lookup_status').innerText(), '');
   assert.equal(await page.locator('#r_name').innerText(), 'RECOVERED fixture (RECOVERED)');

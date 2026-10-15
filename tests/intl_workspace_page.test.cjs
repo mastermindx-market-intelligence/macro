@@ -783,6 +783,39 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   });
 }
 
+
+// A mouse can stay on the sheet scrim while its trigger owns keyboard focus.
+// Hover grace must not dismiss that reader's explanation.
+for (const width of [320,1440]) test(`Focused LENS survives pointer exit and closes after focus leaves ${width}`,async()=>{
+  const lensHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+    "from tests.test_intl_dollar_method_render import five_day_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=five_day_fixture()))"],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+  await pageFixture(async page=>{
+    await page.clock.install();
+    const help=page.locator('#intl-dollar-conditions .help.help-upgraded');
+    await help.focus();await help.press('Enter');
+    await page.mouse.move(1,1);
+    await page.clock.runFor(220); // exercise the real180ms hover-close deadline
+    const pop=page.locator('#lensPop');
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),true,'focused explanation survives unrelated pointer movement');
+    const close=pop.locator('.lens-x');await close.focus();
+    await page.mouse.move(2,2);await page.clock.runFor(220);
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),true,'focus inside the explanation also retains it');
+    await page.locator('[data-im-library-search]:visible').focus();
+    await page.clock.runFor(220);
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),false,'leaving both trigger and explanation closes it');
+    await help.focus();await help.press('Enter');await page.keyboard.press('Escape');
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),false,'explicit Escape still wins');
+    await page.locator('[data-im-library-search]:visible').focus();
+    await help.hover();await page.clock.runFor(120);
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),true,'pointer-only disclosure still opens');
+    await page.mouse.move(1,1);await page.clock.runFor(220);
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),false,'pointer-only disclosure still closes');
+    await help.focus();await help.press('Enter');await page.mouse.click(1,1);
+    assert.equal(await pop.evaluate(n=>n.classList.contains('open')),false,'explicit outside click still wins');
+  },{width,htmlOverride:lensHtml,initialSearch:'?view=library#intl-dollar-conditions'});
+});
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Mobile LENS hides resting launcher and restores it ${theme} ${lang}`,async()=>{
     const lensHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',

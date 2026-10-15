@@ -5774,7 +5774,16 @@
     document.documentElement.classList.remove('lens-lock');
     if (cur) { cur.classList.remove('lens-on'); cur.removeAttribute('aria-describedby'); cur = null; }
   }
-  function scheduleClose() { clearTimeout(closeTimer); closeTimer = setTimeout(hide, CLOSE_MS); }
+  function scheduleClose() {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function () {
+      // Pointer movement must not dismiss an explanation still being read by
+      // keyboard. Check at expiry so focus can move into the popover first.
+      var active = document.activeElement;
+      if ((cur && cur.contains(active)) || (pop && pop.contains(active))) return;
+      hide();
+    }, CLOSE_MS);
+  }
 
   document.addEventListener('pointerover', function (e) {
     // Touch devices: a tap fires pointerover BEFORE click, so pre-showing here would
@@ -5819,7 +5828,7 @@
   }, true);
   document.addEventListener('focusout', function (e) {
     var t = e.target && e.target.closest && e.target.closest(SEL);
-    if (t) scheduleClose();
+    if (t || (pop && pop.contains(e.target))) scheduleClose();
   }, true);
   document.addEventListener('click', function (e) {
     if (!e.target || !e.target.closest) return;
