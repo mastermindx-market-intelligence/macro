@@ -167,17 +167,15 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 head939b original CI38773271071 passed; canonical original terminal evidence is consumed.
-  All26 check runs are canonically binding-clean at18:08; incumbent freshness/merge and production remain separate.
+- Old939b CI38773271071 passed; its127jobs/351semanticsteps do not qualify the new b4ff source.
+  Current original CI38801265500/attempt1 is running; terminal binding checks, merge and production remain open.
 next_actions:
-- Publish local b4ff two-input correction after fresh canonical capacity and same-A1 custody admission; an indexed
-  lease on another PR is counted once and is not itself an A1 source-publication hold;
-  if the incumbent refreshed first, apply those two additions to its verified successor. Fresh binding CI and
-  incumbent merge remain required. No second manual base integration.
+- Consume original b4ff CI38801265500 plan/tested-source and terminal binding proof; repair actual failures or
+  continue through incumbent-only refresh and merge. No second manual A1 base integration or duplicate producer.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
-- Reconcile actual qualified landing with locally qualified0add and clean newer-base preview2c2a9; integrate
-  the same follow-on, open its single PR and prove real consumer adoption.
+- Reconcile actual qualified landing and newest continuity with preparedcb274/newmaineb46/tree8d126;
+  integrate the same follow-on, open its single PR and prove actual consumer adoption.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -191,17 +189,15 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T18:53Z
+## Current checkpoint — 2026-10-15T20:27Z
 
-A1 PR6651 remains OPEN939b at18:49. Original CI38773271071 and all26 binding checks passed; final11996491671 is canonically consumed as127jobs/351semantic commandsteps,0blocked. That proof belongs to939b. Incumbent freshness is still required because main has new CI definitions.
+A1b4ff0d721ab8 is PUBLISHED on original PR6651, ordinarypush/readback20:21:22 and body/head verified20:21:40. Canonical admission7active/cap8/0unindexedreservations; the indexed OTHER-PR lease9455 does not hold A1 source custody. Four transport/seven boundary controls preserve real same-A1/unknown/cleanup/capacity refusals. Freshmaineb46/preview3271 is clean, retains incoming capability-broker execution, unchanged A1scope and17productfiles. Accepted two-input1210closure/zero omissions/three controls/packing proof is reused. No manual base integration, forcepush, controller or producer duplication. Original26 NEVERPUSH.
 
-LOCAL CLEAN b4ff0d721ab8f40cd7aa50d469167537f43ca3cd is an ordinary sole-parent939b source correction, UNPUBLISHED. It adds only collectors/yahoo.py and lib/stooq.py to eval-os-a1; all320execution definitions, prior memberships, eight suites, limits and product bytes are preserved. Its main5bb preview exactly reproduces the already qualified repair manifest (1210closure/0misses/3controlsPASS). Fresh maind925 introduces one unrelated research-price-panel command/path delta; preview78065 is clean and preserves its execution/memberships plus the same three accepted A1 additive paths. A1 itself is unchanged by that new-main delta. No broad tests repeated or manual base integration.
+Original b4 CI38801265500/attempt1 was running20:22:31; plan and contract were running, artifact not yet present. Old939b terminal PASS127jobs/351semanticsteps is prior-source proof only. Consume the exact original plan, binding checks and terminal evidence, then incumbent-only refresh/merge. Local20:26 observation guard refused before API transport; no timer retry/reset/alternate path. Current state and original evidence references: research/evidence/eval-os-tier-query-20261014/a1-current-release.json.
 
-Canonical GET-only18:49:47 admission is11active/cap8/0reservations/no leaseowner, so no A1 push. PR8888 original38721056371/attempt2 still had pack11 running18:44; its running state alone is not an exclusive aggregate-capacity dependency. At the next actual source/completion event or existing wake, consume one bounded canonical admission, then ordinary same-carrier publication if head/custody still match. If incumbent refreshes first, retain b4ff and apply only its two additions to the actual successor. Never push synthetic previews or old26.
+Follow-on runtime3528080/updater9cb/probe2edbb/source7f1dc remains unchanged. Preparedcb274+actualmaineb46 produces clean8d126: only capability-broker differs from previous prepared composition and exactly retains incoming main; all other320jobs unchanged. One of12 adoption files differs from branch source: brain_gateway retained-source citation extraction already present in prior composition. Chat/chat_stream and numeric/log functions stay unchanged. This prepares final integration; it is not a final binding or installed proof. Reconcile actual qualified A1 landing and newest continuity before the same follow-on single PR. Reuse accepted T11/QLedger/T5local649/T12real300claim/context-consumer/20textcases+bear/169updater/12fileprobe proof.
 
-Follow-on runtime3528080/updater9cb/probe2edbb/source7f1dc remain unchanged; accepted T5/T11/T12,20textcases+bear,12fileprobe and169updater checks are reused. Prospective cb274+maind925 is clean/tree12ba386; actual qualified A1 landing and latest continuity still require reconciliation before the same follow-on single PR. T12 real300claim metadata/typedDiscovery and T5local649 outputs remain bounded local consumption, not installed adoption or model/PIT proof.
-
-After qualified A1 landing bind17-file probe ANDasset projector; prove updater/install/process/servedassets/authAPI-DOM/eightstates/naturalowner/comprehension. Follow-on separately owes12files/actualupdatercopy/API-admin/numeric-internallog/CLI/Discovery adoption. Source and current-main comparison/admission are retained in a1-current-release.json. OriginalFabricIDs/unknowns/refusals/capacity remain protected; all final flagsfalse. SESSION END: DURABLE_EXECUTION_RUNNING.
+After A1 merge bind17fileprobe ANDassetprojector; prove normalupdater/install/process/assets/authAPI-DOM/eightvisualstates/naturalowner/comprehension. Followon separately owes12files/updatercopy/API-admin/numeric-internallog/CLI/Discovery adoption. Preserve all original Fabric IDs/unknowns/refusals/capacity; allfinalflagsfalse. SESSION END: DURABLE_EXECUTION_RUNNING.
 
 ## 2026-10-15 A1 repair published
 

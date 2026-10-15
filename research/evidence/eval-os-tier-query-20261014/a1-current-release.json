@@ -1,25 +1,76 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T18:53:31.895876+00:00",
+  "updated_at": "2026-10-15T20:27:09.057851+00:00",
   "a1_pr": 6651,
-  "incumbent_refresh": {
-    "parents": [
-      "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-      "32bbb313dcc4df8939664ac6ffd8b7115bf0f717"
+  "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+  "published_at": "2026-10-15T20:21:22.130224+00:00",
+  "same_carrier": true,
+  "ordinary_publication": {
+    "at": "2026-10-15T20:21:01.378579+00:00",
+    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "preview_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+    "changed_incoming_jobs": [
+      "capability-broker"
     ],
-    "tree": "5820d76771dea4a60a0c8328442f87d673bffdf3",
-    "merge_tree_equals_incumbent_tree": true,
-    "production_paths_compared": 17,
-    "changed_production_paths": [],
-    "all_7_asset_source_paths_covered_by_17_unchanged_files": true,
-    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "old": "624465a40a80cb2e34ff26c4a058d2de4244b26d"
+    "incoming_job_definitions_preserved": true,
+    "a1_job_unchanged": true,
+    "production_files_17_unchanged": true,
+    "source_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "config/provider_native_capabilities.v1.json",
+      "engine/provider_native_capabilities.py",
+      "research/NATIVE_CLAUDE_REALM_PROVIDER_CONTROL_V2_ARCHITECTURE_2026-09-14.md",
+      "tests/test_provider_native_capabilities.py"
+    ],
+    "remote": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "clean": true,
+    "admission": "source-publication-admission-20261015T201651.json",
+    "scope": "Reuse accepted A1 closure and controls; incoming provider-only command retained. Fresh hosted checks required.",
+    "push_returncode": 0,
+    "readback": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "published_at": "2026-10-15T20:21:22.130224+00:00"
   },
-  "source_and_plan_only": false,
-  "terminal_binding_checks_pending": false,
+  "admission": {
+    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "no_effects": true,
+    "admission_complete": true,
+    "observed_at": "2026-10-15T20:17:09.284108+00:00",
+    "pr_head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "pr_state": "open",
+    "main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+    "active_pr_proofs": 7,
+    "canonical_unindexed_reservations": 0,
+    "cap": 8,
+    "lease_owner": 9455,
+    "preview_returncode": 0,
+    "publication_admitted": true
+  },
+  "source_and_plan_only": true,
+  "terminal_binding_checks_pending": true,
+  "incumbent_release_pending": true,
   "production_verified": false,
   "programme_complete": false,
-  "next": "On actual capacity/source change or existing wake, one bounded canonical admission/current head check. Publish local b4ff source correction on unchanged 939b if admitted, or apply only its two input additions to the verified incumbent successor. No second manual base integration. Fresh binding CI and incumbent merge, then production verification.",
+  "latest_ci_observation": {
+    "observed_at": "2026-10-15T20:22:31.630322+00:00",
+    "run_id": 38801265500,
+    "attempt": 1,
+    "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "status": "in_progress",
+    "ci_plan": "in_progress",
+    "contract_delta": "in_progress",
+    "plan_artifact_pending": true
+  },
+  "qualified_previous_revision": {
+    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "run_id": 38773271071,
+    "final_artifact_id": 11996491671,
+    "logical_jobs_pass": 127,
+    "semantic_command_steps_pass": 351,
+    "binding_clean_as_of": "2026-10-15T18:08:20Z",
+    "does_not_qualify_current_head": true,
+    "canonical_history_source": "e11aac9de1f3d00ee98240533d62f9bf54a290c6:research/evidence/eval-os-tier-query-20261014/a1-current-release.json"
+  },
   "followon": {
     "qualified_source": "7f1dcf04176ccef68a4d82a20ca846cf95f57120",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
@@ -312,317 +363,51 @@
       "runtime_unchanged": true,
       "a1_carrier_changed": false
     },
-    "published_source_correction": "7f1dcf04176ccef68a4d82a20ca846cf95f57120"
+    "published_source_correction": "7f1dcf04176ccef68a4d82a20ca846cf95f57120",
+    "latest_prepared_main_comparison": {
+      "at": "2026-10-15T20:24:35.454913+00:00",
+      "prepared": "cb274db9ffc5fdb650130837a855c933a3e07160",
+      "current_main": "eb46b820042f27d1f4a517af2df8b158be83d063",
+      "preview_tree": "8d1268e56432bf4ce3c89dd1c365ec45e0234d57",
+      "latest_followon": "e11aac9de1f3d00ee98240533d62f9bf54a290c6",
+      "changed_jobs_from_previous_preview": [
+        "capability-broker"
+      ],
+      "current_main_job_count": 319,
+      "current_job_count": 320,
+      "incoming_command_preserved": true,
+      "preexisting_followon_execution_deltas": [
+        "neural-web"
+      ],
+      "all_other_job_definitions_equal_prior_qualified_preview": true,
+      "runtime_unchanged": true,
+      "diagnostic_correction": "Initial equality-to-main assertion also caught accepted preexisting follow-on execution delta neural-web. Compared against prior qualified composition instead; only capability-broker changes and exactly matches incoming main. No source edit or failed product test.",
+      "scope": "Unreferenced read-only composition preparation only. Latest evidence continuity and actual qualified A1 landing must be reconciled before same follow-on integration; never publish synthetic previews.",
+      "adoption_12_file_comparison": {
+        "count": 12,
+        "changed_from_followon": [
+          "engine/neuralweb/brain_gateway.py"
+        ],
+        "gateway_delta": {
+          "changed_definitions": [
+            "_extract_citations_brain"
+          ],
+          "already_in_previous_prepared_composition": true,
+          "chat_and_chat_stream_ast_unchanged": true,
+          "classification": "Retained-source citation enrichment is inherited main code; native numeric verifier/request correlation and actual log reader source remain accepted. No new runtime source edit or broad rerun. Final release binder must use actual combined source bytes."
+        }
+      }
+    }
   },
+  "next": "Consume original b4 CI38801265500 plan/tested source, terminal semantic evidence and all binding checks; real repair or incumbent-only refresh/merge, then final-source binding and actual production verification. No rerun or second manual A1 base integration.",
   "preserved_boundaries": [
     "incumbent-only A1 refresh/final merge",
     "no second manual A1 integration",
     "original Fabric effects and refusals",
     "all production, model, PIT and consumer adoption obligations"
   ],
-  "qualified_previous_revision": {
-    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-    "original_plan": {
-      "verified_at": "2026-10-15T16:02:07.433839+00:00",
-      "observation_at": "2026-10-15T16:01:31.125692+00:00",
-      "workflow_run_id": 38764340141,
-      "subject_head_sha": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-      "artifact_id": 11986114129,
-      "zip_sha256": "10c577de828b9cea92c0f2307afdb01ecacfe8f96dcedc142558157c50aa90e7",
-      "plan_sha256": "0f6decce7d529033d114c473738abe48f6c527cbd55f8a9e7b49055236fdaf8c",
-      "tested_commit": "75ca7699a5658c28319347d81457478d79a7a20f",
-      "base_sha": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
-      "tested_parents": [
-        "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
-        "624465a40a80cb2e34ff26c4a058d2de4244b26d"
-      ],
-      "tested_git_tree": "e7bfd7430bb8542905fefd678faacbdf65a0197d",
-      "preview_matches": true,
-      "production_paths_match": 17,
-      "eligible_job_count": 127,
-      "a1_job": {
-        "logical_job_id": "eval-os-a1",
-        "pack_index": 10,
-        "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
-        "steps": [
-          {
-            "proof_id": "require Node for actual renderer contracts",
-            "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
-          },
-          {
-            "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
-            "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
-          }
-        ]
-      },
-      "a1_execution_identity_unchanged": true,
-      "binding_checks_pending": false,
-      "scope": "Original plan bound to consumed terminal semantic proof; incumbent source freshness/release and production remain separate."
-    },
-    "terminal_semantic_ci": {
-      "consumed_at": "2026-10-15T16:42:25.522217+00:00",
-      "workflow_run_id": 38764340141,
-      "attempt": 1,
-      "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-      "artifact_id": 11990733639,
-      "zip_sha256": "93d8b85342aaf886d8c646c148e5bbae770b572c5c80b60d3cc5f6c9c23a9856",
-      "canonical_mode": "semantic",
-      "plan_sha256": "0f6decce7d529033d114c473738abe48f6c527cbd55f8a9e7b49055236fdaf8c",
-      "base_sha": "76c38638fac3ac23463a1d27110fe98bfd6e8cd5",
-      "tested_commit": "75ca7699a5658c28319347d81457478d79a7a20f",
-      "jobs": 127,
-      "semantic_command_steps_passed": 351,
-      "blocked": 0,
-      "inherited": 0,
-      "infrastructure_blocking": false,
-      "clear": true,
-      "plan_execution_and_step_identities_match": true,
-      "scope": "Original624465 terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
-    },
-    "binding_checks": {
-      "observed_at": "2026-10-15T16:43:48.914516+00:00",
-      "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-      "verdict": "clean",
-      "binding_problem_names": [],
-      "check_run_count": 26,
-      "status_count": 0,
-      "non_binding": [
-        {
-          "name": "ci-authority/codex/merge-queue-pilot",
-          "conclusion": "failure",
-          "status": "completed"
-        }
-      ]
-    },
-    "scope": "Only predecessor624465. Current939b requires its own fresh binding checks; earlierb2 record remains in Git history."
-  },
-  "last_previous_run_observation": {
-    "observed_at": "2026-10-15T16:43:48.914516+00:00",
-    "pr_state": "open",
-    "head": "624465a40a80cb2e34ff26c4a058d2de4244b26d",
-    "workflow_run_id": 38764340141,
-    "attempt": 1,
-    "status": "completed",
-    "conclusion": "success",
-    "ci_plan": "success",
-    "contract_delta": "success",
-    "packs_passed": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11
-    ],
-    "packs_in_progress": []
-  },
-  "latest_ci_observation": {
-    "observed_at": "2026-10-15T18:02:57.890662+00:00",
-    "pr_state": "open",
-    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "workflow_run_id": 38773271071,
-    "attempt": 1,
-    "status": "completed",
-    "conclusion": "success",
-    "ci_plan": "success",
-    "contract_delta": "success",
-    "packs_passed": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11
-    ],
-    "packs_in_progress": []
-  },
-  "incumbent_release_pending": true,
-  "source_refresh_requirement": {
-    "prior_requirement_satisfied_by": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "current_freshness_decision": "incumbent-owned",
-    "newer_observed_main": "e01a8aee7e5647af37805fa24c13f1f0feebca3c",
-    "source_delta_from_current_proof_base": {
-      "at": "2026-10-15T18:09:10.109527+00:00",
-      "proof_base": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
-      "observed_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
-      "changed_source_paths": [
-        ".github/ci/legacy-jobs.yml",
-        "collectors/base.py",
-        "collectors/yahoo.py",
-        "lib/store.py",
-        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
-        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "research/RESEARCH_CODEGEN_YAHOO_CAPTURE_SOURCE_2026_10_13.md",
-        "templates/chat.html",
-        "templates/terminal_overlay.js",
-        "tests/js/terminal_overlay_readiness.test.cjs",
-        "tests/test_terminal_overlay_contract.py",
-        "tests/test_yahoo_availability_capture.py"
-      ],
-      "generated_path_count": 13325,
-      "main_commits": [
-        "5bb77dbe6bf9225e483e4448f38728e4a5d97915 hot-tape: radar 2026-10-15T18:07Z [skip ci]",
-        "2c9f9a1a88b054a9fb5658793d6db8765b9e3c73 marketing-publish: outbox run 2026-10-15T18:02Z [skip ci]",
-        "1c35abcd198df30366fe08b4dd714d9ec2b359ef feat(research-codegen): retain default-off Yahoo observation receipts (#9099)",
-        "4bdc9d17469ad4a5cd252fa7de9a68f3d1ff3c09 hot-tape: radar 2026-10-15T18:01Z [skip ci]",
-        "7f5395b7b95b89c19bc1bb15809745cfb6c6a6af marketing-publish: outbox run 2026-10-15T17:56Z [skip ci]",
-        "a46c680fda666c909aa921917489fb54f4cc3b50 hot-tape: radar 2026-10-15T17:55Z [skip ci]",
-        "376a038514bb1dffcc4bd9ff770df3a8e6d5b689 marketing-publish: outbox run 2026-10-15T17:50Z [skip ci]",
-        "1144ede655f1374f898f6c5cbc88faa4a072be02 hot-tape: radar 2026-10-15T17:50Z [skip ci]",
-        "e973749f8bce217fa912817eafe0ad103e2b1fa1 earnings-wire: publish current verified records [skip ci]",
-        "9b255a5377385a6b0dab23850e6a6ff67714a5f1 research_vault: catalog 2026-10-15T17:30Z",
-        "84428276f1000fa09af3e450f27386f12e55b1ed render-public: public pages + asset stamps",
-        "49ae34b5b777178f1a57cd7cc7d301feaa488653 Keep Terminal recovery actions visible while navigation stalls (#9464)",
-        "ff1cd929a5ab0d83d16907fe1495ee6ffa7a5c17 earnings-wire: publish current verified records [skip ci]",
-        "40324c2320782efd063ca5e664c547c01843765b marketing-media-backfill: recovered chart URLs 2026-10-15T16:57Z [skip ci]",
-        "efbf80c2a4077cfb8e6f0007da26a3c048f57c3f render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)",
-        "0147ec7124b89818dad3907d6fd9c11382806ae4 engine-render: regime recompute + re-render 2026-10-15 (scope=all)"
-      ],
-      "scope": "Actual source delta only; incumbent alone adjudicates freshness/refresh/merge."
-    },
-    "current_lease": {
-      "observed_at": "2026-10-15T18:19:57.063243+00:00",
-      "readable": true,
-      "owner": null,
-      "active": 14,
-      "unindexed_reservations": 0,
-      "cap": 8
-    },
-    "no_root_refresh_or_merge": true
-  },
-  "original_plan": {
-    "verified_at": "2026-10-15T17:09:09.665037+00:00",
-    "observation_at": "2026-10-15T17:08:15.228558+00:00",
-    "workflow_run_id": 38773271071,
-    "subject_head_sha": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "artifact_id": 11992178667,
-    "zip_sha256": "50983e3141b0a7167d5eea8159e17a14df9f67531f00aef1ba6cd7009012e648",
-    "plan_sha256": "8e801ceafb530364d28e9d8619ad8d73bf8a3271d03324552bb6b8b4f6464f00",
-    "tested_commit": "529cae70cb6ccdb22791ccd745163a75e7d72c9d",
-    "base_sha": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
-    "tested_parents": [
-      "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
-      "939b348451fc1e46b70eee2e55309e4e1756ab98"
-    ],
-    "tested_git_tree": "5820d76771dea4a60a0c8328442f87d673bffdf3",
-    "preview_matches": true,
-    "production_paths_match": 17,
-    "eligible_job_count": 127,
-    "a1_job": {
-      "logical_job_id": "eval-os-a1",
-      "pack_index": 10,
-      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
-      "steps": [
-        {
-          "proof_id": "require Node for actual renderer contracts",
-          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
-        },
-        {
-          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
-          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
-        }
-      ]
-    },
-    "a1_execution_identity_unchanged": true,
-    "binding_checks_pending": false,
-    "scope": "Original current-head plan bound to consumed terminal semantic proof; all other binding checks and incumbent release still separate."
-  },
-  "terminal_semantic_ci": {
-    "consumed_at": "2026-10-15T18:04:03.184632+00:00",
-    "workflow_run_id": 38773271071,
-    "attempt": 1,
-    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "artifact_id": 11996491671,
-    "zip_sha256": "6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6",
-    "canonical_mode": "semantic",
-    "plan_sha256": "8e801ceafb530364d28e9d8619ad8d73bf8a3271d03324552bb6b8b4f6464f00",
-    "base_sha": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
-    "tested_commit": "529cae70cb6ccdb22791ccd745163a75e7d72c9d",
-    "jobs": 127,
-    "semantic_command_steps_passed": 351,
-    "blocked": 0,
-    "inherited": 0,
-    "infrastructure_blocking": false,
-    "clear": true,
-    "plan_execution_and_step_identities_match": true,
-    "scope": "Original939b terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
-  },
-  "binding_checks": {
-    "observed_at": "2026-10-15T18:08:20.162412+00:00",
-    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "verdict": "clean",
-    "binding_problem_names": [],
-    "check_run_count": 26,
-    "status_count": 0,
-    "non_binding": [
-      {
-        "name": "ci-authority/codex/merge-queue-pilot",
-        "conclusion": "failure",
-        "status": "completed"
-      }
-    ]
-  },
-  "a1_prepared_source_correction": {
-    "at": "2026-10-15T18:48:12.894031+00:00",
-    "source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
-    "parent": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-    "job_count": 320,
-    "added_inputs": [
-      "collectors/yahoo.py",
-      "lib/stooq.py"
-    ],
-    "scope": "Only eval-os-a1 declaration changes. All job execution definitions, other path lists, prior memberships and limits preserved. No base integration or publication.",
-    "reused_qualification": "a1-yahoo-two-input-qualification.json: exact same repair on incoming-main preview, 1210 closure with 0 misses and three controls passed; no product changes.",
-    "published": false,
-    "clean": true,
-    "current_main_reuse": {
-      "at": "2026-10-15T18:52:11.185992+00:00",
-      "a1_source": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
-      "main": "d925921fc6af801d15412a518a93406e2417dc88",
-      "preview_tree": "78065b00d491564f35ff9b65010382a05825afe6",
-      "job_count": 320,
-      "changed_job_from_qualified_preview": [
-        "research-price-panel"
-      ],
-      "incoming_changed_job_execution_and_memberships_preserved": true,
-      "preexisting_additive_paths_retained": [
-        "engine/k3e_eval1_forward.py",
-        "engine/pick_forward_dist.py",
-        "engine/seasonality/multiplicity.py"
-      ],
-      "a1_job_including_paths_unchanged": true,
-      "new_main_source_matches_a1_scopes": {
-        "engine/entry_radar/replay/rs_pullback_launch_labels.py": [],
-        "tests/test_entry_radar_rs_pullback_launch_labels.py": []
-      },
-      "reuse_basis": "Only new-main source changes are outside the previously qualified complete A1 closure; A1 declared input set and execution are unchanged. Incoming research-price-panel execution and path memberships are preserved with the same pre-existing three additive paths. Fresh hosted checks remain required.",
-      "initial_overstrict_equality_assertion": "Initial whole-job equality to main failed because three already accepted A1 paths are additive; no source error or mutation. Exact new-main execution and membership containment now verified.",
-      "followon_prepared_preview_exit": 0,
-      "followon_prepared_preview_output": "12ba386d8b3fc2eee28aa06b60a870519e429ce4\n",
-      "not_a_followon_carrier_integration": true
-    },
-    "admission": {
-      "at": "2026-10-15T18:49:47.251916+00:00",
-      "pr_head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
-      "main": "d925921fc6af801d15412a518a93406e2417dc88",
-      "lease_owner": null,
-      "active_pr_proofs": 11,
-      "reservations": 0,
-      "cap": 8,
-      "publication_admitted": false
-    }
+  "local_guard_event": {
+    "at": "2026-10-15T20:26:08Z",
+    "effect": "CI observation rejected locally before transport because 300 seconds had not elapsed. No API observation, clock reset or alternate reader. Continue source publication work."
   }
 }
