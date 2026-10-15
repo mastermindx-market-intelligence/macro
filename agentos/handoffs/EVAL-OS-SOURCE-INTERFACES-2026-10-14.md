@@ -157,8 +157,10 @@ next_actions:
   admission7active/cap8/0reservations and cleanpreview2f90626 with actualmain9c37ad.
   Six exact dependency additions preserve319branchdefinitions/prior paths/commands/limits.
   Current-main source preview passes3controls/fullclosure0/strict136-135-129jobs.
-  Original run38733137011 on1bb has genuine contract-deltaFAILURE and remains bound to1bb.
-  Consume the new3f exact-head run/plan/terminalartifact and bindingchecks; incumbent alone
+  Original run38733137011 on1bb has contract-delta and browser-step failures, bound to1bb.
+  Current3f run38738100398 has plan+contractPASS at13:03:39;12packsRUNNING. PlanZIP and
+  tested7010/base9c37/tree2f906 match admittedpreview;17files/A1execution unchanged.
+  Consume original terminalartifact/bindingchecks, especially browserpack6 and A1pack9; incumbent alone
   refreshes/finalmerges. No second manualbaseintegration or duplicate producer/controller.
   After qualifiedmerge proceed through normal deployment and production verification.
 
@@ -188,7 +190,7 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-A1 PR6651 is published at3f34040de3a5 after normal capacity admission and verified readback at12:53:44Z. Original run38733137011 correctly rejected four undeclared international-chart dependencies. The correction adds those four exact inputs plus the receipt helper/schema newly reached through current main's build_security_master. All319branch execution definitions, prior paths, eight A1 suites, limits and product files remain intact. An isolated current-main source preview passes three controls, zero closure misses and strict136/135/129jobs within existing weight/pack limits. Main9c37's later changes are only data/site paths, leaving qualified source/CI bytes unchanged; its preview is clean. The local qualification snapshot is not a release revision or a second carrier base integration. See `research/evidence/eval-os-tier-query-20261014/a1-six-input-repair-20261015.json`. Fresh hosted binding checks, incumbent merge and production proof remain required.
+A1 PR6651 is published at3f34040de3a5 after normal capacity admission and verified readback at12:53:44Z. Original run38733137011 correctly rejected four undeclared international-chart dependencies. The correction adds those four exact inputs plus the receipt helper/schema newly reached through current main's build_security_master. All319branch execution definitions, prior paths, eight A1 suites, limits and product files remain intact. An isolated current-main source preview passes three controls, zero closure misses and strict136/135/129jobs within existing weight/pack limits. Main9c37's later changes are only data/site paths, leaving qualified source/CI bytes unchanged; its preview is clean. The local qualification snapshot is not a release revision or a second carrier base integration. See `research/evidence/eval-os-tier-query-20261014/a1-six-input-repair-20261015.json`. Fresh run38738100398 has plan+contract-deltaPASS at13:03:39Z, with all12packs still running. Its original plan ZIP/canonical hash and tested7010/base9c37/tree2f906 match the admitted preview;127jobs/A1pack9 and17productionfile/A1execution identities are verified. Original1bb pack6 separately failed the International DOM step while its exact base passed, so the canonical pr_regression classification is preserved. The same11-file Node command passed180tests locally on original24b with Node20.20.2/Python3.12.13/Playwright1.63.0 on macOS; this is diagnosis, not Linux CI acceptance or a waiver. The fresh browser check, all remaining binding checks, incumbent merge and production proof remain required.
 
 Follow-on runtime/CI3528080 remains unchanged with20supplied-textcases plus legacybear and accepted T11/T5/T12/QLedger source proof. No follow-onPR, installed numeric/internal-log proof, model/PIT proof or real adoption is claimed. After A1 landing, reconcile final source/capacity and release this same follow-on. Original unknown/refused effects and all completion flags remain unchanged.
 
