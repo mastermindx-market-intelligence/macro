@@ -547,7 +547,7 @@ def test_workflow_invariants_unchanged_and_pinned_wiring_is_scoped():
     assert '. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"' in text
     assert '${{ steps.ingest.outputs.rc }}' in text
     assert '${{ steps.source_freshness.outputs.rc }}' in text
-    assert "if: ${{ always() && !inputs.materialize_only }}" in text
+    assert "if: ${{ always() && steps.checkout.outcome == 'success' && !inputs.materialize_only }}" in text
 
 
 def test_admission_step_admits_the_selector_from_the_same_variable():
@@ -614,3 +614,29 @@ def test_ingest_step_pinned_branch_is_fixed_and_scoped():
     assert 'echo "rc=$pinned_rc" >> "$GITHUB_OUTPUT"' in run
     assert "legacy fallback is not permitted" in run
     assert FIXED_PREFIX not in PREPARATION_REFUSAL
+
+
+@pytest.mark.parametrize("checkout", ["skipped", "failure", "success"])
+@pytest.mark.parametrize("step_name", [
+    "commit catalog snapshot (salvage-push)",
+    "grade Research Vault source-content freshness",
+    "research vault id-set census (read-only)",
+    "upload census report",
+])
+def test_post_steps_require_current_checkout_even_with_always(checkout, step_name):
+    # These workflow predicates are conjunctions. Evaluate their actual terms for
+    # a refused admission (checkout skipped), failed checkout, and a later ingest
+    # failure after a successful checkout. always() remains true in all cases:
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/expressions#always
+    condition = _step_by_name(_workflow_doc(), step_name)["if"]
+    terms = [term.strip() for term in condition.removeprefix("${{").removesuffix("}}").split("&&")]
+    values = {
+        "always()": True,
+        "steps.checkout.outcome == 'success'": checkout == "success",
+        "!inputs.materialize_only": True,
+        "github.event_name == 'workflow_dispatch'": True,
+        "inputs.run_census": True,
+    }
+    assert "always()" in terms  # Preserve salvage/census after an ingest failure.
+    allowed = all(values[term] for term in terms)
+    assert allowed is (checkout == "success")

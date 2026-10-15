@@ -264,8 +264,10 @@ jobs:
       # reads) — the PDFs + corpus.sqlite live in R2, never in git. The excerpts
       # payload is deterministic + timestamp-free, so an hour with no new/changed
       # reports produces no diff and no commit.
+      # A refused first-step admission skips checkout. Never salvage stale runner
+      # files or run the optional census/upload without this run's checkout.
       - name: commit catalog snapshot (salvage-push)
-        if: ${{ always() && !inputs.materialize_only }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && !inputs.materialize_only }}
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
@@ -314,11 +316,11 @@ jobs:
       # the failure step so a census is still taken on an hour whose ingest failed
       # — that is exactly the hour whose id sets an operator wants to see.
       - name: research vault id-set census (read-only)
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && github.event_name == 'workflow_dispatch' && inputs.run_census }}
         run: |
           python -m scripts.research_vault_census --json "$RUNNER_TEMP/rv_census.json"
       - name: upload census report
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && github.event_name == 'workflow_dispatch' && inputs.run_census }}
         uses: actions/upload-artifact@v4
         with:
           name: research-vault-census
