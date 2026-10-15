@@ -695,3 +695,91 @@ def test_prophet_scope_refuses_unbound_or_unusable_ledger(tmp_path, change):
             'T1_HIT' if change == 'changed_outcome' else '2026-10-16')
         ledger.write_text(json.dumps(row) + '\n')
     assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def _prophet_plan_fixture(tmp_path):
+    root, row, ledger = _prophet_scope_fixture(tmp_path,
+        price_basis_date='2026-09-30', recorded_at='2026-10-01')
+    plan = {key: value for key, value in row.items() if key not in (
+        'outcome', 'stock_result_pct', 'days_held', 'close_date')}
+    plan.update(schema='prophet.trade_plan/v1', asof='2026-10-01',
+        entry=51.8, invalidation=46.22, targets=[60.17, 68.54], trigger=51.8,
+        entry_status='bounce_wait', authority_tier='display')
+    path = root / 'site/prophet/plans' / (row['id'] + '.json')
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(plan))
+    return root, row, plan, path
+
+
+def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path):
+    import hashlib
+    from engine.press import writer
+    root, row, plan, path = _prophet_plan_fixture(tmp_path)
+    original = path.read_bytes()
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    fact, = [f for f in slot['facts'] if f['id'].startswith('prophet_plan_')]
+    assert fact['values'] == ['51.8', '46.22', '60.17', '68.54']
+    assert fact['dated'] == '2026-10-01'
+    assert 'Historical paper-plan thresholds' in fact['text']
+    assert 'bounce_wait' in fact['context_relevance']
+    assert 'display' in fact['context_relevance']
+    assert 'not executed prices or achieved returns' in fact['context_relevance']
+    assert 'not an instruction to trade' in fact['context_relevance']
+    assert slot['source_revisions']['artifact:site/prophet/plans/' + path.name] == (
+        'sha256:' + hashlib.sha256(original).hexdigest())
+    _, prompt = writer.build_prompt(slot, P.load_config(root))
+    assert fact['text'] in prompt and fact['context_relevance'] in prompt
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize('field,value', [
+    ('asset', 'VNO'), ('entry_date', '2026-10-01'),
+    ('price_basis_date', None), ('signal_provisional', False),
+    ('recorded_at', '2026-10-16'), ('asof', '2026-10-16'),
+    ('confirmed_date', '2026-10-01'), ('integrity_status', 'quarantined'),
+    ('entry', True), ('invalidation', float('nan')), ('targets', [60.17, None]),
+    ('targets', [44.0, 68.54]), ('entry_status', 'invented status'),
+    ('origination_mode', 'outage_backfill_fixture'),
+])
+def test_prophet_plan_refuses_mismatch_bad_geometry_or_unqualified_clock(tmp_path, field, value):
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    plan[field] = value
+    path.write_text(json.dumps(plan))
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_uses_canonical_corrections_and_binds_receipt(tmp_path):
+    root, row, plan, path = _prophet_plan_fixture(tmp_path)
+    plan['price_basis_date'] = None
+    path.write_text(json.dumps(plan))
+    correction = {'schema': 'prophet.plan_correction/v1',
+        'id': row['id'] + ':price_basis:20261002', 'corrects_id': row['id'],
+        'field': 'price_basis_date', 'old_value': None, 'new_value': '2026-09-30',
+        'basis': 'Fixture native price session', 'corrected_at': '2026-10-02',
+        'evidence': {'price_source': 'fixture', 'published_entry': 51.8}}
+    corr = root / 'data/prophet/plan_corrections.jsonl'
+    corr.write_text(json.dumps(correction) + '\n')
+    slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
+    assert any(f['id'].startswith('prophet_plan_') for f in slot['facts'])
+    assert 'artifact:data/prophet/plan_corrections.jsonl' in slot['source_revisions']
+    correction['corrected_at'] = '2026-10-16'
+    corr.write_text(json.dumps(correction) + '\n')
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_mutation_during_projection_refuses_slot(tmp_path, monkeypatch):
+    from engine import prophet_integrity as I
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    native = I.load_effective_plans
+    def racing_read(repo):
+        result = native(repo)
+        path.write_text(json.dumps(dict(plan, entry=52.0)))
+        return result
+    monkeypatch.setattr(I, 'load_effective_plans', racing_read)
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []
+
+
+def test_prophet_plan_duplicate_native_identity_refuses_slot(tmp_path):
+    root, _, plan, path = _prophet_plan_fixture(tmp_path)
+    (path.parent / 'duplicate.json').write_text(json.dumps(dict(plan, entry=52.0)))
+    assert P.plan(['brief'], as_of='2026-10-15', root=root) == []

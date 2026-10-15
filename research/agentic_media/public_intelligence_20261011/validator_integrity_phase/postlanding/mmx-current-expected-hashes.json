@@ -2,7 +2,7 @@
   "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
   "scripts/run_press.py": "6d8d4a566d44ad3f7bb6c42763b0d1d951f6d3d850594525e85f10e84afed1fb",
   "engine/press/validators.py": "568f8cb0cca985e76e3a5aba16b53c51e7ce3db20c98b46f4339f3812ec2771c",
-  "engine/press/desk_planner.py": "93bed297a32ea5c890ecc002c26f3c23b06c37f452d642252789b695b8a8550a",
+  "engine/press/desk_planner.py": "d488f6c614e1545125a5c5169e798d2a5d074721f46b510ac8528653010fad9a",
   "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
   "engine/press/earnings_adapter.py": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
   "engine/earnings_narrative/story_packets.py": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",

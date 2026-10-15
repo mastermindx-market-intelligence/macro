@@ -214,6 +214,62 @@ with tempfile.TemporaryDirectory(prefix="mmx-research-pool-") as directory:
             "quarantined": [{"id": row["id"], "reason": "fixture refusal"}]}))
         assert brief() == []
         controls.append("prophet-stale-future-quarantined-refused")
+        (ledger.parent / 'ledger_quarantine.json').unlink()
+        row.update(price_basis_date='2026-07-12', recorded_at='2026-07-13')
+        ledger.write_text(json.dumps(row) + '\n')
+        native_plan = {key: value for key, value in row.items() if key not in (
+            'outcome', 'stock_result_pct', 'days_held', 'close_date')}
+        native_plan.update(schema='prophet.trade_plan/v1', asof='2026-07-13',
+            entry=51.8, invalidation=46.22, targets=[60.17, 68.54], trigger=51.8,
+            entry_status='bounce_wait', authority_tier='display')
+        plan_path = path / 'site/prophet/plans' / (row['id'] + '.json')
+        plan_path.parent.mkdir(parents=True)
+        plan_path.write_text(json.dumps(native_plan))
+        slot, = brief()
+        detail, = [f for f in slot['facts'] if f['id'].startswith('prophet_plan_')]
+        assert detail['values'] == ['51.8', '46.22', '60.17', '68.54']
+        assert detail['dated'] == '2026-07-13'
+        assert 'Historical paper-plan thresholds' in detail['text']
+        assert 'not executed prices or achieved returns' in detail['context_relevance']
+        assert detail['context_relevance'] in W.build_prompt(slot, cfg)[1]
+        assert slot['source_revisions']['artifact:site/prophet/plans/' + plan_path.name] == 'sha256:' + sha(plan_path)
+        controls.append('native-plan-thresholds-dated-limited-and-byte-bound')
+        for field, value in (('asset', 'OTHER'), ('entry_date', '2026-07-14'),
+                             ('asof', '2026-07-27'), ('integrity_status', 'quarantined'),
+                             ('entry', True), ('targets', [44.0]),
+                             ('origination_mode', 'outage_backfill_fixture')):
+            plan_path.write_text(json.dumps(dict(native_plan, **{field: value})))
+            assert brief() == []
+        plan_path.write_text(json.dumps(native_plan))
+        controls.append('native-plan-mismatch-future-quarantine-and-geometry-refusals')
+        correction_path = ledger.parent / 'plan_corrections.jsonl'
+        correction = {'schema': 'prophet.plan_correction/v1', 'id': row['id'] + ':price:fix',
+            'corrects_id': row['id'], 'field': 'price_basis_date', 'old_value': None,
+            'new_value': '2026-07-12', 'basis': 'Fixture native price session',
+            'corrected_at': '2026-07-14', 'evidence': {'price_source': 'fixture'}}
+        plan_path.write_text(json.dumps(dict(native_plan, price_basis_date=None)))
+        correction_path.write_text(json.dumps(correction) + '\n')
+        slot, = brief()
+        assert 'artifact:data/prophet/plan_corrections.jsonl' in slot['source_revisions']
+        correction['corrected_at'] = '2026-07-27'
+        correction_path.write_text(json.dumps(correction) + '\n')
+        assert brief() == []
+        correction_path.unlink()
+        plan_path.write_text(json.dumps(native_plan))
+        controls.append('native-plan-correction-consumed-and-future-correction-refused')
+        from engine import prophet_integrity as I
+        original_loader = I.load_effective_plans
+        def racing_read(repo):
+            result = original_loader(repo)
+            plan_path.write_text(json.dumps(dict(native_plan, entry=52.0)))
+            return result
+        with patch.object(I, 'load_effective_plans', side_effect=racing_read):
+            assert brief() == []
+        plan_path.write_text(json.dumps(native_plan))
+        controls.append('native-plan-changed-input-refused')
+        (plan_path.parent / 'alias.json').write_text(json.dumps(native_plan))
+        assert brief() == []
+        controls.append('native-plan-duplicate-identity-refused')
         assert writer.call_count == 0
 
 assert before == snapshot() and before_head == head()

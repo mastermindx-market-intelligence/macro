@@ -886,7 +886,79 @@ def chronicle_context(as_of: date, *, tickers=None, topics=None,
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, str]]:
+def _prophet_plan_fact(root, row: dict, projection, revisions: dict,
+                       as_of: date) -> dict | None:
+    """Original native geometry, explicitly historical and never trade authority.
+
+    Missing plans leave the existing compact closure alone. A present but
+    inconsistent plan refuses that story; its parameters must not pad receipts.
+    """
+    from engine.prophet_integrity import is_reconstructed, load_plan_corrections
+
+    ref = row['id']
+    plan = projection.plans.get(ref)
+    if plan is None:
+        return None
+    rel = f'site/prophet/plans/{ref}.json'
+    if (rel not in revisions or ref in projection.quarantined_ids
+            or is_reconstructed(plan) or is_reconstructed(row)):
+        raise ValueError('unqualified native plan')
+    for key in ('id', 'asset', 'direction', 'signal_date', 'signal_date_basis',
+                'source_marker_date', 'entry_date', 'price_basis_date',
+                'recorded_at', 'confirmed_date', 'signal_provisional'):
+        if plan.get(key) != row.get(key):
+            raise ValueError('native plan/ledger mismatch')
+    for key in ('asof', 'recorded_at', 'price_basis_date', 'entry_date', 'signal_date'):
+        value = plan.get(key)
+        if (not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value)
+                or _as_date(value) is None or _as_date(value) > as_of
+                or value > row['close_date']):
+            raise ValueError('unqualified native plan clock')
+    corrections = load_plan_corrections(root / 'data/prophet/plan_corrections.jsonl')
+    if any(c['corrects_id'] == ref and _as_date(c['corrected_at']) > as_of
+           for c in corrections):
+        raise ValueError('future native correction')
+    values = [plan.get('entry'), plan.get('invalidation')]
+    targets = plan.get('targets')
+    if not isinstance(targets, list) or not 1 <= len(targets) <= 3:
+        raise ValueError('unqualified target geometry')
+    values += targets
+    trigger = plan.get('trigger')
+    if trigger is not None:
+        values.append(trigger)
+    if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in values):
+        raise ValueError('unqualified plan level')
+    entry, invalidation = values[:2]
+    direction = plan.get('direction')
+    if not ((direction == 'BULL' and invalidation < entry < min(targets)) or
+            (direction == 'BEAR' and invalidation > entry > max(targets))):
+        raise ValueError('inconsistent plan geometry')
+    status, authority = plan.get('entry_status'), plan.get('authority_tier')
+    if any(not isinstance(v, str) or not re.fullmatch(r'[a-z_]{1,40}', v)
+           for v in (status, authority)):
+        raise ValueError('unqualified plan status')
+    fmt = lambda value: format(value, '.12g')
+    text = (f'Historical paper-plan thresholds for {plan["asset"]}, recorded '
+            f'{plan["recorded_at"]}, price basis {plan["price_basis_date"]}: '
+            f'entry reference ${fmt(entry)}; invalidation threshold ${fmt(invalidation)}; '
+            f'hypothetical target levels {", ".join("$" + fmt(v) for v in targets)}.')
+    if trigger is not None:
+        text += f' Activation trigger ${fmt(trigger)}.'
+    fact = _fact('prophet_plan_' + ref, text, ref='prophet_plan:' + ref,
+                 tier='first_party', values=list(dict.fromkeys(values)),
+                 dated=plan['recorded_at'], source_name='Mastermind corrected Prophet plan')
+    fact['context_relevance'] = (
+        f'Historical simulated plan; entry_status={status}; authority_tier={authority}. '
+        'Parameters are not executed prices or achieved returns, not independent market '
+        'observations, and not an instruction to trade. No recorded confirmation is '
+        'invented; use the linked closure scope and its original signal clocks.')
+    fact['input_revisions'] = {f'artifact:{path}': 'sha256:' + digest
+        for path, digest in revisions.items() if digest is not None and (
+            path == rel or path.startswith('data/prophet/'))}
+    return fact
+
+
+def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, str, list]]:
     """Bind paper-plan limits to the incumbent corrected, non-quarantined event.
 
     Chronicle intentionally carries a compact outcome. Its consumer must retain
@@ -894,17 +966,23 @@ def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, 
     The native adapter owns the event/return calculation; no producer is rewritten.
     """
     from engine.chronicle.adapters import adapt_prophet_ledger  # noqa: PLC0415
-    from engine.prophet_integrity import load_effective_ledger  # noqa: PLC0415
+    from engine.prophet_integrity import load_effective_ledger, load_effective_plans  # noqa: PLC0415
 
     root = repo_root(root)
     paths = [root / 'data/prophet' / name for name in (
-        'ledger.jsonl', 'ledger_corrections.jsonl', 'ledger_quarantine.json')]
+        'ledger.jsonl', 'ledger_corrections.jsonl', 'ledger_quarantine.json',
+        'plan_corrections.jsonl')]
     def snapshot():
-        return [hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None
-                for p in paths]
+        current = paths + sorted((root / 'site/prophet/plans').glob('*.json'))
+        return {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+                if p.exists() else None for p in current}
     try:
         before = snapshot()
+        plan_ids = [json.loads((root / path).read_bytes()).get('id')
+                    for path in before if path.startswith('site/prophet/plans/')]
+        ambiguous = {ref for ref in refs if plan_ids.count(ref) > 1}
         projection = load_effective_ledger(root)
+        plans = load_effective_plans(root)
         events, _ = adapt_prophet_ledger(root)
         if before != snapshot():
             return {}
@@ -917,7 +995,7 @@ def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, 
     result = {}
     for event in events:
         ref = event["source_ref"]
-        if ref not in refs:
+        if ref not in refs or ref in ambiguous:
             continue
         rows = by_id.get(ref, [])
         if len(rows) != 1 or ref in projection.quarantined_ids:
@@ -952,7 +1030,16 @@ def _prophet_scopes(root, as_of: date, refs: set[str]) -> dict[str, tuple[dict, 
             f'entry={clock("entry_date")}; closed={clock("close_date")}. '
             'A legacy alias is not a fresh signal. No company-event causality is evidenced.'
         )
-        result[ref] = (event, scope)
+        try:
+            detail = _prophet_plan_fact(root, row, plans, before, as_of)
+        except (ValueError, TypeError, KeyError):
+            continue
+        result[ref] = (event, scope, [detail] if detail else [])
+    try:
+        if before != snapshot():
+            return {}
+    except OSError:
+        return {}
     return result
 
 
@@ -993,6 +1080,7 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
             continue
 
         lead = _event_fact(ev)
+        plan_facts = []
         if ev.get("source") == "prophet_ledger":
             bound = prophet_scopes.get(str(ev.get("source_ref") or ""))
             if bound is None or any(ev.get(key) != bound[0].get(key) for key in (
@@ -1000,6 +1088,7 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
             )):
                 continue
             lead["context_relevance"] = bound[1]
+            plan_facts = bound[2]
         revision_receipt = str(lead.get("receipt") or "").lower()
         if ev.get("source") == "earnings_call" and not _SHA256_RECEIPT_RE.fullmatch(
             revision_receipt
@@ -1019,7 +1108,7 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
         # A brief must be OUR read of the day, not a wire rewrite: every slot
         # carries the day's first-party engine context alongside the event so
         # the our-value floor is reachable without padding.
-        facts = [lead] + stats + movers
+        facts = [lead] + plan_facts + stats + movers
         tickers = [str(t) for t in (ev.get("tickers") or [])]
         ctx = chronicle_context(as_of, tickers=tickers or None, root=root)
 
@@ -1041,6 +1130,8 @@ def _plan_brief(cfg: dict, desk_cfg: dict, as_of: date, root,
         source_revisions = (
             {ref: revision_receipt} if ev.get("source") == "earnings_call" else {}
         )
+        for fact in plan_facts:
+            source_revisions.update(fact['input_revisions'])
         event_title = str(ev.get("title") or "")
         if ev.get("source") == "earnings_call":
             from engine.chronicle.earnings_calls import sanitize_untrusted_prose  # noqa: PLC0415
