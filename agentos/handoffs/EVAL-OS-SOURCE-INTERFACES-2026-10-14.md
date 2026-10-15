@@ -152,16 +152,17 @@ unresolved:
 - Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
   Protected merge and all production proof remain owed.
 next_actions:
-- A1 PR6651/headff7912003742 remains open; originalCI38716442763/attempt1 at11:03:50Oct15 has
-  plan, contract-delta and11packs passed; only10 running. Original pack9 artifact11967139028
-  digest verified and canonically consumed,13jobs/27semantic command steps passed including both A1 steps. Originalplan/tested1ac926/basefb596 and
-  17productionfiles proof retained. Consume final evidence and binding checks; repair actual failure
-  or continue incumbent final merge. Incumbent alone owns next refresh and merge; no second manual base integration.
+- A1 PR6651/headff7912003742 remains open. OriginalCI38716442763/attempt1 completedSUCCESS
+  11:13:45Oct15; original finalartifact11967297948 ZIPdigest verified and canonical loader/gate consumed
+  127jobs/350semantic commandstepsPASS,0inherited/blocked/infrastructurefailure. Not unit-test or zero-skip
+  counts. Exact tested1ac926/basefb596/sourceff identity retained; incumbent controller38726698591 was
+  running11:23. Consume its decision and preserve any admitted refresh/fresh checks before final merge.
+
 - Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
   eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
   reviewer accepted without content correction, not independent/blind model review.8newcase+2CIcontrolsPASS,
   zero fullclosure misses and strict134/134/128jobs within unchanged limits.314execution definitions and
-  evaluator functions preserved. See policy-contracts-20261015.json. Publish on the same follow-on branch;
+  evaluator functions preserved. See policy-contracts-20261015.json. Published669debca88fb on the same follow-on branch;
   open its single PR only after A1 landing and final-base/capacity reconciliation. Reuse prior proof.
 - After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
   authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
