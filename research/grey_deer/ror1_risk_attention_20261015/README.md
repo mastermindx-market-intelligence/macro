@@ -112,6 +112,43 @@ replays to the exact same JSON findings receipt hash
 `429605fc52fba14f63253416674f8ba5abfb5d97db89b6939e222d962a3cf979`.
 No original source artifacts were edited and no production service was invoked.
 
+## Source-native verdict date lost in Neural Web compact export
+
+Sixth independently read original source:
+`data/neuralweb/world_state.json`, Git blob
+`5a79f3a14b90bad891d0fdba808c5176ea9fe51d` at the same
+Macro main observation. Its verdict is **50/MIXED as of October 13**
+(`world_state.verdict.asof`), while world-state `produced_at` is
+October 14 19:32:19Z. The compact plane uses
+`build_market_plane() -> _asof_of(world_state)`, which falls back to
+the **processing timestamp** because world_state has no top-level
+`asof`/`as_of`, so the plane labels itself October 14. Its verdict
+projection copies label/score but not native verdict `asof`.
+Top-level plane `stale=false` is a separate world-state freshness
+decision; it does not certify the verdict's native session.
+
+This is a **confirmed provenance-field omission**, not proof that the
+October 13 reading was stale at 15:35 ET before the October 14 close.
+The safest consumer-compatible response is to retain a typed native
+verdict source session and input-health qualifier **additively** in
+the existing plane projection, without treating `produced_at` as
+the observed market session, recomputing risk, or changing forecast
+and capital permissions. Route eventual code changes to the existing
+Neural Web owner with current source custody and consumer tests.
+
+Accepted five-source inputs/receipt remain immutable. Additive
+`evidence/plane_provenance_inputs_20261015.json` and
+`evidence/plane_provenance_findings_20261015.json` preserve the six-source
+same-pin view. Its full ledger consists of the previous five qualified
+artifact findings **plus** `VERDICT_SOURCE_SESSION_LOST`.
+The new receipt SHA256 is
+`2e842e286f19e2b11303670b878434f7b8eb2c4d05b3a39f7f1839c96d6c8a25`.
+Two new test-first cases prove date-loss detection and no-false-finding
+when native source session survives the plane projection.
+
+Reproduce with the same `audit_artifact_consistency.py --bundle`
+command above, pointing at the new `plane_provenance_inputs` file.
+
 ## Next acceptance
 
 Native source-vintage/issuance-bound episode replay, a predeclared negative
