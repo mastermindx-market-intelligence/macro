@@ -180,7 +180,7 @@ def test_library_trade_link_follows_rendered_panel_without_qualifying_data(cgl, 
     assert not BeautifulSoup(render_fixture(mode="stocks", cgl=cgl), "html.parser").select("#intl-trade-supply-links")
 
 
-def render_history_fixture():
+def render_history_fixture(history_sources=None):
     """Real page with isolated synthetic EOD and explicit test-only History permissions."""
     from tempfile import TemporaryDirectory
     from unittest.mock import patch
@@ -192,7 +192,8 @@ def render_history_fixture():
         data_root = Path(directory)
         frame, _ = _setup(data_root)
         workspace = build_intl._publication_workspace(
-            frame, data_root=data_root, evaluated_at=EVALUATED, history_sources=args["sources"])
+            frame, data_root=data_root, evaluated_at=EVALUATED,
+            history_sources=args["sources"] if history_sources is None else history_sources)
         with patch(__name__ + "._workspace_overviews", return_value=workspace):
             return render_fixture()
 

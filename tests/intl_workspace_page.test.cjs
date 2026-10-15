@@ -69,6 +69,61 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 const sourceChartHtml = new Map();
+let historyEventFixture;
+function historyEventDisclosureFixture() {
+  if(!historyEventFixture) historyEventFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+import json
+from engine.intl_inputs import countries
+from tests.test_intl_workspace_history_render import EVENT_CASES, event_source
+from tests.test_intl_workspace_integration import render_history_fixture
+cases = [dict(market=market, kind=kind, expected=EVENT_CASES[kind])
+         for market, kind in zip(countries(), EVENT_CASES)]
+assert len(cases) == len(EVENT_CASES)
+sources = {case['market']: event_source(case['kind'], case['market']) for case in cases}
+print(json.dumps(dict(html=render_history_fixture(history_sources=sources), cases=cases)))
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return historyEventFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`History attached-change disclosures preserve their source states ${theme} ${lang}`,async()=>{
+    const fixture=historyEventDisclosureFixture();
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const panel=page.locator('[data-im-history-panel]');
+      const picker=panel.locator('select[data-im-action="select_market"]');
+      for(const {market,kind,expected} of fixture.cases) {
+        await picker.selectOption(market);
+        const article=panel.locator(`[data-im-history-market="${market}"]`);
+        assert.equal(await article.isVisible(),true);
+        const heading=article.locator('h4').filter({hasText:'Attached changes'});
+        const state=heading.locator('xpath=following-sibling::*[1]');
+        const text=await state.innerText();
+        assert.ok(text.includes(expected[lang==='en'?0:1]),JSON.stringify({market,kind,lang,text}));
+        assert.equal(/No qualified changes supplied|此市场尚未提供符合条件的变化记录/.test(text),kind==='empty');
+        assert.equal(await article.locator('.intl-history__timeline').count(),kind==='available'?1:0);
+        assert.equal(await article.locator('time').count(),kind==='available'?1:0);
+        if(kind!=='available') assert.doesNotMatch(await article.textContent(),/MA turn|均线转折|record.turn.events:0/);
+        assert.equal(await article.locator('[data-im-history-status]').innerText(),lang==='en'?'Recomputed observations':'重新计算的观测');
+        assert.match((await article.locator('tbody th').allTextContents()).join(' '),/2026-01-03T00:00:00\.123456789\+09:00/);
+        for(const width of [320,1440]) {
+          await page.setViewportSize({width,height:900});
+          assert.equal(await state.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${kind} ${lang} ${width}`);
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+          if(width===320&&kind==='metadata_denied'&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+            fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+            await page.evaluate(()=>document.fonts.ready);
+            await article.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+            await article.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`history-event-disclosure-${theme}-${lang}-320.png`)});
+          }
+        }
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=history'});
+  });
+}
+
 let staleMacroComponentHtml;
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`

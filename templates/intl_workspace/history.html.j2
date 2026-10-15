@@ -57,6 +57,9 @@
         {% if s.events.records %}<ol class="intl-history__timeline">
           {% for event in s.events.records %}<li><time>{{ event.event_date|e }}</time><p>{{ words(event.text_en,event.text_zh) }}</p><small>{{ words('Recomputed change','重新计算的变化') }} · {{ event.evidence_ref|e }}</small></li>{% endfor %}
         </ol><p class="intl-history__muted">{{ words('Only the changes attached to this market are included. This is not a complete alert history.','仅包含此市场附带的变化记录，并非完整提醒历史。') }}</p>
+        {% elif s.events.status == 'denied' %}<p>{{ words('Attached changes withheld.','附带变化记录未披露。') }}</p>
+        {% elif s.events.status == 'unknown' %}<p>{{ words('Disclosure of attached changes is unknown.','附带变化记录的披露状态未知。') }}</p>
+        {% elif s.events.reason == 'wrong_market' %}<p>{{ words('Supplied changes do not match this market.','已提供的变化记录与此市场不匹配。') }}</p>
         {% else %}<p>{{ words('No qualified changes supplied for this market.','此市场尚未提供符合条件的变化记录。') }}</p>{% endif %}
         <aside class="intl-history__boundary"><h4>{{ words('Original-known history unavailable','当时已知的历史不可用') }}</h4><p>{{ words('Immutable original vintages and first-known times have not been supplied.','尚未提供不可变的原始版本及首次获知时间。') }}</p>
           <p>{{ words('No linked revision records are available. This does not establish that the source was never revised.','暂无关联的修订记录。这不代表来源从未修订。') }}</p></aside>

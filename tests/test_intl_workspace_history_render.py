@@ -1,6 +1,7 @@
 from copy import deepcopy
 from pathlib import Path
 from html.parser import HTMLParser
+from bs4 import BeautifulSoup
 import pytest
 from jinja2 import Environment,FileSystemLoader
 from lib.intl_history_mount import attach_history
@@ -89,3 +90,55 @@ def test_reset_and_context_confirmations_are_separate_hidden_actions():
         assert 'hidden' in next(a for _,a in nodes if attr in a)
     actions={a.get('data-im-scenario-action') for _,a in nodes}
     assert {'calculate','request_reset','confirm_reset','cancel_reset','confirm_context','cancel_context','set_tab'}<=actions
+
+
+EVENT_CASES = {
+    'metadata_denied': ('Attached changes withheld.', '附带变化记录未披露。'),
+    'value_denied': ('Attached changes withheld.', '附带变化记录未披露。'),
+    'metadata_unknown': ('Disclosure of attached changes is unknown.', '附带变化记录的披露状态未知。'),
+    'value_unknown': ('Disclosure of attached changes is unknown.', '附带变化记录的披露状态未知。'),
+    'empty': ('No qualified changes supplied for this market.', '此市场尚未提供符合条件的变化记录。'),
+    'wrong_market': ('Supplied changes do not match this market.', '已提供的变化记录与此市场不匹配。'),
+    'available': ('MA turn', '均线转折'),
+}
+
+
+def event_source(kind, market='JP'):
+    """Synthetic native History inputs; these grants are test-only."""
+    _, args = fixture()
+    source = args['sources']['JP']
+    source['history_read']['market_id'] = market
+    source['history_read']['identity']['market_id'] = market
+    source['track_record']['market_id'] = market
+    source['turn_events'] = [source['turn_events'][0]]
+    source['turn_events'][0]['market_id'] = market
+    if kind.startswith('metadata_'):
+        state = kind.removeprefix('metadata_')
+        source['capabilities']['events'] = dict(metadata=state, value=state)
+    elif kind.startswith('value_'):
+        source['capabilities']['events']['value'] = kind.removeprefix('value_')
+    elif kind == 'empty':
+        source['turn_events'] = []
+    elif kind == 'wrong_market':
+        source['turn_events'][0]['market_id'] = 'OTHER'
+    return source
+
+
+@pytest.mark.parametrize('kind', EVENT_CASES)
+def test_event_disclosure_state_is_not_reported_as_empty_history(kind):
+    source = event_source(kind)
+    before = deepcopy(source)
+    text = render(lambda w, a: a['sources'].update(JP=source))
+    article = BeautifulSoup(text, 'html.parser').select_one('[data-im-history-market="JP"]')
+    heading = next(h for h in article.find_all('h4') if 'Attached changes' in h.get_text())
+    state = heading.find_next_sibling()
+    for expected in EVENT_CASES[kind]:
+        assert expected in state.get_text()
+    assert ('No qualified changes supplied' in state.get_text()) == (kind == 'empty')
+    assert ('MA turn' in str(article)) == (kind == 'available')
+    assert ('record.turn.events:0' in str(article)) == (kind == 'available')
+    assert ('<time>' in str(article)) == (kind == 'available')
+    # The independent history read and its date remain available.
+    assert 'Recomputed observations' in article.get_text()
+    assert '2026-01-03T00:00:00.123456789+09:00' in article.get_text()
+    assert source == before
