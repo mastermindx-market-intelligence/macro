@@ -643,6 +643,16 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
         if latest < older:
             return False, (f"SOURCE_REGRESSION: local latest {latest} predates "
                            f"remote source latest {older}")
+        if latest > older and remote_update is not None:
+            # A later session can still carry an OLDER source generation.
+            # A known remote collector revision needs a comparable local
+            # observation even when the session date itself advanced.
+            if latest_update is None:
+                return False, ("SOURCE_REVISION_UNVERIFIED: newer local session "
+                               "has no original collector UTC revision")
+            if latest_update < remote_update:
+                return False, ("SOURCE_REVISION_REGRESSION: newer session source "
+                               "has an older collector revision than remote")
         if latest == older:
             # Source session dates are not revision IDs. Any same-day
             # correction must retain newer original collector evidence.
