@@ -25184,6 +25184,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # R17: synthetic intraday outcome conformance, without changing W5 daily labels.
+      - "engine/entry_radar/replay/rs_pullback_launch_labels.py"
+      - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       # R15: the existing phase1 tests now reach both native 30m pivot families.
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
@@ -26088,6 +26091,7 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
           tests/test_ptse_breadth_observation.py

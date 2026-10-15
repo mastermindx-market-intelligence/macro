@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-15T07:58:14.785296+00:00",
+  "source_base": "bc9e1f143d06bf33ca889babfe29653082107804",
+  "ordinary_pytest_cases": 210,
+  "subtests": 113,
+  "junit": {
+    "tests": 323,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_parameterized_cases": 53,
+  "native_xml_sha256": "548012aab5355ec8ec40223922cad0c7ab57feb29789bcdf3a0a24e7b3f804ec",
+  "module_sha256": "fe95aec53f8f8ea621eed85f6456185d53df81214861cf147f9ef7dccfca87b2",
+  "test_sha256": "e03afbef5b4f34330158ebfdd580fb967e1d98036cc1451a10e880b2ded634a9",
+  "unchanged_owners": {
+    "engine/entry_radar/replay/outcomes.py": true,
+    "engine/entry_radar/replay/prereg.py": true,
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": true,
+    "lib/dataos/identity.py": true,
+    "scripts/build_security_master.py": true
+  },
+  "market_labels_computed": false,
+  "product_ranking_authority": false,
+  "hosted_ci_pass": false
+}
