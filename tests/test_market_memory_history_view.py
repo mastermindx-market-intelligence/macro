@@ -81,3 +81,45 @@ def test_macro_projection_requires_exact_paired_source_digest(monkeypatch,tmp_pa
     assert 'id="mmh-benchmark-heading"' in html
     with pytest.raises(ValueError):
         module().export_browser(root,tmp_path/'bad.html',expected_manifest_sha256=r['manifest_sha256'],macro_path=path)
+
+
+def test_asset_reads_are_explicit_utf8(monkeypatch, tmp_path):
+    root, receipt = archive(monkeypatch, tmp_path)
+    old = Path.read_text
+    assets = {'theme.css', 'market_memory_retained.css', 'market_memory_history.css', 'market_memory_history.js'}
+    seen = set()
+    def checked(path, *args, **kwargs):
+        if path.name in assets:
+            assert kwargs.get('encoding') == 'utf-8', 'locale-dependent asset decoding'
+            seen.add(path.name)
+        return old(path, *args, **kwargs)
+    monkeypatch.setattr(Path, 'read_text', checked)
+    module().export_browser(root, tmp_path / 'utf8.html', expected_manifest_sha256=receipt['manifest_sha256'])
+    assert seen == assets
+
+
+def test_browser_macro_payload_contains_no_revision_end_metadata(monkeypatch, tmp_path):
+    from tests.test_market_memory_history_macro import packet
+    from engine.neuralweb.market_memory_history_macro import build_macro_chronology, write_macro_chronology
+    root, receipt = archive(monkeypatch, tmp_path)
+    chronology = build_macro_chronology(packet(), start='2020-01-01', end='2020-03-31')
+    source = tmp_path / 'macro.json'
+    source_receipt = write_macro_chronology(chronology, source)
+    dest = tmp_path / 'no-revision-hindsight.html'
+    module().export_browser(root, dest, expected_manifest_sha256=receipt['manifest_sha256'],
+        macro_path=source, expected_macro_sha256=source_receipt['sha256'])
+    html = dest.read_text(encoding='utf-8')
+    encoded = re.search(r'<script id="mmh-macro-data"[^>]*>([^<]+)</script>', html).group(1)
+    payload = json.loads(gzip.decompress(base64.b64decode(encoded)))
+    assert 'first_vintage_valid_through' not in payload['columns']
+    assert payload['metadata']['revision_end_metadata'] == 'withheld_from_daily_projection'
+    assert json.loads(source.read_text())['events'][0]['first_vintage_valid_through'] == '2020-03-10'
+
+
+def test_browser_budget_refusal_preserves_its_specific_reason(monkeypatch, tmp_path):
+    root, receipt = archive(monkeypatch, tmp_path)
+    manifest = json.loads((root / 'manifest.json').read_text())
+    m = module()
+    monkeypatch.setattr(m, 'MAX_BROWSER_BYTES', 1)
+    with pytest.raises(m.HistoricalExperienceError, match='browser decoded source exceeds budget'):
+        m._columnar(root, manifest, 'states', receipt['manifest_sha256'])

@@ -202,3 +202,48 @@ def test_empty_source_keeps_declared_denominator_without_inventing_price(monkeyp
 def test_capture_cutoff_is_normalized_to_utc_by_existing_temporal_owner():
     m=module()
     assert m.utc('2024-01-15T23:59:59-05:00').isoformat()=='2024-01-16T04:59:59+00:00'
+
+
+# Independent integration-review reproducers: do not weaken the retained archive.
+def test_day_reader_discloses_stored_calculation_vintage(monkeypatch, tmp_path):
+    m, root, receipt = make_archive(monkeypatch, tmp_path)
+    manifest = json.loads((root / 'manifest.json').read_text())
+    manifest['feature_version'] = 'retained-older-features.v0'
+    manifest['artifact_id'] = m._semantic_identity(manifest)
+    raw = m._bytes(manifest)
+    (root / 'manifest.json').write_bytes(raw)
+    result = m.read_day(root, '2020-01-05', expected_manifest_sha256=m._hash(raw))
+    assert result['feature_version'] == 'retained-older-features.v0'
+    assert result['feature_version_matches_reader'] is False
+    assert result['source_code_sha256'] == manifest['source_code_sha256']
+    assert result['rows'][0]['close_tradj'] == 52.0
+
+
+@pytest.mark.parametrize('missing', ['sources', 'feature_version', 'source_code_sha256',
+                                     'state_schema', 'states_sha256', 'outcomes_sha256'])
+def test_missing_read_contract_fields_refuse_typed(monkeypatch, tmp_path, missing):
+    m, root, receipt = make_archive(monkeypatch, tmp_path)
+    manifest = json.loads((root / 'manifest.json').read_text())
+    del manifest[missing]
+    manifest['artifact_id'] = m._semantic_identity(manifest)
+    raw = m._bytes(manifest)
+    (root / 'manifest.json').write_bytes(raw)
+    with pytest.raises(m.HistoricalExperienceError):
+        m.read_day(root, '2020-01-05', expected_manifest_sha256=m._hash(raw))
+
+
+def test_exhausted_build_budget_refuses_before_another_source_read(monkeypatch):
+    m = module()
+    r = request()
+    r['symbols'].append({'vendor_symbol': 'OTHER', 'refs': [['2026-10-13', 'b' * 64]]})
+    calls = []
+    def reader(*args, **kwargs):
+        calls.append(kwargs['max_rows'])
+        if len(calls) > 1:
+            pytest.fail('exhausted budget must refuse before another source read')
+        return fake_reader(*args, **kwargs)
+    monkeypatch.setattr(m, 'MAX_TOTAL_ROWS', 10)
+    monkeypatch.setattr(m, 'read_research_history', reader)
+    with pytest.raises(m.HistoricalExperienceError, match='total row budget'):
+        m.assemble_history(r)
+    assert calls == [10]

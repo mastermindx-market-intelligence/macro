@@ -43,8 +43,8 @@ __all__ = ["main", "make_parser"]
 # engine package also resolves when this file is executed by path.  Importing
 # this module as ``scripts.market_memory_history`` needs no adjustment.
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+# Always pin ahead of ambient or sibling-repository import paths.
+sys.path.insert(0, str(_REPO_ROOT))
 
 try:  # the real archive module exists only inside the commissioned checkout
     from engine.neuralweb.market_memory_history_archive import (
@@ -53,16 +53,18 @@ try:  # the real archive module exists only inside the commissioned checkout
         read_manifest,
         write_archive,
     )
-except ImportError:  # pragma: no cover - reachable only outside the checkout
+    from engine.neuralweb.market_memory_history_dossier import build_daily_dossier
+    from engine.neuralweb.market_memory_history_view import export_browser
+except ImportError:
     assemble_history = None  # type: ignore[assignment]
     read_day = None  # type: ignore[assignment]
     read_manifest = None  # type: ignore[assignment]
     write_archive = None  # type: ignore[assignment]
+    build_daily_dossier = None  # type: ignore[assignment]
+    export_browser = None  # type: ignore[assignment]
 
-from engine.neuralweb.market_memory_history_dossier import build_daily_dossier
-from engine.neuralweb.market_memory_history_view import export_browser
-
-_ARCHIVE_CALLABLES = ("assemble_history", "write_archive", "read_manifest", "read_day")
+_ARCHIVE_CALLABLES = ("assemble_history", "write_archive", "read_manifest", "read_day",
+                      "build_daily_dossier", "export_browser")
 MAX_INPUT_BYTES = 128 * 1024
 _SHA256_PATTERN = re.compile(r"\A[0-9a-fA-F]{64}\Z")
 _DATE_PATTERN = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
@@ -97,7 +99,7 @@ def _sha256_argument(text: str) -> str:
         raise argparse.ArgumentTypeError(
             "--manifest-sha256 must be exactly 64 hexadecimal characters"
         )
-    return text
+    return text.lower()
 
 
 def _date_argument(text: str) -> str:
@@ -179,6 +181,7 @@ def _macro_binding(args: argparse.Namespace) -> dict:
 
 
 def _run_dossier(args: argparse.Namespace) -> dict:
+    _require_archive_module()
     binding=_macro_binding(args)
     return build_daily_dossier(Path(args.archive),args.date,
         expected_manifest_sha256=args.manifest_sha256,
@@ -186,6 +189,7 @@ def _run_dossier(args: argparse.Namespace) -> dict:
 
 
 def _run_export(args: argparse.Namespace) -> dict:
+    _require_archive_module()
     binding=_macro_binding(args)
     return export_browser(Path(args.archive),Path(args.output),
         expected_manifest_sha256=args.manifest_sha256,

@@ -32,7 +32,12 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
     root,parts=workspace._split_ref(ref)
     if parts[-1]!='manifest.json':raise WorkspaceError('HISTORY_MANIFEST_REF_REQUIRED')
     if macro_ref is not None:
-        workspace._split_ref(macro_ref)
+        _, macro_parts = workspace._split_ref(macro_ref)
+        # Historical state/outcome partitions are Parquet. They cannot be
+        # opened through the optional first-print JSON channel, even to reject
+        # their contents later. Normal source-owner path guards remain in force.
+        if not macro_parts[-1].endswith('.json'):
+            raise WorkspaceError('HISTORY_MACRO_JSON_REF_REQUIRED')
         if type(macro_sha256) is not str or not _HEX.fullmatch(macro_sha256):
             raise WorkspaceError('INVALID_HISTORY_BINDING')
     prefix=root.alias+':'+('/'.join(parts[:-1])+'/' if len(parts)>1 else '')

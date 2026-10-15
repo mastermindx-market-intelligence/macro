@@ -76,6 +76,8 @@ The same date with separately bound macro first releases:
 
 Dates must be real, zero-padded ISO dates; no nearest-date fallback occurs. Digests are 64 lowercase hexadecimal characters. `macro_ref` and `macro_sha256` must appear together. `ref` is a descriptor-confined source reference, never an absolute path or URL. Source reads are bounded by the existing DataWorkspace owner and the archive's hash, schema, record and decoded-byte limits; the response retains each observed source version, content hash, and query receipt. Refusals leave no partial result.
 
+The optional macro reference must end in `.json`; a historical Parquet partition is refused before it is opened. Source and calculation versions remain explicit, with full provenance accessible in the same exact manifest. The response separately declares encoded-file and decoded-table budgets; these are not peak-process-memory limits. Later revision-end metadata is omitted from date projections, and the declared macro archive window does not prove calendar completeness.
+
 The default does not read outcome files at all. Only an explicit outcome-analysis task may add `"reveal_outcomes":true`. The returned `summary` describes selected proxies, not whole-market breadth. `coverage` lists unavailable news/causal context, consensus, filings, historical stock identity, intraday/options and strict point-in-time proof rather than filling gaps. First-release chronology is not a full historical macro revision matrix.
 
 This action does not run a strategy, collect a source, refresh data, create a ledger entry, write an artifact, or change a live signal. The separate existing Lab remains the strategy-experiment interface.

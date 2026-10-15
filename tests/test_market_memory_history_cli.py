@@ -456,3 +456,32 @@ class TestDossierAndExport:
         args+=['--date','2020-02-13'] if command=='dossier' else ['--output','/new.html']
         code,out,err=run_cli(args,capsys)
         assert code==1 and 'together' in json.loads(err)['error'] and not out
+
+
+def test_cli_import_failure_has_reachable_compact_error(monkeypatch, capsys):
+    import builtins
+    import importlib.util
+    original = builtins.__import__
+    unavailable = {'engine.neuralweb.market_memory_history_archive',
+                   'engine.neuralweb.market_memory_history_dossier',
+                   'engine.neuralweb.market_memory_history_view'}
+    def guarded(name, *args, **kwargs):
+        if name in unavailable:
+            raise ImportError('simulated missing source dependency')
+        return original(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, '__import__', guarded)
+    spec = importlib.util.spec_from_file_location('history_cli_missing_dependency', Path(cli.__file__))
+    candidate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(candidate)
+    for command in ('inspect', 'dossier', 'export'):
+        args = [command, '--archive', 'not-opened', '--manifest-sha256', SHA256]
+        if command == 'dossier': args += ['--date', '2020-01-05']
+        if command == 'export': args += ['--output', 'not-written.html']
+        assert candidate.main(args) == 1
+        captured = capsys.readouterr()
+        assert captured.out == '' and 'Traceback' not in captured.err
+        assert 'unavailable' in json.loads(captured.err)['error']
+
+
+def test_cli_normalizes_accepted_hex_case():
+    assert cli._sha256_argument('ABCDEF01' * 8) == 'abcdef01' * 8

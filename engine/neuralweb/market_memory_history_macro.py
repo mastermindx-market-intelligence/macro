@@ -109,12 +109,20 @@ def select_macro_date(chronology: dict, calendar_date: str, *, limit: int=100) -
     _validate(chronology)
     if type(limit) is not int or not 1<=limit<=200:
         raise HistoricalExperienceError('one to 200 first-print rows per date response')
-    selected=[r for r in chronology['events'] if r['calendar_date']==day]
+    # Revision-end metadata is only learned later. Omit it uniformly (rather
+    # than mask conditionally, which would still reveal that a revision exists).
+    # The exact retained chronology is unchanged and remains inspectable.
+    selected=[{k:v for k,v in r.items() if k!='first_vintage_valid_through'}
+              for r in chronology['events'] if r['calendar_date']==day]
     return {'schema':SCHEMA,'chronology_id':chronology['chronology_id'],'calendar_date':day,
         'events':selected[:limit],'total_events':len(selected),'remaining_events':max(0,len(selected)-limit),
         'date_basis':'fred_realtime_start_date_only','pit_backtest_eligible':False,
         'intraday_publication_time_known':False,'full_revision_history':False,'units_retained':False,
-        'source_rows_sha256':chronology['source_rows_sha256']}
+        'source_rows_sha256':chronology['source_rows_sha256'],
+        'revision_end_metadata':'withheld_from_daily_projection',
+        'declared_archive_window':{'start':chronology['start'],'end':chronology['end']},
+        'within_declared_archive_window':chronology['start']<=day<=chronology['end'],
+        'calendar_completeness_proven':False}
 
 
 def _validate(chronology: dict) -> None:
@@ -123,6 +131,8 @@ def _validate(chronology: dict) -> None:
             or chronology.get('units_retained') is not False):
         raise HistoricalExperienceError('invalid first-print chronology contract')
     _flags(chronology)
+    if _day(chronology.get('start'))>_day(chronology.get('end')):
+        raise HistoricalExperienceError('reversed chronology dates')
     if type(chronology.get('events')) is not list or len(chronology['events'])>MAX_ROWS:
         raise HistoricalExperienceError('first-print chronology row budget exceeded')
     identity={k:v for k,v in chronology.items() if k!='chronology_id'}

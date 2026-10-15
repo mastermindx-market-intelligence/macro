@@ -25173,6 +25173,20 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - collectors/biocatalyst/__init__.py
+      - engine/biocatalyst/__init__.py
+      - engine/capital_structure/__init__.py
+      - engine/close_pass/__init__.py
+      - engine/codex_lane/__init__.py
+      - engine/context_index/__init__.py
+      - engine/earnings_narrative/__init__.py
+      - engine/earnings_release/__init__.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/intelligence_workspace/adapters/__init__.py
+      - engine/marketing/__init__.py
+      - engine/oracle/__init__.py
+      - engine/press/__init__.py
+      - engine/seasonality/__init__.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
@@ -27288,6 +27302,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - scripts/__init__.py
+      - tests/__init__.py
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
@@ -27414,6 +27431,9 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - collectors/__init__.py
+      - scripts/__init__.py
+      - tests/__init__.py
       - config/delisted_symbols.yml
       # issuer_group_allowlist: read by scripts/build_security_master.py since the
       # D2 Identity Atlas merge (#5932) — the import-closure contract

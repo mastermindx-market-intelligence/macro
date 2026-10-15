@@ -65,3 +65,18 @@ def test_missing_return_is_not_a_flat_or_negative_proxy(monkeypatch,tmp_path):
     assert result['summary']['valid_return_count']==0
     assert result['summary']['flat_proxy_count']==0
     assert result['summary']['missing_return_count']==1
+
+
+@pytest.mark.parametrize('key', ['intraday_publication_time_known', 'full_revision_history', 'units_retained'])
+def test_direct_composition_refuses_macro_qualification_upgrade(monkeypatch, tmp_path, key):
+    from tests.test_market_memory_history_archive import make_archive
+    from engine.neuralweb.market_memory_history_macro import build_macro_chronology, select_macro_date
+    from tests.test_market_memory_history_macro import packet
+    from engine.neuralweb.market_memory_history_dossier import compose_daily_dossier
+    from engine.neuralweb.market_memory_history import HistoricalExperienceError
+    ar, root, receipt = make_archive(monkeypatch, tmp_path)
+    market = ar.read_day(root, '2020-02-13', expected_manifest_sha256=receipt['manifest_sha256'])
+    macro = select_macro_date(build_macro_chronology(packet(), start='2020-01-01', end='2020-03-31'), '2020-02-13')
+    macro[key] = True
+    with pytest.raises(HistoricalExperienceError):
+        compose_daily_dossier(market, macro)

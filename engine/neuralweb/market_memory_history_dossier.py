@@ -10,7 +10,7 @@ from pathlib import Path
 
 from engine.neuralweb.market_memory_history import HistoricalExperienceError
 from engine.neuralweb.market_memory_history_archive import read_day
-from engine.neuralweb.market_memory_history_macro import read_macro_chronology,select_macro_date
+from engine.neuralweb.market_memory_history_macro import read_macro_chronology,select_macro_date,_flags
 
 SCHEMA='market_memory.daily_dossier.v1'
 
@@ -57,8 +57,12 @@ def compose_daily_dossier(market: dict, macro: dict | None=None) -> dict:
     if macro is None:
         macro={'status':'SOURCE_NOT_SELECTED','calendar_date':market_date,'events':[],
                'reason':'No exact first-print chronology reference was selected.'}
-    elif macro.get('calendar_date')!=market_date or macro.get('pit_backtest_eligible') is not False:
-        raise HistoricalExperienceError('verified macro packet must match the exact requested date')
+    else:
+        if (type(macro) is not dict or macro.get('calendar_date')!=market_date
+                or macro.get('units_retained') is not False
+                or macro.get('date_basis')!='fred_realtime_start_date_only'):
+            raise HistoricalExperienceError('verified macro packet must match the exact requested date')
+        _flags(macro)
     return {'schema':SCHEMA,'market_date':market_date,'mode':market['mode'],
         'retrospective_only':True,'outcomes_revealed':'outcomes' in market,
         'market':market,'macro':macro,'summary':summary,

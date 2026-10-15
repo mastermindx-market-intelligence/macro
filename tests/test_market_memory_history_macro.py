@@ -82,3 +82,42 @@ def test_roundtrip_verified_chronology_and_tamper_refusal(tmp_path):
     with pytest.raises(FileExistsError):m.write_macro_chronology(c,out)
     out.write_text('{}')
     with pytest.raises(ValueError):m.read_macro_chronology(out,expected_sha256=r['sha256'])
+
+
+def test_daily_projection_withholds_revision_end_metadata_without_mutating_evidence():
+    m = module()
+    original = m.build_macro_chronology(packet(), start='2020-01-01', end='2020-03-31')
+    before = json.dumps(original, sort_keys=True)
+    changed = packet()
+    changed['rows'][0]['realtime_end'] = '2021-12-31T00:00:00'
+    later = m.build_macro_chronology(resign(changed), start='2020-01-01', end='2020-03-31')
+    a = m.select_macro_date(original, '2020-02-13')
+    b = m.select_macro_date(later, '2020-02-13')
+    assert all('first_vintage_valid_through' not in row for row in a['events'])
+    assert a['events'] == b['events']
+    assert a['revision_end_metadata'] == 'withheld_from_daily_projection'
+    assert original['events'][0]['first_vintage_valid_through'] == '2020-03-10'
+    assert json.dumps(original, sort_keys=True) == before
+
+
+def test_macro_projection_distinguishes_archive_window_from_empty_date():
+    m = module()
+    chronology = m.build_macro_chronology(packet(), start='2020-01-01', end='2020-03-31')
+    inside = m.select_macro_date(chronology, '2020-01-05')
+    outside = m.select_macro_date(chronology, '2019-12-31')
+    assert inside['events'] == outside['events'] == []
+    assert inside['within_declared_archive_window'] is True
+    assert outside['within_declared_archive_window'] is False
+    assert inside['declared_archive_window'] == {'start': '2020-01-01', 'end': '2020-03-31'}
+    assert inside['calendar_completeness_proven'] is False
+
+
+@pytest.mark.parametrize('key', ['start', 'end'])
+def test_missing_macro_window_field_is_a_typed_refusal(key):
+    m = module()
+    chronology = m.build_macro_chronology(packet(), start='2020-01-01', end='2020-03-31')
+    del chronology[key]
+    unsigned = {k: v for k, v in chronology.items() if k != 'chronology_id'}
+    chronology['chronology_id'] = 'mmfirst_' + hashlib.sha256(m._bytes(unsigned)).hexdigest()
+    with pytest.raises(m.HistoricalExperienceError):
+        m.select_macro_date(chronology, '2020-02-13')

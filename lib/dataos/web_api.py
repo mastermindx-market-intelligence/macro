@@ -37,7 +37,11 @@ def _lab():
 def validate_request(raw: Any) -> dict:
     if not isinstance(raw, dict) or not isinstance(raw.get("action"), str):
         raise WorkspaceError("INVALID_REQUEST")
-    if len(json.dumps(raw, allow_nan=False, separators=(",", ":")).encode()) > MAX_REQUEST_BYTES:
+    try:
+        encoded = json.dumps(raw, allow_nan=False, separators=(",", ":")).encode()
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise WorkspaceError("INVALID_REQUEST") from exc
+    if len(encoded) > MAX_REQUEST_BYTES:
         raise WorkspaceError("REQUEST_TOO_LARGE")
     return raw
 
@@ -243,8 +247,11 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
             history={"source_access":"existing_descriptor_confined_roots",
                      "mode":"RETROSPECTIVE_EXPLORATORY","point_in_time_eligible":False,
                      "max_proxy_symbols":64,"max_macro_records_per_date":100,
+                     "max_price_file_bytes":256*1024*1024,
                      "max_decoded_price_file_bytes":64*1024*1024,
-                     "required_evidence":"exact manifest digest; paired optional macro reference and digest",
+                     "budget_is_peak_process_memory_limit":False,
+                     "provenance":"compact per-source digests; full source detail in the retained manifest",
+                     "required_evidence":"exact manifest digest; paired optional JSON macro reference and digest",
                      "outcomes":"excluded unless explicitly revealed"},
             freshness="stored data clocks where available; filesystem mtime is not freshness",
             access="host bindings and the existing Studio account-scoped transport")

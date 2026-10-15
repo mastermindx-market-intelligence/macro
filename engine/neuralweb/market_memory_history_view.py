@@ -32,11 +32,11 @@ def _columnar(root: Path, manifest: dict, kind: str, manifest_sha: str) -> dict:
             raise HistoricalExperienceError('browser source file digest mismatch')
         try:
             pf=pq.ParquetFile(pa.BufferReader(payload),pre_buffer=False)
-            if pf.metadata.num_rows != record['rows']:
-                raise HistoricalExperienceError('browser source row count mismatch')
-            if sum(pf.metadata.row_group(i).total_byte_size for i in range(pf.metadata.num_row_groups)) > MAX_BROWSER_BYTES:
-                raise HistoricalExperienceError('browser decoded source exceeds budget')
             try:
+                if pf.metadata.num_rows != record['rows']:
+                    raise HistoricalExperienceError('browser source row count mismatch')
+                if sum(pf.metadata.row_group(i).total_byte_size for i in range(pf.metadata.num_row_groups)) > MAX_BROWSER_BYTES:
+                    raise HistoricalExperienceError('browser decoded source exceeds budget')
                 table=pf.read(use_threads=False)
             finally:
                 pf.close()
@@ -48,6 +48,8 @@ def _columnar(root: Path, manifest: dict, kind: str, manifest_sha: str) -> dict:
                 rows.append([row.get(c) for c in columns])
             if len(rows)>MAX_TOTAL_ROWS:
                 raise HistoricalExperienceError('browser row budget exceeded')
+        except HistoricalExperienceError:
+            raise
         except (ValueError,TypeError,KeyError,OSError) as exc:
             raise HistoricalExperienceError('invalid browser source payload') from exc
     if kind=='states' and any(c.startswith(('forward_','outcome')) for c in columns or []):
@@ -89,16 +91,19 @@ def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: s
     if macro_path is not None:
         from engine.neuralweb.market_memory_history_macro import read_macro_chronology
         macro=read_macro_chronology(macro_path,expected_sha256=expected_macro_sha256)
-        columns=['calendar_date','series','period','value','first_vintage_valid_through','source_units']
+        columns=['calendar_date','series','period','value','source_units']
         macro_events=len(macro['events'])
         payload={'mode':MODE,'manifest_sha256':expected_manifest_sha256,
                  'macro_sha256':expected_macro_sha256,'columns':columns,
                  'rows':[[r[c] for c in columns] for r in macro['events']],
-                 'metadata':{k:macro[k] for k in ('chronology_id','source','source_rows_sha256','coverage','limitations')}}
+                 'metadata':{**{k:macro[k] for k in ('chronology_id','source','source_rows_sha256','coverage','limitations')},
+                     'revision_end_metadata':'withheld_from_daily_projection',
+                     'declared_archive_window':{'start':macro['start'],'end':macro['end']},
+                     'calendar_completeness_proven':False}}
         macro_data,macro_payload_sha=_packed(payload)
     templates=Path(__file__).resolve().parents[2]/'templates'
-    css='\n'.join((templates/name).read_text() for name in ('theme.css','market_memory_retained.css','market_memory_history.css'))
-    js=(templates/'market_memory_history.js').read_text()
+    css='\n'.join((templates/name).read_text(encoding='utf-8') for name in ('theme.css','market_memory_retained.css','market_memory_history.css'))
+    js=(templates/'market_memory_history.js').read_text(encoding='utf-8')
     env=Environment(loader=FileSystemLoader(templates),undefined=StrictUndefined,autoescape=True)
     html=env.get_template('market_memory_history.html.j2').render(
         css=css,js=js,state_data=state_data,state_sha=state_sha,

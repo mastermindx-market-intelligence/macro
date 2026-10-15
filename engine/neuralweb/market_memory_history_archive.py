@@ -155,10 +155,13 @@ def assemble_history(request: dict) -> dict:
     total = 0
     for item in request['symbols']:
         symbol = item['vendor_symbol']
+        remaining = MAX_TOTAL_ROWS - total
+        if remaining <= 0:
+            raise HistoricalExperienceError('historical input total row budget exceeded')
         history = read_research_history(
             'eod-bars', symbol, item['refs'], request['warmup_start'], request['end'],
             request['capture_cutoff'], acknowledge_hindsight=True,
-            max_partitions=32, max_rows=min(100_000, MAX_TOTAL_ROWS-total),
+            max_partitions=32, max_rows=min(100_000, remaining),
         )
         rows = list(history.rows)
         total += len(rows)
@@ -235,6 +238,34 @@ def _validate_semantics(manifest: dict, *, allow_legacy: bool) -> None:
             or manifest.get('authority') != dict(AUTHORITY)):
         raise HistoricalExperienceError('historical manifest cannot grant admission')
     request = _validate_request(manifest.get('request'))
+    feature = manifest.get('feature_version')
+    code = manifest.get('source_code_sha256')
+    if (manifest.get('state_schema') != HISTORY_SCHEMA
+            or type(feature) is not str or not 1 <= len(feature) <= 128
+            or type(code) is not dict or not 1 <= len(code) <= 16
+            or any(type(k) is not str or not 1 <= len(k) <= 120
+                   or type(v) is not str or not _HEX.fullmatch(v) for k, v in code.items())
+            or any(type(manifest.get(k)) is not str or not _HEX.fullmatch(manifest[k])
+                   for k in ('states_sha256', 'outcomes_sha256'))):
+        raise HistoricalExperienceError('historical calculation vintage or read contract invalid')
+    sources = manifest.get('sources')
+    if (type(sources) is not dict
+            or set(sources) != {item['vendor_symbol'] for item in request['symbols']}):
+        raise HistoricalExperienceError('historical source provenance missing or inconsistent')
+    for source in sources.values():
+        if (type(source) is not dict or type(source.get('reader_metadata')) is not dict
+                or type(source.get('input_rows')) is not int
+                or not 0 <= source['input_rows'] <= MAX_TOTAL_ROWS
+                or type(source.get('input_rows_sha256')) is not str
+                or not _HEX.fullmatch(source['input_rows_sha256'])
+                or type(source.get('source_partitions')) is not list
+                or not 1 <= len(source['source_partitions']) <= 32):
+            raise HistoricalExperienceError('historical source provenance invalid')
+        for ref in source['source_partitions']:
+            if (type(ref) is not list or len(ref) != 2 or type(ref[1]) is not str
+                    or not _HEX.fullmatch(ref[1])):
+                raise HistoricalExperienceError('historical source partition invalid')
+            _date(ref[0])
     if manifest.get('basis') != request['basis']:
         raise HistoricalExperienceError('historical manifest price basis disagrees with source selection')
     if manifest.get('artifact_id') != _semantic_identity(manifest):
@@ -406,6 +437,19 @@ def _row_payload(payload: bytes, item: dict, target: str) -> list[dict]:
     return rows
 
 
+def _compact_source_references(sources: dict) -> dict:
+    # Full provenance remains in the exact hash-bound manifest. Repeating all
+    # capture partitions in every day response made admitted archives impossible
+    # to serve through the existing bounded Data & Lab transport.
+    return {symbol: {
+        'source_partition_count': len(source['source_partitions']),
+        'source_partitions_sha256': _hash(_bytes(source['source_partitions'])),
+        'input_rows': source['input_rows'],
+        'input_rows_sha256': source['input_rows_sha256'],
+        'reader_metadata_sha256': _hash(_bytes(source['reader_metadata'])),
+    } for symbol, source in sources.items()}
+
+
 def read_day(root: Path, market_date: str, *, expected_manifest_sha256: str,
              reveal_outcomes: bool = False) -> dict:
     root = Path(root)
@@ -437,7 +481,12 @@ def read_day_from_reader(read_file, market_date: str, *, expected_manifest_sha25
               'basis': manifest['basis'], 'pit_backtest_eligible': False,
               'redistribution_admitted': False, 'authority': dict(AUTHORITY),
               'horizon_unit': manifest['horizon_unit'],
-              'source_references': manifest['sources']}
+              'feature_version': manifest['feature_version'],
+              'reader_feature_version': FEATURE_VERSION,
+              'feature_version_matches_reader': manifest['feature_version'] == FEATURE_VERSION,
+              'source_code_sha256': manifest['source_code_sha256'],
+              'source_reference_detail': 'compact_digests; full_detail_in_retained_manifest',
+              'source_references': _compact_source_references(manifest['sources'])}
     if reveal_outcomes:
         result['outcomes'] = _row_payload(read_file(matching['outcomes']['name'], MAX_FILE_BYTES), matching['outcomes'], target) if 'outcomes' in matching else []
     return result
