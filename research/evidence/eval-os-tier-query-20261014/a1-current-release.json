@@ -1,0 +1,75 @@
+{
+  "schema": "eval_os.current_release.v1",
+  "updated_at": "2026-10-15T15:19:28.515355+00:00",
+  "a1_pr": 6651,
+  "incumbent_refresh": {
+    "old": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+    "head": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+    "parents": [
+      "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+      "4574d083b0398dd4ac75e283eabff041c561c369"
+    ],
+    "tree": "02a0189e05111e084342b57dc0a06e2a9aa67a96",
+    "merge_tree_equals_incumbent_tree": true,
+    "production_paths_compared": 17,
+    "changed_production_paths": [],
+    "all_7_asset_source_paths_covered_by_17_unchanged_files": true
+  },
+  "original_plan": {
+    "verified_at": "2026-10-15T15:17:26.806643+00:00",
+    "observation_at": "2026-10-15T15:15:54.553314+00:00",
+    "workflow_run_id": 38757206381,
+    "subject_head_sha": "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0",
+    "artifact_id": 11984037247,
+    "zip_sha256": "b8025397092354f48e6f97536125cd760cc8a39189eec29a231dd7624e2334f3",
+    "plan_sha256": "398d34be1a2342ca027d6f1479e7ba1387670c6778c506013dbcec7411b7c084",
+    "tested_commit": "1846b408a449fbad52206edd1a466fd8bb3a9bc9",
+    "base_sha": "4574d083b0398dd4ac75e283eabff041c561c369",
+    "tested_parents": [
+      "4574d083b0398dd4ac75e283eabff041c561c369",
+      "b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0"
+    ],
+    "tested_git_tree": "02a0189e05111e084342b57dc0a06e2a9aa67a96",
+    "preview_matches": true,
+    "production_paths_match": 17,
+    "eligible_job_count": 127,
+    "a1_job": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 10,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+        }
+      ]
+    },
+    "a1_execution_identity_unchanged": true,
+    "binding_checks_pending": true,
+    "scope": "Original plan/source identity only; terminal original semantic evidence and all binding checks still owed."
+  },
+  "source_and_plan_only": true,
+  "terminal_binding_checks_pending": true,
+  "production_verified": false,
+  "programme_complete": false,
+  "next": "Consume original run38757206381/attempt1 terminal evidence and all binding checks; repair a real failure or continue incumbent-only merge. Stop polling former lease owner9441.",
+  "followon": {
+    "qualified_source": "dd1d34db1d40160205be33950c5936f0ad32148b",
+    "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
+    "updater_fix": "9cb9d0ad0c955ad1f46cc3519d34e4c12fd708a4",
+    "no_pr": true,
+    "composition_pending": true,
+    "prepared_resolution": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/post-a1-resolution-preview/resolution.json",
+    "resolution_limit": "Six conflict resolutions prepared against earlier hypothetical main575a+A1 squash; exact evaluator equals qualified runtime, current A1 commands preserved. Nine redundant path copies need removal and newer4574 options source must be reconciled against actual qualified landing before application. No carrier integration or acceptance."
+  },
+  "preserved_boundaries": [
+    "incumbent-only A1 refresh/final merge",
+    "no second manual A1 integration",
+    "original Fabric effects and refusals",
+    "all production, model, PIT and consumer adoption obligations"
+  ]
+}

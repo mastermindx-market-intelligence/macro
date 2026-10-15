@@ -149,13 +149,12 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 published3f34040de3a5 repairs four actual contract-delta omissions plus two newly
-  reachable current-main inputs. Source qualification passes; fresh hosted checks, protected
-  merge and all production proof remain owed.
+- Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own
+  CI38757206381 is running. Terminal binding checks, protected merge and production proof remain owed.
 next_actions:
-- "A1 PR6651/head3f34040de3a5 original CI38738100398 is terminal PASS. Newer main663 changed CI definitions and requires incumbent refresh. Canonical14:33 census9/cap8, lease ownerPR9077/run38748904681; that original run completed PASS14:43:37, consumed14:47. Follow incumbent lease settlement/refresh/freshchecks/merge."
-- "Follow-on dd1d34db1d40 repairs six conflicts with main575a by30 exact incoming dependency declarations and three existing path relocations;314definitions/priorpaths/limits/runtime unchanged.2controlsPASS/closure0/strict packingPASS. Current-main preview is clean. Hypothetical post-A1 squash still has six content/add-add conflicts; resolve against actual qualified landing on this same branch before its single PR."
-- "After qualified A1 merge bind17fileprobe and assetprojector; prove installation/assets/authenticated API/DOM/eightvisualstates/naturalowner/comprehension, then follow-on updater/actual API-admin processes/numeric-internal-log/CLI/rights-qualified Discovery use. Preserve original unknown/refused effects; all final flags remain false."
+- "A1 PR6651 refreshed by incumbent tob2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0, exact parent3f+main4574/tree02a018 verified; all17 production files unchanged. Consume original CI38757206381/attempt1: planPASS, contract and12packsrunning15:15:54; original plan digest/source/tree/A1execution verified, A1pack10. Stop polling settled owner9441."
+- "Follow-on dd1d34 source/runtime retained. Six future squash conflict resolutions are prepared locally with explicit limits; reconcile actual qualified A1 landing, remove nine redundant merge-created path copies while preserving both parents, retain newer main options source, and release on this same branch through one PR."
+- "After qualified A1 merge bind17fileprobe and assetprojector; prove installation/assets/authenticated API/DOM/eight visual states/natural owner/comprehension, then follow-on updater/actual API-admin processes/numeric-internal-log/CLI/rights-qualified Discovery use. Preserve original unknown/refused effects; all final flags remain false."
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -169,27 +168,24 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T14:51:12.829308+00:00
+## Current checkpoint — 2026-10-15T15:19:28.515355+00:00
 
-A1 exact3f CI is terminal PASS:127jobs/350semantic commandsteps, zero inherited/blocked.
-Canonical freshness at incumbent source finds newer main663 changed CI definitions.
-Canonical GET-only discovery confirms A1 armed/eligible among74 PRs;14:33 capacity9/cap8,
-leasePR9077/headed5/run38748904681, no unindexed reservation. That original owner CI
-completed successfully14:43:37 and was consumed14:47. A1 remainedOPEN3f. No controller,
-producer, branch refresh, protected merge or production effect was issued by this root.
+Incumbent A1 refresh b2c44ab1e5b0925ef0afee82ee5cee3b2cf3d6c0 is the exact ordinary
+merge of3f340 and protected main4574, tree02a018. Owned local A1 fast-forwarded only.
+All17 production files, including all7 asset-projector inputs, are unchanged. Original
+CI38757206381/attempt1 is running: planPASS, contract-delta and12packsrunning15:15:54.
+Original plan artifact11984037247 digest and canonical identity verified; tested1846b4,
+base4574 and tree02a018 match.127 jobs/A1pack10; A1 execution/step identities unchanged.
+Prior3f terminal127jobs/350semanticsteps is retained historical proof, not this new head's
+terminal result. Former lease9441 completed successfully and is no longer our dependency.
 
-Follow-on dd1d34db1d40160205be33950c5936f0ad32148b adds30 exact current-main input
-declarations across five jobs and relocates three existing paths. All314 definitions,
-prior paths, limits and runtime9cb/3528080 are preserved. Two affected controlsPASS;
-full tracked closure0 and all strict probesPASS. Current-main575a preview is clean/treea0d1;
-all319main jobs and paths survive with only the pre-existing A1 neural-web suite addition
-and QLedgerexclusive metadata. The eval-os-a1 job remains additional. Direct old-A1 and
-hypothetical post-A1 squash previews are NOT clean. The latter retains six conflict paths;
-resolve actual qualified landed source before release. No final composition/hosted/production
-or adoption claim. Canonical followon-current-main-alignment-20261015.json retains details.
-
-Reuse T11/T5/T12/20textcases+bear/QLedger and native-checker deployment169PASS proof.
-All completion flags stay false; original experience/CLI-review effects/refusals persist.
+Follow-on dd1d34/runtime3528080/updater9cb are unchanged; accepted qualification is reused.
+Six future squash conflict resolutions were prepared locally, preserving the exact qualified
+evaluator, current A1 commands and both parents' paths. Actual qualified landing remains
+required: remove9 redundant merge-created path copies and reconcile the newer4574 options
+source before applying them. No integration, PR, deployment or adoption is claimed.
+Current source/plan evidence: research/evidence/eval-os-tier-query-20261014/a1-current-release.json.
+All final flags stay false; original Fabric effects/refusals remain frozen.
 
 ## 2026-10-15 A1 repair published
 
