@@ -1,0 +1,47 @@
+{
+  "status": "VALIDATED_ISOLATED_OWNER_AND_ECONOMICS_CONSUMER",
+  "source_files_sha256": {
+    "engine/company_intelligence/defense_space_profiles.py": "8da13b55ff4c09eb7026b041c9487980ebce0aeea43b424e09ce34ebe54a9f0f",
+    "engine/company_intelligence/defense_cash_profiles.py": "59621e511c3f0db6ab3cae907c757c60159ca7df8ed45ed26c38c09f6bba6b6f"
+  },
+  "source_head": "d84a4b0834bbec213810cd59ddcc35a09c03aefd",
+  "original_generation": "449f7f3c5b6a8c9faa181a28",
+  "original_manifest_sha256": "eedc2d6758902b24e98f7e0f39f24611c449c52d4fe730088f4bd5fb893e7a1d",
+  "isolated_generation": "5a5bc26d8f2c10a2931c0350",
+  "isolated_manifest_sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+  "events_preserved": 10,
+  "aliases_identical": true,
+  "other9_events_identical_except_generation_metadata": true,
+  "all_existing_noc_facts_identical": 22,
+  "new_source_facts": 7,
+  "consumer_values": [
+    2753.0,
+    2646.0,
+    236.0,
+    280.0,
+    8.6,
+    10.6,
+    91.0
+  ],
+  "consumer_units": [
+    "USD_million",
+    "USD_million",
+    "USD_million",
+    "USD_million",
+    "percent",
+    "percent",
+    "USD_million"
+  ],
+  "snapshot_sha256": "7e057f4e0fb1fb379ac59d5c504b49a67b7dfdcae1be0f05eb1b998e1f631945",
+  "source_observed_clock_preserved": "2026-10-13T05:44:47Z",
+  "source_available_clock_preserved": "2026-07-21T10:45:45Z",
+  "source_exhibit_sha256": "5f8488263feeed78515180fa7ac0d48ca370e4692ac592ddc9371ae62389a038",
+  "canonical_candidate_unchanged": true,
+  "network_reads": 0,
+  "CAS_or_publication": false,
+  "limits": [
+    "Stage uses absent optional market/government inputs, not a complete release snapshot",
+    "No theme review fingerprint or canonical financial admission was changed",
+    "Source and current comparison clocks are preserved; no historical availability claim"
+  ]
+}
