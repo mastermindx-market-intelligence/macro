@@ -48,6 +48,16 @@
           </div>
         </details>
         {% endif %}
+        {% if s.snapshot_compare.eligible %}
+        <details class="intl-history__snapshot">
+          <summary>{{ words('Compare two supplied observations','比较两条已提供的观测') }}</summary>
+          <p class="intl-history__muted">{{ words('Two observations from the current reconstruction. These are classifier scores, not investment returns, and not what was known at the time.','两条观测均来自当前重建。这些是分类器评分，不是投资回报，也不代表当时已知的信息。') }}</p>
+          <dl>{% for point in [s.snapshot_compare.left, s.snapshot_compare.right] %}<div>
+            <dt>{{ point.observation_at|e }}</dt>
+            <dd>{{ words('Growth score','增长评分') }}: <span data-im-snapshot-growth>{{ point.growth_score|e }}</span> · {{ words('Inflation score','通胀评分') }}: <span data-im-snapshot-inflation>{{ point.inflation_score|e }}</span></dd>
+          </div>{% endfor %}</dl>
+        </details>
+        {% endif %}
         {% if s.source_reference or s.acquisition_at %}<details class="intl-history__evidence"><summary>{{ words('Reconstruction evidence','重建依据') }}</summary><dl>
           {% if s.source_reference %}<div><dt>{{ words('Source reference','来源引用') }}</dt><dd>{{ s.source_reference|e }}</dd></div>{% endif %}
           {% if s.acquisition_at %}<div><dt>{{ words('Read time · not first-known time','读取时间 · 非首次获知时间') }}</dt><dd>{{ s.acquisition_at|e }}</dd></div>{% endif %}

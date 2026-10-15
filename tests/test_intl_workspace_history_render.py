@@ -200,3 +200,84 @@ def test_forward_record_reports_its_own_reason_without_losing_real_zero(kind):
     assert 'MA turn' in article.get_text()
     assert '2026-01-03T00:00:00.123456789+09:00' in article.get_text()
     assert source == before
+
+
+SNAPSHOT_ELIGIBLE = ('available', 'zero', 'reversed', 'monthly')
+SNAPSHOT_INELIGIBLE = ('metadata_denied', 'metadata_unknown', 'value_denied',
+                       'value_unknown', 'not_requested', 'same_date', 'absent_date',
+                       'incomplete_identity', 'null_score', 'failed')
+
+
+def snapshot_source(kind, market='JP'):
+    """Existing native snapshot-query seam with explicit synthetic History grants."""
+    source = event_source('available', market)
+    read = source['history_read']
+    query = source['capabilities']['snapshot_compare']
+    if kind.startswith('metadata_'):
+        state = kind.removeprefix('metadata_')
+        source['capabilities']['history_source'] = dict(metadata=state, value=state)
+    elif kind.startswith('value_'):
+        source['capabilities']['history_source']['value'] = kind.removeprefix('value_')
+    elif kind == 'zero':
+        read['points'][0].update(growth_score=0, inflation_score=0)
+    elif kind == 'reversed':
+        query['left_observation_at'], query['right_observation_at'] = query['right_observation_at'], query['left_observation_at']
+    elif kind == 'monthly':
+        read['points'] = [dict(observation_at='2026-01', growth_score=0, inflation_score=-1.25),
+                          dict(observation_at='2026-03', growth_score=17, inflation_score=0.1875)]
+        query.update(left_observation_at='2026-01', right_observation_at='2026-03')
+    elif kind == 'not_requested':
+        query.update(left_observation_at=None, right_observation_at=None)
+    elif kind == 'same_date':
+        query['right_observation_at'] = query['left_observation_at']
+    elif kind == 'absent_date':
+        query['right_observation_at'] = '2026-01-04T00:00:00+09:00'
+    elif kind == 'incomplete_identity':
+        read['identity']['universe'] = None
+    elif kind == 'null_score':
+        read['points'][1]['growth_score'] = None
+    elif kind == 'failed':
+        read.update(status='failed', identity=None, points=[])
+    return source
+
+
+@pytest.mark.parametrize('kind', SNAPSHOT_ELIGIBLE)
+def test_snapshot_composition_keeps_supplied_pair_order_dates_and_scores(kind):
+    source = snapshot_source(kind)
+    before = deepcopy(source)
+    html = render(lambda w, a: a['sources'].update(JP=source))
+    soup = BeautifulSoup(html, 'html.parser')
+    comparison = soup.select_one('[data-im-history-market="JP"] .intl-history__snapshot')
+    assert comparison is not None
+    assert comparison.name == 'details' and not comparison.has_attr('open')
+    assert comparison.select_one('summary').get_text() == 'Compare two supplied observations比较两条已提供的观测'
+    query = source['capabilities']['snapshot_compare']
+    expected = [next(p for p in source['history_read']['points'] if p['observation_at'] == query[key])
+                for key in ('left_observation_at', 'right_observation_at')]
+    rows = comparison.select('dl > div')
+    assert len(rows) == 2
+    assert [row.dt.get_text() for row in rows] == [p['observation_at'] for p in expected]
+    for row, point in zip(rows, expected):
+        assert row.select_one('[data-im-snapshot-growth]').get_text() == str(point['growth_score'])
+        assert row.select_one('[data-im-snapshot-inflation]').get_text() == str(point['inflation_score'])
+    for text in ('current reconstruction', '当前重建', 'not investment returns', '不是投资回报',
+                 'not what was known at the time', '不代表当时已知的信息'):
+        assert text in comparison.get_text()
+    assert not comparison.select('button, input, select, a')
+    assert source == before
+    assert soup.select_one('[data-im-history-market="KR"] .intl-history__snapshot') is None
+
+
+@pytest.mark.parametrize('kind', SNAPSHOT_INELIGIBLE)
+def test_snapshot_composition_does_not_admit_ineligible_pairs(kind):
+    source = snapshot_source(kind)
+    html = render(lambda w, a: a['sources'].update(JP=source))
+    article = BeautifulSoup(html, 'html.parser').select_one('[data-im-history-market="JP"]')
+    assert article.select_one('.intl-history__snapshot') is None
+    # Ineligible pairs do not hide independently permitted single observations.
+    if kind in ('not_requested', 'same_date', 'absent_date', 'incomplete_identity', 'null_score'):
+        assert len(article.select('.intl-history__observations tbody tr')) == 3
+    if kind in ('metadata_denied', 'metadata_unknown'):
+        assert '2026-01-01T00:00:00+09:00' not in article.get_text()
+    if kind in ('metadata_denied', 'metadata_unknown', 'value_denied', 'value_unknown'):
+        assert '0.4375' not in article.get_text()

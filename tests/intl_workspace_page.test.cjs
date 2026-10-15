@@ -180,6 +180,79 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   });
 }
 
+let historySnapshotFixture;
+function historySnapshotComparisonFixture() {
+  if(!historySnapshotFixture) historySnapshotFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+import json
+from engine.intl_inputs import countries
+from tests.test_intl_workspace_history_render import snapshot_source, SNAPSHOT_ELIGIBLE
+from tests.test_intl_workspace_integration import render_history_fixture
+kinds = ['zero','reversed','metadata_denied','value_unknown','incomplete_identity','null_score','not_requested']
+sources, cases = {}, []
+for market, kind in zip(countries(), kinds):
+    source = snapshot_source(kind, market)
+    sources[market] = source
+    query = source['capabilities']['snapshot_compare']
+    rows = [next(p for p in source['history_read']['points'] if p['observation_at'] == query[key])
+            for key in ('left_observation_at','right_observation_at')] if kind in SNAPSHOT_ELIGIBLE else []
+    cases.append(dict(market=market, kind=kind, rows=rows))
+assert len(cases) == len(kinds)
+print(json.dumps(dict(html=render_history_fixture(history_sources=sources), cases=cases)))
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return historySnapshotFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`History supplied snapshot comparison preserves eligibility and keyboard access ${theme} ${lang}`,async()=>{
+    const fixture=historySnapshotComparisonFixture();
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const panel=page.locator('[data-im-history-panel]');
+      const picker=panel.locator('select[data-im-action="select_market"]');
+      for(const {market,kind,rows} of fixture.cases) {
+        await picker.selectOption(market);
+        const article=panel.locator(`[data-im-history-market="${market}"]`);
+        assert.equal(await article.isVisible(),true);
+        const comparison=article.locator('.intl-history__snapshot');
+        assert.equal(await comparison.count(),rows.length?1:0,kind);
+        if(!rows.length) continue;
+        const summary=comparison.locator('summary');
+        assert.equal(await summary.innerText(),lang==='en'?'Compare two supplied observations':'比较两条已提供的观测');
+        await article.locator('.intl-history__observations > summary').focus();
+        await page.keyboard.press('Tab');
+        assert.equal(await summary.evaluate(n=>n===document.activeElement),true);
+        await page.keyboard.press('Enter');
+        assert.equal(await comparison.getAttribute('open'),'');
+        assert.deepEqual(await comparison.locator('dt').allTextContents(),rows.map(p=>p.observation_at));
+        assert.deepEqual(await comparison.locator('[data-im-snapshot-growth]').allTextContents(),rows.map(p=>String(p.growth_score)));
+        assert.deepEqual(await comparison.locator('[data-im-snapshot-inflation]').allTextContents(),rows.map(p=>String(p.inflation_score)));
+        const text=await comparison.innerText();
+        assert.ok(text.includes(lang==='en'?'not what was known at the time':'不代表当时已知的信息'));
+        assert.ok(text.includes(lang==='en'?'Growth score':'增长评分'));
+        for(const width of [320,1440]) {
+          await page.setViewportSize({width,height:900});
+          const overflow=await comparison.locator('summary,p,dt,dd').evaluateAll(ns=>ns.filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>n.innerText));
+          assert.deepEqual(overflow,[],`${kind} ${theme} ${lang} ${width}`);
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+          if(width===320&&kind==='zero'&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+            fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+            await page.evaluate(()=>document.fonts.ready);
+            await comparison.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+            await comparison.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`history-snapshot-${theme}-${lang}-320.png`)});
+          }
+        }
+        await summary.focus();
+        await page.keyboard.press('Space');
+        assert.equal(await comparison.getAttribute('open'),null);
+        await page.keyboard.press('Tab');
+        assert.equal(await article.locator('.intl-history__evidence > summary').evaluate(n=>n===document.activeElement),true);
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=history'});
+  });
+}
+
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture
