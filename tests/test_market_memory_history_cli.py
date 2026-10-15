@@ -1,0 +1,429 @@
+"""Tests for the Market Memory history command line interface.
+
+All four archive callables are monkeypatched, so no real provider data, no
+real archive module and no real file system outside ``tmp_path`` are touched.
+Run inside the commissioned checkout with
+``pytest tests/test_market_memory_history_cli.py``.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import types
+from pathlib import Path
+
+import pytest
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+import scripts.market_memory_history as cli
+
+SHA256 = "a" * 64
+SHORT_SHA256 = "a" * 63
+REQUEST = {"symbol": "SPY", "start": "2026-01-02", "end": "2026-10-01"}
+PACKET = {
+    "manifest": {"symbol": "SPY", "days": 1},
+    "states": [{"date": "2026-01-02", "close": 1.0}],
+    "outcomes": [{"date": "2026-01-05", "close": 1.1}],
+}
+
+
+class Recorder:
+    """Callable stub that records every invocation and returns a canned result."""
+
+    def __init__(self, result=None):
+        self.calls = []
+        self.result = result
+
+    def __call__(self, *args, **kwargs):
+        self.calls.append((args, kwargs))
+        if isinstance(self.result, BaseException):
+            raise self.result
+        return self.result
+
+    @property
+    def last(self):
+        assert self.calls, "expected the stub to have been called"
+        return self.calls[-1]
+
+
+@pytest.fixture()
+def stubs(monkeypatch):
+    """Install recording stubs for the four imported archive callables."""
+    box = types.SimpleNamespace(
+        assemble_history=Recorder(result=PACKET),
+        write_archive=Recorder(result={"status": "written", "days": 1}),
+        read_day=Recorder(result={"date": "2026-01-02", "state": {"close": 1.0}}),
+        read_manifest=Recorder(result={"manifest_sha256": SHA256, "days": 1}),
+    )
+    for name in ("assemble_history", "write_archive", "read_day", "read_manifest"):
+        monkeypatch.setattr(cli, name, getattr(box, name))
+    return box
+
+
+def run_cli(argv, capsys):
+    code = cli.main(argv)
+    captured = capsys.readouterr()
+    return code, captured.out, captured.err
+
+
+def expect_usage_error(argv, capsys):
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(argv)
+    assert excinfo.value.code == 2
+    captured = capsys.readouterr()
+    return captured.out, captured.err
+
+
+def write_text(path, text):
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+class TestBuild:
+    def test_success_forwards_request_and_prints_receipt(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        output_path = tmp_path / "archive-out"
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(output_path)], capsys
+        )
+
+        assert (code, err) == (0, "")
+        assert stubs.assemble_history.calls == [((REQUEST,), {})]
+        assert stubs.write_archive.last == ((PACKET, output_path), {})
+        assert out.count("\n") == 1
+        assert json.loads(out) == {"status": "written", "days": 1}
+
+    def test_input_request_document_is_not_overwritten(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        before = request_path.read_bytes()
+
+        code, out, _ = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 0
+        assert request_path.read_bytes() == before
+
+    @pytest.mark.parametrize("text", ["{oops", "", "null", "[1, 2]", "42", '"text"'])
+    def test_invalid_or_non_object_json_never_calls_assembler(
+        self, tmp_path, stubs, capsys, text
+    ):
+        request_path = write_text(tmp_path / "request.json", text)
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert stubs.assemble_history.calls == []
+        assert stubs.write_archive.calls == []
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_malformed_utf8_is_refused(self, tmp_path, stubs, capsys):
+        request_path = tmp_path / "request.json"
+        request_path.write_bytes(b'{"symbol": "\xff\xfe"}')
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert stubs.assemble_history.calls == []
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_input_over_128kib_is_refused(self, tmp_path, stubs, capsys):
+        oversized = b'{"padding":"' + b"a" * cli.MAX_INPUT_BYTES + b'"}'
+        assert len(oversized) > cli.MAX_INPUT_BYTES
+        request_path = tmp_path / "big.json"
+        request_path.write_bytes(oversized)
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert stubs.assemble_history.calls == []
+        assert out == ""
+        assert str(cli.MAX_INPUT_BYTES) in json.loads(err)["error"]
+
+    def test_input_exactly_128kib_is_accepted(self, tmp_path, stubs, capsys):
+        head, tail = '{"padding":"', '"}'
+        text = head + "a" * (cli.MAX_INPUT_BYTES - len(head) - len(tail)) + tail
+        assert len(text.encode("utf-8")) == cli.MAX_INPUT_BYTES
+        request_path = write_text(tmp_path / "edge.json", text)
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert (code, err) == (0, "")
+        assert len(stubs.assemble_history.calls) == 1
+        assert json.loads(out) == {"status": "written", "days": 1}
+
+    def test_symlink_input_is_refused(self, tmp_path, stubs, capsys):
+        real_path = write_text(tmp_path / "real.json", json.dumps(REQUEST))
+        link_path = tmp_path / "link.json"
+        link_path.symlink_to(real_path)
+
+        code, out, err = run_cli(
+            ["build", "--input", str(link_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert stubs.assemble_history.calls == []
+        assert out == ""
+        assert "symlink" in json.loads(err)["error"]
+
+    def test_missing_input_file_reports_error(self, tmp_path, stubs, capsys):
+        code, out, err = run_cli(
+            ["build", "--input", str(tmp_path / "absent.json"), "--output", str(tmp_path / "o")],
+            capsys,
+        )
+
+        assert code == 1
+        assert stubs.assemble_history.calls == []
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_existing_output_directory_refusal_is_preserved(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        existing = tmp_path / "already-there"
+        existing.mkdir()
+        stubs.write_archive.result = FileExistsError(f"target exists: {existing}")
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(existing)], capsys
+        )
+
+        assert code == 1
+        assert len(stubs.assemble_history.calls) == 1
+        assert out == ""
+        assert "exists" in json.loads(err)["error"]
+
+    def test_non_object_packet_is_refused_before_write(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        stubs.assemble_history.result = ["not", "a", "dict"]
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert stubs.write_archive.calls == []
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_non_finite_receipt_is_refused(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        stubs.write_archive.result = {"status": "written", "bytes": float("nan")}
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_assembler_value_error_is_reported_not_raised(self, tmp_path, stubs, capsys):
+        request_path = write_text(tmp_path / "request.json", json.dumps(REQUEST))
+        stubs.assemble_history.result = ValueError("request failed schema validation")
+
+        code, out, err = run_cli(
+            ["build", "--input", str(request_path), "--output", str(tmp_path / "out")], capsys
+        )
+
+        assert code == 1
+        assert out == ""
+        assert "schema" in json.loads(err)["error"]
+
+
+class TestDay:
+    def test_forwarding_with_reveal_outcomes_defaulting_to_false(self, tmp_path, stubs, capsys):
+        archive = tmp_path / "archive"
+
+        code, out, err = run_cli(
+            [
+                "day", "--archive", str(archive), "--manifest-sha256", SHA256,
+                "--date", "2026-01-02",
+            ],
+            capsys,
+        )
+
+        assert (code, err) == (0, "")
+        assert stubs.read_day.last == (
+            (archive, "2026-01-02"),
+            {"expected_manifest_sha256": SHA256, "reveal_outcomes": False},
+        )
+        assert out.count("\n") == 1
+        assert json.loads(out) == {"date": "2026-01-02", "state": {"close": 1.0}}
+
+    def test_forwarding_with_reveal_outcomes_true(self, tmp_path, stubs, capsys):
+        archive = tmp_path / "archive"
+
+        code, out, err = run_cli(
+            [
+                "day", "--archive", str(archive), "--manifest-sha256", SHA256,
+                "--date", "2026-01-02", "--reveal-outcomes",
+            ],
+            capsys,
+        )
+
+        assert (code, err) == (0, "")
+        assert stubs.read_day.last == (
+            (archive, "2026-01-02"),
+            {"expected_manifest_sha256": SHA256, "reveal_outcomes": True},
+        )
+        assert json.loads(out) == {"date": "2026-01-02", "state": {"close": 1.0}}
+
+    @pytest.mark.parametrize("missing", ["--manifest-sha256", "--date", "--archive"])
+    def test_required_options_are_enforced(self, tmp_path, stubs, capsys, missing):
+        argv = ["day", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256,
+                "--date", "2026-01-02"]
+        index = argv.index(missing)
+        del argv[index:index + 2]
+
+        out, err = expect_usage_error(argv, capsys)
+
+        assert stubs.read_day.calls == []
+        assert not out
+
+    @pytest.mark.parametrize("digest", [SHORT_SHA256, "a" * 65, "z" * 64, "", "0x" + "a" * 62])
+    def test_digest_must_be_exactly_64_hex_characters(self, tmp_path, stubs, capsys, digest):
+        out, err = expect_usage_error(
+            ["day", "--archive", str(tmp_path / "a"), "--manifest-sha256", digest,
+             "--date", "2026-01-02"],
+            capsys,
+        )
+
+        assert stubs.read_day.calls == []
+
+    @pytest.mark.parametrize(
+        "value", ["2026-13-01", "2026-02-30", "20261014", "26-01-02", "2026-1-2", "not-a-date"]
+    )
+    def test_date_must_be_real_yyyy_mm_dd(self, tmp_path, stubs, capsys, value):
+        out, err = expect_usage_error(
+            ["day", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256,
+             "--date", value],
+            capsys,
+        )
+
+        assert stubs.read_day.calls == []
+
+    @pytest.mark.parametrize(
+        "failure", [ValueError("manifest sha256 mismatch"), OSError("archive root missing")]
+    )
+    def test_operational_failure_reports_error_json(self, tmp_path, stubs, capsys, failure):
+        stubs.read_day.result = failure
+
+        code, out, err = run_cli(
+            ["day", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256,
+             "--date", "2026-01-02"],
+            capsys,
+        )
+
+        assert code == 1
+        assert out == ""
+        assert json.loads(err)["error"]
+
+    def test_non_finite_record_is_refused(self, tmp_path, stubs, capsys):
+        stubs.read_day.result = {"date": "2026-01-02", "close": float("inf")}
+
+        code, out, err = run_cli(
+            ["day", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256,
+             "--date", "2026-01-02"],
+            capsys,
+        )
+
+        assert code == 1
+        assert out == ""
+        assert json.loads(err)["error"]
+
+
+class TestInspect:
+    def test_forwards_archive_and_digest_and_prints_manifest(self, tmp_path, stubs, capsys):
+        archive = tmp_path / "archive"
+
+        code, out, err = run_cli(
+            ["inspect", "--archive", str(archive), "--manifest-sha256", SHA256], capsys
+        )
+
+        assert (code, err) == (0, "")
+        assert stubs.read_manifest.calls == [((archive,), {"expected_manifest_sha256": SHA256})]
+        assert out.count("\n") == 1
+        assert json.loads(out) == {"manifest_sha256": SHA256, "days": 1}
+
+    def test_manifest_sha256_is_mandatory(self, tmp_path, stubs, capsys):
+        out, err = expect_usage_error(["inspect", "--archive", str(tmp_path / "a")], capsys)
+
+        assert stubs.read_manifest.calls == []
+
+    def test_operational_failure_reports_error_json(self, tmp_path, stubs, capsys):
+        stubs.read_manifest.result = ValueError("manifest digest mismatch")
+
+        code, out, err = run_cli(
+            ["inspect", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256], capsys
+        )
+
+        assert code == 1
+        assert out == ""
+        assert json.loads(err) == {"error": "manifest digest mismatch"}
+
+    def test_non_finite_manifest_is_refused(self, tmp_path, stubs, capsys):
+        stubs.read_manifest.result = {"days": float("nan")}
+
+        code, out, err = run_cli(
+            ["inspect", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256], capsys
+        )
+
+        assert code == 1
+        assert out == ""
+        assert json.loads(err)["error"]
+
+
+class TestCliContract:
+    def test_missing_command_is_a_usage_error(self, stubs, capsys):
+        out, err = expect_usage_error([], capsys)
+
+        assert stubs.assemble_history.calls == []
+        assert stubs.read_manifest.calls == []
+
+    def test_unknown_command_is_a_usage_error(self, stubs, capsys):
+        out, err = expect_usage_error(["frobnicate"], capsys)
+
+        assert stubs.read_manifest.calls == []
+
+    def test_keyboard_interrupt_is_never_swallowed(self, tmp_path, stubs, capsys):
+        stubs.read_manifest.result = KeyboardInterrupt()
+
+        with pytest.raises(KeyboardInterrupt):
+            cli.main(["inspect", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256])
+
+    def test_unavailable_archive_module_reports_clean_error(self, monkeypatch, tmp_path, capsys):
+        for name in ("assemble_history", "write_archive", "read_day", "read_manifest"):
+            monkeypatch.setattr(cli, name, None)
+
+        code, out, err = run_cli(
+            ["inspect", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256], capsys
+        )
+
+        assert code == 1
+        assert out == ""
+        assert "unavailable" in json.loads(err)["error"]
+
+    def test_success_output_is_single_line_finite_json(self, tmp_path, stubs, capsys):
+        code, out, err = run_cli(
+            ["inspect", "--archive", str(tmp_path / "a"), "--manifest-sha256", SHA256], capsys
+        )
+
+        assert code == 0
+        assert err == ""
+        assert out.endswith("\n")
+        json.loads(out)
