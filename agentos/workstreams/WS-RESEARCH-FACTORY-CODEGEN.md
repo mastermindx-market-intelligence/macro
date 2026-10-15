@@ -29,6 +29,7 @@ next_action: >
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
+  - research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md
   - research/research_factory_codegen/2026-10-14/CONTRACTS_SOURCE_ACCEPTANCE.md
   - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
   - research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md
@@ -56,8 +57,9 @@ open under its original merge controller, last observed head a773e3c03e68.
 Draft #9463 at df27dcccbe03 passed CI38756282141: all 12 packs, contract-delta,
 ci-gate and selected authority checks succeeded. The inactive codex authority
 complement is not the selected authority. The observer's retained log records
-completion; its process has ended. Current main has advanced and conflicts
-must be resolved before the next source revision is published.
+completion; its process has ended. Main9b255a537738 is now integrated; the sole
+workstream-record conflict preserves this current programme checkpoint and
+the existing fence acceptance reference.
 
 Chris explicitly authorized quarantine of any eventual result from
 rf-fixed-workload-plans-01a1333c-v1 and released its two source outputs for
@@ -66,12 +68,13 @@ remain unchanged, with no retry or replacement remote run. The new pure factory
 accepts only exact bytes from the seven pinned workload sources and returns
 fixed transport plans. The connected frontend keeps the existing single-attempt,
 exact-container cleanup and refusal semantics. All 42 affected source checks
-pass with inert payloads and fake Docker. The general engine remains dormant;
+pass with inert payloads and fake Docker. The joined runtime suite passes658
+tests and67subtests with four platform skips. The general engine remains dormant;
 the frozen v4 capsule remains unchanged and undispatched.
 
-Scoped independent review rf-fixed-workload-source-review-01a1333c-v1 is running
-through the existing Fabric adapter (Qwen on ubuntu2), assigned directly by this
-root. Review scope is only the new factory/frontend; original archive/mountinfo
+Scoped independent review rf-fixed-workload-source-review-01a1333c-v1 returned remote_admission_refused (rc75)
+through the existing Fabric adapter (Qwen route on ubuntu2), assigned directly
+by this root. No independent quality verdict has been established. Review scope is only the new factory/frontend; original archive/mountinfo
 review collections remain refused and unconsumed. Physical qualification has
 not been authorized or claimed by source tests or this review.
 

@@ -1,0 +1,31 @@
+{
+  "base": "f9a5a35cd66bd840ad37e7976cb42034359c22fa",
+  "merge": "e1c44106d8df8448976f4313e309af1709e4e738",
+  "sources_changed": {
+    "engine/press/external_candidate.py": {
+      "prior": "89a9ae3b591a569e10cfd2146dcfe7d8565728d68369d80ade723c7a1081f197",
+      "current": "6c18f0286d7a3042c704212652861713bd7df43359ff825b8ea1cb71c36259d2"
+    }
+  },
+  "pages": {
+    "blog/index.html": {
+      "prior": "03d2b24abacf5dcbcf10e7249055d97821f763b1f7f58874fa32741b65adf10b",
+      "current": "2b5efaa610549f7d5f5e438e6eda5c91f4a97bcee32765aa55dd0b20ab2466f8",
+      "only_change": "theme.css cache version d6d52074 -> 311f121e"
+    },
+    "learn/index.html": {
+      "prior": "0e3eb18609dc7e2fa4e62a7dd23232e1af87c90a233643b7726bf2bc58d4fec9",
+      "current": "22120fc98543ce0465d8f2ebeb43d84b5ac249716000f7a3f56e5af26d8844b2",
+      "only_change": "theme.css cache version d6d52074 -> 311f121e"
+    },
+    "tools/calculators/position-size.html": {
+      "prior": "2056fc21bab1e571422a4a02be826b9fc1ec37c80d01bf2d3fd9a3fc3e975f58",
+      "current": "be34f6882a73ba104e45ddda631c0bb7225913dca5ae1f80acc08e2f53df8d46",
+      "only_change": "theme.css cache version d6d52074 -> 311f121e"
+    }
+  },
+  "application_diff_from_current_main": [
+    "engine/press/external_candidate.py",
+    "tests/test_press_external_candidate.py"
+  ]
+}
