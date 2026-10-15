@@ -276,35 +276,40 @@ class TestBenchFreshness:
         idx = pd.bdate_range(end=last_date, periods=30)
         return pd.DataFrame({"^N225": np.linspace(100.0, 110.0, 30)}, index=idx)
 
-    def test_spy_substituted_when_bench_stale(self):
-        """intl closes 30 business days beyond the committed ^GSPC last date
-        must trigger the SPY substitution + a bench_note naming the stale date."""
-        from engine.intl_performance import _bench_series_fresh
-        from lib import store
-        gspc = store.read("yahoo", "^GSPC")
-        if gspc is None or gspc.empty:
-            pytest.skip("^GSPC store unavailable")
-        gspc_last = gspc["close"].dropna().index[-1]
-        future = (gspc_last + pd.offsets.BDay(30)).date().isoformat()
-        series, note = _bench_series_fresh(intl_closes=self._fake_intl_closes(future))
-        assert series is not None, "Expected a series (SPY), got None"
-        assert note is not None, "Expected a bench_note when SPY is substituted"
-        assert "SPY" in note and "GSPC" in note, f"Unexpected note format: {note!r}"
-        assert gspc_last.date().isoformat() in note, (
-            f"Expected stale date {gspc_last.date()} in note: {note!r}"
-        )
+    def test_spy_substituted_when_bench_stale(self, monkeypatch):
+        """A fresh SPY substitutes for an old ^GSPC, not merely any SPY file.
 
-    def test_no_substitution_when_fresh(self):
-        """intl closes at/behind the ^GSPC last date -> primary kept, no note."""
-        from engine.intl_performance import _bench_series_fresh
-        from lib import store
-        gspc = store.read("yahoo", "^GSPC")
-        if gspc is None or gspc.empty:
-            pytest.skip("^GSPC store unavailable")
-        gspc_last = gspc["close"].dropna().index[-1].date().isoformat()
-        series, note = _bench_series_fresh(intl_closes=self._fake_intl_closes(gspc_last))
-        assert series is not None
-        assert note is None, f"No substitution expected when fresh, got: {note!r}"
+        Deliberately synthetic: advancing the International source clock beyond
+        *both* real locally cached tickers is not a qualified fallback test.
+        """
+        from engine import intl_performance as P
+        gspc_idx = pd.bdate_range(end="2026-09-01", periods=315)
+        spy_idx = pd.bdate_range(end="2026-10-13", periods=315)
+        gspc = pd.DataFrame({"close": np.linspace(90, 105, len(gspc_idx))}, index=gspc_idx)
+        spy = pd.DataFrame({"close": np.linspace(91, 111, len(spy_idx))}, index=spy_idx)
+        monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
+        monkeypatch.setattr(P.store, "read",
+                            lambda area, sym: {"^GSPC": gspc, "SPY": spy}[sym] if area == "yahoo" else None)
+        series, note = P._bench_series_fresh(intl_closes=self._fake_intl_closes("2026-10-14"))
+        assert series is not None and series.equals(spy["close"])
+        assert note and "SPY" in note and "GSPC" in note
+        assert "2026-09-01" in note and "2026-10-13" in note
+
+    def test_no_substitution_when_fresh(self, monkeypatch):
+        """A current primary remains the source even if SPY is unavailable."""
+        from engine import intl_performance as P
+        idx = pd.bdate_range(end="2026-10-14", periods=315)
+        gspc = pd.DataFrame({"close": np.linspace(90, 105, len(idx))}, index=idx)
+        reads = []
+        def source(area, ticker):
+            assert area == "yahoo"
+            reads.append(ticker)
+            return gspc if ticker == "^GSPC" else None
+        monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
+        monkeypatch.setattr(P.store, "read", source)
+        series, note = P._bench_series_fresh(intl_closes=self._fake_intl_closes("2026-10-14"))
+        assert series is not None and series.equals(gspc["close"])
+        assert note is None and reads == ["^GSPC"]
 
     def test_spy_series_is_read_only(self):
         """Verify we don't mutate the committed store: just check type and shape."""

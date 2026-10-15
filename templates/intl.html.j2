@@ -902,7 +902,7 @@
 <div class="panel accent">
   <div class="sec-h"><h2 id="intl-performance-heading" tabindex="-1">{{ t('Performance in US dollars', '以美元计的表现') }} {{ help('Price returns on the same observation grid. FX contribution is USD return minus local return, in percentage points; it includes the interaction with the equity return and is not the currency return alone. Display values are rounded. Rotation order uses the separate weighted composite with state adjustments; its bars show 12m returns when available. Otherwise the default is 12m USD return. Horizon buttons sort only markets with that supplied period.', '在同一观测日期网格上计算价格收益。汇率贡献为美元收益减本币收益，以百分点计；包含与股市收益的交互项，并非单独的汇率收益。显示值已四舍五入。轮动排序采用另一个经状态调整的加权综合分数；可用时条形显示12月收益。否则默认按12月美元收益排序。期间按钮仅排序具有该期间数据的市场。') }}</h2>
     <span class="sub">{{ t('Local return + FX contribution = USD return', '本币收益 + 汇率贡献 = 美元收益') }}</span>
-    {% if bench_note is defined and bench_note %}<span class="muted small" style="margin-left:4px">{{ bench_note }}</span>{% endif %}
+    {% if bench_note is defined and bench_note and 'withheld' not in bench_note %}<span class="muted small" style="margin-left:4px">{{ bench_note|e }}</span>{% endif %}
     <span style="flex:1"></span>
     <div class="seg" id="lb-seg">
       {% if rotation_ranks %}<button type="button" data-h="__rank__" class="on">{{ t('Rotation rank', '轮动排名') }}</button>{% endif %}
@@ -917,6 +917,16 @@
     <span><i style="background:var(--down)"></i>{{ t('negative FX contribution', '负汇率贡献') }}</span>
     <span><i style="background:var(--text);width:3px;height:13px;border-radius:2px"></i>{{ t('net USD return', '美元净收益') }}</span>
   </div>
+</div>
+{% endif %}
+
+<!-- Qualified US-relative readings never fall back to an undated benchmark.
+     Preserve the independent ex-US views and explain the withheld comparison. -->
+{% if not RG and bench_note is defined and bench_note and 'withheld' in bench_note %}
+<div class="panel" data-us-benchmark-withheld>
+  <h2 id="intl-us-benchmark-unavailable" tabindex="-1">{{ t('US-relative comparison unavailable', '对美相对比较暂不可用') }}</h2>
+  <p class="muted">{{ t('No US benchmark qualifies against the international observation clock. Current US-relative rotation and US correlation values are withheld; available international results retain their own coverage.', '没有符合国际市场观测日期要求的美国基准。当前对美轮动及美股相关性数据暂不展示；仍可查看各自有数据覆盖的国际市场结果。') }}</p>
+  <p class="muted small" data-us-benchmark-source>{{ bench_note|e }}</p>
 </div>
 {% endif %}
 
@@ -949,9 +959,9 @@
         {% for r in RG.rows %}
           <tr><td class="l"><span class="flg">{{ r.flag }}</span>{{ t(r.name, r.name_zh) }}</td>
             <td class="l"><span class="tilt q-{{ r.q }}" style="padding:2px 8px;font-size:11px">{% if r.q=='lead' %}{{ t('Leading','领先') }}{% elif r.q=='impr' %}{{ t('Improving','改善') }}{% elif r.q=='weak' %}{{ t('Weakening','走弱') }}{% else %}{{ t('Lagging','落后') }}{% endif %}</span></td>
-            <td class="{{ 'pos' if (r.rel_ret.get('3m') or 0) >= 0 else 'neg' }}">{% if r.rel_ret.get('3m') is not none %}{{ '%+.1f'|format(r.rel_ret['3m']) }}%{% else %}—{% endif %}</td>
-            <td class="{{ 'pos' if (r.rel_ret.get('6m') or 0) >= 0 else 'neg' }}">{% if r.rel_ret.get('6m') is not none %}{{ '%+.1f'|format(r.rel_ret['6m']) }}%{% else %}—{% endif %}</td>
-            <td class="{{ 'pos' if (r.rel_ret.get('12m') or 0) >= 0 else 'neg' }}">{% if r.rel_ret.get('12m') is not none %}{{ '%+.1f'|format(r.rel_ret['12m']) }}%{% else %}—{% endif %}</td>
+            <td class="{{ 'pos' if r.rel_ret.get('3m') is not none and (r.rel_ret['3m']|round(1)) > 0 else 'neg' if r.rel_ret.get('3m') is not none and (r.rel_ret['3m']|round(1)) < 0 else 'muted' }}">{% if r.rel_ret.get('3m') is not none %}{{ '%+.1f'|format(r.rel_ret['3m']) }}%{% else %}—{% endif %}</td>
+            <td class="{{ 'pos' if r.rel_ret.get('6m') is not none and (r.rel_ret['6m']|round(1)) > 0 else 'neg' if r.rel_ret.get('6m') is not none and (r.rel_ret['6m']|round(1)) < 0 else 'muted' }}">{% if r.rel_ret.get('6m') is not none %}{{ '%+.1f'|format(r.rel_ret['6m']) }}%{% else %}—{% endif %}</td>
+            <td class="{{ 'pos' if r.rel_ret.get('12m') is not none and (r.rel_ret['12m']|round(1)) > 0 else 'neg' if r.rel_ret.get('12m') is not none and (r.rel_ret['12m']|round(1)) < 0 else 'muted' }}">{% if r.rel_ret.get('12m') is not none %}{{ '%+.1f'|format(r.rel_ret['12m']) }}%{% else %}—{% endif %}</td>
           </tr>
         {% endfor %}
         </tbody>

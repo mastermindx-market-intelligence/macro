@@ -63,3 +63,65 @@ def test_rotation_text_is_escaped():
     assert not el.select("img,script")
     assert '<img src=x onerror=alert(1)>' in el.get_text()
     assert '<script>bad()</script>' in el.get_text()
+
+
+# R10_NEUTRAL_ROTATION_REGRESSION — isolated independent audit tests only.
+@pytest.mark.parametrize("returns,expected_class,expected_text", [
+    ({"3m": None,"6m": 0.0,"12m": -1.4}, ["muted","muted","neg"], ["—","+0.0%","-1.4%"]),
+    ({"3m": 1.4,"6m": -1.4,"12m": 0.0}, ["pos","neg","muted"], ["+1.4%","-1.4%","+0.0%"]),
+    ({"3m": -0.01,"6m": 0.01,"12m": None}, ["muted","muted","muted"], ["-0.0%","+0.0%","—"]),
+    ({"3m": 0.0,"6m": None}, ["muted","muted","muted"], ["+0.0%","—","—"]),
+])
+def test_r10_null_zero_rotation_cells_are_neutral(returns, expected_class, expected_text):
+    """A missing/zero relative return is not positive outperformance."""
+    row=dict(cc="JP",name="Japan",name_zh="日本",flag="🇯🇵",q="lead",
+        rs_level=105.,rs_mom=1.5,rel_ret=returns)
+    rrg=dict(tilt="mixed",tilt_en="Mixed",tilt_zh="分化",rows=[row])
+    soup=BeautifulSoup(render_fixture(mode="macro",perf={"rrg":rrg}),"html.parser")
+    table=next((t for t in soup.select("table.sb") if "vs US 3m" in t.get_text()),None)
+    assert table is not None
+    tr=next(x for x in table.select("tbody tr") if "Japan" in x.get_text())
+    cells=tr.find_all("td",recursive=False)[2:5]
+    assert [c.get("class",[None])[0] for c in cells]==expected_class
+    assert [c.get_text(" ",strip=True) for c in cells]==expected_text
+
+
+
+def test_withheld_us_relative_benchmark_discloses_without_invented_comparison():
+    """The real bilingual template remains informative when every US source fails."""
+    from tests.test_intl_build import _env, _perf_vm
+    vm = _perf_vm()
+    vm["perf"]["rrg"] = None
+    vm["bench_note"] = ("US-relative benchmark withheld: no qualified ^GSPC "
+                        "(last 2026-09-01) or SPY (last 2026-09-03) "
+                        "versus international observation 2026-10-14")
+    soup = BeautifulSoup(_env().get_template("intl.html.j2").render(
+        **vm, mode="macro"), "html.parser")
+    notice = soup.select_one("[data-us-benchmark-withheld]")
+    assert notice is not None
+    assert "US-relative comparison unavailable" in notice.get_text()
+    assert "对美相对比较暂不可用" in notice.get_text()
+    assert "2026-09-01" in notice.get_text() and "2026-09-03" in notice.get_text()
+    assert soup.select_one("[data-us-benchmark-source]") is not None
+    assert not any("US vs the World — capital rotation" in node.get_text()
+                   for node in soup.select("div.panel h2"))
+
+
+def test_us_relative_withheld_disclosure_escapes_source_text():
+    from tests.test_intl_build import _env, _perf_vm
+    vm = _perf_vm()
+    vm["bench_note"] = "US-relative benchmark withheld: <img src=x onerror=alert(1)>"
+    soup = BeautifulSoup(_env().get_template("intl.html.j2").render(
+        **vm, mode="macro"), "html.parser")
+    notice = soup.select_one("[data-us-benchmark-withheld]")
+    assert notice is not None and notice.find("img") is None
+    assert "<img src=x onerror=alert(1)>" in notice.get_text()
+
+
+def test_substituted_spy_note_is_not_a_false_withheld_warning():
+    from tests.test_intl_build import _env, _perf_vm
+    vm = _perf_vm()
+    vm["bench_note"] = "US benchmark: qualified SPY substituted (^GSPC unqualified)"
+    soup = BeautifulSoup(_env().get_template("intl.html.j2").render(
+        **vm, mode="macro"), "html.parser")
+    assert soup.select_one("[data-us-benchmark-withheld]") is None

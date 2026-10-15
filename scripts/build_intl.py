@@ -463,6 +463,7 @@ def main() -> int:
     # the ITR block can fail-open if this try never runs.
     _wr_intl_raw: "pd.DataFrame | None" = None
     _wr_bench: "pd.Series | None" = None
+    _wr_bench_note: str | None = None
     try:
         from engine import intl_performance
         from engine import intl_inputs as _wr_inputs
@@ -472,7 +473,7 @@ def main() -> int:
         _wr_countries = _wr_inputs.countries()
         # US bench (already USD, ^GSPC/SPY fallback) for the momentum leg + as a
         # turn-state input for the US row.
-        _wr_bench, _ = intl_performance._bench_series_fresh(intl_closes=_wr_intl_raw)
+        _wr_bench, _wr_bench_note = intl_performance._bench_series_fresh(intl_closes=_wr_intl_raw)
         if _wr_bench is not None and not _wr_bench.empty:
             _wr_extra_closes["US"] = _wr_bench.dropna()
 
@@ -917,8 +918,10 @@ def main() -> int:
             _itr_bench = perf.get("bench")
             bench_note = perf.get("bench_note")
         elif _wr_bench is not None:
-            # ITR-R7: reuse the bench hoisted for the world-risk block (same helper).
+            # Reuse the already-qualified benchmark and its source-date disclosure.
+            # Performance-panel failure must not erase a SPY-substitution note.
             _itr_bench = _wr_bench
+            bench_note = _wr_bench_note
         else:
             try:
                 from engine.intl_performance import _bench_series_fresh as _itr_bf
