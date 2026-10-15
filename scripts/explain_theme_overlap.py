@@ -27,19 +27,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", help="new output file only; existing paths are never overwritten")
     args = parser.parse_args(argv)
     try:
-        source = Path(args.review or args.microtheme_research)
+        name = args.review if args.review is not None else args.microtheme_research
+        if not name:
+            raise ValueError("source path must not be empty")
+        source = Path(name)
         output = Path(args.out) if args.out else None
         if output and (output.resolve() == source.resolve() or output.exists()):
             raise ValueError("output must be a new path, not the input or an existing file")
         document = _load(source)
         if args.microtheme_research is not None:
             report = build_microtheme_research_evidence(document)
-            formatted = render_microtheme_research_markdown(report)
         else:
             report = build_overlap_evidence(document)
-            formatted = render_markdown(report)
-        text = (formatted if args.format == "markdown" else
-                json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n")
+        text = (render_microtheme_research_markdown(report)
+                if args.microtheme_research is not None and args.format == "markdown"
+                else render_markdown(report) if args.format == "markdown"
+                else json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n")
         if output is None:
             print(text, end="")
         else:
@@ -49,7 +52,9 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"schema": ("gmi.microtheme_membership_review_refusal/v1"
                                        if args.microtheme_research is not None
                                        else "gmi.theme_overlap_refusal/v1"), "ok": False,
-                          "code": "OVERLAP_EVIDENCE_UNAVAILABLE", "message": str(exc)},
+                          "code": ("MICROTHEME_RESEARCH_UNAVAILABLE"
+                                   if args.microtheme_research is not None
+                                   else "OVERLAP_EVIDENCE_UNAVAILABLE"), "message": str(exc)},
                          sort_keys=True), file=sys.stderr)
         return 2
     return 0

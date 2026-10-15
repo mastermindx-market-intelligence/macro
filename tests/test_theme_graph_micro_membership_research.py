@@ -180,3 +180,71 @@ def test_legacy_review_cli_requirement_retained():
     process = _run_cli("--format", "json")
     assert process.returncode != 0
     assert "--review" in process.stderr
+
+
+# Independent regression probes from the exact-head review. They test refusal
+# of latent untrusted-input and render-injection mistakes without changing
+# any canonical membership, source data, or historical owner behavior.
+@pytest.mark.parametrize("mutate", [
+    lambda d: d["source_pin"].__setitem__("initial_research_snapshot", "not-a-commit"),
+    lambda d: d.__setitem__("compiled_at", "2099-01-01T00:00:00+00:00"),
+    lambda d: d.__setitem__("commission_date", "2099-01-01"),
+    lambda d: d.__setitem__("commission_date", "not-a-date"),
+    lambda d: d.__setitem__("operation", ""),
+    lambda d: d.__setitem__("operation", None),
+    lambda d: d.__setitem__("limitations", [""]),
+    lambda d: d.__setitem__("limitations", None),
+    lambda d: d["sources"]["S001"].__setitem__("catalogued_at", "2099-01-01T00:00:00+00:00"),
+    lambda d: d["sources"]["S001"].__setitem__("catalogued_at", "junk"),
+    lambda d: d["sources"]["S001"].__setitem__("catalogued_at", None),
+    lambda d: d["sources"]["S001"].__setitem__("limitation", {"unsafe": True}),
+    lambda d: d["population"].__setitem__("definition", ["not a text"]),
+    lambda d: d["microthemes"][0].__setitem__("parent_theme_ids", "theme:fake"),
+    lambda d: d["microthemes"][0].__setitem__("parent_subtheme_ids", {"bad": True}),
+    lambda d: d["microthemes"][0].__setitem__("activity_facets", [""]),
+    lambda d: d["subthemes"][0].__setitem__("name", {"bad": True}),
+    lambda d: d["subthemes"][0].__setitem__("children", "fake"),
+    lambda d: d["negative_cases"][0].__setitem__("case_id", {"nonhashable": True}),
+    lambda d: d["negative_cases"][0].__setitem__("research_disposition", ["bad"]),
+    lambda d: d["cpu_scope_review"][0].__setitem__("label", {"bad": 1}),
+    lambda d: d["candidates"][0].__setitem__("source_ids", [{"bad": 1}]),
+])
+def test_micro_review_hardening_fails_closed(document, mutate):
+    mutate(document)
+    with pytest.raises(ValueError, match="microtheme research refused"):
+        build_microtheme_research_evidence(document)
+
+
+def test_micro_review_markdown_links_escape_delimiters_quotes_and_parens(document):
+    document["sources"]["S001"]["url"] = 'https://example.org/dossier/(case)|part?label="quote"'
+    review = build_microtheme_research_evidence(document)
+    md = render_microtheme_research_markdown(review)
+    assert "%28case%29%7Cpart?label=%22quote%22" in md
+    assert '](https://example.org/dossier/(case)|part?' not in md
+    line = next(x for x in md.splitlines() if x.startswith("| theme:hbm_packaging") and "Micron" in x)
+    assert line.count("|") == 7
+
+
+def test_cli_json_never_calls_human_renderer(tmp_path, monkeypatch, capsys, document):
+    from scripts import explain_theme_overlap as cli
+    path = tmp_path / "input.json"
+    path.write_text(json.dumps(document))
+    def forbid(*args, **kwargs):
+        raise AssertionError("JSON path must not render markdown")
+    monkeypatch.setattr(cli, "render_microtheme_research_markdown", forbid)
+    assert cli.main(["--microtheme-research", str(path)]) == 0
+    assert json.loads(capsys.readouterr().out)["counts"]["candidate_activity_records"] == 103
+
+    monkeypatch.setattr(cli, "render_markdown", forbid)
+    monkeypatch.setattr(cli, "_load", lambda _: {"kind": "fixture"})
+    monkeypatch.setattr(cli, "build_overlap_evidence", lambda _: {"legacy": "unchanged"})
+    assert cli.main(["--review", str(path), "--format", "json"]) == 0
+    assert json.loads(capsys.readouterr().out) == {"legacy": "unchanged"}
+
+
+def test_cli_mode_specific_refusal_code(tmp_path):
+    result = _run_cli("--microtheme-research", str(tmp_path / "missing.json"))
+    assert result.returncode == 2
+    body = json.loads(result.stderr)
+    assert body["schema"] == "gmi.microtheme_membership_review_refusal/v1"
+    assert body["code"] == "MICROTHEME_RESEARCH_UNAVAILABLE"

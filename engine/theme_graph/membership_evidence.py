@@ -261,14 +261,29 @@ def build_microtheme_research_evidence(
         compiled = dt.datetime.fromisoformat(document["compiled_at"].replace("Z", "+00:00"))
         if compiled.utcoffset() is None:
             raise ValueError()
+        commission = dt.date.fromisoformat(document["commission_date"])
+        if commission.isoformat() != document["commission_date"]:
+            raise ValueError()
     except (ValueError, TypeError, KeyError, AttributeError):
-        _micro_refuse("invalid compilation timestamp")
+        _micro_refuse("invalid research or commission timestamp")
+    if compiled.astimezone(dt.timezone.utc) > dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=5):
+        _micro_refuse("research compilation is future dated")
+    if commission > compiled.date():
+        _micro_refuse("commission date follows compilation")
+    _micro_string(document.get("operation"), "operation")
+    limits = document.get("limitations")
+    if not isinstance(limits, list) or not limits:
+        _micro_refuse("missing source limitations")
+    for limit in limits:
+        _micro_string(limit, "source limitation")
 
     pin = document.get("source_pin")
     if not isinstance(pin, Mapping) or pin.get("repository") != "mastermindx-market-intelligence/macro" or pin.get("crosswalk_path") != "config/theme_crosswalk.yml":
         _micro_refuse("unbound incumbent source")
     _micro_exact_fields(pin, "repository commit crosswalk_path crosswalk_blob initial_research_snapshot crosswalk_sha256 protected_procedure_commit", "source pin")
-    for key in ("commit", "crosswalk_blob", "protected_procedure_commit"):
+    # SHA-shaped declarations are not commit-authenticity proof; the
+    # independently verified crosswalk bytes are the local source fence.
+    for key in ("commit", "crosswalk_blob", "protected_procedure_commit", "initial_research_snapshot"):
         if not re.fullmatch(r"[0-9a-f]{40}", str(pin.get(key, ""))):
             _micro_refuse("malformed source pin")
     if not re.fullmatch(r"[0-9a-f]{64}", str(pin.get("crosswalk_sha256", ""))):
@@ -306,7 +321,17 @@ def build_microtheme_research_evidence(
             _micro_refuse("invented or duplicate micro ID")
         seen.add(micro)
         parents = sorted(e["parent"] for e in edges if e["child"] == micro)
-        supplied = sorted((row.get("parent_theme_ids") or []) + (row.get("parent_subtheme_ids") or []))
+        theme_paths, sub_paths = row.get("parent_theme_ids"), row.get("parent_subtheme_ids")
+        if not isinstance(theme_paths, list) or not isinstance(sub_paths, list):
+            _micro_refuse("micro parent paths must be lists")
+        if any(not isinstance(x, str) for x in theme_paths + sub_paths):
+            _micro_refuse("micro parent IDs must be strings")
+        supplied = sorted(theme_paths + sub_paths)
+        facets = row.get("activity_facets")
+        if not isinstance(facets, list) or not facets:
+            _micro_refuse("activity facets missing")
+        for facet in facets:
+            _micro_string(facet, "activity facet")
         if parents != supplied:
             _micro_refuse("micro parent relations conflict with incumbent crosswalk")
         if row.get("canonical_definition_modified") is not False or row.get("membership_population_complete") is not False or row.get("predicate_authority") != "MODEL_PROPOSED_REVIEW_CRITERIA":
@@ -319,6 +344,9 @@ def build_microtheme_research_evidence(
             _micro_refuse("invented or duplicate intermediate subtheme")
         _micro_exact_fields(row, "node_id name value_chain_position children", "subtheme")
         seen.add(row["node_id"])
+        _micro_string(row.get("name"), "subtheme name")
+        if not isinstance(row.get("children"), list) or any(not isinstance(x, str) for x in row["children"]):
+            _micro_refuse("subtheme children must be string IDs")
         own = next(x for x in sub_rows if x["id"] == row["node_id"])
         children = sorted(e["child"] for e in edges if e["parent"] == row["node_id"])
         if children != row.get("children") or own.get("value_chain_position") != row.get("value_chain_position"):
@@ -354,6 +382,15 @@ def build_microtheme_research_evidence(
             _micro_refuse("unsafe source URL")
         _micro_string(source.get("supported_observation"), "source observation")
         _micro_string(source.get("publisher"), "source publisher")
+        _micro_string(source.get("limitation"), "source limitation")
+        try:
+            catalogued = dt.datetime.fromisoformat(source["catalogued_at"].replace("Z", "+00:00"))
+            if catalogued.utcoffset() is None:
+                raise ValueError()
+        except (ValueError, TypeError, KeyError, AttributeError):
+            _micro_refuse("invalid source cataloguing clock")
+        if catalogued > compiled:
+            _micro_refuse("source catalogue postdates compilation")
         if source.get("rights_use_qualification") != "NOT_PERFORMED" or source.get("full_document_archived") is not False or source.get("body_sha256") is not None:
             _micro_refuse("unsupported source authenticity or rights claim")
         published, precision = source.get("published_on"), source.get("publication_precision")
@@ -361,14 +398,14 @@ def build_microtheme_research_evidence(
             if published is not None:
                 _micro_refuse("unknown publication precision falsely dated")
         elif precision == "YEAR":
-            if not isinstance(published, str) or not re.fullmatch(r"[12][0-9]{3}", published) or int(published) > compiled.year:
+            if not isinstance(published, str) or not re.fullmatch(r"[12][0-9]{3}", published) or int(published) > min(compiled.year, catalogued.year):
                 _micro_refuse("invalid source publication year")
         elif precision == "DAY":
             try:
                 date = dt.date.fromisoformat(published)
             except (ValueError, TypeError):
                 _micro_refuse("invalid publication day")
-            if date.isoformat() != published or date > compiled.date():
+            if date.isoformat() != published or date > min(compiled.date(), catalogued.date()):
                 _micro_refuse("future-dated source")
         else:
             _micro_refuse("invalid source precision")
@@ -397,7 +434,7 @@ def build_microtheme_research_evidence(
         if row.get("issuer_name_hint") is not None:
             _micro_string(row.get("issuer_name_hint"), "issuer hint")
         refs = row.get("source_ids")
-        if not isinstance(refs, list) or not refs or len(set(refs)) != len(refs) or any(ref not in sources for ref in refs):
+        if not isinstance(refs, list) or not refs or any(not isinstance(ref, str) for ref in refs) or len(set(refs)) != len(refs) or any(ref not in sources for ref in refs):
             _micro_refuse("candidate source references incomplete or duplicate")
         stage_counts[row["stage"]] += 1
     for key in ("negative_cases", "cpu_scope_review"):
@@ -410,18 +447,27 @@ def build_microtheme_research_evidence(
                 _micro_refuse("nonobject " + key)
             _micro_exact_fields(row, ("case_id micro_id unsupported_inference research_disposition source_ids adjudication" if key == "negative_cases" else "label entity_name activity source_ids note canonical_micro_id admission_status measurement_eligible"), key)
             refs = row.get("source_ids")
-            if not isinstance(refs, list) or not refs or any(ref not in sources for ref in refs):
+            if not isinstance(refs, list) or not refs or any(not isinstance(ref, str) for ref in refs) or any(ref not in sources for ref in refs):
                 _micro_refuse("unlinked negative or scope reference")
             if key == "negative_cases":
-                if row.get("case_id") in seen_ids or row.get("micro_id") not in micro_ids or row.get("adjudication") != "MODEL_AUTHORED_REVIEW_CASE_NOT_HUMAN_GOLD_LABEL":
+                case_id = row.get("case_id")
+                if not isinstance(case_id, str) or not re.fullmatch(r"N[0-9]{2,6}", case_id):
+                    _micro_refuse("malformed negative case ID")
+                for field in ("unsupported_inference", "research_disposition"):
+                    _micro_string(row.get(field), "negative " + field)
+                if case_id in seen_ids or row.get("micro_id") not in micro_ids or row.get("adjudication") != "MODEL_AUTHORED_REVIEW_CASE_NOT_HUMAN_GOLD_LABEL":
                     _micro_refuse("negative case overclaims adjudication")
-                seen_ids.add(row["case_id"])
-            elif row.get("canonical_micro_id") is not None or row.get("admission_status") != "SCOPE_REVIEW_ONLY" or row.get("measurement_eligible") is not False:
-                _micro_refuse("CPU scope item overclaims admission")
+                seen_ids.add(case_id)
+            else:
+                for field in ("label", "entity_name", "activity", "note"):
+                    _micro_string(row.get(field), "CPU scope " + field)
+                if row.get("canonical_micro_id") is not None or row.get("admission_status") != "SCOPE_REVIEW_ONLY" or row.get("measurement_eligible") is not False:
+                    _micro_refuse("CPU scope item overclaims admission")
     population = document.get("population")
     if not isinstance(population, Mapping) or population.get("complete_global_membership") is not False:
         _micro_refuse("unverified population completeness")
     _micro_exact_fields(population, "definition micro_definitions subtheme_definitions parent_relationships candidate_activity_records source_references source_stage_counts complete_global_membership canonical_memberships_admitted dataos_identities_qualified measurement_cohorts_admitted", "population")
+    _micro_string(population.get("definition"), "population definition")
     numeric = {
         "micro_definitions": len(definitions), "subtheme_definitions": len(subthemes),
         "parent_relationships": len(edges), "candidate_activity_records": len(candidates),
@@ -453,6 +499,7 @@ def build_microtheme_research_evidence(
             "An operating-business hint does not resolve a legal issuer, listing or corporate event.",
             "Parent paths are context, not multiple issuers, weights, forecasts or trading signals.",
             "No graph, membership, probation, score, identity, state or production write occurs.",
+            "Source commits are unverified declarations; local byte checks bind only the crosswalk.",
         ]
     )
 
@@ -460,6 +507,7 @@ def build_microtheme_research_evidence(
 def render_microtheme_research_markdown(report: Mapping[str, Any]) -> str:
     """Render escaped human review with source references, never an authority card."""
     import html
+    from urllib.parse import quote
     def clean(value):
         return html.escape(str(value if value is not None else "unresolved"), quote=True).replace("|", "&#124;").replace("\n", " ").replace("\r", " ")
     c = report["counts"]
@@ -475,7 +523,7 @@ def render_microtheme_research_markdown(report: Mapping[str, Any]) -> str:
     ]
     for row in report["candidates"]:
         refs = ", ".join(
-            "[" + clean(sid) + "](" + report["sources"][sid]["url"].replace(")", "%29") + ")"
+            "[" + clean(sid) + "](" + quote(report["sources"][sid]["url"], safe="/:?&=#%+@-._~") + ")"
             for sid in row["source_ids"]
         )
         lines.append("| " + " | ".join([
