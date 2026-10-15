@@ -155,9 +155,9 @@ unresolved:
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
 - Current A1 head939b original CI38773271071 passed; canonical original terminal evidence is consumed.
-  Remaining binding checks, incumbent protected merge and production proof remain separate.
+  All26 check runs are canonically binding-clean at18:08; incumbent freshness/merge and production remain separate.
 next_actions:
-- Consume current939b all binding checks and incumbent release disposition; its original terminal CI evidence
+- Consume the incumbent release disposition after actual new-main CI changes; current939b binding/terminal evidence
   is accepted. The incumbent alone refreshes or merges. No second manual integration.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
@@ -178,11 +178,13 @@ prs:
 
 ## Current checkpoint — 2026-10-15T18:04Z
 
-PR6651 remains OPEN939b348451fc1e46b70eee2e55309e4e1756ab98 at18:02:57. Its original CI38773271071/attempt1 completed successfully:12packs,contract-delta,plan andci-gate. Final artifact11996491671 ZIP SHA6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6 matches GitHub; canonical validation accepts127jobs/351semantic commandsteps,zero blocked/inherited/infrastructure failure. Every execution/step identity matches the original plan. These are command results, not a unit-test or zero-skip count. All remaining binding checks and the incumbent release decision are separate; no root refresh or merge.
+PR6651 remains OPEN939b348451fc1e46b70eee2e55309e4e1756ab98 at18:02:57. Its original CI38773271071/attempt1 completed successfully:12packs,contract-delta,plan andci-gate. Final artifact11996491671 ZIP SHA6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6 matches GitHub; canonical validation accepts127jobs/351semantic commandsteps,zero blocked/inherited/infrastructure failure. Every execution/step identity matches the original plan. These are command results, not a unit-test or zero-skip count. All26 check runs are canonically binding-clean at18:08. Main5bb contains real new Yahoo CI definitions; the incumbent release/freshness decision remains separate. No root refresh or merge.
 
 The qualified plan/source identity remains tested529cae70/base32bbb/tree5820d767 with17productionfiles/7assetinputs unchanged. Preserve the incumbent-only refresh/merge path and consumed one-time base exception. The original terminal artifact and consumption record are retained in a1-refresh-recovery-20261015/ beside this record; a1-current-release.json carries the current structured state.
 
 Follow-on runtime3528080/updater9cb/probe2edbb/CI340774 remain unchanged; accepted12-file probe,20 supplied-text cases plus bear,T11/T5/T12/QLedger and169updater checks are reused. Newest3d46 Discovery/continuity cleanly composes with the existing prospective integration (unreferenced2e1e3057/treeada6; main32 preview197198d9), preserving all320 prospective job definitions and incoming research-factory command. This is no carrier integration or final qualification: reconcile actual qualified A1 landing before the same follow-on single PR.
+
+The actual main5bb dependency delta exposes two missing inputs in each prospective A1/QLedger exclusive list: collectors/yahoo.py and lib/stooq.py. Four declarations repair the follow-on and private composition, preserving314/320 execution definitions, all prior paths and limits. Source2controls and prospective3controls pass; canonical closures1240/922 have zero misses, and all packing-probe selections remain unchanged. Unchanged runtime/strict packing proof is reused. A1 carrier remains untouched; apply only its precise two-input correction to a verified admitted successor when required.
 
 The real local T12 consumer uses300 production whitehouse claim-direction records (210positive/90negative), exact rule-2 binding and intended excess_mean assessment. It feeds the existing typed Discovery drafter/validator with independently authored admission fields. No grade/sealed outcome/model read or metric-publication assertion; protected Discovery delivery, installed execution and subsequent consumption remain owed.
 

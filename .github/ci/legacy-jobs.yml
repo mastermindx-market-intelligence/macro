@@ -7532,6 +7532,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       - lib/symbol_directory_receipts.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - engine/intl_performance_charts.py
@@ -10942,6 +10944,8 @@ jobs:
     # unchanged; an opaque transitive import must not select unrelated builders.
     scope: exclusive
     paths:
+      - "collectors/yahoo.py"
+      - "lib/stooq.py"
       # Incoming main QLedger test and imports, qualified in the A1 composition.
       - engine/intl_performance_charts.py
       - engine/rates_command_basis.py

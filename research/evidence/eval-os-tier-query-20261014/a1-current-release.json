@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T18:05:08.520478+00:00",
+  "updated_at": "2026-10-15T18:16:57.013662+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "parents": [
@@ -16,10 +16,10 @@
     "old": "624465a40a80cb2e34ff26c4a058d2de4244b26d"
   },
   "source_and_plan_only": false,
-  "terminal_binding_checks_pending": true,
+  "terminal_binding_checks_pending": false,
   "production_verified": false,
   "programme_complete": false,
-  "next": "Consume current939b all binding checks and incumbent release disposition. After qualified incumbent merge bind final-source probes and prove production; retain separate follow-on delivery/adoption.",
+  "next": "Incumbent adjudicates actual new-main CI-definition change and admits any required refresh. Preserve current939b terminal PASS; prepare exact new collector dependency correction for actual next head, then fresh binding checks/incumbent merge/production.",
   "followon": {
     "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
@@ -288,6 +288,29 @@
       "carrier_mutated": false,
       "final_qualification": false,
       "production_verified": false
+    },
+    "new_yahoo_dependency_repair": {
+      "parent": "ce701527b214b07e7980db94d34b496dd3af9703",
+      "jobs": [
+        "eval-os-a1",
+        "qledger-cluster-honest-ci"
+      ],
+      "added_inputs": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "branch_controls_passed": 2,
+      "prospective_controls_passed": 3,
+      "prospective_closure_counts": [
+        1240,
+        922
+      ],
+      "prospective_closure_missing": [],
+      "all_branch_execution_definitions_preserved": 314,
+      "all_prospective_execution_definitions_preserved": 320,
+      "packing_probe_selection_unchanged": true,
+      "runtime_unchanged": true,
+      "a1_carrier_changed": false
     }
   },
   "preserved_boundaries": [
@@ -428,15 +451,46 @@
   "source_refresh_requirement": {
     "prior_requirement_satisfied_by": "939b348451fc1e46b70eee2e55309e4e1756ab98",
     "current_freshness_decision": "incumbent-owned",
-    "newer_observed_main": "40324c2320782efd063ca5e664c547c01843765b",
+    "newer_observed_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
     "source_delta_from_current_proof_base": {
-      "at": "2026-10-15T17:06:03.957575+00:00",
+      "at": "2026-10-15T18:09:10.109527+00:00",
       "proof_base": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
-      "observed_main": "40324c2320782efd063ca5e664c547c01843765b",
-      "changed_source_paths": [],
-      "changed_generated_path_count": 3769,
-      "ci_definition_paths": [],
-      "scope": "Source-delta read only; no freshness verdict override."
+      "observed_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
+      "changed_source_paths": [
+        ".github/ci/legacy-jobs.yml",
+        "collectors/base.py",
+        "collectors/yahoo.py",
+        "lib/store.py",
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "research/RESEARCH_CODEGEN_YAHOO_CAPTURE_SOURCE_2026_10_13.md",
+        "templates/chat.html",
+        "templates/terminal_overlay.js",
+        "tests/js/terminal_overlay_readiness.test.cjs",
+        "tests/test_terminal_overlay_contract.py",
+        "tests/test_yahoo_availability_capture.py"
+      ],
+      "generated_path_count": 13325,
+      "main_commits": [
+        "5bb77dbe6bf9225e483e4448f38728e4a5d97915 hot-tape: radar 2026-10-15T18:07Z [skip ci]",
+        "2c9f9a1a88b054a9fb5658793d6db8765b9e3c73 marketing-publish: outbox run 2026-10-15T18:02Z [skip ci]",
+        "1c35abcd198df30366fe08b4dd714d9ec2b359ef feat(research-codegen): retain default-off Yahoo observation receipts (#9099)",
+        "4bdc9d17469ad4a5cd252fa7de9a68f3d1ff3c09 hot-tape: radar 2026-10-15T18:01Z [skip ci]",
+        "7f5395b7b95b89c19bc1bb15809745cfb6c6a6af marketing-publish: outbox run 2026-10-15T17:56Z [skip ci]",
+        "a46c680fda666c909aa921917489fb54f4cc3b50 hot-tape: radar 2026-10-15T17:55Z [skip ci]",
+        "376a038514bb1dffcc4bd9ff770df3a8e6d5b689 marketing-publish: outbox run 2026-10-15T17:50Z [skip ci]",
+        "1144ede655f1374f898f6c5cbc88faa4a072be02 hot-tape: radar 2026-10-15T17:50Z [skip ci]",
+        "e973749f8bce217fa912817eafe0ad103e2b1fa1 earnings-wire: publish current verified records [skip ci]",
+        "9b255a5377385a6b0dab23850e6a6ff67714a5f1 research_vault: catalog 2026-10-15T17:30Z",
+        "84428276f1000fa09af3e450f27386f12e55b1ed render-public: public pages + asset stamps",
+        "49ae34b5b777178f1a57cd7cc7d301feaa488653 Keep Terminal recovery actions visible while navigation stalls (#9464)",
+        "ff1cd929a5ab0d83d16907fe1495ee6ffa7a5c17 earnings-wire: publish current verified records [skip ci]",
+        "40324c2320782efd063ca5e664c547c01843765b marketing-media-backfill: recovered chart URLs 2026-10-15T16:57Z [skip ci]",
+        "efbf80c2a4077cfb8e6f0007da26a3c048f57c3f render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)",
+        "0147ec7124b89818dad3907d6fd9c11382806ae4 engine-render: regime recompute + re-render 2026-10-15 (scope=all)"
+      ],
+      "scope": "Actual source delta only; incumbent alone adjudicates freshness/refresh/merge."
     },
     "current_lease": {
       "readable": true,
@@ -485,7 +539,7 @@
       ]
     },
     "a1_execution_identity_unchanged": true,
-    "binding_checks_pending": true,
+    "binding_checks_pending": false,
     "scope": "Original current-head plan bound to consumed terminal semantic proof; all other binding checks and incumbent release still separate."
   },
   "terminal_semantic_ci": {
@@ -507,5 +561,20 @@
     "clear": true,
     "plan_execution_and_step_identities_match": true,
     "scope": "Original939b terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
+  },
+  "binding_checks": {
+    "observed_at": "2026-10-15T18:08:20.162412+00:00",
+    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "verdict": "clean",
+    "binding_problem_names": [],
+    "check_run_count": 26,
+    "status_count": 0,
+    "non_binding": [
+      {
+        "name": "ci-authority/codex/merge-queue-pilot",
+        "conclusion": "failure",
+        "status": "completed"
+      }
+    ]
   }
 }
