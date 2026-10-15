@@ -160,3 +160,45 @@ def test_single_date_reader_never_starts_an_async_dataset_scan(monkeypatch,tmp_p
     monkeypatch.setattr(pq,'read_table',forbidden)
     result=m.read_day(root,'2020-01-05',expected_manifest_sha256=r['manifest_sha256'])
     assert len(result['rows'])==1
+
+
+def test_date_reader_refuses_decoded_year_over_64mib_before_materializing(monkeypatch,tmp_path):
+    from types import SimpleNamespace
+    import pyarrow.parquet as pq
+    m,root,r=make_archive(monkeypatch,tmp_path)
+    record=next(f for f in json.loads((root/'manifest.json').read_text())['files'] if f['kind']=='states')
+    calls=[]
+    class OversizedMetadata:
+        metadata=SimpleNamespace(num_rows=record['rows'],num_row_groups=1,
+            row_group=lambda i:SimpleNamespace(total_byte_size=64*1024*1024+1))
+        def read(self,**kwargs):
+            pytest.fail('decode budget must be checked before table materialization')
+        def close(self):calls.append('closed')
+    monkeypatch.setattr(pq,'ParquetFile',lambda *a,**k:OversizedMetadata())
+    with pytest.raises(ValueError,match='decoded size'):
+        m.read_day(root,'2020-01-05',expected_manifest_sha256=r['manifest_sha256'])
+    assert calls==['closed']
+
+
+def test_malformed_source_date_is_refused_before_coverage(monkeypatch):
+    m=module()
+    def reader(*a,**k):
+        h=fake_reader(); h.rows=({'close_tradj':50.0,'volume_raw':1},); return h
+    monkeypatch.setattr(m,'read_research_history',reader)
+    with pytest.raises(ValueError,match='date'):
+        m.assemble_history(request())
+
+
+def test_empty_source_keeps_declared_denominator_without_inventing_price(monkeypatch):
+    m=module()
+    def reader(*a,**k):h=fake_reader();h.rows=();return h
+    monkeypatch.setattr(m,'read_research_history',reader)
+    result=m.assemble_history(request())
+    assert result['states']==[]
+    assert result['manifest']['coverage']['selected_proxy_count']==1
+    assert result['manifest']['coverage']['by_symbol']['SPY']['observations']==0
+
+
+def test_capture_cutoff_is_normalized_to_utc_by_existing_temporal_owner():
+    m=module()
+    assert m.utc('2024-01-15T23:59:59-05:00').isoformat()=='2024-01-16T04:59:59+00:00'

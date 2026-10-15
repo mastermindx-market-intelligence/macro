@@ -26059,6 +26059,28 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
+      # Daily historical experience: existing source reader, exact-date consumer and offline browser.
+      - engine/neuralweb/market_memory_history.py
+      - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_view.py
+      - tests/test_market_memory_history.py
+      - tests/test_market_memory_history_archive.py
+      - tests/test_market_memory_history_cli.py
+      - tests/test_market_memory_history_dossier.py
+      - tests/test_market_memory_history_macro.py
+      - tests/test_market_memory_history_view.py
+      - scripts/market_memory_history.py
+      - templates/market_memory_history.html.j2
+      - templates/market_memory_history.css
+      - templates/market_memory_history.js
+      - templates/theme.css
+      - templates/market_memory_retained.css
+      - collectors/tiingo_archive.py
+      - scripts/tiingo_materialize.py
+      - lib/dataos/tiingo_reader.py
+      - lib/dataos/tiingo_views.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26066,7 +26088,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx jinja2
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
       # PTSE source-only research contracts are fixture-only: no live source/store
@@ -26100,7 +26122,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -27314,6 +27336,39 @@ jobs:
       - tests/test_dataos_rights_matrix.py
       - tests/test_tiingo_produced_contracts.py
       - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
+      # Existing guarded Data & Lab historical-dossier read projection.
+      - tests/test_dataos_web_history.py
+      - tests/test_market_memory_history_workflow.py
+      - plugins/mastermind-data-lab/skills/data-workspace/SKILL.md
+      - plugins/mastermind-data-lab/skills/data-workspace/references/requests.md
+      - lib/dataos/web_history.py
+      - engine/neuralweb/market_memory_history.py
+      - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_view.py
+      - tests/test_market_memory_history_archive.py
+      - tests/test_market_memory_history_dossier.py
+      - tests/test_market_memory_history_macro.py
+      # Historical dossier transitive imports: canonical closure, not a scope waiver.
+      - collectors/tiingo_archive.py
+      - config/market_memory_canary.v1.json
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
+      - lib/dataos/tiingo_reader.py
+      - lib/dataos/tiingo_views.py
+      - scripts/tiingo_materialize.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27326,7 +27381,7 @@ jobs:
       - name: web data access, source clocks, reader limits and canonical Lab isolation
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
@@ -27425,6 +27480,27 @@ jobs:
       - tests/test_dataos_registry.py
       - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
+      # Historical dossier transitive imports: canonical closure, not a scope waiver.
+      - collectors/tiingo_archive.py
+      - config/market_memory_canary.v1.json
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_episode_comparison.py
+      - engine/neuralweb/market_memory_episode_features.py
+      - engine/neuralweb/market_memory_episode_retrieval.py
+      - engine/neuralweb/market_memory_history.py
+      - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_identity.py
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_operating_cortex_service.py
+      - engine/neuralweb/market_memory_pit.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_retained_context_cohort.py
+      - engine/neuralweb/market_memory_trusted.py
+      - scripts/tiingo_materialize.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:

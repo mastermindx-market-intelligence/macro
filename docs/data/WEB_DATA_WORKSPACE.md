@@ -182,3 +182,11 @@ OpenAI primary references:
 - https://developers.openai.com/api/docs/guides/secure-mcp-tunnels
 - https://developers.openai.com/plugins/build/auth
 - https://learn.chatgpt.com/docs/extend/mcp
+
+## Historical Market Memory projection
+
+The additive `history_dossier` action uses `lib/dataos/web_history.py` to compose the existing Market Memory archive and optional initial-release macro chronology. All files are opened through `DataWorkspace._file`; the adapter never uses an unrestricted filesystem reader or admits caller-supplied paths, SQL, providers, output destinations or runtime controls.
+
+The request requires a retained `manifest.json` reference, its exact SHA-256 and a calendar date. An optional macro reference requires its own digest. Each source descriptor must close its mutation/replacement guard before the result can return. The default never opens outcome files. A source-bound query receipt includes actual content hashes, source versions and the explicit request. No replay or source-eligibility authority is widened.
+
+Source tests and a real source-checkout dossier are not installation. The accepted runtime export must include the tracked Market Memory history modules, their existing Tiingo/Data OS dependencies and the unchanged host binding. Verify both historical requests and existing capabilities/reads from the immutable export before selecting the launcher. Workflow publication/installation on other accounts remains separately verified.

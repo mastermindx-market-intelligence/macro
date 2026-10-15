@@ -3,7 +3,7 @@
 
 All archive behaviour lives in ``engine.neuralweb.market_memory_history_archive``;
 this module only parses arguments, bounds and validates the build request
-document, forwards the four archive callables unchanged, and renders their
+document, composes existing read/export consumers, and renders their
 results as finite JSON.
 
 Commands:
@@ -15,6 +15,12 @@ Commands:
               Read one archived market day.
   inspect --archive PATH --manifest-sha256 EXACT64
               Read an archive manifest.
+  dossier --archive PATH --manifest-sha256 EXACT64 --date YYYY-MM-DD
+          [--macro PATH --macro-sha256 EXACT64] [--reveal-outcomes]
+              Join the exact market day and optional first-print chronology.
+  export --archive PATH --manifest-sha256 EXACT64 --output NEW_HTML
+          [--macro PATH --macro-sha256 EXACT64] [--include-outcomes]
+              Produce a private offline browser. Default export has no outcomes.
 
 Exit status: ``0`` on success, ``1`` on a supported operational error
 (reported as a compact ``{"error": ...}`` JSON document on stderr, never a
@@ -52,6 +58,9 @@ except ImportError:  # pragma: no cover - reachable only outside the checkout
     read_day = None  # type: ignore[assignment]
     read_manifest = None  # type: ignore[assignment]
     write_archive = None  # type: ignore[assignment]
+
+from engine.neuralweb.market_memory_history_dossier import build_daily_dossier
+from engine.neuralweb.market_memory_history_view import export_browser
 
 _ARCHIVE_CALLABLES = ("assemble_history", "write_archive", "read_manifest", "read_day")
 MAX_INPUT_BYTES = 128 * 1024
@@ -162,6 +171,27 @@ def _run_inspect(args: argparse.Namespace) -> dict:
     return manifest
 
 
+def _macro_binding(args: argparse.Namespace) -> dict:
+    if (args.macro is None) != (args.macro_sha256 is None):
+        raise CliError("macro path and exact source digest must be supplied together")
+    return {"macro_path":Path(args.macro) if args.macro is not None else None,
+            "expected_macro_sha256":args.macro_sha256}
+
+
+def _run_dossier(args: argparse.Namespace) -> dict:
+    binding=_macro_binding(args)
+    return build_daily_dossier(Path(args.archive),args.date,
+        expected_manifest_sha256=args.manifest_sha256,
+        reveal_outcomes=args.reveal_outcomes,**binding)
+
+
+def _run_export(args: argparse.Namespace) -> dict:
+    binding=_macro_binding(args)
+    return export_browser(Path(args.archive),Path(args.output),
+        expected_manifest_sha256=args.manifest_sha256,
+        include_outcomes=args.include_outcomes,**binding)
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="market_memory_history",
@@ -170,7 +200,7 @@ def make_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(
         title="commands",
         dest="command",
-        metavar="{build,day,inspect}",
+        metavar="{build,day,inspect,dossier,export}",
         required=True,
     )
 
@@ -210,6 +240,22 @@ def make_parser() -> argparse.ArgumentParser:
         help="expected manifest SHA-256, exactly 64 hex characters",
     )
     inspect.set_defaults(handler=_run_inspect)
+    for name,help_text,handler in (
+            ("dossier","read a source-bound daily market and macro dossier",_run_dossier),
+            ("export","create a private offline browser with explicit source evidence",_run_export)):
+        consumer=commands.add_parser(name,help=help_text)
+        consumer.add_argument("--archive",required=True,metavar="PATH")
+        consumer.add_argument("--manifest-sha256",required=True,type=_sha256_argument,metavar="EXACT64")
+        consumer.add_argument("--macro",metavar="PATH",help="optional retained first-print chronology")
+        consumer.add_argument("--macro-sha256",type=_sha256_argument,metavar="EXACT64")
+        if name=="dossier":
+            consumer.add_argument("--date",required=True,type=_date_argument,metavar="YYYY-MM-DD")
+            consumer.add_argument("--reveal-outcomes",action="store_true")
+        else:
+            consumer.add_argument("--output",required=True,metavar="NEW_HTML")
+            consumer.add_argument("--include-outcomes",action="store_true",
+                                 help="embed future outcomes for explicit educational reveal; not blind evaluation")
+        consumer.set_defaults(handler=handler)
     return parser
 
 

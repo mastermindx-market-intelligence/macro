@@ -30,6 +30,7 @@ LEGACY_ARCHIVE_SCHEMA = 'market_memory.history_archive.v1'
 MODE = 'RETROSPECTIVE_EXPLORATORY'
 MAX_MANIFEST_BYTES = 2 * 1024 * 1024
 MAX_FILE_BYTES = 256 * 1024 * 1024
+MAX_DATE_DECODE_BYTES = 64 * 1024 * 1024
 MAX_TOTAL_ROWS = 1_000_000
 MAX_SYMBOLS = 64
 _HEX = re.compile(r'[a-f0-9]{64}\Z')
@@ -330,6 +331,14 @@ def read_manifest(root: Path, *, expected_manifest_sha256: str) -> dict:
     if type(expected_manifest_sha256) is not str or not _HEX.fullmatch(expected_manifest_sha256):
         raise HistoricalExperienceError('exact retained manifest SHA-256 required')
     payload = _regular_file(Path(root), 'manifest.json', MAX_MANIFEST_BYTES)
+    return _manifest_payload(payload, expected_manifest_sha256)
+
+
+def _manifest_payload(payload: bytes, expected_manifest_sha256: str) -> dict:
+    if type(payload) is not bytes or len(payload) > MAX_MANIFEST_BYTES:
+        raise HistoricalExperienceError('historical manifest bytes exceed budget')
+    if type(expected_manifest_sha256) is not str or not _HEX.fullmatch(expected_manifest_sha256):
+        raise HistoricalExperienceError('exact retained manifest SHA-256 required')
     if _hash(payload) != expected_manifest_sha256:
         raise HistoricalExperienceError('retained manifest digest mismatch')
     try:
@@ -356,21 +365,28 @@ def read_manifest(root: Path, *, expected_manifest_sha256: str) -> dict:
 
 
 def _read_rows(root: Path, item: dict, target: str) -> list[dict]:
+    return _row_payload(_regular_file(root, item['name'], MAX_FILE_BYTES), item, target)
+
+
+def _row_payload(payload: bytes, item: dict, target: str) -> list[dict]:
     import pyarrow as pa
     import pyarrow.parquet as pq
-    payload = _regular_file(root, item['name'], MAX_FILE_BYTES)
+    if type(payload) is not bytes or len(payload) > MAX_FILE_BYTES:
+        raise HistoricalExperienceError('historical data bytes exceed budget')
     if len(payload) != item['bytes'] or _hash(payload) != item['sha256']:
         raise HistoricalExperienceError('historical data file digest mismatch')
     try:
         pf = pq.ParquetFile(pa.BufferReader(payload), pre_buffer=False)
-        if pf.metadata.num_rows != item['rows']:
-            raise HistoricalExperienceError('historical row count mismatch')
-        if sum(pf.metadata.row_group(i).total_byte_size for i in range(pf.metadata.num_row_groups)) > MAX_FILE_BYTES * 4:
-            raise HistoricalExperienceError('historical decoded size exceeds budget')
-        # One bounded local file does not need the asynchronous dataset scanner.
-        # Its deferred Python-buffer cleanup can race interpreter finalization
-        # (observed on Arrow25/Python3.14). Finish decoding before returning.
         try:
+            if pf.metadata.num_rows != item['rows']:
+                raise HistoricalExperienceError('historical row count mismatch')
+            decoded_size = sum(pf.metadata.row_group(i).total_byte_size
+                               for i in range(pf.metadata.num_row_groups))
+            if decoded_size > MAX_DATE_DECODE_BYTES:
+                raise HistoricalExperienceError('historical decoded size exceeds budget')
+            # One bounded local file does not need the asynchronous dataset scanner.
+            # Its deferred Python-buffer cleanup can race interpreter finalization
+            # (observed on Arrow25/Python3.14). Finish decoding before returning.
             table = pf.read(use_threads=False)
         finally:
             pf.close()
@@ -383,6 +399,8 @@ def _read_rows(root: Path, item: dict, target: str) -> list[dict]:
             row['missing'] = json.loads(row['missing'])
             if row['market_date'] != target:
                 raise HistoricalExperienceError('historical date filter mismatch')
+    except HistoricalExperienceError:
+        raise
     except (ValueError, TypeError, KeyError, OSError) as exc:
         raise HistoricalExperienceError('invalid historical data file') from exc
     return rows
@@ -390,13 +408,28 @@ def _read_rows(root: Path, item: dict, target: str) -> list[dict]:
 
 def read_day(root: Path, market_date: str, *, expected_manifest_sha256: str,
              reveal_outcomes: bool = False) -> dict:
+    root = Path(root)
+    return read_day_from_reader(lambda name, limit: _regular_file(root, name, limit),
+                               market_date, expected_manifest_sha256=expected_manifest_sha256,
+                               reveal_outcomes=reveal_outcomes)
+
+
+def read_day_from_reader(read_file, market_date: str, *, expected_manifest_sha256: str,
+                         reveal_outcomes: bool = False) -> dict:
+    """Decode through an existing admitted source owner, not a new path resolver.
+
+    The callback is application code, never a user-supplied JSON field. Data &
+    Lab supplies its existing descriptor-confined, read-only file owner. Local
+    archive readers supply _regular_file. Both use identical validation below.
+    """
     target = _date(market_date)
     if type(reveal_outcomes) is not bool:
         raise HistoricalExperienceError('outcome reveal must be an explicit boolean')
-    root = Path(root)
-    manifest = read_manifest(root, expected_manifest_sha256=expected_manifest_sha256)
+    if type(expected_manifest_sha256) is not str or not _HEX.fullmatch(expected_manifest_sha256):
+        raise HistoricalExperienceError('exact retained manifest SHA-256 required')
+    manifest = _manifest_payload(read_file('manifest.json', MAX_MANIFEST_BYTES), expected_manifest_sha256)
     matching = {r['kind']:r for r in manifest['files'] if r['year'] == target[:4]}
-    rows = _read_rows(root, matching['states'], target) if 'states' in matching else []
+    rows = _row_payload(read_file(matching['states']['name'], MAX_FILE_BYTES), matching['states'], target) if 'states' in matching else []
     rows = select_day(rows, target)
     result = {'schema': HISTORY_SCHEMA, 'mode': MODE, 'artifact_id': manifest['artifact_id'],
               'manifest_sha256': expected_manifest_sha256, 'market_date': target,
@@ -406,5 +439,5 @@ def read_day(root: Path, market_date: str, *, expected_manifest_sha256: str,
               'horizon_unit': manifest['horizon_unit'],
               'source_references': manifest['sources']}
     if reveal_outcomes:
-        result['outcomes'] = _read_rows(root, matching['outcomes'], target) if 'outcomes' in matching else []
+        result['outcomes'] = _row_payload(read_file(matching['outcomes']['name'], MAX_FILE_BYTES), matching['outcomes'], target) if 'outcomes' in matching else []
     return result

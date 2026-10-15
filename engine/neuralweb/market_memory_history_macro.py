@@ -147,6 +147,15 @@ def read_macro_chronology(path: Path, *, expected_sha256: str) -> dict:
     if type(expected_sha256) is not str or not _HEX.fullmatch(expected_sha256):
         raise HistoricalExperienceError('exact first-print chronology digest required')
     path=Path(path);raw=_regular_file(path.parent,path.name,MAX_BYTES)
+    return read_macro_chronology_bytes(raw, expected_sha256=expected_sha256)
+
+
+def read_macro_chronology_bytes(raw: bytes, *, expected_sha256: str) -> dict:
+    """Decode evidence already read by an admitted source owner with one validator."""
+    if type(expected_sha256) is not str or not _HEX.fullmatch(expected_sha256):
+        raise HistoricalExperienceError('exact first-print chronology digest required')
+    if type(raw) is not bytes or len(raw)>MAX_BYTES:
+        raise HistoricalExperienceError('first-print chronology bytes exceed budget')
     if hashlib.sha256(raw).hexdigest()!=expected_sha256:
         raise HistoricalExperienceError('first-print chronology digest mismatch')
     try:result=json.loads(raw)

@@ -214,6 +214,11 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
         return workspace.read(**_fields(args,
             {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version"},
             {"ref"}))
+    if action == "history_dossier":
+        from lib.dataos.web_history import history_dossier
+        return history_dossier(workspace, **_fields(args,
+            {"ref", "manifest_sha256", "date", "macro_ref", "macro_sha256", "reveal_outcomes"},
+            {"ref", "manifest_sha256", "date"}))
     if action == "lab_signals":
         return workspace._result(action=action, **_lab().list_signals(
             **_fields(args, {"query", "limit"})))
@@ -226,7 +231,7 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
     if action == "capabilities":
         _fields(args, set())
         return workspace._result(action=action,
-            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"],
+            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run", "history_dossier"],
             supported_formats=["parquet", "csv", "json", "jsonl", "ndjson"],
             unsupported_formats="metadata only; use the existing owner decoder",
             max_response_bytes=MAX_RESPONSE_BYTES, max_rows_per_read=200,
@@ -235,6 +240,12 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
                  "wall_limit_seconds": MAX_LAB_WALL_SECONDS,
                  "bar_frequency": "daily", "canonical_annualization_periods": 252,
                  "execution": "canonical catalog recipes only; no arbitrary code or shell"},
+            history={"source_access":"existing_descriptor_confined_roots",
+                     "mode":"RETROSPECTIVE_EXPLORATORY","point_in_time_eligible":False,
+                     "max_proxy_symbols":64,"max_macro_records_per_date":100,
+                     "max_decoded_price_file_bytes":64*1024*1024,
+                     "required_evidence":"exact manifest digest; paired optional macro reference and digest",
+                     "outcomes":"excluded unless explicitly revealed"},
             freshness="stored data clocks where available; filesystem mtime is not freshness",
             access="host bindings and the existing Studio account-scoped transport")
     raise WorkspaceError("UNKNOWN_ACTION")

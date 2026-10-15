@@ -9,6 +9,7 @@ The host configuration fixes roots and test-workspace paths. Requests cannot sup
 | browse | root alias; optional path, offset, limit 1–200, expected_directory_version |
 | describe | ref |
 | read | ref; optional columns, time_column, start, end, equals, offset, limit 1–200, expected_version |
+| history_dossier | ref to manifest.json, manifest_sha256, date; optional paired macro_ref and macro_sha256; optional reveal_outcomes (boolean, default false) |
 | lab_signals | Optional query, limit 1–100 |
 | lab_plan | signal_id, refs; optional horizon_bars, cost_bps, n_configs_searched |
 | lab_run | request (the plan's inner request), time_column, column_map, bar_frequency ("daily"); optional start, end, expected_versions |
@@ -56,6 +57,28 @@ After obtaining the exact schema and version, replace the example version with t
 Date-only bounds are inclusive in the stored clock's calendar. Timestamp bounds require compatible awareness; epoch units are never inferred. `equals` maps exact column names to scalar equality values. Projection names and filter names must exist.
 
 Rows and positions retain original source ordering. `next_offset` is an original-row position, not a count of matches. A call evaluates at most 100,000 rows after its offset. Results are capped at 128 KiB and 200 rows; reduce columns or limit when needed. Text sources have a separate 32 MiB format/schema-read limit. Large Parquet row groups and oversized cells can be refused explicitly.
+
+## Historical daily dossier
+
+First check that `capabilities.actions` contains `history_dossier`. Browse the retained output and read its producer receipt. Replace every example reference and digest below with that retained evidence; these placeholders are not usable hashes. A missing receipt is an evidence gap, not permission to invent a checksum. The manifest binds the exact archive generation; the independent macro digest binds the selected initial-release chronology.
+
+Market observations only, with future outcomes excluded:
+
+```json
+{"action":"history_dossier","ref":"web_test_runs:<observed archive>/manifest.json","manifest_sha256":"<exact manifest digest from producer receipt>","date":"2022-09-13"}
+```
+
+The same date with separately bound macro first releases:
+
+```json
+{"action":"history_dossier","ref":"web_test_runs:<observed archive>/manifest.json","manifest_sha256":"<exact manifest digest from producer receipt>","date":"2022-09-13","macro_ref":"web_test_runs:<observed macro archive>/initial-prints.json","macro_sha256":"<exact macro digest from producer receipt>"}
+```
+
+Dates must be real, zero-padded ISO dates; no nearest-date fallback occurs. Digests are 64 lowercase hexadecimal characters. `macro_ref` and `macro_sha256` must appear together. `ref` is a descriptor-confined source reference, never an absolute path or URL. Source reads are bounded by the existing DataWorkspace owner and the archive's hash, schema, record and decoded-byte limits; the response retains each observed source version, content hash, and query receipt. Refusals leave no partial result.
+
+The default does not read outcome files at all. Only an explicit outcome-analysis task may add `"reveal_outcomes":true`. The returned `summary` describes selected proxies, not whole-market breadth. `coverage` lists unavailable news/causal context, consensus, filings, historical stock identity, intraday/options and strict point-in-time proof rather than filling gaps. First-release chronology is not a full historical macro revision matrix.
+
+This action does not run a strategy, collect a source, refresh data, create a ledger entry, write an artifact, or change a live signal. The separate existing Lab remains the strategy-experiment interface.
 
 ## Prepare and execute a Lab test
 

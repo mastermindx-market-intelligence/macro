@@ -427,3 +427,32 @@ class TestCliContract:
         assert err == ""
         assert out.endswith("\n")
         json.loads(out)
+
+
+class TestDossierAndExport:
+    def test_dossier_forwards_exact_source_bindings(self,monkeypatch,capsys):
+        stub=Recorder(result={'schema':'market_memory.daily_dossier.v1'})
+        monkeypatch.setattr(cli,'build_daily_dossier',stub,raising=False)
+        code,out,err=run_cli(['dossier','--archive','/archive','--manifest-sha256',SHA256,'--date','2020-02-13','--macro','/macro.json','--macro-sha256',SHA256],capsys)
+        assert code==0 and not err
+        assert stub.last==((Path('/archive'),'2020-02-13'),{'expected_manifest_sha256':SHA256,'macro_path':Path('/macro.json'),'expected_macro_sha256':SHA256,'reveal_outcomes':False})
+    def test_export_is_default_outcome_free(self,monkeypatch,capsys):
+        stub=Recorder(result={'html_sha256':SHA256})
+        monkeypatch.setattr(cli,'export_browser',stub,raising=False)
+        code,out,err=run_cli(['export','--archive','/archive','--manifest-sha256',SHA256,'--output','/new.html'],capsys)
+        assert code==0 and not err
+        assert stub.last==((Path('/archive'),Path('/new.html')),{'expected_manifest_sha256':SHA256,'macro_path':None,'expected_macro_sha256':None,'include_outcomes':False})
+    def test_export_requires_explicit_outcome_inclusion(self,monkeypatch,capsys):
+        stub=Recorder(result={'html_sha256':SHA256})
+        monkeypatch.setattr(cli,'export_browser',stub,raising=False)
+        code,out,err=run_cli(['export','--archive','/archive','--manifest-sha256',SHA256,'--output','/new.html','--include-outcomes'],capsys)
+        assert code==0 and stub.last[1]['include_outcomes'] is True
+    @pytest.mark.parametrize('command',['export','dossier'])
+    def test_partial_macro_binding_never_calls_consumer(self,command,monkeypatch,capsys):
+        def fail(*a,**k):pytest.fail('partial macro binding dispatched')
+        monkeypatch.setattr(cli,'export_browser',fail,raising=False)
+        monkeypatch.setattr(cli,'build_daily_dossier',fail,raising=False)
+        args=[command,'--archive','/archive','--manifest-sha256',SHA256,'--macro','/macro.json']
+        args+=['--date','2020-02-13'] if command=='dossier' else ['--output','/new.html']
+        code,out,err=run_cli(args,capsys)
+        assert code==1 and 'together' in json.loads(err)['error'] and not out
