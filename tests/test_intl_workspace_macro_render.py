@@ -174,6 +174,78 @@ def collect(html):
     return collector
 
 
+def source_reference_measure(**overrides):
+    return measure(**{
+        "quality": "stale", "reason": "source_stale", "source_reference": None,
+        "instrument": {"kind": "macro_yoy", "id": "gdp", "market_id": "EZ"},
+        "evidence_key": "synthetic:gdp-zero", **overrides,
+    })
+
+
+def source_reference_slot(**overrides):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = inputs(measures={"EZ.gdp_yoy": source_reference_measure(**overrides)},
+                    cycle_evidence={}, destinations={})
+    section = build_macro_section(**packet)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    assert section == before
+    return soup.select_one('[data-im-macro-market="EZ"] .intl-macro__metric-slot[id$="-gdp_yoy"]')
+
+
+@pytest.mark.parametrize("quality,reason,permission", [
+    ("stale", "source_stale", "allowed"), ("missing", "not_supplied", "allowed"),
+    ("failed", "source_failed", "allowed"), ("denied", "value_denied", "denied"),
+])
+def test_absent_measure_source_reference_is_bilingual_without_borrowing(quality, reason, permission):
+    slot = source_reference_slot(quality=quality, reason=reason, value_permission=permission)
+    reference = slot.select_one(".intl-macro__source-reference")
+    assert reference.select_one(".l-en").get_text(strip=True) == "Not supplied"
+    assert reference.select_one('.l-zh[lang="zh"]').get_text(strip=True) == "未提供"
+    assert "None" not in reference.get_text()
+    assert not reference.select("a")
+    assert "2026-09-10" in slot.get_text()
+    assert "synthetic:gdp-zero" in slot.get_text()
+    value = slot.select_one("[data-im-macro-value]")
+    assert (value.get_text() if value else None) == ("0" if quality == "stale" else None)
+
+
+@pytest.mark.parametrize("reference", ["None", 'synthetic:<script>alert(1)</script>&"owner"'])
+def test_supplied_measure_source_reference_remains_exact_escaped_text(reference):
+    slot = source_reference_slot(source_reference=reference)
+    node = slot.select_one(".intl-macro__source-reference")
+    assert node.get_text() == reference
+    assert not node.select("script, a, .l-en, .l-zh")
+
+
+@pytest.mark.parametrize("metadata", ["denied", "unknown"])
+def test_measure_source_reference_does_not_open_withheld_metadata(metadata):
+    slot = source_reference_slot(metadata=metadata, quality="denied", reason="metadata_denied",
+                                 value_permission="denied", source_reference="private-source")
+    assert not slot.select(".intl-macro__evidence")
+    assert "private-source" not in slot.get_text()
+
+
+def render_source_reference_page():
+    """Synthetic permitted metadata through the existing native publication path."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(None, workspace_generation=f"im-workspace-generation:{uuid4()}")
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"], "bases": workspace["config"]["bases"],
+    }
+    workspace = attach_macros(workspace, registry=registry,
+                              measures={"EZ.gdp_yoy": source_reference_measure()},
+                              cycle_evidence={}, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
+
+
 CYCLE_LABELS = [
     ("Q1", "goldilocks", "Goldilocks", "金发女孩"),
     ("Q2", "reflation", "Reflation", "再通胀"),

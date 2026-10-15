@@ -101,7 +101,7 @@
             {% set metric_period = metric.get('period') %}{% if metric_period is none %}{{ not_supplied() }}{% else %}<span class="intl-macro__period">{{ metric_period.start|e }} – {{ metric_period.end|e }} · {{ metric_period.count|e }} · {{ metric_period.count_basis|e }}</span>{% endif %}
           </dd></div>
           <div><dt><span class="l-en">Calculation date</span><span class="l-zh" lang="zh">计算日期</span></dt><dd>{% if metric.get('calculation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('calculation_at')|e }}{% endif %}</dd></div>
-          <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{{ metric.get('source_reference')|e }}</dd></div>
+          <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{% if metric.get('source_reference') is none %}{{ not_supplied() }}{% else %}{{ metric.get('source_reference')|e }}{% endif %}</dd></div>
           {% if metric.get('evidence_key') is not none %}<div><dt><span class="l-en">Evidence key</span><span class="l-zh" lang="zh">证据键</span></dt><dd class="intl-macro__reference" tabindex="0">{{ metric.get('evidence_key')|e }}</dd></div>{% endif %}
         </dl>
       </details>

@@ -69,6 +69,42 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 const sourceChartHtml = new Map();
+let sourceReferenceHtml;
+for(const [lang,width,theme] of [['en',1440,'dark'],['zh',320,'light']]) {
+  test(`Macro absent source reference stays readable through locale and keyboard ${lang} ${width}`,async()=>{
+    sourceReferenceHtml ||= execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+      'from tests.test_intl_workspace_macro_render import render_source_reference_page; print(render_source_reference_page())'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024});
+    await pageFixture(async page=>{
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.evaluate(theme=>setTheme(theme),theme);
+      const panel=page.locator('[data-im-panel][data-view="macro"]:visible');
+      const slot=panel.locator('[data-im-macro-market="EZ"] .intl-macro__metric-slot[id$="-gdp_yoy"]');
+      const disclosure=slot.locator('.intl-macro__evidence');
+      const summary=disclosure.locator(':scope > summary');
+      await summary.focus();await page.keyboard.press('Enter');
+      assert.equal(await disclosure.getAttribute('open'),'');
+      const reference=disclosure.locator('.intl-macro__source-reference');
+      await page.keyboard.press('Tab');
+      assert.equal(await reference.evaluate(n=>n===document.activeElement),true);
+      const before=page.url();
+      for(const locale of [lang,lang==='en'?'zh':'en',lang]) {
+        await page.evaluate(locale=>setLang(locale),locale);
+        assert.equal(await reference.innerText(),locale==='en'?'Not supplied':'未提供');
+        assert.equal(await reference.evaluate(n=>n===document.activeElement),true);
+        assert.equal(await reference.locator('a').count(),0);
+        assert.equal(await slot.locator('[data-im-macro-value]').innerText(),'0');
+        assert.equal(await slot.locator('.intl-macro__observation').innerText(),'2026-09-10');
+        assert.match(await slot.innerText(),locale==='en'?/Stale data/:/数据过期/);
+        assert.match(await disclosure.innerText(),/synthetic:gdp-zero/);
+        assert.equal(page.url(),before);
+        assert.equal(await reference.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+      }
+      await page.keyboard.press('Shift+Tab');await page.keyboard.press('Space');
+      assert.equal(await disclosure.getAttribute('open'),null);
+    },{htmlOverride:sourceReferenceHtml,bootLanguage:lang,width,initialSearch:'?view=macro'});
+  });
+}
 let cycleLabelHtml;
 for(const [lang,width,theme] of [['en',1440,'dark'],['zh',320,'light']]) {
   test(`Macro admitted cycle names follow locale ${lang} ${width}`,async()=>{
