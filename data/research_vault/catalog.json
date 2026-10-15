@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T05:43:48.775999+00:00",
-  "count": 2937,
+  "generated_at": "2026-10-15T06:27:22.831751+00:00",
+  "count": 2939,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sraykmat2bm-fbe300",
+      "title": "Rio Tinto Ltd. (RIO)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T04:15:34Z",
+      "summary_points": [
+        "Copper Production & Guidance: In-line Q3 copper (205kt) driven by Oyu Tolgoi (+27% YoY), 2026 guidance maintained (800-870kt, $30-50/lb C1), critical for growth thesis and EBITDA +30% to 2030.",
+        "Iron Ore Stockpile Gap: 7.9Mt stockpiles with 75-90 day mine-to-sale cycle (vs 2.5Mt Simandou production), creating material supply-demand imbalance and port capacity risk for 2027-2028.",
+        "Lithium Production Miss: Q3 LCE production 24% below consensus (13k vs 17k), slower Sal de Vida ramp-up, directly threatening battery materials growth guidance (61-64kt full-year).",
+        "Strategic Capital Allocation: $2bn YTD capital release ($5bn target by 2026), $5-10bn non-core divestments to de-leverage, 50% higher copper exploration spend ($692mn YTD) for future flows.",
+        "Valuation Discount: NAV at A$196/sh (0.8x NAV vs peers), 12-month target A$176.30 (9.9% upside from A$160.48), supported by copper growth and EBITDA expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vbqdfjznzri-6b7442",
       "title": "VON32629798",
@@ -850,6 +871,26 @@
         "Mag7 as SPX Weakness Catalyst: Mag7 (last SPX cohort without weakness) widely owned; trend reversal likely triggers sustained SPX weakness, per SOX 2000 analog (semis low within 24h, sell-off accelerates late October).",
         "SOX 2000 Analog & Timing: SOX 2000 pattern holds; expect 24h low, final rally before October sell-off (CPI catalyst).",
         "IGV/SMH Ratio Inflection: IGV/SMH ratio above 200 DMA (first in 16 months, crossing summer highs) confirms software outperformance over semis, signaling potential major inflation with software semis outperforming."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8ujilw8hhsf-c407e7",
+      "title": "BP Plc (BP.L) Upgrading our estimates following the company's 3Q26 strong trading update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:45:55Z",
+      "summary_points": [
+        "Estimate Upgrade: Q3 2026 adjusted net income revised to $7.492bn (+18%), Gas & Low Carbon Energy operating profit up $400m to $2.6bn, OCF raised to $12.5bn, capex lowered to $3.0bn.",
+        "Key Risks: Downside risks include lower oil/gas prices, exploration success, and growth/capex surprises despite Buy rating.",
+        "Valuation Upside: 22.0-22.4% upside to $57.00 target (BP) and 720p (BP.L), driven by EBIT growth from $19.45bn to $28.20bn by 12/28E.",
+        "Rating Bias: 65% Buy rating from Investment Banking Relationships vs. 50% Global Buy, indicating potential coverage-driven optimism over fundamentals."
       ],
       "tags": [],
       "tickers": [],
