@@ -13,7 +13,10 @@ import hashlib
 import io
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from engine.options_matrix_retention import SnapshotReference
 
 from lib.dataos.identity import (
     IdentityError,
@@ -206,6 +209,52 @@ def resolve_option_underlying_security(
                                         aliases.sha256, max(aliases_at, master_at, source_at))
     except IdentityError as exc:
         raise IdentityResolutionError(f"option identity contract invalid: {exc}") from exc
+
+
+@dataclass(frozen=True)
+class OptionMatrixIdentity:
+    """Exact Matrix reference joined to a captured canonical underlying.
+
+    This is neither a source-use decision nor Saved Research admission. Selection
+    membership and current principal/snapshot/action rights remain separate.
+    """
+
+    snapshot: "SnapshotReference"
+    underlying: OptionUnderlyingIdentity
+    available_at: datetime
+
+
+def resolve_option_matrix_security(
+    ref: "SnapshotReference", matrix: IdentityArtifactRead, *, vendor: str,
+    decision_at: datetime | str, aliases: IdentityArtifactRead,
+    security_master: IdentityArtifactRead, root_evidence: IdentityArtifactRead,
+) -> OptionMatrixIdentity | None:
+    """Use the verified Matrix root and source session, never caller substitutes.
+
+    The admitted reader supplies the vendor namespace and exact artifact reads.
+    Their hashes and clocks are consistency checks, not capture authentication.
+    No bucket read, mutable-head fallback, alias publication or implicit clock.
+    """
+    from engine.options_matrix_retention import HistoricalUnavailable, verify_snapshot
+
+    try:
+        cutoff = _aware_utc(decision_at, "decision_at")
+        matrix_at = _identity_read(matrix, cutoff)
+        verify_snapshot(ref, matrix.body)
+        if ref.session is None:
+            raise IdentityResolutionError("matrix source session unavailable")
+        on = date.fromisoformat(ref.session)
+        if on > matrix_at.date():
+            raise IdentityResolutionError("matrix source session is after captured read")
+        underlying = resolve_option_underlying_security(
+            vendor, ref.root, on, decision_at=cutoff, aliases=aliases,
+            security_master=security_master, root_evidence=root_evidence,
+        )
+        if underlying is None:
+            return None
+        return OptionMatrixIdentity(ref, underlying, max(matrix_at, underlying.available_at))
+    except (IdentityError, HistoricalUnavailable) as exc:
+        raise IdentityResolutionError(f"matrix identity contract invalid: {exc}") from exc
 
 
 def _records(path: Path) -> list[dict[str, Any]]:

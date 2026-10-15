@@ -3,6 +3,7 @@ from dataclasses import replace
 from datetime import date, datetime, timezone
 import hashlib
 import io
+import json
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -10,6 +11,7 @@ import pytest
 from lib.dataos import identity as I
 from scripts import build_security_master as W
 from engine.intelligence_workspace import entity as E
+from engine import options_matrix_retention as R
 
 D=date(2026,10,12)
 SEC='SEC:US-ARCX-SYNTH'
@@ -229,3 +231,93 @@ def test_second_precision_writer_does_not_invent_subsecond_order(known,expected)
     args=inputs(aliases=[row])
     result=E.resolve_option_underlying_security(**args)
     assert (result is not None) is expected
+
+
+def matrix_inputs(root='ROOTA',session='2026-10-12',payload=None,aliases=None):
+    value=payload if payload is not None else dict(schema=R.SCHEMA,root=root,session=session,cells=[])
+    raw=json.dumps(value,separators=(',',':')).encode()
+    ref=R.reference_for_bytes(root,raw)
+    args=inputs(aliases=aliases)
+    for key in ('root','on'): args.pop(key)
+    return dict(ref=ref,matrix=read(raw),**args)
+
+
+def test_matrix_join_exact_matrix_drives_root_session_and_identity_without_ticker_equality():
+    args=matrix_inputs()
+    result=E.resolve_option_matrix_security(**args)
+    assert result.snapshot is args['ref']
+    assert result.underlying.binding.vendor_symbol=='ROOTA'
+    assert result.underlying.binding.security_id=='SEC:US-ARCX-SYNTH'
+    assert result.available_at==datetime(2026,10,12,17,tzinfo=timezone.utc)
+    # Empty cells are identity-only: no implicit membership, rights or Save claim.
+    assert R.matrix_observed_side_tokens(result.snapshot,args['matrix'].body)==()
+
+
+def test_matrix_join_meta_session_is_taken_only_from_verified_native_fallback():
+    args=matrix_inputs(payload=dict(schema=R.SCHEMA,root='ROOTA',_build_meta={'asof_date':'2026-10-12'},cells=[]))
+    assert E.resolve_option_matrix_security(**args).snapshot.session=='2026-10-12'
+
+
+@pytest.mark.parametrize('change',[
+    {'root':'ROOTB'}, {'session':'2026-10-11'}, {'sha256':'0'*64}, {'byte_length':1},
+])
+def test_matrix_join_reference_cannot_substitute_root_session_digest_or_length(change):
+    args=matrix_inputs();args['ref']=replace(args['ref'],**change)
+    with pytest.raises(E.IdentityResolutionError): E.resolve_option_matrix_security(**args)
+
+
+@pytest.mark.parametrize('body',[
+    b'{"schema":"options_structure.matrix/v1","root":"ROOTA","root":"ROOTB","session":"2026-10-12"}',
+    b'{"schema":"options_structure.matrix/v1","root":"ROOTA","session":"2026-10-12","_build_meta":{"asof_date":"2026-10-11"}}',
+    b'{"schema":"other","root":"ROOTA","session":"2026-10-12"}',
+    b'{"schema":"options_structure.matrix/v1","root":"ROOTA","session":"2026-10-12","value":NaN}',
+])
+def test_matrix_join_matched_digest_does_not_admit_invalid_native_matrix(body):
+    args=matrix_inputs(); args['matrix']=read(body)
+    args['ref']=R.SnapshotReference('ROOTA',hashlib.sha256(body).hexdigest(),len(body),'2026-10-12')
+    with pytest.raises(E.IdentityResolutionError): E.resolve_option_matrix_security(**args)
+
+
+def test_matrix_join_missing_source_session_refuses_before_identity_lookup(monkeypatch):
+    args=matrix_inputs(session=None)
+    monkeypatch.setattr(E,'resolve_option_underlying_security',lambda *a,**k: pytest.fail('must not resolve'))
+    with pytest.raises(E.IdentityResolutionError,match='source session unavailable'):
+        E.resolve_option_matrix_security(**args)
+
+
+@pytest.mark.parametrize('field,value,match',[
+    ('read_at','2026-10-12T17:00:00.000000001Z','after decision cutoff'),
+    ('read_at','2026-10-11T23:59:59Z','source session is after'),
+    ('read_at','2026-10-12T16:00:00','invalid UTC clock'),
+    ('sha256','0'*64,'digest mismatch'),
+    ('body',b'changed','digest mismatch'),
+])
+def test_matrix_join_bad_matrix_read_refuses_before_identity_lookup(field,value,match,monkeypatch):
+    args=matrix_inputs(); args['matrix']=replace(args['matrix'],**{field:value})
+    monkeypatch.setattr(E,'resolve_option_underlying_security',lambda *a,**k: pytest.fail('must not resolve'))
+    with pytest.raises(E.IdentityResolutionError,match=match): E.resolve_option_matrix_security(**args)
+
+
+@pytest.mark.parametrize('change',[{'root':'UNBOUND'}, {'session':'2026-10-11'}])
+def test_matrix_join_no_current_root_or_session_fallback(change):
+    assert E.resolve_option_matrix_security(**matrix_inputs(**change)) is None
+
+
+def test_matrix_join_vendor_namespace_is_explicit_and_no_ordinary_alias_fallback():
+    args=matrix_inputs();args['vendor']='other_vendor'
+    assert E.resolve_option_matrix_security(**args) is None
+
+
+def test_matrix_join_available_at_includes_matrix_capture_completion():
+    args=matrix_inputs();args['decision_at']='2026-10-12T17:01:00Z'
+    args['matrix']=replace(args['matrix'],read_at='2026-10-12T17:00:30Z')
+    result=E.resolve_option_matrix_security(**args)
+    assert result.available_at==datetime(2026,10,12,17,0,30,tzinfo=timezone.utc)
+    assert result.underlying.available_at==datetime(2026,10,12,17,tzinfo=timezone.utc)
+
+
+def test_matrix_join_existing_resolver_error_stays_unavailable():
+    args=matrix_inputs();row=master_record(security_state='RETIRED')
+    args['security_master']=read(parquet([row],clocks=['effective_at','ingested_at']))
+    with pytest.raises(E.IdentityResolutionError,match='retired or superseded'):
+        E.resolve_option_matrix_security(**args)
