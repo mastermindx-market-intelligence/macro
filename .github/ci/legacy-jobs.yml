@@ -14638,6 +14638,7 @@ jobs:
       - "engine/neuralweb/world_state.py"
       - "engine/neuralweb/mastermind_context.py"
       - "engine/neuralweb/market_packet.py"
+      - "engine/session_digest.py"
       - "tests/test_regime_outlook_reader_world_state.py"
       - "tests/test_regime_outlook_reader_context.py"
       - "tests/test_regime_outlook_reader_digest.py"
