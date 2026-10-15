@@ -101,6 +101,7 @@
   /* zh 红涨绿跌: q1/q3 use token vars so theme.css's html[data-lang="zh"] swap picks them up
      automatically (no per-page mirror needed). q2/q4 (amber/blue) are direction-neutral. */
   .q-Q1 { background:var(--q1,#2e9e4f); } .q-Q2 { background:#d4a017; } .q-Q3 { background:var(--q3,#d04545); } .q-Q4 { background:#3f78d8; }
+  .quad.q-unknown { color:var(--text); background:var(--panel2); }
   .qdot { width:9px;height:9px;border-radius:50%;display:inline-block; }
   .qd-Q1{background:var(--q1,#2e9e4f)}.qd-Q2{background:#d4a017}.qd-Q3{background:var(--q3,#d04545)}.qd-Q4{background:#3f78d8}
   /* comparison grid */
@@ -2064,7 +2065,7 @@
       </tbody>
     </table>
   </div>
-  <p class="caveat" style="margin-top:9px">{% if CR.read_en %}{{ t(CR.read_en, CR.read_zh) }} · {% endif %}{{ t('Historical pairwise estimates; coverage and overlapping observations may differ. Missing values are not zero. Display-only.', '历史成对估计；覆盖范围与重叠观测可能不同。缺失值不等于零。仅展示。') }}</p>
+  <p class="caveat" style="margin-top:9px">{{ t('The mean can conceal opposing pairwise relationships; it does not establish portfolio diversification. Historical pairwise estimates; coverage and overlapping observations may differ. Missing values are not zero. Display-only.', '平均值可能掩盖相反的成对关系，不能据此确定组合分散效果。历史成对估计；覆盖范围与重叠观测可能不同。缺失值不等于零。仅展示。') }}</p>
 </div>
 {% endif %}
 

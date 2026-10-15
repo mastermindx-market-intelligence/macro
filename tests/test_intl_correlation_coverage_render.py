@@ -62,3 +62,14 @@ def test_correlation_summary_does_not_promise_safety():
     html=render_fixture(perf={'correlation':correlation_fixture()})
     assert 'lower = safer' not in html
     assert 'weekly USD returns' in html and '美元周收益' in html
+
+
+def test_strong_mixed_pairs_do_not_inherit_diversification_promise():
+    cr=correlation_fixture();before=deepcopy(cr)
+    assert cr['avg_offdiag'] < 0
+    assert cr['cells'][0][1] == 1.0 and cr['cells'][0][2] <= -0.99
+    assert 'meaningful diversification' in cr['read_en']
+    text=panel(cr).get_text()
+    assert 'meaningful diversification' not in text and '分散价值显著' not in text
+    assert 'opposing pairwise relationships' in text and '相反的成对关系' in text
+    assert cr==before

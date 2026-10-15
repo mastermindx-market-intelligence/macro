@@ -54,6 +54,33 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Reference unknown contrast and correlation limits ${theme} ${lang}`,async t=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_cross_country_reading_render import country_fixture; from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(records=country_fixture(),perf={'correlation':correlation_fixture()}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});await page.goto('http://intl.test/intl.html?view=library#intl-cross-country');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const chip=page.locator('table.cmp .q-unknown').first();
+        const reading=await chip.evaluate(node=>{
+          const rgb=value=>value.match(/[\d.]+/g).map(Number);
+          const style=getComputedStyle(node),ink=rgb(style.color);let parent=node,background;
+          while(parent){const bg=rgb(getComputedStyle(parent).backgroundColor);if(bg.length===3 || bg[3]===1){background=bg;break;}parent=parent.parentElement;}
+          const lum=c=>c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+          const a=lum(ink),b=lum(background);return {ink,background,opacity:style.opacity,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+        });
+        assert.ok(reading.ratio>=4.5,JSON.stringify({theme,lang,width,...reading}));assert.equal(reading.opacity,'1');
+        t.diagnostic(JSON.stringify({theme,lang,width,...reading}));
+        await page.goto('http://intl.test/intl.html?view=library#intl-cross-market-correlation');
+        const panel=page.locator('#intl-cross-market-correlation').locator('..').locator('..');
+        const text=await panel.innerText();assert.ok(text.includes(lang==='zh'?'相反的成对关系':'opposing pairwise relationships'));
+        assert.ok(!text.includes(lang==='zh'?'分散价值显著':'meaningful diversification'));assert.equal(await panel.locator('td.diag').count(),3);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,initialSearch:'?view=library#intl-cross-country'});
+  });
+}
+
 for (const lang of ['en','zh']) {
   test(`Performance unavailable period remains useful ${lang}`,async()=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_performance_reading_render import performance_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(perf=performance_fixture(short_only=True)))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});

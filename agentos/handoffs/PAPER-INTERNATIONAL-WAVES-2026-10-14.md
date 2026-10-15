@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_correlation_coverage_render.py; tests/intl_workspace_page.test.cjs
+  what: Restore Unknown regime chip contrast with existing tokens and remove unsupported diversification promise from the correlation display without changing owner estimates.
 - path: templates/intl.html.j2; tests/test_intl_cross_country_reading_render.py; tests/intl_workspace_page.test.cjs; tests/test_intl_workspace_integration.py
   what: Correct Cross-country stress meaning and unknown-state fallback; restore actual named scroll owners in three Library tables and unoccluded narrow Cross-country values.
 - path: templates/intl.html.j2; tests/test_intl_performance_reading_render.py; tests/intl_workspace_page.test.cjs
@@ -205,6 +207,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Five render and four browser cases across eight width states pass; Light unknown contrast1.19to10.21 and Dark10.61; sixteen canonical and sixteen focused source views.
+  command: python3 -m pytest -q tests/test_intl_correlation_coverage_render.py; node --test --test-name-pattern="Reference unknown contrast and correlation limits" tests/intl_workspace_page.test.cjs; reference-reading-limits capture.py and inspect_focus.py
+  result: REFERENCE_READING_LIMITS_ACCEPTANCE.json binds causal reds, final source and original capture completion recovery without a fabricated exit code. Counts overlap; source not deployed and independent review pending.
 - claim: Cross-country three render cases and twelve unique browser cases across24width states pass, including final four Cross-country occlusion cases; original failures and one optimizer timeout retained.
   command: python3 -m pytest -q tests/test_intl_cross_country_reading_render.py; node --test --test-name-pattern="Cross-country composite|Leadership composite reading|Correlation availability" tests/intl_workspace_page.test.cjs with recorded targeted corrections; capture_final_cross.py and inspect_final_cross.py
   result: CROSS_COUNTRY_STRESS_READING_ACCEPTANCE.json binds source and staged evidence. Earlier Leadership/Correlation narrow keyboard claims are superseded by measured nested-scroller failures and actual focus-owner repairs; data claims retain their original scope. Source not deployed; review pending.
