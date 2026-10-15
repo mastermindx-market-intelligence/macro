@@ -444,6 +444,15 @@ COHORT_STATES = frozenset({
 _CANON_SIGNED = re.compile(r"^(?:0|[1-9][0-9]*|-[1-9][0-9]*)$")
 
 
+def _same_native_type_and_value(observed, frozen):
+    """Do not let Python bool/int/float equality erase native JSON evidence types.
+
+    Every source timestamp is a native integer; accepting an equal-looking
+    floating point round-trip may lose original nanosecond precision.
+    """
+    return type(observed) is type(frozen) and observed == frozen
+
+
 def _frozen_paired_rational(value, label):
     row = _dict(value, {
         "numerator", "denominator", "display_bps_12dp",
@@ -580,7 +589,7 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         if type(key) is not str or key not in expected or key in matched:
             raise ValueError("cohort: unknown, duplicate or unregistered result")
         identity = expected[key]
-        if any(row[name] != identity[name]
+        if any(not _same_native_type_and_value(row[name], identity[name])
                for name in COHORT_CANDIDATE_FREEZE_FIELDS):
             raise ValueError("cohort: frozen candidate economic basis or source-clock drift")
         # The registered policy version and claimant's original consumer receipt
@@ -589,19 +598,21 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         # evidence legitimately incurs no research fill fee.
         for role in ("baseline", "challenger"):
             freeze_fields = (role+"_policy_receipt_sha256", role+"_policy_frozen_ns")
-            if any(row[name] != identity[name] for name in freeze_fields):
+            if any(not _same_native_type_and_value(row[name], identity[name])
+                   for name in freeze_fields):
                 raise ValueError("cohort: frozen policy receipt/timing changed")
             state = row[role+"_policy_state"]
             if type(state) is not str or state not in STATES:
                 raise ValueError("cohort: frozen policy reported invalid action state")
             fee = row[role+"_fees_usd"]
             if state == "SIMULATED_FULL":
-                if fee != identity[role+"_fees_usd"]:
+                if not _same_native_type_and_value(fee, identity[role+"_fees_usd"]):
                     raise ValueError("cohort: frozen policy fee assumption changed")
             elif fee is not None:
                 raise ValueError("cohort: frozen policy charges fee without fill")
         if any(
-            row[name] != identity[name] for name in (
+            not _same_native_type_and_value(row[name], identity[name])
+            for name in (
                 "challenger_consumer_receipt_sha256",
                 "challenger_consumer_available_ns",
             )
@@ -614,10 +625,14 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             row["source_mode"] != mode,
             row["candidate_source_receipt_sha256"] != identity["source_receipt_sha256"],
             row["calendar_receipt_sha256"] != identity["calendar_receipt_sha256"],
-            row["original_decision_ns"] != identity["original_decision_ns"],
-            row["horizon_end_ns"] != identity["horizon_end_ns"],
-            row["horizon_trading_minutes"] != 30,
-            row["policy_count"] != 2,
+            not _same_native_type_and_value(
+                row["original_decision_ns"], identity["original_decision_ns"]
+            ),
+            not _same_native_type_and_value(
+                row["horizon_end_ns"], identity["horizon_end_ns"]
+            ),
+            not _same_native_type_and_value(row["horizon_trading_minutes"], 30),
+            not _same_native_type_and_value(row["policy_count"], 2),
             row["primary_policy_authority"] != "RESEARCH_DIAGNOSTIC_ONLY",
             row["forward_outcome_available_to_original_decision"] is not False,
             row["source_authenticated"] is not False,

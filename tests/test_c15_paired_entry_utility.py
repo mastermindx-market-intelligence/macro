@@ -1179,3 +1179,32 @@ def test_genuine_immature_horizon_keeps_original_watermark_evidence():
     assert reported["by_state"]["NOT_MATURE"]==1
     assert reported["observed_pair_subset_mean_bps"] is None
     assert reported["source_authenticated"] is False
+
+
+@pytest.mark.parametrize(("field", "mutate"), [
+    ("direction", lambda original: True),
+    ("direction", lambda original: 1.0),
+    ("original_decision_ns", float),
+    ("horizon_end_ns", float),
+    ("baseline_policy_frozen_ns", float),
+    ("challenger_policy_frozen_ns", float),
+    ("candidate_source_available_ns", float),
+    ("deadline_ns", float),
+    ("anchor_quote_event_ns", float),
+    ("anchor_quote_available_ns", float),
+    ("max_quote_age_ns", float),
+    ("policy_count", float),
+    ("horizon_trading_minutes", float),
+])
+def test_frozen_cohort_exact_json_native_types_cannot_be_float_or_bool(field, mutate):
+    a = setup()
+    source = run(a)
+    original = source[field]
+    changed = dict(source)
+    changed[field] = mutate(original)
+    # Values compare equal under Python ==, hence the original bug:
+    # floats and True silently masqueraded as native nanosecond/int payloads.
+    assert changed[field] == source[field]
+    assert type(changed[field]) is not type(source[field])
+    with pytest.raises(ValueError, match="frozen candidate|frozen policy|source identity"):
+        accounted([registered_row(a)], [changed])
