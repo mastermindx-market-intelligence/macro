@@ -230,3 +230,47 @@ def build_chart_records(
         if return_record["horizon"] == horizon
     ]
     return _envelope(records, envelope["source_reference"])
+
+
+def build_snapshot_bound_charts(
+    closes: pd.DataFrame,
+    *,
+    snapshot: dict,
+    adjustment_bases: dict[str, str],
+    market_ids: Sequence[str] | None = None,
+    horizon: str = "1m",
+    basis: str = "usd",
+) -> dict:
+    """Bind raw chart output to exact supplied source content, without admission.
+
+    Recompute the existing snapshot on the same detached frame passed to the
+    numerical producer. Typed equality includes dated nulls, original clocks,
+    basis labels and numeric identity; a caller label alone cannot pass a
+    changed frame. Neither a matching hash nor the caller's source reference
+    authenticates an issuer or grants disclosure, freshness or qualification.
+    This preparation function is not mounted in Compare or publication.
+    """
+    from engine.intl_inputs import (
+        _qualification_plain_json, _qualification_typed, source_snapshot,
+    )
+
+    try:
+        if (type(snapshot) is not dict or not _qualification_plain_json(snapshot)
+                or set(snapshot) != {"source_reference", "content_sha256", "series"}
+                or type(closes) is not pd.DataFrame):
+            raise ValueError("invalid_chart_snapshot")
+    except RecursionError as error:
+        raise ValueError("invalid_chart_snapshot") from error
+    frame = closes.copy(deep=True)
+    expected = source_snapshot(
+        frame, source_reference=snapshot["source_reference"],
+        adjustment_bases=adjustment_bases,
+    )
+    if _qualification_typed(snapshot) != _qualification_typed(expected):
+        raise ValueError("chart_snapshot_mismatch")
+    result = build_chart_records(
+        frame, market_ids=market_ids, horizon=horizon, basis=basis,
+        source_reference=expected["source_reference"],
+    )
+    result["source_content_sha256"] = expected["content_sha256"]
+    return result

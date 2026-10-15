@@ -3446,3 +3446,9 @@ html[data-theme="light"] .mrs-pop{
   .mrs-caveat{ justify-self:start; }
   .mrs-pop{ left:0; right:auto; }
 }
+
+/* International correlation cells keep data hue secondary to readable numbers.
+   Resolve on each cell so its supplied percentage and active theme both apply. */
+body.page-intl table.heat td {
+  --intl-correlation-cell-bg:color-mix(in srgb, color-mix(in srgb, var(--down) var(--correlation-weight,0%), var(--up)) 18%, var(--panel));
+}

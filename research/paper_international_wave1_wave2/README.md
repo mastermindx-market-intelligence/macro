@@ -74,6 +74,12 @@ Grok returned the source at its deadline without tests. Astra repaired one malfo
 
 The existing foundation PR job now runs both numerical suites and owns their measured dependency closure. The route-state core is now independently source-approved; its exact acceptance is recorded below. No additional page mount or production claim follows.
 
+## Raw chart snapshot binding — source preparation, review pending
+
+`engine.intl_performance_charts.build_snapshot_bound_charts` now checks a supplied snapshot against the exact detached frame passed to the accepted raw chart producer. It reuses `source_snapshot`, preserves typed numeric identity, dated nulls and original observation clocks, and adds the matching content digest to the raw envelope. Ten new contract cases pass; the original31-case producer evidence is reused because its existing AST is unchanged. See `COMPARE_CHART_SNAPSHOT_BINDING_ACCEPTANCE.json` for the initial missing-function failures and one corrected error-reason expectation.
+
+This function is not mounted. A content match does not authenticate the caller's source label, approve adjustment bases, qualify interior observations, grant disclosure or supply a benchmark. The existing confirmed EOD index/FX grant and endpoint qualifier retain their original scope. Raw records remain `not_evaluated`, normalization remains unavailable, and independent review remains pending after the original policy refusal. No current-price, publication or live acceptance follows from these synthetic source checks.
+
 ## Accepted research route state
 
 IM00-T3a adds `templates/intl_workspace_state.js` and20 focused Node tests. It retains six research views, independent selection and ordered four-market pins, source-bound baseline and eight-level return context, and canonical allowlisted share URLs. It refuses malformed/accessor inputs, preserves Unicode IDs, and clears prior source-bound snapshots on a source change. It performs no DOM, history, network, storage, account, financial or search operations.

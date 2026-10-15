@@ -55,6 +55,31 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Correlation cell readings remain legible ${theme} ${lang}`,async t=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; c=correlation_fixture(); c['cells'][0][2]=c['cells'][2][0]=0.; c['cells'][1][2]=c['cells'][2][1]=.5; print(render_fixture(perf={'correlation':c}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      const panel=page.locator('#intl-cross-market-correlation').locator('..').locator('..');
+      const cells=panel.locator('tbody td');const before=await cells.allTextContents();
+      assert.ok(before.includes('0.00')&&before.includes('0.50')&&before.includes('1.00'));
+      assert.equal(await panel.locator('[data-correlation-unavailable]').count(),7);
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const readings=await cells.evaluateAll(nodes=>{
+          const c=document.createElement('canvas');c.width=c.height=1;const ctx=c.getContext('2d',{willReadFrequently:true});
+          const rgb=value=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=value;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];};
+          const lum=c=>c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+          return nodes.map(n=>{const s=getComputedStyle(n),ink=rgb(s.color),bg=rgb(s.backgroundColor),a=lum(ink),b=lum(bg);return {text:n.textContent.trim(),diag:n.classList.contains('diag'),opacity:s.opacity,ink,bg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};});
+        });
+        t.diagnostic(JSON.stringify({theme,lang,width,readings}));
+        assert.ok(readings.every(m=>m.opacity==='1'&&m.ink[3]===255&&m.bg[3]===255&&m.ratio>=4.5),JSON.stringify({theme,lang,width,readings}));
+        assert.deepEqual(await cells.allTextContents(),before);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{published:true,htmlOverride:h,bootLanguage:lang,width:320,initialSearch:'?view=library#intl-cross-market-correlation'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Reference unknown contrast and correlation limits ${theme} ${lang}`,async t=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_cross_country_reading_render import country_fixture; from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(records=country_fixture(),perf={'correlation':correlation_fixture()}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
     await pageFixture(async page=>{

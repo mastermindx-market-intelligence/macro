@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: engine/intl_performance_charts.py; tests/test_intl_performance_charts.py
+  what: Add unmounted exact snapshot binding around the existing raw chart producer; matching source content grants no disclosure, normalization, benchmark or qualification.
+- path: templates/intl.html.j2; tests/intl_workspace_page.test.cjs
+  what: Restore readable correlation-cell ink and full-opacity diagonal using canonical theme derivation; paired site CSS exact, values/missing cells/incumbent hue mapping retained.
 - path: templates/intl.html.j2; tests/test_intl_correlation_coverage_render.py; tests/intl_workspace_page.test.cjs
   what: Restore Unknown regime chip contrast with existing tokens and remove unsupported diversification promise from the correlation display without changing owner estimates.
 - path: templates/intl.html.j2; tests/test_intl_cross_country_reading_render.py; tests/intl_workspace_page.test.cjs; tests/test_intl_workspace_integration.py
@@ -207,6 +211,12 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Ten new snapshot-binding cases pass; old numerical producer AST unchanged and31-case acceptance reused without replay.
+  command: python3 -m pytest -q tests/test_intl_performance_charts.py -k snapshot_binding; targeted -k "snapshot_binding and extra" after correcting only expected closed-shape error reason; AST comparison with parent source
+  result: COMPARE_CHART_SNAPSHOT_BINDING_ACCEPTANCE.json retains missing-function reds,9passes plus1corrected targeted pass, caller-label limits and unchanged endpoint publication/Compare consumers. Unmounted, not deployed, review pending.
+- claim: Four causal browser reds become four passes across eight width states and128 nested cell readings; minimum contrast5.33Dark and6.21Light.
+  command: node --test --test-name-pattern="^Correlation cell readings" tests/intl_workspace_page.test.cjs; correlation-cell-reading capture.py and inspect_focus.py
+  result: CORRELATION_CELL_READING_ACCEPTANCE.json binds eight canonical and eight focused views; original42572 and final35644 bothEXIT0 consumed; original design3findings corrected before publication. Source not deployed; independent review pending.
 - claim: Five render and four browser cases across eight width states pass; Light unknown contrast1.19to10.21 and Dark10.61; sixteen canonical and sixteen focused source views.
   command: python3 -m pytest -q tests/test_intl_correlation_coverage_render.py; node --test --test-name-pattern="Reference unknown contrast and correlation limits" tests/intl_workspace_page.test.cjs; reference-reading-limits capture.py and inspect_focus.py
   result: REFERENCE_READING_LIMITS_ACCEPTANCE.json binds causal reds, final source and original capture completion recovery without a fabricated exit code. Counts overlap; source not deployed and independent review pending.

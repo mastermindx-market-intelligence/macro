@@ -1,0 +1,59 @@
+{
+  "base_head": "78bb811201e80fbfa6d0db63489d9891d64d9ffb",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "repair": "Readable semantic ink on18percent existing hue tints; neutral full-opacity diagonal. Existing hue calculation and all values/absence unchanged.",
+  "tests": {
+    "browser_red": 4,
+    "browser_green": 4,
+    "width_states": 8,
+    "cell_readings": 128,
+    "counts_are_nested": true,
+    "fixtures": "Explicit synthetic0/.5/1 display controls, seven unavailable cells; actual owner negative/positive matrix in captures.",
+    "contrast_min_dark": 5.329661159549015,
+    "contrast_min_light": 6.211118895496447,
+    "red_note": "Diagonal opacity.45; opaque bright numeric fills include ratios below4.5. Pre-opacity diagonal ratios in log are not effective composited contrast."
+  },
+  "visual": {
+    "canonical": 8,
+    "focused": 8,
+    "parent_focused_read": 8,
+    "canonical_widths": [
+      1440,
+      390
+    ],
+    "focused_widths": [
+      1440,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "dark_treatment": "Dark instrument surface with restrained red/green luminance and crisp pale numbers; neutral self-pairs.",
+    "light_treatment": "Pale red/green washes with dark research ink; distinct neutral self-pairs and clear available/missing text.",
+    "material_difference": "Both retain the native panel art direction. Hue intensity is secondary to numeric reading; no new palette or runtime stylesheet.",
+    "manifest_sha256": "f41c744b1932e1e4f760c8a94886076fa79645bc045f03c650a05137c6ba4623",
+    "capture_process": 35644,
+    "capture_exit": 0,
+    "limits": "Assigning-parent visual review and headless source fixtures; not independent review, served acceptance, speech, native zoom or complete accessibility.",
+    "fixture_asset_404": "live_config.js",
+    "final_parent_pixel_comparison": "Six changed focused files freshly read; two English320 images byte-identical to already-read originals. All eight final states covered."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "6321f71e58261fb3f86f9acadd9a45ef92c5a30bca40cce8f14c19ebceb61790",
+    "tests/intl_workspace_page.test.cjs": "30758bfe6d4e069b0554f9084dce3ff7255a3e509f5a66bcbc84ddfeb1b4a68b",
+    "templates/theme.css": "7cdc252ea9515ad0b19ec2d6c774018c09e56a98bc0eab478877cc2ae10278e9",
+    "site/theme.css": "7cdc252ea9515ad0b19ec2d6c774018c09e56a98bc0eab478877cc2ae10278e9"
+  },
+  "owner_unchanged": {
+    "engine/intl_performance.py": "4aaed61e435ca87ba6845bd93eb0bc815eb5969d651d8ff81526b0401ecb2038"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/correlation-cell-reading-20261015-r1",
+  "guard_correction": "Original design check3findings before any commit; moved material derivation into canonical theme.css, only supplied numeric percentage remains template-local. Paired site/theme.css exact."
+}

@@ -161,3 +161,87 @@ def test_source_and_input_identity_nonmutating(closes):
     pd.testing.assert_frame_equal(closes,before)
     assert intl_inputs.countries()==countries_before
     assert build_return_records(closes)==legacy_before
+
+
+def _binding_inputs(closes):
+    bases = {series_id: "fixture-only" for country in intl_inputs.countries().values()
+             for series_id in (country["index"], country["fx"])}
+    snap = intl_inputs.source_snapshot(closes, source_reference="fixture:bound", adjustment_bases=bases)
+    return bases, snap
+
+
+def test_snapshot_binding_preserves_raw_owner_points_and_no_admission(closes, monkeypatch):
+    from engine.intl_performance_charts import build_snapshot_bound_charts
+    def forbidden(*args, **kwargs):
+        raise AssertionError("unexpected source acquisition")
+    monkeypatch.setattr(store, 'read', forbidden)
+    monkeypatch.setattr(intl_inputs, '_intl_closes', forbidden)
+    monkeypatch.setattr(owner, '_bench_series_fresh', forbidden)
+    closes.loc[closes.index[-8], 'USDJPY=X'] = np.nan
+    before = closes.copy(deep=True)
+    bases, snap = _binding_inputs(closes); original = deepcopy(snap)
+    raw = build_chart_records(closes, market_ids=['JP'], basis='usd', source_reference=snap['source_reference'])
+    bound = build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'], basis='usd')
+    assert bound['source_content_sha256'] == snap['content_sha256']
+    assert {k: v for k, v in bound.items() if k != 'source_content_sha256'} == raw
+    assert bound['records'][0]['qualification'] == 'not_evaluated'
+    assert bound['records'][0]['normalization']['status'] == 'unavailable'
+    assert any(p['reason'] == 'missing_fx' for p in bound['records'][0]['points'])
+    assert 'benchmark' not in bound
+    bound['records'][0]['points'][0]['value'] = -100
+    assert snap == original
+    pd.testing.assert_frame_equal(closes, before)
+
+
+@pytest.mark.parametrize('change', ['value', 'digest', 'timestamp', 'basis', 'extra', 'number_type'])
+def test_snapshot_binding_rejects_tampered_snapshot(closes, change):
+    from engine.intl_performance_charts import build_snapshot_bound_charts
+    bases, snap = _binding_inputs(closes)
+    if change == 'value': snap['series'][0]['observations'][0]['value'] += 1
+    if change == 'digest': snap['content_sha256'] = '0' * 64
+    if change == 'timestamp': snap['series'][0]['observations'][0]['timestamp'] += 'Z'
+    if change == 'basis': snap['series'][0]['adjustment_basis'] = 'different'
+    if change == 'extra': snap['permission'] = 'allowed'
+    if change == 'number_type': snap['series'][0]['observations'][0]['value'] = int(snap['series'][0]['observations'][0]['value'])
+    reason = 'invalid_chart_snapshot' if change == 'extra' else 'chart_snapshot_mismatch'
+    with pytest.raises(ValueError, match=reason):
+        build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'])
+
+
+def test_snapshot_binding_rejects_changed_frame_and_preserves_nanosecond_clock(closes):
+    from engine.intl_performance_charts import build_snapshot_bound_charts
+    closes.index = pd.date_range('2025-09-01 23:30:00.000000123', periods=len(closes), tz='Pacific/Kiritimati')
+    bases, snap = _binding_inputs(closes)
+    result = build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'])
+    assert result['records'][0]['points'][-1]['timestamp'] == closes.index[-1].isoformat()
+    closes.iloc[-5, 0] += 1
+    with pytest.raises(ValueError, match='chart_snapshot_mismatch'):
+        build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'])
+
+
+def test_snapshot_binding_rejects_container_hooks_before_access(closes):
+    from engine.intl_performance_charts import build_snapshot_bound_charts
+    bases, snap = _binding_inputs(closes)
+    class Poison(dict):
+        def get(self, *args): raise AssertionError('hook invoked')
+        def __getitem__(self, key): raise AssertionError('hook invoked')
+        def items(self): raise AssertionError('hook invoked')
+    with pytest.raises(ValueError, match='invalid_chart_snapshot'):
+        build_snapshot_bound_charts(closes, snapshot=Poison(snap), adjustment_bases=bases)
+    snap['series'][0]['observations'] = Poison()
+    with pytest.raises(ValueError, match='invalid_chart_snapshot'):
+        build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases)
+
+
+def test_snapshot_binding_keeps_local_absence_and_source_label_untrusted(closes):
+    from engine.intl_performance_charts import build_snapshot_bound_charts
+    closes = closes[['^N225']]
+    bases, snap = _binding_inputs(closes)
+    local = build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'], basis='local')
+    usd = build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'], basis='usd')
+    assert local['records'][0]['points'] and usd['records'][0]['points'] == []
+    assert local['source_content_sha256'] == usd['source_content_sha256']
+    snap['source_reference'] = 'caller-label-not-issuer-authentication'
+    relabelled = build_snapshot_bound_charts(closes, snapshot=snap, adjustment_bases=bases, market_ids=['JP'], basis='local')
+    assert relabelled['source_content_sha256'] == local['source_content_sha256']
+    assert relabelled['records'][0]['qualification'] == 'not_evaluated'
