@@ -809,7 +809,6 @@
     "tests/test_theme_validation.py",
     "tests/test_theme_warn.py",
     "tests/test_thesis_funnel.py",
-    "tests/test_thesis_monitor.py",
     "tests/test_thetadata.py",
     "tests/test_thetadata_dedup.py",
     "tests/test_ticker_alerts.py",
