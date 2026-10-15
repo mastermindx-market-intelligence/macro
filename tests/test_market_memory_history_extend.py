@@ -187,3 +187,14 @@ def test_destination_cannot_be_created_inside_the_immutable_parent(case,monkeypa
     monkeypatch.setattr(ar,'read_research_history',lambda *a,**k:pytest.fail('nested parent write admitted before source read'))
     with pytest.raises(ar.HistoricalExperienceError,match='inside the parent archive'):extend(case)
     assert not case.destination.exists()
+
+
+def test_case_insensitive_parent_alias_cannot_bypass_no_nested_write(case,monkeypatch):
+    alias=case.root.with_name(case.root.name.swapcase())
+    if not alias.exists() or not alias.samefile(case.root):
+        pytest.skip('filesystem distinguishes case; actual APFS alias path is not present')
+    assert alias.resolve()!=case.root.resolve()
+    case.destination=alias/'nested-generation'
+    monkeypatch.setattr(ar,'read_research_history',lambda *a,**k:pytest.fail('case alias bypassed immutable-parent preflight'))
+    with pytest.raises(ar.HistoricalExperienceError,match='inside the parent archive'):extend(case)
+    assert not case.destination.exists()

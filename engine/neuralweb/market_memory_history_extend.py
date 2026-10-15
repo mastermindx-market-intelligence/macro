@@ -102,8 +102,16 @@ def extend_archive(parent_path: Path, request: dict, destination: Path, *,
     parent_path, destination = Path(parent_path), Path(destination)
     if destination.exists() or destination.is_symlink():
         raise FileExistsError(destination)
-    if destination.resolve().is_relative_to(parent_path.resolve()):
-        raise HistoricalExperienceError('extension destination cannot be inside the parent archive')
+    # Path.resolve preserves spelling on case-insensitive APFS. Compare actual
+    # directory identities as well; textual prefix checks alone admit PARENT/x.
+    parent_stat = parent_path.stat()
+    for ancestor in destination.parents:
+        try:
+            state = ancestor.stat()
+        except FileNotFoundError:
+            continue
+        if (state.st_dev, state.st_ino) == (parent_stat.st_dev, parent_stat.st_ino):
+            raise HistoricalExperienceError('extension destination cannot be inside the parent archive')
     if any(p.is_symlink() for p in destination.parents):
         raise HistoricalExperienceError('extension destination cannot traverse symlinks')
     parent = archive.read_manifest(parent_path,
