@@ -206,6 +206,38 @@ Investigation v1/v2 remain unchanged; future v3, SQL, authenticated runtime and
 production reopen still require their own integration. The tests reuse the
 unchanged 76-vector IW2 selection corpus plus exact-byte/identity membership cases.
 
+## Selection on an exact current or reopened snapshot
+
+The same one-shot publication check accepts `--selection /path/to/selection.json`
+with `--identity-vendor thetadata`. It captures the exact selection bytes, digest
+and actual read-completion clock before creating the provisioned store client.
+The file must be nonempty and at most 2048 bytes; selection syntax and membership
+are resolved by the existing consumer described above.
+
+The default `--selection-target current` checks the observed current SPY snapshot.
+For an exact reopen, use `--selection-target prior --prior /path/to/prior.json`.
+This uses the bytes from the existing prior-history GET, with its completion
+clock, then checks current heads again. It makes no extra history GET and never
+substitutes current B bytes when reopened A is missing, denied, changed, unbound
+or lacks the selected coordinate. The current Matrix and the selected prior
+Matrix must each have a valid captured canonical identity for its own session.
+
+The receipt's separate `selection` result names the target, exact Matrix reference
+and digest, canonical underlying, captured selection digest and clock, decision
+and availability times, primary/comparisons, view and hidden flags. Selection
+completion requires successful stable publication and current identity, then
+successful membership in the selected snapshot. Selection failure preserves the
+publication fields but makes the opt-in CLI exit 1; invalid request/capture exits
+2 before any store GET. Without selection flags, existing output/read counts and
+exit semantics remain unchanged. Capture clocks are checked before store reads
+and again against the actual final decision time.
+
+This is a finite observation with the existing non-atomic local reader, not a
+publisher lock, authenticated provenance, metric-availability proof, source-use
+right or Save grant. Fake-store tests remain synthetic. An actual A/B/reopen run
+still requires the existing admitted producer runtime and store, matching Matrix
+bytes, valid session-specific identity evidence and separate rights/IW2 gates.
+
 ## R2 head precondition
 
 `_upload_r2` reads `options_structure/matrix/<ROOT>.json` before `put_object`.
