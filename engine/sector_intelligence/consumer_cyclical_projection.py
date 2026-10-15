@@ -335,13 +335,23 @@ def _envelope_unit(fact: Any) -> str:
     return "USD"
 
 
+#: Scale grammar: an optional SINGLE leading ``-`` then ASCII digits only.
+#: ``str.isdigit`` answers True for ``"\u00b2"`` and ``"--3".lstrip("-")``
+#: answers ``"3"``, so both passed the old check and then crashed ``int()``
+#: inside this reader -- and a crash here killed the whole case instead of
+#: withholding one fact. ``[0-9]`` (not ``\d``) is deliberate: it refuses
+#: the non-ASCII digits ``int()`` would otherwise silently rebase. Shared
+#: with ``_fact_admission_failure``: the gate admits exactly what this reads.
+_SCALE_TEXT_RE = re.compile(r"-?[0-9]+")
+
+
 def _envelope_scale(fact: Any) -> int:
     if not isinstance(fact, Mapping):
         return 0
     raw = fact.get("scale_power10")
     if isinstance(raw, int) and not isinstance(raw, bool):
         return raw
-    if isinstance(raw, str) and raw.lstrip("-").isdigit():
+    if isinstance(raw, str) and _SCALE_TEXT_RE.fullmatch(raw):
         return int(raw)
     return 0
 
@@ -583,7 +593,21 @@ def _fact_admission_failure(fact: Any) -> str | None:
         return "fact_value_text_unparseable"
     if not _DATE_RE.match(_envelope_period_end(fact)):
         return "fact_period_end_missing_or_malformed"
+    if _as_date(_envelope_period_end(fact)) is None:
+        # ``_DATE_RE`` mirrors the schema's PATTERN, which admits
+        # ``2026-06-31``; the schema's own ``format: date`` does not.
+        # A regex-only gate let that day travel into the emitted
+        # document, where the shape backstop raised ``CaseShapeError``
+        # and one impossible calendar day lost the whole case. Same
+        # refusal reason as a missing/malformed bound: refusal is the
+        # mechanism, withholding one fact is the scope.
+        return "fact_period_end_missing_or_malformed"
     if not _DATE_RE.match(_envelope_period_start(fact)):
+        return "fact_period_start_missing_or_malformed"
+    if _as_date(_envelope_period_start(fact)) is None:
+        # Same hole as ``period_end`` above: the schema gives both bounds
+        # ``format: date``, so an impossible start day must withhold this
+        # fact here rather than reach the shape backstop and lose the case.
         return "fact_period_start_missing_or_malformed"
     if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
         return "fact_period_kind_outside_vocabulary"
@@ -621,7 +645,7 @@ def _fact_admission_failure(fact: Any) -> str | None:
     _scale = fact.get("scale_power10")
     if not (
         (isinstance(_scale, int) and not isinstance(_scale, bool))
-        or (isinstance(_scale, str) and _scale.lstrip("-").isdigit())
+        or (isinstance(_scale, str) and _SCALE_TEXT_RE.fullmatch(_scale))
     ):
         return "fact_scale_power10_missing_or_malformed"
     if not isinstance(fact.get("evidence"), Mapping):
