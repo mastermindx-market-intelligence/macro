@@ -63,14 +63,21 @@ I2_TRACE_KEYS = ("alternatives", "maximum_issuable", "variable_terms")
 
 
 def evaluate(instruments, share_basis, selected_scenario):
-    """Run both entry points and schema-check EVERY record this suite emits."""
+    """Run both entry points and schema-check EVERY record this suite emits.
+
+    The shared helper also enforces the two audit r1 row invariants — an unknown
+    row names its Unknowns and every row Unknown is in the envelope (M3), and a
+    ``bounded_by_floor`` maximum really bounds what the row delivers (M4) — on
+    every supply result this suite emits, so every test below checks them.
+    """
     envelope = evaluate_supply(instruments, share_basis, selected_scenario)
-    record = V.checked(envelope.as_record(), "supply_envelope")
+    trace = supply_trace(instruments, share_basis, selected_scenario)
+    record = V.checked(envelope.as_record(), "supply_envelope", supply=(trace, envelope))
     V.checked(envelope.receipt.as_record(), "calculation_receipt")
     V.checked(instruments.as_record(), "instrument_set")
     V.checked(share_basis.as_record(), "share_basis_result")
     V.checked(selected_scenario.as_record(), "financing_scenario")
-    trace = supply_trace(instruments, share_basis, selected_scenario)
+    V.assert_supply_rows(trace, envelope)
     assert trace["schema"] == SS.TRACE_SCHEMA
     assert trace["implementation"] == IMPLEMENTATION
     assert trace["state_id"] == envelope.state_id
@@ -147,17 +154,23 @@ def market_note(series_key: str, aggregation: str = "lowest_daily", lookback: in
 
 def reset_warrant(series_key: str, share_adjustment: str = "none", *, price: str = "1.60",
                   effective_at: str = V.EFFECTIVE, rule: str = "set_to_market",
-                  floor: str | None = None, reset_date: str = "2026-11-13"):
-    """1,000,000 warrants, one share each, strike 1.60, one 2026-11-13 reset."""
+                  floor: str | None = None, reset_date: str = "2026-11-13", **extra):
+    """1,000,000 warrants, one share each, strike 1.60, one 2026-11-13 reset.
+
+    ``extra`` overrides any term by name, which is how a COUNT term dated on or
+    after the reset is supplied (audit r1 M2).
+    """
     instrument_id = SS.series_id(series_key)
     schedule = c.ResetSchedule("reset_schedule", "exercise_price",
                                (V.reset_event(reset_date, rule, floor=floor,
                                               share_adjustment=share_adjustment),))
-    return SS.make_instrument(
-        series_key, kind="warrant", instruments_outstanding="1000000", shares_per_instrument="1",
+    terms = dict(
+        instruments_outstanding="1000000", shares_per_instrument="1",
         exercise_price=SS.economic_term(instrument_id, "exercise_price", price, effective_at=effective_at),
         cashless_exercise_permitted=True,
         price_reset=V.structure_term(instrument_id, "price_reset", schedule, effective_at=effective_at))
+    terms.update(extra)
+    return SS.make_instrument(series_key, kind="warrant", **terms)
 
 
 def anti_dilution_note(series_key: str, method: str, *, rounding: c.Rounding | None = None,
@@ -173,6 +186,7 @@ def anti_dilution_note(series_key: str, method: str, *, rounding: c.Rounding | N
 
 def accruing_preferred(series_key: str, day_count: str = "actual_365", compounding: str = "simple", *,
                        period_months: int | None = None, converts: bool = True, accrued: str | None = None,
+                       accrued_at: str = "2026-04-01T00:00:00Z",
                        kind: str = "convertible_preferred", rate: str = "10"):
     instrument_id = SS.series_id(series_key)
     built = c.Accrual("accrual", c.Quantity.known(rate, "percent"), day_count, compounding,
@@ -182,7 +196,7 @@ def accruing_preferred(series_key: str, day_count: str = "actual_365", compoundi
                  accrual_terms=V.structure_term(instrument_id, "accrual_terms", built))
     if accrued is not None:
         terms["accrued_amount_outstanding"] = SS.economic_term(
-            instrument_id, "accrued_amount_outstanding", accrued, effective_at="2026-04-01T00:00:00Z")
+            instrument_id, "accrued_amount_outstanding", accrued, effective_at=accrued_at)
     return SS.make_instrument(series_key, kind=kind, **terms)
 
 
@@ -692,6 +706,70 @@ def test_fx_reset_in_the_past_evidenced_by_an_admitted_term_lets_that_term_rule(
     assert rows(trace)[instrument_id]["variable_terms"]["past_reset"] == "2026-11-13"
 
 
+# -- audit r1 M2: a past reset that adjusts the count needs the count evidenced --
+
+
+def test_m2_past_reset_count_not_evidenced_is_unknown():
+    """M2: the price is evidenced, the COUNT is not, so the row is Unknown.
+
+    The pre-repair code kept the pre-reset count of 1,000,000 and delivered
+    200,000 at P 1.50, understating supply against the honest 1,333,333 /
+    266,666.  Neither number may appear: an unknown is never a guessed count.
+    """
+    series_key = "series_i2a_m2_count_unevidenced"
+    instrument_id = SS.series_id(series_key)
+    _id, instrument = reset_warrant(series_key, "preserve_aggregate_exercise_price",
+                                    price="1.20", effective_at="2026-11-13T00:00:00Z")
+    assert _id == instrument_id
+    envelope, trace = reset_run(instrument_id, instrument, as_of="2026-11-20T00:00:00Z",
+                                horizon_end="2026-11-20")
+    unknown_id = f"reset_share_adjustment_not_evidenced_{instrument_id}_2026-11-13"
+    row = rows(trace)[instrument_id]
+    assert row["incremental_shares"] == "unknown"
+    assert row["underlying_shares"] == "unknown"
+    assert row["unknowns"] == [unknown_id]
+    assert unknowns(envelope) == [unknown_id]
+    # Neither the pre-reset count nor the cashless delivery it would produce is
+    # reported as a delivered or a claimed number.
+    assert envelope.incremental_issuance.status == "unknown"
+    assert envelope.incremental_issuance.value is None
+    assert envelope.as_converted_claims.status == "unknown"
+    assert envelope.as_converted_claims.value is None
+
+
+def test_m2_past_reset_count_evidenced_is_a_fact():
+    """M2: with an admitted post-reset count term the adjusted count is a fact."""
+    series_key = "series_i2a_m2_count_evidenced"
+    instrument_id = SS.series_id(series_key)
+    _id, instrument = reset_warrant(
+        series_key, "preserve_aggregate_exercise_price", price="1.20",
+        effective_at="2026-11-13T00:00:00Z",
+        instruments_outstanding=SS.economic_term(
+            instrument_id, "instruments_outstanding", "1333333",
+            effective_at="2026-11-13T00:00:00Z"))
+    assert _id == instrument_id
+    envelope, trace = reset_run(instrument_id, instrument, as_of="2026-11-20T00:00:00Z",
+                                horizon_end="2026-11-20")
+    # Every figure below is derived here from the admitted term: the count is the
+    # admitted 1,333,333 at one share each, and the cashless delivery nets the
+    # spread of the admitted K 1.20 against the 2026-11-20 path point of 1.50.
+    admitted_count = Fraction(1_333_333)
+    shares_per_instrument = Fraction(1)
+    claim = admitted_count * shares_per_instrument
+    strike = Fraction(Decimal("1.20"))
+    market = Fraction(Decimal("1.50"))
+    delivery = claim * (market - strike) / market
+    assert unknowns(envelope) == []
+    assert claimed(envelope) == str(claim.numerator // claim.denominator)
+    assert claimed(envelope) == "1333333"
+    assert delivered(envelope) == str(delivery.numerator // delivery.denominator)
+    assert delivered(envelope) == "266666"
+    row = rows(trace)[instrument_id]["variable_terms"]
+    assert row["past_reset"] == "2026-11-13"
+    assert row["past_reset_count_2026-11-13"] == "instruments_outstanding"
+    assert row["contract_price"] == "1.2"
+
+
 def test_fx_reset_set_to_lesser_of_current_and_market_keeps_the_lower_price():
     instrument_id, instrument = reset_warrant("series_i2a_fx_rlesser", "none", price="1.10",
                                               rule="set_to_lesser_of_current_and_market")
@@ -808,6 +886,31 @@ def test_fx_accretion_an_evidenced_accrued_amount_continues_from_its_own_date():
     row = rows(trace)[instrument_id]["variable_terms"]
     assert row["accrued_amount_evidenced"] == "24657.53"
     assert row["accrued_amount_evidenced_at"] == "2026-04-01"
+
+
+def test_m1_supply_periodic_evidenced_claim():
+    """M1 through ``evaluate_supply``: the claim at CP 1.00 is 1,050,203 shares.
+
+    The evidenced 12,328.77 is stated at 2026-02-15, in the middle of the anchored
+    Q1 period, so it re-bases the balance and never moves the grid.  The pre-repair
+    code compounded 02-15 -> 05-15 plus a 47-day stub and claimed 1,049,889.
+    """
+    instrument_id, instrument = accruing_preferred(
+        "series_i2a_m1_supply", "actual_365", "periodic", period_months=3,
+        accrued="12328.77", accrued_at="2026-02-15T00:00:00Z")
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)], **ACCRUAL_HORIZON)
+    rate = Fraction(1, 10)
+    balance = Fraction(1_000_000) + Fraction(Decimal("12328.77"))     # B at 2026-02-15
+    opening = balance / (1 + rate * Fraction(45, 365))                # 2026-01-01 -> 2026-02-15
+    at_april = balance + opening * rate * Fraction(45, 365)           # 2026-02-15 -> 2026-04-01
+    claim = at_april * (1 + rate * Fraction(91, 365))                 # 2026-04-01 -> 2026-07-01
+    assert claimed(envelope) == str(claim.numerator // claim.denominator)
+    assert claimed(envelope) == "1050203"
+    assert delivered(envelope) == "1050203"
+    row = rows(trace)[instrument_id]["variable_terms"]
+    assert row["accrual_period_grid_anchored_at"] == "2026-01-01"
+    assert row["accrual_evidenced_period_start"] == "2026-01-01"
+    assert row["accrued_amount_evidenced_at"] == "2026-02-15"
 
 
 def test_fx_accretion_converts_with_principal_false_converts_principal_only():
@@ -1053,3 +1156,221 @@ def test_determinism_two_entry_points_agree_on_one_evaluation():
     V.checked(envelope.as_record(), "supply_envelope")
     assert trace["state_id"] == envelope.state_id
     assert c.sha256_of(envelope.as_record()) == c.sha256_of(evaluate_supply(instruments, basis, scenario).as_record())
+
+
+# ---------------------------------------------------------------------------
+# Audit r1 — M3, M4 and S2-S6 through ``evaluate_supply``
+# ---------------------------------------------------------------------------
+
+
+def formula_note(series_key: str, built: c.PriceFormula, *, value: str | None = None, **extra):
+    """A convertible note whose conversion price is a formula, plus any I2 term.
+
+    ``value`` states a KNOWN price alongside an all-fixed formula, which is what
+    §1.4 permits and what audit r1 S3 is about.
+    """
+    instrument_id = SS.series_id(series_key)
+    # §1.4: an admitted price term carries a known value OR its verbatim formula.
+    # A stated value therefore has no expression, and a market formula has one.
+    price_term = V.price_formula_term(
+        instrument_id, "conversion_price", built, value=value, expression=None
+    ) if value is not None else V.price_formula_term(instrument_id, "conversion_price", built)
+    terms = dict(
+        principal_outstanding="1000000",
+        cashless_exercise_permitted=True,
+        conversion_price=price_term,
+    )
+    terms.update(extra)
+    return SS.make_instrument(series_key, kind="convertible_note", **terms)
+
+
+def test_m3_warrant_settlement_branches_named_unknown():
+    """M3: a warrant carrying settlement_branches is a NAMED unknown.
+
+    The pre-repair row went unknown with an EMPTY unknown list, because I2 reads
+    the branches term for every action but prices branches for a conversion only,
+    and a warrant has no amount.  Nothing is raised: the term is valid.
+    """
+    series_key = "series_i2a_m3_warrant_branches"
+    instrument_id = SS.series_id(series_key)
+    built = c.SettlementBranches("settlement_branches", ("cash", "physical"), "issuer")
+    _id, instrument = SS.make_instrument(
+        series_key, kind="warrant", instruments_outstanding="1000000", shares_per_instrument="1",
+        exercise_price="1.00", cashless_exercise_permitted=True,
+        settlement_branches=V.structure_term(instrument_id, "settlement_branches", built))
+    assert _id == instrument_id
+    envelope, trace = run([(instrument_id, instrument)],
+                          [SS.selection(instrument_id, "warrant_exercise", "cashless")],
+                          price=fixed_price("7.50"))
+    unknown_id = f"settlement_branches_not_evaluated_{instrument_id}"
+    row = rows(trace)[instrument_id]
+    assert row["incremental_shares"] == "unknown"
+    assert row["unknowns"] == [unknown_id]
+    assert unknowns(envelope) == [unknown_id]
+    assert envelope.incremental_issuance.value is None
+    # A25: the claim, which the branches term does not touch, still survives.
+    assert claimed(envelope) == "1000000"
+    assert trace["alternatives"] == []
+
+
+def test_m4_full_ratchet_below_formula_floor_maximum_unbounded():
+    """M4: the reported maximum must bound every delivered count.
+
+    The formula states a 0.50 floor, but §2.5 anti-dilution applies no floor, so
+    a full ratchet to a 0.40 issuance delivers 2,500,000 shares.  The pre-repair
+    trace reported a ``bounded_by_floor`` maximum of 2,000,000 — a wrong number
+    that its own row contradicted.
+    """
+    built = V.formula([V.market("lowest_daily", 10)], floor_basis="stated", floor="0.50",
+                      below_floor="floor_applies")
+    series_key = "series_i2a_m4_ratchet"
+    ratchet_term = V.structure_term(
+        SS.series_id(series_key), "anti_dilution",
+        c.AntiDilution("anti_dilution", "conversion_price", "full_ratchet",
+                       price_rounding=None, share_adjustment="none"))
+    instrument_id, instrument = formula_note(series_key, built, anti_dilution=ratchet_term)
+    envelope, trace = run(
+        [(instrument_id, instrument)], [conversion(instrument_id)],
+        other_assumptions=((vt.DILUTIVE_ISSUANCE_SHARES, "2000000"),
+                           (vt.DILUTIVE_ISSUANCE_PRICE, "0.40")))
+    ratchet = Fraction(Decimal("0.40"))
+    expected = Fraction(1_000_000) / ratchet
+    assert delivered(envelope) == str(expected.numerator // expected.denominator)
+    assert delivered(envelope) == "2500000"
+    body = trace["maximum_issuable"][instrument_id]
+    assert body["state"] == "unbounded_by_contract"
+    assert body["floor_basis"] == "stated"
+    assert body[vt.TRACE_ANTI_DILUTION_BYPASSES_FLOOR] == "full_ratchet"
+    assert body[vt.TRACE_AUTHORIZED_SHARES_NOT_EVALUATED] == "true"
+    assert "shares" not in body
+    assert "inf" not in repr(body).lower()
+
+
+def test_s2_cap_not_listed_when_approval_obtained():
+    """S2: an exchange cap that shareholder approval has lifted is not a limit."""
+    instrument_id, instrument = market_note(
+        "series_i2a_s2_approved", "lowest_daily", 10,
+        exchange_cap_shares="700000", shares_issued_under_instrument="200000",
+        shareholder_approval_obtained=True)
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    body = trace["maximum_issuable"][instrument_id]
+    assert body["state"] == "unbounded_by_contract"
+    assert body["binding_limits"] == []
+    # The cap really is lifted: the whole claim is delivered.
+    assert delivered(envelope) == "1250000"
+    assert rows(trace)[instrument_id]["variable_terms"]["shareholder_approval_obtained"] == "true"
+
+
+def test_s2_issued_under_instrument_not_a_limit():
+    """S2: the issued count is the cap's USAGE, not a second limit."""
+    instrument_id, instrument = market_note(
+        "series_i2a_s2_usage", "lowest_daily", 10,
+        exchange_cap_shares="700000", shares_issued_under_instrument="200000")
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    body = trace["maximum_issuable"][instrument_id]
+    assert body["binding_limits"] == ["exchange_cap_shares"]
+    assert "shares_issued_under_instrument" not in body["binding_limits"]
+    # The usage stays in the row trace, where the cap arithmetic is visible, and
+    # it still limits delivery to 700,000 - 200,000.
+    row = rows(trace)[instrument_id]["variable_terms"]
+    assert row["shares_issued_under_instrument"] == "200000"
+    assert row["exchange_cap_remaining"] == "500000"
+    assert delivered(envelope) == "500000"
+
+
+def test_s2_authorized_shares_flagged_not_evaluated():
+    """S2: authorized-share headroom is joined later, and the trace says so."""
+    instrument_id, instrument = market_note(
+        "series_i2a_s2_authorized", "lowest_daily", 10,
+        exchange_cap_shares="700000", shares_issued_under_instrument="200000")
+    _envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    body = trace["maximum_issuable"][instrument_id]
+    assert body["state"] == "unbounded_by_contract"
+    assert body[vt.TRACE_AUTHORIZED_SHARES_NOT_EVALUATED] == "true"
+    assert "authorized_shares" not in body["binding_limits"]
+
+
+def test_s3_fixed_value_respects_ceiling():
+    """S3: a fixed known value still passes its own formula's ceiling.
+
+    §1.4 lets an all-fixed formula carry a known value; the pre-repair row took
+    the value and never ran §2.2, so a 0.90 ceiling on a 1.00 value was ignored.
+    """
+    built = V.formula([V.fixed("1.00")], ceiling="0.90")
+    instrument_id, instrument = formula_note("series_i2a_s3_ceiling", built, value="1.00")
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    ceiling = Fraction(Decimal("0.90"))
+    expected = Fraction(1_000_000) / ceiling
+    row = rows(trace)[instrument_id]["variable_terms"]
+    assert row["price_source"] == "price_formula"
+    assert row["contract_price"] == "0.9"
+    assert row["ceiling_reached"] == "true"
+    assert row["price_term_also_states_a_value"] == "1.00"
+    assert delivered(envelope) == str(expected.numerator // expected.denominator)
+    assert delivered(envelope) == "1111111"
+
+
+@pytest.mark.parametrize("key", [vt.DILUTIVE_ISSUANCE_SHARES, vt.DILUTIVE_ISSUANCE_PRICE],
+                         ids=["shares", "price"])
+@pytest.mark.parametrize("text", ["NaN", "inf", "1e5", "abc", "-1"])
+def test_s4_dilutive_issuance_refusals(key, text):
+    """S4: an issuance assumption is exact non-negative decimal text or it is refused.
+
+    The pre-repair code parsed with ``Fraction(Decimal(str(text)))``, so "NaN" and
+    "inf" died with a bare ValueError, "1e5" and "-1" were silently accepted, and
+    none of them was a ContractViolation.
+    """
+    instrument_id, instrument = anti_dilution_note("series_i2a_s4_refusals", "full_ratchet")
+    with pytest.raises(c.ContractViolation, match="dilutive_issuance"):
+        ad_run(instrument_id, instrument, other_assumptions=((key, text),))
+
+
+def test_s5_make_whole_not_applied_when_condition_not_met():
+    """S5: no make-whole repayment is booked against a delivery of zero."""
+    built = V.formula([V.market("lowest_daily", 10)], floor_basis="stated", floor="1.00",
+                      below_floor="floor_applies_with_cash_make_whole")
+    instrument_id, instrument = formula_note(
+        "series_i2a_s5_notmet", built,
+        conversion_condition=V.structure_term(
+            SS.series_id("series_i2a_s5_notmet"), "conversion_condition", V.condition(10, 10)))
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    row = rows(trace)[instrument_id]
+    assert row["variable_terms"]["conversion_condition"] == "not_met"
+    assert row["variable_terms"]["floor_reached"] == "true"
+    assert delivered(envelope) == "0"
+    assert f"make_whole_amount_{instrument_id}" not in row["unknowns"]
+    assert vt.BLOCKER_FLOOR_MAKE_WHOLE in row["blockers"]
+    # The cash effect is the honest no-cash one, not an unknown repayment.
+    effect = cash(envelope)[instrument_id]
+    assert effect.kind == "no_cash"
+    assert effect.gross.status == "known"
+    assert str(effect.gross.value) == "0"
+    assert str(effect.net.value) == "0"
+    # The claim path runs BEFORE the condition (A25), so the envelope still names
+    # the missing amount; the row, which books the cash, does not.
+    assert unknowns(envelope) == [f"make_whole_amount_{instrument_id}"]
+    assert claimed(envelope) == "1000000"
+
+
+def test_s5_make_whole_ids_agree_row_and_envelope():
+    """S5: when the make-whole applies, the row and the envelope name the same Unknown."""
+    built = V.formula([V.market("lowest_daily", 10)], floor_basis="stated", floor="1.00",
+                      below_floor="floor_applies_with_cash_make_whole")
+    instrument_id, instrument = formula_note(
+        "series_i2a_s5_agree", built,
+        conversion_condition=V.structure_term(
+            SS.series_id("series_i2a_s5_agree"), "conversion_condition", V.condition(5, 10)))
+    envelope, trace = run([(instrument_id, instrument)], [conversion(instrument_id)])
+    unknown_id = f"make_whole_amount_{instrument_id}"
+    row = rows(trace)[instrument_id]
+    assert row["variable_terms"]["conversion_condition"] == "met"
+    assert row["variable_terms"]["floor_reached"] == "true"
+    # The pre-repair row named nothing while the envelope named the make-whole.
+    assert unknown_id in row["unknowns"]
+    assert unknown_id in unknowns(envelope)
+    assert set(row["unknowns"]) <= set(unknowns(envelope))
+    assert delivered(envelope) == "1000000"
+    effect = cash(envelope)[instrument_id]
+    assert effect.kind == "repayment"
+    assert effect.gross.status == "unknown"
+    assert effect.gross.value is None

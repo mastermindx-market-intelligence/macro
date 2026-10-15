@@ -65,10 +65,48 @@ PATH_V = (
 # ---------------------------------------------------------------------------
 
 
-def checked(record, kind: str) -> dict:
-    """The ONE shared helper: schema-validate every record this suite emits."""
+def assert_supply_rows(trace: dict, envelope) -> None:
+    """The two row invariants every emitted supply result must satisfy (M3, M4).
+
+    * **M3** — a row whose status is unknown must NAME at least one Unknown, and
+      every Unknown a row names must also be named by the envelope.  An anonymous
+      unknown tells a reader nothing about what would resolve it (§0 item 4).
+    * **M4** — a maximum reported as ``bounded_by_floor`` must actually bound what
+      the row delivers, or the reported maximum is simply a wrong number (§2.3).
+    """
+    envelope_ids = {item.unknown_id for item in envelope.unknowns}
+    maxima = trace.get("maximum_issuable", {})
+    for row in trace["rows"]:
+        is_unknown = row["incremental_shares"] == "unknown"
+        if is_unknown:
+            assert row["unknowns"], f"row {row['route_id']} is unknown and names no Unknown"
+        for unknown_id in row["unknowns"]:
+            assert unknown_id in envelope_ids, (
+                f"row {row['route_id']} names {unknown_id!r}, which the envelope does not"
+            )
+        body = maxima.get(row["instrument_id"])
+        if body is None or body.get("state") != "bounded_by_floor" or is_unknown:
+            continue
+        delivered_shares = int(row["incremental_shares"])
+        assert delivered_shares <= int(body["shares"]), (
+            f"row {row['route_id']} delivers {delivered_shares}, above the maximum "
+            f"{body['shares']} reported for {row['instrument_id']}"
+        )
+
+
+def checked(record, kind: str, *, supply: tuple | None = None) -> dict:
+    """The ONE shared helper: schema-validate every record this suite emits.
+
+    ``supply`` is a ``(trace, envelope)`` pair.  When it is given, the row
+    invariants of :func:`assert_supply_rows` (audit r1 M3 and M4) are enforced on
+    it as well.  This suite emits contract records only — it builds no envelope —
+    so the supply suite hands its result to this same helper from its own shared
+    helper on every test, which is what makes the guard cover the whole suite.
+    """
     c.validate_state_record(kind, record)
     SS.assert_no_float(record, kind)
+    if supply is not None:
+        assert_supply_rows(*supply)
     return record
 
 
@@ -968,6 +1006,102 @@ def test_fx_an_evidenced_accrued_amount_continues_from_its_own_date():
     assert result.trace["accrued_amount_evidenced_at"] == "2026-04-01"
 
 
+# -- audit r1 M1: the periodic grid is anchored to accrual_start --------------
+#
+# Period boundaries are ALWAYS accrual_start + k * period_months.  An admitted
+# accrued_amount_outstanding term is a fact about the BALANCE at its own date, so
+# it re-bases the balance inside the anchored period that contains it; it never
+# moves the grid.  With B = principal + E stated at s, [p0, p1) the anchored
+# period containing s and r the annual rate:
+#
+#   Pk  = B / (1 + r * yf(p0, s))      the period's opening balance
+#   B1  = B + Pk * r * yf(s, p1)       simple interest to the period end
+#   ...  then ordinary compounding on the anchored grid from p1.
+#
+# An s exactly on a boundary gives yf(p0, s) = 0, so Pk = B.
+
+
+def _floor_of(value: Fraction) -> int:
+    """The floored whole count of an exact positive rational."""
+    return value.numerator // value.denominator
+
+
+def test_m1_periodic_evidenced_mid_period_is_anchored():
+    """M1: an amount evidenced MID-period never moves the anchored grid.
+
+    The pre-repair code stepped the boundaries from the evidenced date
+    (02-15 -> 05-15, then a 47-day stub) and reported 1,049,889.
+    """
+    evidenced = Fraction(Decimal("12328.77"))
+    term = value_term("accrued_amount_outstanding", "12328.77", effective_at="2026-02-15T00:00:00Z")
+    result = vt.accreted_amount(PRINCIPAL, accrual("actual_365", "periodic", period_months=3),
+                                term, HORIZON_END, INST)
+    rate = Fraction(1, 10)
+    balance = PRINCIPAL + evidenced                          # B at 2026-02-15
+    opening = balance / (1 + rate * Fraction(45, 365))       # Pk: 2026-01-01 -> 2026-02-15 = 45 days
+    at_second_grid_point = balance + opening * rate * Fraction(45, 365)   # 2026-02-15 -> 2026-04-01
+    expected = at_second_grid_point * (1 + rate * Fraction(91, 365))      # 2026-04-01 -> 2026-07-01
+    assert result.unknown is None
+    assert result.value == expected
+    assert _floor_of(result.value) == 1_050_203
+    # The grid is the anchored one, and the period the evidence falls in is Q1.
+    assert result.trace["accrual_period_grid_anchored_at"] == "2026-01-01"
+    assert result.trace["accrual_evidenced_period_start"] == "2026-01-01"
+    # 7390 = 2 * 5 * 739 does not terminate in base 10, so the exact opening
+    # balance is written as the reduced fraction it is, never as a rounding.
+    assert opening == balance / (1 + rate * Fraction(45, 365))
+    assert opening == Fraction(7_390_000_021, 7_390)
+    assert result.trace["accrual_evidenced_period_opening_balance"] == f"{opening.numerator}/{opening.denominator}"
+    assert result.trace["accrued_amount_evidenced_at"] == "2026-02-15"
+
+
+def test_m1_periodic_evidenced_on_boundary():
+    """M1: an amount evidenced exactly ON a boundary gives d = 0, so Pk = B.
+
+    The exact Q1 accrual, 1,000,000 * 10% * 90/365 = 1,800,000/73, does not
+    terminate in base 10 (73 divides no power of 10), so a term — which carries
+    exact decimal text and nothing else — cannot state it.  The case is therefore
+    derived from an exactly representable E, as the ruling allows, and the
+    expectation is computed here from B * (1 + r * 91/365).
+    """
+    exact_first_quarter = PRINCIPAL * Fraction(1, 10) * Fraction(90, 365)
+    assert exact_first_quarter == Fraction(1_800_000, 73)
+    assert exact_first_quarter.denominator == 73
+    evidenced = Fraction(Decimal("24657.53"))
+    term = value_term("accrued_amount_outstanding", "24657.53", effective_at="2026-04-01T00:00:00Z")
+    result = vt.accreted_amount(PRINCIPAL, accrual("actual_365", "periodic", period_months=3),
+                                term, HORIZON_END, INST)
+    rate = Fraction(1, 10)
+    balance = PRINCIPAL + evidenced
+    expected = balance * (1 + rate * Fraction(91, 365))      # 2026-04-01 -> 2026-07-01 = 91 days
+    assert result.unknown is None
+    assert result.value == expected
+    assert _floor_of(result.value) == 1_050_203
+    # d = 0, so the period's opening balance IS the evidenced balance.
+    assert result.trace["accrual_evidenced_period_start"] == "2026-04-01"
+    assert result.trace["accrual_evidenced_period_opening_balance"] == "1024657.53"
+
+
+def test_m1b_periodic_stub_on_running_balance():
+    """M1b: the partial final period earns simple interest on the RUNNING balance.
+
+    Two full quarters plus a 45-day stub.  The pre-repair code earned the stub on
+    the original principal only and reported 1,062,532.
+    """
+    stub_end = "2026-08-15"
+    result = vt.accreted_amount(PRINCIPAL, accrual("actual_365", "periodic", period_months=3),
+                                None, stub_end, INST)
+    rate = Fraction(1, 10)
+    first_quarter = PRINCIPAL * (1 + rate * Fraction(90, 365))     # 2026-01-01 -> 2026-04-01
+    second_quarter = first_quarter * (1 + rate * Fraction(91, 365))  # 2026-04-01 -> 2026-07-01
+    expected = second_quarter + second_quarter * rate * Fraction(45, 365)  # 2026-07-01 -> 2026-08-15
+    assert result.unknown is None
+    assert result.value == expected
+    assert _floor_of(result.value) == 1_063_151
+    assert result.trace["accrual_periods_compounded"] == "2"
+    assert result.trace["accrual_period_grid_anchored_at"] == "2026-01-01"
+
+
 def test_fx_converts_with_principal_false_converts_principal_only():
     result = vt.accreted_amount(PRINCIPAL, accrual("actual_365", "simple", converts=False),
                                 None, HORIZON_END, INST)
@@ -1272,3 +1406,94 @@ def test_s2_unknown_ids_match_the_contract_id_pattern():
     for item in unknowns:
         assert item is not None
         assert pattern.match(item.unknown_id), item.unknown_id
+
+
+# ---------------------------------------------------------------------------
+# Audit r1 — M4 (the maximum must bound every delivery) and S6 (a sparse window)
+# ---------------------------------------------------------------------------
+
+
+def test_m4_reset_event_floor_lowers_the_bound():
+    """M4: §2.4 applies the EVENT floor, so the bound is the LOWEST stated floor.
+
+    Every expected value is computed here from the stated floors; none is read
+    back from the implementation.
+    """
+    built = formula([market("lowest_daily", 10)], floor_basis="stated", floor="1.00",
+                    below_floor="floor_applies")
+    stated_floor = Fraction(1)
+    event_floor = Fraction(Decimal("0.80"))
+    with_floor = c.ResetSchedule("reset_schedule", "conversion_price",
+                                 (reset_event(RESET_DATE, "set_to_market", floor="0.80"),))
+    body = vt.maximum_issuable(built, PRINCIPAL, INST, schedule=with_floor)
+    bound = min(stated_floor, event_floor)
+    expected = PRINCIPAL / bound
+    assert body["state"] == "bounded_by_floor"
+    assert body["floor"] == "0.8"
+    assert body["shares"] == str(expected.numerator // expected.denominator)
+    assert body["shares"] == "1250000"
+    SS.assert_no_float(body, "maximum_issuable")
+    # A reset event that states NO floor can take the price anywhere below the
+    # formula floor, so the contract bounds nothing: never the formula floor alone.
+    without_floor = c.ResetSchedule("reset_schedule", "conversion_price",
+                                    (reset_event(RESET_DATE, "set_to_market"),))
+    open_body = vt.maximum_issuable(built, PRINCIPAL, INST, schedule=without_floor)
+    assert open_body["state"] == "unbounded_by_contract"
+    assert open_body[vt.TRACE_RESET_EVENT_FLOOR_NOT_STATED] == RESET_DATE
+    assert open_body[vt.TRACE_AUTHORIZED_SHARES_NOT_EVALUATED] == "true"
+    assert "shares" not in open_body
+    SS.assert_no_float(open_body, "maximum_issuable")
+    assert "inf" not in repr(open_body).lower()
+
+
+def test_m4_an_anti_dilution_term_that_applies_no_floor_leaves_the_maximum_unbounded():
+    """M4: §2.5 anti-dilution applies no floor, so a stated floor bounds nothing."""
+    built = formula([market("lowest_daily", 10)], floor_basis="stated", floor="1.00",
+                    below_floor="floor_applies")
+    for method in vt.FLOOR_BYPASSING_ANTI_DILUTION:
+        body = vt.maximum_issuable(built, PRINCIPAL, INST, anti_dilution=ad(method))
+        assert body["state"] == "unbounded_by_contract", method
+        assert body[vt.TRACE_ANTI_DILUTION_BYPASSES_FLOOR] == method
+        assert "shares" not in body
+        SS.assert_no_float(body, "maximum_issuable")
+    # `none_in_complete_agreement` changes nothing, so the stated floor still binds.
+    unchanged = vt.maximum_issuable(built, PRINCIPAL, INST,
+                                    anti_dilution=ad("none_in_complete_agreement"))
+    assert unchanged["state"] == "bounded_by_floor"
+    assert unchanged["shares"] == "1000000"
+    assert vt.TRACE_ANTI_DILUTION_BYPASSES_FLOOR not in unchanged
+
+
+def test_m4_stated_floor_zero_is_unbounded():
+    """M4 / N2: a stated floor of exactly 0 is unbounded — never a division by zero."""
+    built = formula([market("lowest_daily", 10)], floor_basis="stated", floor="0")
+    body = vt.maximum_issuable(built, PRINCIPAL, INST)
+    assert body["state"] == "unbounded_by_contract"
+    assert body["floor_basis"] == "stated"
+    assert body[vt.TRACE_STATED_FLOOR_IS_ZERO] == "true"
+    assert body["binding_limits"] == []
+    assert body[vt.TRACE_AUTHORIZED_SHARES_NOT_EVALUATED] == "true"
+    assert "shares" not in body
+    # It is NOT the Unknown an unestablished floor produces.
+    assert "unknown_id" not in body
+    SS.assert_no_float(body, "maximum_issuable")
+
+
+def test_s6_sparse_window_flagged():
+    """S6: a sparse ``including_pricing_date`` window is visible, never silent."""
+    sparse = PATH_V[:-1]                                  # the last point is 2026-11-12
+    result = vt.component_price(market("single_day", 1), sparse, PRICING_DATE, CLOSED, INST)
+    assert result.unknown is None
+    assert result.value == Fraction(Decimal("1.60")) * Fraction(80, 100)
+    assert result.trace["component_window_end_date"] == "2026-11-12"
+    assert result.trace[vt.TRACE_WINDOW_LAST_POINT_BEFORE_PRICING_DATE] == "true"
+    # Behaviour is otherwise unchanged: a window that does reach D is not flagged.
+    covered = vt.component_price(market("single_day", 1), PATH_V, PRICING_DATE, CLOSED, INST)
+    assert covered.value == Fraction(Decimal("1.70")) * Fraction(80, 100)
+    assert vt.TRACE_WINDOW_LAST_POINT_BEFORE_PRICING_DATE not in covered.trace
+    # A preceding_pricing_date window never reads a point at D by definition, so
+    # it is not sparse and carries no flag.
+    preceding = vt.component_price(market("single_day", 1, window_end="preceding_pricing_date"),
+                                   PATH_V, PRICING_DATE, CLOSED, INST)
+    assert preceding.value == result.value
+    assert vt.TRACE_WINDOW_LAST_POINT_BEFORE_PRICING_DATE not in preceding.trace

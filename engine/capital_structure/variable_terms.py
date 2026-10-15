@@ -49,6 +49,11 @@ from engine.capital_structure.issuer_state_contracts import (
     ResetSchedule,
     Unknown,
 )
+# The contracts module's ONE exact-decimal validator (regex, finiteness and
+# non-negativity, refusing with ContractViolation).  It is imported rather than
+# re-spelled so a scenario assumption can never drift from the rule a Quantity
+# value obeys (SPEC_I2 §0 item 3, audit S4).
+from engine.capital_structure.issuer_state_contracts import _decimal as _exact_decimal_text
 
 IMPLEMENTATION = "capital_structure.variable_terms.v1"
 
@@ -70,6 +75,23 @@ BLOCKER_ANTI_DILUTION_NOT_TRIGGERED = "anti_dilution_not_triggered"
 BLOCKER_SHAREHOLDER_APPROVAL_REQUIRED = "shareholder_approval_required"
 BLOCKER_EXCHANGE_CAP_REACHED = "exchange_cap_reached"
 TRACE_ACCRUED_NOT_CONVERTED = "accrued_not_converted"
+#: S6: a sparse ``including_pricing_date`` window is visible, never silent.
+TRACE_WINDOW_LAST_POINT_BEFORE_PRICING_DATE = "window_last_point_before_pricing_date"
+#: M4: the §2.5 methods that apply NO floor, so a later step can carry the price
+#: below any floor the formula states and the contract itself bounds nothing.
+FLOOR_BYPASSING_ANTI_DILUTION = (
+    "full_ratchet",
+    "weighted_average_narrow",
+    "weighted_average_broad",
+)
+TRACE_ANTI_DILUTION_BYPASSES_FLOOR = "anti_dilution_bypasses_floor"
+TRACE_STATED_FLOOR_IS_ZERO = "stated_floor_is_zero"
+TRACE_RESET_EVENT_FLOOR_NOT_STATED = "reset_event_floor_not_stated"
+#: S2: authorized-share headroom is joined later, by the joint capacity model and
+#: the issuer state — never here, and the trace says so out loud.
+TRACE_AUTHORIZED_SHARES_NOT_EVALUATED = "authorized_shares_not_evaluated_here"
+#: M2: the count terms a PAST reset that adjusts shares must have evidenced.
+COUNT_TERM_NAMES = ("instruments_outstanding", "shares_per_instrument")
 
 AFFECTS_PRICE = ("as_converted_claims", "incremental_issuance")
 AFFECTS_DELIVERY = ("incremental_issuance",)
@@ -113,6 +135,17 @@ def _exact(value: Fraction) -> str:
 
 def _floor(value: Fraction) -> int:
     return value.numerator // value.denominator
+
+
+def exact_decimal(value: Any, field_name: str) -> Fraction:
+    """One exact decimal string as a :class:`~fractions.Fraction`.
+
+    This is the contracts module's own validation, so ``NaN``, an infinity, an
+    exponent form, garbage text, a float and a negative are each refused with
+    :class:`ContractViolation` and never with another exception type.  A
+    scenario assumption is exact text or it is nothing (audit S4).
+    """
+    return Fraction(Decimal(_exact_decimal_text(value, field_name)))
 
 
 def _quantity_value(quantity: Quantity | None, field_name: str) -> Fraction | None:
@@ -346,20 +379,24 @@ def component_price(
             unknown=_not_established(inst, "percent_of_measure_not_established", "the price formula states no known percentage of the measure"),
             trace_items=(("path_points_are_trading_days", "true"),),
         )
-    return TermResult(
-        value=measure * percent / 100,
-        trace_items=(
-            ("path_points_are_trading_days", "true"),
-            ("component_source", "market"),
-            ("component_measure", str(component.measure)),
-            ("component_aggregation", str(aggregation)),
-            ("component_window_end", str(component.window_end)),
-            ("component_window_start", points[0][0]),
-            ("component_window_end_date", points[-1][0]),
-            ("component_measure_value", _exact(measure)),
-            ("component_percent_of_measure", _exact(percent)),
-        ),
-    )
+    trace: list[tuple[str, str]] = [
+        ("path_points_are_trading_days", "true"),
+        ("component_source", "market"),
+        ("component_measure", str(component.measure)),
+        ("component_aggregation", str(aggregation)),
+        ("component_window_end", str(component.window_end)),
+        ("component_window_start", points[0][0]),
+        ("component_window_end_date", points[-1][0]),
+        ("component_measure_value", _exact(measure)),
+        ("component_percent_of_measure", _exact(percent)),
+    ]
+    if component.window_end == "including_pricing_date" and points[-1][0] < str(pricing_date):
+        # S6: the window is SPARSE at the pricing date — no point is dated on D,
+        # so the last point read is an earlier trading day.  The price is still
+        # the contract's price (a path point is one trading day, never one
+        # calendar day), but the gap is visible instead of silent.
+        trace.append((TRACE_WINDOW_LAST_POINT_BEFORE_PRICING_DATE, "true"))
+    return TermResult(value=measure * percent / 100, trace_items=tuple(trace))
 
 
 def _not_established(inst: str, what: str, description: str) -> Unknown:
@@ -471,11 +508,29 @@ def formula_price(
 # ---------------------------------------------------------------------------
 
 
+def _unbounded(body: dict[str, Any], limits: Sequence[str], **flags: str) -> dict[str, Any]:
+    """The one shape a floating price may report: unbounded, and saying why."""
+    body.update(
+        {
+            "state": "unbounded_by_contract",
+            "binding_limits": [str(item) for item in limits],
+            # S2: authorized-share headroom is joined later, by the joint
+            # capacity model and the issuer state.  I2 never joins it, and the
+            # trace says so rather than letting a reader assume it was checked.
+            TRACE_AUTHORIZED_SHARES_NOT_EVALUATED: "true",
+        }
+    )
+    body.update(flags)
+    return body
+
+
 def maximum_issuable(
     formula: PriceFormula | None,
     amount: Fraction,
     inst: str,
     limits: Sequence[str] = (),
+    anti_dilution: AntiDilution | None = None,
+    schedule: ResetSchedule | None = None,
 ) -> dict[str, Any]:
     """What the contract itself bounds, as a trace row — never a Quantity.
 
@@ -483,26 +538,58 @@ def maximum_issuable(
     ``unbounded_by_contract``: this is the one place the module says so out
     loud, and it never converts that into a finite maximum or into infinity
     (A26, masterplan L231).  ``binding_limits`` names the OTHER limits that do
-    bind — an exchange cap, an issued-share count — because they bound delivery
-    without bounding the claim.
+    bind — an exchange cap that shareholder approval has not lifted — because
+    they bound delivery without bounding the claim.
+
+    The bound is taken from the LOWEST price any stated term can reach, not
+    from the formula floor alone (audit M4):
+
+    * §2.5 anti-dilution applies NO floor, so a ``full_ratchet`` or a weighted
+      average can carry the price below the formula's floor and the contract
+      bounds nothing — ``anti_dilution_bypasses_floor`` says so;
+    * §2.4 resets DO apply the EVENT floor, so every event floor lowers the
+      bound, and an event with no stated floor (or a floor of exactly zero)
+      leaves the price unbounded;
+    * a stated floor of exactly ``0`` bounds nothing either.  It is not a
+      division by zero and it is not ``floor_not_established`` (audit N2);
+    * ``not_established`` stays the Unknown it always was.
     """
     _require(isinstance(amount, Fraction), "maximum_issuable.amount: an exact Fraction is required")
+    if anti_dilution is not None:
+        _require(isinstance(anti_dilution, AntiDilution), "maximum_issuable.anti_dilution: an AntiDilution is required")
+    if schedule is not None:
+        _require(isinstance(schedule, ResetSchedule), "maximum_issuable.schedule: a ResetSchedule is required")
     body: dict[str, Any] = {"amount": _exact(amount)}
     if formula is None:
         body.update({"state": "no_price_formula"})
         return body
     body["floor_basis"] = formula.floor_basis
+    stated: Fraction | None = None
     if formula.floor_basis == "stated":
-        floor = _quantity_value(formula.floor, "price_formula.floor")
-        if floor is None or floor == 0:
+        stated = _quantity_value(formula.floor, "price_formula.floor")
+        if stated is None:
             body.update({"state": "unknown", "unknown_id": f"floor_not_established_{inst}"})
             return body
-        body.update({"state": "bounded_by_floor", "floor": _exact(floor), "shares": str(_floor(amount / floor))})
+    elif formula.floor_basis != "none_in_complete_agreement":
+        body.update({"state": "unknown", "unknown_id": f"floor_not_established_{inst}"})
         return body
-    if formula.floor_basis == "none_in_complete_agreement":
-        body.update({"state": "unbounded_by_contract", "binding_limits": [str(item) for item in limits]})
-        return body
-    body.update({"state": "unknown", "unknown_id": f"floor_not_established_{inst}"})
+    if anti_dilution is not None and anti_dilution.method in FLOOR_BYPASSING_ANTI_DILUTION:
+        return _unbounded(body, limits, **{TRACE_ANTI_DILUTION_BYPASSES_FLOOR: anti_dilution.method})
+    if stated == 0:
+        return _unbounded(body, limits, **{TRACE_STATED_FLOOR_IS_ZERO: "true"})
+    floors: list[Fraction] = [] if stated is None else [stated]
+    if schedule is not None and floors:
+        for event in schedule.events:
+            event_floor = _quantity_value(event.floor, "reset_event.floor")
+            if event_floor is None or event_floor == 0:
+                return _unbounded(
+                    body, limits, **{TRACE_RESET_EVENT_FLOOR_NOT_STATED: str(event.reset_date)}
+                )
+            floors.append(event_floor)
+    if not floors:
+        return _unbounded(body, limits)
+    bound = min(floors)
+    body.update({"state": "bounded_by_floor", "floor": _exact(bound), "shares": str(_floor(amount / bound))})
     return body
 
 
@@ -517,6 +604,40 @@ def _reset_evidenced(applies_to: str, reset_date: date, terms: Any) -> bool:
     if not isinstance(term, EconomicTerm) or term.status != "admitted" or term.effective_at is None:
         return False
     return _as_date(term.effective_at, "economic_term.effective_at") >= reset_date
+
+
+def _count_evidence(reset_date: date, terms: Any) -> tuple[str, ...]:
+    """The admitted COUNT terms dated on or after a past reset (audit M2).
+
+    A reset that adjusts the share count states two facts, not one: the new
+    price AND the new count.  Only an admitted ``shares_per_instrument`` or
+    ``instruments_outstanding`` term dated on or after the reset date evidences
+    the second one; the pre-reset count is never carried across a reset that
+    changed it, because that would report the pre-reset supply as a fact.
+    """
+    if not isinstance(terms, Mapping):
+        return ()
+    evidenced: list[str] = []
+    for name in COUNT_TERM_NAMES:
+        term = terms.get(name)
+        if not _is_admitted_value(term) or term.effective_at is None:
+            continue
+        if _as_date(term.effective_at, "economic_term.effective_at") >= reset_date:
+            evidenced.append(name)
+    return tuple(evidenced)
+
+
+def _evidenced_count(terms: Any) -> Fraction | None:
+    """The share count the admitted count terms state, or ``None`` if incomplete."""
+    if not isinstance(terms, Mapping):
+        return None
+    count = Fraction(1)
+    for name in COUNT_TERM_NAMES:
+        term = terms.get(name)
+        if not _is_admitted_value(term):
+            return None
+        count *= _known(term.value, f"economic_term[{name}].value")
+    return count
 
 
 def apply_resets(
@@ -574,6 +695,30 @@ def apply_resets(
                 )
             past.append(event.reset_date)
             trace.append((f"past_reset_{event.reset_date}", "evidenced_by_admitted_term"))
+            if event.share_adjustment != "none" and count is not None:
+                # M2: the reset changed the count, so the count is a second fact
+                # that needs its own evidence.  Without it the row is Unknown and
+                # never the pre-reset count.
+                evidenced_names = _count_evidence(reset_date, terms)
+                if not evidenced_names:
+                    return TermResult(
+                        value=None,
+                        count=count,
+                        unknown=_unknown(
+                            f"reset_share_adjustment_not_evidenced_{inst}_{reset_date.isoformat()}",
+                            f"the {event.reset_date} reset of instrument {inst} is already past and adjusts the "
+                            f"share count ({event.share_adjustment}), but no admitted count term dated on or after "
+                            "it states the adjusted count",
+                            f"an admitted shares_per_instrument or instruments_outstanding term for instrument "
+                            f"{inst} with an effective_at on or after {reset_date.isoformat()}",
+                            AFFECTS_PRICE,
+                        ),
+                        trace_items=tuple(trace),
+                    )
+                adjusted = _evidenced_count(terms)
+                if adjusted is not None:
+                    count = adjusted
+                trace.append((f"past_reset_count_{event.reset_date}", ",".join(evidenced_names)))
             continue
         if reset_date > horizon_end:
             future.append(event.reset_date)
@@ -770,6 +915,26 @@ def accreted_amount(
     stated figure at its own date, because a stated accrued amount is a fact and
     re-deriving it from the start date would be a second, possibly different,
     reading of the same contract.
+
+    ``periodic`` compounds on a grid that is ALWAYS anchored to
+    ``accrual_start``: the boundaries are ``accrual_start + k × period_months``
+    and an evidenced amount never moves them (audit M1).  A stated balance is a
+    fact about the BALANCE, not about the contract's compounding dates, so it
+    re-bases the balance inside its own anchored period:
+
+    * ``B`` = principal + the evidenced amount, stated at ``s``;
+    * ``[p0, p1)`` is the anchored period containing ``s``;
+    * the period's opening balance is ``Pk = B / (1 + r × yf(p0, s))``, so the
+      evidence is read as the opening balance plus simple interest to ``s``;
+    * the balance at ``p1`` is ``B + Pk × r × yf(s, p1)`` — simple interest on
+      that opening balance, from ``s`` to the period end;
+    * from ``p1`` the balance compounds on the anchored grid.
+
+    An ``s`` exactly on a boundary gives ``yf(p0, s) = 0``, so ``Pk = B`` and the
+    period compounds normally.  A partial final period earns SIMPLE interest on
+    the RUNNING balance, never on the original principal (audit M1b): interest
+    already compounded into the balance keeps earning, which is what compounding
+    means.
     """
     _require(isinstance(accrual, Accrual), "accreted_amount.accrual: an Accrual is required")
     _require(isinstance(principal, Fraction), "accreted_amount.principal: an exact Fraction is required")
@@ -785,8 +950,10 @@ def accreted_amount(
             )
         )
     rate = rate / 100
-    cursor = _as_date(accrual.accrual_start, "accrual.accrual_start")
+    start = _as_date(accrual.accrual_start, "accrual.accrual_start")
+    cursor = start
     evidenced = Fraction(0)
+    evidenced_at: date | None = None
     trace: list[tuple[str, str]] = [
         ("accrual_day_count", accrual.day_count),
         ("accrual_compounding", accrual.compounding),
@@ -800,6 +967,7 @@ def accreted_amount(
         stated_at = None
         if accrued_term.effective_at is not None:
             stated_at = _as_date(accrued_term.effective_at, "economic_term.effective_at")
+            evidenced_at = stated_at
         if stated_at is None:
             return TermResult(
                 unknown=_unknown(
@@ -818,18 +986,37 @@ def accreted_amount(
         accrued = evidenced + principal * rate * _year_fraction(cursor, end_date, accrual.day_count)
     else:
         assert accrual.period_months is not None
+        period_months = accrual.period_months
         amount = principal + evidenced
+        # M1: the grid is anchored to accrual_start, never stepped from the
+        # evidenced date.
+        period_start = start
+        if evidenced_at is not None:
+            while _add_months(period_start, period_months) <= evidenced_at:
+                period_start = _add_months(period_start, period_months)
+            trace.append(("accrual_evidenced_period_start", period_start.isoformat()))
+        trace.append(("accrual_period_grid_anchored_at", start.isoformat()))
         periods = 0
         while True:
-            boundary = _add_months(cursor, accrual.period_months)
+            boundary = _add_months(period_start, period_months)
+            # The opening balance of the anchored period that contains `cursor`.
+            # With no evidence cursor == period_start, so this is the running
+            # balance and the step is ordinary compounding.
+            opening = amount / (
+                Fraction(1) + rate * _year_fraction(period_start, cursor, accrual.day_count)
+            )
+            if evidenced_at is not None and periods == 0:
+                trace.append(("accrual_evidenced_period_opening_balance", _exact(opening)))
             if boundary > end_date:
+                # M1b: the partial final period is simple interest on the RUNNING
+                # balance — the period's opening balance — never on principal.
+                amount = amount + opening * rate * _year_fraction(cursor, end_date, accrual.day_count)
                 break
-            amount = amount * (Fraction(1) + rate * _year_fraction(cursor, boundary, accrual.day_count))
-            cursor = boundary
+            amount = amount + opening * rate * _year_fraction(cursor, boundary, accrual.day_count)
             periods += 1
+            period_start = boundary
+            cursor = boundary
         trace.append(("accrual_periods_compounded", str(periods)))
-        # The final partial period is simple, on principal only.
-        amount = amount + principal * rate * _year_fraction(cursor, end_date, accrual.day_count)
         accrued = amount - principal
     trace.append(("accrued_amount", _exact(accrued)))
     owed = principal + accrued
@@ -995,6 +1182,7 @@ __all__ = [
     "apply_resets",
     "component_price",
     "condition_met",
+    "exact_decimal",
     "exchange_cap_remaining",
     "formula_price",
     "maximum_issuable",
