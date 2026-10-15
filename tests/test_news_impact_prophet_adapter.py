@@ -972,8 +972,11 @@ def test_range_quantity_projects_with_exact_bound() -> None:
 
 
 def test_range_bound_present_is_carried() -> None:
+    # A bound on a range is outside news_impact_event.v1; the adapter keeps one as given
+    # and leaves the judgment to output validation.
     event = _w1_range()
     event["incremental_amount"]["bound"] = "approximately"
+    assert not validate_event(event).ok
     got = build_prophet_evidence(event, listing=LISTING)
     _assert_valid(got.to_dict())
     assert _quantity(got, "incremental_amount")["bound"] == "approximately"
@@ -1003,6 +1006,192 @@ def test_point_missing_key_is_coded(key: str) -> None:
         build_prophet_evidence(event, listing=LISTING)
     assert ei.value.code == "MISSING_REQUIRED_FIELD"
     assert str(ei.value).endswith(f"incremental_amount.{key}")
+
+
+def _range_of(point: dict, slot: str, low: float, high: float, **overrides) -> dict:
+    """A v1 quantity_range carrying a point's unit, currency, basis, period, negation and evidence."""
+    quantity = {
+        "form": "range",
+        "low": low,
+        "high": high,
+        **{k: copy.deepcopy(point[k]) for k in ("unit", "currency", "basis", "period", "negated", "evidence")},
+    }
+    quantity["period"]["subject"] = f"{slot}.period"
+    quantity.update(overrides)
+    return quantity
+
+
+def test_remaining_authorization_range_projects() -> None:
+    event = _worked("W1")
+    point = event["remaining_authorization"]
+    event["remaining_authorization"] = _range_of(point, "remaining_authorization", 10e9, 20e9)
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    quantity = _quantity(got, "remaining_authorization")
+    assert (quantity["form"], quantity["bound"], quantity["basis"]) == ("range", "exact", "total")
+    _assert_en_zh(got)
+
+
+def test_executed_amount_range_routes_t1_execution() -> None:
+    event = _worked("W1")
+    event["commitment_status"] = "executed"
+    point = event["incremental_amount"]
+    event["executed_amount"] = _range_of(point, "executed_amount", 10e9, 12e9, basis="total")
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert got.to_dict()["glance"]["template_id"] == "T1_execution"
+    assert _quantity(got, "executed_amount")["bound"] == "exact"
+    assert "已买回100亿美元–120亿美元" in _assert_en_zh(got)["zh"]["subtitle"]
+
+
+@pytest.mark.parametrize("cid", ["W3", "R2"])
+def test_t2_worked_range_needs_cluster_grain(cid: str) -> None:
+    # The worked T2 cases leave cluster_grain out, which v1 allows and the adapter refuses.
+    event = _worked(cid)
+    assert "cluster_grain" not in event
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "MISSING_REQUIRED_FIELD"
+    assert str(ei.value).endswith("cluster_grain")
+
+
+@pytest.mark.parametrize(("cid", "zh"), [("W3", "460亿美元–465亿美元"), ("R2", "200亿美元–210亿美元")])
+def test_t2_worked_range_projects_with_cluster_grain(cid: str, zh: str) -> None:
+    event = _worked(cid)
+    event["cluster_grain"] = "fact_revision"
+    assert event["stated_amount"]["form"] == "range"
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    quantity = _quantity(got, "stated_amount")
+    assert (quantity["form"], quantity["bound"]) == ("range", "exact")
+    assert zh in _assert_en_zh(got)["zh"]["subtitle"]
+
+
+def test_t3_stated_quantity_range_projects() -> None:
+    # T3 copy shows no amount slot, so the range is checked in the projection only.
+    event = _worked("W5")
+    event["economic_claim_class"] = "funded_demand"
+    point = _worked("W1")["incremental_amount"]
+    event["stated_quantity"] = _range_of(
+        point, "stated_quantity", 2, 3, unit="GW", currency="NA", basis="total"
+    )
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert got.to_dict()["glance"]["template_id"] == "T3_milestone"
+    assert _quantity(got, "stated_quantity") == {
+        "slot": "stated_quantity",
+        "form": "range",
+        "low": 2,
+        "high": 3,
+        "bound": "exact",
+        "unit": "GW",
+        "currency": "NA",
+        "basis": "total",
+    }
+    _assert_en_zh(got)
+
+
+def test_range_low_equals_high() -> None:
+    event = _w1_range(150e9, 150e9)
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    assert "1500亿美元–1500亿美元" in _assert_en_zh(got)["zh"]["subtitle"]
+
+
+def test_range_non_usd_unit() -> None:
+    event = _w1_range()
+    event["incremental_amount"].update(unit="EUR", currency="EUR")
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    quantity = _quantity(got, "incremental_amount")
+    assert (quantity["unit"], quantity["currency"], quantity["bound"]) == ("EUR", "EUR", "exact")
+    _assert_en_zh(got)
+
+
+def _long_unit_pair(unit: str) -> tuple[dict, dict]:
+    ranged = _w1_range(100, 150)
+    ranged["incremental_amount"].update(unit=unit, currency="NA")
+    pointed = _worked("W1")
+    pointed["incremental_amount"].update(value=150, unit=unit, currency="NA")
+    return ranged, pointed
+
+
+def test_long_unit_range_refused_at_build() -> None:
+    # prophet_evidence.v1 caps amount_plain at 48 characters and the adapter checks it when
+    # it builds; a range that overruns it is refused exactly as a point would be.
+    ranged, pointed = _long_unit_pair("metric tons of copper equivalent")
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(ranged, listing=LISTING)
+    assert ei.value.code == "SLOT_TOO_LONG"
+    got = build_prophet_evidence(pointed, listing=LISTING)
+    _assert_valid(got.to_dict())
+    render_glance_copy(got)
+
+
+def test_long_unit_range_refused_at_render() -> None:
+    # copy_templates.v1 caps the subtitle words and only render_glance_copy checks it: the
+    # range builds and validates, and its copy is refused when rendered.
+    ranged, pointed = _long_unit_pair("bbl of crude oil eq")
+    got = build_prophet_evidence(ranged, listing=LISTING)
+    _assert_valid(got.to_dict())
+    with pytest.raises(ProphetAdapterError) as ei:
+        render_glance_copy(got)
+    assert ei.value.code == "SLOT_TOO_LONG"
+    got = build_prophet_evidence(pointed, listing=LISTING)
+    _assert_valid(got.to_dict())
+    render_glance_copy(got)
+
+
+@pytest.mark.parametrize("bound", [None, "", "bogus"])
+def test_range_falsy_or_unknown_bound_fails_output_validation(bound) -> None:
+    event = _w1_range()
+    event["incremental_amount"]["bound"] = bound
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "SCHEMA_VIOLATION"
+
+
+def test_quantity_missing_form_is_coded() -> None:
+    event = _w1_range()
+    del event["incremental_amount"]["form"]
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "MISSING_REQUIRED_FIELD"
+    assert str(ei.value).endswith("incremental_amount.form")
+
+
+@pytest.mark.parametrize("form", ["interval", None])
+def test_quantity_unknown_form_is_coded(form) -> None:
+    event = _w1_range()
+    event["incremental_amount"]["form"] = form
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(event, listing=LISTING)
+    assert ei.value.code == "SCHEMA_VIOLATION"
+    assert str(ei.value).endswith("incremental_amount.form")
+
+
+@pytest.mark.parametrize(
+    "overrides", [{"negated": True}, {"low": -150e9, "high": -100e9}], ids=["negated", "negative"]
+)
+def test_negated_and_negative_range_project(overrides: dict) -> None:
+    # Projection only: how copy should phrase a negated or negative range is an owner question.
+    event = _w1_range()
+    event["incremental_amount"].update(overrides)
+    assert validate_event(event).ok
+    got = build_prophet_evidence(event, listing=LISTING)
+    _assert_valid(got.to_dict())
+    quantity = _quantity(got, "incremental_amount")
+    assert (quantity["form"], quantity["bound"]) == ("range", "exact")
+    assert (quantity["low"], quantity["high"]) == (
+        event["incremental_amount"]["low"],
+        event["incremental_amount"]["high"],
+    )
 
 
 # ---------------------------------------------------------------- transfer / thesis

@@ -495,7 +495,10 @@ def _require_quantity_keys(slot: str, raw: Mapping[str, Any], keys: tuple[str, .
 
 
 def _project_quantity(slot: str, raw: Mapping[str, Any]) -> dict[str, Any]:
-    form = raw.get("form")
+    _require_quantity_keys(slot, raw, ("form",))
+    form = raw["form"]
+    if form not in {"point", "range", "absent"}:
+        raise ProphetAdapterError("SCHEMA_VIOLATION", f"{slot}.form")
     if form == "absent":
         absence = raw.get("absence") or {}
         return {"slot": slot, "form": "absent", "absence": _absence_dict(absence)}
@@ -507,7 +510,8 @@ def _project_quantity(slot: str, raw: Mapping[str, Any]) -> dict[str, Any]:
             "form": "range",
             "low": raw["low"],
             "high": raw["high"],
-            "bound": raw.get("bound") or RANGE_BOUND,
+            # A bound the input carries is kept as given; output validation judges it.
+            "bound": raw["bound"] if "bound" in raw else RANGE_BOUND,
             "unit": raw["unit"],
             "currency": raw["currency"],
             "basis": raw["basis"],

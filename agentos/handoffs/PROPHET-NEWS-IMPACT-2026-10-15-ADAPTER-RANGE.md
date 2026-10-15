@@ -18,14 +18,19 @@ state_before: >
 changed:
   - path: engine/news_impact/prophet_adapter.py
     what: >
-      ADAPTER_VERSION ni-prophet-adapter-2. A range projects bound
-      raw.get("bound") or RANGE_BOUND ("exact"); range and point quantities check the
-      keys they read and raise ProphetAdapterError MISSING_REQUIRED_FIELD "<slot>.<key>".
+      ADAPTER_VERSION ni-prophet-adapter-2. A range with no bound key projects
+      RANGE_BOUND ("exact"); a bound key present is carried as given and judged by output
+      validation. Every quantity checks form (missing: MISSING_REQUIRED_FIELD, unknown:
+      SCHEMA_VIOLATION), and range and point quantities check the keys they read and raise
+      MISSING_REQUIRED_FIELD "<slot>.<key>".
   - path: tests/test_news_impact_prophet_adapter.py
     what: >
-      A W1 variant whose incremental_amount is a v1 range that validate_event accepts:
-      full projected dict, English and Chinese copy, carried bound, adapt_batch path, and
-      a coded error for every missing range and point key.
+      Range quantities that validate_event accepts on every template slot: W1
+      incremental_amount and remaining_authorization, executed_amount (T1_execution), the
+      worked T2 ranges W3 and R2 with and without cluster_grain, T3 stated_quantity; low
+      equal to high, a non-USD unit, negated and negative ranges, carried and invalid
+      bounds, the build-time 48-character refusal and the render-time word-budget
+      refusal, and coded errors for every missing or unknown key including form.
   - path: tests/test_news_impact_producer_facts.py
     what: >
       The stage-two range test now expects Prophet evidence for both events and no crash;
@@ -42,11 +47,11 @@ changed:
 verified:
   - claim: The adapter tests pass, and the new tests discriminate.
     command: PYTHONPATH=. python3.12 -m pytest tests/test_news_impact_prophet_adapter.py -q, then the same file against the ni-prophet-adapter-1 module
-    result: 90 passed; 12 of the 13 new tests fail on the previous adapter (the carried-bound test passes on both by design).
+    result: 109 passed; 12 of the 13 first-round tests fail on the previous adapter (the carried-bound test passes on both by design).
   - claim: The whole news_impact suite passes after merging origin/main.
     command: PYTHONPATH=. python3.12 -m pytest tests/test_news_impact_*.py -q
     result: >
-      1202 passed, 2 skipped on the merge of origin/main 53750adc. The skips are
+      1221 passed, 2 skipped on the merge of origin/main 53750adc. The skips are
       pre-existing: a raw-byte case invisible after json.loads, and the issuer ledger test
       that needs data/ in a sparse worktree.
   - claim: Stage two on the four W3 shadow event files projects every range.
@@ -57,7 +62,21 @@ verified:
       Graded fam_a adapter ok 125 and SLOT_TOO_LONG 2 (was ok 91, crash 34); graded fam_b
       ok 88 (was 61, crash 27); queue fam_a ok 12 (was 11); queue fam_b ok 7 (was 6). The
       runs project 34, 27, 1 and 1 range quantities, all bound exact; the longest range
-      amount slot is 29 characters against a limit of 48.
+      amount slot is 29 characters against a limit of 48, and render_glance_copy refuses
+      none of the 231 records (63 ranges). The shadow files stay in scratch and cannot be
+      reproduced from the repository; the tests are the committed falsifier.
+  - claim: An independent review of the diff, and the repairs it asked for.
+    command: >
+      Fabric review lane W3R_ADAPTER_RANGE_REVIEW_ubuntu1_v1 (review class, bailian
+      qwen3.8-max, ubuntu1, read-only); the seat checked each defect against the code.
+    result: >
+      REQUEST_REPAIR with five change-attributable defects, all answered in the second
+      commit: D1 a long-unit range refused at build or render is now a documented scoped
+      refusal, pinned by tests, with the DEC's rejected-alternative wording corrected;
+      D2 range tests added on every template slot and both worked T2 ranges; D3 a bound key
+      present is carried as given and judged by output validation; D4 form is checked and
+      coded; D5 the DEC says the shadow figures are scratch-held. Six pre-existing findings
+      are recorded below as owner notes.
   - claim: No filing text, headline, entity name or dollar figure is added.
     command: the DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE rights grep on every new file and on the added lines of every changed file
     result: no matches.
@@ -65,11 +84,6 @@ verified:
     command: python3 scripts/agentos.py validate
     result: exit 0
 unverified:
-  - claim: An independent review of the diff.
-    what_would_verify: >
-      The fabric review lane W3R_ADAPTER_RANGE_REVIEW_ubuntu1_v1 (review class, bailian
-      qwen3.8-max, ubuntu1, read-only) writes REVIEW/VERDICT.md; the seat judges it against
-      the code and records the verdict on the pull request before merging.
   - claim: The CI run on this pull request and its landing.
     what_would_verify: Concluded-green checks, gh pr merge --squash --match-head-commit, and a per-path blob comparison against a freshly fetched origin/main. No CI-authority path changes, so no main baseline is owed.
   - claim: Any adjudicated fact log or measured Prophet evidence.
@@ -79,6 +93,10 @@ unresolved:
   - "format_amount scales a range by its high value, so a low on a smaller scale than the high reads in the high's scale; the tests use same-scale ranges."
   - "Next prompt version: the enum lists, cross-field rules and executed_amount split (DSC:NEWS-IMPACT-LABEL-CONTRACT-COHERENCE)."
   - "Owner notes carried from stage two: the adapter requires cluster_grain, which the event schema leaves optional; event span_id allows 128 characters but fact_log expects span_ plus 20 hex; object_name allows 120 in events and 80 in fact keys; the T2 baseline carries no evidence; append_records revalidates the whole log on each call."
+  - "Owner notes from the adapter review (pre-existing, not changed here): a negative amount renders with a doubled sign; a negated quantity renders as positive copy; SCHEMA_VIOLATION messages echo input values (producer_facts records codes and classes only); SUPERSEDED copy leaves a placeholder unfilled; a quantity's own evidence span never reaches source_spans; the five T2 worked cases lack cluster_grain, which the adapter requires."
+  - "The copy word budget is enforced only in render_glance_copy, so build_prophet_evidence, adapt_batch and the stage-two producer accept a record whose copy is refused when rendered; none of the 231 shadow records hits it."
+  - "A range repeats its unit per endpoint, so a long unit reaches the 48-character or word budget sooner than a point; a compact range format is a copy question for the A7 owner."
+  - "Other notes: stage one (producer.py) drops a bound a labeler puts on a range and counts it range_bound_dropped, because v1 has no bound field, so that hedge is the one a later event version would keep; non-USD amounts render unscaled; the T1_authorization subtitle omits remaining_plain; T3 copy never renders the quantity."
 next_actions:
   - Merge this PR on concluded green with --match-head-commit and verify landing per path.
   - "After 2026-10-19 05:16Z: the GLM third family on the 12 queue and 157 graded cases, stage one in adjudicated mode, stage two on its events, and the section 11 quality/cost report."
