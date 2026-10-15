@@ -97,6 +97,30 @@ class ArtifactConsistencyTests(unittest.TestCase):
         self.assertEqual(a["status"], "INCOMPLETE")
         self.assertIn("SITE_ENVELOPE_MISSING", {x["code"] for x in a["findings"]})
 
+    def test_native_verdict_date_is_lost_by_compact_plane(self):
+        d = artifacts()
+        d["world_state"] = {
+            "produced_at": "2026-10-14T19:32:19Z",
+            "verdict": {"asof": "2026-10-13", "score": 50,
+                        "freshness": {"any_input_stale": True}},
+        }
+        result = audit(d)
+        matches = [x for x in result["findings"]
+                   if x["code"] == "VERDICT_SOURCE_SESSION_LOST"]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]["native_verdict_session"], "2026-10-13")
+        self.assertEqual(matches[0]["plane_label_session"], "2026-10-14")
+        self.assertEqual(matches[0]["classification"], "confirmed_source_date_not_projected")
+        self.assertFalse(matches[0]["asserts_stale_at_production"])
+
+    def test_native_verdict_source_date_carried_means_no_loss(self):
+        d = artifacts()
+        d["world_state"] = {"produced_at": "2026-10-14T19:32:19Z",
+                            "verdict": {"asof": "2026-10-13", "score": 50}}
+        d["market_plane"]["verdict"]["source_session"] = "2026-10-13"
+        self.assertNotIn("VERDICT_SOURCE_SESSION_LOST",
+                         {x["code"] for x in audit(d)["findings"]})
+
     def test_source_health_remains_independent_of_market_score(self):
         a = audit(artifacts())
         codes = {x["code"] for x in a["findings"]}
