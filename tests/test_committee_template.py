@@ -57,3 +57,30 @@ def test_every_getelementbyid_target_exists():
         f"getElementById targets absent from the static DOM: {missing} — "
         "add to DYNAMIC_ID_ALLOWLIST only if the id is really created at runtime"
     )
+
+def test_ror1_market_plane_native_source_date_has_paired_display_contract():
+    """The existing Committee strip must not silently turn build time into source date."""
+    src = _src()
+    site = TEMPLATE.parent.parent / "site" / "committee.html"
+    published = site.read_text(encoding="utf-8")
+    marker = "  function renderMarketPlane(d) {"
+    end = "  // ── NW read layer: Web Health panel"
+
+    def renderer(full: str) -> str:
+        start_at = full.index(marker)
+        end_at = full.index(end, start_at)
+        return full[start_at:end_at]
+
+    template_renderer = renderer(src)
+    assert template_renderer == renderer(published), "Committee site and template renderer diverged"
+    assert "v.source_session" in template_renderer
+    assert "sf.any_input_stale === true" in template_renderer
+    assert "Source date unverified" in template_renderer
+    assert "来源日期未核实" in template_renderer
+    assert "Some inputs late" in template_renderer
+    assert "部分输入延迟" in template_renderer
+    assert "Input freshness unverified" in template_renderer
+    assert "输入新鲜度未核实" in template_renderer
+    assert "d.stale === true" in template_renderer  # original whole-plane signal
+    assert "new Date(sourceDay" in template_renderer  # closed date validation
+    assert "var VERDICT_COL" in template_renderer  # original score/color path untouched
