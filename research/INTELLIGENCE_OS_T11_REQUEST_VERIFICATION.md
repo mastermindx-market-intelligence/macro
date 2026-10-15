@@ -46,8 +46,15 @@ A recorded verdict does not self-admit source context to the offline scorer.
 
 This is a bounded source composition, not completion of T11. Installed execution
 and actual same-request log consumption must be qualified after lawful release.
-The eleven-file follow-on probe binds the direct caller/checker/log sources, but
-its two CLI observations do not establish live numeric-verifier execution.
+The twelve-file follow-on probe binds the direct caller/checker/log sources and
+`app/deploy/update.sh`, but its two CLI observations do not establish live
+numeric-verifier execution. After the normal updater installs the qualified
+release, separately verify the installed updater copy and the actual
+`macro-api.service` and `admin.service` processes. An installed source hash or an
+admin PID alone does not prove that the native caller loaded the new source.
+Correlate one actual native request with its internal log row and existing
+operator-reader consumption. Follow the source-binding and observation procedure
+in `research/evidence/eval-os-tier-query-20261014/release-probe/README.md`.
 General model narratives remain outside the exact native renderer subset. The
 earlier authenticated native browser observation demonstrates one real receipt/
 answer path; it does not independently bind installed source or supply historical
