@@ -1243,6 +1243,18 @@ def auto_profile(root: Path = ROOT, config_path: Path | None = None) -> int:
         return 0
 
     if sparse_enabled(root):
+        # core.sparseCheckout=true is only a config bit. A missing/invalid
+        # info/sparse-checkout file causes git sparse-checkout list to warn
+        # that this worktree is not sparse, while heavy tracked files remain.
+        # Fail closed rather than claiming success or rewriting an existing
+        # or resumed worker's index.
+        rules = _git(root, "sparse-checkout", "list")
+        if not rules:
+            print("worktree-sparse: inconsistent sparse state — "
+                  "core.sparseCheckout is true but Git has no readable "
+                  "sparse rules; refusing to change this checkout",
+                  file=sys.stderr)
+            return 1
         print("worktree-sparse: auto skipped — linked worktree is already sparse; "
               "preserving its current selection")
         return 0
