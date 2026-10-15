@@ -137,6 +137,12 @@ unverified:
   what_would_verify: Normal deployment followed by installed identity, authenticated actual consumers, natural
     update receipts and the real operator response.
 unresolved:
+- T11 operator ingestion is host-local. Metadata-only VPS observation on 2026-10-15 at10:39Z
+  found an active admin process but response_log.jsonl last modified 2026-09-13; no matching
+  systemd/cron configuration names were found in the bounded scan. The list API does not
+  ingest, and the weekly Mac Studio workflow does not update the VPS ledger. Use the existing
+  operator ingestion path for postrelease consumption and label any manual ingestion truthfully;
+  it does not prove natural QLedger owner progression. No row contents or outcomes were read.
 - Original historical20/15 objective and historical source availability remain open.
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.

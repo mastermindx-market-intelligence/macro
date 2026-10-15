@@ -67,3 +67,6 @@ which does not establish ingestion on the admin host. Verify the actual ingestio
 path and host before relying on the list route. Keep sink publication and operator
 consumption separate if that path is absent. Do not dispatch a model judge, force
 the normal owner or reset source clocks to manufacture this evidence.
+The existing operator “Refresh from R2” action ingests response rows without a
+model judge. If used for the operator-consumption leg, record it as manual
+ingestion; it cannot satisfy the separate natural QLedger owner-progression leg.
