@@ -35,6 +35,12 @@ changed:
   what: Add official SNB announcement diagnostic for quotation direction, rate units, threshold scope, interval
     width and commitment limits; answer excludes oracle.
 verified:
+- claim: Ordinary A1 source publication retains canonical capacity and exact carrier custody without waiting on unrelated PR custody.
+  command: Retained GET-only admission observer repair; seven boundary controls and four transport controls.
+  result: The historical09:53 admission with seven proofs and PR9209 as indexed lease owner remains admitted;
+    full capacity, unindexed reservation, same-A1 lease, changed head, closed carrier and conflict remain refused.
+    Recent inline readers had added an unsupported no-owner condition. No prior full-capacity defer changes and
+    no controller refresh, lease mutation or merge authority changes. See admission-helper-correction-20261015.json.
 - claim: The existing context compiler consumes the real T12 Discovery on published follow-on source.
   command: python3 scripts/agentos.py compile-context --workstream EVAL-OS-EVIDENCE-VIEW --json
   result: On3a6a5be the exact whitehouse Discovery appears once as A3 scoped evidence with its source locator;
@@ -164,7 +170,8 @@ unresolved:
 - Current A1 head939b original CI38773271071 passed; canonical original terminal evidence is consumed.
   All26 check runs are canonically binding-clean at18:08; incumbent freshness/merge and production remain separate.
 next_actions:
-- Publish local b4ff two-input correction on the original A1 carrier only after fresh capacity/custody admission;
+- Publish local b4ff two-input correction after fresh canonical capacity and same-A1 custody admission; an indexed
+  lease on another PR is counted once and is not itself an A1 source-publication hold;
   if the incumbent refreshed first, apply those two additions to its verified successor. Fresh binding CI and
   incumbent merge remain required. No second manual base integration.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
