@@ -69,7 +69,22 @@
           {% if s.track_record.sample_dates %}<p>{{ words('Sample dates','样本日期') }}: {{ s.track_record.sample_dates|join(' · ')|e }}</p>{% endif %}
           {% if s.track_record.qualification_notes %}<p>{{ s.track_record.qualification_notes|e }}</p>{% endif %}
           <p class="intl-history__muted">{{ words('Counts are source-reported. No success rate is inferred.','数量由来源报告，未据此推算成功率。') }}</p>
-        {% else %}<p>{{ words('A qualified forward record is unavailable. A failed read does not establish an empty record.','暂无符合条件的前瞻记录。读取失败不代表记录为空。') }}</p>{% endif %}
+        {% else %}
+          <p>{{ words('A qualified forward record is unavailable.','暂无符合条件的前瞻记录。') }}</p>
+          {% if s.track_record.status == 'denied' %}<p>{{ words('Forward record withheld.','前瞻记录未披露。') }}</p>
+          {% elif s.track_record.status == 'unknown' %}<p>{{ words('Forward-record disclosure is unknown.','前瞻记录的披露状态未知。') }}</p>
+          {% else %}
+            {% set track_reasons = {
+              'not_supplied': ['No forward record supplied.','未提供前瞻记录。'],
+              'wrong_market': ['The supplied forward record does not match this market.','已提供的前瞻记录与此市场不匹配。'],
+              'read_health_failed': ['The forward record could not be read. A failed read does not establish an empty record.','无法读取前瞻记录。读取失败不代表记录为空。'],
+              'read_health_missing': ['The forward-record source is missing.','缺少前瞻记录来源。'],
+              'read_health_invalid': ['The forward-record source is invalid.','前瞻记录来源无效。'],
+              'read_health_unsupported': ['The forward-record source is unsupported.','不支持此前瞻记录来源。'] } %}
+            {% set track_reason = track_reasons.get(s.track_record.reason) %}
+            {% if track_reason %}<p>{{ words(track_reason[0],track_reason[1]) }}</p>{% endif %}
+          {% endif %}
+        {% endif %}
         </section>
       </article>
       {% endfor %}

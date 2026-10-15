@@ -125,6 +125,61 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
 }
 
 let staleMacroComponentHtml;
+let historyTrackFixture;
+function historyForwardRecordFixture() {
+  if(!historyTrackFixture) historyTrackFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+import json
+from engine.intl_inputs import countries
+from tests.test_intl_workspace_history_render import TRACK_CASES, track_source
+from tests.test_intl_workspace_integration import render_history_fixture
+kinds = ['available','metadata_denied','value_unknown','not_supplied','wrong_market','failed','zero']
+cases = [dict(market=market, kind=kind, expected=TRACK_CASES[kind]) for market, kind in zip(countries(), kinds)]
+assert len(cases) == len(kinds)
+sources = {case['market']: track_source(case['kind'], case['market']) for case in cases}
+print(json.dumps(dict(html=render_history_fixture(history_sources=sources), cases=cases)))
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return historyTrackFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`History forward record keeps disclosure and zero counts distinct ${theme} ${lang}`,async()=>{
+    const fixture=historyForwardRecordFixture();
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const panel=page.locator('[data-im-history-panel]');
+      const picker=panel.locator('select[data-im-action="select_market"]');
+      for(const {market,kind,expected} of fixture.cases) {
+        await picker.selectOption(market);
+        const article=panel.locator(`[data-im-history-market="${market}"]`);
+        const track=article.locator('.intl-history__track');
+        assert.equal(await track.isVisible(),true);
+        const text=await track.innerText();
+        assert.ok(text.includes(expected[lang==='en'?0:1]),JSON.stringify({market,kind,lang,text}));
+        const available=['available','zero'].includes(kind);
+        assert.deepEqual(await track.locator('dd').allTextContents(),available?(kind==='zero'?['0','0']:['4','1']):[]);
+        assert.equal(text.includes('2026-01-15'),available);
+        assert.equal(text.includes('forward_log independent read'),available);
+        assert.equal(/A failed read|读取失败/.test(text),kind==='failed');
+        assert.equal(await article.locator('.intl-history__timeline').count(),1);
+        assert.equal(await article.locator('[data-im-history-status]').innerText(),lang==='en'?'Recomputed observations':'重新计算的观测');
+        for(const width of [320,1440]) {
+          await page.setViewportSize({width,height:900});
+          assert.equal(await track.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${kind} ${lang} ${width}`);
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+          if(width===320&&kind==='metadata_denied'&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+            fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+            await page.evaluate(()=>document.fonts.ready);
+            await track.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+            await track.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`history-forward-record-${theme}-${lang}-320.png`)});
+          }
+        }
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=history'});
+  });
+}
+
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture

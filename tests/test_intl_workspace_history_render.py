@@ -142,3 +142,61 @@ def test_event_disclosure_state_is_not_reported_as_empty_history(kind):
     assert 'Recomputed observations' in article.get_text()
     assert '2026-01-03T00:00:00.123456789+09:00' in article.get_text()
     assert source == before
+
+
+TRACK_CASES = {
+    'metadata_denied': ('Forward record withheld.', '前瞻记录未披露。'),
+    'value_denied': ('Forward record withheld.', '前瞻记录未披露。'),
+    'metadata_unknown': ('Forward-record disclosure is unknown.', '前瞻记录的披露状态未知。'),
+    'value_unknown': ('Forward-record disclosure is unknown.', '前瞻记录的披露状态未知。'),
+    'not_supplied': ('No forward record supplied.', '未提供前瞻记录。'),
+    'wrong_market': ('The supplied forward record does not match this market.', '已提供的前瞻记录与此市场不匹配。'),
+    'failed': ('The forward record could not be read. A failed read does not establish an empty record.', '无法读取前瞻记录。读取失败不代表记录为空。'),
+    'missing': ('The forward-record source is missing.', '缺少前瞻记录来源。'),
+    'invalid': ('The forward-record source is invalid.', '前瞻记录来源无效。'),
+    'unsupported': ('The forward-record source is unsupported.', '不支持此前瞻记录来源。'),
+    'available': ('Counts are source-reported. No success rate is inferred.', '数量由来源报告，未据此推算成功率。'),
+    'zero': ('Counts are source-reported. No success rate is inferred.', '数量由来源报告，未据此推算成功率。'),
+}
+
+
+def track_source(kind, market='JP'):
+    """Use native input states; no production grant or record is created."""
+    source = event_source('available', market)
+    if kind.startswith('metadata_'):
+        state = kind.removeprefix('metadata_')
+        source['capabilities']['track_record'] = dict(metadata=state, value=state)
+    elif kind.startswith('value_'):
+        source['capabilities']['track_record']['value'] = kind.removeprefix('value_')
+    elif kind == 'not_supplied':
+        source['track_record'] = None
+    elif kind == 'wrong_market':
+        source['track_record']['market_id'] = 'OTHER'
+    elif kind in {'failed', 'missing', 'invalid', 'unsupported'}:
+        source['track_record'].update(read_health=kind, graded_count=0, alert_count=0)
+    elif kind == 'zero':
+        source['track_record'].update(graded_count=0, alert_count=0)
+    return source
+
+
+@pytest.mark.parametrize('kind', TRACK_CASES)
+def test_forward_record_reports_its_own_reason_without_losing_real_zero(kind):
+    source = track_source(kind)
+    before = deepcopy(source)
+    text = render(lambda w, a: a['sources'].update(JP=source))
+    article = BeautifulSoup(text, 'html.parser').select_one('[data-im-history-market="JP"]')
+    track = article.select_one('.intl-history__track')
+    for expected in TRACK_CASES[kind]:
+        assert expected in track.get_text()
+    available = kind in {'available', 'zero'}
+    assert len(track.select('dd')) == (2 if available else 0)
+    if available:
+        assert [n.get_text() for n in track.select('dd')] == (['0', '0'] if kind == 'zero' else ['4', '1'])
+        assert '2026-01-15' in track.get_text()
+    else:
+        assert '2026-01-15' not in track.get_text()
+        assert 'forward_log independent read' not in track.get_text()
+    assert ('A failed read' in track.get_text()) == (kind == 'failed')
+    assert 'MA turn' in article.get_text()
+    assert '2026-01-03T00:00:00.123456789+09:00' in article.get_text()
+    assert source == before
