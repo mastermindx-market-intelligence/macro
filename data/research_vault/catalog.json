@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T09:12:57.210120+00:00",
-  "count": 2947,
+  "generated_at": "2026-10-15T09:27:47.445622+00:00",
+  "count": 2948,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-2vgkwavht24-a7588c",
+      "title": "JPM US Market Intelligence | Afternoon Briefing Oct 14",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T08:52:07Z",
+      "summary_points": [
+        "CPI Surprise & Inflation Pressure: Core CPI at 0.335% MoM (7bp above estimates), largest upside surprise since March 2024, driving hawkish Fed pricing (50% Oct hike probability) and spiking 2Y yields 16bp; core PCE forecast at 0.31% m/m (3.1% yoy) signals persistent inflation.",
+        "AI Credit Fears & Tech Selloff: AI-driven sector rotation triggered by credit distress (CoreWeave -15.5%, ASML memory underperformance), with Semis (SOXX down 6 days) and banks (BAC -5.5%) leading declines; AI credit event concerns fueling spread widening.",
+        "ETF Flow Shifts & Sector Rotation: Capital flowing into energy/growth ETFs (MLPX, IEO, IVF) and global EM ETFs (ACWI, VT, VXUS) amid CPI-driven volatility, while defensives (healthcare/staples) outperformed cyclical tech by 7.0%.",
+        "Fed Rate Probability Volatility: Post-CPI, Oct hike probability surged to 50% (from 20%), then reversed to ~32%; bond yields showed confusion (2Y +2bp, 10Y -2bp), reflecting Fed signal uncertainty and overreaction to inflation data.",
+        "Critical Risk Factors: AI credit fears, tech unwind, earnings misses, and bond/equity volatility spikes threaten post-earnings rally momentum; key catalysts include PPI (0.5% MoM), Retail Sales (0.4% MoM), and Banks earnings (BAC miss, fee income decline)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-aw9qvbltjyw-13f780",
       "title": "Jefferies European Equity Daily",
