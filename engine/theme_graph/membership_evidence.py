@@ -545,3 +545,178 @@ def render_microtheme_research_markdown(report: Mapping[str, Any]) -> str:
     lines.extend("- " + clean(x) for x in report["limitations"])
     lines.extend(["", "Research document digest: " + report["source_digest"], ""])
     return "\n".join(lines)
+
+
+# Source-local identity *diagnostic* for the M1 admission worklist.
+# The Data OS IssuerMaster remains the sole authority for CURRENT issuer-security
+# relationships. A legal-name match here is never an issuer binding, even when unique.
+MICRO_IDENTITY_PREFLIGHT_SCHEMA = "gmi.microtheme_identity_preflight/v1"
+
+
+def build_microtheme_identity_preflight(
+    research: Mapping[str, Any],
+    *,
+    issuer_rows: list[dict],
+    security_rows: list[dict],
+    issuer_snapshot_sha256: str,
+    security_snapshot_sha256: str,
+    crosswalk_path: Path | None = None,
+) -> dict[str, Any]:
+    """Diagnose CURRENT issuer-name hints without minting memberships.
+
+    The caller supplies actual Data OS reference rows, not a second name registry.
+    Qualifying real issuer/security/listing identity, clocks and semantic roles
+    remains with the original Data OS and GMI owners. No network or file writes.
+    """
+    import re
+
+    from lib.dataos.identity import IssuerMaster
+
+    base = build_microtheme_research_evidence(research, crosswalk_path=crosswalk_path)
+    if any(not isinstance(v, str) or re.fullmatch(r"[0-9a-f]{64}", v) is None
+           for v in (issuer_snapshot_sha256, security_snapshot_sha256)):
+        _micro_refuse("unbound identity reference digest")
+    if not isinstance(issuer_rows, list) or not isinstance(security_rows, list):
+        _micro_refuse("identity references must be record lists")
+    if not issuer_rows or not security_rows:
+        _micro_refuse("identity reference rows unavailable")
+
+    try:
+        owner = IssuerMaster.from_records(security_rows)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise ValueError("microtheme identity preflight: Data OS owner reader refused") from exc
+
+    # Current active-issuer source row is a *search candidate*, not a way to
+    # resolve a ticker. Only the incumbent owner determines the existing
+    # currently active security roster; duplicate issuer records fail closed.
+    index: list[tuple[tuple[str, ...], dict[str, Any]]] = []
+    seen_issuers: set[str] = set()
+    omitted_active_names = 0
+    for row in issuer_rows:
+        if not isinstance(row, Mapping):
+            _micro_refuse("invalid issuer reference row")
+        issuer_id, legal_name = row.get("issuer_id"), row.get("legal_name")
+        if not isinstance(issuer_id, str) or not issuer_id.startswith("ISS:") or issuer_id in seen_issuers:
+            _micro_refuse("duplicated or malformed current issuer id")
+        if legal_name is not None and (not isinstance(legal_name, str) or not legal_name.strip()):
+            _micro_refuse("malformed source legal name")
+        seen_issuers.add(issuer_id)
+        if row.get("status") != "active":
+            continue
+        if legal_name is None:
+            # Real Data OS current issuer reference contains legally unnamed
+            # active rows. Exclude from prefix matching, never fabricate a name.
+            omitted_active_names += 1
+            continue
+        security_ids = owner.securities_of_issuer(issuer_id)
+        if not security_ids:
+            continue
+        index.append((
+            tuple(re.findall(r"[^\W_]+", legal_name.casefold())),
+            {"issuer_id": issuer_id, "legal_name": legal_name,
+             "current_security_count": len(security_ids)},
+        ))
+
+    if not index:
+        _micro_refuse("no current issuers with incumbent eligible securities")
+    counts = {
+        "POSSIBLE_ONE_CURRENT_ISSUER": 0,
+        "NO_NAME_PREFIX_IN_REFERENCE": 0,
+        "AMBIGUOUS_NAME_PREFIX": 0,
+        "UNUSABLE_NAME_HINT": 0,
+    }
+    entries: list[dict[str, Any]] = []
+    for row in base["candidates"]:
+        hint = row.get("issuer_name_hint")
+        words = tuple(re.findall(r"[^\W_]+", hint.casefold())) if isinstance(hint, str) else ()
+        # Multi-company conjunctions are not legal issuers. No fuzzy fallback:
+        # "AMD" must NOT match the letters buried in "Camden".
+        usable = (isinstance(hint, str) and bool(words) and len(words[0]) >= 3
+                  and "/" not in hint and " and " not in hint.casefold())
+        matches = [
+            dict(candidate)
+            for legal, candidate in index
+            if usable and legal[:len(words)] == words
+        ]
+        matches.sort(key=lambda item: item["issuer_id"])
+        state = (
+            "UNUSABLE_NAME_HINT" if not usable else
+            "POSSIBLE_ONE_CURRENT_ISSUER" if len(matches) == 1 else
+            "AMBIGUOUS_NAME_PREFIX" if len(matches) > 1 else
+            "NO_NAME_PREFIX_IN_REFERENCE"
+        )
+        counts[state] += 1
+        entries.append({
+            "record_id": row["record_id"], "micro_id": row["micro_id"],
+            "entity_name": row["entity_name"], "issuer_name_hint": hint,
+            "identity_hint_state": state, "possible_current_issuer_refs": matches,
+            "legal_entity_qualification": "NOT_PERFORMED",
+            "canonical_membership_admitted": False,
+            "measurement_eligible": False,
+        })
+    countries = sorted({
+        row.get("country") for row in security_rows
+        if isinstance(row, Mapping) and isinstance(row.get("country"), str)
+    })
+    return {
+        "schema": MICRO_IDENTITY_PREFLIGHT_SCHEMA,
+        "authority_ceiling": "internal_research_candidate_triage_only",
+        "availability": {
+            "state": "CURRENT_SOURCE_HINTS_ONLY_NOT_ADMITTED",
+            "reason": "Name-prefix hints are not Data OS identity proof or product-role curation.",
+        },
+        "research_source_digest": base["source_digest"],
+        "reference": {
+            "issuer_snapshot_sha256": issuer_snapshot_sha256,
+            "security_snapshot_sha256": security_snapshot_sha256,
+            "basis": "CALLER_SUPPLIED_DATAOS_REFERENCE_BYTES_NOT_INDEPENDENTLY_AUTHENTICATED",
+            "point_in_time_issuer_history_available": False,
+            "covered_country_codes": countries,
+            "current_issuer_rows_without_legal_name": omitted_active_names,
+        },
+        "counts": {
+            "activity_records": len(entries),
+            "micro_definitions": base["counts"]["micro_definitions"],
+            "identity_hint_states": counts,
+            "canonical_memberships_admitted": 0,
+            "dataos_identities_qualified_for_micro": 0,
+            "measurement_cohorts_admitted": 0,
+        },
+        "candidate_diagnostics": entries,
+        "limitations": [
+            "Whole-token legal-name prefixes are discovery cues only, never binding evidence.",
+            "Current Data OS reference lacks complete global issuer coverage and historical lineage.",
+            "Current identity readers do not qualify source rights, economic activity or product stage.",
+            "No graph, company theme edge, basket, membership, signal, weight or trade is emitted.",
+        ],
+    }
+
+
+def render_microtheme_identity_preflight_markdown(report: Mapping[str, Any]) -> str:
+    """Escaped, deliberately non-actionable owner triage view."""
+    import html
+
+    def clean(value):
+        return html.escape(str(value if value is not None else "unknown"), quote=True).replace("|", "&#124;").replace("\n", " ")
+
+    counts = report["counts"]
+    lines = [
+        "# GMI identity reference preflight — NOT ADMITTED",
+        "",
+        "Current source-local legal-name hints only; qualified identities, memberships and weights: zero.",
+        "",
+        f"Investigated {counts['activity_records']} candidate activities across {counts['micro_definitions']} micros.",
+        "",
+        "| Micro | Research candidate | Possible current issuers | Diagnostic |",
+        "| --- | --- | --- | --- |",
+    ]
+    for entry in report["candidate_diagnostics"]:
+        issuer_names = ", ".join(x["issuer_id"] for x in entry["possible_current_issuer_refs"])
+        lines.append("| " + " | ".join((
+            clean(entry["micro_id"]), clean(entry["entity_name"]),
+            clean(issuer_names or "none"), clean(entry["identity_hint_state"]),
+        )) + " |")
+    lines.extend(["", "## Refusal ceiling", ""])
+    lines.extend("- " + clean(x) for x in report["limitations"])
+    lines.append("")
+    return "\n".join(lines)
