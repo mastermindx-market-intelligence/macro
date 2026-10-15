@@ -195,14 +195,17 @@ are in where work happens and how large the context is.
 
 ## Required context at the start of every task
 
-1. Read `CLAUDE.md` in full and follow it as the authoritative project guide.
-2. Search the Claude project memory index at
-   `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/memory/MEMORY.md`
-   and open the entries relevant to the task. For delivery work, always include
-   `session-finish-full-git-chain`, `auto-finish-commit-push-pr`, and
-   `go-live-deploy-mechanics` — read all three under §Definition of done, which
-   outranks them: one session owns the whole delivery chain through the merge and
-   the live check.
+1. Recover the current cumulative checkpoint before following historical handoffs.
+   Reuse the verified compatible Mastermind procedure pin; inspect only material
+   changes to the assignment, relevant source, dependencies, custody and effects.
+   Read the task-relevant `CLAUDE.md` sections, not every historical incident on
+   each resume. The current assignment authorizes ordinary in-scope recovery.
+2. Account-local memory is optional advisory context, not a required delivery gate
+   or proof of current source, authority, liveness or completion. Use it only when
+   it resolves a material missing fact. The assigned operation remains accountable
+   through its required delivery and acceptance boundary; an archived conversation
+   does not become a permanent owner. Existing accepted executors and real source
+   custody remain binding; a checkpoint alone transfers neither.
 3. Treat `/Users/chriswong/Documents/Cluade/charting-app` as the connected Terminal
    repository. Authentication, subscriptions, data contracts, APIs, and deployment
    changes may require checking both repositories.
@@ -303,14 +306,21 @@ only — a human/Opus reviewer owns visual taste.
 
 ## Workspace and git
 
-- The canonical tree is GitHub `origin/main`
-  (`mastermindx-market-intelligence/macro`), never a local folder. The only local
-  project root is `/Users/chriswong/Documents/Cluade/macro-main` (operator
-  2026-08-15). Never open `/Users/chriswong/Documents/Cluade/Macro Dashboard` as a
-  workspace — not as a session working directory, not as an editor root.
-- At session start: `git fetch origin && git merge --ff-only origin/main`. If the
-  fast-forward fails, stop and tell the operator; do not rebase, reset, or force
-  past it.
+- The canonical source is GitHub `origin/main`
+  (`mastermindx-market-intelligence/macro`), never a local folder. Reuse the exact
+  workspace and branch assigned by the accepted harness or workspace owner. For
+  new attended Web source work, use the installed `mmx-workspace acquire` with
+  `--repository macro`, one stable operation ID and the verified base SHA. Native
+  sessions use their accepted host workspace/sparse hook. Verify the returned
+  root, branch, HEAD and relevant governing source before editing. Do not rename
+  an existing accepted branch to satisfy a different client's convention.
+- Never merge, pull, reset, rebase or stash the shared primary checkout as part
+  of task startup. An administrative fast-forward failure is not a mission-wide
+  stop: preserve its changes and acquire or recover the task's isolated workspace
+  under the current assignment. A live writer, permission denial and unresolved
+  effect remain real action-scoped gates. A new workspace does not transfer a
+  STARTed operation or clear an uncertain write. The historical `macro-main`
+  checkout is an administrative source location, not every session's required cwd.
 - `macro-main` is a linked worktree, not a second clone (verified 2026-08-15):
   `macro-main/.git` is a gitfile pointing at
   `Macro Dashboard/.git/worktrees/macro-main`, which still owns every object, ref,
