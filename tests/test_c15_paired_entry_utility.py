@@ -765,3 +765,60 @@ def test_cohort_paired_fraction_must_match_both_policy_utilities():
     result["baseline_bps"]["display_bps_12dp"]="100.000000000000"
     with pytest.raises(ValueError,match="delta not conserved"):
         accounted([registered_row(a)],[result])
+
+
+# Original published v0.2 incorrectly leaked TypeError/InvalidOperation for
+# legal JSON-shaped but malformed untrusted evidence. All contract refusals
+# must be typed ValueError, never an implicit host-language exception.
+from fractions import Fraction
+from engine.market_microstructure.paired_entry_utility import (
+    _exact_bp, _frozen_paired_rational,
+)
+
+
+def test_unhashable_candidate_source_mode_is_typed_refusal():
+    a = setup()
+    a["candidate"]["source_mode"] = ["ACTUAL_AS_SEEN"]
+    with pytest.raises(ValueError, match="invalid source mode"):
+        run(a)
+
+
+def test_unhashable_policy_state_is_typed_refusal():
+    a = setup()
+    a["baseline"]["state"] = {"state": "SIMULATED_FULL"}
+    with pytest.raises(ValueError, match="invalid state"):
+        run(a)
+
+
+def test_unhashable_source_missing_reason_is_typed_refusal():
+    a = setup()
+    a["baseline"]["state"] = "UNOBSERVABLE"
+    a["baseline"]["unobservable_reason"] = ["SOURCE_GAP"]
+    with pytest.raises(ValueError, match="missing typed source failure"):
+        run(a)
+
+
+def test_extreme_canonical_but_untrusted_ratio_uses_typed_refusal():
+    ratio = {
+        "numerator": "9" * 1024,
+        "denominator": "1",
+        "display_bps_12dp": "0.000000000000",
+        "display_only_rounded": True,
+    }
+    with pytest.raises(ValueError, match="ratio/display incompatible"):
+        _frozen_paired_rational(ratio, "cohort.adversarial_ratio")
+
+
+@pytest.mark.parametrize(("value", "expected"), [
+    (Fraction(1, 2_000_000_000_000), "0.000000000000"),
+    (Fraction(3, 2_000_000_000_000), "0.000000000002"),
+    (Fraction(-1, 2_000_000_000_000), "-0.000000000000"),
+    (Fraction(-3, 2_000_000_000_000), "-0.000000000002"),
+    (Fraction(1, 3), "0.333333333333"),
+])
+def test_exact_display_uses_half_even_without_changing_source_fraction(value, expected):
+    output = _exact_bp(value)
+    assert output["numerator"] == str(value.numerator)
+    assert output["denominator"] == str(value.denominator)
+    assert output["display_bps_12dp"] == expected
+    assert output["display_only_rounded"] is True

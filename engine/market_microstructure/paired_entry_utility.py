@@ -16,7 +16,7 @@ import re
 from datetime import datetime, timezone, time
 from zoneinfo import ZoneInfo
 from lib.nyse_calendar import is_session
-from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN, localcontext
+from decimal import Decimal, InvalidOperation
 from fractions import Fraction
 
 from engine.market_microstructure.pressure_response import MODES, _bounded_decimal
@@ -64,15 +64,24 @@ def _money(value, label, *, positive=False):
 
 
 def _exact_bp(value):
-    # Preserve exact rational for very small nonzero effects, rounded for UI ONLY.
-    with localcontext() as ctx:
-        ctx.prec = 700
-        ctx.rounding = ROUND_HALF_EVEN
-        rendered = Decimal(value.numerator) / Decimal(value.denominator)
-        rendered = rendered.quantize(Decimal("0.000000000001"))
+    """Exact rational source, bounded 12dp display with integer half-even.
+
+    No Decimal context/quantize precision cliff even for accepted 1024-digit
+    evidence ratios. The display may round to signed zero; exact numerator and
+    denominator always remain unrounded and authoritative for research math.
+    """
+    scale = 10 ** 12
+    scaled, remainder = divmod(abs(value.numerator) * scale, value.denominator)
+    double_rem = remainder * 2
+    if double_rem > value.denominator or (
+        double_rem == value.denominator and scaled % 2 == 1
+    ):
+        scaled += 1
+    whole, fractional = divmod(scaled, scale)
+    prefix = "-" if value.numerator < 0 else ""
     return {
         "numerator": str(value.numerator), "denominator": str(value.denominator),
-        "display_bps_12dp": format(rendered, "f"),
+        "display_bps_12dp": f"{prefix}{whole}.{fractional:012d}",
         "display_only_rounded": True,
     }
 
@@ -117,7 +126,7 @@ def _policy(row, *, role, candidate, cutoff_ns, max_quote_age_ns, anchor, size):
     elif consumer is not None or p["consumer_receipt_sha256"] is not None:
         raise ValueError("baseline: overlay claim forbidden")
     status = p["state"]
-    if status not in STATES:
+    if type(status) is not str or status not in STATES:
         raise ValueError(role + ": invalid state")
     forbidden_for_source_gap = (
         "entry_decision_ns", "entry_quote_event_ns", "entry_quote_available_ns",
@@ -127,7 +136,8 @@ def _policy(row, *, role, candidate, cutoff_ns, max_quote_age_ns, anchor, size):
         *quote_fields,
     )
     if status == "UNOBSERVABLE":
-        if p["unobservable_reason"] not in REASONS:
+        reason = p["unobservable_reason"]
+        if type(reason) is not str or reason not in REASONS:
             raise ValueError(role + ": missing typed source failure")
         if any(p[k] is not None for k in forbidden_for_source_gap):
             raise ValueError(role + ": source-failure masquerades as fill/abstain")
@@ -211,7 +221,7 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
             or type(c["ticker"]) is not str or not SYMBOL.fullmatch(c["ticker"])
             or type(c["session"]) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH", c["session"])):
         raise ValueError("candidate: invalid frozen identity")
-    if c["source_mode"] not in MODES:
+    if type(c["source_mode"]) is not str or c["source_mode"] not in MODES:
         raise ValueError("candidate: invalid source mode")
     _sha(c["source_receipt_sha256"], "candidate.receipt")
     source_available = _clock(c["candidate_source_available_ns"], "candidate.source_available")
