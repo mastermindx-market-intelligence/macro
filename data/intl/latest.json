@@ -523,13 +523,13 @@
           }
         ],
         "drawdown_prob": {
-          "h5": 0.092,
-          "h10": 0.179,
-          "h21": 0.289,
+          "h5": 0.142,
+          "h10": 0.229,
+          "h21": 0.327,
           "base_h5": 0.092,
           "base_h10": 0.179,
           "base_h21": 0.289,
-          "lift_h21": 1.0,
+          "lift_h21": 1.13,
           "measure": ">=5% index pullback within h business days (measured on this market's own history)"
         },
         "trajectory": {
@@ -541,8 +541,8 @@
           "phase": "receding",
           "reached_risk": true,
           "state_now": "watch",
-          "odds_now": 0.289,
-          "odds_peak": 0.289,
+          "odds_now": 0.327,
+          "odds_peak": 0.327,
           "odds_delta": 0.0,
           "spark": [
             45.2,
@@ -2114,13 +2114,13 @@
           }
         ],
         "drawdown_prob": {
-          "h5": 0.043,
-          "h10": 0.102,
-          "h21": 0.2,
+          "h5": 0.021,
+          "h10": 0.052,
+          "h21": 0.15,
           "base_h5": 0.043,
           "base_h10": 0.102,
           "base_h21": 0.2,
-          "lift_h21": 1.0,
+          "lift_h21": 0.75,
           "measure": ">=5% index pullback within h business days (measured on this market's own history)"
         },
         "trajectory": {
@@ -2132,8 +2132,8 @@
           "phase": "flat",
           "reached_risk": true,
           "state_now": "caution",
-          "odds_now": 0.2,
-          "odds_peak": 0.2,
+          "odds_now": 0.15,
+          "odds_peak": 0.15,
           "odds_delta": 0.0,
           "spark": [
             50.6,
