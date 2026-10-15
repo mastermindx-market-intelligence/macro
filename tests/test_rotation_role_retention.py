@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import copy
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -285,15 +285,25 @@ def test_a23_recently_closed_episode_identity_survives_the_leg_leaving(
     flat_a = pd.concat([a, pd.Series(float(a.iloc[-1]), index=idx)])
     flat_b = pd.concat([b, pd.Series(float(b.iloc[-1]), index=idx)])
     closed_row = None
+    stamps: list[str] = []
     for k in range(RE.PARAMS["lapse_run"] + RE.PARAMS["ttl_sessions"] + 2):
+        # real calendar dates: the old f"2026-10-{6 + k:02d}" minted 2026-10-32 once
+        # k ran past the end of October, which run_nightly now rejects.
+        stamp = (date(2026, 10, 6) + timedelta(days=k)).isoformat() + " 05:00 UTC"
+        stamps.append(stamp)
         payload = RE.run_nightly(
             _sectors({"memory": flat_a.iloc[:len(a) + k + 1],
                       "mag7": flat_b.iloc[:len(b) + k + 1]}),
-            tmp_path, generated_utc=f"2026-10-{6 + k:02d} 05:00 UTC")
+            tmp_path, generated_utc=stamp)
         if payload["closed_tonight"]:
             closed_row = payload["closed_tonight"][0]
             break
     assert closed_row is not None
+    fmt = "%Y-%m-%d %H:%M UTC"
+    assert stamps
+    assert all(datetime.strptime(s, fmt).strftime(fmt) == s for s in stamps), (
+        f"run_nightly was handed a non-canonical build stamp: {stamps}"
+    )
     assert closed_row["reason"] in ("conditions_lapsed", "ttl", "ratio_slope_flipped")
     ledger = tmp_path / "rotation_events" / "events.jsonl"
     # tonight: the receiver leg is gone from the current list — the closure row must

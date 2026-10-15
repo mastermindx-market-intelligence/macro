@@ -6862,9 +6862,19 @@ jobs:
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
           tests/test_capital_structure_rule_applicability.py
+          tests/test_capital_structure_capacity_joint.py
+          tests/test_capital_structure_capacity.py
+          tests/test_capital_structure_capacity_c2.py
+          tests/test_capital_structure_capacity_c2b.py
+          tests/test_capital_structure_capacity_c2c_a.py
+          tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
+          tests/test_capital_structure_authorized_shares.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_capital_structure_funding.py
+          tests/test_capital_structure_instrument_economics.py
+          tests/test_capital_structure_supply_scenarios.py
+          tests/test_capital_structure_transactions.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
@@ -7702,6 +7712,8 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
@@ -9390,6 +9402,11 @@ jobs:
       # W8-FIN-1 page signal. The review gate writes falsifiers onto the named slice.
       - "engine/sector_intelligence/finance_page_signal.py"
       - "tests/test_finance_page_signal.py"
+      # W10-FIN-1 watching. Live not-connected shell ships two NOT_YET_EVALUABLE
+      # items in ul.fi-falsifiers via apply_page_signal on in-module constants.
+      - "engine/sector_intelligence/finance_watching.py"
+      - "tests/test_finance_watching.py"
+      - "templates/_finance_watching.html.j2"
       # FIN-2 witness hints. Closed roster; not an issuer_profiles writer.
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "tests/test_finance_witness_hints.py"
@@ -9473,7 +9490,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py tests/test_finance_watching.py -q
 
 
   consumer-cyclical-economic-change:
@@ -9494,6 +9511,13 @@ jobs:
       - "tests/test_consumer_cyclical_shared_contract.py"
       - "engine/sector_intelligence/consumer_cyclical_display.py"
       - "tests/test_consumer_cyclical_display.py"
+      # Wave-10 Build B — PLNT synthetic display card: page, builder, suite.
+      - "templates/consumer_cyclical_plnt.html.j2"
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "scripts/__init__.py"
+      - "tests/test_consumer_cyclical_plnt_page.py"
+      # Read-only input of the PLNT suite: the public route list.
+      - "config/site_access.yml"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -9531,9 +9555,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest jsonschema referencing pyyaml
+        run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -11673,15 +11697,20 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/LEADERSHIP_ROTATION_PREREG_V1.md"
+      - "research/LEADERSHIP_ROTATION_LOOK_LEDGER.jsonl"
       - "research/LEADERSHIP_ROTATION_PREREG_V2.md"
+      - "research/LEADERSHIP_ROTATION_PREREG_V2_1.md"
+      - "research/LEADERSHIP_ROTATION_STUDY_T12R_2026-10-14.size_gate.json"
       - "scripts/__init__.py"
       - "scripts/leadership_rotation_episodes.py"
       - "scripts/leadership_rotation_inference.py"
+      - "scripts/leadership_rotation_null.py"
       - "scripts/leadership_rotation_p0.py"
       - "scripts/leadership_rotation_run.py"
       - "scripts/leadership_rotation_study.py"
       - "tests/test_leadership_rotation_episodes.py"
       - "tests/test_leadership_rotation_inference.py"
+      - "tests/test_leadership_rotation_null.py"
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
@@ -11695,7 +11724,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation pre-registered study harness
-        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_study.py tests/test_leadership_rotation_episodes.py tests/test_leadership_rotation_inference.py tests/test_leadership_rotation_run.py tests/test_leadership_rotation_p0.py tests/test_leadership_rotation_null.py -q -p no:cacheprovider
 
   leadership-measured-read:
     if: ${{ false }}
@@ -13309,9 +13338,21 @@ jobs:
       - scripts/build_china_masterminds.py
       - scripts/build_china_strategies.py
       - scripts/build_commodity_strategies.py
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - scripts/build_consumer_cyclical_plnt_page.py
+      - engine/sector_intelligence/consumer_cyclical_display.py
+      - engine/sector_intelligence/consumer_cyclical_projection.py
+      - engine/sector_intelligence/consumer_cyclical_shared_contract.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
+      - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_witness_hints.py
+      - engine/sector_intelligence/finance_page_signal.py
+      - engine/sector_intelligence/finance_case_signal.py
+      - engine/sector_intelligence/finance_projection.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_fundamental_forensics.py
       - scripts/build_index_leadership.py
       - scripts/build_ipo.py
@@ -15410,6 +15451,8 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
@@ -17461,7 +17504,7 @@ jobs:
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
       # Also validate the data-free Market Memory shell and owned read-API wiring.
       # This test registration does not alter production render/publish inventory.
-        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py tests/test_consumer_cyclical_plnt_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -21352,8 +21395,20 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_international_macro.py"
@@ -22600,10 +22655,22 @@ jobs:
       - "scripts/build_china_pick_lab.py"
       - "scripts/build_china_strategies.py"
       - "scripts/build_commodity_strategies.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_crossmarket.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_index_leadership.py"
@@ -23043,6 +23110,8 @@ jobs:
       - "tests/test_fda_sweep_duplicate_key_completeness.py"
       - "tests/test_healthcare_dispersion_w0b.py"
       - "tests/test_healthcare_molecule_gap.py"
+      - "tests/test_healthcare_observation_split.py"
+      - "tests/test_healthcare_fda_details.py"
       - "collectors/base.py"
       - "collectors/sector_holdings.py"
       - "config/delisted_symbols.yml"
@@ -23058,6 +23127,7 @@ jobs:
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
       - "engine/healthcare_molecule_gap.py"
+      - "engine/healthcare_observation_split.py"
       - "engine/foresight_cascade.py"
       - "scripts/build_foresight.py"
       - "collectors/__init__.py"
@@ -23101,6 +23171,10 @@ jobs:
         run: python -m pytest tests/test_healthcare_dispersion_w0b.py -q
       - name: Healthcare configured molecules with no rows
         run: python -m pytest tests/test_healthcare_molecule_gap.py -q
+      - name: Healthcare regulator manufacturer and capacity kept apart
+        run: python -m pytest tests/test_healthcare_observation_split.py -q
+      - name: Healthcare FDA record lines under the chips
+        run: python -m pytest tests/test_healthcare_fda_details.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
@@ -23527,11 +23601,35 @@ jobs:
     if: ${{ false }}
     gate: code
     # RIC Y1 (A22/A23/A24, 2026-10-14): engine/yield_momentum.build_curve_accounting qualifies the 10y nominal/real/KW-term-premium inputs as B0 basis records and runs the canonical rates_command_basis comparison rules; ACM stays explicitly missing. Listed on engine/rates_command_basis.py too because the suite pins B0 rule outcomes. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    # RIC Y1b (2026-10-14, seat ruling Y1b-PRODUCER): the same job also pins the additive snapshot()["curve_accounting"] key (engine/rate_inflation_transmission.py, fail-open shell, existing keys byte-invariant against tests/fixtures/ric_y1b_snapshot_base.json), the verbatim display-only build_board passthrough (engine/rates_inflation_command.py, export closed until E1) and the engine/pit.py Kim-Wright note. Hermetic: synthetic frames + one committed fixture, no data/ reads or writes, no network.
     timeout-minutes: 10
     paths:
       - "engine/yield_momentum.py"
       - "engine/rates_command_basis.py"
       - "tests/test_ric_y1_curve_accounting.py"
+      # RIC Y1b producer suite and its direct subjects.
+      - "engine/rate_inflation_transmission.py"
+      - "engine/rates_inflation_command.py"
+      - "engine/pit.py"
+      - "tests/test_ric_y1b_curve_accounting_producer.py"
+      - "tests/fixtures/ric_y1b_snapshot_base.json"
+      # RIC Y1b measured static import closure (run_ci_pack.infer_job_scopes).
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/__init__.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/prediction_markets.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23541,7 +23639,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: ric-y1-curve-accounting
-        run: python -m pytest tests/test_ric_y1_curve_accounting.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_ric_y1_curve_accounting.py tests/test_ric_y1b_curve_accounting_producer.py -q -p no:cacheprovider
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
@@ -25999,6 +26097,35 @@ jobs:
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
 
+  entry-radar-identity-snapshot:
+    # Actual five-file/Parquet observation boundary for the existing pure identity owner.
+    # A passing synthetic read is not publication, market admission, or live trading proof.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/entry_radar/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - lib/__init__.py
+      - lib/dataos/**
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_dataos_identity.py
+      - tests/test_entry_radar_identity_observation_snapshot.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install actual Parquet reader test dependencies
+        run: pip install pytest pyyaml pyarrow
+      - name: actual-clock identity snapshot file boundary
+        run: python -m pytest tests/test_entry_radar_identity_observation_snapshot.py -q
+
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
     gate: code
@@ -26274,6 +26401,232 @@ jobs:
         run: pip install pytest numpy pandas pyyaml
       - name: basket read band + board group-pulse column (GR1)
         run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py -q -rs
+
+  leadership-rotation-countercases:
+    # LEADERSHIP-ROTATION T20 (O8 independent challenge): one integrated counter-case suite driving SYNTHETIC
+    # inputs SOURCE -> PROJECTION (engine/leadership_rotation_context.measured_group_read) -> CONSUMER (the T18
+    # panel JS in templates/sector_central.html.j2, executed under node) on the same identities. Each test is a
+    # baseline + one single-axis mutation with an exact expected effect; three env-selected wrong-branch mutants
+    # (LR_COUNTERCASE_MUTANT) must each red it. node is load-bearing: the panel tests skip without it.
+    # scope: exclusive — the suite reads scripts/build_sector_central.py through ast and the template as text,
+    # which inference widened to whole-tree roots; paths: is the measured import/read closure.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/holdings.py"
+      - "collectors/openfigi.py"
+      - "collectors/sponsors.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "config/sector_legs.json"
+      - "config/site_access.yml"
+      - "engine/__init__.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/basket_index.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_intl.py"
+      - "engine/baskets_region.py"
+      - "engine/canon.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/conditions.py"
+      - "engine/cross_asset.py"
+      - "engine/crowding.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/election_cycle.py"
+      - "engine/entity_resolver.py"
+      - "engine/equity_factors.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/event_calendar.py"
+      - "engine/extension.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/leadership_receipt.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/market_state.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/mtf_monitor.py"
+      - "engine/name_resolver.py"
+      - "engine/name_score_grader.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/narrative_rotation.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/passport.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/playbook.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/rate_inflation_transmission.py"
+      - "engine/rates_command_basis.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime.py"
+      - "engine/regime_label.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_rate_inflation.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/sue.py"
+      - "engine/technicals.py"
+      - "engine/theme_crowding.py"
+      - "engine/theme_tape.py"
+      - "engine/theme_validation.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/us_act_now.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/build_sector_central.py"
+      - "scripts/notify.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/marketdata/rotation_events.json"
+      - "site/sectordata/sector_central.json"
+      - "templates/sector_central.html.j2"
+      - "tests/__init__.py"
+      - "tests/fixtures/leadership_rotation/**"
+      - "tests/test_leadership_measured_read.py"
+      - "tests/test_leadership_rotation_countercases.py"
+      - "tests/test_sector_central_measured_panel.py"
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        run: pip install pytest numpy pandas pyyaml
+      - name: LEADERSHIP-ROTATION T20 integrated counter-cases
+        run: python -m pytest tests/test_leadership_rotation_countercases.py -q -rs
 
   group-earnings-pulse:
     # Group Reads W-GR2: engine/group_earnings.py -> site/basketdata/earnings_pulse.json,
@@ -28641,9 +28994,21 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
@@ -29099,6 +29464,16 @@ jobs:
       # T07 evidence-drawer review pin and date-only cutoff. Closure of
       # tests/test_mining_updates.py adds no path this job does not already list.
       - "tests/test_mining_updates.py"
+      # Wave 10 build W10-2: publish the copper estimate-vs-actual row through the
+      # composer's existing mev path. Closure of tests/test_mining_witness_expectations.py
+      # adds no path this job does not already list (tests/mining_casebook.py is already in paths:,
+      # engine/market_ontology/mining_theme_research.py is too, and the only stdlib import
+      # is ``dataclasses.replace``).
+      - "tests/test_mining_witness_expectations.py"
+      # W10-3 company-card typed-absence helper. The composer
+      # (engine/market_ontology/mining_theme_research.py, companies loop) now
+      # imports it, so the suite's import closure requires the path here.
+      - "engine/market_ontology/mining_company_card.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29111,7 +29486,7 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py tests/test_mining_witness_expectations.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
@@ -29205,10 +29580,26 @@ jobs:
       # W8-B: hold the source-edition section until a selector ruling.
       - "engine/company_intelligence/industrials_edition_record.py"
       - "tests/test_industrials_edition_record.py"
+      # W10-C: chronology-section dict the dossier renders until a ruling.
+      - "engine/company_intelligence/industrials_chronology_section.py"
+      - "tests/test_industrials_chronology_section.py"
       # IND-R206: a revenue_share_pct cell is refused unless its
       # segment/denominator pair is one of the two synthetic pairs.
       - "engine/fundamental_forensics/industrials_denominator_guard.py"
       - "tests/test_industrials_denominator_guard.py"
+      # W10-A: certified-comparison enrollment. The stated cell end and the
+      # shared fiscal label reach the certified record beside the QUOTED
+      # derive_result_cash dict; neither owner is edited.
+      - "engine/company_intelligence/industrials_certified_enrollment.py"
+      - "tests/test_industrials_certified_enrollment.py"
+      # W10-B: the first consumer-visible Industrials signal. One certified
+      # comparison payload — the QUOTED derivation dict plus the enrolled label
+      # and stated end — is placed all-or-nothing on a caller page dict under
+      # ``industrials_certified_comparison``; a data refusal publishes value None
+      # on the same key. Neither owner (W10-A enrollment, derive_result_cash) is
+      # edited or vendored here.
+      - "engine/company_intelligence/industrials_certified_signal.py"
+      - "tests/test_industrials_certified_signal.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -29226,7 +29617,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_denominator_guard.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py tests/test_industrials_certified_signal.py -q
 
   house-law-registry-code:
     if: ${{ false }}
@@ -29528,7 +29919,8 @@ jobs:
   # events.py minted spans, absences and fiscal periods), plus the Phase 1
   # engine/news_impact leaf: semantic validator + hostile corpus, sampler,
   # cluster adapter, issuer resolver, and the W2 benchmark tools (tape draw
-  # with the body-available frame, EDGAR body fetch; hermetic, no network).
+  # with the body-available frame, EDGAR body fetch; hermetic, no network) and
+  # the W3 measured packet producer (label returns to validated candidate events).
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -29581,8 +29973,8 @@ jobs:
         run: python -m pytest tests/test_news_impact_contracts.py -q
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
         run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
-      - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement)
-        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py -q
+      - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement, producer)
+        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
         run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
 

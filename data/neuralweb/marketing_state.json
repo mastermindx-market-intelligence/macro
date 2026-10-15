@@ -1697,7 +1697,7 @@
           "id": "radar-stage-ACA-2026-10-14",
           "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
           "expected_value": 0.4,
-          "score": 0.383961,
+          "score": 0.367622,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACU-2026-10-14",
           "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
           "expected_value": 0.4,
-          "score": 0.383961,
+          "score": 0.367622,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-CDNA-2026-10-14",
           "problem_or_desire": "$CDNA: stage 2D_extended_run, SATA 10, 34w in stage",
           "expected_value": 0.4,
-          "score": 0.383961,
+          "score": 0.367622,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1835,
-      "receipts": 1835,
+      "total": 1858,
+      "receipts": 1858,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-13-8b0a932934",
-          "channel": "x",
-          "account": "meagan",
-          "status": "clean",
-          "published_at": "2026-10-14T02:06:47Z"
-        },
-        {
-          "id": "pub-ob-2026-10-13-055f6f3f30",
+          "id": "pub-ob-2026-10-14-51ebd434eb",
           "channel": "x",
           "account": "kelly",
           "status": "clean",
-          "published_at": "2026-10-13T23:03:50Z"
+          "published_at": "2026-10-14T20:07:53Z"
         },
         {
-          "id": "pub-ob-2026-10-13-955b7c72be",
+          "id": "pub-ob-2026-10-14-8dd46fde5a",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-10-13T23:03:50Z"
+          "published_at": "2026-10-14T18:30:37Z"
+        },
+        {
+          "id": "pub-ob-2026-10-14-4138e0c1af",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-10-14T18:23:59Z"
         }
       ]
     },
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-14T09:55:08Z",
-  "inputs_hash": "sha256:032706c250105153e4b56a36dfa5c5828e72a5ee1c3614317cf64af19a622064",
+  "produced_at": "2026-10-14T20:27:30Z",
+  "inputs_hash": "sha256:c94351cc9c680c44ed6507b557859f121441ba1bf32c351527f870c8a2b082e5",
   "tier": "display"
 }

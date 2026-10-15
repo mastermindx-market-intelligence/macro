@@ -2,96 +2,45 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-10-08",
-  "generated_utc": "2026-10-14T11:17:52Z",
+  "generated_utc": "2026-10-14T23:37:49Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
     "n": 9,
-    "n_eff": 5.25,
+    "n_eff": 6.09,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 9 candidates \u2248 5.25 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 9 candidates \u2248 6.09 independent bets."
   },
   "same_thesis_groups": [],
   "earnings_coverage_frac": 0.778,
   "by_ticker": {
-    "EDU": {
-      "verdict": "duplicate",
-      "max_similarity": 1.0,
-      "basis": "membership-only:no-beta",
+    "SCHL": {
+      "verdict": "new",
+      "max_similarity": 0.3333,
+      "basis": "membership-only:r2=0.06<0.2",
       "nearest": [
-        {
-          "ticker": "SCHL",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": false
-        },
         {
           "ticker": "ULTA",
           "combined": 0.3333,
           "membership_jaccard": 0.3333,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.12<0.2",
+          "factor_basis": "beta-read-thin:r2=0.06<0.2",
           "shared_groups": [
             "sector:Consumer Discretionary"
           ],
-          "same_earnings_week": false
+          "same_earnings_week": null
         },
         {
           "ticker": "NWE",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "factor_basis": "beta-read-thin:r2=0.06<0.2",
           "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-27",
-        "same_week_peers": [
-          "ABBV",
-          "FOX"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as SCHL \u2014 Consumer Discretionary (similarity 100%).",
-      "why_zh": "\u4e0e SCHL \u62bc\u6ce8\u76f8\u540c \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
-    },
-    "SCHL": {
-      "verdict": "duplicate",
-      "max_similarity": 1.0,
-      "basis": "membership-only:r2=0.06<0.2",
-      "nearest": [
-        {
-          "ticker": "EDU",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
           "same_earnings_week": null
         },
         {
-          "ticker": "ULTA",
-          "combined": 0.3333,
-          "membership_jaccard": 0.3333,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "NWE",
+          "ticker": "BKH",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
@@ -106,8 +55,8 @@
         "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as EDU \u2014 Consumer Discretionary (similarity 100%).",
-      "why_zh": "\u4e0e EDU \u62bc\u6ce8\u76f8\u540c \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer ULTA at 33% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 ULTA\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
     },
     "NWE": {
       "verdict": "duplicate",
@@ -126,20 +75,20 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.11<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
           "ticker": "SCHL",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "ABBV",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.11<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
@@ -174,20 +123,20 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.09<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
           "ticker": "SCHL",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "ABBV",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
@@ -211,15 +160,6 @@
       "basis": "membership-only:r2=0.13<0.2",
       "nearest": [
         {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.13<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
           "ticker": "SCHL",
           "combined": 0.0,
           "membership_jaccard": 0.0,
@@ -234,6 +174,15 @@
           "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "BKH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
@@ -241,59 +190,14 @@
       "earnings_leg": {
         "next_date": "2026-10-30",
         "same_week_peers": [
-          "EDU",
-          "FOX"
+          "FOX",
+          "ICE"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EDU at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    },
-    "FOX": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.08<0.2",
-      "nearest": [
-        {
-          "ticker": "EDU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "NWE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.11<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-29",
-        "same_week_peers": [
-          "ABBV",
-          "EDU"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EDU at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer SCHL at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
     "APA": {
       "verdict": "duplicate",
@@ -313,11 +217,11 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "EDU",
-          "combined": 0.0,
+          "ticker": "ICE",
+          "combined": 0.1676,
           "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:insufficient-factors",
+          "factor_cosine": 0.1676,
+          "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": false
         },
@@ -362,11 +266,11 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "EDU",
-          "combined": 0.0,
+          "ticker": "ICE",
+          "combined": 0.1506,
           "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:insufficient-factors",
+          "factor_cosine": 0.1506,
+          "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": false
         },
@@ -393,22 +297,56 @@
       "why_en": "Same bet as APA \u2014 us_sector_energy, Energy (similarity 100%).",
       "why_zh": "\u4e0e APA \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
+    "FOX": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:r2=0.08<0.2",
+      "nearest": [
+        {
+          "ticker": "SCHL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "NWE",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.11<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "BKH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-29",
+        "same_week_peers": [
+          "ABBV",
+          "ICE"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer SCHL at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
     "ULTA": {
       "verdict": "new",
       "max_similarity": 0.3333,
       "basis": "membership-only:r2=0.12<0.2",
       "nearest": [
-        {
-          "ticker": "EDU",
-          "combined": 0.3333,
-          "membership_jaccard": 0.3333,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.12<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": null
-        },
         {
           "ticker": "SCHL",
           "combined": 0.3333,
@@ -428,6 +366,15 @@
           "factor_basis": "beta-read-thin:r2=0.11<0.2",
           "shared_groups": [],
           "same_earnings_week": null
+        },
+        {
+          "ticker": "BKH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": null
         }
       ],
       "earnings_leg": {
@@ -436,71 +383,56 @@
         "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EDU at 33% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EDU\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer SCHL at 33% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
+    },
+    "ICE": {
+      "verdict": "new",
+      "max_similarity": 0.1676,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "APA",
+          "combined": 0.1676,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1676,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "DVN",
+          "combined": 0.1506,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.1506,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "SCHL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-29",
+        "same_week_peers": [
+          "ABBV",
+          "FOX"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer APA at 17% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 APA\uff0c\u76f8\u4f3c\u5ea6 17%\u3002"
     }
   },
   "pair_basis": {
-    "EDU__SCHL": {
-      "membership_jaccard": 1.0,
-      "factor_cosine": null,
-      "combined": 1.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": [
-        "sector:Consumer Discretionary"
-      ]
-    },
-    "EDU__NWE": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.11<0.2",
-      "shared_groups": []
-    },
-    "EDU__BKH": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.09<0.2",
-      "shared_groups": []
-    },
-    "EDU__ABBV": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.13<0.2",
-      "shared_groups": []
-    },
-    "EDU__FOX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "EDU__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:insufficient-factors",
-      "shared_groups": []
-    },
-    "EDU__DVN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:insufficient-factors",
-      "shared_groups": []
-    },
-    "EDU__ULTA": {
-      "membership_jaccard": 0.3333,
-      "factor_cosine": null,
-      "combined": 0.3333,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": [
-        "sector:Consumer Discretionary"
-      ]
-    },
     "SCHL__NWE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -522,13 +454,6 @@
       "factor_basis": "beta-read-thin:r2=0.06<0.2",
       "shared_groups": []
     },
-    "SCHL__FOX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
     "SCHL__APA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -537,6 +462,13 @@
       "shared_groups": []
     },
     "SCHL__DVN": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
+    "SCHL__FOX": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -552,6 +484,13 @@
         "sector:Consumer Discretionary"
       ]
     },
+    "SCHL__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "shared_groups": []
+    },
     "NWE__BKH": {
       "membership_jaccard": 1.0,
       "factor_cosine": null,
@@ -562,13 +501,6 @@
       ]
     },
     "NWE__ABBV": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.11<0.2",
-      "shared_groups": []
-    },
-    "NWE__FOX": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -589,6 +521,13 @@
       "factor_basis": "beta-read-thin:r2=0.11<0.2",
       "shared_groups": []
     },
+    "NWE__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
+      "shared_groups": []
+    },
     "NWE__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -596,14 +535,14 @@
       "factor_basis": "beta-read-thin:r2=0.11<0.2",
       "shared_groups": []
     },
-    "BKH__ABBV": {
+    "NWE__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.09<0.2",
+      "factor_basis": "beta-read-thin:r2=0.11<0.2",
       "shared_groups": []
     },
-    "BKH__FOX": {
+    "BKH__ABBV": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -624,6 +563,13 @@
       "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
+    "BKH__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
+      "shared_groups": []
+    },
     "BKH__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -631,11 +577,11 @@
       "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
-    "ABBV__FOX": {
+    "BKH__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.13<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
     "ABBV__APA": {
@@ -652,6 +598,13 @@
       "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
+    "ABBV__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
+      "shared_groups": []
+    },
     "ABBV__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -659,25 +612,11 @@
       "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
-    "FOX__APA": {
+    "ABBV__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "FOX__DVN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "FOX__ULTA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
     "APA__DVN": {
@@ -690,6 +629,13 @@
         "sector:Energy"
       ]
     },
+    "APA__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
     "APA__ULTA": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -697,7 +643,49 @@
       "factor_basis": "beta-read-thin:r2=0.12<0.2",
       "shared_groups": []
     },
+    "APA__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.1676,
+      "combined": 0.1676,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "DVN__FOX": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
     "DVN__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.12<0.2",
+      "shared_groups": []
+    },
+    "DVN__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.1506,
+      "combined": 0.1506,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "FOX__ULTA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "FOX__ICE": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "ULTA__ICE": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -713,8 +701,8 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 2.8,
-    "setting_up": 2.7
+    "entry_open": 2.7,
+    "setting_up": 3.5
   },
   "source_passport": {
     "factor_betas": {

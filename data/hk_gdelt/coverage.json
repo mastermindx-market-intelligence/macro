@@ -1,8 +1,9 @@
 {
   "alibaba": {
     "date": "2026-10-14",
-    "rows": 0,
-    "status": "empty"
+    "rows": 74,
+    "status": "ok",
+    "ticker": "9988.HK"
   },
   "tencent": {
     "date": "2026-10-14",
@@ -21,8 +22,9 @@
   },
   "baidu": {
     "date": "2026-10-14",
-    "rows": 0,
-    "status": "empty"
+    "rows": 74,
+    "status": "ok",
+    "ticker": "9888.HK"
   },
   "jdcom": {
     "date": "2026-10-14",
@@ -30,6 +32,12 @@
     "status": "empty"
   },
   "kuaishou": {
+    "date": "2026-10-14",
+    "rows": 74,
+    "status": "ok",
+    "ticker": "1024.HK"
+  },
+  "smic": {
     "date": "2026-10-14",
     "rows": 0,
     "status": "empty"

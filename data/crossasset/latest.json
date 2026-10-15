@@ -17,10 +17,10 @@
     "regime": "mixed / no clear trend",
     "correlation": {
       "verdict": "converging",
-      "absorption_pctile": 0.53,
+      "absorption_pctile": 0.48,
       "n_markets": 6,
-      "absorption_ratio": 0.366,
-      "mean_abs_corr": 0.223,
+      "absorption_ratio": 0.362,
+      "mean_abs_corr": 0.218,
       "dominant_cluster": [
         "US",
         "Commodities",
@@ -130,7 +130,7 @@
         0.337,
         0.351,
         0.366,
-        0.366
+        0.362
       ],
       "spark_asof": "2026-10-16"
     },
@@ -234,54 +234,54 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.264,
-          "t": 4.252,
+          "r": 0.266,
+          "t": 4.283,
           "q": 0.0
+        },
+        {
+          "leader": "US",
+          "follower": "HK",
+          "lag": 1,
+          "r": 0.307,
+          "t": 4.021,
+          "q": 0.005
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
           "r": 0.263,
-          "t": 4.002,
-          "q": 0.005
-        },
-        {
-          "leader": "US",
-          "follower": "HK",
-          "lag": 1,
-          "r": 0.304,
-          "t": 3.997,
+          "t": 3.993,
           "q": 0.005
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.252,
-          "t": 3.632,
-          "q": 0.0112
+          "r": 0.257,
+          "t": 3.71,
+          "q": 0.0075
         },
         {
           "leader": "Crypto",
           "follower": "China",
           "lag": 1,
-          "r": 0.186,
-          "t": 3.098,
-          "q": 0.06
+          "r": 0.189,
+          "t": 3.157,
+          "q": 0.048
         },
         {
           "leader": "China",
           "follower": "HK",
           "lag": 1,
-          "r": -0.227,
-          "t": -2.998,
-          "q": 0.0675
+          "r": -0.231,
+          "t": -3.055,
+          "q": 0.0575
         }
       ],
       "stable": false,
       "lead_asset": {
-        "name": "Crypto",
+        "name": "US",
         "n_followers": 2
       },
       "n_significant": 6,
@@ -333,7 +333,7 @@
           "equity_blind": true
         }
       ],
-      "asof": "2026-10-08"
+      "asof": "2026-10-13"
     },
     "dollar": {
       "usd_dir": "flat",
@@ -357,11 +357,11 @@
       "fx_stress": {
         "dominant": "em_crisis_capital_flight",
         "top_key": "em_crisis_capital_flight",
-        "top_val": 61.2
+        "top_val": 63.5
       }
     },
     "shadow": {
-      "pressure_pctile": 0.53,
+      "pressure_pctile": 0.48,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false

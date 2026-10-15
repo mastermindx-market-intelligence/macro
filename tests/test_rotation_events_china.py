@@ -187,7 +187,7 @@ def test_run_nightly_china_writes_to_china_subdir(tmp_path):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     payload = re_.run_nightly(sectors, tmp_path,
-                              generated_utc="test",
+                              generated_utc="2026-10-01 05:00 UTC",
                               data_subdir="rotation_events_china")
     assert payload["schema"] == "rotation_events.v1"
     assert payload["authority"]["may_gate"] is False
@@ -209,7 +209,7 @@ def test_run_nightly_china_does_not_touch_us_state(tmp_path):
     mtime_before = us_state_p.stat().st_mtime
 
     re_.run_nightly(_cn_sectors(a, b), tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     assert us_state_p.stat().st_mtime == mtime_before, "US state.json was touched by China builder"
 
@@ -225,7 +225,7 @@ def test_ledger_append_only_never_truncated(tmp_path):
 
     # First run
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="run1",
+                    generated_utc="2026-10-02 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     lines_after_run1 = ledger_p.read_text().strip().splitlines()
@@ -233,7 +233,7 @@ def test_ledger_append_only_never_truncated(tmp_path):
 
     # Second run — same conditions
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="run2",
+                    generated_utc="2026-10-03 05:00 UTC",
                     data_subdir="rotation_events_china")
     lines_after_run2 = ledger_p.read_text().strip().splitlines()
 
@@ -250,7 +250,7 @@ def test_ledger_rows_are_valid_json(tmp_path):
     """Every line in the ledger must be parseable JSON with required fields."""
     a, b = _aligned_pair()
     re_.run_nightly(_cn_sectors(a, b), tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     for line in ledger_p.read_text().strip().splitlines():
@@ -269,7 +269,7 @@ def test_china_detector_fires_on_blowoff_turn_pair(tmp_path):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     payload = re_.run_nightly(sectors, tmp_path,
-                              generated_utc="test",
+                              generated_utc="2026-10-01 05:00 UTC",
                               data_subdir="rotation_events_china")
     # Must have at least one active event or coldstart replay
     assert payload["active"] or payload["coldstart"], \
@@ -315,7 +315,7 @@ def test_cn_lane_unarmed_state_written_no_ledger(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     state_p = tmp_path / "rotation_events_china" / "state.json"
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
@@ -331,7 +331,7 @@ def test_cn_lane_armed_ledger_advances(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _cn_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_china")
     ledger_p = tmp_path / "rotation_events_china" / "events.jsonl"
     assert ledger_p.exists(), (

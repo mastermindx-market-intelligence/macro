@@ -1,5 +1,5 @@
 {
-  "A": 3,
+  "A": 2,
   "AAPL": 4,
   "ACM": 2,
   "ADI": 2,
@@ -63,8 +63,10 @@
   "IRDM": 2,
   "KDP": 2,
   "KLAC": 2,
-  "KO": 3,
+  "KMB": 2,
+  "KO": 2,
   "KR": 2,
+  "KVUE": 2,
   "KVYO": 2,
   "LHX": 2,
   "LTH": 2,
@@ -83,6 +85,7 @@
   "NEE": 2,
   "NFLX": 3,
   "NOW": 2,
+  "NTAP": 2,
   "NVDA": 6,
   "NVS": 2,
   "NVT": 3,
@@ -91,6 +94,7 @@
   "PFE": 2,
   "PINS": 2,
   "PLTR": 5,
+  "PSKY": 2,
   "Q": 2,
   "QCOM": 4,
   "RDNT": 2,
@@ -108,6 +112,7 @@
   "VRT": 2,
   "VRTX": 2,
   "VST": 2,
+  "WDAY": 2,
   "WMT": 2,
   "XYZ": 2
 }

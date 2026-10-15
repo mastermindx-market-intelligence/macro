@@ -84,6 +84,7 @@ danger_areas:
   - The pack pins the E0 file sha256; any E0 edit requires L0 requalification, and the loader refuses a mismatch.
   - Window sha256 values must equal the span sha256 (or the pinned E0 label sha); editing span text without re-deriving the window breaks loading.
   - The pool's 12-month window is computed with day clamping (leap day); callers pass the exact window or the function refuses.
+prs: [9314]
 ---
 
 # Capital Structure V2 — L0 rule applicability handoff
