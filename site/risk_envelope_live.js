@@ -159,7 +159,7 @@
     if (["FRAGILE", "TRANSMITTING", "BREAKDOWN"].indexOf(view.stage) >= 0 && rows[0].length && session)
       return {state: "warning", title: warningTitle, cause: [rows[0].join(" · "), rows[1].join(" · ")],
         action: warningAction, date: session};
-    if (view.stage === "NONE" && session) return {state: "quiet"};
+    if (view.stage === "NONE" && session && (d.measured_state || {}).usable === true) return {state: "quiet"};
     if (partialGrounds && rows[0].length && session)
       return {state: "partial-warning", title: warningTitle,
         cause: [(fgc.partial_prefix || copy.partial_hint)[0] + rows[0].join(" · "),

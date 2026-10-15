@@ -850,3 +850,37 @@ def test_live_foreground_checks_independent_session_floor_and_market(mutation):
     out = _js_value(setup+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', e)
     assert out['state'] == 'unavailable' and not out['hidden']
     assert 'Credit stress: building' not in out['cause']
+
+
+@pytest.mark.parametrize('usable', [False, None, 'true'])
+def test_foreground_quiet_requires_a_usable_measured_read(usable):
+    e = source_envelope()
+    e['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    e['measured_state']['usable'] = usable
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="unavailable"' in summary
+    assert ' hidden' not in summary.split('>')[0]
+    live = _live_fixture()
+    live['hazard_summary'].update(stage='NONE', contributing_sources=[])
+    live['live_transition'].update(candidate_stage='NONE', stable_stage='NONE', pending=None)
+    live['measured_state']['usable'] = usable
+    out = _js_value(_FOREGROUND_DOM+'applyFeed(FEED);console.log(JSON.stringify(foregroundResult()));', live)
+    assert out['state'] == 'unavailable' and not out['hidden']
+
+
+def test_foreground_warning_exposes_live_status_and_existing_dialog_semantics():
+    summary = _foreground_fragment(_foreground_render(source_envelope()))
+    opening = summary.split('>')[0]
+    assert 'role="status"' in opening
+    assert 'aria-live="polite"' in opening
+    assert 'aria-atomic="true"' in opening
+    assert 'aria-haspopup="dialog"' in summary
+
+
+def test_foreground_settled_session_does_not_accept_a_timestamp_as_a_day():
+    e = source_envelope()
+    e['source_session'] = '2026-09-18T20:00:00Z'
+    for s in e['provenance']['sources']: s['as_of'] = e['source_session']
+    summary = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="unavailable"' in summary
+    assert 'Credit stress: building' not in summary

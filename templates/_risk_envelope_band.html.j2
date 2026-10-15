@@ -59,7 +59,7 @@
 {% macro risk_foreground(envelope, expected_session) -%}
 {%- set _fg = _GDE_COPY.foreground -%}
 {%- set _re = envelope if (envelope is mapping and envelope.get('schema') == 'mastermind.risk_envelope/v1' and envelope.get('market', 'US') == 'US') else none -%}
-{%- set _expected = expected_session if (expected_session is string and expected_session) else none -%}
+{%- set _expected = expected_session if (expected_session is string and expected_session|length == 10 and expected_session[4] == '-' and expected_session[7] == '-' and expected_session.replace('-', '').isdigit()) else none -%}
 {%- set _v = namespace(state='unavailable', hidden=false, title=_fg.unavailable_title, cause=['', ''], action=_fg.unavailable_action, date='') -%}
 {%- if _re -%}
 {%- set _hz = _re.get('hazard_summary') or {} -%}
@@ -82,7 +82,7 @@
 {%- set _v.state = 'warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
 {%- set _v.cause = [_rows.en | join(' · '), _rows.zh | join(' · ')] %}
 {%- set _v.date = _session -%}
-{%- elif _stage == 'NONE' and _expected is string and _expected == _session -%}
+{%- elif _stage == 'NONE' and _expected is string and _expected == _session and (_re.get('measured_state') or {}).get('usable') is sameas true -%}
 {%- set _v.state = 'quiet' %}{% set _v.hidden = true -%}
 {%- elif 'stage' in _hz and _stage is none and _hz.get('stage_reason') in ('required_coverage_unavailable', 'required_source_state_unmapped') and _expected is string and _expected == _session and _rows.en -%}
 {%- set _v.state = 'partial-warning' %}{% set _v.title = _fg.warning_title %}{% set _v.action = _fg.warning_action %}
@@ -90,10 +90,10 @@
 {%- set _v.date = _session -%}
 {%- endif -%}
 {%- endif -%}
-<section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} aria-labelledby="risk-response-title">
+<section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} role="status" aria-live="polite" aria-atomic="true" aria-labelledby="risk-response-title">
   <div class="rr-head">
     <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
-    <button type="button" class="rr-open" aria-controls="dlg-risk" onclick="mx5OpenDlg('dlg-risk')"><span class="l-en">{{ _fg.open_details[0] }}</span><span class="l-zh">{{ _fg.open_details[1] }}</span></button>
+    <button type="button" class="rr-open" aria-controls="dlg-risk" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')"><span class="l-en">{{ _fg.open_details[0] }}</span><span class="l-zh">{{ _fg.open_details[1] }}</span></button>
   </div>
   <p class="rr-line" id="risk-response-cause"><span class="l-en">{{ _v.cause[0] }}</span><span class="l-zh">{{ _v.cause[1] }}</span></p>
   <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
