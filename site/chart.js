@@ -280,6 +280,7 @@
     this.intraday = !!this.opts.intraday;
     this.intradayRows = null;
     this.chart = null; this.S = {};            // series refs
+    this._destroyed = false;                  // async responses cannot revive a retired instance
     var pr = loadPrefs();
     this.tf = pr.tf || '1D';
     if (this.tf === '4H') this.tf = '1D';      // 4H loads on demand, not at mount
@@ -297,6 +298,7 @@
   }
 
   Instance.prototype.mount = function () {
+    if (this._destroyed) return this;
     injectCSS();
     this.host.innerHTML = '';
     this.wrap = document.createElement('div'); this.wrap.className = 'bchart';
@@ -304,6 +306,7 @@
     this.renderMsg(tt('Loading chart…', '正在加载图表…'));
     var self = this;
     function use(j) {
+      if (self._destroyed) return;
       if (!j || !j.bars || !j.bars.length) { self.renderMsg(tt(
         'Live chart unavailable for this name — the analysis above stands on its own.',
         '该标的暂无图表数据 —— 上方分析独立成立。')); return; }
@@ -326,6 +329,7 @@
   };
 
   Instance.prototype.renderMsg = function (msg) {
+    if (this._destroyed) return;
     this.wrap.innerHTML = '<div class="bchart-msg">' + msg + '</div>';
   };
 
@@ -406,16 +410,18 @@
   // frame in place (syncBar un-highlights 4H) — the button only shows for names we
   // expect to have data, so this is a rare graceful no-op.
   Instance.prototype.setTimeframe = function (tf) {
+    if (this._destroyed) return;
     var self = this;
     if (tf === '4H' && !this.intradayRows) {
       fetch('intraday/' + safeName(this.ticker) + '.json')
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
+          if (self._destroyed) return;
           if (j && j.bars && j.bars.length) {
             self.intradayRows = normaliseIntra(j);
             self.tf = '4H'; self.persist(); self.syncBar(); self.rerender();
           } else { self.syncBar(); }
-        }).catch(function () { self.syncBar(); });
+        }).catch(function () { if (!self._destroyed) self.syncBar(); });
       return;
     }
     this.tf = tf; this.persist(); this.syncBar(); this.rerender();
@@ -436,7 +442,7 @@
   // (re)build the whole chart — cheap (data already in memory) and avoids any
   // pane-index bookkeeping. The visible range is preserved across rebuilds.
   Instance.prototype.rerender = function () {
-    if (!this.rows) return;
+    if (this._destroyed || !this.rows) return;
     // Preserve the user's zoom/pan ONLY across changes that keep the same x-axis
     // (toggling an indicator, theme/lang). A timeframe switch changes the bar
     // count, so a stale logical range would land in empty space past the series —
@@ -691,6 +697,8 @@
   };
 
   Instance.prototype.destroy = function () {
+    if (this._destroyed) return;
+    this._destroyed = true;
     document.removeEventListener('themechange', this._onTheme);
     document.removeEventListener('langchange', this._onLang);
     document.removeEventListener('keydown', this._onKey);
@@ -769,11 +777,12 @@
   }
 
   Instance.prototype.loadSignals = function () {
+    if (this._destroyed) return;
     var self = this, dir = this.opts.signalsDir || 'signals';
     fetch(dir + '/' + safeName(this.ticker) + '.json')
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
-        if (!j || !j.markers || !j.markers.length) return;   // no file (non-US, or none) -> silent
+        if (self._destroyed || !j || !j.markers || !j.markers.length) return;   // no file (non-US, or none) -> silent
         self.signals = j;
         if (self.chips && !self.chips.querySelector('[data-sig]')) self.appendSignalsChip();
         self.renderSignals();   // chart already built: attach overlay + panel, no full rebuild

@@ -5,6 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {execFileSync} = require('node:child_process');
 const path = require('node:path');
+const fs = require('node:fs');
 const {chromium} = require('playwright');
 const ROOT = path.resolve(__dirname, '..');
 const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c', `
@@ -24,14 +25,14 @@ function record(ticker, {limited = false, name = ticker + ' fixture'} = {}) {
     ladder:{state:'NEUTRAL', points:[], entry:{}, cycle_plain:{}}, cycle:{}, tech:{price:123},
     fundamentals:{valuation:{pe:17}}, analyst:{}, earnings:{}, positioning:{}};
 }
-async function setup(t, lang = 'en', {initialHash='', indexStatus=200} = {}) {
+async function setup(t, lang = 'en', {initialHash='', indexStatus=200, realChart=false} = {}) {
   const context = await browser.newContext();
   t.after(() => context.close());
-  await context.addInitScript(lang => {
+  await context.addInitScript(({lang,realChart}) => {
     localStorage.setItem('lang', lang);
-    window.StockChart = {mount(host, ticker) { host.textContent='chart fixture '+ticker; }};
+    if (!realChart) window.StockChart = {mount(host, ticker) { host.textContent='chart fixture '+ticker; }};
     window.renderMTF = host => { host.textContent='MTF fixture'; };
-  }, lang);
+  }, {lang,realChart});
   const page = await context.newPage(); page.setDefaultTimeout(3000);
   const waiting = new Map(), arrivals = new Map();
   function requested(ticker) { return new Promise(resolve => arrivals.set(ticker, resolve)); }
@@ -41,6 +42,10 @@ async function setup(t, lang = 'en', {initialHash='', indexStatus=200} = {}) {
     if (url.pathname === '/intl_stock.html') return route.fulfill({contentType:'text/html', body:html});
     if (url.pathname.endsWith('/index.json')) return route.fulfill({status:indexStatus, json:indexStatus!==200 ? {error:'fixture unavailable'} :
       url.pathname.startsWith('/intlstockdata/') ? ['OLD','NEW','RETRY'].map(t=>({t,n:t+' fixture',s:'fixture sector',st:'LIMITED'})) : []});
+    if (realChart && ['/chart.js','/lightweight-charts-v5.js'].includes(url.pathname))
+      return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(ROOT,'site',url.pathname.slice(1)),'utf8')});
+    if (url.pathname.startsWith('/intlohlc/')) return route.fulfill({json:{o:0,bars:[['2026-10-01',100,1000],['2026-10-02',101,1100]]}});
+    if (url.pathname.startsWith('/signals/')) return route.fulfill({status:404,json:{}});
     if (url.pathname.endsWith('/calibration.json')) return route.fulfill({json:{}});
     if (url.pathname.startsWith('/intlstockdata/')) {
       const key = url.pathname.split('/').pop().replace('.json','');
@@ -134,7 +139,8 @@ test('selecting the same ticker retries a failed lookup through the native searc
   // The visible loading state is the bounded assertion; do not await a request
   // that the broken same-hash path never issued.
   await page.waitForFunction(()=>document.getElementById('lookup_status').textContent.includes('Loading'));
-  await retry; await reply('RETRY'); await page.waitForLoadState('networkidle');
+  await retry; await reply('RETRY');
+  await page.waitForFunction(()=>document.getElementById('r_name').textContent==='RETRY fixture (RETRY)');
   assert.equal(await page.locator('#r_name').innerText(), 'RETRY fixture (RETRY)');
   assert.equal(await page.locator('#result').isVisible(), true);
 });
@@ -146,4 +152,19 @@ for (const lang of ['en','zh']) test(`deep-linked record can load when the optio
   await page.waitForLoadState('networkidle');
   assert.equal(await page.locator('#r_name').innerText(), 'DIRECT fixture (DIRECT)');
   assert.equal(await page.locator('#result').isVisible(), true);
+});
+
+
+for (const limited of [false,true]) test(`leaving a ${limited?'limited':'full'} stock retires its fullscreen chart before the next lookup settles`,async t=>{
+  const {page,select,reply}=await setup(t,'en',{realChart:true});
+  await select('OLD'); await reply('OLD',record('OLD',{limited})); await page.waitForLoadState('networkidle');
+  await page.locator('.bchart-fsbtn').click();
+  assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),true);
+  await page.evaluate(()=>{window.retiredChart=StockChart._cur;});
+  await select('NEXT');
+  assert.equal(await page.locator('html').evaluate(n=>n.classList.contains('bchart-lock')),false,'pending selection must release hidden fullscreen chart');
+  assert.equal(await page.evaluate(()=>retiredChart.chart===null),true);
+  await reply('NEXT',record('NEXT',{limited}));
+  await page.waitForFunction(()=>StockChart._cur!==retiredChart&&StockChart._cur.ticker==='NEXT'&&StockChart._cur.chart!==null);
+  assert.equal(await page.evaluate(()=>StockChart._cur!==retiredChart&&StockChart._cur.chart!==null),true);
 });

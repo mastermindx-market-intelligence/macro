@@ -278,7 +278,7 @@
 <script src="stockview.js"></script>
 <script>
 (function () {
-  var idx = [], cal = null, sel = -1, items = [], lookupSerial = 0;
+  var idx = [], cal = null, sel = -1, items = [], lookupSerial = 0, activeChart = null;
   var q = document.getElementById('q'), sugg = document.getElementById('sugg');
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
@@ -439,6 +439,7 @@
   function showLookupStatus(message) {
     // Keep old facts, chart and decision bands out of the accessible/visible page
     // until the current selection has a complete record. Do not move search focus.
+    if (activeChart) { activeChart.destroy(); activeChart = null; }
     document.getElementById('result').style.display = 'none';
     liveHeaderPx({});
     document.getElementById('lookup_status').textContent = message;
@@ -527,7 +528,7 @@
       ' of history so far. The cycle & momentum model needs about a year of trading, so the full analysis unlocks as data accrues. Watch — don\'t chase. Price chart below.',
       '新上市 —— 首个交易日 ' + d.listed + '，目前仅有 ' + n + ' 个交易日。周期与动量模型需约一年历史，完整分析将随数据积累解锁。宜观察，勿追高。下方为价格走势图。')) + '</div>';
     if (window.StockChart) {
-      try { window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
+      try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish — the banner above stands alone */ }
     }
     hideEmptyGroups();
@@ -746,7 +747,7 @@
     // Bespoke self-hosted chart (chart.js) from our own intl closes (intlohlc/<T>.json):
     // area + client-side RSI/Stoch/MACD/Stoch-RSI/EMA, 1D/3D/1W. Garnish — fails quietly.
     if (window.StockChart) {
-      try { window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
+      try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish */ }
     }
     hideEmptyGroups();
