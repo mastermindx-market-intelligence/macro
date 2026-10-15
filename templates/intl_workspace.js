@@ -1188,6 +1188,8 @@
         var show = !duplicate && cohortId === id && selected.length >= 2 &&
           selected.every(function (market) { return lineIds.has(market) && tableIds.has(market); });
         group.hidden = !show;
+        var marketCount = group.querySelector('[data-im-chart-market-count]');
+        if (show && marketCount) marketCount.textContent = String(selected.length);
         lines.forEach(function (node) {
           // SVGGeometryElement.hidden may be only a JS expando; the actual
           // attribute is required for browser [hidden] CSS and rollback.
@@ -1256,7 +1258,7 @@
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
-      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
+      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable],[data-im-chart-market-count]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
@@ -1294,6 +1296,7 @@
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]')) attrs.push('hidden');
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
+      if (node.matches('[data-im-chart-market-count]')) text = true;
       if (node.matches('[data-im-compare-pin] option')) attrs.push('disabled');
       if (node.matches('[data-im-compare-pin]')) value = true;
       return {node:node, attrs:Array.from(new Set(attrs)).map(function (name) {return [name,node.getAttribute(name)];}),

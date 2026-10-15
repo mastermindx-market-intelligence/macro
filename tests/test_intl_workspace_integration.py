@@ -59,7 +59,7 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None, risk_desk=None, heatmap=None, rotation_ranks=None, records=None):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None, risk_desk=None, heatmap=None, rotation_ranks=None, records=None, workspace_payload=None, chart_sources=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
@@ -84,11 +84,11 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl
     if risk_desk is not None:
         vm["risk_desk"] = risk_desk
     if workspace:
-        vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
+        vm["intl_workspace"] = workspace_payload if workspace_payload is not None else (_workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state))
     env = RENDER_ENV
     env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
     catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
-    pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue)
+    pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue, chart_sources=chart_sources)
     return pages[1] if mode == "stocks" else pages[0]
 
 

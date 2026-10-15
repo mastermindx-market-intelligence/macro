@@ -68,6 +68,61 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+let sourceChartHtml;
+function sourceChartFixture() {
+  // Actual publisher/renderer with existing synthetic parquet inputs. This is
+  // source composition evidence, never live data or a new disclosure grant.
+  if (!sourceChartHtml) sourceChartHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from tests.test_intl_eod_publication import _setup, EVALUATED
+from tests.test_intl_workspace_integration import render_fixture
+from scripts import build_intl
+with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
+    frame, _ = _setup(Path(tmp))
+    sink = {}
+    workspace = build_intl._publication_workspace(frame, data_root=Path(tmp), evaluated_at=EVALUATED, chart_source_sink=sink)
+    print(render_fixture(workspace_payload=workspace, chart_sources=sink['sources']))
+`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024});
+  return sourceChartHtml;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Source chart heading counts committed visible markets ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.emulateMedia({reducedMotion:'reduce'});
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang)},{theme,lang});
+      const active='[data-im-compare-panel]:not([hidden])';
+      const panel=page.locator(active),picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('0');await picker.selectOption('1');
+      const chart=panel.locator('[data-im-chart-model]'),group=chart.locator('[data-im-chart-cohort]:not([hidden])');
+      async function countIs(n) {
+        assert.match(await group.locator('summary').innerText(),new RegExp('·\\s*'+n+'\\s*(?:markets|个市场)'));
+        assert.equal(await group.locator('[data-im-chart-table-market]:not([hidden])').count(),n);
+        assert.equal(await group.locator('[data-im-chart-series]:not([hidden])').evaluateAll(ns=>new Set(ns.map(n=>n.dataset.imChartSeries)).size),n);
+      }
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await countIs(2);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+      await picker.selectOption('2');await countIs(3);
+      const before=await chart.innerHTML(),url=page.url();
+      const geometry=await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>n.getAttribute('d')));
+      await page.evaluate(()=>{window.__chartPagePush=history.pushState;history.pushState=()=>{throw Error('synthetic navigation failure')}});
+      try {await panel.locator('[data-im-compare-remove="2"]').click();}
+      finally {await page.evaluate(()=>{history.pushState=window.__chartPagePush;delete window.__chartPagePush});}
+      await countIs(3);assert.equal(await chart.innerHTML(),before);assert.equal(page.url(),url);
+      await panel.locator('[data-im-compare-remove="2"]').click();await countIs(2);
+      assert.deepEqual(await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>n.getAttribute('d'))),geometry);
+      await page.goBack();await countIs(3);
+      await page.locator('[data-im-action="set_basis"]').selectOption('local');await countIs(3);
+      await page.goBack();await countIs(3);
+      assert.equal(await chart.locator('[data-im-chart-benchmark-unavailable]').isVisible(),true);
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage:lang,initialSearch:'?view=compare'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Correlation cell readings remain legible ${theme} ${lang}`,async t=>{
     const h=execFileSync('python3',['-c',"from tests.test_intl_correlation_coverage_render import correlation_fixture; from tests.test_intl_workspace_integration import render_fixture; c=correlation_fixture(); c['cells'][0][2]=c['cells'][2][0]=0.; c['cells'][1][2]=c['cells'][2][1]=.5; print(render_fixture(perf={'correlation':c}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
