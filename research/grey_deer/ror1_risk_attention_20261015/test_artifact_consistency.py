@@ -121,6 +121,47 @@ class ArtifactConsistencyTests(unittest.TestCase):
         self.assertEqual(audit(d), audit(d))
         self.assertEqual(d, orig)
 
+    def test_cli_replays_saved_minimal_bundle(self):
+        import json
+        import subprocess
+        import tempfile
+        bundle = {
+            "schema": "ror1.grounded_artifact_excerpt.v1",
+            "macro_commit": "1b12af09222df183ac61ed5bcabb1ecc6bf5c735",
+            "observations": artifacts(),
+            "sources": {"site/riskdata/risk_envelope.json": {
+                "blob_sha": "80a2dd2f86a62944803cd3224d448e5ba1eebd76"
+            }},
+        }
+        with tempfile.TemporaryDirectory() as td:
+            file = Path(td) / "bundle.json"
+            file.write_text(json.dumps(bundle), encoding="utf-8")
+            run = subprocess.run([
+                sys.executable, str(Path(__file__).with_name("audit_artifact_consistency.py")),
+                "--bundle", str(file),
+            ], capture_output=True, text=True, timeout=6)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        replay = json.loads(run.stdout)
+        self.assertEqual(replay["macro_commit"], bundle["macro_commit"])
+        self.assertEqual(replay["audit"], audit(artifacts()))
+        self.assertIn("inputs_sha256", replay)
+        self.assertEqual(replay["sources"], bundle["sources"])
+
+    def test_cli_refuses_unrecognized_bundle_schema(self):
+        import json
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            file = Path(td) / "bundle.json"
+            file.write_text(json.dumps({"schema": "unknown.v1",
+                                        "observations": artifacts()}), encoding="utf-8")
+            run = subprocess.run([
+                sys.executable, str(Path(__file__).with_name("audit_artifact_consistency.py")),
+                "--bundle", str(file),
+            ], capture_output=True, text=True, timeout=6)
+        self.assertNotEqual(run.returncode, 0)
+        self.assertIn("invalid_bundle_schema", run.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
