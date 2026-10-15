@@ -15,7 +15,7 @@ changed:
 - path: engine/postmortem.py
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit sixteen bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
+  what: Admit twenty bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
     bear. Add explicit same-request native numeric verification to the scorer; no persisted-row source admission,
     independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
@@ -152,26 +152,22 @@ unresolved:
 - Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
   Protected merge and all production proof remain owed.
 next_actions:
-- A1 PR6651 repair ff7912003742 was ordinarily published and read back09:55 after canonical admission09:53
-  showed7 active proofs/cap8 with0 live reservations. Current-main fb596 preview passed. No base integration
-  was performed. Original exact-head run38716442763/attempt1 is active at10:14; plan,contract-delta andpacks1/11
-  passed,10packs remain running. Original plan ZIP digest/canonical hash validated;127jobs/A1pack9, tested1ac926/basefb596
-  equals admitted preview tree,17productionfiles and A1execution unchanged. Consume terminal artifact and
-  binding checks; repair an actual failure or continue incumbent final merge. Old ba848 failure stays separate.
-- Existing admission helper now uses incumbent prepare_refresh_lease under GET-only transport; a stale
-  generation register is not ownership. Four focused controls retain genuine reservations and fail closed
-  on unreadable or cleanup-required state. Source/proof is admission-helper-correction-20261015.json in
-  research/evidence/eval-os-tier-query-20261014. No duplicate controller or observer was created.
-- Follow-on GDP fixture/source6cb697a6be23 extends to16supplied-text cases plus legacybear; two case and
-  two CI controls pass. One missing native-verifier source path repaired; targeted250-path closure passes,
-  prior all-other closure and strict134/134/128 packing reused after exact isolated path diff. All314job
-  execution definitions/limits and evaluator function bodies remain. Original M2 constructor accepted
-  WITH neutral-question correction, not independent or blind model review. See gdp-units-20261015.json.
-  Publish the same follow-on source/evidence carrier; reuse T11 caller/sink/probe/CI qualification.
-  After qualified A1 merge bind installation/asset probes; prove deployment/API/DOM/eight visual states,
-  natural owner progression and comprehension. Release this same follow-on through one lawful PR; prove
-  installed numeric execution/internal log, CLI and rights-qualified Discovery use. Preserve unknown/refused
-  original effects and false completion flags. Incumbent alone owns A1 final merge and next refresh.
+- A1 PR6651/headff7912003742 remains open; originalCI38716442763/attempt1 at11:03:50Oct15 has
+  plan, contract-delta and11packs passed; only10 running. Original pack9 artifact11967139028
+  digest verified and canonically consumed,13jobs/27semantic command steps passed including both A1 steps. Originalplan/tested1ac926/basefb596 and
+  17productionfiles proof retained. Consume final evidence and binding checks; repair actual failure
+  or continue incumbent final merge. Incumbent alone owns next refresh and merge; no second manual base integration.
+- Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
+  eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
+  reviewer accepted without content correction, not independent/blind model review.8newcase+2CIcontrolsPASS,
+  zero fullclosure misses and strict134/134/128jobs within unchanged limits.314execution definitions and
+  evaluator functions preserved. See policy-contracts-20261015.json. Publish on the same follow-on branch;
+  open its single PR only after A1 landing and final-base/capacity reconciliation. Reuse prior proof.
+- After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
+  authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
+  prove numeric execution/internal-log, CLI and rights-qualified Discovery use. Host-local operator ingestion
+  is separate from R2 publication and natural QLedger progression. All final flags remain false;
+  preserve original unknown/refused effects and source custody.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.

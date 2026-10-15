@@ -80,3 +80,32 @@ The sixteenth supplied-text case uses the official April25,2024 BEA advance rele
 The original M2 fixture constructor returned its retained artifact; parent review changed the question to remove leading conclusions, while preserving the exact source and separate judge-only adjudication. Two new-case source-binding/explicit-callback controls and two affected CI controls pass. This extends diagnostic coverage without changing evaluator function bodies, model defaults, the rubric or authority. Sixteen supplied-text cases plus the unchanged legacy bear case still do not prove the original20/15 historical objective, actual model performance, independent trials or consumer adoption. Original refused blind-answer operations remain unchanged. Source: `research/GDP_GROWTH_UNITS_CASE_2024_04_25.md`.
 
 Final source6cb697a6be23 adds twelve source-path memberships while preserving all314job execution definitions and limits. The full closure check identified one new native-verifier dependency; its isolated repair passed the250-path target closure, and unchanged jobs/strict134-134-128 packing were reused after exact diff validation. See `research/evidence/eval-os-tier-query-20261014/gdp-units-20261015.json`.
+
+
+## Policy instruments and futures contracts — 2026-10-15
+
+Four source-bound cases extend the supplied-text inventory to twenty, alongside the
+unchanged legacy bear case. The shared source document is
+`research/POLICY_AND_CONTRACT_CASES_2020_2022.md` and links the official BOJ, ECB,
+Bank of England and EIA pages read for this tranche. BOJ separates a yield band
+from policy-rate levels; ECB separates announcement, effectiveness and possible
+instrument activation; BOE separates temporary financial-stability operations,
+sales timing and the annual stock target; WTI separates contract identity,
+intraday prices, storage occupancy and commercially available capacity.
+
+The EIA page is dated April27,2020. Its case is explicitly an April27 retrospective,
+not a proved April20 decision-time snapshot. The FDIC candidate source returned403
+and was not retried or included. Facts and root adjudications remain separate;
+questions are neutral and copied exactly. One M2 Fabric worker assembled the four
+fixtures from the supplied document. Its same-ID result/artifacts were consumed,
+checked and accepted by the assigning root without content correction. This is
+construction acceptance, not independent scientific or blind model review.
+
+Eight new case controls pass; the prior sixteen-case proof is reused rather than
+repeated. The evaluator's function/class bodies, frozen rubric and all314 CI
+execution definitions remain unchanged. Two affected CI controls pass. Exact
+source closure and packing are recorded in `policy-contracts-20261015.json` under
+the existing evidence directory. Twenty fixtures meet an inventory count only:
+historical byte availability, the original qualified20/15 objective, actual
+model-answer/judgement acceptance and release/adoption remain unproved. The
+original refused blind-answer operation is preserved without replay or replacement.
