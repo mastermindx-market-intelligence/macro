@@ -9,7 +9,7 @@ The host configuration fixes roots and test-workspace paths. Requests cannot sup
 | browse | root alias; optional path, offset, limit 1–200, expected_directory_version |
 | describe | ref |
 | read | ref; optional columns, time_column, start, end, equals, offset, limit 1–200, expected_version |
-| history_dossier | ref to manifest.json, manifest_sha256, date; optional paired macro_ref and macro_sha256; optional reveal_outcomes (boolean, default false) |
+| history_dossier | ref to manifest.json, manifest_sha256, date; optional paired macro_ref/macro_sha256 and filings_ref/filings_sha256; filings_offset (default 0); reveal_outcomes (boolean, default false) |
 | lab_signals | Optional query, limit 1–100 |
 | lab_plan | signal_id, refs; optional horizon_bars, cost_bps, n_configs_searched |
 | lab_run | request (the plan's inner request), time_column, column_map, bar_frequency ("daily"); optional start, end, expected_versions |
@@ -81,6 +81,20 @@ The optional macro reference must end in `.json`; a historical Parquet partition
 The default does not read outcome files at all. Only an explicit outcome-analysis task may add `"reveal_outcomes":true`. The returned `summary` describes selected proxies, not whole-market breadth. `coverage` lists unavailable news/causal context, consensus, filings, historical stock identity, intraday/options and strict point-in-time proof rather than filling gaps. First-release chronology is not a full historical macro revision matrix.
 
 This action does not run a strategy, collect a source, refresh data, create a ledger entry, write an artifact, or change a live signal. The separate existing Lab remains the strategy-experiment interface.
+
+## Filing context
+
+Only use this when the installed capabilities advertise `history.filings`. Select a retained `earnings_8k_dates.parquet` reference and its exact SHA-256, along with the market archive reference/digest. A source stat-version token is not its content digest. Both optional filing fields must appear together.
+
+```json
+{"action":"history_dossier","ref":"web_test_runs:<observed archive>/manifest.json","manifest_sha256":"<exact retained manifest digest>","date":"2020-03-16","filings_ref":"macro_snapshot:edgar/earnings_8k_dates.parquet","filings_sha256":"<exact retained filing source digest>"}
+```
+
+The result contains at most 50 filing records, `total_events`, `next_offset`, and `remaining_events`. For another page, resend the exact same date and hashes with `filings_offset` equal to the returned `next_offset`. This is a matched-filing offset, not the generic `read` action's original-row offset. Do not treat a first page as a full date census while `next_offset` remains present.
+
+The source's filing-date range is an observed range, not calendar completeness. `NO_RETAINED_FILING` means no record in that selected source/date, not no corporate or market event. The canonical filing key is CIK/accession; stored ticker labels do not prove historical symbol identity. `filing_date`, `report_date`, `acceptance_datetime_source` and normalized source-claimed UTC remain distinct. No verified intraday publication/availability, earnings values, consensus, surprise or causal explanation is supplied. The source universe need not match the selected price-proxy universe.
+
+All bytes pass through the unchanged descriptor-confined source reader. The exact source filename is required before opening it, so a historical outcomes partition cannot be selected through this channel. The limits are 16 MiB source bytes, 32 MiB declared decoded Parquet and 250,000 original records, plus the existing 128 KiB response limit. No collector, filing download, write, identity migration or live signal is triggered.
 
 ## Prepare and execute a Lab test
 

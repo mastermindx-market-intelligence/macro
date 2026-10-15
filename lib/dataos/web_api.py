@@ -221,7 +221,8 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
     if action == "history_dossier":
         from lib.dataos.web_history import history_dossier
         return history_dossier(workspace, **_fields(args,
-            {"ref", "manifest_sha256", "date", "macro_ref", "macro_sha256", "reveal_outcomes"},
+            {"ref", "manifest_sha256", "date", "macro_ref", "macro_sha256", "reveal_outcomes",
+             "filings_ref", "filings_sha256", "filings_offset"},
             {"ref", "manifest_sha256", "date"}))
     if action == "lab_signals":
         return workspace._result(action=action, **_lab().list_signals(
@@ -252,6 +253,12 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
                      "budget_is_peak_process_memory_limit":False,
                      "provenance":"compact per-source digests; full source detail in the retained manifest",
                      "required_evidence":"exact manifest digest; paired optional JSON macro reference and digest",
+                     "filings":{"source_kind":"retained_item_202_filing_metadata",
+                                "required_source_filename":"earnings_8k_dates.parquet",
+                                "requires_exact_sha256":True,"max_records_per_date_page":50,
+                                "max_source_bytes":16*1024*1024,"max_decoded_bytes":32*1024*1024,
+                                "max_source_rows":250000,"intraday_publication_time_verified":False,
+                                "identity":"canonical CIK/accession; ticker is an unqualified source label"},
                      "outcomes":"excluded unless explicitly revealed"},
             freshness="stored data clocks where available; filesystem mtime is not freshness",
             access="host bindings and the existing Studio account-scoped transport")

@@ -80,3 +80,33 @@ def test_direct_composition_refuses_macro_qualification_upgrade(monkeypatch, tmp
     macro[key] = True
     with pytest.raises(HistoricalExperienceError):
         compose_daily_dossier(market, macro)
+
+
+
+def test_cli_dossier_composes_identical_filing_metadata(monkeypatch,tmp_path):
+    from tests.test_market_memory_history_archive import make_archive
+    from tests.test_market_memory_history_filings import row, payload, read
+    from engine.neuralweb.market_memory_history_dossier import build_daily_dossier
+    ar, root, receipt = make_archive(monkeypatch,tmp_path)
+    raw = payload([row(filing_date='2020-01-05',report_date='2020-01-03',acceptance_datetime='2020-01-05T12:00:00Z')])
+    source = tmp_path/'earnings_8k_dates.parquet';source.write_bytes(raw)
+    digest = hashlib.sha256(raw).hexdigest()
+    actual = build_daily_dossier(root,'2020-01-05',expected_manifest_sha256=receipt['manifest_sha256'],
+        filings_path=source,expected_filings_sha256=digest)
+    assert actual['filings'] == read(raw,day='2020-01-05')
+    assert actual['market']['rows'][0]['close_tradj']==52.0
+    assert actual['coverage']['issuer_filings_and_earnings_context']=='SELECTED_ITEM_202_FILING_METADATA_ONLY'
+    assert actual['outcomes_revealed'] is False
+
+
+def test_dossier_refuses_wrong_filing_date_or_qualification(monkeypatch,tmp_path):
+    from tests.test_market_memory_history_archive import make_archive
+    from tests.test_market_memory_history_filings import read
+    from engine.neuralweb.market_memory_history_dossier import compose_daily_dossier
+    from engine.neuralweb.market_memory_history import HistoricalExperienceError
+    ar,root,receipt=make_archive(monkeypatch,tmp_path)
+    market=ar.read_day(root,'2020-03-16',expected_manifest_sha256=receipt['manifest_sha256'])
+    for changes in ({'calendar_date':'2020-03-15'},{'point_in_time_eligible':True},
+                    {'historical_ticker_identity_proven':True},{'intraday_publication_time_verified':True}):
+        with pytest.raises(HistoricalExperienceError):
+            compose_daily_dossier(market,filings={**read(),**changes})

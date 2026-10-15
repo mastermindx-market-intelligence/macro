@@ -44,6 +44,12 @@ Default requests never open outcome files. Reveal future outcomes only for an ex
 
 Report the selected-proxy denominator, exact date, source receipts and missing coverage. The macro panel holds initial release records, not full revision history, consensus forecasts or verified intraday release times. A price move and a same-date macro record do not prove a causal explanation. These dossiers are `RETROSPECTIVE_EXPLORATORY`, not strict point-in-time replay, actual historical Mastermind alerts, whole-market breadth or trading approval. Null observations and absent dates must remain explicit.
 
+## Add historical filing context
+
+When the installed `history` capability advertises `filings`, an optional `filings_ref` plus exact `filings_sha256` adds retained Item 2.02 SEC filing metadata to the same daily dossier. Use the original source receipt or a verified retained source digest; never guess it. Only the exact `earnings_8k_dates.parquet` source family is supported. Keep `filings_offset` tied to the returned next offset for that exact date and source; it counts matched filings, not generic source-row positions.
+
+Filing date is not the report period and not the original press-release time. Acceptance timestamps are source-claimed, not independently verified intraday availability. CIK/accession supplies the canonical filing key; the ticker is only a later source label, not proven historical security identity. An amendment remains a distinct filing. The returned filings cover the source universe, not only the selected price proxies. Do not infer EPS, consensus, surprise, press-release contents, or market-move causation from this metadata. An empty or out-of-range filing view is not proof no event occurred.
+
 ## Test with the existing Lab
 
 Use `lab_signals` to discover recipes and their support status, then `lab_plan` to make the intended test concrete. The installed adapter admits only reviewed OHLCV-only recipe modules. Other catalog entries remain discoverable with a refusal reason.
