@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T17:09:44.608763+00:00",
+  "updated_at": "2026-10-15T18:05:08.520478+00:00",
   "a1_pr": 6651,
   "incumbent_refresh": {
     "parents": [
@@ -15,11 +15,11 @@
     "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
     "old": "624465a40a80cb2e34ff26c4a058d2de4244b26d"
   },
-  "source_and_plan_only": true,
+  "source_and_plan_only": false,
   "terminal_binding_checks_pending": true,
   "production_verified": false,
   "programme_complete": false,
-  "next": "Consume original939b run38773271071 terminal artifact and all binding checks; repair actual failures or continue incumbent-only merge. Then bind final-source probes and prove production behavior.",
+  "next": "Consume current939b all binding checks and incumbent release disposition. After qualified incumbent merge bind final-source probes and prove production; retain separate follow-on delivery/adoption.",
   "followon": {
     "qualified_source": "34077489ec627188041d3b062d12f44ceed9c0cd",
     "runtime": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
@@ -265,6 +265,29 @@
         "followon": 320
       },
       "scope": "Targeted composition check for the actual new-main command/test delta only. No test rerun, carrier integration, final source qualification or production claim."
+    },
+    "latest_continuity_composition": {
+      "at": "2026-10-15T18:00:38.162107+00:00",
+      "purpose": "Preserve newly published real T12 consumer and current continuity in existing prospective integration; not a carrier/base integration or final qualification.",
+      "prepared_parent": "1c3ac9746c24bd525f58ee2794693813df2a8fea",
+      "current_followon": "3d46e299b3723891f620bc933a0a0ca24bad1507",
+      "composition_tree": "ada6f6d79e1ddd14013d28b2c0f9c6ca244753f5",
+      "unreferenced_preview_commit": "2e1e3057d9c752297d654b45e0f0a5aae6c6088c",
+      "observed_main": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+      "main_composition_tree": "197198d978a825d25927c840877864c9cdf759c1",
+      "new_continuity_and_discovery_blobs_preserved": [
+        "agentos/discoveries/DSC-WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS.md",
+        "agentos/handoffs/EVAL-OS-SOURCE-INTERFACES-2026-10-14.md",
+        "research/evidence/eval-os-tier-query-20261014/a1-current-release.json",
+        "research/evidence/eval-os-tier-query-20261014/t12-real-claim-consumer.json"
+      ],
+      "prepared_manifest_unchanged": true,
+      "incoming_research_factory_job_preserved": true,
+      "prospective_job_count": 320,
+      "reuse": "All unchanged runtime/CI/probe qualification retained. Actual qualified A1 landing must still be reconciled.",
+      "carrier_mutated": false,
+      "final_qualification": false,
+      "production_verified": false
     }
   },
   "preserved_boundaries": [
@@ -376,17 +399,16 @@
     "packs_in_progress": []
   },
   "latest_ci_observation": {
-    "observed_at": "2026-10-15T17:08:15.228558+00:00",
+    "observed_at": "2026-10-15T18:02:57.890662+00:00",
     "pr_state": "open",
     "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
     "workflow_run_id": 38773271071,
     "attempt": 1,
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "ci_plan": "success",
-    "contract_delta": "in_progress",
-    "packs_passed": [],
-    "packs_in_progress": [
+    "contract_delta": "success",
+    "packs_passed": [
       0,
       1,
       2,
@@ -399,7 +421,8 @@
       9,
       10,
       11
-    ]
+    ],
+    "packs_in_progress": []
   },
   "incumbent_release_pending": true,
   "source_refresh_requirement": {
@@ -463,6 +486,26 @@
     },
     "a1_execution_identity_unchanged": true,
     "binding_checks_pending": true,
-    "scope": "Original current-head plan/source identity only; terminal original semantic evidence and binding checks remain owed."
+    "scope": "Original current-head plan bound to consumed terminal semantic proof; all other binding checks and incumbent release still separate."
+  },
+  "terminal_semantic_ci": {
+    "consumed_at": "2026-10-15T18:04:03.184632+00:00",
+    "workflow_run_id": 38773271071,
+    "attempt": 1,
+    "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+    "artifact_id": 11996491671,
+    "zip_sha256": "6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6",
+    "canonical_mode": "semantic",
+    "plan_sha256": "8e801ceafb530364d28e9d8619ad8d73bf8a3271d03324552bb6b8b4f6464f00",
+    "base_sha": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+    "tested_commit": "529cae70cb6ccdb22791ccd745163a75e7d72c9d",
+    "jobs": 127,
+    "semantic_command_steps_passed": 351,
+    "blocked": 0,
+    "inherited": 0,
+    "infrastructure_blocking": false,
+    "clear": true,
+    "plan_execution_and_step_identities_match": true,
+    "scope": "Original939b terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
   }
 }

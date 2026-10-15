@@ -154,11 +154,11 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 incumbent refresh b2c44ab1e5b0 retains the qualified source repair; its own CI38757206381 is running.
-  Terminal binding checks, protected merge and production proof remain owed.
+- Current A1 head939b original CI38773271071 passed; canonical original terminal evidence is consumed.
+  Remaining binding checks, incumbent protected merge and production proof remain separate.
 next_actions:
-- Consume original A1 head939b CI38773271071 terminal artifact and all binding evidence; the incumbent
-  alone refreshes or merges. Predecessor624465 checks do not qualify this new head.
+- Consume current939b all binding checks and incumbent release disposition; its original terminal CI evidence
+  is accepted. The incumbent alone refreshes or merges. No second manual integration.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
 - Reconcile actual qualified landing with locally qualified0add and clean newer-base preview2c2a9; integrate
@@ -176,17 +176,17 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T17:07:06.642210+00:00
+## Current checkpoint — 2026-10-15T18:04Z
 
-The incumbent refreshed original PR6651 to939b348451fc1e46b70eee2e55309e4e1756ab98 at16:57:10Oct15. Exact parents624465+main32bbb and tree5820d767 match a clean merge preview; all17productionfiles and7assetinputs remain unchanged. Root only fast-forwarded its owned clean checkout to that existing commit. Original CI38773271071/attempt1 has planPASS and contract+12packsRUNNING at17:08:15. Original planartifact11992178667 ZIPdigest/canonicalhash verified:127jobs/A1pack10, tested529cae70/base32bbb/tree5820d767 equals the incumbent source;17productionfiles and A1execution identity match. Terminal artifact and all binding conclusions remain owed. A1 now owns the canonical refresh lease;8active/cap8/0unindexedreservations. Owner9099 CI completed and is no longer our dependency. No duplicate controller or manual base integration.
+PR6651 remains OPEN939b348451fc1e46b70eee2e55309e4e1756ab98 at18:02:57. Its original CI38773271071/attempt1 completed successfully:12packs,contract-delta,plan andci-gate. Final artifact11996491671 ZIP SHA6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6 matches GitHub; canonical validation accepts127jobs/351semantic commandsteps,zero blocked/inherited/infrastructure failure. Every execution/step identity matches the original plan. These are command results, not a unit-test or zero-skip count. All remaining binding checks and the incumbent release decision are separate; no root refresh or merge.
 
-Predecessor624465 original CI38764340141/final11990733639 passed127jobs/351semantic commandsteps with all26bindingcheckruns clean. Those results belong only to624465. Newer observedmain40324 differs from proofbase32bbb only in3769generateddata/sitepaths; no new source or CI-definition change was found. Actual freshness and merge remain incumbent-owned.
+The qualified plan/source identity remains tested529cae70/base32bbb/tree5820d767 with17productionfiles/7assetinputs unchanged. Preserve the incumbent-only refresh/merge path and consumed one-time base exception. The original terminal artifact and consumption record are retained in a1-refresh-recovery-20261015/ beside this record; a1-current-release.json carries the current structured state.
 
-Follow-on80fb runtime3528080/updater9cb/probe2edbb/CI340774 are unchanged. Twelve-file probe16tests+20subtestsPASS;20suppliedtextcases+bear/T11/T5/T12/QLedger/169updater proof retained. The retained A1/preparedfollowon previews preserve the actual incoming research-factory-authority command and all5changed runtime/test blobs exactly. Reconcile actualqualifiedA1landing and current continuity before SAMEfollowon integration/singlePR. No final integration/qualification or production/adoption claim.
+Follow-on runtime3528080/updater9cb/probe2edbb/CI340774 remain unchanged; accepted12-file probe,20 supplied-text cases plus bear,T11/T5/T12/QLedger and169updater checks are reused. Newest3d46 Discovery/continuity cleanly composes with the existing prospective integration (unreferenced2e1e3057/treeada6; main32 preview197198d9), preserving all320 prospective job definitions and incoming research-factory command. This is no carrier integration or final qualification: reconcile actual qualified A1 landing before the same follow-on single PR.
 
-A real T12 consumer now uses the production claims snapshot observed2026-10-15T17:46:25Z:300 whitehouse claim-direction records, exact canonical rule-2 binding, and explicit intended excess_mean assessment. Actual local CLI output feeds DSC:WHITEHOUSE-CLAIM-SNAPSHOT-REQUIRES-DIRECTION-SPLIT-EXCESS through the existing drafter/validator with independently authored admission fields. No grade/sealed outcome/model read, metric publication assertion or gate/producer mutation. Protected Discovery delivery and installed consumer execution remain owed.
+The real local T12 consumer uses300 production whitehouse claim-direction records (210positive/90negative), exact rule-2 binding and intended excess_mean assessment. It feeds the existing typed Discovery drafter/validator with independently authored admission fields. No grade/sealed outcome/model read or metric-publication assertion; protected Discovery delivery, installed execution and subsequent consumption remain owed.
 
-Canonical current record: research/evidence/eval-os-tier-query-20261014/a1-current-release.json. After actual qualified landing, bind17fileprobe ANDassetprojector, then prove updater/install/process/assets/authAPI-DOM/8visualstates/naturalowner/comprehension. Separate follow-on owes12fileidentity/actualupdatercopy/API-admin,numeric/internal-log,CLI/rights-qualifiedDiscovery adoption. All finalflagsfalse; originalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals preserved. SESSION END: DURABLE_EXECUTION_RUNNING.
+After qualified A1 landing bind17-file probe ANDasset projector, then prove normal deployment,served assets,authenticatedAPI/DOM,eightvisualstates,naturalownerprogression and comprehension. Follow-on separately owes12-fileidentity/actualupdatercopy/API-admin,numeric/internal-log,CLI/Discovery adoption. Allfinalflagsfalse; originalFabricIDs/experienceUNKNOWN/lostCLIreview/refusals preserved. SESSION END: DURABLE_EXECUTION_RUNNING.
 
 ## 2026-10-15 A1 repair published
 
