@@ -1,0 +1,5 @@
+# Selected-card study browser evidence
+
+These pages are offline illustrative fixtures from the actual shared card/detail templates, scoped workspace CSS and full theme.js. They are not production data, native runtime adoption or scientific acceptance. The study fixture invokes the actual selection buttons for the first three original cards before capture. The scan fixture starts with zero selection. No comparison strategy or horizon is assigned; the unequal/date-only/missing assessment clocks remain original detail facts. Both art directions retain the existing core cards. The additional focus state uses actual browser focus on the source card control. The canonical capture tool writes this manifest and the screenshots; the parent does not synthesize capture receipts.
+
+Reference and bounded design: research/migration_packets/MP-PROPHET-COMPARISON-STUDY-20261014.md. Original root programme6817. Independent owner review is unresolved and this evidence does not replace it. Hosted CI, current-main qualification, ordinary release, automatic render and authenticated live proof remain separate obligations.

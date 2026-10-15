@@ -889,3 +889,138 @@ fire(closeBtn());
 assert.equal(document.activeElement, origin.trigger);
 assert.equal(scrollState.y, before.scroll, 'Close must retain the original candidate scroll');
 """, pre=_PRE["table"])
+
+
+# Selected-card study uses the same actual detail and Plan-return owners.
+_CMP_PRE = """
+build({mode: 'candidates', view: 'grid'});
+const second = candidate('board', 'SECOND', 'OTHER-BULL-20260811');
+const third = candidate('board', 'THIRD', 'OTHER-BULL-20260811');
+const fourth = candidate('board', 'FOURTH', 'OTHER-BULL-20260811');
+candGrid.append(second.row, third.row, fourth.row);
+"""
+_CMP_START = """
+await flush();
+const origin = origins.board;
+const pick = row => row.querySelector('.pvs-study-pick');
+const bar = document.querySelector('[data-pvs-study-for="us-cand-grid"]');
+assert.ok(bar && pick(origin.row), 'study controls must be on the actual source cards');
+const go = bar.querySelector('.pvs-study-start');
+const back = bar.querySelector('.pvs-study-back');
+const clear = bar.querySelector('.pvs-study-clear');
+"""
+
+
+def test_explicit_selection_keeps_original_nodes_order_and_three_card_capacity():
+    _run(_CMP_START + """
+assert.equal(go.disabled, true);
+const order = Array.from(candGrid.children);
+fire(pick(third.row)); await flush();
+assert.equal(go.disabled, true);
+fire(pick(origin.row)); await flush();
+assert.equal(go.disabled, false);
+fire(pick(second.row)); await flush();
+assert.equal(pick(fourth.row).disabled, true);
+fire(pick(fourth.row)); await flush(); // reject even a synthetic disabled-button event
+assert.equal(pick(fourth.row).getAttribute('aria-pressed'), 'false');
+fire(go); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+assert.deepEqual(Array.from(candGrid.children), order, 'never reorder or copy publisher cards');
+assert.ok(fourth.row.classList.contains('pvs-study-omit'));
+assert.equal(origin.row.classList.contains('pvs-study-omit'), false);
+assert.ok(bar.textContent.includes('Comparison eligibility unverified'));
+assert.ok(bar.textContent.includes('比较资格未验证'));
+fire(back); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true', 'return retains chosen originals');
+assert.equal(document.activeElement, go);
+assert.equal(scrollState.y, 1200);
+fire(clear); await flush();
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'false');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+def test_study_keeps_the_native_detail_and_exact_plan_return():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+fire(origin.trigger); await flush();
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+fire(origin.link); await flush();
+assert.equal(mode(), 'plans');
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true');
+assert.equal(window.PVSetupReturn.run(), true);
+await flush();
+assert.equal(mode(), 'candidates');
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+fire(closeBtn()); await flush();
+assert.equal(document.activeElement, origin.trigger);
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true');
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize('mutation', [
+    "origin.row.remove();",
+    "origin.row.querySelector('.pv-setup-stock-link').setAttribute('href', 'stock.html#REPLACED');",
+    "origin.row.setAttribute('data-ticker', 'RECYCLED');",
+    "panel.setAttribute('data-board-asof', '2026-10-15');",
+    "origin.row.setAttribute('hidden', '');",
+    "origin.row.classList.add('mx-tier-hidden');",
+    "fire(srcBtn('plan'));",
+])
+def test_stale_or_unrelated_sources_clear_without_resurrection(mutation):
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+""" + mutation + """
+await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(pick(second.row).getAttribute('aria-pressed'), 'false');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+def test_language_preserves_selection_but_access_and_hydration_clear_it():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+(document.listeners.langchange || []).forEach(fn => fn({})); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+(window.listeners['mmx-access-tier'] || []).forEach(fn => fn({})); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(go.disabled, true);
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+(document.listeners['candidate-pool-hydrated'] || []).forEach(fn => fn({})); await flush();
+assert.equal(go.disabled, true);
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+""", _CMP_PRE)
+
+
+def test_invalidated_selection_also_closes_its_open_native_detail():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+fire(origin.trigger); await flush();
+origin.row.querySelector('.pv-setup-stock-link').setAttribute('href', 'stock.html#OTHER');
+await flush();
+assert.equal(dialogEl().open, false, 'a changed identity cannot retain the old detail');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize('key', ['data-today-source-sha256','data-today-pair-id','data-today-selection-receipt','data-today-roster-size','data-today-served','data-today-native-state'])
+def test_today_native_envelope_changes_invalidate_the_display_selection(key):
+    _run("""
+await flush();
+const grid=document.getElementById('us-today-grid');
+const original=origins.today.row, other=grid.querySelector('[data-ticker="SECOND"]');
+const ui=document.querySelector('[data-pvs-study-for="us-today-grid"]');
+fire(original.querySelector('.pvs-study-pick'));fire(other.querySelector('.pvs-study-pick'));
+fire(ui.querySelector('.pvs-study-start'));await flush();
+assert.equal(grid.classList.contains('pvs-study-active'),true);
+document.getElementById('us-today').setAttribute(""" + repr(key) + """, 'changed');
+await flush();
+assert.equal(grid.classList.contains('pvs-study-active'),false);
+assert.equal(original.querySelector('.pvs-study-pick').getAttribute('aria-pressed'),'false');
+""", """
+build({mode:'today',view:'grid'});
+document.getElementById('us-today-grid').append(candidate('today','SECOND','OTHER-BULL-20260811').row);
+""")

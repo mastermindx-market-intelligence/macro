@@ -234,3 +234,58 @@ html[data-theme="light"] #us-standouts :is(#us-today-grid, #us-cand-grid) .pvcar
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+/* Selected-card study retains each original card in publisher order. */
+#us-standouts .pvs-study-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card, 12px);
+  background: var(--panel2);
+  color: var(--text);
+}
+html[data-theme="light"] #us-standouts .pvs-study-bar {
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+#us-standouts .pvs-study-copy { flex: 1 1 220px; min-width: 0; }
+#us-standouts .pvs-study-copy strong { font-size: var(--fs-body); }
+#us-standouts .pvs-study-count,
+#us-standouts .pvs-study-note { font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
+#us-standouts .pvs-study-count { margin: 4px 0 0; }
+#us-standouts .pvs-study-note { flex: 1 1 100%; border-top: 1px solid var(--line); padding-top: 12px; }
+#us-standouts .pvs-study-note p { margin: 4px 0 0; }
+#us-standouts .pvs-study-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#us-standouts :is(.pvs-study-actions button, .pvs-study-pick) {
+  min-height: 44px;
+  min-width: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+#us-standouts .pvs-study-pick { position: relative; z-index: 5; margin-top: 12px; align-self: flex-start; }
+#us-standouts .pvs-study-pick[aria-pressed="true"] { border-color: var(--link); color: var(--link); background: var(--panel2); }
+html[data-theme="light"] #us-standouts .pvs-study-pick[aria-pressed="true"] { background: var(--bg); }
+#us-standouts :is(.pvs-study-actions button, .pvs-study-pick):focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+#us-standouts .pvs-study-bar [hidden] { display: none !important; }
+#us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 296px), 1fr)) !important;
+}
+#us-standouts .pvs-study-active > .pvs-study-omit,
+#us-standouts .pvs-study-active + .sm-bar { display: none !important; }
+/* Show-more is pagination, not access: only an explicitly chosen original can stay
+   visible across a column resize. Hidden/tier access remains the native owner's. */
+#us-standouts .pvs-study-active > .pvcard.pvs-study-chosen.sm-hidden { display: flex !important; }
+@media (min-width: 1280px) {
+  #us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 680px) {
+  #us-standouts :is(#us-today-grid, #us-cand-grid).pvs-study-active { grid-template-columns: minmax(0, 1fr) !important; }
+  #us-standouts .pvs-study-actions { width: 100%; }
+  #us-standouts .pvs-study-actions button { flex: 1 1 120px; }
+}
