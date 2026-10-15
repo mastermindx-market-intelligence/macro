@@ -401,6 +401,27 @@
           <td class="num">{% if r.accel_x %}{{ '%.1f'|format(r.accel_x) }}×{% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div>
       {% endif %}
 
+      {% if pipeline_counts and pipeline_counts.rows %}
+      <div class="sid-card"><h3>{{ t('Federal pipeline counts','联邦项目管线数量') }}
+        <span class="mut" style="font-size:11px;">{{ t('90d vs prior 90d',
+          '近90天 vs 前90天') }}</span></h3>
+        <table class="sid-t"><thead><tr><th>{{ t('Theme','主题') }}</th>
+          <th class="num">{{ t('SAM now','SAM 近期') }}</th>
+          <th class="num">{{ t('SAM prior','SAM 前期') }}</th>
+          <th class="num">{{ t('FOA now','FOA 近期') }}</th>
+          <th class="num">{{ t('FOA prior','FOA 前期') }}</th>
+          <th>{{ t('SAM as of','SAM 截至') }}</th></tr></thead>
+        <tbody>{% for r in pipeline_counts.rows %}<tr><td class="tkc">{{ r.basket_id }}</td>
+          <td class="num">{{ r.sam_recent if r.sam_recent is not none else '—' }}</td>
+          <td class="num">{{ r.sam_prior if r.sam_prior is not none else '—' }}</td>
+          <td class="num">{{ r.foa_recent if r.foa_recent is not none else '—' }}</td>
+          <td class="num">{{ r.foa_prior if r.foa_prior is not none else '—' }}</td>
+          <td class="mut">{{ r.sam_as_of or '—' }}</td></tr>{% endfor %}</tbody></table>
+        <p><span class="mut" style="font-size:11px;">{{
+          t('Source: SAM.gov opportunity and Grants.gov FOA counts per theme. Display only.',
+            '来源：SAM.gov 采购机会与 Grants.gov 资助公告的主题计数。仅供展示。') }}</span></p></div>
+      {% endif %}
+
       {% if s.fda %}
       <div class="sid-card"><h3>{{ t('FDA catalysts','FDA催化') }}</h3>
         <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th><th>{{ t('Event','事件') }}</th><th>{{ t('Drug','药物') }}</th></tr></thead>
