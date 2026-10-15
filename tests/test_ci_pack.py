@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # A1 pure product/finite QA must run on code PRs without the legacy data job.
+    "eval-os-a1",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
     # share their measured 43-file import/read closure plus the Agent OS corpus.
     # Source/fence execution remains in the existing self-mod job.
@@ -4835,6 +4837,47 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
 
 
+def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
+    """A data-only Neural Web job must not make an A1 code PR falsely green."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    assert "eval-os-a1" in jobs, "Eval OS acceptance needs an ordinary PR code job"
+    job = jobs["eval-os-a1"]
+    commands = "\n".join(step["run"] for step in _yaml(MANIFEST)["jobs"][job.job_id]["steps"] if "run" in step)
+    suites = (
+        "tests/test_admin_intelligence_os.py",  # ci-trigger-closure: data
+        "tests/test_admin_intelligence_os_ui.py",  # ci-trigger-closure: data
+        "tests/test_admin_server.py",  # ci-trigger-closure: data
+        "tests/test_admin_theme_tokens.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings_ui.py",  # ci-trigger-closure: data
+        "tests/test_eval_os_adversarial_acceptance.py",  # ci-trigger-closure: data
+        "tests/test_response_eval.py",  # ci-trigger-closure: data
+    )
+    assert "node --version" in commands, "UI contracts must not silently skip without Node"
+    owner = _yaml(MANIFEST)["jobs"]["qledger-cluster-honest-ci"]
+    assert owner["gate"] == "code"
+    assert any("tests/test_w6_readiness_monitor.py" in step.get("run", "") for step in owner["steps"])  # ci-trigger-closure: data
+    for suite in suites:
+        assert suite in commands, suite
+    for dependency in (*suites,
+        "tests/test_qledger_control_policy.py",  # ci-trigger-closure: data
+        ".gitignore",  # ci-trigger-closure: data
+        ".github/workflows/brain-eval.yml",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_bear_steepener_2026-07-29.json",  # ci-trigger-closure: data
+        "admin/intelligence_os.py",  # ci-trigger-closure: data
+        "admin/static/index.html",  # ci-trigger-closure: data
+        "admin/static/app.js",  # ci-trigger-closure: data
+        "admin/static/styles.css",  # ci-trigger-closure: data
+        "scripts/grade_qledger.py",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",  # ci-trigger-closure: data
+    ):
+        assert dependency in job.paths, dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, _ = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
+
+
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
     """The recovered MarketDesk owner must not become a whole-tree CI rider."""
     manifest = _yaml(MANIFEST)
@@ -4984,7 +5027,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -4993,6 +5036,38 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
+    ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
+    Hosted contract-delta run 38568750084 / job 115868075914 measured
+    published 1b7916353dd4 on tested merge 7c610b6d8a77, base b4a515dcbab3:
+    eval-os-a1 is the sole entrant on that probe; no job leaves.
+    This job is already exclusive, and its builder dependency is real:
+    test_admin_server -> admin/server -> admin/press -> desk_planner ->
+    research_triage -> validators -> scripts/build_free_content._validate.
+    The other owners of the generic server/response suites are DATA-gated;
+    removing those suites would lose the required ordinary-PR proof.
+
+    On that exact tested merge, after adding the five missing A1 inputs,
+    canonical full-closure and packing measurements at 2026-10-14T14:25Z:
+
+        templates/index.html          135 jobs / 5,684 weight / 10 packs
+        scripts/build_free_content.py 135 jobs / 5,502 weight / 10 packs
+        engine/prophet/plan_book.py   129 jobs / 5,445 weight / 10 packs
+
+    A1 selects only the middle probe. Its closure is complete; the sole
+    remaining closure miss is leadership-rotation-science's inherited
+    rates input, already repaired separately on current main. Re-base only
+    the middle JOB ceiling to its exact measurement, without padding.
+    Current main 190311584167 already owns the neighboring 136/130 job
+    ceilings from the Market Memory / Leadership Rotation decision. Preserve
+    those exact protected-main values in the final integration; this
+    introduces no new baseline decision for either probe. All WEIGHT/PACK
+    ceilings, all eight A1 suites, existing job definitions and the selector
+    stay unchanged. Full source,
+    measurement and corrected advisory-review evidence lives under
+    research/evidence/eval-os-20261012/a1-ci-delta-20261014/.
+    Fresh checks of the final containing source remain mandatory.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

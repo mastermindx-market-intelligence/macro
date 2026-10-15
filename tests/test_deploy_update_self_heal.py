@@ -568,6 +568,8 @@ def test_non_api_path_does_not_trigger_api_restart(path):
 ADMIN_MUST_RESTART = [
     # panel code (all import-cached by the running process)
     "admin/server.py",
+    "templates/theme.css",  # derived token response is process-pinned
+    "engine/qledger_store.py",  # A1 selected request scope is import-cached
     "admin/marketing.py",
     "admin/metabolism_panel.py",
     "admin/neural_web.py",
