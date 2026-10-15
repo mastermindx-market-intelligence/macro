@@ -9136,6 +9136,7 @@ jobs:
     paths:
       - "scripts/research_codegen_qualification/runtime/**"
       - "scripts/research_codegen_qualification/w*.py"
+      - "engine/research_codegen/__init__.py"
       - "engine/research_codegen/transport.py"
     runs-on: ubuntu-latest
     steps:

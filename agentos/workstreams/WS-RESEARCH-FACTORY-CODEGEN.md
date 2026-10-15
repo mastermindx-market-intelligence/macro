@@ -23,8 +23,8 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Integrate the fresh fixed-plan factory and frontend, consume their existing
-  Fabric source review, and resolve the combined draft against current main.
+  Consume the new combined-source CI and the original capture merge result.
+  Fabric Integration is diagnosing the new review account-cooldown refusal.
   Preserve original quarantined runs and refused reads; no physical admission.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
@@ -70,11 +70,17 @@ fixed transport plans. The connected frontend keeps the existing single-attempt,
 exact-container cleanup and refusal semantics. All 42 affected source checks
 pass with inert payloads and fake Docker. The joined runtime suite passes658
 tests and67subtests with four platform skips. The general engine remains dormant;
-the frozen v4 capsule remains unchanged and undispatched.
+the frozen v4 capsule remains unchanged and undispatched. The new CI import
+closure needed one additional package-initializer path; after that correction,
+the exact affected closure check passes. Curation and packing checks already pass.
 
 Scoped independent review rf-fixed-workload-source-review-01a1333c-v1 returned remote_admission_refused (rc75)
 through the existing Fabric adapter (Qwen route on ubuntu2), assigned directly
-by this root. No independent quality verdict has been established. Review scope is only the new factory/frontend; original archive/mountinfo
+by this root. Its exact484-byte result was consumed: broker-assigned account
+Chris was in host-local cooldown before provider execution (key=none,thread=none).
+Fabric Integration confirmed the central/host cooldown-view mismatch is possible
+and owns diagnosis; no marker reset, account switch or retry was made. No
+independent quality verdict has been established. Review scope is only the new factory/frontend; original archive/mountinfo
 review collections remain refused and unconsumed. Physical qualification has
 not been authorized or claimed by source tests or this review.
 

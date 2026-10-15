@@ -22,3 +22,27 @@ The original contracts operation remains quarantined as `EFFECT_UNKNOWN`; none o
 ## Mount-table source preparation
 
 `mountinfo_contract.py` parses bounded caller-supplied mountinfo and returns only a matching declaration. It does not read host mounts, authenticate the host namespace or admit execution. Original Fabric source had eight reproduced contract failures; root's separate derived repair passes80inert checks. Original return remains unaccepted and unchanged. See `research/research_factory_codegen/2026-10-14/MOUNTINFO_SOURCE_CONTRACT.md`. This helper is excluded from the fixed canary capsule.
+
+## Fixed workload source preparation
+
+`fixed_workload_plans.py` accepts a case ID (`w01` through `w07`) and inert bytes
+matching that case's literal length and SHA256. It returns the existing
+`TransportPlan` with fixed identity, image, minimal environment and resource
+limits. It never reads, imports or runs the workload. Its description exposes
+digests and outstanding obligations, with execution authorization, candidate
+admission and containment qualification all false.
+
+`fixed_workload_engine.py` connects those plans to the existing fixed transport
+lifecycle. It has no CLI or default executor. A separately commissioned caller
+still owes the installed runtime, trusted host/resource mapping, helper census,
+outer supervision and physical cleanup observations. When such a caller injects
+an executor, the frontend reserves 30 of its 120 seconds and 4KiB of its total
+64KiB capture for same-container cleanup. It exclusively creates a receipt
+before Docker effects and persists the known container ID before start. An
+uncertain create cannot be replaced or guessed, a prior receipt prevents reuse,
+and a permission refusal freezes subsequent commands. Cleanup success preserves
+any workload failure. There is no automatic seven-case campaign or retry loop.
+
+These two helpers are excluded from the frozen v4 canary capsule. Their tests
+use inert source bytes and fake Docker responses; source success does not
+qualify the host or grant physical execution.
