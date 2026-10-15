@@ -94,7 +94,7 @@ def bind(parts, *, years=(2017,), **kwargs):
                                      expected_lineage_sha256=digest(lineage), **kwargs)
 
 
-class NativeCandidateTests(unittest.TestCase):
+class TestNativeCandidate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.parts = fixture()
@@ -219,7 +219,7 @@ class NativeCandidateTests(unittest.TestCase):
             self.assertIs(bind(self.parts,predecessor=self.candidate), self.candidate)
 
 
-class SourceParserTests(unittest.TestCase):
+class TestSourceParser(unittest.TestCase):
     def test_bad_source_headers_shapes_and_codes(self):
         changes = {
             "edition":lambda t:t.update(Description="May 20, 2026"),
@@ -282,7 +282,7 @@ class SourceParserTests(unittest.TestCase):
             bea._receipt_source(receipt24,2024,"Use")
 
 
-class CandidateHardeningTests(unittest.TestCase):
+class TestCandidateHardening(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.parts = fixture()
@@ -397,7 +397,7 @@ class CandidateHardeningTests(unittest.TestCase):
             bind((encoded(lineage),sources,receipts))
 
 
-class ProducerIdentityTests(unittest.TestCase):
+class TestProducerIdentity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.parts = fixture()
