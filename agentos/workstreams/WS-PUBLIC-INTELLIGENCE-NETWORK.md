@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Release ready serving guard d59cf5d6 through one capacity-admitted PR; 47 API tests pass, no PR/install yet. CAT report/page and two-page viewer accepted after unassisted API recovery. 9209 exact99cc CI passed but controller38701423511 marks proof stale/capacity-deferred; consume admitted refresh and actual protected install, then SAME follow-on33groups. Pure35current Prophet events await existing live daily38661819472 Chronicle publication; actual Brief planner0slots. Preserve holds and publication0of10.
+next_action: Release serving guard d59cf5d6 when capacity admits (08:19 eighteen proofs/cap8);47API tests pass,no PR/install. Consume9209 admitted refresh/exact-head protected installation. Then SAME Press follow-on c7ac2b9f includes explicit Research dossier links;488affected checks pass/1sparse skip,35portable groups local. CAT viewer/dossier route accepted but actual planner not selected. At08:20 committed Chronicle still66Research and0Brief slots; consume existing daily38661819472 output without replay. Preserve publication0of10 and all held inputs.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
