@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Release serving guard d5ad51d0 when capacity admits (latest10proofs/cap8); current-main integration preserves accepted two-file source and47tests. Consume9209 admitted refresh/exact-head protected installation, then SAME Press follow-on c7ac2b9f with488affected checks/35portablegroups. Source screening holds15unqualified private reports, preserving29prior refs/five drafts. CAT is natural rank19 but now first unheld at installeddb596002; current planner still emits0slots because the already-repaired pool bug is not installed. Re-run current44-ref CAT inspector after protected follow-on installation, then qualify actual selected slot before one-shot staging. Preserve publication0of10 and producer38661819472 without replay.
+next_action: Consume9209 admitted refresh/new exact-head CI/protected installation (99cc8729 oldgreen stale; controller38708138601 at8/cap8), then SAME follow-on7bbfc486 with495affected checks/38portable groups/26sources. Normal Chronicle1097efa is installed and selects POWI/VNO; preserve native paper-plan/provisional/legacy-clock limits and qualify receipt relevance before one writer attempt. EmbeddedPOWI route unaccepted with Browser Use paused-document diagnostic; standalonePOWI and dossier verified. CAT firstunheld/44refs still needs installed pool repair. Release ready serving guardd5ad51d0 when capacity admits; latest8/cap8,9196lease. Preserve five held drafts,publication0of10 and all unknown effects.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
