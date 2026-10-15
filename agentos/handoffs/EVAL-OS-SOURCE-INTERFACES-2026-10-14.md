@@ -153,23 +153,14 @@ unresolved:
   reachable current-main inputs. Source qualification passes; fresh hosted checks, protected
   merge and all production proof remain owed.
 next_actions:
-- A1 originalPR6651 source3f34040de3a5 is PUBLISHED/readback12:53Oct15 after canonical
-  admission7active/cap8/0reservations and cleanpreview2f90626 with actualmain9c37ad.
-  Six exact dependency additions preserve319branchdefinitions/prior paths/commands/limits.
-  Current-main source preview passes3controls/fullclosure0/strict136-135-129jobs.
-  Original run38733137011 on1bb has contract-delta and browser-step failures, bound to1bb.
-  Current3f run38738100398 has plan+contractPASS at13:03:39;12packsRUNNING. PlanZIP and
-  tested7010/base9c37/tree2f906 match admittedpreview;17files/A1execution unchanged.
-  Consume original terminalartifact/bindingchecks, especially browserpack6 and A1pack9; incumbent alone
-  refreshes/finalmerges. No second manualbaseintegration or duplicate producer/controller.
-  After qualifiedmerge proceed through normal deployment and production verification.
-
-- Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
-  eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
-  reviewer accepted without content correction, not independent/blind model review.8newcase+2CIcontrolsPASS,
-  zero fullclosure misses and strict134/134/128jobs within unchanged limits.314execution definitions and
-  evaluator functions preserved. See policy-contracts-20261015.json. Qualified source remains published on the same follow-on branch;
-  open its single PR only after A1 landing and final-base/capacity reconciliation. Reuse prior proof.
+- Consume current A1 PR6651/head3f34040de3a5 original CI38738100398/attempt1 terminal
+  artifact and all binding checks. At13:18:13 plan+contract and packs1/2/6/9/10/11 PASS;
+  six packs remain running. Original critical pack6/9 artifacts canonically consumed,
+  including Chromium DOM and A1 steps. Incumbent alone refreshes/finalmerges.
+- Follow-on qualified2d0e98bf6b7e resolves the new six-path manifest composition conflict;
+  2controlsPASS/zero closure misses/strict134-134-128jobs. All314definitions and runtime3528080
+  preserved; clean composition with A1 preserves319existing definitions/path memberships.
+  Publish the same branch and open its single PR only after A1 landing and final-base/capacity reconciliation.
 - After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
   authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
   prove numeric execution/internal-log, CLI and rights-qualified Discovery use. Host-local operator ingestion
@@ -188,11 +179,11 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15
+## Current checkpoint — 2026-10-15T13:20Z
 
-A1 PR6651 is published at3f34040de3a5 after normal capacity admission and verified readback at12:53:44Z. Original run38733137011 correctly rejected four undeclared international-chart dependencies. The correction adds those four exact inputs plus the receipt helper/schema newly reached through current main's build_security_master. All319branch execution definitions, prior paths, eight A1 suites, limits and product files remain intact. An isolated current-main source preview passes three controls, zero closure misses and strict136/135/129jobs within existing weight/pack limits. Main9c37's later changes are only data/site paths, leaving qualified source/CI bytes unchanged; its preview is clean. The local qualification snapshot is not a release revision or a second carrier base integration. See `research/evidence/eval-os-tier-query-20261014/a1-six-input-repair-20261015.json`. Fresh run38738100398 has plan+contract-deltaPASS at13:03:39Z, with all12packs still running. Its original plan ZIP/canonical hash and tested7010/base9c37/tree2f906 match the admitted preview;127jobs/A1pack9 and17productionfile/A1execution identities are verified. Original1bb pack6 separately failed the International DOM step while its exact base passed, so the canonical pr_regression classification is preserved. The same11-file Node command passed180tests locally on original24b with Node20.20.2/Python3.12.13/Playwright1.63.0 on macOS; this is diagnosis, not Linux CI acceptance or a waiver. The fresh browser check, all remaining binding checks, incumbent merge and production proof remain required.
+A1 PR6651 remains published3f34040de3a5. Current run38738100398/attempt1 at13:18:13 has plan+contract and packs1/2/6/9/10/11 PASS;0/3/4/5/7/8 remain running. Original pack6 and9 ZIP digests and canonical plan/execution identities were consumed:26jobs/59semantic commandsteps PASS, including the previously failing International Chromium DOM step and both A1 steps. These are command steps, not unit-test or zero-skip counts. See `research/evidence/eval-os-tier-query-20261014/a1-critical-packs-38738100398.json` and the two original ZIPs. Final artifact/all binding checks and incumbent final merge remain required; no rerun, second base integration or controller dispatch.
 
-Follow-on runtime/CI3528080 remains unchanged with20supplied-textcases plus legacybear and accepted T11/T5/T12/QLedger source proof. No follow-onPR, installed numeric/internal-log proof, model/PIT proof or real adoption is claimed. After A1 landing, reconcile final source/capacity and release this same follow-on. Original unknown/refused effects and all completion flags remain unchanged.
+Follow-on source2d0e98bf6b7e adds the same six A1 dependency paths to resolve a newly demonstrated manifest composition conflict. All314follow-on job definitions, prior paths, limits and runtime remain unchanged. Two affected controls pass, full dependency closure has zero misses, and strict packing remains134/134/128jobs within existing limits. Read-only composition with A1 is clean at tree077ffc7f and preserves319existing A1 execution definitions and path memberships; the existing follow-on QLedger exclusive-scope metadata remains intentional and predates this repair. See `research/evidence/eval-os-tier-query-20261014/followon-six-input-alignment-20261015.json`. Runtime remains3528080 with20supplied-textcases plus legacybear/T11/T5/T12/QLedger proof. After A1 landing, reconcile final source/capacity and release the same follow-on. No model/PIT/installed numeric/internal-log or adoption claim; original unknown/refused effects and all final flags remain unchanged.
 
 ## 2026-10-15 A1 repair published
 
