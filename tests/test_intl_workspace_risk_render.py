@@ -716,3 +716,108 @@ def render_annual_clock_fixture():
     with patch('scripts.build_intl.attach_risks', side_effect=mount):
         html = render_history_fixture(history_sources={})
     return dict(html=html, cases=cases)
+
+
+PRESSURE_EVIDENCE_FIELDS = ('country_credit_change', 'annual_current_account', 'constituent_breadth_50d')
+PRESSURE_EVIDENCE_CASES = ('supplied', 'stale', 'value_denied', 'metadata_denied',
+                           'metadata_unknown', 'invalid_support', 'missing',
+                           'empty', 'source_only', 'evidence_only', 'hostile')
+
+
+def pressure_evidence_input(field, kind, market='JP'):
+    """Explicit synthetic native records; no production disclosure grant."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    measure = source['measures']['JP.' + field]
+    support = source['field_support']['JP.' + field]
+    measure['instrument']['market_id'] = market
+    support['market_id'] = market
+    measure['source_reference'] = 'source:' + market + ':' + field + ':' + 'x' * 96
+    measure['evidence_key'] = 'evidence:' + market + ':' + field
+    support['method_ref'] = 'method:' + market + ':' + field
+    if kind == 'stale':
+        measure['quality'] = 'stale'
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'invalid_support':
+        support['market_id'] = 'WRONG'
+    elif kind in ('missing', 'empty', 'source_only', 'evidence_only'):
+        measure.update(quality='missing', value=None)
+        if kind in ('empty', 'evidence_only'):
+            measure['source_reference'] = None
+        if kind in ('empty', 'source_only'):
+            measure['evidence_key'] = None
+    elif kind == 'hostile':
+        measure['source_reference'] = 'https://example.invalid/<img src=x onerror=alert(1)>'
+        measure['evidence_key'] = 'javascript:alert(1) <script> & "evidence"'
+        support['method_ref'] = '<svg onload=alert(1)> & method'
+        if field == 'constituent_breadth_50d':
+            support['membership_ref'] = '<iframe src=evil> & members'
+    return measure, support
+
+
+@pytest.mark.parametrize('field', PRESSURE_EVIDENCE_FIELDS)
+@pytest.mark.parametrize('kind', PRESSURE_EVIDENCE_CASES)
+def test_pressure_evidence_discloses_only_native_retained_references(field, kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = pressure_evidence_input(field, kind, market)
+    key = market + '.' + field
+    source = dict(registry=registry, measures={key: measure}, field_support={key: support})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    index = PRESSURE_EVIDENCE_FIELDS.index(field) + 2
+    article = BeautifulSoup(render(section, registry), 'html.parser')
+    cell = article.select_one(f'[data-im-risk-row="{market}"] td:nth-of-type({index})')
+    evidence = cell.select_one('details.intl-risk__evidence')
+    visible = kind not in ('metadata_denied', 'metadata_unknown', 'invalid_support', 'empty')
+    assert (evidence is not None) == visible
+    supported = kind in ('supplied', 'stale', 'hostile')
+    if visible:
+        expected = [measure[k] for k in ('source_reference', 'evidence_key') if measure[k]]
+        if supported:
+            expected.append(support['method_ref'])
+            if field == 'constituent_breadth_50d':
+                expected.append(support['membership_ref'])
+        assert [dd.get_text() for dd in evidence.select('dd')] == expected
+        assert evidence.select_one('summary .l-en') is not None
+        assert evidence.select_one('summary .l-zh') is not None
+        assert evidence.select('a,script,img,svg,iframe') == []
+        assert not evidence.has_attr('open')
+        if not supported:
+            assert support['method_ref'] not in evidence.get_text()
+    else:
+        assert measure['source_reference'] is None or measure['source_reference'] not in cell.get_text()
+    if supported:
+        value = cell.select_one('[data-im-risk-value]')
+        assert value.get_text() == ('0' if field == 'country_credit_change' else '+3.4' if field == 'annual_current_account' else '+61')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+    assert source == before
+
+
+def render_pressure_evidence_fixture():
+    """Native projection and full mount; seven distinct synthetic disclosure states."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('supplied', 'value_denied', 'metadata_denied', 'metadata_unknown',
+             'invalid_support', 'empty', 'source_only')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        for field in PRESSURE_EVIDENCE_FIELDS:
+            key = case['market'] + '.' + field
+            measures[key], support[key] = pressure_evidence_input(field, case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases, fields=PRESSURE_EVIDENCE_FIELDS)

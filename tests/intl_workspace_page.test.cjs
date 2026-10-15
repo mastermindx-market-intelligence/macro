@@ -371,6 +371,82 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   });
 }
 
+let riskPressureEvidenceFixture;
+function riskPressureReferencesFixture() {
+  if(!riskPressureEvidenceFixture) riskPressureEvidenceFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+    'import json; from tests.test_intl_workspace_risk_render import render_pressure_evidence_fixture; print(json.dumps(render_pressure_evidence_fixture()))'],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return riskPressureEvidenceFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Risk pressure evidence follows native disclosure and keyboard context ${theme} ${lang}`,async()=>{
+    const fixture=riskPressureReferencesFixture();
+    const labels=lang==='en'?['Credit evidence','Current account evidence','Breadth evidence']:['信用依据','经常账户依据','广度依据'];
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const controls=page.locator('[data-im-controls]');
+      for(const [width,horizon,basis] of [[320,'1m','usd_unhedged'],[1440,'3m','local']]) {
+        await page.setViewportSize({width,height:900});
+        await controls.locator('select[data-im-action="set_horizon"]').selectOption(horizon);
+        await controls.locator('select[data-im-action="set_basis"]').selectOption(basis);
+        const panel=page.locator('[data-im-panel][data-view="risk"]:visible');
+        const url=page.url();
+        for(const {market,kind} of fixture.cases) {
+          const row=panel.locator(`[data-im-risk-row="${market}"]`);
+          const visible=['supplied','stale','value_denied','source_only'].includes(kind);
+          const supported=['supplied','stale'].includes(kind);
+          for(const [i,field] of fixture.fields.entries()) {
+            const cell=row.locator(`td:nth-of-type(${i+2})`);
+            const evidence=cell.locator('details.intl-risk__evidence');
+            assert.equal(await evidence.count(),visible?1:0,`${kind} ${field}`);
+            if(!visible) {
+              assert.doesNotMatch(await cell.textContent(),/source:|evidence:|method:|public-members/);
+              continue;
+            }
+            const summary=evidence.locator('summary');
+            assert.equal(await summary.innerText(),labels[i]);
+            assert.equal(await evidence.evaluate(n=>n.open),false);
+            await summary.focus();
+            await page.keyboard.press('Enter');
+            assert.equal(await evidence.evaluate(n=>n.open),true);
+            const refs=await evidence.locator('dd').allTextContents();
+            const expected=[`source:${market}:${field}:`+'x'.repeat(96)];
+            if(kind!=='source_only') expected.push(`evidence:${market}:${field}`);
+            if(supported) expected.push(`method:${market}:${field}`);
+            if(supported&&field==='constituent_breadth_50d') expected.push('public-members');
+            assert.deepEqual(refs,expected);
+            assert.equal(await evidence.locator('a').count(),0,'references do not invent destinations');
+            const terms=await evidence.locator('dt').allInnerTexts();
+            assert.equal(terms[0],lang==='en'?'Source reference':'来源引用');
+            if(supported) assert.equal(await cell.locator('[data-im-risk-value]').innerText(),['0','+3.4','+61'][i]);
+            else assert.equal(await cell.locator('[data-im-risk-value]').count(),0);
+            assert.equal(await cell.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${field} ${lang} ${width}`);
+            assert.equal(await evidence.locator('dd').evaluateAll(ns=>ns.every(n=>n.scrollWidth<=n.clientWidth+1)),true);
+            if(width===320&&kind==='supplied'&&i===0&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+              fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+              await page.evaluate(()=>document.fonts.ready);
+              await cell.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+              await cell.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`risk-pressure-evidence-${theme}-${lang}-320.png`)});
+            }
+            await summary.focus();
+            await page.keyboard.press('Space');
+            assert.equal(await evidence.evaluate(n=>n.open),false);
+            if(i<2) {
+              await page.keyboard.press('Tab');
+              assert.equal(await row.locator(`td:nth-of-type(${i+3}) summary`).evaluate(n=>n===document.activeElement),true);
+            }
+          }
+        }
+        assert.equal(page.url(),url,'disclosures must not change navigation context');
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=risk'});
+  });
+}
+
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture

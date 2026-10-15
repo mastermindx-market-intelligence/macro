@@ -142,6 +142,26 @@
 {%- else -%}{{ quality_reason(metric) }}
 {%- endif -%}
 {%- endmacro %}
+{% macro pressure_evidence(metric, label_en, label_zh) -%}
+{%- if metric is mapping -%}
+{%- set source = metric.get('source_reference') -%}
+{%- set evidence = metric.get('evidence_key') -%}
+{%- set support = metric.get('support') -%}
+{%- set method = support.get('method_ref') if support is mapping else none -%}
+{%- set membership = support.get('membership_ref') if support is mapping else none -%}
+{%- if source or evidence or method or membership %}
+<details class="intl-risk__evidence">
+  <summary>{{ words(label_en, label_zh) }}</summary>
+  <dl>
+    {% if source %}<div><dt>{{ words('Source reference', '来源引用') }}</dt><dd class="intl-risk__reference">{{ source|e }}</dd></div>{% endif %}
+    {% if evidence %}<div><dt>{{ words('Evidence reference', '依据引用') }}</dt><dd class="intl-risk__reference">{{ evidence|e }}</dd></div>{% endif %}
+    {% if method %}<div><dt>{{ words('Method reference', '方法引用') }}</dt><dd class="intl-risk__reference">{{ method|e }}</dd></div>{% endif %}
+    {% if membership %}<div><dt>{{ words('Membership reference', '成员名单引用') }}</dt><dd class="intl-risk__reference">{{ membership|e }}</dd></div>{% endif %}
+  </dl>
+</details>
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
 {% macro endpoint_block(window) -%}
 {%- if window is mapping -%}
 <div><dt>{{ words('Start', '起点') }}</dt><dd>{{ window.get('start')|e if window.get('start') is not none else words('Not supplied', '未提供') }}</dd></div>
@@ -305,6 +325,7 @@
                   <small>{{ period.get('start')|e }} – {{ period.get('end')|e }} · {{ period.get('count')|e }} · {{ period.get('count_basis')|e }}</small>
                 {% endif %}
               {% endif %}
+              {{ pressure_evidence(credit, 'Credit evidence', '信用依据') }}
             </td>
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-account">
               <strong class="intl-risk__cell-label">{{ words('Current account %GDP', '经常账户占GDP%') }}</strong>
@@ -322,6 +343,7 @@
                 {% if annual.get('observation_at') is not none %}<p data-im-annual-observation><small>{{ words('Observation', '观测') }} {{ annual.get('observation_at')|e }}</small></p>{% endif %}
                 {% if annual.get('calculation_at') is not none %}<p data-im-annual-calculation><small>{{ words('Calculation time', '计算时间') }} {{ annual.get('calculation_at')|e }}</small></p>{% endif %}
               {% endif %}
+              {{ pressure_evidence(annual, 'Current account evidence', '经常账户依据') }}
             </td>
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">
               <strong class="intl-risk__cell-label">{{ words('Above 50-day average %', '高于50日均线 %') }}</strong>
@@ -336,6 +358,7 @@
                 <small>{{ words('Lookback sessions', '回看交易日') }} {{ bsupport.get('lookback_sessions')|e }}</small>
                 {% if bsupport.get('membership_asof') is not none %}<p data-im-breadth-membership><small>{{ words('Membership as of', '成员名单截至日期') }} {{ bsupport.get('membership_asof')|e }}</small></p>{% endif %}
               {% endif %}
+              {{ pressure_evidence(breadth, 'Breadth evidence', '广度依据') }}
             </td>
           </tr>
         {% endfor %}
