@@ -149,22 +149,25 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 publishedff791 repairs the original ba848 closure failure and awaits fresh binding checks.
-  Protected merge and all production proof remain owed.
+- Current A1 published1bb4b0c394aa has fresh exact-head CI38733137011 in progress.
+  The original plan, tested merge/base and all17productionfiles are verified; terminal checks,
+  incumbent protected merge and all production proof remain owed.
 next_actions:
 - A1 originalPR6651 sourcecorrection1bb4b0c394aa is PUBLISHED after12:12:53Oct15 canonical
   admission7active/cap8/0reservations and cleanpreview3810d367 with currentmain24e858. It relocates
   3existingpaths only, preserving319branchdefinitions/pathmultisets/limits and all current-main
   commands with the accepted A1 suite addition.2controlsPASS; prior semantic proof retained.
-  Consume the actual new head/run/plan and terminal artifact; ff791CI38716442763PASS remains
-  bound to its original source. Incumbent alone refreshes/finalmerges; no newmanualbaseintegration,
+  Original plan38733137011/attempt1 is digest/canonically verified:127eligiblejobs/A1pack9;
+  tested24b30fc1/base24e858 tree3810 exactly matches the admitted preview.17productionfiles
+  and A1job/step identities match accepted source. Consume the terminal artifact and binding
+  checks; ff791CI38716442763PASS remains bound to its original source. Incumbent alone refreshes/finalmerges; no newmanualbaseintegration,
   duplicateproducer or adminmerge. After qualifiedmerge proceed through normal production proof.
 
 - Follow-on qualified3528080cd35f has20supplied-text cases plus legacybear. Original M2
   eval-t6-policy-contracts-01a1333d-c1 returned4exact fixtures; same-ID artifacts consumed and
   reviewer accepted without content correction, not independent/blind model review.8newcase+2CIcontrolsPASS,
   zero fullclosure misses and strict134/134/128jobs within unchanged limits.314execution definitions and
-  evaluator functions preserved. See policy-contracts-20261015.json. Published511f6d4b294f on the same follow-on branch;
+  evaluator functions preserved. See policy-contracts-20261015.json. Qualified source remains published on the same follow-on branch;
   open its single PR only after A1 landing and final-base/capacity reconciliation. Reuse prior proof.
 - After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
   authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
@@ -186,7 +189,9 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-T11's bounded verifier is now composed with the actual native executor, both gateway modes and existing internal response-log/operator-reader path. Same-request values remain ephemeral; strict verdict projection cannot normalize malformed evidence into success. Caller, sink, probe and affected CI checks pass; final closure has zero misses and packing stays within the existing limits. Original worker construction is accepted with corrections, not independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. A1's ff791 repair is now published on PR6651 after fresh canonical admission and clean current-main preview. The existing admission helper resolves the retained generation register through incumbent read-only lease preparation; four focused controls preserve live reservations and fail-closed paths. The fresh observation proved7 active proofs and0 live reservations, while the stale register had previously been miscounted. Fresh exact-head hosted checks remain owed. Protected releases, installed execution, general narrative verification and real follow-on adoption remain open. Final completion flags remain false.
+A1 PR6651 is published at1bb4b0c394aa. Original run38733137011/attempt1 has a successful plan and running contract-delta/twelve packs at12:25:48Z. Its original plan ZIP digest and canonical plan hash pass; tested24b30fc1/base24e858 exactly reproduces admitted preview3810. All17productionfiles and both A1 semantic step identities remain unchanged. The127eligible jobs include A1 inpack9. See `research/evidence/eval-os-tier-query-20261014/a1-plan-consumption-38733137011.json` and the original plan ZIP. Terminal evidence, incumbent refresh/merge and production verification remain owed; prior ff791 success cannot qualify this new head. No controller or duplicate producer was dispatched.
+
+Follow-on qualified3528080 remains published on the same branch with20supplied-textcases plus legacybear and accepted T11/T5/T12/QLedger source checks. Runtime/CI are unchanged. No follow-onPR, installed numeric/internal-log proof, model/PIT proof or real consumer adoption is claimed. After A1 landing, reconcile final source/capacity and release this same follow-on. Original unknown/refused effects and all completion flags remain unchanged.
 
 ## 2026-10-15 A1 repair published
 
