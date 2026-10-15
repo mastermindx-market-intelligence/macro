@@ -26371,6 +26371,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Recorded-readiness import closure required by the Intelligence OS consumer.
+      - engine/k3e_eval1_forward.py
+      - engine/pick_forward_dist.py
+      - engine/seasonality/multiplicity.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -27249,10 +27253,6 @@ jobs:
       - "tests/test_ptse_shadow_outcome.py"
       - "tests/test_ptse_w3_publication.py"
       - "tests/test_research_price_panel.py"
-      # Recorded-readiness import closure required by the Intelligence OS consumer.
-      - engine/k3e_eval1_forward.py
-      - engine/pick_forward_dist.py
-      - engine/seasonality/multiplicity.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
