@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-15T09:43:07.588434+00:00",
+  "generated_utc": "2026-10-15T14:02:03.494214+00:00",
   "as_of": "2026-10-15",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28362,14 +28362,6 @@
           "sellers": 0
         },
         {
-          "ticker": "JEF",
-          "buy_usd": 318717006.0,
-          "sell_usd": 0.0,
-          "net_usd": 318717006.0,
-          "buyers": 1,
-          "sellers": 0
-        },
-        {
           "ticker": "GPI",
           "buy_usd": 245257284.0,
           "sell_usd": 0.0,
@@ -28424,6 +28416,14 @@
           "net_usd": 100000000.0,
           "buyers": 1,
           "sellers": 0
+        },
+        {
+          "ticker": "BBD",
+          "buy_usd": 104303593.0,
+          "sell_usd": 5567116.0,
+          "net_usd": 98736477.0,
+          "buyers": 55,
+          "sellers": 10
         }
       ],
       "sells": [
@@ -28524,20 +28524,20 @@
           "sellers": 32
         },
         {
-          "ticker": "SNOW",
-          "buy_usd": 0.0,
-          "sell_usd": 879855812.0,
-          "net_usd": -879855812.0,
-          "buyers": 0,
-          "sellers": 163
-        },
-        {
           "ticker": "ANET",
           "buy_usd": 0.0,
           "sell_usd": 870984320.0,
           "net_usd": -870984320.0,
           "buyers": 0,
           "sellers": 263
+        },
+        {
+          "ticker": "SNOW",
+          "buy_usd": 0.0,
+          "sell_usd": 865341812.0,
+          "net_usd": -865341812.0,
+          "buyers": 0,
+          "sellers": 161
         },
         {
           "ticker": "ILMN",
@@ -31521,6 +31521,13 @@
         "days_to": 7,
         "eps_forecast": 0.46,
         "last_surprise_pct": 5.2
+      },
+      {
+        "ticker": "BBD",
+        "next_date": "2026-10-22",
+        "days_to": 7,
+        "eps_forecast": 0.13,
+        "last_surprise_pct": 0.0
       },
       {
         "ticker": "BC",

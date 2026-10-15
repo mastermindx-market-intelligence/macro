@@ -12,6 +12,8 @@ a source list that arrived empty) read as a pass.
 
 The suite, in report order:
 
+  markup_safety        static allowed HTML fragment; no executable, hidden,
+                       malformed or ambiguous markup
   fact_anchor          every number and every attributed quote in the draft
                        appears in the planner's source facts
   claim_scope          canonical earnings prose attributes each substantive
@@ -60,6 +62,7 @@ import html as _html
 import json
 import logging
 import re
+from html.parser import HTMLParser
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -429,6 +432,105 @@ def _v(cfg: dict) -> dict:
 
 def _body(draft: dict) -> str:
     return str(draft.get("body_html") or "")
+
+
+_ARTICLE_TAGS = frozenset({"p", "h2", "h3", "h4", "ul", "ol", "li",
+                           "a", "strong", "em", "blockquote", "br"})
+_ARTICLE_BLOCKS = frozenset({"p", "h2", "h3", "h4", "li", "blockquote"})
+_ARTICLE_START = re.compile(
+    r"""<[A-Za-z][A-Za-z0-9]*(?:\s+[A-Za-z][A-Za-z0-9_-]*\s*=\s*"""
+    r"""(?:"[^"]*"|'[^']*'|[^\s"'=<>\x60]+))*\s*/?>\Z"""
+)
+
+
+class _ArticleFragment(HTMLParser):
+    """Recognize a conservative static fragment; never repair or sanitize it.
+
+    HTMLParser is not a browser sanitizer. A closed grammar, allowed tags and
+    attributes, and balanced explicit endings avoid depending on browser error
+    recovery. Escaped text stays text, while raw malformed markup is refused.
+    """
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.stack: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in _ARTICLE_TAGS or not _ARTICLE_START.fullmatch(self.get_starttag_text()):
+            raise ValueError("unsupported or malformed article tag")
+        names = [name for name, _ in attrs]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate article attribute")
+        allowed = ({"href"} if tag == "a" else set())
+        if tag in _ARTICLE_BLOCKS:
+            allowed.add("data-claim-ids")
+        if tag == "p":
+            allowed.add("class")
+        for name, value in attrs:
+            if name not in allowed or value is None:
+                raise ValueError("unsupported article attribute")
+            if name == "class" and value not in {"press-byline", "press-footer"}:
+                raise ValueError("unsupported article class")
+            if name == "data-claim-ids" and not re.fullmatch(r"[A-Za-z0-9_.:\-]+(?: [A-Za-z0-9_.:\-]+)*", value):
+                raise ValueError("malformed claim identifiers")
+            if name == "href":
+                from urllib.parse import urlsplit
+                if any(c.isspace() or ord(c) < 32 or ord(c) == 127 or c == "\\" for c in value):
+                    raise ValueError("ambiguous article URL")
+                uri = urlsplit(value)
+                if not ((value.startswith("https://") and uri.netloc and not uri.username and not uri.password)
+                        or (value.startswith("/") and not value.startswith("//") and not uri.netloc)):
+                    raise ValueError("article URL must be HTTPS or a root-relative path")
+        if tag == "a" and ("href" not in names or "a" in self.stack):
+            raise ValueError("article anchor needs one URL and cannot nest")
+        if tag != "br":
+            self.stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        if tag != "br":
+            raise ValueError("only br may be self-closing")
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            raise ValueError("unbalanced article markup")
+        self.stack.pop()
+
+    def handle_data(self, data):
+        if "<" in data:
+            raise ValueError("unparsed article markup; escape literal angle brackets")
+
+    def handle_comment(self, data):
+        raise ValueError("article comments are not permitted")
+
+    def handle_decl(self, decl):
+        raise ValueError("article declarations are not permitted")
+
+    def unknown_decl(self, data):
+        raise ValueError("article declarations are not permitted")
+
+    def handle_pi(self, data):
+        raise ValueError("article processing instructions are not permitted")
+
+
+def check_markup_safety(draft: dict, slot: dict, cfg: dict) -> dict:
+    body = _body(draft)
+    try:
+        if any(ord(c) < 32 and c not in "\n\r\t" for c in body):
+            raise ValueError("article contains control characters")
+        for ending in re.findall(r"</[^>]*>", body):
+            if not re.fullmatch(r"</[A-Za-z][A-Za-z0-9]*\s*>", ending):
+                raise ValueError("malformed closing tag")
+        parser = _ArticleFragment()
+        parser.feed(body)
+        if parser.rawdata:
+            raise ValueError("incomplete article markup or character reference")
+        parser.close()
+        if parser.stack:
+            raise ValueError("unclosed article tag")
+    except (ValueError, AssertionError) as exc:
+        return _row("markup_safety", False, str(exc))
+    return _row("markup_safety", True, "static article fragment with allowed tags and attributes")
 
 
 def _prose_html(draft: dict, cfg: dict) -> str:
@@ -1444,6 +1546,7 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
 
 # (name, callable, takes_root) — order is report order.
 _SUITE = (
+    ("markup_safety", check_markup_safety, False),
     ("fact_anchor", check_fact_anchor, False),
     ("claim_scope", check_claim_scope, False),
     ("close_paraphrase", check_close_paraphrase, False),

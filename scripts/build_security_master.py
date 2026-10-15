@@ -3754,9 +3754,281 @@ def _retained_direct_resolutions(state: dict | None, existing: list[dict], *,
     return results
 
 
+def prepare_spy_option_root(sources: dict, *, decision_at: str) -> tuple[AliasRow, dict]:
+    """Prepare one observed-day source inference; no network or publication.
+
+    This profile is deliberately SPY-specific. Capture metadata belongs to the
+    admitted caller and is not authentication. Cboe identifies the actual option
+    product; Theta's v3 contract supplies the namespace semantics; SEC plus the
+    native listing receipt identify the underlying. No name or ticker matching
+    fallback, historical effective date, index admission or source-use grant.
+    """
+    import csv
+    from html.parser import HTMLParser
+    from lib.dataos.identity import option_root_binding_sha256
+
+    urls = {
+        "cboe_reference": "https://cdn.cboe.com/data/us/options/market_statistics/symbol_reference/cone-underlying.csv",
+        "cboe_product": "https://www.cboe.com/tradable_products/sp_500/spx_weekly_options/specifications",
+        "theta_contract": "https://thetadata.net/docs/operations/option_history_eod.html",
+        "registrant": "https://data.sec.gov/submissions/CIK0000884394.json",
+    }
+    if type(sources) is not dict or set(sources) != set(urls) | {"listing_body", "listing_receipt_body"}:
+        raise IdentityError("invalid option-root source bundle")
+    decision = _reference_clock_ns(decision_at)
+    bodies, observations, clocks = {}, {}, []
+    for role, url in urls.items():
+        source = sources[role]
+        if type(source) is not dict or set(source) != {"body", "capture"}:
+            raise IdentityError("invalid option-root source record")
+        body, capture = source["body"], source["capture"]
+        if (type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES
+                or type(capture) is not dict
+                or set(capture) != {"url", "final_url", "status", "bytes", "sha256",
+                                    "request_started_at", "read_completed_at"}
+                or capture.get("url") != url
+                or capture.get("final_url") != url or type(capture.get("status")) is not int
+                or capture["status"] != 200 or type(capture.get("bytes")) is not int
+                or capture["bytes"] != len(body)
+                or capture.get("sha256") != hashlib.sha256(body).hexdigest()):
+            raise IdentityError("option-root capture does not bind the exact source")
+        started = _reference_clock_ns(capture.get("request_started_at"))
+        completed = _reference_clock_ns(capture.get("read_completed_at"))
+        if not 0 < started <= completed <= decision:
+            raise IdentityError("invalid option-root source clocks")
+        clocks.extend((started, completed))
+        observations[role] = {"url": url, "bytes": len(body), "sha256": capture["sha256"],
+                              "request_started_at": _reference_clock_iso(started),
+                              "read_completed_at": _reference_clock_iso(completed)}
+        bodies[role] = body
+    on = date.fromisoformat(_reference_clock_iso(max(clocks))[:10])
+    if any(_reference_clock_iso(clock)[:10] != on.isoformat() for clock in clocks):
+        raise IdentityError("option-root sources must be observed on one date")
+    if _reference_clock_iso(decision)[:10] != on.isoformat():
+        raise IdentityError("new option-root admission must occur on its observed date")
+
+    class Tables(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text, self.tables = [], []
+            self.hidden = 0
+            self.rows = self.cells = self.cell = None
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ("script", "style", "template"):
+                self.hidden += 1
+            if self.hidden:
+                return
+            if tag == "table":
+                if self.rows is not None:
+                    raise ValueError("nested source table")
+                self.rows = []
+            if tag == "tr" and self.rows is not None:
+                self.cells = []
+            if tag in ("td", "th") and self.cells is not None:
+                self.cell = []
+
+        def handle_data(self, value):
+            if self.hidden:
+                return
+            self.text.append(value)
+            if self.cell is not None:
+                self.cell.append(value)
+
+        def handle_endtag(self, tag):
+            if self.hidden:
+                if tag in ("script", "style", "template"):
+                    self.hidden -= 1
+                return
+            if tag in ("td", "th") and self.cell is not None:
+                self.cells.append(" ".join(" ".join(self.cell).split()))
+                self.cell = None
+            if tag == "tr" and self.cells is not None:
+                self.rows.append(self.cells)
+                self.cells = None
+            if tag == "table" and self.rows is not None:
+                self.tables.append(self.rows)
+                self.rows = None
+
+    try:
+        reader = csv.DictReader(io.StringIO(bodies["cboe_reference"].decode("utf-8-sig")))
+        if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)):
+            raise ValueError("duplicate reference columns")
+        rows = list(reader)
+        if len(rows) > 20000 or any(None in row or any(v is None for v in row.values()) for row in rows):
+            raise ValueError("invalid reference rows")
+        selected = [r for r in rows if r.get("Symbol") == "SPY"]
+        if len(selected) != 1 or {k: selected[0].get(k) for k in
+                ("Company", "Symbol Type", "Options Type", "Clearing")} != {
+                "Company": "STATE STR SPDR S&P 500 ETF TR TR UNIT", "Symbol Type": "ETF",
+                "Options Type": "Standard", "Clearing": "OCC"}:
+            raise ValueError("SPY reference does not identify the standard ETF product")
+        product = Tables()
+        product.feed(bodies["cboe_product"].decode("utf-8"))
+        matches = [(table, row.index("SPDR ® S&P 500 ® ETF Options")) for table in product.tables
+                   for row in table if row.count("SPDR ® S&P 500 ® ETF Options") == 1]
+        if len(matches) != 1:
+            raise ValueError("ambiguous SPY product column")
+        table, column = matches[0]
+        for label, expected in (("Root Ticker Symbol", "SPY"), ("Options Chain", "SPY"),
+                                ("Settlement Type", "Physical Shares of ETF"), ("Exercise Style", "American")):
+            cells = [r for r in table if r and r[0] == label]
+            if len(cells) != 1 or len(cells[0]) <= column or cells[0][column] != expected:
+                raise ValueError("SPY root/product semantics conflict")
+            if label == "Root Ticker Symbol" and cells[0].count("SPY") != 1:
+                raise ValueError("SPY option root appears in multiple product columns")
+        theta = Tables()
+        theta.feed(bodies["theta_contract"].decode("utf-8"))
+        text = " ".join(" ".join(theta.text).split())
+        if ("/v3/option/history/eod" not in text or
+                "symbol Required - The stock or index symbol, or underlying symbol for options. Type: string" not in text):
+            raise ValueError("Theta v3 symbol contract unavailable")
+    except (UnicodeError, ValueError, TypeError, csv.Error) as exc:
+        raise IdentityError("option-root source semantics invalid") from exc
+
+    direct = prepare_direct_registrant(symbol="SPY", response_body=bodies["registrant"],
+        capture=sources["registrant"]["capture"], listing_body=sources["listing_body"],
+        listing_receipt_body=sources["listing_receipt_body"], decision_at=decision_at)
+    registrant = direct["registrant"]
+    if (registrant["cik"] != "0000884394" or registrant["title"] != "SPDR S&P 500 ETF TRUST"
+            or registrant["observed_on"] != on.isoformat()
+            or registrant["listing_key"] != "US-ARCX-SPY"):
+        raise IdentityError("option-root canonical source identity conflicts")
+    known = _reference_clock_iso(max(*clocks, _reference_clock_ns(registrant["known_at"])))
+    end = on + timedelta(days=1)
+    evidence = {"schema": "mastermind.spy_option_root_sources.v1", "vendor": "thetadata", "root": "SPY",
+        "underlying_id": "SEC:US-ARCX-SPY", "valid_from": on.isoformat(), "valid_to": end.isoformat(),
+        "known_at": known, "sources": observations, "listing": registrant,
+        "scope": "source-specific SPY inference; observed day only; no live Theta or rights assertion",
+        "limits": ["No verified Matrix session for this observed date; root lookup is identity preparation only",
+                   "Consumption uses the Options root/Matrix path; ordinary us_equity excludes ARCX"]}
+    body = (json.dumps(evidence, indent=2, sort_keys=True) + "\n").encode()
+    sha = hashlib.sha256(body).hexdigest()
+    seal = option_root_binding_sha256("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha)
+    return AliasRow("thetadata", "SPY", "SEC:US-ARCX-SPY", on, end, known, sha, seal,
+                    alias_kind="occ_root"), evidence
+
+
+def admit_spy_option_root(sources: dict, master_rows: list[dict], *, decision_at: str):
+    """Prepare against exactly one existing active canonical target, before writes."""
+    row, evidence = prepare_spy_option_root(sources, decision_at=decision_at)
+    matches = [r for r in master_rows if r.get("security_id") == row.security_id]
+    if len(matches) != 1:
+        raise IdentityError("option underlying canonical target missing or duplicated")
+    master = matches[0]
+    if (master.get("security_state") is not None or master.get("superseded_by") is not None
+            or [master.get(k) for k in ("listing_key", "country", "mic", "inception_code")] !=
+               ["US-ARCX-SPY", "US", "ARCX", "SPY"]):
+        raise IdentityError("option underlying is inactive or conflicting")
+    def stored_clock(name):
+        # The existing writer reader returns ISO strings from typed UTC Parquet.
+        try:
+            value = datetime.fromisoformat(str(master.get(name)).replace("Z", "+00:00"))
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
+            return _reference_clock_ns(value.isoformat())
+        except (ValueError, TypeError) as exc:
+            raise IdentityError("invalid canonical target clock") from exc
+    effective, ingested = stored_clock("effective_at"), stored_clock("ingested_at")
+    if not 0 < effective <= ingested <= _reference_clock_ns(decision_at) or _reference_clock_iso(effective)[:10] > str(row.valid_from):
+        raise IdentityError("option underlying canonical clocks conflict")
+    # Seal the exact canonical record fields used for admission. Consumers also
+    # bind the independently captured master bytes and their availability clock.
+    evidence["canonical_target"] = {key: master.get(key) for key in MASTER_COLUMNS}
+    body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+    digest = hashlib.sha256(body).hexdigest()
+    from lib.dataos.identity import option_root_binding_sha256
+    seal = option_root_binding_sha256(row.vendor, row.vendor_symbol, row.security_id,
+        row.valid_from, row.valid_to, row.known_at, digest)
+    return AliasRow(row.vendor, row.vendor_symbol, row.security_id, row.valid_from, row.valid_to,
+                    row.known_at, digest, seal, alias_kind="occ_root"), evidence
+
+
+def read_spy_option_root_input(path: Path) -> dict:
+    """Read the explicit local source bundle with the incumbent bounded reader."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate source manifest key")
+            result[key] = value
+        return result
+
+    def read(name, limit):
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+            raise ValueError("source must be a sibling filename")
+        return _read_regular_file(path.parent / name, label="option-root source", limit=limit)
+
+    try:
+        raw = _read_regular_file(path, label="option-root manifest", limit=512 * 1024)
+        manifest = json.loads(raw, object_pairs_hook=pairs,
+                              parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        roles = {"cboe_reference", "cboe_product", "theta_contract", "registrant"}
+        if (type(manifest) is not dict or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] != "mastermind.spy_option_root_input.v1"
+                or type(manifest["sources"]) is not dict
+                or set(manifest["sources"]) != roles | {"listing_body", "listing_receipt_body"}):
+            raise ValueError("invalid option-root manifest")
+        sources = manifest["sources"]
+        for role in roles:
+            if type(sources[role]) is not dict or set(sources[role]) != {"body", "capture"}:
+                raise ValueError("invalid option-root source")
+            sources[role]["body"] = read(sources[role]["body"], _REFERENCE_MAX_BYTES)
+        sources["listing_body"] = read(sources["listing_body"], 8 * 1024 * 1024)
+        sources["listing_receipt_body"] = read(sources["listing_receipt_body"], 512 * 1024)
+        return sources
+    except (OSError, ValueError, TypeError, RecursionError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid option-root input files") from exc
+
+
+def _spy_option_root_state(out_dir: Path, sources: dict | None, master_rows: list[dict], now: str):
+    """Retain one bounded admission in the existing writer receipt, without replay."""
+    previous = (_reference_json(out_dir / RECEIPT_NAME)[0].get("spy_option_root")
+                if (out_dir / RECEIPT_NAME).exists() else None)
+    if sources is not None and previous is not None:
+        raise IdentityError("SPY option-root admission already retained; no replay")
+    if sources is not None:
+        row, evidence = admit_spy_option_root(sources, master_rows, decision_at=now + "Z")
+        return evidence, [row]
+    if previous is not None:
+        if (type(previous) is not dict or previous.get("schema") != "mastermind.spy_option_root_sources.v1"
+                or previous.get("vendor") != "thetadata" or previous.get("root") != "SPY"
+                or previous.get("underlying_id") != "SEC:US-ARCX-SPY"):
+            raise IdentityError("invalid retained SPY root evidence")
+        # Its sealed alias binds the whole retained document below. No source
+        # observation is resubmitted and its historical clock is never refreshed.
+        if _reference_clock_ns(previous.get("known_at")) > _reference_clock_ns(now + "Z"):
+            raise IdentityError("retained SPY source evidence is not yet known")
+    return previous, []
+
+
+def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[dict], now: str):
+    roots = [r for r in alias_rows if r.get("alias_kind") == "occ_root"
+             and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY"]
+    if evidence is None:
+        if roots:
+            raise IdentityError("SPY root lacks its retained source evidence")
+        return
+    try:
+        start, end = date.fromisoformat(evidence["valid_from"]), date.fromisoformat(evidence["valid_to"])
+        body = (json.dumps(evidence, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+        table = VendorAliasTable.from_records(roots)
+        binding = table.resolve_option_underlying("thetadata", "SPY", start,
+                    decision_at=now + "Z", evidence_bytes=body)
+        if (len(roots) != 1 or end != start + timedelta(days=1) or binding is None
+                or binding.security_id != evidence["underlying_id"]
+                or binding.valid_to != end or binding.known_at.isoformat() != evidence["known_at"]):
+            raise IdentityError("retained SPY source/alias mismatch")
+    except (KeyError, ValueError, TypeError, OverflowError) as exc:
+        raise IdentityError("invalid retained SPY root binding") from exc
+
+
 def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
           reference_evidence_path: Path | None = None,
-          direct_registrant_inputs: tuple[dict, ...] | list[dict] = ()) -> dict:
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
     """Do the whole build and return the receipt payload (written unless ``dry_run``).
 
     ``allow_missing_evidence`` (V4-D2B1 FIX 2 / B2 manual-path hardening): a missing or
@@ -3770,6 +4042,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
+        raise IdentityError("option-root intake cannot combine with security admission")
     now = _iso_now()
     direct_state, direct_resolutions = _direct_registrant_state(out_dir, direct_registrant_inputs, now)
     direct_keys = frozenset(direct_state["observations"]) if direct_state else frozenset()
@@ -3847,6 +4121,22 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         master_path, MASTER_COLUMNS, MASTER_DTYPES,
         allow_missing=ISSUER_AXIS_COLUMNS | SECURITY_AXIS_COLUMNS,
     )
+    spy_root_evidence, spy_root_aliases = _spy_option_root_state(
+        out_dir, spy_option_root_input, existing_master_rows, now)
+    if spy_option_root_input is not None:
+        observed = spy_root_evidence["listing"]
+        if (snapshot_date != observed["observed_on"] or snapshot_path is None
+                or _current_direct_resolution("SPY", observed, directory, directory_flags,
+                                              delisted, snapshot_date) is None
+                or hashlib.sha256(spy_option_root_input["listing_body"]).hexdigest() != observed["listing_snapshot_sha256"]):
+            raise IdentityError("option-root evidence does not bind the current listing")
+        from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+        try:
+            current_listing = _read_regular_file(snapshot_path, label="current listing", limit=8 * 1024 * 1024)
+        except (OSError, ReceiptValidationError) as exc:
+            raise IdentityError("current listing unavailable") from exc
+        if current_listing != spy_option_root_input["listing_body"]:
+            raise IdentityError("option-root evidence does not bind the current listing bytes")
     existing_us_rows = [r for r in existing_master_rows if r.get("country") == "US"]
     existing_cn_hk_rows = [r for r in existing_master_rows if r.get("country") in ("CN", "HK")]
     direct_resolutions += _retained_direct_resolutions(
@@ -4133,7 +4423,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         direct_state["sha256"] = _reference_digest(direct_state)
     fresh_aliases = build_alias_rows(
         [r for r in resolutions if r.key not in reference_only_keys], ids
-    ) + cn_hk_alias_rows + native_aliases
+    ) + cn_hk_alias_rows + native_aliases + spy_root_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
         _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
                        allow_missing=OPTIONAL_ALIAS_COLUMNS),
@@ -4459,7 +4749,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
                      "CURRENT" if symbol in current_direct_ids else "LISTING_UNAVAILABLE")
             for symbol, row in direct_state["observations"].items()
         }
-    if reference_evidence_path is not None or direct_registrant_inputs:
+    _validate_spy_option_root_retention(spy_root_evidence, alias_rows, now)
+    if spy_root_evidence is not None:
+        receipt["spy_option_root"] = spy_root_evidence
+    if reference_evidence_path is not None or direct_registrant_inputs or spy_option_root_input is not None:
         def semantic(rows, columns):
             return sorted(_reference_digest({
                 c: (int(row[c]) if c == "n_securities" and row.get(c) is not None else row.get(c))
@@ -4470,12 +4763,16 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if semantic(projected_existing, MASTER_COLUMNS) != semantic(existing_master_rows, MASTER_COLUMNS):
             raise IdentityError("bounded reference intake would change an existing security row")
         extras = [r for r in master_rows if r["security_id"] not in old_by_id]
-        if any(r["inception_code"] not in reference_only_keys for r in extras):
+        if (spy_option_root_input is not None and extras) or any(r["inception_code"] not in reference_only_keys for r in extras):
             raise IdentityError("bounded reference intake would mint a non-probe security")
         old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
                                      allow_missing=OPTIONAL_ALIAS_COLUMNS)
         old_native = [r for r in old_aliases if r["vendor"] == "polygon"]
-        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"]
+        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"
+                      and not (spy_option_root_input is not None and r.get("alias_kind") == "occ_root"
+                               and r["vendor"] == "thetadata" and r["vendor_symbol"] == "SPY")]
+        if spy_option_root_input is not None and len(alias_rows) != len(old_aliases) + 1:
+            raise IdentityError("option-root intake must add exactly one new relation")
         old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]
         if semantic(new_legacy, ALIAS_COLUMNS) != semantic(old_legacy, ALIAS_COLUMNS):
             raise IdentityError("bounded reference intake would change non-native aliases")
@@ -4882,6 +5179,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="bounded prospective reference observations; no network calls")
     parser.add_argument("--direct-registrant-evidence", type=Path,
                         help="new captured SEC/listing observation; no old-input replay or network calls")
+    parser.add_argument("--spy-option-root-evidence", type=Path,
+                        help="bounded captured SPY option sources; existing canonical target required")
     parser.add_argument("--report", action="store_true",
                         help="full census: row counts, rename events, input hashes")
     parser.add_argument(
@@ -4905,7 +5204,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None):
+    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None or args.spy_option_root_evidence is not None):
         parser.error("evidence intake is explicit, not a nightly fetch")
     if args.nightly:
         return run_nightly_refresh(Path(args.out))
@@ -4920,7 +5219,9 @@ def main(argv: list[str] | None = None) -> int:
                     allow_missing_evidence=args.allow_missing_evidence,
                     reference_evidence_path=args.reference_evidence,
                     direct_registrant_inputs=(read_direct_registrant_inputs(args.direct_registrant_evidence)
-                                              if args.direct_registrant_evidence is not None else ()))
+                                              if args.direct_registrant_evidence is not None else ()),
+                    spy_option_root_input=(read_spy_option_root_input(args.spy_option_root_evidence)
+                                           if args.spy_option_root_evidence is not None else None))
     _report(receipt, verbose=args.report)
     # A NOTE IS A FAILURE, not a warning (adversarial review, 2026-08-13).  `notes`
     # carries exactly two things, and neither may pass: a rename the repo's own maps

@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-15T10:30:03+00:00",
+  "generated_at": "2026-10-15T14:27:23+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-14",
@@ -421,14 +421,14 @@
       }
     },
     "cn": {
-      "asof_last_row": "2026-10-14",
+      "asof_last_row": "2026-10-15",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 23
+        "graded_n": 24
       },
       "windows": {
         "full": {
@@ -439,10 +439,10 @@
             "hit_rate": 0.25
           },
           "watch_caution": {
-            "n": 15,
-            "tp": 7,
+            "n": 16,
+            "tp": 8,
             "tn": 8,
-            "precursor_rate": 0.467
+            "precursor_rate": 0.5
           },
           "calm": {
             "n": 0,
@@ -468,10 +468,10 @@
             "hit_rate": 0.25
           },
           "watch_caution": {
-            "n": 15,
-            "tp": 7,
+            "n": 16,
+            "tp": 8,
             "tn": 8,
-            "precursor_rate": 0.467
+            "precursor_rate": 0.5
           },
           "calm": {
             "n": 0,
@@ -492,14 +492,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-10-14",
+      "asof_last_row": "2026-10-15",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 28
+        "graded_n": 29
       },
       "windows": {
         "full": {
@@ -510,10 +510,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 12,
+            "n": 13,
             "tp": 1,
-            "tn": 11,
-            "precursor_rate": 0.083
+            "tn": 12,
+            "precursor_rate": 0.077
           },
           "calm": {
             "n": 13,
@@ -539,10 +539,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 12,
+            "n": 13,
             "tp": 1,
-            "tn": 11,
-            "precursor_rate": 0.083
+            "tn": 12,
+            "precursor_rate": 0.077
           },
           "calm": {
             "n": 13,

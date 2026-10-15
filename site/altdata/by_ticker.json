@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-15",
-  "generated_utc": "2026-10-15T09:43:16.985995+00:00",
+  "generated_utc": "2026-10-15T14:02:12.877584+00:00",
   "n_tickers": 2898,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -948,18 +948,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "JEF": {
-      "ticker": "JEF",
-      "channels": [
-        "insider_buy"
-      ],
-      "weighted_score": 0.6,
-      "insider_net_usd": 318717006.0,
-      "insider_buyers": 1,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "GPI": {
       "ticker": "GPI",
       "channels": [
@@ -1049,6 +1037,21 @@
       "weighted_score": 0.6,
       "insider_net_usd": 100000000.0,
       "insider_buyers": 1,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "BBD": {
+      "ticker": "BBD",
+      "channels": [
+        "insider_cluster"
+      ],
+      "weighted_score": 1.0,
+      "insider_net_usd": 98736477.0,
+      "insider_buyers": 55,
+      "days_to_earnings": 7,
+      "next_earnings": "2026-10-22",
+      "earnings_surprise_pct": 0.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false

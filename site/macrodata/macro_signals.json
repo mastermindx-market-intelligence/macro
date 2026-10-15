@@ -1,15 +1,15 @@
 {
   "date": "2026-10-14",
-  "generated_utc": "2026-10-15 09:45",
+  "generated_utc": "2026-10-15 14:04",
   "business_cycle": {
     "available": true,
     "asof": "2026-10-31",
     "tiers": {
       "leading": {
         "asof": "2026-10-31",
-        "index": 95.3211107676426,
+        "index": 95.32111076764258,
         "mom6": 0.710668008577656,
-        "trend": 0.8171915735969684,
+        "trend": 0.8171915735969679,
         "diffusion": 75.0,
         "n_legs": 4,
         "direction": "rising",
@@ -1138,9 +1138,9 @@
       },
       "coincident": {
         "asof": "2026-08-31",
-        "index": 36.18026236246195,
+        "index": 36.180262362461924,
         "mom6": -0.011709533365944935,
-        "trend": -0.07254167131860807,
+        "trend": -0.07254167131860809,
         "diffusion": 100.0,
         "n_legs": 3,
         "direction": "falling",
@@ -2269,9 +2269,9 @@
       },
       "lagging": {
         "asof": "2026-09-30",
-        "index": 92.98775856332801,
+        "index": 92.98775856332804,
         "mom6": 0.4668343771851653,
-        "trend": 0.341991454514807,
+        "trend": 0.3419914545148086,
         "diffusion": 75.0,
         "n_legs": 4,
         "direction": "rising",
@@ -4165,7 +4165,7 @@
       "initial_claims_4wk": 198000.0,
       "continued_claims": 1716000.0,
       "claims_yoy_pct": -12.679162072767369,
-      "claims_z": -2.076403673621343,
+      "claims_z": -2.07640367362154,
       "claims_trend": "falling",
       "indeed_postings": 103.8443465423,
       "indeed_chg_3m_pct": 2.265570688397056,
@@ -4198,22 +4198,22 @@
       "read": "transitory (flexible-led)"
     },
     "risk_appetite": {
-      "vrp": 6.652179135268922,
+      "vrp": 6.652179135268877,
       "vrp_pctile": 0.6646825396825397,
       "vrp_state": "normal",
-      "realized_vol": 10.217821703964477,
+      "realized_vol": 10.217821703964521,
       "vix_term": 0.8978179892100309,
       "vix_term_state": "contango (calm)",
       "vix_term_lead_lag": "coincident",
       "skew": 154.74,
       "skew_pctile": 0.8244047619047619,
-      "stock_bond_corr": 0.45639246913243886,
+      "stock_bond_corr": 0.4563924691324398,
       "stock_bond_regime": "breakdown (bonds not hedging)",
-      "roro": -0.536644935101636,
+      "roro": -0.5366449351016038,
       "roro_state": "risk-off",
-      "vol_target_scalar": 1.1744186136409138,
+      "vol_target_scalar": 1.1744186136409087,
       "news_sentiment": 0.06280666589736938,
-      "news_sentiment_z": 1.1963619065796414,
+      "news_sentiment_z": 1.1963619065796363,
       "news_sentiment_state": "optimistic"
     },
     "drawdown_risk": {
@@ -4353,7 +4353,7 @@
   "fear_euphoria": {
     "fe_score": 20,
     "band": "Fear",
-    "roro": -0.536644935101636,
+    "roro": -0.5366449351016038,
     "roro_state": "risk-off",
     "legs": [
       {
@@ -5328,7 +5328,7 @@
     ],
     "n_legs_qualifying": 11,
     "as_of": "2026-10-14",
-    "generated_utc": "2026-10-15T08:25:16Z",
+    "generated_utc": "2026-10-15T13:07:28Z",
     "disclaimer_en": "Sentiment context only \u2014 display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.",
     "disclaimer_zh": "\u4ec5\u4e3a\u60c5\u7eea\u53c2\u8003 \u2014 \u516c\u5f00\u5e02\u573a\u6307\u6807\u7684\u4ec5\u5c55\u793a\u5408\u6210\u3002\u4e0d\u8ba1\u5206\uff0c\u4e0d\u8fdb\u5165\u5468\u671f\u5f15\u64ce\uff0c\u65e0\u524d\u77bb\u6027\u5224\u65ad\u3002\u8d2a\u5a6a/\u6050\u60e7\u8bfb\u6570\u82e5\u65e0\u5468\u671f\u80cc\u666f\uff0c\u4e0d\u6784\u6210\u53cd\u5411\u4fe1\u53f7\u3002"
   },
@@ -5949,7 +5949,7 @@
       }
     ],
     "as_of": "2026-10-14",
-    "generated_utc": "2026-10-15T08:25:17Z",
+    "generated_utc": "2026-10-15T13:07:29Z",
     "n_young": 0,
     "disclaimer_en": "Display-only context \u2014 volatility surface indicators from public CBOE / Yahoo data. Never scored, no forward claim. These chips describe the current vol environment; they do not predict direction.",
     "disclaimer_zh": "\u4ec5\u4f9b\u5c55\u793a\u7684\u80cc\u666f \u2014 \u6765\u81ea\u516c\u5f00 CBOE / Yahoo \u6570\u636e\u7684\u6ce2\u52a8\u7387\u66f2\u9762\u6307\u6807\u3002\u4e0d\u8ba1\u5206\uff0c\u65e0\u524d\u77bb\u5224\u65ad\u3002\u8fd9\u4e9b\u82af\u7247\u63cf\u8ff0\u5f53\u524d\u6ce2\u52a8\u7387\u73af\u5883\uff0c\u4e0d\u9884\u6d4b\u65b9\u5411\u3002"
