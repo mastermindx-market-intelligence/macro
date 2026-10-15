@@ -186,41 +186,173 @@
     card.appendChild(source);
   }
 
+  function publicationProgress(row, nowValue) {
+    row = row || {};
+    var now = nowValue instanceof Date ? nowValue.getTime() : Date.now();
+    var actual = row.actual;
+    if (row.data_ready === true && actual && typeof actual === "object" &&
+        Object.keys(actual).length > 0) {
+      return {state: "verified", pill: "Official result · verified", pillZh: "官方结果 · 已核验",
+        short: "OUT", shortZh: "已发布", detail: "Verified official values are available.", detailZh: "官方数据已核验。"};
+    }
+    var detected = row.detected_at ? Date.parse(row.detected_at) : NaN;
+    var knownAge = Number.isFinite(detected) && detected <= now;
+    var age = knownAge ? now - detected : null;
+    var attempt = (row.extraction || {}).status;
+    var delayed = knownAge && age >= 120000;
+    var unavailable = !knownAge || attempt === "incomplete" || attempt === "source_unavailable";
+    if (delayed || unavailable) {
+      return {state: delayed ? "delayed" : "unavailable",
+        pill: delayed ? "Result delayed · needs attention" : "Official publication · values unavailable",
+        pillZh: delayed ? "结果延迟 · 需要检查" : "官方已发布 · 核验值暂不可用",
+        short: delayed ? "DELAYED" : "UNAVAILABLE", shortZh: delayed ? "延迟" : "暂不可用",
+        detail: "The report is published, but verified values have not reached this dashboard. This is a data-delivery issue, not a release still in progress.",
+        detailZh: "报告已经发布，但核验数据尚未送达本看板。这是数据更新问题，并非报告仍在发布中。"};
+    }
+    return {state: "pending", pill: "Official publication · awaiting verified values", pillZh: "官方已发布 · 等待核验数据",
+      short: "PENDING", shortZh: "等待核验", detail: "Publication detected. Verified values are not available yet.", detailZh: "已检测到官方发布，核验数据暂未送达。"};
+  }
+
+  function reconcileOutcomePanel(panel, publications, awaiting, payload, now) {
+    var existing = Object.create(null);
+    list(panel.children).forEach(function (node) {
+      existing[node.getAttribute("data-live-event-id")] = node;
+    });
+    var rows = publications.map(function (row) { return {row: row, published: true}; })
+      .concat(awaiting.map(function (row) { return {row: row, published: false}; }));
+    var retained = [];
+    var scrollParent = panel.parentElement;
+    var scrollTop = scrollParent ? scrollParent.scrollTop : 0;
+    rows.forEach(function (item, index) {
+      var row = item.row;
+      var id = String(row.event_id || (row.type + ":" + row.date));
+      var old = existing[id];
+      var signature = JSON.stringify([row, item.published, publicationProgress(row, now).state]);
+      var node = old;
+      if (!old || old.__mmLiveSignature !== signature) {
+        var expanded = old && old.querySelector("details");
+        var focused = old && old.contains(document.activeElement) ?
+          document.activeElement.getAttribute("data-live-control") : null;
+        node = item.published ? renderPublicationCard(row) : renderAwaitingCard(row, payload);
+        node.setAttribute("data-live-event-id", id);
+        node.__mmLiveSignature = signature;
+        var details = node.querySelector("details");
+        if (expanded && details) details.open = expanded.open;
+        if (old) panel.replaceChild(node, old);
+        if (focused) {
+          list(node.querySelectorAll("[data-live-control]")).some(function (control) {
+            if (control.getAttribute("data-live-control") !== focused) return false;
+            control.focus({preventScroll: true});
+            return true;
+          });
+        }
+      }
+      // markFeedStale may have changed this node without changing row content.
+      // Successful revalidation must restore its row status without losing focus.
+      if (item.published) {
+        var progress = publicationProgress(row, now);
+        var pill = node.querySelector(".mx-live-event-pill");
+        if (pill) setPair(pill, progress.pill, progress.pillZh);
+      }
+      if (panel.children[index] !== node) panel.insertBefore(node, panel.children[index] || null);
+      retained.push(node);
+    });
+    list(panel.children).forEach(function (node) {
+      if (retained.indexOf(node) < 0) panel.removeChild(node);
+    });
+    panel.hidden = rows.length === 0;
+    if (scrollParent) scrollParent.scrollTop = scrollTop;
+  }
+
+  function ensureReportDetailStyles() {
+    if (document.getElementById("mx-live-report-detail-css")) return;
+    var style = document.createElement("style");
+    style.id = "mx-live-report-detail-css";
+    style.textContent = ".mx-live-report-details{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}" +
+      ".mx-live-report-details summary{cursor:pointer;font-weight:650;padding:4px 0}" +
+      ".mx-live-report-details dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;margin:12px 0;font-size:12px}" +
+      ".mx-live-report-details dt{overflow-wrap:anywhere}.mx-live-report-details dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}" +
+      ".mx-live-refresh{display:inline-flex;margin:10px 0 0 14px;padding:6px 10px;border:1px solid var(--line);border-radius:7px;" +
+      "background:var(--panel2);color:var(--text);font:inherit;font-size:11px;cursor:pointer}" +
+      ".mx-live-refresh:disabled{opacity:.55;cursor:wait}.mx-live-event-card{overflow-wrap:anywhere}";
+    (document.head || document.documentElement).appendChild(style);
+  }
+
   function renderPublicationCard(row) {
-    var actual = row.actual || {};
-    var verified = row.data_ready === true;
+    ensureReportDetailStyles();
+    var progress = publicationProgress(row);
+    var verified = progress.state === "verified";
+    var actual = verified ? row.actual : {};
     var card = document.createElement("section");
-    card.className = "mx-live-event-card published " +
-      (verified ? "verified" : "unparsed");
+    card.className = "mx-live-event-card published " + (verified ? "verified" : "awaiting unparsed");
     card.setAttribute("data-live-event-id", row.event_id || "");
     card.setAttribute("data-live-verified", verified ? "true" : "false");
+    card.setAttribute("data-extraction-state", progress.state);
     var top = document.createElement("div");
     top.className = "mx-live-event-top";
-    top.appendChild(languagePair(
-      "mx-live-event-pill",
-      verified ? "Official result · live" : "Official publication · extracting",
-      verified ? "官方结果 · 实时" : "官方发布 · 正在提取"
-    ));
+    top.appendChild(languagePair("mx-live-event-pill", progress.pill, progress.pillZh));
     var asof = document.createElement("span");
     asof.className = "mx-live-event-asof";
-    setPair(
-      asof,
-      "Detected " + (easternTime(row.detected_at) || "live"),
-      "检测于 " + (easternTime(row.detected_at) || "实时")
-    );
+    var checked = easternTime((row.extraction || {}).last_attempt_at);
+    setPair(asof,
+      "Detected " + (easternTime(row.detected_at) || "time unavailable") + (checked ? " · Checked " + checked : " · Last verification check unavailable"),
+      "检测于 " + (easternTime(row.detected_at) || "时间未记录") + (checked ? " · 上次核验 " + checked : " · 上次核验时间未记录"));
     top.appendChild(asof);
     card.appendChild(top);
-    card.appendChild(languagePair(
-      "mx-live-event-headline",
-      actual.headline_en || ((row.label || row.type) + " publication detected"),
-      actual.headline_zh || ((row.label_zh || row.label || row.type) + "官方发布已检测")
-    ));
-    card.appendChild(languagePair(
-      "mx-live-event-summary",
-      actual.summary_en || "Official publication detected. Verified values are being extracted.",
-      actual.summary_zh || "已检测到官方发布，正在提取并核验数据。"
-    ));
+    card.appendChild(languagePair("mx-live-event-headline",
+      actual.headline_en || ((row.label || row.type) + " · official report published"),
+      actual.headline_zh || ((row.label_zh || row.label || row.type) + " · 官方报告已发布")));
+    card.appendChild(languagePair("mx-live-event-summary",
+      actual.summary_en || progress.detail, actual.summary_zh || progress.detailZh));
+    if (verified && Array.isArray(actual.metrics) && actual.metrics.length) {
+      var details = document.createElement("details");
+      details.className = "mx-live-report-details";
+      var summary = document.createElement("summary");
+      summary.setAttribute("data-live-control", "report-details");
+      setPair(summary, "Inspect reported values", "查看报告数据");
+      details.appendChild(summary);
+      var labels = {
+        cpi_headline_mom: ["Headline CPI · month-on-month (SA)", "整体 CPI · 环比（季调）"],
+        cpi_core_mom: ["Core CPI · month-on-month (SA)", "核心 CPI · 环比（季调）"],
+        cpi_headline_yoy: ["Headline CPI · year-on-year (NSA)", "整体 CPI · 同比（未季调）"],
+        cpi_core_yoy: ["Core CPI · year-on-year (NSA)", "核心 CPI · 同比（未季调）"]
+      };
+      var values = document.createElement("dl");
+      actual.metrics.forEach(function (metric) {
+        var label = labels[metric.metric_id] || [String(metric.metric_id || "Metric"), String(metric.metric_id || "指标")];
+        var term = document.createElement("dt");
+        setPair(term, label[0], label[1]);
+        var value = document.createElement("dd");
+        var number = typeof metric.value === "number" && Number.isFinite(metric.value) ? metric.value : null;
+        var formatted = number === null ? "Unavailable" :
+          (metric.unit === "percent" || metric.unit === "percent_annualized" ? number.toFixed(1) + "%" : number.toLocaleString("en-US") + " " + String(metric.unit || ""));
+        setPair(value, formatted, number === null ? "暂不可用" : formatted);
+        values.appendChild(term);
+        values.appendChild(value);
+      });
+      details.appendChild(values);
+      details.appendChild(languagePair("mx-live-event-summary",
+        "Reference period: " + (row.reference_period || actual.reference_period || "not recorded"),
+        "参考期：" + (row.reference_period || actual.reference_period || "未记录")));
+      details.appendChild(languagePair("mx-live-event-summary",
+        "Forecast comparison is not attached to this live result. Do not treat a later model update as the pre-release estimate.",
+        "本次实时结果尚未附带预测对比；不得把发布后的模型更新当作发布前预测。"));
+      card.appendChild(details);
+    }
     appendSource(card, row);
+    var source = card.querySelector(".mx-live-event-source");
+    if (source) source.setAttribute("data-live-control", "official-source");
+    var refresh = document.createElement("button");
+    refresh.type = "button";
+    refresh.className = "mx-live-refresh";
+    refresh.setAttribute("data-live-control", "refresh-display");
+    setPair(refresh, "Refresh display", "刷新显示");
+    refresh.addEventListener("click", function (event) {
+      event.stopPropagation();
+      refresh.disabled = true;
+      Promise.resolve(poll()).finally(function () { refresh.disabled = false; });
+    });
+    card.appendChild(refresh);
     return card;
   }
 
@@ -291,8 +423,8 @@
         badge.classList.add(verified ? "live-out" : "live-wait");
         setPair(
           badge,
-          verified ? "OUT" : "VERIFYING",
-          verified ? "已发布" : "核验中"
+          verified ? "OUT" : (published ? publicationProgress(row).short : "AWAITING"),
+          verified ? "已发布" : (published ? publicationProgress(row).shortZh : "等待发布")
         );
       }
       var outcome = card.querySelector(".mx-live-cal-outcome");
@@ -305,10 +437,10 @@
       setPair(
         outcome,
         published ?
-          (actual.headline_en || "Official publication detected · extracting verified facts") :
+          (actual.headline_en || publicationProgress(row).detail) :
           "Scheduled time passed · awaiting official source",
         published ?
-          (actual.headline_zh || "已检测到官方发布 · 正在提取核验信息") :
+          (actual.headline_zh || publicationProgress(row).detailZh) :
           "预定时间已过 · 正在等待官方来源"
       );
       var oldSource = card.querySelector(".mx-live-cal-source");
@@ -350,7 +482,7 @@
     if (badge) {
       badge.classList.remove("high", "med", "low", "live-out", "live-wait");
       badge.classList.add(verified ? "live-out" : "live-wait");
-      setPair(badge, verified ? "OUT" : "VERIFY", verified ? "已发布" : "核验");
+      setPair(badge, verified ? "OUT" : (published ? publicationProgress(row).short : "AWAITING"), verified ? "已发布" : (published ? publicationProgress(row).shortZh : "等待发布"));
     }
     var dot = item.querySelector(".mx5-tl-dot");
     if (dot) dot.classList.toggle("live-out-dot", verified);
@@ -383,10 +515,10 @@
       );
       setPair(
         subline,
-        actual.headline_en || ((row.label || row.type) + " · extracting verified values"),
-        actual.headline_zh || ((row.label_zh || row.label || row.type) + " · 正在提取核验值")
+        actual.headline_en || ((row.label || row.type) + " · " + publicationProgress(row).short),
+        actual.headline_zh || ((row.label_zh || row.label || row.type) + " · " + publicationProgress(row).shortZh)
       );
-      setPair(badge, verified ? "Live" : "Parsing", verified ? "实时" : "提取中");
+      setPair(badge, verified ? "Live" : publicationProgress(row).short, verified ? "实时" : publicationProgress(row).shortZh);
     } else {
       setPair(title, "Live event status", "实时事件状态");
       setPair(subline, (row.label || row.type) + " · verifying official source",
@@ -607,9 +739,9 @@
     // a result and then denied having one.
     var bodyEn = actual.summary_en || ((row.label || row.type) + (verified ?
       " released — see verified outcome." :
-      " publication detected — verified facts are being extracted."));
+      " published — verified values are unavailable."));
     var bodyZh = actual.summary_zh || ((row.label_zh || row.label || row.type) +
-      (verified ? "已发布 — 查看核验结果。" : "官方发布已检测 — 正在提取核验信息。"));
+      (verified ? "已发布 — 查看核验结果。" : "官方已发布 — 核验数据暂不可用。"));
     list(document.querySelectorAll(".mx5-action-label")).forEach(function (label) {
       var text = String(label.textContent || "").toLowerCase();
       if (text.indexOf(String(row.type || "").toLowerCase()) < 0 &&
@@ -656,9 +788,9 @@
         setPair(
           signal.querySelector(".ms-sig-detail"),
           actual.summary_en || ((row.label || row.type) +
-            " publication detected; verified facts are being extracted."),
+            " published; verified values have not reached the dashboard."),
           actual.summary_zh || ((row.label_zh || row.label || row.type) +
-            "官方发布已检测；正在提取核验信息。")
+            "官方已发布；核验数据尚未送达。")
         );
         setPair(
           signal.querySelector(".ms-sig-what"),
@@ -764,9 +896,9 @@
       setPair(
         alert.querySelector(".mx5-alert-detail"),
         actual.summary_en || ((row.label || row.type) +
-          " publication detected; verified facts are being extracted."),
+          " published; verified values have not reached the dashboard."),
         actual.summary_zh || ((row.label_zh || row.label || row.type) +
-          "官方发布已检测；正在提取核验信息。")
+          "官方已发布；核验数据尚未送达。")
       );
       alert.classList.add("mx-live-resolved");
     });
@@ -796,9 +928,9 @@
         setPair(
           detailEnglish.parentNode,
           actual.summary_en || ((row.label || row.type) +
-            " publication detected; verified facts are being extracted."),
+            " published; verified values have not reached the dashboard."),
           actual.summary_zh || ((row.label_zh || row.label || row.type) +
-            "官方发布已检测；正在提取核验信息。")
+            "官方已发布；核验数据尚未送达。")
         );
       }
       container.setAttribute("data-live-event-container", "true");
@@ -866,14 +998,14 @@
         (actual.summary_en ||
           ((row.label || row.type) + " released — see verified outcome.")) :
         ((row.label || row.type) +
-          " publication detected — verified facts are being extracted.");
+          " published — verified values are unavailable.");
       var chinese = parent && parent.querySelector ? parent.querySelector(".l-zh") : null;
       if (chinese) {
         chinese.textContent = verified ?
           (actual.summary_zh ||
             ((row.label_zh || row.label || row.type) + "已发布 — 查看核验结果。")) :
           ((row.label_zh || row.label || row.type) +
-            "官方发布已检测 — 正在提取核验信息。");
+            "官方已发布 — 核验数据暂不可用。");
       }
       if (parent && parent.classList) {
         parent.classList.add("mx-live-resolved");
@@ -1139,14 +1271,7 @@
     var awaiting = awaitingEvents(payload, now, publishedKeys);
     var panel = ensureOutcomePanel();
     if (panel) {
-      panel.textContent = "";
-      publications.forEach(function (row) {
-        panel.appendChild(renderPublicationCard(row));
-      });
-      awaiting.forEach(function (row) {
-        panel.appendChild(renderAwaitingCard(row, payload));
-      });
-      panel.hidden = publications.length === 0 && awaiting.length === 0;
+      reconcileOutcomePanel(panel, publications, awaiting, payload, now);
     }
 
     publications.forEach(function (row) {
@@ -1185,22 +1310,42 @@
     return true;
   }
 
+  var VISIBLE_POLL_MS = 15000;
+  var pollRequest = null;
+
   function poll() {
-    fetch(ENDPOINT, { cache: "no-store", credentials: "same-origin" })
+    if (pollRequest) return pollRequest;
+    var controller = new AbortController();
+    var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
+    pollRequest = fetch(ENDPOINT, {
+      cache: "no-store", credentials: "same-origin", signal: controller.signal
+    })
       .then(function (response) {
         if (!response.ok) throw new Error("HTTP " + response.status);
         return response.json();
       })
       .then(render)
       .catch(function () {
-        /* Keep the baked dashboard usable, but never leave a false green "Live". */
+        /* Retain last known facts but never advertise a failed fetch as live. */
         notePollFailure();
+      })
+      .finally(function () {
+        window.clearTimeout(timeout);
+        pollRequest = null;
       });
+    return pollRequest;
   }
 
   function start() {
-    poll();
-    if (!timer) timer = window.setInterval(poll, POLL_MS);
+    function pollVisible() {
+      if (document.visibilityState !== "hidden") poll();
+    }
+    pollVisible();
+    if (!timer) {
+      timer = window.setInterval(pollVisible, VISIBLE_POLL_MS);
+      document.addEventListener("visibilitychange", pollVisible);
+      window.addEventListener("focus", pollVisible);
+    }
   }
 
   window.__mmReleasePublicationTest = {
