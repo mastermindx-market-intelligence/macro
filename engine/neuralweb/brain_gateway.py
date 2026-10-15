@@ -317,6 +317,8 @@ _BRAIN_TOOLS = frozenset({
     # Analyst OS W2 — depth retrieval: dated historical episodes (display-tier,
     # China-analog idiom) and the full curve read (pure slice of yield_curve snapshot)
     "get_historical_analogues",
+    "get_retained_market_context",
+    "get_retained_market_catalog",
     "get_curve_detail",
     # Analyst OS W3 — per-user memory: own-session recall + own trade journal
     # (signed-in only, per-user scoped; derived from canonical stores — CXI-R12)
@@ -370,6 +372,8 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "search_research",
     # Analyst OS W2
     "get_historical_analogues",
+    "get_retained_market_context",
+    "get_retained_market_catalog",
     "get_curve_detail",
     # Analyst OS W3
     "recall_sessions",
@@ -3980,6 +3984,28 @@ def _dispatch_brain_tool(
                 report_id=str(tool_params.get("report_id") or ""),
                 user_ctx={"user_id": user_id} if _mode == "report" else None,
             )
+        if tool_name == "get_retained_market_catalog":
+            from app.market_memory import retained_catalog_for_user
+            from fastapi import HTTPException
+            try:
+                params = dict(tool_params)
+                limit = params.get("limit", 8)
+                if type(limit) is not int or not 1 <= limit <= 8:
+                    raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+                return retained_catalog_for_user(root, user_id, params)
+            except HTTPException as exc:
+                return {"error": "retained_catalog_unavailable", "http_status": exc.status_code,
+                        "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
+                        if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
+        if tool_name == "get_retained_market_context":
+            from app.market_memory import retained_macro_for_user
+            from fastapi import HTTPException
+            try:
+                return retained_macro_for_user(root, user_id, tool_params)
+            except HTTPException as exc:
+                return {"error": "retained_context_unavailable", "http_status": exc.status_code,
+                        "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
+                        if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
         if tool_name == "get_historical_analogues":
             # Analyst OS W2 — dated episodes whose measured state rhymed with today
             # (display-tier, China-analog idiom). Depth capability → Essential/Pro,
@@ -4108,6 +4134,14 @@ def _all_brain_tool_schemas(
     try:
         from engine.neuralweb import brain_analogues as _ban  # noqa: PLC0415
         schemas = schemas + [_ban.ANALOGUES_TOOL_SCHEMA]
+        if user_id:
+            from app.paywall import enforce_site_full
+            try:
+                enforce_site_full({"id": user_id}, always=True)
+            except Exception:
+                pass
+            else:
+                schemas = schemas + [_ban.RETAINED_CONTEXT_TOOL_SCHEMA, _ban.RETAINED_CATALOG_TOOL_SCHEMA]
     except Exception:  # noqa: BLE001
         pass
     try:
@@ -4149,7 +4183,8 @@ def _fast_visible_tool_schemas(
 
     Unknown/specialist profiles, Terminal, Pro/Research, and internals sessions fail open
     to the byte-equivalent full authorized list.  If a qualified family drifts and names a
-    tool absent from the current authorized surface, fail open rather than partially narrow.
+    required tool absent from the current authorized surface, fail open rather than
+    partially narrow. Explicit entitlement-only tools may be absent for this caller.
     """
     if (
         lane != "fast"
@@ -4172,7 +4207,14 @@ def _fast_visible_tool_schemas(
     authorized_names = {
         schema.get("name") for schema in full_schemas if isinstance(schema, dict)
     }
-    missing = [name for name in visible_names if name not in authorized_names]
+    # These schemas are deliberately withheld upstream when site-full access is
+    # absent. Their omission is not family drift and must not expose every other
+    # authorized tool to an otherwise qualified Fast question.
+    entitlement_optional_names = {"get_retained_market_context", "get_retained_market_catalog"}
+    missing = [
+        name for name in visible_names
+        if name not in authorized_names and name not in entitlement_optional_names
+    ]
     if missing:
         log.warning(
             "brain_gateway: Fast visibility fail-open for profile %s; missing schemas=%s",
@@ -6369,10 +6411,13 @@ def _earnings_call_citations(value: Any) -> list[str]:
 def _extract_citations_brain(
     messages: list[dict], *, extra: Iterable[str] = (),
 ) -> list[str]:
-    """Pull signal refs plus earnings URL/hash citations from the conversation."""
+    """Pull signal refs, retained source locators and earnings citations."""
     from engine.neuralweb.ask_brain import _extract_citations  # noqa: PLC0415
 
+    from engine.neuralweb.market_memory_brain_citations import retained_source_citations
+
     found = list(_extract_citations(messages))
+    found.extend(retained_source_citations(messages))
     for message in messages:
         content = message.get("content") if isinstance(message, dict) else None
         if not isinstance(content, list):
@@ -6660,6 +6705,21 @@ def _delta_sse(text: str, timing: dict | None = None, t0: float | None = None) -
 # ---------------------------------------------------------------------------
 # Core chat loop (non-streaming)
 # ---------------------------------------------------------------------------
+
+def _thinking_only_token_limit(response: Any) -> bool:
+    """A completed call spent its budget on reasoning without text or tool blocks.
+
+    Refusals, partial answers, and unfinished tool calls do not qualify. The
+    incomplete reasoning/signature must not be replayed into the answer pass.
+    """
+    blocks = getattr(response, "content", None) or []
+    return (
+        getattr(response, "stop_reason", None) == "max_tokens"
+        and bool(blocks)
+        and all(getattr(block, "type", "") in {"thinking", "redacted_thinking"}
+                for block in blocks)
+    )
+
 
 def _run_brain_loop(
     message: str,
@@ -6970,7 +7030,14 @@ def _run_brain_loop(
     # out with the model still mid-investigation (stop_reason == tool_use), the last
     # text block is narration ("Let me also check…"), not an answer. Nudge ONE final
     # no-more-tools synthesis turn so chat() returns a real answer.
-    if last_resp is not None and getattr(last_resp, "stop_reason", None) == "tool_use":
+    thinking_limited = _thinking_only_token_limit(last_resp)
+    recovery_usage = getattr(last_resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        messages.pop()  # Keep completed reads, discard unfinished reasoning.
+        answer_text = ""  # Earlier tool-round narration is not a final answer.
+    if last_resp is not None and (
+        getattr(last_resp, "stop_reason", None) == "tool_use" or thinking_limited
+    ):
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
         messages.append({
@@ -6981,9 +7048,9 @@ def _run_brain_loop(
             resp, model = _create_failover(
                 _cands,
                 per_model_kwargs=_pmk,
-                max_tokens=max_tokens,
+                max_tokens=max_tokens * 2 if thinking_limited else max_tokens,
                 system=system_param,
-                tools=tools_param,
+                tools=[] if thinking_limited else tools_param,
                 messages=messages,
             )
             last_resp = resp
@@ -7017,6 +7084,10 @@ def _run_brain_loop(
                 val = getattr(u, field, None)
                 if val is not None:
                     usage_dict[field] = val
+
+    if recovery_usage is not None and getattr(last_resp, "usage", None) is not recovery_usage:
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
@@ -7082,6 +7153,8 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_market_events":      ("Skimming the wire for news",    "扫一眼最新消息"),
     "search_research":        ("Digging through the research shelf", "翻找机构研报"),
     "get_historical_analogues": ("Searching the desk's history books", "检索历史相似情景"),
+    "get_retained_market_catalog": ("Finding saved market captures", "查找已保存的市场记录"),
+    "get_retained_market_context": ("Reading original retained evidence", "读取原始留存证据"),
     "get_curve_detail":       ("Reading the yield curve",       "解读收益率曲线"),
     "recall_sessions":        ("Recalling your past sessions",  "回顾您最近的会话"),
     "get_trade_episodes":     ("Reading your trade journal",    "读取您的交易日志"),
@@ -8064,7 +8137,15 @@ def _run_brain_loop_stream(
     usage_dict: dict = {}
     _synth_stop: str | None = None   # synthesis stop_reason, for the degraded-stub log
 
-    need_synthesis = last_stop == "tool_use"
+    thinking_limited = not _leak_tripped and _thinking_only_token_limit(resp)
+    recovery_usage = getattr(resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        # ONE no-tool answer pass with bounded headroom, using the existing
+        # candidates, thinking policy, evidence receipt, and final screens.
+        messages.pop()
+        last_resp_content = []
+    need_synthesis = last_stop == "tool_use" or thinking_limited
+    synthesis_max_tokens = max_tokens * 2 if thinking_limited else max_tokens
     if need_synthesis:
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
@@ -8092,7 +8173,7 @@ def _run_brain_loop_stream(
             try:
                 with _cl.messages.stream(
                     model=_p.get("model"),
-                    max_tokens=max_tokens,
+                    max_tokens=synthesis_max_tokens,
                     system=system_param,
                     # NO tools: synthesis must produce PROSE. With tools attached the model
                     # answers a tool-budget-exhausted turn with yet another tool_use, the
@@ -8211,6 +8292,12 @@ def _run_brain_loop_stream(
         except Exception:  # noqa: BLE001
             pass
 
+    if recovery_usage is not None:
+        # The additional pass must count its spent reasoning against the same
+        # existing token backstop, even when the recovery is empty too.
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
+
     if need_synthesis and not full_answer.strip():
         # Every candidate came back empty — salvage any text the last tool round wrote
         # rather than degrading a turn whose tool work all succeeded.
@@ -8265,7 +8352,8 @@ def _run_brain_loop_stream(
             "phase=%s stop=%s input_tokens=%s output_tokens=%s max_tokens=%s)",
             lane, model, "synthesis" if need_synthesis else "tool-round",
             _synth_stop or last_stop,
-            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"), max_tokens)
+            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"),
+            synthesis_max_tokens if need_synthesis else max_tokens)
 
     # ── Contract S reconciliation ────────────────────────────────────────────────────
     # `_emitted` is exactly what the client holds. It is EMPTY on every non-streaming

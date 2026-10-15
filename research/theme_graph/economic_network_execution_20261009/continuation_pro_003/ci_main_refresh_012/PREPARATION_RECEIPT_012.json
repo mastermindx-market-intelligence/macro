@@ -1,0 +1,107 @@
+{
+  "archived_script_execution": false,
+  "ci_all113_members_verified": true,
+  "ci_archive_bytes": 7225728,
+  "ci_archive_sha256": "879929aec7b02314bd2840d62d4e866f44b0af9db55e5b4411c1250051cf5e20",
+  "direct_files": [
+    {
+      "byte_length": 3470,
+      "path": "README.md",
+      "sha256": "45efec4df2dfd6b26013d40768181ffe23e144a2c2d8f4e59310507cc54dba95"
+    },
+    {
+      "byte_length": 10051,
+      "path": "CI_REFRESH_ADJUDICATION_012.md",
+      "sha256": "d8e324e4f0dfef03bd9f202f9f3f35457989ac48735d2906c4c909623cf774cf"
+    },
+    {
+      "byte_length": 1552,
+      "path": "ci_main_refresh_012/CI_ARCHIVE_GUIDE.md",
+      "sha256": "06bba163ed8172377a4c2d7166ba2be52f5db27790026bf5f2430568bc2b2b14"
+    },
+    {
+      "byte_length": 1517,
+      "path": "ci_main_refresh_012/RECOVERY_ARCHIVE_GUIDE.md",
+      "sha256": "127eef80c0179be1e925563e421ffc167936868b6d7ac2d83c5c4509c7dfefa9"
+    },
+    {
+      "byte_length": 33596,
+      "path": "ci_main_refresh_012/CI_ARCHIVE_MANIFEST.json",
+      "sha256": "a612fa6f1f665c405a8a06eaa95f700294b7f2f20dae70e9c64af55374677c27"
+    },
+    {
+      "byte_length": 11607,
+      "path": "ci_main_refresh_012/CI_BLOB_TRANSPORT_INDEX.json",
+      "sha256": "139b8588d7b3fd4ad984bfac93aa8daa4f49805f024fcdc0ad366c3b2d905280"
+    },
+    {
+      "byte_length": 16593,
+      "path": "ci_main_refresh_012/pro003-final-release-gate-004.json",
+      "sha256": "4ab9519a63a6194708225dbb24585c900df1e048f41f5c6e04693ac0d8f7aabb"
+    },
+    {
+      "byte_length": 1222,
+      "path": "ci_main_refresh_012/pro003-main-refresh-integration-006.json",
+      "sha256": "23d2841738a1d34f0119709779fd4b244dc253a1b74aba695f5c33917519771a"
+    },
+    {
+      "byte_length": 2902,
+      "path": "ci_main_refresh_012/pro003-explicit-required-blob-fetch-010.json",
+      "sha256": "cdd3c6c9ea3c5dcd6e585d4cdb7639a236ac52738b486c9d79a37441358c94ae"
+    },
+    {
+      "byte_length": 1618,
+      "path": "ci_main_refresh_012/pro003-main-refresh-integration-011.json",
+      "sha256": "a40b57c1b4e64bdea6ef7408ad949bc361f62c1bcea6927eda3ae6e74fadbce7"
+    },
+    {
+      "byte_length": 32284,
+      "path": "ci_main_refresh_012/pro003-ci-archive-native-readback-006.json",
+      "sha256": "5085be0c6463ab78530ce7de820202aa6fb88fc7a0cf6e35c4ac1acf93f2649f"
+    },
+    {
+      "byte_length": 3103,
+      "path": "ci_main_refresh_012/README_PRE_REFRESH_012.md",
+      "sha256": "04eb1bd05bd75a735aa13b003f617fa71add527deadc6856e5842f1311047732"
+    },
+    {
+      "byte_length": 38362,
+      "path": "ci_main_refresh_012/PRIOR_CHECKPOINT_INVENTORY_012.json",
+      "sha256": "4730b1c9ced6b80ee73a0cf58eec6314cefe1729ca4efe8b486d45fe0c16bf4a"
+    },
+    {
+      "byte_length": 24118,
+      "path": "ci_main_refresh_012/CI_OBSERVATION_REPORT.md",
+      "sha256": "f29df4fd06e7bd8b431b28e45dc892f657306f74da5835fabc3f47995516181f"
+    },
+    {
+      "byte_length": 7225728,
+      "path": "ci_main_refresh_012/PR8711_CANDIDATE_CBCC_CI_EVIDENCE.tar.gz",
+      "sha256": "879929aec7b02314bd2840d62d4e866f44b0af9db55e5b4411c1250051cf5e20"
+    },
+    {
+      "byte_length": 1244583,
+      "path": "ci_main_refresh_012/RECOVERY_EVIDENCE_012.tar.gz",
+      "sha256": "0a89ad296ac36a6732f75bb669d2051bf9ad19ff67da656a86897b4447bf7916"
+    },
+    {
+      "byte_length": 9847,
+      "path": "ci_main_refresh_012/RECOVERY_EVIDENCE_MANIFEST_012.json",
+      "sha256": "511bc4e20b7d1d8c1852e7759474a151b35d3b5d75f565157d3aee6163bfea2c"
+    }
+  ],
+  "finished_at": "2026-10-09T16:33:29.349792+00:00",
+  "git_or_worktree_mutation": false,
+  "head": "4caf1e2b1e58e3199ba5d63ebfa6563ef098eeff",
+  "historical_manifest004_entry_count": 139,
+  "old_checkpoint_file_count": 140,
+  "old_readme_bytes_preserved": true,
+  "recovery_archive_bytes": 1244583,
+  "recovery_archive_sha256": "0a89ad296ac36a6732f75bb669d2051bf9ad19ff67da656a86897b4447bf7916",
+  "recovery_member_count": 32,
+  "schema": "economic_network.native_refresh_preparation/v1",
+  "status": "PREPARED_AND_BYTES_VERIFIED_NOT_APPLIED",
+  "transport_bytes": 198662,
+  "transport_git_blob": "ac24abc38084ec24c7ec06f8b7af29f7b84bc838",
+  "transport_sha256": "37b3748dc3e0cdd43fa9e48bb4e1a0ae97a8654a853b5c186d8afe829a3ed223"
+}
