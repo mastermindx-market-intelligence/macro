@@ -3517,6 +3517,7 @@ jobs:
       - "engine/intelligence_workspace/contracts.py"
       - "engine/intelligence_workspace/entity.py"
       - "engine/intelligence_workspace/options_identity.py"
+      - "engine/intelligence_workspace/options_use.py"
       - "engine/intelligence_workspace/registry.py"
       - "engine/intelligence_workspace/resolver.py"
       - "lib/dataos/__init__.py"
@@ -3530,6 +3531,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/test_observe_options_matrix_identity.py"
       - "tests/test_options_selection_composition.py"
+      - "tests/test_options_use.py"
       - "tests/test_observe_options_matrix_selection.py"
       - "tests/fixtures/options_matrix_selection_vectors_v1.json"
       - "collectors/flow_signals.py"
@@ -3635,7 +3637,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -11519,7 +11521,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -15113,7 +15115,7 @@ jobs:
       # suites with the ingestion/page tests while preserving their full inferred
       # dependency ownership. No extra interpreter is needed.
       - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
-        run: python -m pytest tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -25477,6 +25479,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_history_filings.py
+      - tests/test_market_memory_history_filings.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py
@@ -25852,6 +25856,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/entry_radar/replay/rs_pullback_launch_labels.py"
       - "engine/entry_radar/spool.py"
       - "engine/entry_signal.py"
       - "engine/equity_factors.py"
@@ -26350,6 +26355,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
+      - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_episode_features.py"
@@ -26359,6 +26365,8 @@ jobs:
       - "tests/test_market_memory_pit.py"
       - "tests/test_market_memory_population.py"
       - "tests/test_market_memory_retained_context_cohort.py"
+      - "tests/test_market_memory_synthetic_capacity.py"
+      - "research/market_memory/performance_20261015/benchmark.py"
       - "tests/test_market_memory_technical_store.py"
       - "tests/test_market_memory_retained_source_metadata.py"
       - "tests/test_market_memory_trusted.py"
@@ -26423,6 +26431,7 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
           tests/test_ptse_breadth_observation.py
@@ -26446,6 +26455,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
+          tests/test_market_memory_synthetic_capacity.py
           tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
@@ -27673,6 +27683,10 @@ jobs:
       - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
       # Existing guarded Data & Lab historical-dossier read projection.
       - tests/test_dataos_web_history.py
+      - engine/neuralweb/market_memory_history_filings.py
+      - tests/test_market_memory_history_filings.py
+      - engine/earnings_release/filing_key.py
+      - engine/earnings_release/__init__.py
       - tests/test_market_memory_history_workflow.py
       - plugins/mastermind-data-lab/skills/data-workspace/SKILL.md
       - plugins/mastermind-data-lab/skills/data-workspace/references/requests.md
@@ -27716,7 +27730,7 @@ jobs:
       - name: web data access, source clocks, reader limits and canonical Lab isolation
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
@@ -27749,6 +27763,9 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - engine/neuralweb/market_memory_history_filings.py
+      - engine/earnings_release/filing_key.py
+      - engine/earnings_release/__init__.py
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
       - collectors/__init__.py
