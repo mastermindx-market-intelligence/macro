@@ -10,6 +10,12 @@ Tests:
 7. build_qledger_reliability: correct row extraction and §0.5.8 caveat present.
 8. build_qledger_reliability: absent-file-safe.
 9. No "validated" / "已验证" in any new function output (BC-2).
+10. build_thesis_monitor_broken: BROKEN-only rows, index-paired fired criteria.
+11. build_thesis_monitor_broken: absent-file-safe (returns {available: False}).
+12. build_thesis_monitor_broken: non-list "monitored" or a non-object file is
+    unavailable.
+13. measurement.html.j2: eg-thesis-broken prints the BROKEN thesis, escaped.
+14. measurement.html.j2: eg-thesis-broken hidden when unavailable / key absent.
 
 House rules:
 - Synthetic fixture files only — no real data writes.
@@ -395,3 +401,200 @@ def test_no_validated_in_output(monkeypatch, tmp_path):
     ql = bm.build_qledger_reliability()
     ql_text = json.dumps(ql).lower()
     assert "validated" not in ql_text, "build_qledger_reliability output contains 'validated'"
+
+
+# ---------------------------------------------------------------------------
+# 10-12. build_thesis_monitor_broken (Calibration Lab — name the BROKEN theses)
+# ---------------------------------------------------------------------------
+
+THESIS_MONITOR_FIXTURE = {
+    "schema": "thesis_monitor.v1",
+    "asof": "2026-01-01",
+    "n_open": 3,
+    "n_broken": 1,
+    "n_weakening": 1,
+    "monitored": [
+        {
+            "theme": "fixture_alpha",
+            "source": "deterministic",
+            "status": "BROKEN",
+            "opened": "2025-12-01",
+            "stage_at_open": "PRECIPICE",
+            "kill_criteria": [
+                {"kind": "k_first", "detail": "first criterion detail"},
+                {"kind": "k_second", "detail": "second criterion detail"},
+            ],
+            "criterion_statuses": ["WEAKENING", "BROKEN"],
+        },
+        {
+            "theme": "fixture_beta",
+            "source": "deterministic",
+            "status": "WEAKENING",
+            "opened": "2025-12-02",
+            "stage_at_open": "BROADENING",
+            "kill_criteria": [{"kind": "k_first", "detail": "beta first"}],
+            "criterion_statuses": ["WEAKENING"],
+        },
+        {
+            "theme": "fixture_gamma",
+            "source": "deterministic",
+            "status": "INTACT",
+            "opened": "2025-12-03",
+            "stage_at_open": "PRECIPICE",
+            "kill_criteria": [{"kind": "k_first", "detail": "gamma first"}],
+            "criterion_statuses": ["INTACT"],
+        },
+    ],
+}
+
+
+def test_thesis_monitor_broken_rows_from_fixture(monkeypatch, tmp_path):
+    """Only status==BROKEN rows appear; fired pairs by index with kill_criteria."""
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, THESIS_MONITOR_FIXTURE)
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+
+    result = bm.build_thesis_monitor_broken()
+
+    assert result["available"] is True
+    assert result["asof"] == "2026-01-01"
+    # counts are passed through from the file — never recomputed here
+    assert result["n_broken"] == 1
+    assert result["n_weakening"] == 1
+
+    # file order preserved, BROKEN-only
+    assert [r["theme"] for r in result["rows"]] == ["fixture_alpha"]
+    alpha = result["rows"][0]
+    assert alpha["opened"] == "2025-12-01"
+    assert alpha["stage_at_open"] == "PRECIPICE"
+    # the SECOND criterion is the BROKEN one — not the first, not both
+    assert alpha["fired"] == [{"kind": "k_second", "detail": "second criterion detail"}]
+
+
+def test_thesis_monitor_absent_is_unavailable(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        bm, "THESIS_MONITOR_PATH", tmp_path / "foresight" / "thesis_monitor.json"
+    )
+    result = bm.build_thesis_monitor_broken()
+    assert result["available"] is False
+
+
+def test_thesis_monitor_non_list_monitored_is_unavailable(monkeypatch, tmp_path):
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {"asof": "2026-01-01", "monitored": {}})
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    result = bm.build_thesis_monitor_broken()
+    assert result["available"] is False
+
+
+def test_thesis_monitor_non_object_file_is_unavailable(monkeypatch, tmp_path):
+    """A top-level list has no .get(); it must degrade, not crash run()."""
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, [{"status": "BROKEN"}])
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    result = bm.build_thesis_monitor_broken()
+    assert result["available"] is False
+
+
+def test_thesis_monitor_llm_only_row_shows_heat_decay(monkeypatch, tmp_path):
+    """An LLM-only thesis is shaped like the producer's standalone row
+    (engine/thesis_monitor.py): opened_asof, text kill_criteria, no
+    criterion_statuses.  It still names when it opened and what it was
+    judged on, instead of rendering as an empty row."""
+    fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
+    _write_json(fixture_path, {
+        "asof": "2026-01-01", "n_broken": 1, "n_weakening": 0,
+        "monitored": [{
+            "theme": "fixture_llm", "source": "llm", "status": "BROKEN",
+            "heat_at_open": 0.196, "heat_now": 0.157, "n_surfaces_now": 1,
+            "physical_now": False, "opened_asof": "2025-12-05",
+            "kill_criteria": ["a text criterion", "another text criterion"],
+        }],
+    })
+    monkeypatch.setattr(bm, "THESIS_MONITOR_PATH", fixture_path)
+    rows = bm.build_thesis_monitor_broken()["rows"]
+    assert rows == [{
+        "theme": "fixture_llm", "opened": "2025-12-05", "stage_at_open": "",
+        "fired": [{"kind": "heat_decay",
+                   "detail": "heat 0.196 → 0.157 · 1 surface(s) now"}],
+    }]
+    html = _render_measurement(thesis_monitor_broken=bm.build_thesis_monitor_broken())
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "2025-12-05" in panel and "heat_decay" in panel
+    assert '<td class="eg-mono">—</td>' in panel  # no stage at open
+
+
+# ---------------------------------------------------------------------------
+# 13-14. measurement.html.j2 — eg-thesis-broken subpanel (escaped, hidden)
+# ---------------------------------------------------------------------------
+
+def _render_measurement(**over) -> str:
+    """Render measurement.html.j2 with all-artifacts-absent defaults.
+
+    Same absent-state context as tests/test_etf_board_windows_tile.py::_render;
+    thesis_monitor_broken is deliberately NOT defaulted there so the "key absent"
+    case can be exercised by simply not passing it.
+    """
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(loader=FileSystemLoader(str(REPO / "templates")), autoescape=False)
+    try:
+        from engine import i18n
+        env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    except Exception:  # noqa: BLE001 — English-only fallback, as the builder does
+        env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
+    ctx = {
+        "page_title": "Test", "engines": [], "gate_ledger": [],
+        "accruing_experiments": [], "cone_recalibration": {}, "collinearity": {},
+        "sync_gauge": {"available": False},
+        "provenance": {"epochs": {}, "fingerprint_consistent": True},
+        "build_date": "2026-01-01", "generated_at": "2026-01-01T00:00:00Z",
+        "n_stamps_grand_total": 0, "truth_ledger": {"available": False},
+        "accrual_clocks": [], "prediction_layer": {"available": False},
+        "coverage_matrix": {"available": False, "rows": []},
+        "grading_closure": {"available": False}, "trial_budgets": {"available": False},
+        "rule_experiments": {"available": False},
+        "qledger_reliability": {"available": False},
+        "seasonality_record": {"available": False, "registered": 0, "graded": 0,
+                               "next_close": None},
+    }
+    ctx.update(over)
+    return env.get_template("measurement.html.j2").render(**ctx)
+
+
+BROKEN_THESIS_CONTEXT = {
+    "available": True,
+    "asof": "2026-01-01",
+    "n_broken": 1,
+    "n_weakening": 1,
+    "rows": [
+        {
+            "theme": "fixture_alpha",
+            "opened": "2025-12-01",
+            "stage_at_open": "PRECIPICE",
+            "fired": [{"kind": "k_second", "detail": "<b>x</b>"}],
+        },
+    ],
+}
+
+
+def test_measurement_template_lists_broken_thesis_escaped():
+    html = _render_measurement(thesis_monitor_broken=BROKEN_THESIS_CONTEXT)
+
+    assert 'id="eg-thesis-broken"' in html
+    assert "fixture_alpha" in html
+    assert "k_second" in html
+    # autoescape=False in the builder — producer strings must carry |e
+    assert "&lt;b&gt;x&lt;/b&gt;" in html
+    assert "<b>x</b>" not in html
+    # no real producer theme may leak into a synthetic render
+    assert "ai_semiconductors" not in html
+
+
+def test_measurement_template_hides_broken_block_when_unavailable():
+    # rows present but available=False: the guard must still hide the block
+    unavailable = dict(BROKEN_THESIS_CONTEXT, available=False)
+    assert "eg-thesis-broken" not in _render_measurement(
+        thesis_monitor_broken=unavailable
+    )
+    assert "eg-thesis-broken" not in _render_measurement()

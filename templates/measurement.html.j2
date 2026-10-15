@@ -1742,6 +1742,63 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
 
+    {# ── 0. BROKEN THESES (thesis monitor) — display only ─────────────────
+       Self-defaulting like the ETF-windows tile, so the panel is absent-safe in
+       ANY render context.  autoescape=False in the builder: every interpolated
+       producer string below carries |e.  No new CSS — existing eg-* classes. #}
+    {% set thesis_monitor_broken = thesis_monitor_broken | default(none) %}
+    {% if thesis_monitor_broken and thesis_monitor_broken.get('available')
+          and thesis_monitor_broken.rows %}
+    {% set tm = thesis_monitor_broken %}
+    <div class="eg-subpanel" id="eg-thesis-broken">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Broken theses</span><span class="l-zh">已失效论点</span></h3>
+        <span class="eg-subhd-meta">
+          <span class="l-en">{{ tm.n_broken|e }} broken · {{ tm.n_weakening|e }} weakening ·
+            as of {{ tm.asof|e }}</span>
+          <span class="l-zh">{{ tm.n_broken|e }} 个已失效 · {{ tm.n_weakening|e }} 个走弱 ·
+            截至 {{ tm.asof|e }}</span>
+        </span>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">Kill criterion fired</span>
+            <span class="l-zh">触发的失效条件</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in tm.rows %}
+          <tr>
+            <td class="eg-mono">{{ row.theme|e }}</td>
+            <td class="eg-mono">{{ (row.opened or '—')|e }}</td>
+            <td class="eg-mono">{{ (row.stage_at_open or '—')|e }}</td>
+            <td>
+              {% if row.fired %}
+              {% for f in row.fired %}{{ f.kind|e }} — {{ f.detail|e }}
+                {% if not loop.last %}<br>{% endif %}{% endfor %}
+              {% else %}
+              —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>{# end .eg-table-wrap #}
+      <div class="eg-footnote">
+        <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
+        Deterministic kill criteria; display only, not a sizing input.</span>
+        <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
+        确定性失效条件，仅供展示，不用于仓位决策。</span>
+      </div>
+    </div>
+    {% endif %}
+
     {# ── 1. GRADING CLOSURE TABLE ────────────────────────────────────────── #}
     {% if grading_closure and grading_closure.get('available') %}
     <div class="eg-subpanel" id="eg-grading-closure">

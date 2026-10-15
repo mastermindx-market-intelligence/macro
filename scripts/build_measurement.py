@@ -1176,6 +1176,7 @@ GRADING_CLOSURE_PATH = DATA / "governance" / "grading_closure.json"
 TRIAL_LEDGER_PATH = DATA / "trial_ledger.jsonl"
 RULE_EXPERIMENTS_PATH = DATA / "rule_experiments" / "registry.jsonl"
 QLEDGER_TRACK_RECORD_PATH = SITE / "qledger" / "track_record.json"
+THESIS_MONITOR_PATH = DATA / "foresight" / "thesis_monitor.json"
 
 # Earliest-maturity notes for TIME-starved ledgers (drawn from §0, programmatically
 # readable from grading_closure.json data; the notes below follow program doc §1/§3).
@@ -1264,6 +1265,90 @@ def build_grading_closure() -> dict:
         "n_closed": raw.get("n_closed", 0),
         "n_grader_starved": raw.get("n_grader_starved", 0),
         "n_log_only": raw.get("n_log_only", 0),
+        "rows": rows,
+    }
+
+
+def _or_dash(value) -> str:
+    """A producer value as text, or an em dash when it is absent."""
+    return "—" if value is None or value == "" else str(value)
+
+
+def build_thesis_monitor_broken() -> dict:
+    """Load thesis_monitor.json and list ONLY the BROKEN theses (display only).
+
+    engine/thesis_monitor.py owns the deterministic kill logic; this reader
+    re-evaluates nothing and recomputes nothing — n_broken / n_weakening pass
+    through verbatim and rows keep file order.  `fired` pairs a criterion
+    status with the kill_criteria entry AT THE SAME INDEX; an index missing
+    from either parallel list is skipped, never invented.  An LLM-only thesis
+    (source "llm") has no per-criterion statuses, so its row shows the
+    heat-decay inputs the producer judged it on.
+    Absent-safe: returns {available: False} if the file is missing/unreadable,
+    is not a JSON object, or if "monitored" is not a list.
+    """
+    if not THESIS_MONITOR_PATH.exists():
+        log.warning("thesis_monitor.json not found: %s", THESIS_MONITOR_PATH)
+        return {"available": False}
+
+    try:
+        raw = load_json(THESIS_MONITOR_PATH)
+    except Exception as exc:
+        log.warning("Failed to load thesis_monitor.json: %s", exc)
+        return {"available": False}
+
+    if not isinstance(raw, dict):
+        log.warning("thesis_monitor.json is not an object: %s", THESIS_MONITOR_PATH)
+        return {"available": False}
+
+    monitored = raw.get("monitored")
+    if not isinstance(monitored, list):
+        log.warning("thesis_monitor.json has no 'monitored' list: %s",
+                    THESIS_MONITOR_PATH)
+        return {"available": False}
+
+    rows: list[dict] = []
+    for entry in monitored:
+        if not isinstance(entry, dict) or entry.get("status") != "BROKEN":
+            continue
+        fired: list[dict] = []
+        if entry.get("source") == "llm":
+            # An LLM-only thesis has text criteria and no per-criterion
+            # statuses; the producer judges it by heat decay and surface count
+            # (engine/thesis_monitor.py _status_llm).  Show those inputs as
+            # written — they are not re-judged here.
+            fired.append({
+                "kind": "heat_decay",
+                "detail": "heat {} → {} · {} surface(s) now".format(
+                    _or_dash(entry.get("heat_at_open")),
+                    _or_dash(entry.get("heat_now")),
+                    _or_dash(entry.get("n_surfaces_now")),
+                ),
+            })
+        else:
+            criteria = entry.get("kill_criteria") or []
+            statuses = entry.get("criterion_statuses") or []
+            for i, cstatus in enumerate(statuses):
+                if cstatus != "BROKEN" or i >= len(criteria):
+                    continue
+                crit = criteria[i] if isinstance(criteria[i], dict) else {}
+                fired.append({
+                    "kind": crit.get("kind", ""),
+                    "detail": crit.get("detail", ""),
+                })
+        rows.append({
+            "theme": entry.get("theme", ""),
+            # deterministic rows write "opened"; LLM-only rows "opened_asof"
+            "opened": entry.get("opened") or entry.get("opened_asof") or "",
+            "stage_at_open": entry.get("stage_at_open", ""),
+            "fired": fired,
+        })
+
+    return {
+        "available": True,
+        "asof": raw.get("asof", ""),
+        "n_broken": raw.get("n_broken", 0),
+        "n_weakening": raw.get("n_weakening", 0),
         "rows": rows,
     }
 
@@ -1861,6 +1946,17 @@ def run() -> None:
     else:
         log.warning("Grading closure unavailable — data/governance/grading_closure.json missing")
 
+    thesis_monitor_broken = build_thesis_monitor_broken()
+    if thesis_monitor_broken.get("available"):
+        log.info(
+            "Thesis monitor: %d BROKEN theses listed (%d broken, %d weakening overall)",
+            len(thesis_monitor_broken.get("rows", [])),
+            thesis_monitor_broken.get("n_broken", 0),
+            thesis_monitor_broken.get("n_weakening", 0),
+        )
+    else:
+        log.warning("Thesis monitor unavailable — data/foresight/thesis_monitor.json missing")
+
     trial_budgets = build_trial_budgets()
     if trial_budgets.get("available"):
         log.info(
@@ -2020,6 +2116,7 @@ def run() -> None:
         coverage_matrix=coverage_matrix,
         # Evidence-Gap panel (PR-A1)
         grading_closure=grading_closure,
+        thesis_monitor_broken=thesis_monitor_broken,
         trial_budgets=trial_budgets,
         rule_experiments=rule_experiments,
         qledger_reliability=qledger_reliability,
