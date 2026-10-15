@@ -1,65 +1,68 @@
 ---
 key: RESEARCH-FACTORY-CODEGEN
-title: Research Factory codegen — bounded end-to-end research capability
+title: Research Factory bounded codegen delivery
 objective: >
-  Complete the Chairman-assigned codegen programme through qualified contracts,
-  lawful point-in-time inputs, isolated execution, incumbent accounting and evaluation,
-  independent verification, existing product review, protected release and the required
-  prospective evidence. A source PR or synthetic test is not programme acceptance.
+  Deliver isolated original research features through causal inputs, existing Trial
+  and Vault accounting, trusted evaluation, authenticated review and prospective
+  evidence. Source checks and merges do not complete the programme.
 status: active
 program: research-factory
 repos: [macro, mastermind]
-owner: chairman-assigned-meta-ceo
+owner: Chairman-assigned Fable Meta-CEO, root 01a1333c-a475-7052-95a8-72a88eb8c17b
 class: build
-blast_radius: reversible
+blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
   - engine/research_codegen/
-  - tests/test_research_codegen_*.py
-  - research/RESEARCH_CODEGEN_*.md
+  - engine/research_factory/codegen_boundary.py
+  - research/research_factory_codegen/
 waves:
-  - {id: SOURCE, title: "Dormant source and reserved-metadata fences on original protected PRs", status: awaiting_ci}
-  - {id: CONTRACTS, title: "Recover and adjudicate original contracts operator result without replay", status: in_progress}
-  - {id: RUNTIME, title: "Qualify actual isolated runtime, identities and budgets", status: todo, depends_on: [CONTRACTS]}
-  - {id: DATA, title: "Qualify provenance and future capture through the incumbent data owner", status: in_progress}
-  - {id: PILOT, title: "Original bounded pilot, incumbent ledger and Vault, complete paired evaluation", status: todo, depends_on: [RUNTIME, DATA]}
-  - {id: PRODUCT, title: "Existing challenge and Experiments surfaces with authenticated workflow proof", status: todo, depends_on: [PILOT]}
-  - {id: FORWARD, title: "Actual prospective evidence through the existing forward owner", status: todo, depends_on: [PILOT]}
-  - {id: ACCEPTANCE, title: "Protected release, recovery and complete programme acceptance", status: todo, depends_on: [PRODUCT, FORWARD]}
+  - {id: SOURCE, title: "Contracts and connected source on original carriers", status: in_progress}
+  - {id: RUNTIME, title: "Fixed Linux canary and actual containment qualification", status: in_progress}
+  - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
+  - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
+next_action: >
+  Repair the actual PR9077 workstream conflict and PR9099 import-closure omissions
+  on their original branches. Consume the two original Fabric reviews through
+  same-operation recovery, then run the prepared v4 canary through normal admission.
 artifacts:
+  - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
+  - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
+  - research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md
   - research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md
   - engine/research_codegen/static_checks.py
-landmines:
-  - "Static morphology never qualifies a physical execution or parser boundary. RF-16 remains held."
-  - "Current mutable Yahoo history lacks original-availability proof; dormant future capture cannot repair historical vintages."
-  - "Source acceptance, CI, merge, installed bytes, runtime selection, product proof and scientific acceptance are separate facts."
 do_not_redo:
-  - "Do not recreate or replay rf-codegen-contracts-impl-01a1333c-v1; preserve original root01a1333c-a475-7052-95a8-72a88eb8c17b and assigning parent01a1333e-742d-7c80-8dbb-db42109f06ce."
-  - "Do not accept or rerun original rc65 rf-static-checks-01a1333c-v1; its one qualified current-source retrieval completed and derived source has separate review."
-  - "Do not send the Linux capacity cleanup request elsewhere: the Chairman explicitly kept it here. Preserve admission floors and uncertain/active artifacts."
-  - "Do not push into armed PRs9077,9096,9099 or bypass their existing release controller. Preserve separate Yahoo basis-refresh DRAFT/HOLD PR8066."
-next_action: >
-  Continue exact-head source verification and normal protected release; consume the
-  original contracts return in its actual assigning parent when its existing recovery
-  owner qualifies delivery. Continue only admitted independent work while runtime,
-  provenance and release gates remain unresolved. No production activation is granted.
-verified_by: >
-  research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md;
-  PR #9077; PR #9096; PR #9099;
-  /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/ROOT_CONTINUATION.json
+  - Reuse accepted checks and reviews until their relevant source or requirements change.
+  - Original contracts operation remains EFFECT_UNKNOWN. Chris authorized quarantine
+    and a fresh seven-path implementation, not replay, refused reads or lease release.
+  - Static worker rc65 remains unaccepted; its recovered derived source has separate acceptance.
+  - Preserve original Fabric operations, current writers, capacity limits and release controls.
+  - Keep the capacity cleanup request here and preserve Yahoo basis-refresh PR8066 HOLD.
+landmines:
+  - Mutable Yahoo history does not establish original availability; future capture cannot repair it.
+  - Host isolation, candidate admission, holdout authority and scientific inference remain unqualified.
+  - Chris identified himself as repository administrator and directed continuation with
+    the documented protection-read gap. Do not change repository controls or credentials.
 ---
 
-This is a knowledge-plane checkpoint of the original assignment, not a scheduler,
-resource grant or second strategic state. The attached masterplan is a specification;
-the Chairman's direct instruction controls the Sol coordinator / M2 Fabric route.
-Native coordinators preserve the original root and consume their own retained results.
-The Fabric Integration chat owns the two explicitly authorised same-operation recovery
-requests; the static retrieval is complete, and original contracts recovery is active.
+Current checkpoint — 2026-10-15 (Vancouver).
 
-The local evidence directory retains the original package, 31-package evidence frontier,
-selected protocol, exact operations, source reviews and test logs. PR #9077 carries the
-reserved-metadata fence, #9096 dormant accounting/evaluation/transport, and #9099
-future Yahoo observation capture. Their publication does not establish merger or runtime
-acceptance. The static checker adds another dormant component. No generated candidate,
-market batch, holdout read, canonical Trial/Vault write, live capture or deployment has
-been accepted. The mission remains open across all later evidence obligations.
+Strict transport cleanup #9190 merged at d99c8f129f2d559db814fb6059f7eade03bd40d5;
+static validation #9100 merged at f94050a358c3665a8a1b8cf97b87dc8eab4acaf6.
+Fence #9077 remains on its original branch; its prior CI lost its hosted runner.
+Capture #9099 now has a concrete eight-job import-closure omission to repair.
+
+Combined source is pushed at f70550addb18da7a43c50f82164c5a5a4e8f2378 on the existing
+rf-contracts-fresh carrier. Cgroup corrections passed 64 affected checks; the joined
+runtime suite passed 617 tests and 67 subtests with three Linux-only skips. Mount-table
+source passed 80 checks; its original worker output remains unaccepted. The archive
+scanner repair passed the actual pinned archive scan and private staging verification.
+V4 is prepared but undispatched. Its privileged installer has one existing scoped
+review pending recovery; neither stale controller logs nor missing local processes
+prove remote termination. Fabric Integration received one batched same-operation
+recovery request for that review and the mount-table review. No workers were replayed.
+
+Use the existing programme evidence under
+/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c for retained
+results. Historical receipts remain history; this short checkpoint owns the current
+next action. The programme is incomplete and has no current Chris-only gate.
