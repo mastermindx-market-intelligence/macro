@@ -441,7 +441,8 @@ def backfill_altdata(root: Path, *, dry_run: bool = False) -> int:
                 all_claims.append(pclaim)
 
     if not dry_run:
-        register_batch(all_claims, root)
+        stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "altdata")
         log.info("backfill_altdata: processed %d theses → %d claims (incl. placebos)",
                  registered, len(all_claims))
     else:

@@ -599,3 +599,24 @@ def test_radar_persisted_rejected_rows_are_still_valid_receipts(src_root, monkey
     import scripts.backfill_qledger_us as b
     monkeypatch.setattr(b, "register_batch", lambda claims, root: [{"status":"rejected"} for _ in claims])
     assert b.backfill_radar(src_root) == 4
+
+
+def test_altdata_batch_registration_errors_are_not_reported_as_success(src_root, monkeypatch):
+    """The ALTDATA caller cannot ignore per-claim error slots from register_batch."""
+    import scripts.backfill_qledger_us as b
+
+    def failed_slot(claims, root):
+        return [{"status": "error", "error": "synthetic"} for _ in claims]
+
+    monkeypatch.setattr(b, "register_batch", failed_slot)
+    with pytest.raises(RuntimeError, match="qledger altdata batch registration incomplete"):
+        b.backfill_altdata(src_root)
+
+
+def test_altdata_partial_batch_results_are_not_reported_as_success(src_root, monkeypatch):
+    """Short or missing receipts mean not every input claim was accounted for."""
+    import scripts.backfill_qledger_us as b
+
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [])
+    with pytest.raises(RuntimeError, match="qledger altdata batch registration incomplete"):
+        b.backfill_altdata(src_root)
