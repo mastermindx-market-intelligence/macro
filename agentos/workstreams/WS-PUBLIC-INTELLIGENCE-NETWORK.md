@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: 9209 protected663dbf1f installed bffaa414 and accepted. SAME follow-on integratedf8e6594693fd;922targeted checks,45groups,contract0/0. Historical235snapshots retained in tagged Git and local disk; release footprint narrowed below controller300filecap. Fresh capacity fence then single PR/protected install.9455/9464 green but controller-stale. Preserve44refs/five drafts/Chrome/Fabric001/publication0of10.
+next_action: 9209 protected663dbf1f installed bffaa414 fully accepted. SAME follow-on pushed2a807b258328;922checks,45groups,26sources,contract0/0,282release files with235historical snapshots retained by tag/on disk.14:33capacity9+0/cap8 so noPR. Next eligible admission create one follow-onPR then protected install.9455/9464 green but controller-stale. Preserve44refs/five drafts/Chrome/Fabric001/publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
