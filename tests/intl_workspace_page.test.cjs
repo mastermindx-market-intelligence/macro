@@ -94,6 +94,39 @@ with TemporaryDirectory(prefix='intl-chart-page-') as tmp:
   return sourceChartHtml.get(isolated);
 }
 
+for (const bootLanguage of ['en','zh']) {
+  test(`Source chart accessible reading follows locale and selection ${bootLanguage}`,async()=>{
+    await pageFixture(async page=>{
+      const panel=page.locator('[data-im-compare-panel]:not([hidden])');
+      const picker=panel.locator('[data-im-compare-pin]');
+      await picker.selectOption('1');await picker.selectOption('4');
+      const chart=panel.locator('[data-im-chart-model]');
+      const geometry=await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.getAttribute('d'),n.getAttribute('transform')]));
+      const client=await page.context().newCDPSession(page);
+      async function reading(lang,count) {
+        const prefix=lang==='zh'?'相同起点，不同走势。 可比市场组 1':'Same starting point. Different paths. Comparable group 1';
+        const snapshot=(await client.send('Accessibility.getFullAXTree')).nodes;
+        const image=snapshot.find(n=>!n.ignored&&n.role?.value==='image'&&n.name?.value.startsWith(prefix));
+        assert.ok(image,'chart must expose the current language and selected count: '+JSON.stringify(snapshot.filter(n=>!n.ignored&&n.role?.value==='image').map(n=>n.name?.value)));
+        assert.match(image.name.value,new RegExp('·\\s*'+count+'\\s*'+(lang==='zh'?'个市场':'markets')));
+        assert.match(image.name.value,/2026-09-08.*2026-10-07/);
+        assert.match(image.description?.value||'',lang==='zh'?/每组从可观测起点基准化至 100.*未填补缺失的价格或汇率/:/Price levels rebased to 100 at each observed start.*no missing price or FX value was filled/);
+        if(lang==='en') assert.doesNotMatch(image.name.value+image.description.value,/[\u4e00-\u9fff]/);
+        else assert.doesNotMatch(image.name.value+image.description.value,/Rebased|market|observed|missing/i);
+      }
+      await reading(bootLanguage,2);
+      for(const lang of [bootLanguage==='en'?'zh':'en',bootLanguage]) {
+        const before=page.url();
+        await page.evaluate(lang=>setLang(lang),lang);
+        await reading(lang,2);assert.equal(page.url(),before);
+      }
+      await picker.selectOption('2');await reading(bootLanguage,3);
+      await page.goBack();await reading(bootLanguage,2);
+      assert.deepEqual(await chart.locator('[data-im-chart-series]').evaluateAll(ns=>ns.map(n=>[n.getAttribute('d'),n.getAttribute('transform')])),geometry);
+    },{htmlOverride:sourceChartFixture(),width:320,bootLanguage,initialSearch:'?view=compare'});
+  });
+}
+
 test('Source chart endpoint symbols remain unclipped',async()=>{
   await pageFixture(async page=>{
     await page.emulateMedia({reducedMotion:'reduce'});

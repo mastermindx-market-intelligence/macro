@@ -34,9 +34,10 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert html.count('data-im-chart-cohort="c0"') == 1
     assert 'viewBox="0 0 640 220"' in html and 'width="100%"' in html
     assert 'role="img"' in html and 'aria-labelledby=' in html
-    assert '<title id="im-test-chart-c0-title">' in html
-    assert '<desc id="im-test-chart-c0-desc">' in html
-    assert 'Rebased market performance' in html
+    assert '<summary id="im-test-chart-c0-title">' in html
+    assert '<figcaption id="im-test-chart-c0-desc">' in html
+    assert 'aria-labelledby="im-test-chart-heading im-test-chart-c0-title"' in html
+    assert 'aria-describedby="im-test-chart-intro im-test-chart-c0-desc"' in html
     assert 'Same starting point. Different paths.' in html
     assert '相同起点，不同走势。' in html
     assert 'data-im-chart-series="JP"' in html

@@ -9,8 +9,8 @@
 {% if geometry.schema == 'intl-chart-geometry.v1' and geometry.cohorts %}
 <section class="intl-chart" data-im-chart-model="intl-chart-geometry.v1" data-im-chart-status="{{ geometry.status|e }}">
   <header>
-    <h3>{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
-    <p>{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
+    <h3 id="{{ context_id|e }}-chart-heading">{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
+    <p id="{{ context_id|e }}-chart-intro">{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
   </header>
   <p data-im-chart-selection-unavailable hidden>
     {{ words('Chart unavailable for these selected markets because source evidence or calculation windows do not align.', '由于数据来源依据或计算区间不一致，所选市场的图表暂不可用。') }}
@@ -33,17 +33,18 @@
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
     <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
-      <summary>{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · <span data-im-chart-market-count>{{ cohort.paths|length }}</span> {{ words('markets', '个市场') }}
+      <summary id="{{ identity|e }}-title">{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · <span data-im-chart-market-count>{{ cohort.paths|length }}</span> {{ words('markets', '个市场') }}
         · <time datetime="{{ cohort.window.start|e }}">{{ cohort.window.start[:10]|e }}</time>–
         <time datetime="{{ cohort.window.end|e }}">{{ cohort.window.end[:10]|e }}</time>
       </summary>
       <figure>
-        <svg role="img" aria-labelledby="{{ identity|e }}-title {{ identity|e }}-desc"
+        {# Reuse visible localized text, including the committed count/window.
+           A fixed bilingual SVG title would speak both languages in either locale. #}
+        <svg role="img" aria-labelledby="{{ context_id|e }}-chart-heading {{ identity|e }}-title"
+             aria-describedby="{{ context_id|e }}-chart-intro {{ identity|e }}-desc"
              width="100%" overflow="visible"
              viewBox="0 0 {{ cohort.width|e }} {{ cohort.height|e }}"
              preserveAspectRatio="xMidYMid meet">
-          <title id="{{ identity|e }}-title">Rebased market performance / 市场基准化表现</title>
-          <desc id="{{ identity|e }}-desc">100 at the observed start; missing dates interrupt each line. / 可观测起点为 100；缺失数据中断曲线。</desc>
           <line x1="0" y1="{{ cohort.baseline_y|e }}" x2="{{ cohort.width|e }}"
                 y2="{{ cohort.baseline_y|e }}" stroke="var(--muted)" stroke-width="1"
                 stroke-dasharray="5 5" />
@@ -68,7 +69,7 @@
             {% endfor %}
           {% endfor %}
         </svg>
-        <figcaption>
+        <figcaption id="{{ identity|e }}-desc">
           {{ words('Line and point styles identify markets. Unobserved dates break the series; no missing price or FX value was filled.', '线型和点形用于区分市场。未观测日期中断曲线；未填补缺失的价格或汇率。') }}
         </figcaption>
       </figure>
