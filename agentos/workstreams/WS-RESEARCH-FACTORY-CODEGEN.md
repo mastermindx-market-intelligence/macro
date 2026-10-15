@@ -23,10 +23,10 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Consume original archive and mount reviews after the existing Fabric owner
-  completes qualified collector installation. Resolve the fixed-plan source reservation through the pending Chris decision;
-  do not retry its refused read or replace its original operation. Land fence/capture through the
-  existing merge controller, then publish the combined carrier.
+  Repair PR9463's concrete CI scope/test-discovery failures, then follow its
+  original run and fence/capture releases. Existing Fabric owner diagnoses the
+  two refused original review collections and native watch envelope mismatch.
+  The fixed-plan two-file source-release decision is pending Chris; no replay.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
@@ -59,8 +59,11 @@ CI remains required. The carrier is rearmed after the push. The fence contract-d
 check has passed. No new runner was requested for the previous infrastructure
 failure. Normal merge controls remain in force.
 
-The combined source now integrates the current fence and capture branches,
-including their landed-base repairs and the strict transport. The changed deploy composition passed 270 checks; its capsule bytes
+Draft PR9463 at b736dcfc80d2 integrates the current fence and capture branches,
+including their landed-base repairs and the strict transport. Combined source
+checks passed1183tests and128subtests with four platform-specific skips. Its
+contract-delta failure identified missing dependency paths and unnamed runtime
+suites; the source repair extends six job scopes and explicitly names33suites. The changed deploy composition passed 270 checks; its capsule bytes
 remain unchanged. The actual local admin server, existing login/session flow,
 API and browser display were exercised with the retained synthetic fixture:
 unsigned diagnostics return401, authenticated good/refused rows preserve their
@@ -69,10 +72,12 @@ This is local authenticated integration, not installed production proof. Evidenc
 /Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
 
 V4 remains prepared and undispatched. The existing Fabric owner has reviewed the
-missing same-operation plaintext collector source in Mastermind PR1520 and is
-continuing normal release/install. Only the actual assigning root may collect
-and adjudicate the original archive and mount reviews afterward. No replay,
-lease release or refused observer reopening is authorized by that source work.
+missing same-operation plaintext collector in Mastermind PR1520; it is merged
+and installed. Both original-parent collection attempts then refused local
+binding validation before destination creation. The owner diagnosed the shared
+0775external-volume ancestor; no retry, rehome or permission change was made.
+The actual review content remains unconsumed. The existing owner also has the
+Codex watch-envelope defect; no local CI observer was launched.
 
 The original Fabric leaf rf-fixed-workload-plans-01a1333c-v1 still owns the
 seven-workload factory and its tests. Its single collection refused the remote
