@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T20:29:52.037705+00:00",
+  "updated_at": "2026-10-15T21:19:32.731181+00:00",
   "a1_pr": 6651,
   "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
   "published_at": "2026-10-15T20:21:22.130224+00:00",
@@ -52,15 +52,30 @@
   "production_verified": false,
   "programme_complete": false,
   "latest_ci_observation": {
-    "observed_at": "2026-10-15T20:27:57.082335+00:00",
+    "observed_at": "2026-10-15T21:19:16.654973+00:00",
     "run_id": 38801265500,
     "attempt": 1,
     "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
     "status": "in_progress",
     "ci_plan": "success",
-    "contract_delta": "in_progress",
+    "contract_delta": "success",
     "plan_artifact_pending": false,
-    "packs_running": 12
+    "packs_running": [
+      7
+    ],
+    "packs_passed": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11
+    ]
   },
   "qualified_previous_revision": {
     "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
@@ -441,5 +456,74 @@
       ]
     },
     "scope": "Original hosted plan identity only; terminal semantic evidence and all binding checks remain pending. No final source binding or production acceptance."
+  },
+  "original_critical_pack_consumption": {
+    "at": "2026-10-15T21:04:11.430748+00:00",
+    "run_id": 38801265500,
+    "attempt": 1,
+    "subject_head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "artifacts": [
+      {
+        "id": 12006006662,
+        "pack": 6,
+        "zip_sha256": "55e9dd2afbbcd6df78552301f8114896231a02fd83c4e315d4b42d1b5d6c4039"
+      },
+      {
+        "id": 12005458959,
+        "pack": 0,
+        "zip_sha256": "4701bed2f31ee0ffcc4e6de9de4f4066615d95b2a54b5a02fd8c5178a7903c05"
+      }
+    ],
+    "canonical_plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+    "planned_jobs_present": 14,
+    "passed_semantic_steps": 43,
+    "a1": {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 6,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        }
+      ]
+    },
+    "scope": "Original pack0 and pack6 canonical consumption. All expected jobs/step identities matched exact plan. Not unit-test/zero-skip counts, final full-run gate, installed production or follow-on acceptance. Missing other fragments in partial reconciliation mean unobserved locally, not new hosted failures."
+  },
+  "current_main_preparation": {
+    "at": "2026-10-15T21:07:32.218194+00:00",
+    "main": "c2493c5770835f83e8b70f45a946a4d7689ad3bf",
+    "a1_preview_tree": "7e8d91498ef3b9f10b9e2a52872232e163dfae7b",
+    "changed_incoming_jobs": [
+      "research-price-panel"
+    ],
+    "a1_job_unchanged": true,
+    "new_source_paths_matching_a1_scopes": [],
+    "production_17_files_unchanged": true,
+    "followon_prepared_tree": "66761deb872a966d69048986ae02ddbd3447ce9c",
+    "followon_all_other_jobs_unchanged": true,
+    "followon_job_count": 320,
+    "accepted_preexisting_additives": {
+      "research-price-panel": {
+        "engine/k3e_eval1_forward.py": 1,
+        "engine/pick_forward_dist.py": 1,
+        "engine/seasonality/multiplicity.py": 1
+      }
+    },
+    "local_reporting_correction": "Initial equality-to-main assertion caught the three preexisting accepted research-price-panel additive paths. Comparison now preserves unchanged additive delta and all incoming commands/memberships; no source edit or product-test failure.",
+    "scope": "Current-main source preparation at critical completion. Incoming market-memory command/inputs retained; no actual carrier integration, new CI producer, final binding, source qualification rerun or production claim. Incumbent owns source-freshness/refresh/merge."
   }
 }
