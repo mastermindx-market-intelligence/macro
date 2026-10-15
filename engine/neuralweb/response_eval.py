@@ -36,6 +36,8 @@ better or worse, for the operator's eyes only.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import json
 import logging
 import re
@@ -737,6 +739,7 @@ def score_response(
     judge_fn: Callable[[str], str | None],
     *,
     extra_context: str = "",
+    native_source_context: dict | None = None,
 ) -> dict:
     """Score one response-log row: mechanical checks + the injected LLM judge.
 
@@ -750,11 +753,28 @@ def score_response(
     score must not be able to overturn — the mechanical tier is right exactly
     where the judge is unreliable. Unjudged rows are never ``passed``.
 
+    ``native_source_context`` is optional, ephemeral same-request resolver
+    evidence supplied by the caller, never loaded from the persisted log row.
+    When requested, numeric verification must succeed for ``passed`` to be true;
+    it cannot change the rubric, judge score or frozen failure taxonomy. Only
+    references and the verification result enter telemetry, never source values.
+    The caller owns actual request correlation and existing subscriber admission.
+
     Never raises: a judge that throws, times out, or returns garbage yields
     ``judged: False`` with the mechanical findings intact.
     """
     checks = mechanical_checks(row)
     row = row if isinstance(row, dict) else {}
+    source_verification = None
+    if native_source_context is not None:
+        context = native_source_context if isinstance(native_source_context, dict) else {}
+        source_verification = verify_native_numeric_response(
+            row.get("answer"), context.get("receipt"),
+            request_id=context.get("request_id"),
+            source_request_id=context.get("source_request_id"),
+            symbol=context.get("symbol"),
+            source_envelopes=context.get("source_envelopes"),
+        )
 
     verdict: dict | None = None
     err: str | None = None
@@ -786,7 +806,9 @@ def score_response(
         "lang": row.get("lang") or None,
         "total": total,
         "passed": bool(verdict and total is not None
-                       and total >= PASS_THRESHOLD and not hard_fail),
+                       and total >= PASS_THRESHOLD and not hard_fail
+                       and (source_verification is None
+                            or source_verification["status"] == "verified")),
         "scores": verdict["scores"] if verdict else {},
         "tags": [t for t in FAILURE_TAGS if t in tags],
         "mech": checks,
@@ -795,6 +817,8 @@ def score_response(
         "note": verdict["note"] if verdict else "",
         "hard_fail": hard_fail,
     }
+    if source_verification is not None:
+        out["source_verification"] = source_verification
     if err:
         out["error"] = err
     return out
@@ -1588,3 +1612,348 @@ def run_measurement_acceptance_cases(benchmark: dict | None = None) -> dict:
     return {"ok": protocol["accepted"] and population_ok and all(r["agrees_with_oracle"] for r in rows),
             "internal_qa_only": True, "outcome_access_allowed": False,
             "protocol": protocol, "case_population_matches": population_ok, "cases": rows}
+
+
+# Same-request native numeric source verification (internal QA only).
+# Frozen receipt/answer contract strings.  These assert the native lane's own
+# published constants; no behaviour of the native lane is re-defined here.
+_NATIVE_NUMERIC_RECEIPT_SCHEMA = "brain.native_fact_receipt.v1"
+_NATIVE_NUMERIC_RECEIPT_ROUTE = "instant/native-fact"
+_NATIVE_NUMERIC_CACHE_LABEL = "request_scoped_no_value_cache"
+_NATIVE_NUMERIC_VALUE_SCHEMA = "datapoint_value.v1"
+_NATIVE_NUMERIC_SUBSCRIBER = "subscriber"
+_NATIVE_NUMERIC_SECURITY = "security"
+_NATIVE_NUMERIC_TYPED_FACT = "typed_fact"
+_NATIVE_NUMERIC_CLAUSE_PREFIX = "c"
+# Exact answer grammar of the native renderer: symbol + " — " + "; ".join(...).
+_NATIVE_NUMERIC_ANSWER_SEPARATOR = " — "
+_NATIVE_NUMERIC_CLAUSE_SEPARATOR = "; "
+
+_NATIVE_NUMERIC_MAX_TEXT_LENGTH = 256
+_NATIVE_NUMERIC_MAX_ANSWER_LENGTH = 8192
+_NATIVE_NUMERIC_MIN_SOURCE_FIELDS = 1
+_NATIVE_NUMERIC_MAX_SOURCE_FIELDS = 12
+
+_NATIVE_NUMERIC_VERIFIED = "verified"
+_NATIVE_NUMERIC_MISMATCH = "mismatch"
+_NATIVE_NUMERIC_NOT_ASSESSED = "not_assessed"
+_NATIVE_NUMERIC_VERIFIED_REASON = "numeric_response_verified"
+
+
+def verify_native_numeric_response(
+    answer: Any,
+    receipt: Any,
+    *,
+    request_id: Any,
+    source_request_id: Any,
+    symbol: Any,
+    source_envelopes: Any,
+) -> dict[str, Any]:
+    """Deterministically verify a native numeric answer against its sources.
+
+    Args:
+        answer: the full rendered answer text under verification.
+        receipt: the ``brain.native_fact_receipt.v1`` produced for it.
+        request_id: caller assertion of the serving request id.
+        source_request_id: caller assertion of the request id the sources and
+            receipt were produced under; must equal ``request_id``.
+        symbol: the already-admitted current symbol for the request.
+        source_envelopes: the real same-request subscriber resolver envelopes
+            (``datapoint_value.v1``) for 1..12 distinct numeric native fields.
+
+    Returns:
+        A small internal-only dict: ``status`` (``verified`` | ``mismatch`` |
+        ``not_assessed``), a stable ``reason`` code, ``checked_count`` (fields
+        fully verified; ``0`` unless verified), ``references`` (``field_id`` +
+        ``fact_fingerprint`` only, populated solely on ``verified``), and
+        ``internal_qa_only`` (always ``True``).  Never raises; never mutates
+        its inputs; never echoes values, answer text, receipt content, source
+        content, or exception text.
+    """
+    try:
+        return _native_numeric_verify(
+            answer,
+            receipt,
+            request_id=request_id,
+            source_request_id=source_request_id,
+            symbol=symbol,
+            source_envelopes=source_envelopes,
+        )
+    except Exception:
+        # Fail closed and quiet: a stable code, nothing leaked, nothing mutated.
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "internal_error", 0, ())
+
+
+def _native_numeric_verify(
+    answer: Any,
+    receipt: Any,
+    *,
+    request_id: Any,
+    source_request_id: Any,
+    symbol: Any,
+    source_envelopes: Any,
+) -> dict[str, Any]:
+    # Canonical helpers only, imported lazily; this module adds no registry,
+    # rights policy, or renderer of its own.
+    from engine.intelligence_workspace.contracts import finite_number, semantic_fingerprint
+    from engine.intelligence_workspace.consumers import build_brain_fact_packet
+    from engine.neuralweb.native_facts import _render_fact
+
+    # -- caller correlation assertions (never authentication) ---------------
+    if not _native_numeric_bounded_text(request_id) or not _native_numeric_bounded_text(source_request_id):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "request_id_malformed", 0, ())
+    if request_id != source_request_id:
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "request_id_mismatch", 0, ())
+
+    # -- admitted symbol / answer bounds ------------------------------------
+    if not _native_numeric_bounded_text(symbol):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "symbol_malformed", 0, ())
+    if not isinstance(answer, str) or not answer.strip() or len(answer) > _NATIVE_NUMERIC_MAX_ANSWER_LENGTH:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "answer_malformed", 0, ())
+
+    # -- source evidence admission ------------------------------------------
+    if not isinstance(source_envelopes, (list, tuple)):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+    envelopes = list(source_envelopes)
+    if not _NATIVE_NUMERIC_MIN_SOURCE_FIELDS <= len(envelopes) <= _NATIVE_NUMERIC_MAX_SOURCE_FIELDS:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+
+    field_ids: list[Any] = []
+    digests: set[Any] = set()
+    entities: set[Any] = set()
+    for envelope in envelopes:
+        if not isinstance(envelope, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        if envelope.get("schema") != _NATIVE_NUMERIC_VALUE_SCHEMA:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_schema_unexpected", 0, ())
+        if envelope.get("audience") != _NATIVE_NUMERIC_SUBSCRIBER:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_audience_not_subscriber", 0, ())
+        if envelope.get("status") != "available":
+            # Absence/blocked/stale is honestly not assessed; it is never a
+            # successful numeric check.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_not_available", 0, ())
+        if not finite_number(envelope.get("value")):
+            # Booleans and non-finite floats are rejected outright; non-numeric
+            # native fields are outside this checker's scope, never a pass.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_not_numeric", 0, ())
+        digest = envelope.get("registry_digest")
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_registry_digest_missing", 0, ())
+        if not _native_numeric_bounded_text(envelope.get("field_id")):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        entity = envelope.get("entity")
+        if (
+            not isinstance(entity, Mapping)
+            or entity.get("type") != _NATIVE_NUMERIC_SECURITY
+            or not _native_numeric_bounded_text(entity.get("id"))
+        ):
+            # The industry-rank subset resolves against an industry entity, so
+            # canonical-security equality cannot be established for it: that
+            # supported-subset boundary is not_assessed, never a numeric pass.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_entity_not_security", 0, ())
+        field_ids.append(envelope.get("field_id"))
+        digests.add(digest)
+        entities.add((entity.get("type"), entity.get("id")))
+
+    if len(set(field_ids)) != len(field_ids):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_duplicate", 0, ())
+    if len(digests) != 1:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_registry_inconsistent", 0, ())
+    if len(entities) != 1:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_entity_inconsistent", 0, ())
+    registry_digest = next(iter(digests))
+    entity_type, entity_id = next(iter(entities))
+    canonical_security = {"type": entity_type, "id": entity_id}
+
+    # Source integrity: the stored fingerprint must be exactly the canonical
+    # fingerprint of the envelope as supplied (a well-shaped hash proves
+    # nothing on its own).
+    for envelope in envelopes:
+        try:
+            expected_fingerprint = semantic_fingerprint(envelope)
+        except Exception:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_fingerprint_invalid", 0, ())
+        if envelope.get("fact_fingerprint") != expected_fingerprint:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_fingerprint_invalid", 0, ())
+
+    # Ground truth surfaces, built once from the sources by canonical code.
+    try:
+        packet_facts = build_brain_fact_packet(envelopes)["facts"]
+    except Exception:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+    try:
+        rendered: list[str] = []
+        expected_clauses: list[dict[str, Any]] = []
+        for display_order, envelope in enumerate(envelopes):
+            text, clause = _render_fact(envelope)
+            rendered.append(text)
+            expected_clauses.append(
+                {
+                    **clause,
+                    "clause_id": f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}",
+                    "display_order": display_order,
+                    "receipt_kind": _NATIVE_NUMERIC_TYPED_FACT,
+                }
+            )
+    except Exception:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "field_unrenderable", 0, ())
+
+    # -- receipt admission (is this even a native fact receipt?) -------------
+    if not isinstance(receipt, Mapping):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    if receipt.get("schema") != _NATIVE_NUMERIC_RECEIPT_SCHEMA:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_schema_unexpected", 0, ())
+    if receipt.get("route") != _NATIVE_NUMERIC_RECEIPT_ROUTE:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_route_unexpected", 0, ())
+    if receipt.get("request_scoped_no_value_cache") is not True:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_cache_contract_violated", 0, ())
+    cache = receipt.get("cache")
+    if (
+        not isinstance(cache, Mapping)
+        or cache.get("hit") is not False
+        or cache.get("label") != _NATIVE_NUMERIC_CACHE_LABEL
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_cache_contract_violated", 0, ())
+    if not _native_numeric_bounded_text(receipt.get("registry_digest")):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    receipt_facts = receipt.get("facts")
+    receipt_clauses = receipt.get("clauses")
+    if not isinstance(receipt_facts, list) or not isinstance(receipt_clauses, list):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    effective_context = receipt.get("effective_context")
+    identity_admission = receipt.get("identity_admission")
+    canonical_entity = receipt.get("canonical_entity")
+    if (
+        not isinstance(effective_context, Mapping)
+        or not isinstance(effective_context.get("symbol"), str)
+        or not isinstance(identity_admission, Mapping)
+        or not isinstance(identity_admission.get("requested_symbol"), str)
+        or not _native_numeric_bounded_text(identity_admission.get("canonical_security_id"))
+        or not isinstance(canonical_entity, Mapping)
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+
+    # -- response-vs-source equality ladder (observed defects are mismatch) --
+    if (
+        effective_context.get("symbol") != symbol
+        or identity_admission.get("requested_symbol") != symbol
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "symbol_mismatch", 0, ())
+    if receipt.get("registry_digest") != registry_digest:
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "registry_mismatch", 0, ())
+    if (
+        dict(canonical_entity) != canonical_security
+        or identity_admission.get("canonical_security_id") != canonical_security["id"]
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "canonical_entity_mismatch", 0, ())
+
+    if len(receipt_facts) != len(envelopes):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+    for display_order, (fact, envelope) in enumerate(zip(receipt_facts, envelopes)):
+        if not isinstance(fact, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+        if (
+            fact.get("field_id") != envelope.get("field_id")
+            or fact.get("clause_id") != f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}"
+            or not _native_numeric_is_index(fact.get("display_order"))
+            or fact.get("display_order") != display_order
+        ):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+        expected_fact = {
+            **packet_facts[display_order],
+            "clause_id": f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}",
+            "display_order": display_order,
+        }
+        try:
+            expected_json = _native_numeric_canonical_json(expected_fact)
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        try:
+            observed_json = _native_numeric_canonical_json(fact)
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fact_packet_mismatch", 0, ())
+        if observed_json != expected_json:
+            # Type-sensitive canonical equality over entity/value/status/unit/
+            # clock window/source/quality/freshness/provenance/fingerprint; no
+            # fuzzy numeric coercion, and a re-stamped hash cannot excuse a
+            # changed fact.
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fact_packet_mismatch", 0, ())
+
+    if len(receipt_clauses) != len(envelopes):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+    for display_order, (clause, expected) in enumerate(zip(receipt_clauses, expected_clauses)):
+        if not isinstance(clause, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        if (
+            clause.get("field_id") != expected["field_id"]
+            or clause.get("clause_id") != expected["clause_id"]
+            or not _native_numeric_is_index(clause.get("display_order"))
+            or clause.get("display_order") != display_order
+            or clause.get("receipt_kind") != _NATIVE_NUMERIC_TYPED_FACT
+            or clause.get("status") != "available"
+        ):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        if clause.get("fact_fingerprint") != expected["fact_fingerprint"]:
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fingerprint_mismatch", 0, ())
+        if not isinstance(clause.get("text"), str) or clause.get("text") != expected["text"]:
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_text_mismatch", 0, ())
+        try:
+            if _native_numeric_canonical_json(clause) != _native_numeric_canonical_json(expected):
+                return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+
+    expected_answer = symbol + _NATIVE_NUMERIC_ANSWER_SEPARATOR + _NATIVE_NUMERIC_CLAUSE_SEPARATOR.join(rendered)
+    if answer != expected_answer:
+        # Partial, extra, or edited narrative is rejected wholesale.
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "answer_mismatch", 0, ())
+
+    references = tuple(
+        {"field_id": envelope["field_id"], "fact_fingerprint": envelope["fact_fingerprint"]}
+        for envelope in envelopes
+    )
+    return _native_numeric_result(_NATIVE_NUMERIC_VERIFIED, _NATIVE_NUMERIC_VERIFIED_REASON, len(envelopes), references)
+
+
+def _native_numeric_bounded_text(value: Any) -> bool:
+    """Nonempty string within the bounded-text limit."""
+    return isinstance(value, str) and bool(value.strip()) and len(value) <= _NATIVE_NUMERIC_MAX_TEXT_LENGTH
+
+
+def _native_numeric_is_index(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _native_numeric_canonical_json(payload: Any) -> str:
+    """Type-sensitive canonical JSON: sorted keys, non-finite values refused.
+
+    Deliberately the same canonicalization as the contract layer's canonical
+    JSON bytes, kept local so this module imports only the four canonical
+    helpers named for it.
+    """
+    return json.dumps(
+        payload,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+
+
+def _native_numeric_result(
+    status: str,
+    reason: str,
+    checked_count: int,
+    references: tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
+    """Build the closed, internal-only result shape."""
+    return {
+        "status": status,
+        "reason": reason,
+        "checked_count": checked_count,
+        "references": [
+            {"field_id": reference["field_id"], "fact_fingerprint": reference["fact_fingerprint"]}
+            for reference in references
+        ],
+        "internal_qa_only": True,
+    }

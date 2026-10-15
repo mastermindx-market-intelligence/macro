@@ -1,0 +1,93 @@
+{
+  "schema": "eval_os.t11_source_qualification.v1",
+  "at": "2026-10-15T09:02:19.119450+00:00",
+  "base_revision": "fadcae6907e97cd2d62f3841b64f0bf7bdf6b91d",
+  "source_sha256": {
+    "engine/neuralweb/response_eval.py": "6082ed746f27ea5ec61f2ee736b3fae52ef93bff07d4ef6c69d1c4c6fa369fa3",
+    "tests/test_response_eval.py": "735c00c15b33eaa5b41ad8723f260fa55cd1b46801a0735c777cf20fe79f75cc"
+  },
+  "worker": {
+    "run_id": "eval-t11-request-verifier-01a1333d-c1",
+    "result_sha256": "5ab09d39113c398b432de3b3ffdf3cf8d5f18ccba5ce5e6c26429a952eec8e58",
+    "result_bytes": 4020,
+    "acceptance": "reviewer accepted with parent corrections",
+    "independent_review": false,
+    "usage": "receipt unavailable; no fabricated usage"
+  },
+  "parent_corrections": [
+    "Namespaced private helper names for the existing module.",
+    "Enforced canonical 64-character lowercase registry digest shape.",
+    "Removed worker skip-on-import/missing-production fallbacks; absence now fails the binding tests.",
+    "Integrated explicit ephemeral source context in score_response; mismatch or unavailable assessment cannot pass through a judge score.",
+    "Added actual scorer/checker integration controls and malformed-registry control."
+  ],
+  "checks": {
+    "affected_response_suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "252",
+      "time": "1.984",
+      "timestamp": "2026-10-15T01:56:59.234767-07:00",
+      "hostname": "m2studio"
+    },
+    "focused_ci_controls": {
+      "passed": 3,
+      "exit_code": 0
+    },
+    "closure_misses": {},
+    "strict_packing": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5621,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5803,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5441,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5384,
+        "packs": 9,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+      }
+    ],
+    "strict_breaches": [],
+    "preexisting_functions_changed": [
+      "score_response"
+    ],
+    "ci_manifest_unchanged": true,
+    "job_definitions": 314
+  },
+  "scope": [
+    "Exact native-renderer subset of 1..12 available finite numeric security fields.",
+    "Caller must provide genuine admitted same-request subscriber envelopes; matching IDs are not authentication.",
+    "Reference-only verification output; no source-context echo to judge, persisted log or result.",
+    "No public badge, tier, historical reconstruction, empirical or financial authority."
+  ],
+  "remaining": [
+    "Normal production caller composition and installed execution after lawful release.",
+    "General model-narrative numeric verification.",
+    "A1 has no admitted numeric input.",
+    "Follow-on protected release and actual consumer adoption."
+  ],
+  "production_proven": false,
+  "programme_complete": false
+}

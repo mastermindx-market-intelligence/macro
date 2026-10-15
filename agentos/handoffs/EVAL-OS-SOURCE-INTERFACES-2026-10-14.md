@@ -3,7 +3,7 @@ workstream: WS:EVAL-OS-EVIDENCE-VIEW
 session: claude/eval-os-required-tier-20261014
 model: fable
 ended_because: ci_handoff
-mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and actual
+mission: Deliver the accepted T12, T5, T6 and bounded T11 source interfaces through existing protected source, CI and actual
   consumer adoption. This is a continuity checkpoint; the active root continues.
 state_before: A1 source05a was blocked by shared CI-list conflicts; follow-on f573 had nine analogous conflicts
   against observed main. Capacity then admitted the ordinary source correction.
@@ -16,7 +16,8 @@ changed:
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
   what: Admit fifteen bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
-    bear. No independent model observation or historical byte-custody claim.
+    bear. Add explicit same-request native numeric verification to the scorer; no persisted-row source admission,
+    independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/project_served_asset_identity.py
@@ -142,23 +143,23 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- Current A1 publishedba848 awaits its own fresh hosted binding checks. Originalfea ancestor-init failure remains
-  preserved evidence; repaired local2d0 qualified and reviewed. Protected merge and all production proof remain
-  owed.
+- Current A1 publishedba848 has a known terminal closure failure; localff791 repair is qualified and awaits
+  real capacity admission. Protected merge and all production proof remain owed.
 next_actions:
-- A1 remote ba848 remains on PR6651; clean local ff791 nine-input repair is qualified but capacity-gated.
-  Contract-delta and pack0 share the same missing-input failure. At08:00:14 A1pack9PASS, packs4/6 still run; next CI
-  observation>=08:05:21. After two capacity deferrals, consume the same original run completion before another
-  broad census; then fresh canonical admission, ordinary same-carrier push and incumbent final merge.
-- BLS fifteenth supplied-text case passes123 affected response checks; three CI controls, zero closure misses and strict134/134/128jobs also pass;
-  publish this same follow-on branch. Original Fabric eval-t6-bls-fixture-01a1333d-c1 is consumed;
-  root corrected a gold-sentence ambiguity. Do not replay the refused blind-model operation.
-- T11 real native request64992.109 returned a subscriber receipt; fingerprint, rendered clause and DOM matched.
-  Retain reference-only t11-native-consumer-20261015.json. This is one current native path, not A1 integration,
-  installed-source qualification or general narrative verification. Chrome Person1 is now browser3/tab1925922561.
+- A1 PR6651 remote ba848 has terminal run38695328397 failure on the known nine-input closure defect;
+  eleven packs including A1pack9 passed. Clean local ff791 contains the qualified repair. Last canonical
+  census08:33 was14active/cap8. Existing capacity-owner run38705144154 is now terminal (observed09:04);
+  at the next eligible integration boundary obtain fresh canonical admission, current-source/main preview,
+  ordinary same-carrier push and fresh binding checks. Incumbent alone owns final merge and next refresh.
+- Publish bounded T11 follow-on source after252 affected tests and3CI controls pass, zero closure misses and
+  strict134/134/128jobs. Original eval-t11-request-verifier-01a1333d-c1 consumed and accepted with parent
+  corrections. Do not repeat accepted checks or describe worker construction as independent review.
+- Wire the normal caller to genuine admitted same-request resolver output and qualify installed behavior
+  after lawful release. Earlier request64992.109 proves one native API/DOM path only; it cannot establish
+  source deployment, general narrative verification or an admitted A1 numeric input.
 - After qualified A1 merge bind both installation and served-asset probes, verify normal deployment/API/DOM/
-  eight visual states/natural owner progression/comprehension. Release follow-on through its own normal PR
-  and prove installed CLI and rights-qualified Discovery adoption. No final completion claim yet.
+  eight visual states/natural owner progression/comprehension. Release the same follow-on through its normal PR
+  and prove installed CLI and rights-qualified Discovery adoption. Preserve all unknown/refused original effects.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -174,7 +175,7 @@ prs:
 
 ## Current checkpoint — 2026-10-15
 
-The A1 repair is qualified locally and waits for real CI capacity. The new BLS case adds a distinct survey/revision diagnostic;123 response checks pass. A real authenticated product request also supplied the first observed current native-fact receipt, with fingerprint/API/DOM agreement on one field. The JSON record retains references and verdicts; a local screenshot records the observed UI for review. Final deployment, general numeric verification, model acceptance and follow-on adoption remain open. Reuse existing qualification; no routine review or recursive evidence pack is required.
+A1's original hosted run ended with the diagnosed nine-input failure; its qualified same-carrier repair remains capacity-gated. T11 now has a bounded pure verifier integrated into the existing response scorer:252 affected tests and3CI controls pass, dependency closure has zero misses, and strict packing remains within the existing limits. Original worker output is consumed and accepted with parent corrections, not labeled an independent review. The compact qualification is `research/evidence/eval-os-tier-query-20261014/t11-request-verification-20261015.json`. The normal production caller, protected release, installed execution, general narrative verification and real follow-on adoption remain open. All final completion flags remain false.
 
 ## 2026-10-15 A1 repair published
 
