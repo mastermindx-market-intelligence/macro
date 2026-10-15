@@ -357,14 +357,11 @@ push_classify() {
 _push_qledger_committed_size_preflight() {
   if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
   local source_ref="HEAD" spec metadata size
+  # No explicit source refspec means push.default, branch.pushRemote and
+  # remote.push may select something other than HEAD. Do not incorrectly deny
+  # an unrelated branch because this worktree's HEAD carries large QLedger.
   case "$#" in
-    0) ;;
-    1)
-      case "$1" in
-        origin|upstream) ;;
-        *) return 0 ;;
-      esac
-      ;;
+    0|1) return 0 ;;
     2)
       spec="$2"
       case "$spec" in

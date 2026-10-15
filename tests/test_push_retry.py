@@ -3059,3 +3059,27 @@ def test_preflight_never_hydrates_real_blob_none_partial_clone(tmp_path):
     assert got.returncode == 0, (got.stdout, got.stderr)
     assert "STATUS=0 TERMINAL=0" in got.stdout
     assert not available_locally(), "optional guard fetched a promised QLedger blob"
+
+
+@pytest.mark.parametrize("invocation", ["push_do", "push_do origin"])
+def test_qledger_preflight_never_guesses_implicit_default_push_ref(tmp_path, invocation):
+    """An unspecified default ref may not be HEAD; avoid false publisher denial."""
+    r = run_sh(
+        f"""
+        push_retry_init "opaque default push"
+        push_qledger_guard() {{ return 0; }}
+        git() {{
+          if [ "$1" = ls-tree ]; then
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd 136152822\\tdata/qledger/claims.jsonl\\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo EXPLICITLY_UNBOUND_DEFAULT_PUSH; return 0; fi
+          return 71
+        }}
+        {invocation}
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "EXPLICITLY_UNBOUND_DEFAULT_PUSH" in r.stdout
+    assert "local QLedger Git-tree blob" not in r.stderr
