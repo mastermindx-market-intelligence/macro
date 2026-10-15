@@ -412,7 +412,7 @@ def test_press_lane_covers_estate_and_analytical_dependencies():
         return set(command.split()[2:])
 
     assert _packages("press-lane") == _packages("free-content-estate") | {
-        "numpy", "pandas", "requests"}
+        "numpy", "pandas", "requests", "beautifulsoup4"}
 
 
 def test_every_press_suite_is_named_by_the_ci_job():

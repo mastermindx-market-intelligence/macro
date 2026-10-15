@@ -1,9 +1,10 @@
-"""Read one reviewed OCC RSS item into the existing Press planning context.
+"""Read reviewed official RSS evidence into the existing Press context.
 
 The existing wire parser owns normalization. This adapter is offline: no feed
 poll, cursor, registry mutation, writer slot, provider or publication effect.
-Only the agency's complete RSS summary is evidence; it is never called a full
-release. Qualification records editorial judgments, not a copyright grant.
+OCC uses its complete RSS summary. FDA requires the retained full release and
+reuse policy, including clinical qualifiers beyond the summary. Qualification
+records editorial judgments, not a copyright grant.
 """
 from __future__ import annotations
 
@@ -24,6 +25,12 @@ _OCC = {
     'url': 'https://www.occ.treas.gov/rss/occ_news.xml',
     'source_name': 'Office of the Comptroller of the Currency', 'tier': 'official',
 }
+_FDA = {
+    'key': 'fda_drugs', 'kind': 'rss',
+    'url': 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/drugs/rss.xml',
+    'source_name': 'U.S. Food and Drug Administration', 'tier': 'official',
+}
+_FDA_FIELDS = {'release_sha256', 'policy_sha256', 'source_qualifiers'}
 _REQUIRED = {
     'kind', 'source_key', 'feed_url', 'feed_sha256', 'item_url', 'published_at',
     'event_date', 'observed_at', 'rights_basis', 'review_result',
@@ -40,11 +47,13 @@ class _NoDoctypeTreeBuilder(ET.TreeBuilder):
 
 def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
                                  qualification_path: Path, qualification_sha256: str,
-                                 root: Path, as_of: str, cfg: dict | None = None) -> dict:
+                                 root: Path, as_of: str, cfg: dict | None = None,
+                                 release_path: Path | None = None,
+                                 policy_path: Path | None = None) -> dict:
     """Qualify the selected feed bytes, never authorize generation or emit.
 
-    OCC's documented feed is currently the sole supported source contract. The
-    source is deliberately not installed in a live collector by this function.
+    Only explicit source contracts are supported; this function installs no
+    live collector. FDA additionally needs its original release and policy.
     Declared XML encoding is honored before the existing wire parser consumes
     a Unicode tree; a missing publisher clock is never replaced with poll time.
     """
@@ -52,7 +61,11 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
     from lib.pages import rendered_ticker_pages
 
     q = json.loads(_read_bound(Path(qualification_path), qualification_sha256, 100_000))
-    if not isinstance(q, dict) or set(q) not in (_REQUIRED, _REQUIRED | {'first_party_context'}):
+    if not isinstance(q, dict):
+        raise ValueError('explicit official feed qualification required')
+    source = {'occ_news': _OCC, 'fda_drugs': _FDA}.get(q.get('source_key'))
+    required = _REQUIRED | (_FDA_FIELDS if source is _FDA else set())
+    if source is None or set(q) not in (required, required | {'first_party_context'}):
         raise ValueError('explicit official feed qualification required')
     for key in ('source_key', 'feed_url', 'feed_sha256', 'item_url', 'published_at', 'event_date', 'observed_at'):
         if not isinstance(q[key], str) or not q[key].strip():
@@ -65,7 +78,7 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
             or not isinstance(rights.get('scope'), str) or not rights['scope'].strip()
             or any(q[key] is not False for key in ('allow_stage', 'allow_emit', 'publication_approved'))):
         raise ValueError('source-specific candidate qualification required')
-    if (q['source_key'] != _OCC['key'] or q['feed_url'] != _OCC['url']
+    if (q['feed_url'] != source['url']
             or q['feed_sha256'] != feed_sha256):
         raise ValueError('official source feed identity mismatch')
     feed_path = Path(feed_path)
@@ -96,7 +109,7 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
     if _instant(q['published_at']) != published:
         raise ValueError('qualified publisher clock differs')
     uri = urlsplit(q['item_url'])
-    if (uri.scheme != 'https' or uri.netloc not in {'www.occ.gov', 'www.occ.treas.gov'}
+    if source is _OCC and (uri.scheme != 'https' or uri.netloc not in {'www.occ.gov', 'www.occ.treas.gov'}
             or uri.query or uri.fragment
             or not re.fullmatch(r'/news-issuances/news-releases/\d{4}/nr-occ-\d{4}-\d+\.html', uri.path)):
         raise ValueError('source must be a canonical OCC release')
@@ -113,7 +126,7 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
     if (not event_date <= published.date() <= observed.date() <= now.date()
             or not published <= observed <= now or not 0 <= (now.date() - event_date).days <= window):
         raise ValueError('source event or observation is outside the current Brief window')
-    candidates = [i for i in parse_feed(ET.tostring(tree, encoding='unicode'), _OCC)
+    candidates = [i for i in parse_feed(ET.tostring(tree, encoding='unicode'), source)
                   if i['url'] == q['item_url']]
     if len(candidates) != 1:
         raise ValueError('wire parser did not retain one exact item')
@@ -122,6 +135,12 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
     if (not body or body != item['body_snippet']
             or item_xml.find('{http://purl.org/rss/1.0/modules/content/}encoded') is not None):
         raise ValueError('complete untruncated RSS summary required')
+    if source is _FDA:
+        from engine.press.fda_document import read_fda_drug_release
+
+        if release_path is None or policy_path is None:
+            raise ValueError('FDA requires retained full release and policy')
+        body = read_fda_drug_release(q, body, clock, release_path, policy_path)
     claims, tickers = q['reviewed_claims'], q['reviewed_tickers']
     if not isinstance(claims, list) or not 1 <= len(claims) <= 20:
         raise ValueError('bounded reviewed source claims required')
@@ -136,7 +155,11 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
                 or not re.search(r'(?<![\w.$])' + re.escape(atom) + r'(?![\w.])', literal)):
             raise ValueError('reviewed claim or quantity is not in source evidence')
         facts.append({'text': literal, 'values': [str(_value(atom))], 'tier': 'third_party',
-                      'ref': source_ref, 'dated': event_date.isoformat(), 'source_name': _OCC['source_name']})
+                      'ref': source_ref, 'dated': event_date.isoformat(), 'source_name': source['source_name']})
+    if source is _FDA:
+        facts.extend({'text': s, 'values': [], 'tier': 'third_party', 'ref': source_ref,
+                      'dated': event_date.isoformat(), 'source_name': source['source_name']}
+                     for s in q['source_qualifiers'])
     available = rendered_ticker_pages(Path(root) / 'site')
     if not isinstance(tickers, dict) or not 1 <= len(tickers) <= 10:
         raise ValueError('reviewed issuer association required')
@@ -147,6 +170,9 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
             raise ValueError('reviewed ticker needs source association and existing dossier')
         links.append(f'https://www.mastermind-x.com/stocks/{ticker}.html')
     revisions = {source_ref: 'sha256:' + feed_sha256}
+    if source is _FDA:
+        revisions[source_ref + ':release'] = 'sha256:' + q['release_sha256']
+        revisions[source_ref + ':policy'] = 'sha256:' + q['policy_sha256']
     if 'first_party_context' in q:
         context, context_revisions = _reviewed_context(q['first_party_context'], root=Path(root),
                                                       as_of=now.date(), window_days=window)
@@ -157,7 +183,9 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
     context = {key: desk[key] for key in ('publication', 'byline', 'min_words', 'max_words', 'min_anchored_receipts')}
     context.update(desk='brief', as_of=now.date().isoformat(), facts=facts,
                    raw_documents=[{'ref': source_ref, 'text': body}],
-                   primary_source={'kind': 'external', 'name': _OCC['source_name'], 'url': item['url']},
+                   primary_source={'kind': 'external', 'name': source['source_name'],
+                                   'url': ('https://' + uri.netloc + uri.path)
+                                   if source is _FDA else item['url']},
                    allowed_links=P._allowed_links(cfg, links))
     return {'schema': 'press.external_candidate_plan.v1', 'operation': 'planning_only',
             'candidate_id': 'press-external-' + P.story_key(source_ref, feed_sha256, qualification_sha256),
