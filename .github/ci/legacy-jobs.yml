@@ -3911,6 +3911,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -6254,6 +6255,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -7664,6 +7666,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json
       - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json
@@ -12517,6 +12520,7 @@ jobs:
       - "engine/seasonality/multiplicity.py"
       - "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md"
       - "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md"
+      - "research/POLICY_AND_CONTRACT_CASES_2020_2022.md"
       - "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md"
       - "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
       - "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md"
@@ -17114,6 +17118,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -17765,6 +17770,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -19915,6 +19921,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -21083,6 +21090,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -21730,6 +21738,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -26766,6 +26775,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -27488,6 +27498,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
@@ -29558,6 +29569,7 @@ jobs:
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
       - research/BLS_SURVEY_REVISION_CASE_2024_03_08.md
       - research/GDP_GROWTH_UNITS_CASE_2024_04_25.md
+      - research/POLICY_AND_CONTRACT_CASES_2020_2022.md
       - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md

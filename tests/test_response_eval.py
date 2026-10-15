@@ -1101,6 +1101,10 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_snb_floor_rate_2015-01-15.json",
     "benchmark_bls_survey_revision_2024-03-08.json",
     "benchmark_gdp_growth_units_2024-04-25.json",
+    "benchmark_boj_ycc_band_2022-12-20.json",
+    "benchmark_ecb_rate_clock_2022-07-21.json",
+    "benchmark_boe_gilt_objective_2022-09-28.json",
+    "benchmark_wti_delivery_scope_2020-04-27.json",
 ]
 
 

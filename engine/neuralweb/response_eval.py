@@ -1079,6 +1079,10 @@ _HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_
                                       "snb_floor_rate_2015-01-15",
                                       "bls_survey_revision_2024-03-08",
                                       "gdp_growth_units_2024-04-25",
+                                      "boj_ycc_band_2022-12-20",
+                                      "ecb_rate_clock_2022-07-21",
+                                      "boe_gilt_objective_2022-09-28",
+                                      "wti_delivery_scope_2020-04-27",
                                       })
 _HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
 _HISTORICAL_TEXT_SOURCES = frozenset({
@@ -1086,6 +1090,7 @@ _HISTORICAL_TEXT_SOURCES = frozenset({
     "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
     "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
     "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md",
+    "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
     "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
     "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
     "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
