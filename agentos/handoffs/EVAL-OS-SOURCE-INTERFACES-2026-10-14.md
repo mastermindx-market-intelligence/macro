@@ -142,13 +142,14 @@ unresolved:
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous byte-custody
   witness. All model, historical availability and adoption obligations remain open.
-- 'Current A1 fea04c414282 remainsOPEN/merge-blocked: hosted ancestor-init census test failed; contract-delta
-  and11otherpacks passed. Exact local reproduction/repair is in progress; no production acceptance.'
+- Current A1 publishedba848 awaits its own fresh hosted binding checks. Originalfea ancestor-init failure remains
+  preserved evidence; repaired local2d0 qualified and reviewed. Protected merge and all production proof remain
+  owed.
 next_actions:
-- Publish locally qualified/reviewed A1 containingheadba8487f0b3b1 (source2d0e6e334986) on originalPR6651 when
-  canonicalcapacity/sourcecustody admit. Adds13existing ancestor package inputs, all319definitions/8suites/limits
-  preserved;3focusedPASS/zero closure/strict136-135-129jobs. Remote remainsfea04c414282 with genuine ancestor-census
-  failure. Incumbent alone owns finalmerge/nextbaserefresh; no further manual integration.
+- Consume actual fresh CI and current-head proof for publishedA1ba8487f0b3b1 on originalPR6651. Ordinarysource-onlypush/readback06:54:58Oct15
+  aftercanonicaladmission6/cap8. PRbodyupdated06:55:38; firstCIread>=07:00:45 then>=300s. Qualifiedsource2d0
+  and independentreview accepted. Repair realfailure or incumbentmerge; no second manualintegration, rerun,
+  duplicateproducer/controller.
 - After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source. Verify
   normal updater, installed files/admin process, served assets, authenticated API-to-DOM, eight theme/language/viewport
   states, genuine owner progression and actual operator comprehension. Use original Chrome profile actual browser
@@ -168,6 +169,11 @@ danger_areas:
 prs:
 - 6651
 ---
+
+## 2026-10-15 A1 repair published
+
+A1ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17 ordinarypush/readback06:54:58 aftercanonical6/cap8admission. Parentfea exactremote/custody/ancestry verified and read-onlypreviewagainstactualmain3f62 clean/tree1e6ba68177e4a60af5e5d3c0f6071ee693262043. No secondbaseintegration or forcepush. ExistingPRbody updated06:55:38. Follow-on sourcead03 and containing7104 publishedclean; nofollow-onPR/CIproducer. FreshA1checks/merge/production remainopen. Sixoriginalpublicationrecords retained, allfinalflagsfalse.
+
 
 ## 2026-10-15 ancestor alignment ready
 
