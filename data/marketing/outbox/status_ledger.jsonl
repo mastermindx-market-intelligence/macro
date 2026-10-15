@@ -10466,3 +10466,8 @@
 {"id":"ob-2026-10-13-969b5e12fd","from":"queued","to":"quarantined","at":"2026-10-15T10:05:40Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-13-c3bc14ba91","from":"queued","to":"quarantined","at":"2026-10-15T10:05:40Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-13-9ae4cb7d7f","from":"queued","to":"quarantined","at":"2026-10-15T10:05:40Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-13-e41c0a6792","from":"queued","to":"quarantined","at":"2026-10-15T09:58:37Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-13-6c4dfcb1c8","from":"queued","to":"quarantined","at":"2026-10-15T09:58:37Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-13-969b5e12fd","from":"queued","to":"quarantined","at":"2026-10-15T09:58:37Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-13-c3bc14ba91","from":"queued","to":"quarantined","at":"2026-10-15T09:58:37Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-13-9ae4cb7d7f","from":"queued","to":"quarantined","at":"2026-10-15T09:58:37Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
