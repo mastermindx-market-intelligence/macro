@@ -6873,6 +6873,7 @@ jobs:
           tests/test_capital_structure_funding.py
           tests/test_capital_structure_instrument_economics.py
           tests/test_capital_structure_supply_scenarios.py
+          tests/test_capital_structure_transactions.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
@@ -7710,6 +7711,8 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
@@ -9507,6 +9510,13 @@ jobs:
       - "tests/test_consumer_cyclical_shared_contract.py"
       - "engine/sector_intelligence/consumer_cyclical_display.py"
       - "tests/test_consumer_cyclical_display.py"
+      # Wave-10 Build B — PLNT synthetic display card: page, builder, suite.
+      - "templates/consumer_cyclical_plnt.html.j2"
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "scripts/__init__.py"
+      - "tests/test_consumer_cyclical_plnt_page.py"
+      # Read-only input of the PLNT suite: the public route list.
+      - "config/site_access.yml"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -9544,9 +9554,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest jsonschema referencing pyyaml
+        run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py tests/test_consumer_cyclical_plnt_page.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -13327,6 +13337,12 @@ jobs:
       - scripts/build_china_masterminds.py
       - scripts/build_china_strategies.py
       - scripts/build_commodity_strategies.py
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - scripts/build_consumer_cyclical_plnt_page.py
+      - engine/sector_intelligence/consumer_cyclical_display.py
+      - engine/sector_intelligence/consumer_cyclical_projection.py
+      - engine/sector_intelligence/consumer_cyclical_shared_contract.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
@@ -15433,6 +15449,8 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
@@ -17484,7 +17502,7 @@ jobs:
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
       # Also validate the data-free Market Memory shell and owned read-API wiring.
       # This test registration does not alter production render/publish inventory.
-        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py tests/test_consumer_cyclical_plnt_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -21375,6 +21393,12 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
       - "engine/sector_intelligence/finance_watching.py"
@@ -22628,6 +22652,12 @@ jobs:
       - "scripts/build_china_pick_lab.py"
       - "scripts/build_china_strategies.py"
       - "scripts/build_commodity_strategies.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_crossmarket.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
@@ -28928,6 +28958,12 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      # W10 Build B: build_site.py lazily imports the PLNT card builder.
+      - "scripts/build_consumer_cyclical_plnt_page.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"

@@ -143,6 +143,7 @@ on:
       - "scripts/build_foresight.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_forex.py"
       - "scripts/build_gex_board.py"
       - "scripts/build_hk.py"
