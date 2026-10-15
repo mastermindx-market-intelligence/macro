@@ -18432,3 +18432,10 @@
 {"date":"2026-10-08","kind":"ticker","subject":"SRRK","ticker":"SRRK","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-10-08","kind":"ticker","subject":"ALT","ticker":"ALT","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-10-08","kind":"ticker","subject":"VKTX","ticker":"VKTX","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-08","kind":"ticker","subject":"CRWD","ticker":"CRWD","edge_score":56,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-08","kind":"ticker","subject":"SPCX","ticker":"SPCX","edge_score":56,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-08","kind":"ticker","subject":"COIN","ticker":"COIN","edge_score":23,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-08","kind":"ticker","subject":"ILMN","ticker":"ILMN","edge_score":11,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-10-08","kind":"ticker","subject":"P","ticker":"P","edge_score":10,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-10-08","kind":"ticker","subject":"JBL","ticker":"JBL","edge_score":3,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-08","kind":"ticker","subject":"BMY","ticker":"BMY","edge_score":3,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}

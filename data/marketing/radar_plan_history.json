@@ -2,6 +2,19 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-14",
+      "tickers": [
+        "ATO",
+        "BKH",
+        "FIBK",
+        "MUB",
+        "STX",
+        "TLN",
+        "TNDM",
+        "TSN"
+      ]
+    },
+    {
       "as_of": "2026-10-13",
       "tickers": [
         "ATR",
@@ -159,41 +172,6 @@
         "TNDM",
         "TTWO",
         "ULS"
-      ]
-    },
-    {
-      "as_of": "2026-10-07",
-      "tickers": [
-        "AAP",
-        "ACCV",
-        "APG",
-        "ASML",
-        "AZZ",
-        "CEG",
-        "CENT",
-        "CTVA",
-        "DKS",
-        "DOCS",
-        "EGBN",
-        "ESI",
-        "FAST",
-        "GPI",
-        "KMT",
-        "KRC",
-        "MATW",
-        "N",
-        "NXH",
-        "OMCL",
-        "PLUS",
-        "PSQ",
-        "RSP",
-        "SFM",
-        "ST",
-        "SYF",
-        "TRIP",
-        "VMI",
-        "WH",
-        "WWD"
       ]
     }
   ]

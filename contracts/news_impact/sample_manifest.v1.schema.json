@@ -1,0 +1,760 @@
+{
+  "$id": "https://mastermind-x.com/contracts/news_impact/sample_manifest.v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Manifest of the deterministic Phase 1 benchmark draw (freeze section 6): replays from (tape sha, date bounds, seed, sampler version); reports every short cell instead of padding; counts every input class. Proxy cells are pre-label proxies, never outcomes.",
+  "properties": {
+    "cases_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "cells": {
+      "additionalProperties": false,
+      "properties": {
+        "T1": {
+          "additionalProperties": false,
+          "properties": {
+            "ambiguous": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "negative": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "no_change": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "positive": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "positive",
+            "negative",
+            "ambiguous",
+            "no_change"
+          ],
+          "type": "object"
+        },
+        "T2": {
+          "additionalProperties": false,
+          "properties": {
+            "ambiguous": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "negative": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "no_change": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "positive": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "positive",
+            "negative",
+            "ambiguous",
+            "no_change"
+          ],
+          "type": "object"
+        },
+        "T3": {
+          "additionalProperties": false,
+          "properties": {
+            "ambiguous": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "negative": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "no_change": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "positive": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "positive",
+            "negative",
+            "ambiguous",
+            "no_change"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "type": "object"
+    },
+    "counters": {
+      "additionalProperties": false,
+      "properties": {
+        "low_value": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "outside_window": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "rights_refused": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "unresolved_issuer": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "outside_window",
+        "low_value",
+        "unresolved_issuer",
+        "rights_refused"
+      ],
+      "type": "object"
+    },
+    "economic_cluster": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "max_share": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "status": {
+              "const": "checked"
+            }
+          },
+          "required": [
+            "status",
+            "max_share"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "status": {
+              "const": "unchecked"
+            }
+          },
+          "required": [
+            "status",
+            "reason"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "folds": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^(prospective|f[1-9][0-9]*)$"
+      },
+      "type": "object"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "max_issuer_groups": {
+      "additionalProperties": false,
+      "properties": {
+        "T1": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "T2": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "T3": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "type": "object"
+    },
+    "megacap_share": {
+      "additionalProperties": false,
+      "properties": {
+        "T1": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "T2": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "T3": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "type": "object"
+    },
+    "plan": {
+      "additionalProperties": false,
+      "properties": {
+        "cell_targets": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,31}$"
+          },
+          "type": "object"
+        },
+        "economic_cluster_cap": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "folds": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "indirect_transfer_min": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "issuer_cap": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "megacap_share_cap": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "near_duplicate_min": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "per_template": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "prospective_from": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "per_template",
+        "cell_targets",
+        "issuer_cap",
+        "megacap_share_cap",
+        "economic_cluster_cap",
+        "near_duplicate_min",
+        "indirect_transfer_min",
+        "folds",
+        "prospective_from"
+      ],
+      "type": "object"
+    },
+    "sampler_version": {
+      "const": "ni-sampler-1",
+      "type": "string"
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "tag_quotas": {
+      "additionalProperties": false,
+      "properties": {
+        "T1": {
+          "additionalProperties": false,
+          "properties": {
+            "indirect_transfer": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "near_duplicate": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "near_duplicate",
+            "indirect_transfer"
+          ],
+          "type": "object"
+        },
+        "T2": {
+          "additionalProperties": false,
+          "properties": {
+            "indirect_transfer": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "near_duplicate": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "near_duplicate",
+            "indirect_transfer"
+          ],
+          "type": "object"
+        },
+        "T3": {
+          "additionalProperties": false,
+          "properties": {
+            "indirect_transfer": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            },
+            "near_duplicate": {
+              "additionalProperties": false,
+              "properties": {
+                "drawn": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "short": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "target": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "target",
+                "drawn",
+                "short"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "near_duplicate",
+            "indirect_transfer"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "type": "object"
+    },
+    "tape_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "window": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "start": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "sampler_version",
+    "seed",
+    "tape_sha256",
+    "window",
+    "plan",
+    "cells",
+    "tag_quotas",
+    "megacap_share",
+    "max_issuer_groups",
+    "economic_cluster",
+    "counters",
+    "folds",
+    "cases_sha256",
+    "manifest_sha256"
+  ],
+  "title": "News impact sampling manifest v1",
+  "type": "object"
+}

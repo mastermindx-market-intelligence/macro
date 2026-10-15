@@ -142,17 +142,18 @@ decisions:
   - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
 next_action: >
-  Wave 2 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-13-fif-e2e-wave2):
-  D0–D3, C0/C0-b (#9021, ERRATA-3 clock), G-SRC #9030, D1-ext #9042 (admitted
-  6/16 → 10/16), S2/S1-b/S2-p, E1/E-FIX, P1/P1-b/P2 #9011, X0 #8996, X1 #8949,
-  A0-a #9024, T11 #9028. Live /api/health = golden by design. Next: C0-c
-  (opus review → hand merge on concluded green) → A0 gate (VPS
-  FIF_FINANCIAL_DATASET_MODE=production flip + macro-api restart held for the
-  Chairman or a Sol-delegated root; A45 entitled-browser receipts;
+  Wave 3 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-14-fif-e2e-wave3):
+  C0-c #9047, D1-ext C #9056, D1X B'2 #9095, X1-p #9052, X2-n #9069, X2-s
+  #9068, CA-RK2 #9192 and the A0 chain #9116/#9203/#9214/#9221 (typed
+  per-issuer exclusion). A five-issuer publish now exits 0 but only AAPL
+  reconstructs; GOOGL/SNOW (ragged grid), BAC (retained parent-company role,
+  table-of-contents capture) and CAT (10-K year-row header, title phrase) are
+  typed exclusions. Next: #9246 Lane A hand merge → Lane B P5B (R1–R3) →
+  Lane C CAT R4/R5 → BAC retained-role re-mint ruling → five-issuer publish
+  repro → A0 gate (VPS FIF_FINANCIAL_DATASET_MODE=production flip held for
+  the Chairman or a Sol-delegated root; A45 entitled-browser receipts;
   schedule-born production proof) → G1–G4 → A1 → C2/E2/K1–K4/Q1/Q2/V0/V1 →
   coverage tiers (250-deep, then 1,000-core) → independent acceptance.
-  Parallel: D1-ext C (fragment-only hrefs, 3 CAT 10-Qs) then B'2 (BAC cap
-  co-raise, after step-0 measurement and ruling); X2-n then X2-s, then X2-b.
   Merge by hand with --match-head-commit on concluded green; never arm.
 landmines:
   - >
@@ -297,6 +298,11 @@ do_not_redo:
     output (DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT); do not rebuild
     X0 #8996 or X1 #8949 (TASK_GRAPH status is stale); do not re-spec X2
     (rulings R0–R5, DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT).
+  - >
+    Wave 3 (2026-10-14): do not rebuild C0-c, D1-ext C, D1X B'2, X1-p, X2-n,
+    X2-s, CA-RK2 or the A0 chain (#9116/#9203/#9214/#9221); do not
+    re-diagnose the four five-issuer exclusions; do not fix CAT capture-side,
+    because retained packages keep their minted statement_roles.
 waves:
   - id: FIF-0
     title: Program reset — land masterplan, naming, and collision map

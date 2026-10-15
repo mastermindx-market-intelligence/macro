@@ -593,7 +593,9 @@ def get_retained_market_context(selection, evidence, *, policy) -> dict:
              "exclusion_counts": dict(sorted(Counter(row["reason"] for row in original["accounting"]).items())),
              "source_cards": original["source_cards"],
              "neighbors": [{"context_id": row["candidate"]["context_id"],
-                            "distance_q18": row["distance_q18"]}
+                            "distance_q18": row["distance_q18"],
+                            "comparison_id": row["comparison_id"],
+                            "components_exact_decimal": dict(row["components_exact_decimal"])}
                            for row in selected["selected"]],
              "state_differences": original["state_differences"],
              "missing_evidence": original["missing_evidence"],
@@ -629,4 +631,22 @@ RETAINED_CONTEXT_TOOL_SCHEMA: dict = {
         "required": ["query_id", "subject_id", "generation_id", "generation_sha256",
                      "query_cutoff", "method_spec_id"],
     },
+}
+
+
+RETAINED_CATALOG_TOOL_SCHEMA: dict = {
+    "name": "get_retained_market_catalog",
+    "description": (
+        "Discover exact saved macro capture references and both registered comparison methods. "
+        "Use returned IDs and supported cutoff with get_retained_market_context; never invent them. "
+        "Original measurement time differs from earliest supported analysis cutoff. "
+        "One exact generation, not a complete market or opportunity census."
+    ),
+    "input_schema": {"type": "object", "additionalProperties": False,
+        "properties": {
+            "mode": {"type": "string", "enum": ["historical_hypothetical", "current_contextual_support"]},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 8},
+            "offset": {"type": "integer", "minimum": 0, "maximum": 255},
+            "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
+        }, "required": []},
 }

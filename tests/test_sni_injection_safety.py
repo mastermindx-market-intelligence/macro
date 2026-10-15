@@ -40,8 +40,8 @@ A20_KNOWN_EXCEPTIONS: dict[str, str] = {
     # pinned flags]. No shell; input_ref is a pinned constant and out_dir a
     # /tmp path the module refuses to place inside the repo. No retrieved
     # text reaches these argv.
-    "evaluation/seal_full_check.py:562": "argv list: sys.executable + committed event_response/run_s2.py; pinned flags, no shell",
-    "evaluation/seal_full_check.py:575": "argv list: sys.executable + committed event_response/build_seal.py; pinned flags, no shell",
+    "evaluation/seal_full_check.py:685": "argv list: sys.executable + committed event_response/run_s2.py; pinned flags, no shell",
+    "evaluation/seal_full_check.py:698": "argv list: sys.executable + committed event_response/build_seal.py; pinned flags, no shell",
 }
 
 INJECTION_CORPUS = (
