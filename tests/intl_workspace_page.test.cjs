@@ -2481,6 +2481,54 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   });
 }
 
+for(const [bootLanguage,width] of [['en',1440],['zh',320]]) {
+  test(`Scenario result status follows locale without repeated announcements ${bootLanguage} ${width}`,async()=>{
+    await pageFixture(async page=>{
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      const panel=page.locator('[data-im-history-panel]');
+      if(width===320) await panel.locator('[data-im-scenario-tab="scenario"]').click();
+      const local=panel.locator('#im-scenario-local'),fx=panel.locator('#im-scenario-fx');
+      const calculate=panel.locator('[data-im-scenario-action="calculate"]');
+      const status=panel.locator('[data-im-scenario-announcement]');
+      const expected=lang=>lang==='en'?'Conditional USD return 5.84%; FX contribution -2.16 pp':'条件美元回报 5.84%; 汇率贡献 -2.16 个百分点';
+      await local.fill('8');await fx.fill('-2');await calculate.click();
+      assert.equal(await status.innerText(),expected(bootLanguage));
+      const url=page.url();
+      await fx.focus();
+      await status.evaluate(node=>{
+        window.__scenarioStatusChanges=[];
+        window.__scenarioStatusObserver=new MutationObserver(records=>window.__scenarioStatusChanges.push(...records.map(()=>node.textContent)));
+        window.__scenarioStatusObserver.observe(node,{childList:true,characterData:true,subtree:true});
+      });
+      const lang=bootLanguage==='en'?'zh':'en';
+      await page.evaluate(lang=>setLang(lang),lang);
+      await page.waitForFunction(lang=>document.querySelector('[data-im-scenario-contribution]').textContent.includes(lang==='zh'?'个百分点':'pp'),lang);
+      assert.equal(await status.innerText(),expected(lang));
+      assert.equal(await local.inputValue(),'8');assert.equal(await fx.inputValue(),'-2');
+      assert.equal(await fx.evaluate(n=>n===document.activeElement),true);
+      assert.equal(page.url(),url);
+      assert.deepEqual(await page.evaluate(()=>__scenarioStatusChanges),[expected(lang)]);
+      await page.evaluate(lang=>setLang(lang),lang);
+      await calculate.click();
+      await page.evaluate(()=>setTheme('light'));
+      assert.deepEqual(await page.evaluate(()=>__scenarioStatusChanges),[expected(lang)],'same locale, theme and unchanged calculation must not rewrite the status');
+      await page.locator('[data-im-controls] select[data-im-action="set_horizon"]').selectOption('3m');
+      assert.equal(await panel.locator('[data-im-scenario-confirm-context]').isVisible(),true);
+      assert.equal(await status.textContent(),'');
+      await page.evaluate(lang=>setLang(lang),bootLanguage);
+      await page.waitForFunction(lang=>document.querySelector('[data-im-scenario-candidate-context]').textContent.includes(lang==='zh'?'研究口径':'Research basis'),bootLanguage);
+      assert.equal(await status.textContent(),'','locale change must not resurrect an unconfirmed result');
+      await panel.locator('[data-im-scenario-action="cancel_context"]').click();
+      await local.fill('9');await calculate.click();
+      assert.equal(await status.innerText(),bootLanguage==='en'?'Conditional USD return 6.82%; FX contribution -2.18 pp':'条件美元回报 6.82%; 汇率贡献 -2.18 个百分点');
+      await panel.locator('[data-im-scenario-action="request_reset"]').click();
+      await panel.locator('[data-im-scenario-action="confirm_reset"]').click();
+      assert.equal(await status.textContent(),'');
+      await page.evaluate(()=>__scenarioStatusObserver.disconnect());
+    },{htmlOverride:coldLocaleHtml,bootLanguage,width,initialSearch:'?view=history&market=JP'});
+  });
+}
+
 // Read Chromium's computed accessibility tree, including browser-resolved names
 // and descriptions. This is narrower than screen-reader speech acceptance.
 for (const lang of ['en','zh']) for (const width of [1440,320]) {

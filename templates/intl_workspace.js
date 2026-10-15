@@ -1495,8 +1495,12 @@
       var labels={current:['Your FX input','您的汇率输入'],unchanged:['FX unchanged','汇率不变'],illustrative_plus3:['Illustrative FX +3%','示例汇率 +3%']};
       label.textContent=labels[row.kind][zh?1:0]+' ('+scenarioNumber(row.fxPercent)+'%)';value.textContent=scenarioNumber(row.usdPercent)+'%';li.append(label,value);plan.rows.appendChild(li);
     });
-    if(announcement&&result)plan.announcement.textContent=(zh?'条件美元回报 ':'Conditional USD return ')+scenarioNumber(result.usdPercent)+'%; '+(zh?'汇率贡献 ':'FX contribution ')+scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp');
-    else if(!result)plan.announcement.textContent='';
+    if(result&&(announcement||plan.announcement.textContent)) {
+      // Translate an existing status on locale changes, without rewriting the
+      // live region for an unchanged calculation or unrelated repaint.
+      var statusText=(zh?'条件美元回报 ':'Conditional USD return ')+scenarioNumber(result.usdPercent)+'%; '+(zh?'汇率贡献 ':'FX contribution ')+scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp');
+      if(plan.announcement.textContent!==statusText)plan.announcement.textContent=statusText;
+    } else if(!result&&plan.announcement.textContent)plan.announcement.textContent='';
     plan.all('[data-im-scenario-action="calculate"],[data-im-scenario-action="request_reset"]').forEach(function(n){n.disabled=!!d.pending||d.reset_pending;});
   }
 
