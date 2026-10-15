@@ -15,7 +15,7 @@ changed:
 - path: engine/postmortem.py
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit fourteen bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
+  what: Admit fifteen bounded supplied-text cases with explicit callbacks; preserve prior cases and legacy
     bear. No independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
@@ -146,18 +146,19 @@ unresolved:
   preserved evidence; repaired local2d0 qualified and reviewed. Protected merge and all production proof remain
   owed.
 next_actions:
-- Consume exact-head run38695328397/attempt1 for publishedA1ba8487f0b3b1 on originalPR6651. At07:04Oct15
-  planPASS, contract-delta and12packsRUNNING. Originalplan ZIP digest and canonical plan identity verified;
-  127eligiblejobs, A1pack9, tested0ec629/base3f62 matches admitted preview tree and all17productionfiles.
-  Next CI observation>=07:12:35, then>=300s; terminal artifact and binding gate remain owed. Repair realfailure
-  or incumbentmerge; no second manualintegration, rerun, duplicateproducer/controller.
-- After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source. Verify
-  normal updater, installed files/admin process, served assets, authenticated API-to-DOM, eight theme/language/viewport
-  states, genuine owner progression and actual operator comprehension. Use original Chrome profile actual browser
-  ID2/tab1925922370; the older alias/tab is stale.
-- Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
-  Then use its separately bound two-CLI observation tool and obtain real rights-qualified Discovery adoption;
-  no synthetic substitute.
+- A1 remote ba848 remains on PR6651; clean local ff791 nine-input repair is qualified but capacity-gated.
+  Contract-delta and pack0 share the same missing-input failure. At07:53:56 packs4/6/9 still run; next CI
+  observation>=07:59:03. After two capacity deferrals, consume the same original run completion before another
+  broad census; then fresh canonical admission, ordinary same-carrier push and incumbent final merge.
+- BLS fifteenth supplied-text case passes123 affected response checks; finish the affected CI-scope check,
+  then publish this same follow-on branch. Original Fabric eval-t6-bls-fixture-01a1333d-c1 is consumed;
+  root corrected a gold-sentence ambiguity. Do not replay the refused blind-model operation.
+- T11 real native request64992.109 returned a subscriber receipt; fingerprint, rendered clause and DOM matched.
+  Retain reference-only t11-native-consumer-20261015.json. This is one current native path, not A1 integration,
+  installed-source qualification or general narrative verification. Chrome Person1 is now browser3/tab1925922561.
+- After qualified A1 merge bind both installation and served-asset probes, verify normal deployment/API/DOM/
+  eight visual states/natural owner progression/comprehension. Release follow-on through its own normal PR
+  and prove installed CLI and rights-qualified Discovery adoption. No final completion claim yet.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -171,11 +172,9 @@ prs:
 - 6651
 ---
 
-## 2026-10-15 hosted plan bound and obligation record reconciled
+## Current checkpoint — 2026-10-15
 
-Original A1 run38695328397/attempt1 uses publishedba848 with base3f62 and tested0ec629. The original plan ZIP SHA983194bf0684d9e78bc4d047f7732b0f6b6d82d15f118e339d0317556bf22d4d matches GitHub; canonical plan SHAea55a20a03810631fde72532253b9847fe5d7231291e4936f3ff266a8e827b64 validates. Its tested tree1e6ba68177e4a60af5e5d3c0f6071ee693262043 equals the admitted preview. All17production files and A1 execution digest remain unchanged; A1 is selected inpack9 of127eligiblejobs. At07:04 planPASS while contract-delta and12packs run. No terminal-check, merge or production claim. Original artifacts and hashes are retained in a1-ancestor-hosted-plan-20261015.
-
-The original acceptance record's T5/T6/T12 rows now distinguish accepted narrow source work from outstanding protected delivery, real consumer use, model/PIT and broader historical obligations. No production, policy, data-owner, release, lifecycle or acceptance authority changes. All final completion flags remainfalse; root continues through the incumbent controller.
+The A1 repair is qualified locally and waits for real CI capacity. The new BLS case adds a distinct survey/revision diagnostic;123 response checks pass. A real authenticated product request also supplied the first observed current native-fact receipt, with fingerprint/API/DOM agreement on one field. The receipt's raw value is not retained. Final deployment, general numeric verification, model acceptance and follow-on adoption remain open. Reuse existing qualification; no routine review or recursive evidence pack is required.
 
 ## 2026-10-15 A1 repair published
 

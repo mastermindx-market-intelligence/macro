@@ -67,3 +67,7 @@ historical byte custody. Current-doctrine supplied-text replay, explicit model
 callbacks and internal-QA limits remain unchanged. Root source adjudication is
 not an independent model evaluation. The20/15 historical objective, PIT custody,
 model-performance acceptance and real adoption remain open.
+
+## BLS survey and revision case — 2026-10-15
+
+The fifteenth supplied-text case uses the official8March2024 employment release to distinguish payroll jobs from household employment/unemployment, revisions from current-month growth, and each survey's own sampling threshold. The M2 Fabric fixture constructor returned its original retained artifacts; root corrected an ambiguous gold-sentence threshold reference and verified source binding and answer/oracle separation. The affected response suite passes123tests. Current official-page reading supports the paraphrase; a raw-HTML request returned403 and was not retried. No raw-page hash, historical byte custody, model performance or statistical independence is claimed. The original20/15 objective and actual model acceptance remain open; the prior refused blind-answer operation is unchanged.
