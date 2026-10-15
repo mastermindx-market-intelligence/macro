@@ -526,3 +526,94 @@ def test_unavailable_currency_copy_does_not_repeat_identical_localized_reason(re
     assert card.count('>不可用</span>') == 1
     if reason == 'not_supplied':
         assert '>Not supplied</span>' in card and '>未提供</span>' in card
+
+
+BREADTH_CLOCK_CASES = ('distinct', 'same', 'zero', 'stale', 'value_denied',
+                       'metadata_denied', 'metadata_unknown', 'missing_observation',
+                       'missing_membership', 'absent')
+
+
+def breadth_clock_input(kind, market='JP'):
+    """Synthetic native field input; grants here are test-only."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    key = 'JP.constituent_breadth_50d'
+    measure, support = source['measures'][key], source['field_support'][key]
+    measure['instrument']['market_id'] = market
+    support['market_id'] = market
+    measure.update(observation_at='2026-10-05', calculation_at='2026-10-06')
+    support['membership_asof'] = '2026-09-30'
+    if kind == 'same':
+        support['membership_asof'] = measure['observation_at']
+    elif kind == 'zero':
+        measure['value'] = 0
+        support['above_count'] = 0
+    elif kind == 'stale':
+        measure['quality'] = 'stale'
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'missing_observation':
+        measure['observation_at'] = None
+    elif kind == 'missing_membership':
+        support['membership_asof'] = None
+    elif kind == 'absent':
+        return None, None
+    return measure, support
+
+
+@pytest.mark.parametrize('kind', BREADTH_CLOCK_CASES)
+def test_breadth_render_preserves_separate_admitted_observation_and_membership_clocks(kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = breadth_clock_input(kind, market)
+    key = market + '.constituent_breadth_50d'
+    source = dict(registry=registry, measures={key: measure} if measure else {},
+                  field_support={key: support} if support else {})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    article = BeautifulSoup(render(section, registry), 'html.parser')
+    cell = article.select_one(f'[data-im-risk-row="{market}"] td:last-child')
+    visible = kind in ('distinct', 'same', 'zero', 'stale', 'value_denied')
+    supported = visible and kind != 'value_denied'
+    observation = cell.select_one('[data-im-breadth-observation]')
+    membership = cell.select_one('[data-im-breadth-membership]')
+    assert (observation is not None) == visible
+    assert (membership is not None) == supported
+    if visible:
+        assert observation.get_text() == 'Observation观测 2026-10-05'
+    if supported:
+        date = '2026-10-05' if kind == 'same' else '2026-09-30'
+        assert membership.get_text() == 'Membership as of成员名单截至日期 ' + date
+        assert cell.select_one('[data-im-risk-value]').get_text() == ('0' if kind == 'zero' else '+61')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+        assert '2026-09-30' not in cell.get_text()
+    # The calculation clock is not substituted for either displayed source clock.
+    assert '2026-10-06' not in cell.get_text()
+    assert '2026-10-07' not in cell.get_text()
+    assert source == before
+
+
+def render_breadth_clock_fixture():
+    """Full publication/mount with native synthetic breadth inputs for six markets."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('distinct', 'zero', 'stale', 'value_denied', 'metadata_denied', 'missing_membership')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        key = case['market'] + '.constituent_breadth_50d'
+        measures[key], support[key] = breadth_clock_input(case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases)

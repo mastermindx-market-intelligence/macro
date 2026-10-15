@@ -253,6 +253,61 @@ for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
   });
 }
 
+let riskBreadthClockFixture;
+function riskBreadthClocksFixture() {
+  if(!riskBreadthClockFixture) riskBreadthClockFixture=JSON.parse(execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',
+    'import json; from tests.test_intl_workspace_risk_render import render_breadth_clock_fixture; print(json.dumps(render_breadth_clock_fixture()))'],
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:8*1024*1024}));
+  return riskBreadthClockFixture;
+}
+
+for(const theme of ['dark','light']) for(const lang of ['en','zh']) {
+  test(`Risk breadth retains independent observation and membership clocks ${theme} ${lang}`,async()=>{
+    const fixture=riskBreadthClocksFixture();
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>setTheme(theme),theme);
+      await page.waitForSelector('[data-im-enhanced="true"]');
+      await page.locator('.sky-fx').waitFor({state:'detached'});
+      const controls=page.locator('[data-im-controls]');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        for(const horizon of ['1m','3m']) {
+          await controls.locator('select[data-im-action="set_horizon"]').selectOption(horizon);
+          const panel=page.locator('[data-im-panel][data-view="risk"]:visible');
+          for(const {market,kind} of fixture.cases) {
+            const cell=panel.locator(`[data-im-risk-row="${market}"] td:last-child`);
+            assert.equal(await cell.isVisible(),true);
+            const observation=cell.locator('[data-im-breadth-observation]');
+            const membership=cell.locator('[data-im-breadth-membership]');
+            const supported=['distinct','zero','stale'].includes(kind);
+            assert.equal(await observation.count(),supported||kind==='value_denied'?1:0);
+            assert.equal(await membership.count(),supported?1:0);
+            if(supported||kind==='value_denied') assert.equal(await observation.innerText(),lang==='en'?'Observation 2026-10-05':'观测 2026-10-05');
+            if(supported) {
+              assert.equal(await membership.innerText(),lang==='en'?'Membership as of 2026-09-30':'成员名单截至日期 2026-09-30');
+              assert.equal(await cell.locator('[data-im-risk-value]').innerText(),kind==='zero'?'0':'+61');
+              const valueBox=await cell.locator('[data-im-risk-value]').boundingBox();
+              const observationBox=await observation.boundingBox(),membershipBox=await membership.boundingBox();
+              assert.ok(observationBox.y>=valueBox.y+valueBox.height-1,'observation date must be separate from value/count');
+              assert.ok(membershipBox.y>=observationBox.y+observationBox.height-1,'membership date must have its own readable line');
+              assert.equal((await cell.innerText()).includes(lang==='en'?'Stale data':'数据过期'),kind==='stale');
+            } else assert.equal(await cell.locator('[data-im-risk-value]').count(),0);
+            assert.doesNotMatch(await cell.innerText(),/2026-10-06|2026-10-07/);
+            assert.equal(await cell.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${kind} ${width} ${lang}`);
+            if(width===320&&horizon==='1m'&&kind==='distinct'&&process.env.INTL_BROWSER_EVIDENCE_DIR) {
+              fs.mkdirSync(process.env.INTL_BROWSER_EVIDENCE_DIR,{recursive:true});
+              await page.evaluate(()=>document.fonts.ready);
+              await cell.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));
+              await cell.screenshot({path:path.join(process.env.INTL_BROWSER_EVIDENCE_DIR,`risk-breadth-clocks-${theme}-${lang}-320.png`)});
+            }
+          }
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+        }
+      }
+    },{htmlOverride:fixture.html,width:320,bootLanguage:lang,initialSearch:'?view=risk'});
+  });
+}
+
 function staleMacroComponentFixture() {
   if (!staleMacroComponentHtml) staleMacroComponentHtml=execFileSync(process.env.INTL_TEST_PYTHON||'python3',['-c',`
 from tests.test_intl_workspace_macro_render import component_workspace_fixture
