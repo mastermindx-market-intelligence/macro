@@ -571,6 +571,19 @@ def registered_row(args):
         "horizon_end_ns":c["horizon_end_ns"],
         "source_receipt_sha256":c["source_receipt_sha256"],
         "calendar_receipt_sha256":c["calendar_receipt_sha256"],
+        "candidate_source_available_ns":c["candidate_source_available_ns"],
+        "deadline_ns":c["deadline_ns"],
+        "direction":c["direction"],
+        "research_quantity":c["research_quantity"],
+        "initial_midpoint_usd":c["initial_midpoint_usd"],
+        "max_quote_age_ns":c["max_quote_age_ns"],
+        "anchor_quote_event_ns":c["anchor_quote_event_ns"],
+        "anchor_quote_available_ns":c["anchor_quote_available_ns"],
+        "anchor_quote_receipt_sha256":c["anchor_quote_receipt_sha256"],
+        "anchor_bid_usd":c["anchor_bid_usd"],
+        "anchor_ask_usd":c["anchor_ask_usd"],
+        "anchor_bid_size_shares":c["anchor_bid_size_shares"],
+        "anchor_ask_size_shares":c["anchor_ask_size_shares"],
     }
 
 
@@ -822,3 +835,76 @@ def test_exact_display_uses_half_even_without_changing_source_fraction(value, ex
     assert output["denominator"] == str(value.denominator)
     assert output["display_bps_12dp"] == expected
     assert output["display_only_rounded"] is True
+
+
+# Scientific acceptance red test: the *original registered candidate's*
+# direction, quantity and midpoint basis cannot change after the freeze.
+# Prior cohort v0 did not carry these identities and silently accepted every
+# altered label under the same candidate/source receipt.
+@pytest.mark.parametrize("mutation",[
+    {"direction":-1},
+    {"research_quantity":"5"},
+    {"deadline_ns":T+3*MIN},
+    {"candidate_source_available_ns":T-2*D},
+    {"anchor_quote_receipt_sha256":SHA("6")},
+    {"anchor_quote_event_ns":T-2*D},
+    {"anchor_bid_size_shares":"30"},
+    {"max_quote_age_ns":4*D},
+    {"initial_midpoint_usd":"200", "anchor_bid_usd":"199.9", "anchor_ask_usd":"200.1"},
+])
+def test_frozen_cohort_rejects_post_decision_candidate_economic_basis_change(mutation):
+    original = setup()
+    changed = setup()
+    changed["candidate"].update(mutation)
+    assert run(changed)["state"] == "PAIRED_RESEARCH_UTILITY"
+    with pytest.raises(ValueError, match="frozen candidate"):
+        accounted([registered_row(original)], [run(changed)])
+
+
+@pytest.mark.parametrize(("key","value"),[
+    ("direction",-1),
+    ("research_quantity","2"),
+    ("deadline_ns",T+4*MIN),
+    ("initial_midpoint_usd","99"),
+    ("anchor_quote_receipt_sha256",SHA("5")),
+    ("anchor_bid_size_shares","1"),
+])
+def test_later_paired_label_cannot_forge_frozen_candidate_economic_identity(key,value):
+    a=setup()
+    label=run(a)
+    label[key]=value
+    with pytest.raises(ValueError,match="frozen candidate"):
+        accounted([registered_row(a)],[label])
+
+
+@pytest.mark.parametrize(("key","value"),[
+    ("direction",0),
+    ("candidate_source_available_ns",T),
+    ("deadline_ns",T+31*MIN),
+    ("max_quote_age_ns",6*D),
+    ("initial_midpoint_usd","0"),
+    ("anchor_quote_available_ns",T),
+])
+def test_denominator_manifest_rejects_invalid_unevaluated_candidate(key,value):
+    a=setup()
+    frozen=registered_row(a)
+    frozen[key]=value
+    with pytest.raises(ValueError):
+        accounted([frozen],[])
+
+
+def test_original_economic_basis_survives_censored_and_immature_results():
+    for mode in ("HALTED", "NOT_MATURE"):
+        a=setup()
+        if mode=="HALTED": a["market_health"]="HALTED"
+        else: a["source_watermark_ns"]=T+30*MIN-1
+        r=run(a)
+        frozen=registered_row(a)
+        for key in ("direction","research_quantity","initial_midpoint_usd",
+                    "anchor_quote_receipt_sha256","deadline_ns",
+                    "candidate_source_available_ns"):
+            assert r[key]==frozen[key]
+        reconciled=accounted([frozen],[r])
+        assert reconciled["state"]=="ALL_FROZEN_CANDIDATES_ACCOUNTED_SOFTWARE_ONLY"
+        assert reconciled["primary_population_mean_bps"] is None
+        assert reconciled["source_authenticated"] is False

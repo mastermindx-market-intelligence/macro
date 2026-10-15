@@ -30,6 +30,19 @@ REASONS = frozenset({"QUOTE_MISSING", "SOURCE_GAP", "UNQUALIFIED_MARKET", "CANCE
 MINUTE_NS = 60_000_000_000
 MAX_QUOTE_AGE_NS = 5_000_000_000
 
+# The original candidate's economics and receipt vintages must remain fixed
+# between the incumbent frozen denominator and each later outcome report.
+# Input availability, direction, intended Q0, M0, deadline and original
+# midpoint quote are all part of candidate identity; a candidate_id/source
+# SHA alone cannot prevent retroactive policy/opportunity selection.
+COHORT_CANDIDATE_FREEZE_FIELDS = (
+    "candidate_source_available_ns", "deadline_ns", "direction",
+    "research_quantity", "initial_midpoint_usd", "max_quote_age_ns",
+    "anchor_quote_event_ns", "anchor_quote_available_ns",
+    "anchor_quote_receipt_sha256", "anchor_bid_usd", "anchor_ask_usd",
+    "anchor_bid_size_shares", "anchor_ask_size_shares",
+)
+
 
 def _dict(value, keys, label):
     if type(value) is not dict or set(value) != set(keys):
@@ -283,6 +296,7 @@ def evaluate_same_candidate(*, candidate, baseline, challenger,
         session=c["session"], source_mode=c["source_mode"],
         candidate_source_receipt_sha256=c["source_receipt_sha256"],
         calendar_receipt_sha256=c["calendar_receipt_sha256"],
+        **{key: c[key] for key in COHORT_CANDIDATE_FREEZE_FIELDS},
         horizon_trading_minutes=30, original_decision_ns=decision,
         horizon_end_ns=endpoint, evaluation_cutoff_ns=cutoff,
         policy_count=2, forward_outcome_available_to_original_decision=False,
@@ -384,6 +398,7 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
             "candidate_id", "ticker", "session", "source_mode",
             "original_decision_ns", "horizon_end_ns",
             "source_receipt_sha256", "calendar_receipt_sha256",
+            *COHORT_CANDIDATE_FREEZE_FIELDS,
         }, "frozen_candidate")
         key = e["candidate_id"]
         if (type(key) is not str or not 0 < len(key) <= 128
@@ -400,6 +415,33 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
                 or type(e["source_mode"]) is not str
                 or e["source_mode"] not in MODES):
             raise ValueError("cohort: original horizon or source mode inconsistent")
+        source_available = _clock(
+            e["candidate_source_available_ns"], "frozen_candidate.source_available"
+        )
+        deadline = _clock(e["deadline_ns"], "frozen_candidate.deadline")
+        maxage = _clock(e["max_quote_age_ns"], "frozen_candidate.max_quote_age")
+        if (not source_available < start <= deadline < end
+                or maxage > MAX_QUOTE_AGE_NS):
+            raise ValueError("cohort: frozen candidate timing constraints invalid")
+        if type(e["direction"]) is not int or e["direction"] not in (-1, 1):
+            raise ValueError("cohort: frozen candidate incumbent direction invalid")
+        _money(e["research_quantity"], "frozen_candidate.research_quantity", positive=True)
+        anchor = _money(
+            e["initial_midpoint_usd"], "frozen_candidate.initial_midpoint", positive=True
+        )
+        event = _clock(e["anchor_quote_event_ns"], "frozen_candidate.anchor_event")
+        available = _clock(
+            e["anchor_quote_available_ns"], "frozen_candidate.anchor_available"
+        )
+        _sha(e["anchor_quote_receipt_sha256"], "frozen_candidate.anchor_receipt")
+        if (not event < start or not event <= available < start
+                or start - event > maxage):
+            raise ValueError("cohort: frozen candidate original quote is not prior")
+        original_bid, original_ask, _, _ = _best_quote(
+            e, "anchor", "frozen_candidate.anchor"
+        )
+        if anchor != (original_bid + original_ask) / 2:
+            raise ValueError("cohort: frozen candidate original midpoint disagrees")
         modes.add(e["source_mode"])
         expected[key] = e
     if len(modes) != 1:
@@ -414,6 +456,7 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         row = _dict(evaluation, {
             "schema", "candidate_id", "ticker", "session", "source_mode",
             "candidate_source_receipt_sha256", "calendar_receipt_sha256",
+            *COHORT_CANDIDATE_FREEZE_FIELDS,
             "horizon_trading_minutes", "original_decision_ns", "horizon_end_ns",
             "evaluation_cutoff_ns", "policy_count",
             "forward_outcome_available_to_original_decision",
@@ -430,6 +473,9 @@ def reconcile_frozen_candidate_cohort(*, expected_candidates,
         if type(key) is not str or key not in expected or key in matched:
             raise ValueError("cohort: unknown, duplicate or unregistered result")
         identity = expected[key]
+        if any(row[name] != identity[name]
+               for name in COHORT_CANDIDATE_FREEZE_FIELDS):
+            raise ValueError("cohort: frozen candidate economic basis or source-clock drift")
         if any((
             row["schema"] != SCHEMA,
             row["ticker"] != identity["ticker"],
