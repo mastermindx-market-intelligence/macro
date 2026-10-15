@@ -121,6 +121,13 @@ verified:
     memberships/limits preserved. Original eval-snb-source-review-01a1333d-c1 retained5145bytes consumed, reviewer
     accepted with count/report corrections. Twelve added entries across11job lists; no model/PIT/adoption claim.
     Canonical snb-floor-20261014 manifest retains12original records.
+- claim: Follow-on mirrors the exact reviewed A1 ancestor-input correction and removes the single observed
+    merge conflict.
+  command: Full normalized YAML preservation, exact ad03 source closure/strict packing, two affected CI controls
+    and read-only merge-tree againstA1ba848.
+  result: All314definitions/priorpaths/limits/runtime retained;13reviewed existing paths added.2controlsPASS/zero
+    closure misses/strict134-134-128jobs5621-5441-5384weight10-10-9packs. Preview treee37514e9839f984b55674a92b811ed8d1379f212
+    clean. Reuses SNB121+3 and accepted prior qualification; no additional model/PIT/adoption proof.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
   what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the actual
@@ -138,11 +145,10 @@ unresolved:
 - 'Current A1 fea04c414282 remainsOPEN/merge-blocked: hosted ancestor-init census test failed; contract-delta
   and11otherpacks passed. Exact local reproduction/repair is in progress; no production acceptance.'
 next_actions:
-- Repair the exact current A1 fea04c414282 ancestor-init census failure from CI38624362438/attempt1 on original
-  PR6651. Original b1 CI38601317870 is terminalPASS and its final artifact consumed; it does not qualify refreshed
-  fea. Root adopted verified incumbent base-only refresh by fast-forward only. No second manual base integration,
-  force push, rerun or duplicate controller. Retain census ceilings, current checks, capacity and incumbent
-  final merge.
+- Publish locally qualified/reviewed A1 containingheadba8487f0b3b1 (source2d0e6e334986) on originalPR6651 when
+  canonicalcapacity/sourcecustody admit. Adds13existing ancestor package inputs, all319definitions/8suites/limits
+  preserved;3focusedPASS/zero closure/strict136-135-129jobs. Remote remainsfea04c414282 with genuine ancestor-census
+  failure. Incumbent alone owns finalmerge/nextbaserefresh; no further manual integration.
 - After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source. Verify
   normal updater, installed files/admin process, served assets, authenticated API-to-DOM, eight theme/language/viewport
   states, genuine owner progression and actual operator comprehension. Use original Chrome profile actual browser
@@ -162,6 +168,11 @@ danger_areas:
 prs:
 - 6651
 ---
+
+## 2026-10-15 ancestor alignment ready
+
+Follow-on sourcead03f6267ed27f53aa73ba05b7307cfce119feee adds the13already-reviewed A1ancestor paths in matching order. Fullsource preservation/2affectedcontrols/zero-miss closure/strict134-134-128packing pass. Previously observed single shared-CI conflict is cleared in read-only preview againstA1ba848. Product/runtime source and SNBcase remain unchanged. Canonical a1-ancestor-alignment-20261015 retains original RED/GREEN and review/admission evidence. A1publication was deferred at06:46 with10active/cap8; no controller bypass or additional base integration. Programme incomplete; originalroot continues.
+
 
 ## 2026-10-15 recovery and qualified SNB case
 
