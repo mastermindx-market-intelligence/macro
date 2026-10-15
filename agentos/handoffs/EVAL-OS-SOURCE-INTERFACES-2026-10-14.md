@@ -153,19 +153,9 @@ unresolved:
   reachable current-main inputs. Source qualification passes; fresh hosted checks, protected
   merge and all production proof remain owed.
 next_actions:
-- A1 PR6651/head3f34040de3a5 original CI38738100398/attempt1 is terminal PASS.
-  Original final artifact11978754300 digest and canonical gate consumed:127jobs/350semantic
-  commandstepsPASS,0inherited/blocked. All binding checks clean at14:18:58; PR still OPEN.
-  Consume the incumbent refresh/merge decision; no duplicate controller or second base integration.
-- Follow-on qualified2d0e98bf6b7e resolves the new six-path manifest composition conflict;
-  2controlsPASS/zero closure misses/strict134-134-128jobs. All314definitions and runtime3528080
-  preserved; clean composition with A1 preserves319existing definitions/path memberships.
-  Publish the same branch and open its single PR only after A1 landing and final-base/capacity reconciliation.
-- After qualified A1 merge bind17fileprobe and assetprojector; prove installation, served assets,
-  authenticated API/DOM,8visualstates, natural owner progression and comprehension. Release samefollow-on;
-  prove numeric execution/internal-log, CLI and rights-qualified Discovery use. Host-local operator ingestion
-  is separate from R2 publication and natural QLedger progression. All final flags remain false;
-  preserve original unknown/refused effects and source custody.
+- "A1 PR6651/head3f34040de3a5 original CI38738100398 is terminal PASS. Newer main663 changed CI definitions and requires incumbent refresh. Canonical14:33 census9/cap8, lease ownerPR9077/run38748904681; that original run completed PASS14:43:37, consumed14:47. Follow incumbent lease settlement/refresh/freshchecks/merge."
+- "Follow-on dd1d34db1d40 repairs six conflicts with main575a by30 exact incoming dependency declarations and three existing path relocations;314definitions/priorpaths/limits/runtime unchanged.2controlsPASS/closure0/strict packingPASS. Current-main preview is clean. Hypothetical post-A1 squash still has six content/add-add conflicts; resolve against actual qualified landing on this same branch before its single PR."
+- "After qualified A1 merge bind17fileprobe and assetprojector; prove installation/assets/authenticated API/DOM/eightvisualstates/naturalowner/comprehension, then follow-on updater/actual API-admin processes/numeric-internal-log/CLI/rights-qualified Discovery use. Preserve original unknown/refused effects; all final flags remain false."
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -179,23 +169,27 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T14:23Z
+## Current checkpoint — 2026-10-15T14:51:12.829308+00:00
 
-A1 PR6651/head3f34040de3a5 has terminal hosted PASS on original CI38738100398/attempt1.
-Original final artifact11978754300 ZIP SHA4946408bca8d87d70db700c411238347d7dbdc3fa54c2503a8358099fe089eee
-matches GitHub. Canonical loader/gate and every planned execution/step identity validate:
-127logical jobs/350semantic commandstepsPASS, zero inherited/blocked/infrastructure failures.
-These are not unit-test or zero-skip counts. All binding checks are clean by the incumbent
-predicate at14:18:58; the inactive complementary pilot context retains its nonbinding red.
-PR remains OPEN at3f. Incumbent run38749757653 completed; safe annotations make no A1
-refusal or release claim. Keep its existing successor path; no manual refresh/merge.
-See a1-final-consumption-38738100398.json and original ZIP in the canonical evidence directory.
+A1 exact3f CI is terminal PASS:127jobs/350semantic commandsteps, zero inherited/blocked.
+Canonical freshness at incumbent source finds newer main663 changed CI definitions.
+Canonical GET-only discovery confirms A1 armed/eligible among74 PRs;14:33 capacity9/cap8,
+leasePR9077/headed5/run38748904681, no unindexed reservation. That original owner CI
+completed successfully14:43:37 and was consumed14:47. A1 remainedOPEN3f. No controller,
+producer, branch refresh, protected merge or production effect was issued by this root.
 
-Follow-on source9cb includes the qualified native-checker normal-updater repair, with169affected
-controls and bashsyntaxPASS. CI scope2d0/core3528080 and all earlier T11/T5/T12/QLedger proof
-remain valid; no repeated qualification. Release this same follow-on after A1/final-base and
-capacity reconciliation. Actual A1 production and follow-on numeric/log/CLI/rights-qualified
-Discovery adoption remain open; original unknown/refused effects and all false flags persist.
+Follow-on dd1d34db1d40160205be33950c5936f0ad32148b adds30 exact current-main input
+declarations across five jobs and relocates three existing paths. All314 definitions,
+prior paths, limits and runtime9cb/3528080 are preserved. Two affected controlsPASS;
+full tracked closure0 and all strict probesPASS. Current-main575a preview is clean/treea0d1;
+all319main jobs and paths survive with only the pre-existing A1 neural-web suite addition
+and QLedgerexclusive metadata. The eval-os-a1 job remains additional. Direct old-A1 and
+hypothetical post-A1 squash previews are NOT clean. The latter retains six conflict paths;
+resolve actual qualified landed source before release. No final composition/hosted/production
+or adoption claim. Canonical followon-current-main-alignment-20261015.json retains details.
+
+Reuse T11/T5/T12/20textcases+bear/QLedger and native-checker deployment169PASS proof.
+All completion flags stay false; original experience/CLI-review effects/refusals persist.
 
 ## 2026-10-15 A1 repair published
 
