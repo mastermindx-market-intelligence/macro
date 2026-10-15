@@ -146,10 +146,11 @@ unresolved:
   preserved evidence; repaired local2d0 qualified and reviewed. Protected merge and all production proof remain
   owed.
 next_actions:
-- Consume actual fresh CI and current-head proof for publishedA1ba8487f0b3b1 on originalPR6651. Ordinarysource-onlypush/readback06:54:58Oct15
-  aftercanonicaladmission6/cap8. PRbodyupdated06:55:38; firstCIread>=07:00:45 then>=300s. Qualifiedsource2d0
-  and independentreview accepted. Repair realfailure or incumbentmerge; no second manualintegration, rerun,
-  duplicateproducer/controller.
+- Consume exact-head run38695328397/attempt1 for publishedA1ba8487f0b3b1 on originalPR6651. At07:04Oct15
+  planPASS, contract-delta and12packsRUNNING. Originalplan ZIP digest and canonical plan identity verified;
+  127eligiblejobs, A1pack9, tested0ec629/base3f62 matches admitted preview tree and all17productionfiles.
+  Next CI observation>=07:12:35, then>=300s; terminal artifact and binding gate remain owed. Repair realfailure
+  or incumbentmerge; no second manualintegration, rerun, duplicateproducer/controller.
 - After qualified A1 merge, bind BOTH the17-file probe and served-asset projector to the final source. Verify
   normal updater, installed files/admin process, served assets, authenticated API-to-DOM, eight theme/language/viewport
   states, genuine owner progression and actual operator comprehension. Use original Chrome profile actual browser
@@ -169,6 +170,12 @@ danger_areas:
 prs:
 - 6651
 ---
+
+## 2026-10-15 hosted plan bound and obligation record reconciled
+
+Original A1 run38695328397/attempt1 uses publishedba848 with base3f62 and tested0ec629. The original plan ZIP SHA983194bf0684d9e78bc4d047f7732b0f6b6d82d15f118e339d0317556bf22d4d matches GitHub; canonical plan SHAea55a20a03810631fde72532253b9847fe5d7231291e4936f3ff266a8e827b64 validates. Its tested tree1e6ba68177e4a60af5e5d3c0f6071ee693262043 equals the admitted preview. All17production files and A1 execution digest remain unchanged; A1 is selected inpack9 of127eligiblejobs. At07:04 planPASS while contract-delta and12packs run. No terminal-check, merge or production claim. Original artifacts and hashes are retained in a1-ancestor-hosted-plan-20261015.
+
+The original acceptance record's T5/T6/T12 rows now distinguish accepted narrow source work from outstanding protected delivery, real consumer use, model/PIT and broader historical obligations. No production, policy, data-owner, release, lifecycle or acceptance authority changes. All final completion flags remainfalse; root continues through the incumbent controller.
 
 ## 2026-10-15 A1 repair published
 
