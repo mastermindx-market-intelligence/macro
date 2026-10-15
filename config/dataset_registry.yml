@@ -434,8 +434,8 @@ datasets:
           inclusive end makes the changeover day ambiguous, and 2026-01-14 is exactly
           the day the MMC/MRSH answer has to be unambiguous.
       ingested_at: {dtype: "datetime64[ns]", nullable: false}
-      known_at: {dtype: string, nullable: true, note: "aware UTC evidence observation; required for polygon, not consumer read availability"}
-      evidence_sha256: {dtype: string, nullable: true, note: "retained decoded source evidence digest; required for polygon"}
+      known_at: {dtype: string, nullable: true, note: "aware UTC evidence observation; required for polygon and occ_root, not consumer read availability"}
+      evidence_sha256: {dtype: string, nullable: true, note: "retained decoded source evidence digest; required for polygon and occ_root"}
       binding_sha256: {dtype: string, nullable: true, note: "semantic alias tuple seal; consistency, not source authenticity"}
       alias_kind: {dtype: string, nullable: true, enum: [occ_root], note: "null preserves ordinary bidirectional aliases; occ_root is a forward-only typed-underlying relation"}
     notes: >
@@ -449,6 +449,14 @@ datasets:
       Ingestion must establish source-specific root semantics and bind an existing
       canonical security or index record before publishing any root row. This schema
       does not create an index registry or admit a source by ticker equality.
+      The explicit thetadata/SPY profile combines captured Cboe product/reference,
+      Theta v3 symbol-contract and SEC/listing evidence with an existing active
+      SEC:US-ARCX-SPY record. New intake covers only its observed UTC date, retains
+      both capture clocks and canonical target fields, and refuses later replay.
+      Ordinary refresh preserves the historical window. This is source-specific
+      inference, not a live Theta response, verified Matrix session or rights grant;
+      see docs/dataos/direct-registrant-intake.md. Ordinary us_equity still excludes
+      ARCX; the Options consumer validates the typed canonical target separately.
       The additional `polygon` historical-naming namespace is a bounded prospective
       reference observation, with valid_from on the actual requested date and exclusive
       valid_to. Both canonical lookup directions require an explicit aware decision_at;
