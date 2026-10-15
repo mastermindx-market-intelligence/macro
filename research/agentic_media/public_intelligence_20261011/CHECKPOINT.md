@@ -1,3 +1,56 @@
+## 2026-10-15 07:07 continuation — CAT canonical source installed; public serving fault isolated
+
+Normal ingest38608708361 SUCCESS17:44:14Z October14 consumed the existing CAT
+source. Read-only canonical probe verifies one receipt, exactPDF5fbe3688,
+sidecarfe21f602 and5031character fulltext atstablee4878ea0. No new inbox write:
+the original TWO writes remain KNOWN_COMPLETE, never replay/reupload/alias.
+Installed report probe06:42:42Z October15 passes12dependencies, accepted summary/
+excerpt and exactsite/site.served df7bfe66 atstable5520731a. Crop report separately
+passes at3f62e878 with pageaaa0799d; previous Crop16page viewer remains accepted.
+These are source-report installation proofs, not new Press articles.
+
+Actual installed CAT planner06:45:53Z at5520731a:181eligible,rank19,unheld16,pool8,
+NOT_SELECTED. All523read-input hashes stable;5held peers/29excludedrefs preserved.
+Selected private reportf053ed has no qualified public-article receipt in current
+mission evidence. No forced pool,score,date,alias,provider call or stage write.
+
+Public CAT viewer browser showsHTTP524; dedicated-page HTTP and configured HTTP
+origin reads time out. Read-only origin diagnosis finds macro-apiPID2450971
+(04:27start) with~2.4GBresident/~5GBswap on4GBVPS and queued requests; health also
+stalls. One pinned official PyPI py-spy0.4.1 dump without locals captures TWO
+AnyIO requests in daily_brief_v1 -> read_today_candidate_projection ->
+read_today_candidate_source_rows -> candidate_source_row. Temporary diagnostic
+binary removed; no service restart, config/auth change, provider or producer action.
+A bounded second HTTP check after actual API log progress still timed out. Current
+Chrome profile binding changed IDs after tool reconnect; existing tab was found
+in Chris profile3, but control reports Debugger unattached. Do not switch profile
+or evade an approval prompt. Browser acceptance remains false.
+
+Existing Prophet9369head858e11a4 batches native assessment reads; it does not
+change the two full candidate-source captures. Sole Fabric census
+mmx-press-serving-source-census-20261015-001 TERMINAL/consumed/ACCEPTED within
+corrected parent scope: two captures on the full success path, finite AnyIO pool,
+no resource-allocation attribution or repair approval. No duplicate repair/worker.
+Actual four source parts total20,867,596compressed bytes; no production parquet
+load was launched. This is a concrete serving diagnosis, not proof of resolution.
+
+9209 fresh06:43 read OPEN/armed at1c7e58a6ccd7a1e09c5aeafe75b3abacaa6d4450.
+CI38671972124 all12packs/contract/gate SUCCESS03:08:29Z, but controller38693882649
+marks proof stale after40abd9bd check changes. MainGREEN;10proofs/cap8,0slots.
+All24Presssource hashes unchanged;3pages match accepted12:19shared review.
+New portable bundle postlanding-9209/1c7e58a6ccd7a1e09c5aeafe75b3abacaa6d4450
+is syntax-checked/prepared, NOT executed. Actual protected squashSHA and normal
+updater are still required; new browser acceptance for reviewed changed pages.
+Do not refresh manually, push receipts to9209, waive gates or duplicate CI.
+
+Next: resolve/consume the serving dependency using this retained stack and existing
+source/release boundaries; verify actual CAT page/viewer once serviceable; continue
+permitted source qualification without forcing CAT selection. Consume admitted
+9209refresh/CI/protected install24sources/3pages/4probes, then SAME accepted
+follow-on PR/install33groups. Application61b2cd38 remains434tests/1skip locally,
+not installed. Publication/cutoverfalse,D140/10; five held drafts,3dirty histories,
+Commission19,Catalyst8678,Oct11EFFECT_UNKNOWN and all refusals preserved.
+
 ## 2026-10-14 17:36 continuation — distinct CAT government notice admitted to private intake
 
 USITC source usitc-2026-10-13-337-ta-1473 is a distinct October13 procedural

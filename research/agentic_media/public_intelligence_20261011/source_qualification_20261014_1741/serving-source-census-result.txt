@@ -1,0 +1,77 @@
+C0 read-only call-path census — answer follows. No proposals, no quality verdict.
+
+## Direct answers
+
+1. **Does current code perform two source captures per request?** Yes. In `scripts/build_stock_library.py::read_today_candidate_projection`, `read_today_candidate_source_rows(root)` is invoked twice — once to capture `(source_rows, source_receipts)` before the candidate-resolution try-block, then again as `(_, after_receipts)` to verify receipts after the candidate loop and before the final guard.
+2. **Does PR9369 change that?** No. The supplied diff touches only `_verified_native_owner_read`, `_batch_verified_native_owner_reads`, the `_today_native_source_candidates` signature/body, and the one call site that now passes `native_batch=True` (diff hunk `@@ -1977,7 +2063,7 @@`). Neither of the two `read_today_candidate_source_rows(root)` sites changes.
+3. **Are concurrent calls bounded in the shown route?** No. None of `read_today_candidate_source_rows`, `attest_candidate_episode_store_bytes`, `load_candidate_episode_store_snapshot`, `_batch_verified_native_owner_reads`, or `_verified_native_owner_read` shows a semaphore, lock, counter, or queue in the supplied excerpts. The two-thread AnyIO observation is consistent with an unbounded route.
+
+## Compact function / call-count map (per single `daily_brief_v1` request)
+
+Numbers are per request, not per call-site visit.
+
+| Symbol (file) | Supplied-identity anchor | Calls / request | Notes |
+|---|---|---|---|
+| `daily_brief_v1` (`app/prophet_daily_brief.py`) | sha256 d1758c05…1eb864 | 1 | imports `read_today_candidate_projection` lazily |
+| `read_today_candidate_projection` (`scripts/build_stock_library.py`) | sha256 d8c543c3…d60b0 | 1 | orchestrator |
+| `read_today_candidate_source_rows` (`engine/us_context_vector.py`) | sha256 9ec37b76…52f82 | **2** | one initial, one post-loop verification |
+| `_store_dir(root).glob("*.parquet")` | inside `read_today_candidate_source_rows` | **2 × 1** globs | one per source-capture call |
+| `_records_snapshot(part)` (`engine/us_candidate_episode_intake.py`) | sha256 43838802…b4acf | **2 × P** | `P` = `*.parquet` parts; `path.read_bytes()` + `pd.read_parquet(BytesIO(payload))` |
+| `candidate_source_row(row)` | same file | **2 × P × R** | `R` = rows per part; calls `_plain_row(_json_safe(dict(row)))` |
+| `_plain_row`, `_json_safe`, `_plain_value` | same file | within each `candidate_source_row` | unchanged by PR9369 |
+| `attest_candidate_episode_store_bytes(episode_root)` | inside `read_today_candidate_projection` | 2 | initial `token` and post-loop `==token` check |
+| `load_candidate_episode_store_snapshot(episode_root)` | same | 1 | supplies `snapshot.generation_id`, `snapshot.generation` |
+| `_today_native_source_candidates(..., native_batch=True)` | same file, called at hunk `@@ -1977,7 +2063,7 @@` | 1 | inside loop defers each eligible binding into `deferred` |
+| `_batch_verified_native_owner_reads(snapshot, deferred)` | new in PR9369 | 1 (plural) when `len(deferred) > 1`, else delegates to `_verified_native_owner_read` (1 singular) | one native request resolves all `N` eligible bindings |
+| `build_native_factual_assessment_results` (imported) | new in PR9369 | 1 plural call | `N` bindings in one request |
+| `build_native_factual_assessment_result` (imported) | unchanged at callsite | 0..1 | reached only via the `len(deferred) == 1` branch |
+| `_verify_native_assessment_pair` | unchanged at callsite | N | called per binding inside the batch resolver and singular helper |
+| `source_path.read_bytes()` | inline in `read_today_candidate_projection` | 3 | first bind, post-loop guard, post-after-receipt guard |
+
+`P`, `R`, `N` are not given in the supplied source.
+
+## Stack topology (single route, two concurrent callers)
+
+```
+AnyIO worker A ──┐
+                 ├── daily_brief_v1 (daily_brief_v1 route)
+AnyIO worker B ──┘    └─ read_today_candidate_projection
+                          ├─ read_today_candidate_source_rows   (capture #1)
+                          ├─ attest_candidate_episode_store_bytes / load_…_snapshot
+                          ├─ _today_native_source_candidates(native_batch=True)
+                          │     └─ _batch_verified_native_owner_reads   (one plural call)
+                          ├─ source_path.read_bytes() == raw         (guard)
+                          ├─ read_today_candidate_source_rows   (capture #2, verify)
+                          ├─ attest_candidate_episode_store_bytes == token
+                          └─ source_path.read_bytes() == raw         (final guard)
+```
+
+Both threads traverse the same route. No supplied excerpt shows a per-request or per-worker semaphore; concurrency is whatever the AnyIO worker pool allows.
+
+## Paths affected by PR9369
+
+- `scripts/build_stock_library.py::_today_native_source_candidates` — signature gains `native_batch=False`; loop body forks between deferred-batch and singular; new `_today_brief_owner_unavailable_codes`-prefixed `reason_codes` logic; imports `build_native_factual_assessment_result` removed from this function (now imported inside the helpers).
+- `scripts/build_stock_library.py::read_today_candidate_projection` — one line: `native_batch=True` added to the `_today_native_source_candidates` call (hunk `@@ -1977,7 +2063,7 @@`).
+- New: `scripts/build_stock_library.py::_verified_native_owner_read`.
+- New: `scripts/build_stock_library.py::_batch_verified_native_owner_reads`.
+
+Net effect on call counts in the shown route per request:
+- Native owner read calls: `N` (pre-PR, one per candidate) → **1 plural** (or 1 singular if `len(deferred)==1`) (post-PR). Native owner read count changes; candidate-store normalization count does not.
+
+## Paths unchanged by PR9369 (candidate-store normalization chain)
+
+- `app/prophet_daily_brief.py::daily_brief_v1` — sha256 d1758c05…1eb864; unchanged.
+- `engine/us_context_vector.py::read_today_candidate_source_rows` — sha256 9ec37b76…52f82; unchanged. `glob`, `_records_snapshot`, and `candidate_source_row` still traverse every part on every call.
+- `engine/us_candidate_episode_intake.py::_records_snapshot`, `_json_safe`, `_plain_row`, `candidate_source_row`, `_file_receipt`, `_plain_value` — sha256 43838802…b4acf; unchanged.
+- Both `read_today_candidate_source_rows(root)` call sites inside `read_today_candidate_projection` (initial capture and post-loop verification) — unchanged.
+- `attest_candidate_episode_store_bytes` / `load_candidate_episode_store_snapshot` invocations — unchanged.
+
+## Unknowns
+
+- Whether PR9369 edits any line of `read_today_candidate_projection` other than the shown `native_batch=True` call site is not visible in the bounded diff; the supplied diff does not include a full per-line listing of that function body.
+- `P` (parts), `R` (rows per part), `N` (eligible deferred bindings) are not given in the supplied source. The post-PR per-request `candidate_source_row` count remains `2 × P × R`.
+- Whether `read_today_candidate_source_rows` is invoked from any other route besides `read_today_candidate_projection` (e.g., Plan, ledger, or relation-detail callers) cannot be confirmed from the supplied excerpts; the supplied `read_today_candidate_projection` shows two calls, but the head of the diff implies separate `_today_native_source_candidates(..., relation_details=None)` callers exist elsewhere — those callers are not in the supplied source for this census.
+- The bound on the AnyIO worker pool is not in the supplied excerpts; the observation cites two concurrent threads at 06:57:40Z with no bound visible in the code path.
+- `attest_candidate_episode_store_bytes` and `load_candidate_episode_store_snapshot` are referenced as imported names; their bodies are not supplied, so no claim about their internal call counts or concurrency behavior.
+- The 2.4 GB resident / 5 GB swap observation is supplied but not in the code excerpts; no memory accounting derivable from the supplied functions.
+- Symbols outside the supplied four files (e.g., `_NativeAssessmentBindingRefused`, `_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES`, `_today_source_instant`, `compose_daily_brief`, `today_selection_source_binding`, `_projection_response`, `_unavailable`, `_query`, `_REPO_ROOT`, `_PIN_CONFLICT_REASONS`) are referenced but not defined in the supplied excerpts.

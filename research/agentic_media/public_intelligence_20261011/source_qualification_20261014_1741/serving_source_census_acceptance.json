@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-15T07:05:16.340127+00:00",
+  "run_id": "mmx-press-serving-source-census-20261015-001",
+  "original_root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "packet_sha256": "a322cca878aae61e60b4cecf376661af80a1f915b00ed348c96d12725c53d900",
+  "result_sha256": "4d55a795fca671c0cf5fe7fd9cbe63bbc0aef0297ac1a7b6706f5d08b1238948",
+  "accepted_scope": "Call-path census only, with parent corrections below; no code/repair approval",
+  "parent_verified": {
+    "source_capture_call_sites": [
+      1960,
+      1984
+    ],
+    "pr9369_changed_application_source_capture_calls": false,
+    "full_route_has_no_explicit_admission_semaphore": true
+  },
+  "corrections": [
+    "Two captures describe the full successful traversal; early refusal paths perform zero or one, not always two.",
+    "Normalization work is twice the sum of rows across all parts, not P times one uniform R unless sizes coincide.",
+    "No route-local bound is shown; AnyIO has its own finite pool, so do not describe total concurrency as unlimited.",
+    "Stack/source census identifies expensive concurrent work and unchanged path, not allocation attribution or proven outage resolution."
+  ],
+  "verification_harness_repair": "Initial diff assertion incorrectly included added test calls. Bounded application diff passes; original source two call sites passed. Adapter acceptance ran after that first harness failure because commands shared a shell. Current source/diff adjudication now independently completes the bounded acceptance; no worker rerun or result replacement.",
+  "verdict": "ACCEPTED_BOUNDED_CENSUS_WITH_PARENT_CORRECTIONS",
+  "release_authority": false
+}

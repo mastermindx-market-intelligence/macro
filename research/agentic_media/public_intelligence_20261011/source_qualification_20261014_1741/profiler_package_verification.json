@@ -1,0 +1,7 @@
+{
+  "source": "https://files.pythonhosted.org/packages/68/fb/bc7f639aed026bca6e7beb1e33f6951e16b7d315594e7635a4f7d21d63f4/py_spy-0.4.1-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl",
+  "version": "0.4.1",
+  "wheel_sha256": "6a80ec05eb8a6883863a367c6a4d4f2d57de68466f7956b6367d4edd5c61bb29",
+  "binary_sha256": "e7c2de2dc54449ec88c086f1859555b4e34e63ccdcf3f8804496f9306cd44de6",
+  "mode": "single stack dump without locals; temporary binary only; no service install"
+}
