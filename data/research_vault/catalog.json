@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T09:27:47.445622+00:00",
-  "count": 2948,
+  "generated_at": "2026-10-15T09:58:01.028832+00:00",
+  "count": 2949,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -114,6 +114,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-ly1qlac333k-67980a",
+      "title": "Strategy Daily 2026 10 15",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T08:59:04Z",
+      "summary_points": [
+        "Fed Hike Odds Repricing: Core CPI beat triggered hawkish repricing (2y yields +4.77%→4.95%, 5s30s compressed 56bp→47bp), Fed hike odds at 36%, with swap spreads widening (30y at -63.5bp) and risk-off flows reversing post-CPI.",
+        "Futures-Driven Bull-Flattening: 7-20y sector rallied (2y yields 1.905% vs 5y -5bp, 10y -7.5bp, 20y -8bp) amid futures extension, confirming price action driven by futures flows—not strong cash demand.",
+        "Ultra-Long Lag Confirms Risk-Off: 30y/40y yields (3.980%/4.090%) lagged 20y rally (8bp), with selling across 5y/10y/20y sectors, indicating futures/risk-off led move, not fundamental demand."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-2vgkwavht24-a7588c",
       "title": "JPM US Market Intelligence | Afternoon Briefing Oct 14",
