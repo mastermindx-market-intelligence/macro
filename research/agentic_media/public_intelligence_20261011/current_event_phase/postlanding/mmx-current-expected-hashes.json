@@ -22,5 +22,5 @@
   "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
   "engine/press/official_feed_candidate.py": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
   "engine/marketing/breaking_feed.py": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6",
-  "scripts/stage_official_feed_press.py": "6409126cf87e338d7c22f470acfffa8d0ac349ada405ef483c7395456765b7d1"
+  "scripts/stage_official_feed_press.py": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840"
 }

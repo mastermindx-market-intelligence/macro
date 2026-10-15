@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume9209 refreshed9056f7d94028 exactCI38743369854 (6packs+contractPASS/6running), protected squash/normal updater and unchanged18030bundle24sources/3pages/4probes;27exact Git paths match. Then SAME follow-oncb54d3e9 PR/install45groups. Terminal9464d527 exactCI38743577106 repairedpack6PASS,8packs green/4running; finish protected install/public-render/runtime checks. Serving9455a02 green but stale, controller admission pending9/cap8. PMMS remainsOct8; next actual publication window16:00UTC, no early retry. Preserve Chrome human step,Fabric001,44refs/five drafts/publication0of10.
+next_action: 9209 protected663dbf1f installed bffaa414;24sources/3pages/4probes/HTTP accepted with unchanged browser proof. Commit SAME follow-on landed-main integration,922targeted checks pass plus reused real-data/45groups,then capacity-admitted single PR and protected install. Serving9455/Terminal9464 green but controller-stale after663d. Preserve44refs/five drafts/Chrome human step/Fabric001/publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
