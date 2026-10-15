@@ -458,14 +458,14 @@ class _RaisingClassRerating(MutableMapping):
     typing.MutableMapping's instance check is a ``_SpecialGenericAlias``
     that consults ``type(obj)`` and bypasses the Python ``__class__``
     attribute, so ``isinstance`` returns True here without raising.
-    ``collections.abc.MutableMapping`` (an ``ABCMeta``) walks
-    ``obj.__class__`` during its instance check, so the same lookup
+    A plain ``isinstance`` against a type it is not (``dict``, ``int``) reads
+    ``obj.__class__`` with no abc frame; a ``collections.abc`` ``ABCMeta`` check also
     raises under it. Implemented as a MutableMapping subclass so the
     rerating write at the end of ``_attach_falsifiers`` runs at HEAD
     when ``isinstance`` passes: the all-or-nothing assertion can then
     require the rerating falsifier ids to actually be written.
-    ``==`` on it raises too (``Mapping.__eq__`` runs the same ABC
-    instance check), so tests compare its backing ``_store`` instead.
+    ``==`` returns a bool against a plain dict and raises only against a
+    hostile ``other``; a deepcopy snapshot is one, so tests read ``_store``.
     """
 
     def __init__(self) -> None:
@@ -498,8 +498,8 @@ def test_raising_class_lookup_leaves_both_slices_consistent() -> None:
     ``__class__`` access raises. The all-or-nothing law: after the
     call, either it raised and BOTH slices equal their pre-call deep
     copies, or it returned and BOTH slices carry their falsifier
-    writes (a non-empty ``falsifiers`` list AND a non-empty
-    ``rerating["falsifier_ids"]`` list). A partial state — slice 1
+    writes: ``falsifiers`` ids and ``rerating["falsifier_ids"]`` exactly equal
+    that row's canonical id, on the caller's own rerating. A partial state — slice 1
     written, slice 2 not — fails with a message naming the partial
     write. The subclass decision is measured: without subclassing
     ``MutableMapping`` the HEAD branch skips the rerating write and
@@ -539,19 +539,24 @@ def test_raising_class_lookup_leaves_both_slices_consistent() -> None:
         assert rest == before_second_rest, (
             f"second slice was written after raise: {rest!r} != {before_second_rest!r}"
         )
-        assert second.get("rerating") is hostile and hostile._store == before_store, (
-            f"second slice rerating was written after raise: {hostile._store!r}"
-        )
+        if not (
+            second.get("rerating") is hostile and hostile._store == before_store
+        ):
+            pytest.fail(
+                f"second slice rerating was written after raise: {hostile._store!r}"
+            )
         return
 
-    assert first["falsifiers"], "first slice falsifiers not written"
-    assert first["rerating"]["falsifier_ids"], (
-        "first slice rerating falsifier_ids not written"
-    )
-    assert second["falsifiers"], "second slice falsifiers not written"
-    assert second["rerating"]["falsifier_ids"], (
-        "partial write: second slice rerating falsifier_ids not written"
-    )
+    alpha_ids = [_row("syn-fin-case-alpha")["canonical_case_id"]]
+    beta_ids = [_row("syn-fin-case-beta")["canonical_case_id"]]
+    assert [item["falsifier_id"] for item in first["falsifiers"]] == alpha_ids
+    assert first["rerating"]["falsifier_ids"] == alpha_ids
+    assert [item["falsifier_id"] for item in second["falsifiers"]] == beta_ids
+    if not (second["rerating"] is hostile and hostile["falsifier_ids"] == beta_ids):
+        pytest.fail(
+            "partial write: second slice rerating is not the caller's hostile "
+            f"object carrying {beta_ids!r}; its store is {hostile._store!r}"
+        )
 
 
 def test_neither_signal_module_reads_research_or_uses_io_primitives() -> None:
