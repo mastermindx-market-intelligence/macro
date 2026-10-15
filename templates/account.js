@@ -390,7 +390,11 @@
           a.prefs.theme !== curTheme() && window.setTheme) window.setTheme(a.prefs.theme);
       var lg = document.documentElement.getAttribute('data-lang') || 'en';
       if (a.prefs.lang && (a.prefs.lang === 'en' || a.prefs.lang === 'zh') &&
-          a.prefs.lang !== lg && window.setLang) window.setLang(a.prefs.lang);
+          a.prefs.lang !== lg && window.setLang) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(a.prefs.lang, window.setLang);
+        } else window.setLang(a.prefs.lang);
+      }
     } catch (e) {}
     _hydrating = false;
   }

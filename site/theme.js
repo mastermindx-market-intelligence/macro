@@ -4048,7 +4048,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
