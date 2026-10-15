@@ -9398,6 +9398,11 @@ jobs:
       # W8-FIN-1 page signal. The review gate writes falsifiers onto the named slice.
       - "engine/sector_intelligence/finance_page_signal.py"
       - "tests/test_finance_page_signal.py"
+      # W10-FIN-1 watching. Live not-connected shell ships two NOT_YET_EVALUABLE
+      # items in ul.fi-falsifiers via apply_page_signal on in-module constants.
+      - "engine/sector_intelligence/finance_watching.py"
+      - "tests/test_finance_watching.py"
+      - "templates/_finance_watching.html.j2"
       # FIN-2 witness hints. Closed roster; not an issuer_profiles writer.
       - "engine/sector_intelligence/finance_witness_hints.py"
       - "tests/test_finance_witness_hints.py"
@@ -9481,7 +9486,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py tests/test_finance_watching.py -q
 
 
   consumer-cyclical-economic-change:
@@ -13325,6 +13330,11 @@ jobs:
       - scripts/build_crossmarket.py
       - scripts/build_debt_maturity.py
       - scripts/build_finance_intelligence_page.py
+      - engine/sector_intelligence/finance_watching.py
+      - engine/sector_intelligence/finance_page_signal.py
+      - engine/sector_intelligence/finance_case_signal.py
+      - engine/sector_intelligence/finance_projection.py
+      - engine/sector_intelligence/__init__.py
       - scripts/build_fundamental_forensics.py
       - scripts/build_index_leadership.py
       - scripts/build_ipo.py
@@ -21367,6 +21377,11 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_international_macro.py"
@@ -22617,6 +22632,11 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_index_leadership.py"
@@ -28907,6 +28927,11 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "engine/sector_intelligence/finance_watching.py"
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/__init__.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
@@ -29490,6 +29515,14 @@ jobs:
       # derive_result_cash dict; neither owner is edited.
       - "engine/company_intelligence/industrials_certified_enrollment.py"
       - "tests/test_industrials_certified_enrollment.py"
+      # W10-B: the first consumer-visible Industrials signal. One certified
+      # comparison payload — the QUOTED derivation dict plus the enrolled label
+      # and stated end — is placed all-or-nothing on a caller page dict under
+      # ``industrials_certified_comparison``; a data refusal publishes value None
+      # on the same key. Neither owner (W10-A enrollment, derive_result_cash) is
+      # edited or vendored here.
+      - "engine/company_intelligence/industrials_certified_signal.py"
+      - "tests/test_industrials_certified_signal.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -29507,7 +29540,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py tests/test_industrials_chronology_section.py tests/test_industrials_denominator_guard.py tests/test_industrials_certified_enrollment.py tests/test_industrials_certified_signal.py -q
 
   house-law-registry-code:
     if: ${{ false }}
