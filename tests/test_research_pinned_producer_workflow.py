@@ -376,9 +376,8 @@ def test_valid_digest_launches_pinned_interpreter_with_exact_isolated_argv(tmp_p
     assert _output_rcs(env) == ["0"]
 
 
-def test_pinned_mode_ignores_materialize_flag_set_outside_admission(tmp_path):
-    # The admission step refuses pinned+materialize; even if the flag somehow
-    # reaches the ingest step, the pinned branch must never read it as legacy.
+def test_pinned_mode_refuses_materialize_flag_even_without_admission(tmp_path):
+    # The launch boundary also refuses, even if admission was not executed.
     _make_bundle(tmp_path)
     env = _make_env(
         tmp_path, producer_release=VALID_DIGEST, materialize_only="true"
@@ -386,7 +385,9 @@ def test_pinned_mode_ignores_materialize_flag_set_outside_admission(tmp_path):
     proc = _run_ingest(tmp_path, env)
     assert proc.returncode == 0, proc.stderr
     assert _argv_calls(Path(env["LEGACY_STUB_ARGV_LOG"])) == []
-    assert len(_argv_calls(Path(env["PINNED_STUB_ARGV_LOG"]))) == 1
+    assert _argv_calls(Path(env["PINNED_STUB_ARGV_LOG"])) == []
+    assert _output_rcs(env) == ["1"]
+    assert "materialize_only" in proc.stdout
 
 
 # --------------------------------------------------------------------------- #
@@ -496,9 +497,7 @@ def test_workflow_invariants_unchanged_and_pinned_wiring_is_scoped():
     assert list(doc["jobs"].keys()) == ["ingest"]
 
     # Job secrets namespace unchanged; the selector is a vars mapping.
-    assert job["env"]["RESEARCH_VAULT_PRODUCER_RELEASE"] == (
-        "${{ vars.RESEARCH_VAULT_PRODUCER_RELEASE }}"
-    )
+    assert "RESEARCH_VAULT_PRODUCER_RELEASE" not in job["env"]
     secret_keys = {k for k in job["env"] if k.startswith("R2")}
     assert secret_keys == {
         "R2_ENDPOINT",
@@ -558,7 +557,7 @@ def test_admission_step_admits_the_selector_from_the_same_variable():
     )
     run = step["run"]
     # Values are matched on stdin, never re-parsed by the shell.
-    assert "grep -Eq '^[0-9a-f]{64}$'" in run
+    assert "LC_ALL=C grep -Eq '^[0-9a-f]{64}$'" in run
     assert "eval" not in _code(run) and "source " not in _code(run)
     # The pre-existing forensics guard text is intact, unchanged, and first.
     assert run.index('if [ "$MATERIALIZE_ONLY" = "true" ] && { [ "$PUBLISH_FORENSICS"') < run.index(
@@ -601,9 +600,11 @@ def test_ingest_step_pinned_branch_is_fixed_and_scoped():
     launch_line = [
         line for line in run.splitlines() if "--execute" in line
     ]
+    assert 'launcher="$bundle/mastermind/ops/research_producer/launch.py"' in run
+    assert '[ -f "$launcher" ]' in run
     assert len(launch_line) == 1
     assert launch_line[0].strip() == (
-        '"$pinned_python" -I -B "$bundle/mastermind/ops/research_producer/launch.py" '
+        '"$pinned_python" -I -B "$launcher" '
         '--config "$bundle/producer.json" --run-id "$GITHUB_RUN_ID" '
         '--attempt "$GITHUB_RUN_ATTEMPT" --execute'
     )
@@ -640,3 +641,14 @@ def test_post_steps_require_current_checkout_even_with_always(checkout, step_nam
     assert "always()" in terms  # Preserve salvage/census after an ingest failure.
     allowed = all(values[term] for term in terms)
     assert allowed is (checkout == "success")
+
+
+@pytest.mark.parametrize("locale_name", ["C", "en_US.UTF-8"])
+@pytest.mark.parametrize("value", ["é" * 64, "à" * 64, "ｅ" * 64])
+def test_selector_rejects_collating_unicode_in_caller_locale(tmp_path, locale_name, value):
+    env = _make_env(tmp_path, producer_release=value)
+    env.update(LANG=locale_name, LC_ALL=locale_name)
+    proc = _run_admission(tmp_path, env)
+    assert proc.returncode != 0
+    assert "exactly 64 lowercase hex" in proc.stdout
+    assert _argv_calls(Path(env["PINNED_STUB_ARGV_LOG"])) == []

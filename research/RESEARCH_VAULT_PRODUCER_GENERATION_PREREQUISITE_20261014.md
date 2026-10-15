@@ -95,7 +95,17 @@ with the separately prepared, fixed dependency interpreter, isolated Python
 flags and the original GitHub run ID and attempt. The secure producer config
 binds the exact source commits, trees and manifest, the actual runner checkout
 for public-safe snapshots, and private retention outside the runner cleanup
-root. The installed entry path must be trusted before import; the manifest check
+root. In particular, `producer.json.public_checkout` must equal the actual
+`GITHUB_WORKSPACE` of the admitted runner: the launcher's absolute `--repo-dir`
+then updates the catalog and excerpts consumed by salvage and source freshness.
+The launcher already supplies `--require-store`, bootstraps its own isolated
+entry, changes the child cwd to the pinned source, and keeps child stdout/stderr
+in absolute private retention. Existing standalone missing-Store refusal and
+actual-SDK loopback publication/mirror evidence cover those launcher contracts;
+the workflow stub alone does not. Poppler is deliberately still a qualified host
+dependency, and the legacy venv remains necessary for freshness/optional census.
+The exact prepared interpreter is a trusted installed prerequisite, not verified
+merely by the digest in its directory name. The installed entry path must be trusted before import; the manifest check
 and subsequent launcher checks are not a general defense against a hostile local
 administrator changing files between checks.
 
