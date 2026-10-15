@@ -485,3 +485,22 @@ def test_cli_import_failure_has_reachable_compact_error(monkeypatch, capsys):
 
 def test_cli_normalizes_accepted_hex_case():
     assert cli._sha256_argument('ABCDEF01' * 8) == 'abcdef01' * 8
+
+
+class TestExtend:
+    def test_forwards_exact_parent_new_request_and_new_destination(self,monkeypatch,tmp_path,capsys):
+        box=Recorder(result={'status':'EXTENDED','added_state_rows':5})
+        monkeypatch.setattr(cli,'extend_archive',box,raising=False)
+        source=write_text(tmp_path/'next.json',json.dumps(REQUEST))
+        code,out,err=run_cli(['extend','--archive',str(tmp_path/'parent'),
+            '--manifest-sha256',SHA256,'--input',str(source),'--output',str(tmp_path/'next')],capsys)
+        assert code==0 and err==''
+        assert box.last==((tmp_path/'parent',REQUEST,tmp_path/'next'),{'expected_parent_manifest_sha256':SHA256})
+        assert json.loads(out)['status']=='EXTENDED'
+
+    def test_no_new_data_receipt_is_not_written_as_archive(self,monkeypatch,tmp_path,capsys):
+        monkeypatch.setattr(cli,'extend_archive',Recorder(result={'status':'NO_NEW_OBSERVATIONS','output_created':False}),raising=False)
+        source=write_text(tmp_path/'next.json',json.dumps(REQUEST))
+        code,out,err=run_cli(['extend','--archive',str(tmp_path/'parent'),
+            '--manifest-sha256',SHA256,'--input',str(source),'--output',str(tmp_path/'next')],capsys)
+        assert code==0 and json.loads(out)['output_created'] is False and not (tmp_path/'next').exists()

@@ -3164,6 +3164,8 @@ jobs:
     # fails until it does.
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       - "engine/classification_axes/**"
       - "contracts/classification_axes/**"
       - "tests/fixtures/classification_axes/**/*.json"
@@ -5862,6 +5864,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -9948,6 +9952,8 @@ jobs:
       - scripts/check_symbol_rename_drift.py
       - tests/test_append_only_assertions.py
       - tests/test_dataos_security_master.py
+      - tests/test_dataos_options_root.py
+      - tests/test_dataos_options_underlying.py
       - tests/test_house_law_registry.py
       - tests/test_ticker_alias_boundary.py
     # Meta-guard: verifies config/house_law_checks.yml is complete and honest.
@@ -9997,6 +10003,8 @@ jobs:
       # the job count, and the arithmetic, where it is.
       - name: Data OS security master + time-scoped vendor alias table (MMC/MRSH, SATS/ECHO)
         run: python -m pytest tests/test_dataos_security_master.py -q
+      - name: Forward Options root and canonical underlying identity
+        run: python -m pytest tests/test_dataos_options_root.py tests/test_dataos_options_underlying.py -q
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
       # data.append_only_assertions — registered at `discipline` with EMPTY
@@ -17706,6 +17714,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -25227,6 +25237,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       - collectors/biocatalyst/__init__.py
       - engine/biocatalyst/__init__.py
       - engine/capital_structure/__init__.py
@@ -26130,6 +26142,8 @@ jobs:
       # Daily historical experience: existing source reader, exact-date consumer and offline browser.
       - engine/neuralweb/market_memory_history.py
       - engine/neuralweb/market_memory_history_archive.py
+      - engine/neuralweb/market_memory_history_extend.py
+      - tests/test_market_memory_history_extend.py
       - engine/neuralweb/market_memory_history_dossier.py
       - engine/neuralweb/market_memory_history_macro.py
       - engine/neuralweb/market_memory_history_view.py
@@ -26190,7 +26204,7 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -27274,6 +27288,8 @@ jobs:
     # Explicit scope covers the transitive import closure; no vendor calls,
     # runtime collection, outcome evaluation, or committed-artifact writes occur.
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       - .github/ci/legacy-jobs.yml
       - config/dataset_registry.yml
       - config/identity_seams.yml
@@ -27296,6 +27312,7 @@ jobs:
       - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
+      - tests/test_dataos_direct_registrant.py
       # Tiingo raw-vintage/read-only research proofs; no live provider calls.
       - .github/workflows/ci.yml
       - collectors/__init__.py
@@ -27333,10 +27350,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: prospective reference clocks, refusals and consumer compatibility
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
+          tests/test_dataos_direct_registrant.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
@@ -27485,6 +27503,8 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       - collectors/__init__.py
       - scripts/__init__.py
       - tests/__init__.py
@@ -27684,6 +27704,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -29919,6 +29941,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - lib/symbol_directory_receipts.py
       - collectors/__init__.py
       - collectors/edgar_forensics.py
       - collectors/fundamental_forensics_acquisition.py

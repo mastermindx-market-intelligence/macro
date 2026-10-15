@@ -7,6 +7,9 @@ document, composes existing read/export consumers, and renders their
 results as finite JSON.
 
 Commands:
+  extend --archive PATH --manifest-sha256 EXACT64 --input NEXT_REQUEST --output NEW_DIR
+              Preserve the entire existing historical state and publish only
+              genuinely new dates as a separately hash-bound generation.
   build   --input PATH --output PATH
               Assemble a history from a UTF-8 JSON request (<= 128 KiB) and
               write it to a NEW archive directory.
@@ -55,6 +58,7 @@ try:  # the real archive module exists only inside the commissioned checkout
     )
     from engine.neuralweb.market_memory_history_dossier import build_daily_dossier
     from engine.neuralweb.market_memory_history_view import export_browser
+    from engine.neuralweb.market_memory_history_extend import extend_archive
 except ImportError:
     assemble_history = None  # type: ignore[assignment]
     read_day = None  # type: ignore[assignment]
@@ -62,9 +66,10 @@ except ImportError:
     write_archive = None  # type: ignore[assignment]
     build_daily_dossier = None  # type: ignore[assignment]
     export_browser = None  # type: ignore[assignment]
+    extend_archive = None  # type: ignore[assignment]
 
 _ARCHIVE_CALLABLES = ("assemble_history", "write_archive", "read_manifest", "read_day",
-                      "build_daily_dossier", "export_browser")
+                      "build_daily_dossier", "export_browser", "extend_archive")
 MAX_INPUT_BYTES = 128 * 1024
 _SHA256_PATTERN = re.compile(r"\A[0-9a-fA-F]{64}\Z")
 _DATE_PATTERN = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
@@ -149,6 +154,13 @@ def _run_build(args: argparse.Namespace) -> dict:
     return receipt
 
 
+def _run_extend(args: argparse.Namespace) -> dict:
+    _require_archive_module()
+    request = _load_request(args.input)
+    return extend_archive(Path(args.archive), request, Path(args.output),
+                          expected_parent_manifest_sha256=args.manifest_sha256)
+
+
 def _run_day(args: argparse.Namespace) -> dict:
     _require_archive_module()
     record = read_day(
@@ -204,7 +216,7 @@ def make_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(
         title="commands",
         dest="command",
-        metavar="{build,day,inspect,dossier,export}",
+        metavar="{build,extend,day,inspect,dossier,export}",
         required=True,
     )
 
@@ -220,6 +232,13 @@ def make_parser() -> argparse.ArgumentParser:
         help="archive directory to create; it must not already exist",
     )
     build.set_defaults(handler=_run_build)
+
+    extension = commands.add_parser("extend", help="append new dates into a new immutable generation")
+    extension.add_argument("--archive", required=True, metavar="PATH", help="exact parent archive")
+    extension.add_argument("--manifest-sha256", required=True, type=_sha256_argument, metavar="EXACT64")
+    extension.add_argument("--input", required=True, metavar="PATH", help="explicit next source-reference request")
+    extension.add_argument("--output", required=True, metavar="PATH", help="new archive; never overwrite the parent")
+    extension.set_defaults(handler=_run_extend)
 
     day = commands.add_parser("day", help="read one archived market day")
     day.add_argument("--archive", required=True, metavar="PATH", help="archive root directory")
