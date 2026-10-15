@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T12:58:12.960141+00:00",
-  "count": 2958,
+  "generated_at": "2026-10-15T13:13:23.107794+00:00",
+  "count": 2959,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -129,6 +129,26 @@
       "tags": [],
       "tickers": [],
       "top_pick": true,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ixfukwixfml-b74821",
+      "title": "GS Johnstone GS TMT SPEC SALES Hot CPI and credit concerns; TSMC solid; VAT beats; Ericsson beats; Havas beats; Eutelsat up 15 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-15T12:35:09Z",
+      "summary_points": [
+        "Market volatility from hot CPI & credit/AI risks: Global equities sold off on hot US CPI reviving rate hike fears, with AI unwind intensifying (Nasdaq -2%, SOX -4.5%) and credit stress (CoreWeave bonds <80c, yields >15%).",
+        "Ericsson Q3 Beat with Geopolitical RAN Headwinds: Revenue beat (SEK59.48bn, +7%), Networks strong in Asia/Oceania/India, EBITA beat 28% (SEK10.12bn); geopolitical uncertainty and component costs threaten next year’s RAN gross margins.",
+        "Eutelsat’s Ukraine Starlink Restrictions Highlight Europe’s US Infrastructure Risk: 23% stock surge due to Starlink restrictions in Ukraine, underscoring Europe’s strategic need to reduce reliance on US-controlled critical infrastructure amid Trump-Ukraine tensions.",
+        "RELX's AI Growth Catalyst: Proprietary legal datasets and token-efficient AI tools position RELX for 10% revenue growth despite severe market bear case (17x 2027E EPS), with strong negative correlation to GS AI EU leaders basket."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
       "pages": 5,
       "language": "en",
       "needs_metadata": false
