@@ -48,6 +48,18 @@ decisions:
   - DEC:CS-V2-W2C-EXACT-DEPENDENCY-INCREMENTAL-DOCUMENT-TERMS
   - DEC:CS-V2-W2D-DUAL-DISCOVERY-CLOCK
   - DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY
+  - DEC:CS-V2-STATE-CONTRACTS-FROZEN-V2
+  - DEC:CS-V2-REFERENCE-QUALIFICATION-E0
+  - DEC:CS-V2-TERM-INTEGRATION-T0
+  - DEC:CS-V2-INSTRUMENT-RESOLUTION-I0
+  - DEC:CS-V2-SHARE-SOURCE-ADMISSION-B0
+  - DEC:CS-V2-FINANCIAL-INPUT-BINDING-F0
+  - DEC:CS-V2-SHARE-BASIS-B1
+  - DEC:CS-V2-FUNDING-F1
+  - DEC:CS-V2-RULE-APPLICABILITY-L0
+  - DEC:CS-V2-GIT-REMAINS-GENERATION-SELECTOR
+  - DEC:CS-V2-IDENTITY-DUAL-READ
+  - DEC:CS-V2-JOINT-KERNEL-IN-C1
 discoveries:
   - DSC:CS-MANIFEST-ID-HASHES-RETRIEVAL-CLOCKS
   - DSC:CS-SOURCE-MANIFEST-UNSPECIFIED-MERGE
@@ -81,6 +93,7 @@ do_not_redo:
   - "Create a document-term cache or second compiled-root truth store"
   - "Dispatch or rerun daily.yml to manufacture W2C/W2D proof; wait for the first natural scheduled chain containing both merges"
   - "Rewrite, compact, re-encode or Git-LFS data/capital_structure/source_manifest.jsonl, or rewrite a sealed continuation part (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY)"
+  - "Sum per-route capacity maxima or re-implement joint optimisation outside engine/capital_structure/capacity_joint.py (DEC:CS-V2-JOINT-KERNEL-IN-C1)"
 landmines:
   - "manifest_id_for hashes retrieval clocks (DSC:CS-MANIFEST-ID-HASHES-RETRIEVAL-CLOCKS)"
   - "Partial N+1 persist drops unchanged children from _current_manifest_bundle"
@@ -110,20 +123,37 @@ artifacts:
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-08-25-w2c.md
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-08-25-w2d.md
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-13-r2.md
+  - research/capital_structure/e2e_20261013/U0_JOURNEY_FREEZE.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-13-c0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-13-e0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-t0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-i0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-b0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-f0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-b1.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-f1.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-l0.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-14-c1.md
 next_action: >
-  R2 of the 2026-10-13 masterplan (research/capital_structure/e2e_20261013/
-  MASTERPLAN.md) is BUILT on claude/cs-v2-r2-ledger-sharding: byte-exact
-  source-ledger sharding (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) repairs
-  the GH001 publication loss that silently dropped every generation since
-  2026-09-27 (DSC:CS-GENERATION-PUSH-LOST-TO-GH001-WHILE-JOB-SUCCEEDED). Merge
-  it on concluded green, prove main under the changed authority, then observe
-  the first natural scheduled chain for a generation commit carrying
-  source_manifest.part-0002.jsonl; that same chain remains the only closer for
-  the W2C/W2D BUILT_NOT_PROVEN repairs. Do not dispatch daily.yml. The collect
-  job has been cancelled by the runner-listener outage since 2026-10-10
-  (operator-owned). Next ready tasks after the merge: C0 type freeze, E0
-  reference docs, then P0 adoption of #8673 only through the held owner path
-  with a hosted gate:data receipt. W3 and W4 remain held.
+  2026-10-13 masterplan (research/capital_structure/e2e_20261013/MASTERPLAN.md,
+  PR #9115) tasks R2 #9146, C0 #9159, E0 #9244, T0 #9270, I0 #9274, B0 #9264,
+  F0 #9268, B1 #9277, F1 #9283, L0 #9314 and U0 #9355 (journey freeze) are
+  merged and landed; main ci.yml baseline 38587478485 (918fad1e) concluded
+  success and cleared the L0 authority freeze. R1 is closed: the natural chain
+  is still dark (no source_manifest.part-0002.jsonl on main, last generation
+  24ab0b613f89 on 2026-09-26) because the runner-listener fuse cancels every
+  collect job, a Chairman blocker; never dispatch daily.yml to prove it. C1 is
+  the joint financing-constraint kernel (DEC:CS-V2-JOINT-KERNEL-IN-C1) plus the
+  evidence-qualified capacity adapter, shipped by the PR carrying this record.
+  L1b #9359 (rule pack 1.1.0: Rule 415, Rule 462(e) and Section 10(a)(3)
+  text) is merged and landed (7dd06ff5); L1a #9363 (registration paths) is in
+  CI. I1a (C0 2.1.0 economic terms, instrument_economics.py and
+  supply_scenarios.py, DEC:CS-V2-SUPPLY-ECONOMIC-TERMS-I1) is being built; I1b
+  (deterministic warrant-term extractor) follows it. Then I2, X0, C2, S0, U1,
+  U2, A0, G0, A1, N0, V0 and Z0 per masterplan §13. The UI repair PR #8673
+  stays held and owns site/capital_structure.js, templates/capital_structure.js
+  and their tests. W3 and W4 remain held. W2C/W2D stay BUILT_NOT_PROVEN until
+  the first natural chain publishes.
 waves:
   - id: W0
     title: Architecture freeze, estate audit, competitor/regulatory refresh

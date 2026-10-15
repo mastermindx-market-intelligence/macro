@@ -11,6 +11,14 @@ across cells, never a label (``sampler.py`` module docstring).
 The draw replays byte-identically from (tape sha, date bounds, seed,
 sampler version); no clock reads, no random module, no network. Short
 cells are reported short, never padded.
+
+Issuer resolution reads one ledger by default. An optional fallback ledger
+(``--fallback-ledger``) only fills rows the primary ledger leaves unresolved:
+the second pass reads the primary entries plus the fallback entries whose
+tickers the primary ledger does not carry, so a primary refusal (ambiguous or
+not listed at the as-of) stands, and every row the primary ledger resolves keeps
+its issuer, tickers and tags. Without the option every output is byte-identical
+to a run without it (DEC:NEWS-IMPACT-ISSUER-FALLBACK-LEDGER).
 """
 from __future__ import annotations
 
@@ -26,6 +34,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from engine.news_impact.issuer import (
     ABSENCE_REASONS,
+    Ledger,
     Mention,
     canonical_ticker,
     resolve_mention,
@@ -63,6 +72,7 @@ __all__ = [
     "attach_body_accounting",
     "candidate_to_dict",
     "load_body_frame",
+    "load_gate_frame",
     "main",
 ]
 
@@ -206,6 +216,19 @@ class BodyFrame:
     status_map_sha256: str
 
 
+@dataclass(frozen=True)
+class GateFrame:
+    """A routing-gate draw frame (DEC-NEWS-IMPACT-CONTINUATION-ROUTING-GATES).
+
+    ``gate_map`` is an ``engine.news_impact.routing_gates`` gate map (item_id ->
+    "gated_in" | "gated_out:<code>"); applied after a body frame, the draw keeps the
+    gated-in candidates. Like the body frame it never reads a label or proxy_cell.
+    """
+
+    gate_map: Mapping[str, str]
+    gate_map_sha256: str
+
+
 # --- issuer resolution helpers (S7) -------------------------------------------
 
 _PREFERRED_RE = re.compile(r"^([A-Z]{1,5})p[A-Z]{0,2}$")
@@ -296,6 +319,24 @@ def _resolve_entities(
         reason = first_absence_reason or "no_mention"
         return f"unresolved:{reason}", None, resolved_ciks, preferred_variant_resolved
     return issuer, issuer_ticker, resolved_ciks, preferred_variant_resolved
+
+
+def fill_only_ledger(primary: Any, fallback: Any) -> Ledger:
+    """Primary entries plus the fallback entries for tickers the primary lacks.
+
+    A ticker the primary ledger carries keeps exactly its primary entries, so a
+    primary refusal (ambiguous, not listed at the as-of) is never overridden by
+    the fallback. Both inputs must be :class:`Ledger` objects from ``load_ledger``.
+    """
+    if not isinstance(primary, Ledger) or not isinstance(fallback, Ledger):
+        raise TapeDrawError("fill_only_ledger needs two Ledger objects from load_ledger")
+    entries = {t: fallback[t] for t in fallback if t not in primary}
+    entries.update({t: primary[t] for t in primary})
+    return Ledger(
+        entries,
+        has_validity_dates=primary.has_validity_dates or fallback.has_validity_dates,
+        source=f"{primary.source}+fill:{fallback.source}",
+    )
 
 
 # --- tag and holdout helpers (S8, S9) -----------------------------------------
@@ -391,8 +432,19 @@ def build_candidates(
     low_value: Callable[..., bool],
     dropped: dict,
     total_rows: int,
+    fallback_ledger: Any = None,
 ) -> CandidateBuild:
-    """Turn load_tape rows into sampler Candidates plus a funnel report."""
+    """Turn load_tape rows into sampler Candidates plus a funnel report.
+
+    With ``fallback_ledger`` a row the primary ledger leaves unresolved is
+    re-resolved against :func:`fill_only_ledger`; the report gains a
+    ``fallback_ledger`` record and ``issuers.fallback_resolved``, and each meta
+    row gains ``issuer_ledger``. Without it the output is unchanged.
+    """
+    combined_ledger = (
+        fill_only_ledger(ledger, fallback_ledger) if fallback_ledger is not None else None
+    )
+    fallback_resolved = 0
     event_log_by_id: dict[str, dict] = {r["event_id"]: r for r in event_log_rows}
     reject_by_id: dict[str, dict] = {r["event_id"]: r for r in reject_rows}
     tape_item_ids = {_text(r.get("item_id")) for r in rows}
@@ -490,6 +542,15 @@ def build_candidates(
         issuer, ticker, resolved_ciks, pv_resolved = _resolve_entities(
             entities, title, d, ledger
         )
+        issuer_ledger: str | None = None if issuer.startswith("unresolved:") else "primary"
+        if combined_ledger is not None and issuer_ledger is None:
+            f_issuer, f_ticker, f_ciks, f_pv = _resolve_entities(
+                entities, title, d, combined_ledger
+            )
+            if not f_issuer.startswith("unresolved:"):
+                issuer, ticker, resolved_ciks, pv_resolved = f_issuer, f_ticker, f_ciks, f_pv
+                issuer_ledger = "fallback"
+                fallback_resolved += 1
         preferred_variant_resolved += pv_resolved
 
         if issuer.startswith("unresolved:"):
@@ -568,6 +629,8 @@ def build_candidates(
             "template": template,
             "proxy_cell": proxy_cell,
         }
+        if combined_ledger is not None:
+            meta["issuer_ledger"] = issuer_ledger
         cand_records.append(
             (cand, meta, {"tape_event_key": tape_event_key, "row": row})
         )
@@ -681,6 +744,16 @@ def build_candidates(
         "drawn_cells": None,
         "manifest_sha256": None,
     }
+    if combined_ledger is not None:
+        report["issuers"]["fallback_resolved"] = fallback_resolved
+        # Inputs are recorded by sha256 only (set in run_draw), never by path,
+        # so the report stays byte-reproducible from any checkout.
+        report["fallback_ledger"] = {
+            "tickers": len(fallback_ledger),
+            "fill_only_tickers": sum(1 for t in fallback_ledger if t not in ledger),
+            "primary_tickers": len(ledger),
+            "sha256": None,
+        }
 
     return CandidateBuild(
         candidates=final_candidates_tuple,
@@ -792,6 +865,25 @@ def load_body_frame(status_map_path: str) -> BodyFrame:
     return BodyFrame(status_map=status_map, status_map_sha256=sha256(raw).hexdigest())
 
 
+GATE_STATUS_RE = re.compile(r"^(?:gated_in|gated_out:([a-z0-9_]+))$")
+
+
+def load_gate_frame(gate_map_path: str) -> GateFrame:
+    """Read a routing_gates gate map into a GateFrame (fail-closed on shape)."""
+    with open(gate_map_path, "rb") as fh:
+        raw = fh.read()
+    try:
+        gate_map = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise TapeDrawError(f"gate frame map is not JSON: {exc}") from exc
+    if not isinstance(gate_map, dict) or not gate_map:
+        raise TapeDrawError("gate frame map must be a non-empty JSON object")
+    for item_id, status in gate_map.items():
+        if not isinstance(status, str) or not GATE_STATUS_RE.match(status):
+            raise TapeDrawError(f"malformed gate status for item_id {item_id!r}: {status!r}")
+    return GateFrame(gate_map=gate_map, gate_map_sha256=sha256(raw).hexdigest())
+
+
 def _cell_counts(candidates: Iterable[Candidate]) -> dict[str, dict[str, int]]:
     counts = {t: {c: 0 for c in CELLS} for t in TEMPLATES}
     for cand in candidates:
@@ -830,6 +922,40 @@ def _apply_body_frame(
     return kept, record
 
 
+def _apply_gate_frame(
+    candidates: tuple[Candidate, ...], frame: GateFrame
+) -> tuple[tuple[Candidate, ...], dict[str, Any]]:
+    """Keep the gated-in candidates of a body-framed pool; every one must carry a status."""
+    missing = sorted(c.item_id for c in candidates if c.item_id not in frame.gate_map)
+    if missing:
+        raise TapeDrawError(
+            f"gate frame map lacks {len(missing)} in-frame candidate item_id(s), "
+            f"first {missing[:3]!r}: the map must cover the body-available pool"
+        )
+    stale = sorted(c.item_id for c in candidates if frame.gate_map[c.item_id] == "gated_out:no_body")
+    if stale:
+        raise TapeDrawError(
+            f"gate frame map marks {len(stale)} body-available candidate(s) no_body, "
+            f"first {stale[:3]!r}: the map was built from different bodies"
+        )
+    kept = tuple(c for c in candidates if frame.gate_map[c.item_id] == "gated_in")
+    codes: dict[str, int] = {}
+    for c in candidates:
+        code = GATE_STATUS_RE.match(frame.gate_map[c.item_id]).group(1)
+        if code:
+            codes[code] = codes.get(code, 0) + 1
+    record = {
+        "kind": "routing_gates",
+        "gate_map_sha256": frame.gate_map_sha256,
+        "n_gate_entries": len(frame.gate_map),
+        "n_candidates_pre_gate": len(candidates),
+        "n_candidates_gated_in": len(kept),
+        "excluded_codes": dict(sorted(codes.items())),
+        "gated_cells": _cell_counts(kept),
+    }
+    return kept, record
+
+
 def run_draw(
     tape_path: str,
     event_log_path: str,
@@ -842,15 +968,24 @@ def run_draw(
     prospective_from: date | None = None,
     low_value: Callable[..., bool] | None = None,
     body_frame: BodyFrame | None = None,
+    gate_frame: GateFrame | None = None,
+    fallback_ledger_path: str | None = None,
 ) -> TapeDrawResult:
     """Run the full tape -> draw pipeline (S12).
 
     With ``body_frame`` the draw runs over the body-available candidates only, with
     the same seed, sampler and caps; the report records the frame (status-map sha,
     pre-frame and in-frame cell counts, exclusion reasons). Short cells stay short.
+    With ``gate_frame`` (which requires ``body_frame``) the draw further keeps the
+    gated-in candidates and the report gains a ``gate_frame`` record; without it the
+    report is unchanged. With ``fallback_ledger_path`` unresolved rows are re-resolved
+    fill-only (:func:`fill_only_ledger`) and the report records the fallback file's
+    sha256; without it the report is unchanged.
     """
     if not isinstance(seed, int) or isinstance(seed, bool):
         raise TapeDrawError(f"seed must be an int: {seed!r}")
+    if gate_frame is not None and body_frame is None:
+        raise TapeDrawError("gate_frame requires body_frame: the gates read attached filing bodies")
 
     if low_value is None:
         low_value = _make_default_low_value()
@@ -861,6 +996,7 @@ def run_draw(
     from engine.news_impact.issuer import load_ledger
 
     ledger = load_ledger(ledger_path)
+    fallback_ledger = load_ledger(fallback_ledger_path) if fallback_ledger_path else None
 
     dropped: dict[str, int] = {}
     wide_rows = load_tape(
@@ -885,6 +1021,7 @@ def run_draw(
         low_value=low_value,
         dropped=dropped,
         total_rows=total_rows,
+        fallback_ledger=fallback_ledger,
     )
 
     tape_sha = _read_tape_bytes(tape_path)
@@ -898,8 +1035,11 @@ def run_draw(
 
     frame_record: dict[str, Any] | None = None
     draw_pool = build.candidates
+    gate_record: dict[str, Any] | None = None
     if body_frame is not None:
         draw_pool, frame_record = _apply_body_frame(build.candidates, body_frame)
+    if gate_frame is not None:
+        draw_pool, gate_record = _apply_gate_frame(draw_pool, gate_frame)
 
     draw = draw_sample(
         draw_pool,
@@ -939,6 +1079,11 @@ def run_draw(
     report["drawn_cells"] = rebuilt["cells"]
     report["manifest_sha256"] = rebuilt["manifest_sha256"]
     report["frame"] = frame_record if frame_record is not None else {"kind": "full_pool"}
+    if gate_record is not None:
+        report["gate_frame"] = gate_record
+    if fallback_ledger_path:
+        with open(fallback_ledger_path, "rb") as f:
+            report["fallback_ledger"]["sha256"] = sha256(f.read()).hexdigest()
 
     return TapeDrawResult(
         draw=draw,
@@ -1032,6 +1177,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--reject-sample", required=True, help="path to reject_sample parquet"
     )
     parser.add_argument("--ledger", required=True, help="path to ticker->CIK ledger json")
+    parser.add_argument(
+        "--fallback-ledger",
+        default=None,
+        help=(
+            "ticker->CIK ledger json consulted only for rows --ledger leaves unresolved, "
+            "and only for tickers --ledger does not carry (report records its sha256)"
+        ),
+    )
     parser.add_argument("--seed", required=True, type=int, help="sampler seed (int)")
     parser.add_argument("--out", required=True, help="output directory (created if missing)")
     parser.add_argument("--window-start", default=None, help="ISO date override")
@@ -1052,6 +1205,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
             "over body-available candidates (report records the frame)"
         ),
     )
+    parser.add_argument(
+        "--gate-frame",
+        default=None,
+        help=(
+            "routing_gates gate map covering the body-available pool; requires "
+            "--body-frame and draws only over gated-in candidates"
+        ),
+    )
     return parser
 
 
@@ -1063,6 +1224,7 @@ def main(argv: list[str] | None = None, *, low_value: Callable[..., bool] | None
         window_end = _parse_optional_date(args.window_end)
         prospective_from = _parse_optional_date(args.prospective_from)
         body_frame = load_body_frame(args.body_frame) if args.body_frame else None
+        gate_frame = load_gate_frame(args.gate_frame) if args.gate_frame else None
         result = run_draw(
             args.tape,
             args.event_log,
@@ -1074,6 +1236,8 @@ def main(argv: list[str] | None = None, *, low_value: Callable[..., bool] | None
             prospective_from=prospective_from,
             low_value=low_value,
             body_frame=body_frame,
+            gate_frame=gate_frame,
+            fallback_ledger_path=args.fallback_ledger,
         )
 
         out_dir = args.out

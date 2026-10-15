@@ -33,6 +33,7 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     SCHEMA_VERSION,
+    _DEFINITION_CONTRADICTED,
     _FORBIDDEN_BARE_KEYS,
     _LEAD_FULL,
     _LEAD_GENERIC,
@@ -2034,11 +2035,11 @@ def test_result_envelope_contradiction_withholds_advertising_net_change(
     if expect_withheld:
         assert row["value_text"] is None, row
         assert (
-            row["withheld_reason"] == "result_envelope_contradicts_stated_definition"
+            row["withheld_reason"] == _WITHHELD_REASON
         ), row
     else:
         assert (
-            row["withheld_reason"] != "result_envelope_contradicts_stated_definition"
+            row["withheld_reason"] != _WITHHELD_REASON
         ), row
         assert row["value_text"] == "-4", row
 
@@ -2056,7 +2057,7 @@ def test_result_envelope_contradiction_withholds_advertising_net_change(
 # derived from it kept publishing values computed from withheld input.
 
 
-_WITHHELD_REASON = "result_envelope_contradicts_stated_definition"
+_WITHHELD_REASON = _DEFINITION_CONTRADICTED
 
 
 def _contradict(
@@ -2276,6 +2277,155 @@ def test_emit_result_backstop_withholds_row_level_quantum_contradiction() -> Non
     assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
 
 
+def test_emit_result_backstop_withholds_prior_side_contradiction() -> None:
+    """W15-F-FUY item 1: the backstop must read BOTH envelope sides.
+
+    #9331 mirrored only the ROW-level clause into the ``_emit_result``
+    BACKSTOP; the envelope trigger still read just the CURRENT side's
+    quantum, while ``_stated_definition_contradicted`` checks both sides.
+    The review PROVED a row with a clean current envelope and an EUR /
+    ``scale_power10`` 6 / ``1_million`` PRIOR envelope makes the predicate
+    return True, yet ``_emit_result`` alone published value_text='24344'
+    with withheld_reason=None. It must now withhold with the same reason
+    literal (bound to the engine's ``_DEFINITION_CONTRADICTED`` via
+    ``_WITHHELD_REASON`` below). Behaviour-neutral THROUGH
+    ``project_economic_change``: the screen runs the predicate first and
+    stamps ``withheld_reason``, and the emit guard
+    ``not filled.get("withheld_reason")`` keeps existing reasons, so no
+    pipeline row reaches this clause un-withheld (proved by the replay
+    capture over the four owning suites).
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+        "prior_period_fact": {
+            "unit": "EUR",
+            "scale_power10": 6,
+            "display_quantum": "1_million",
+        },
+    }
+    assert _stated_definition_contradicted(row) is True, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] is None, emitted
+    assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
+
+
+def test_emit_result_backstop_withholds_row_without_current_envelope() -> None:
+    """W15-F-G: the backstop must still withhold a row with NO current envelope.
+
+    On ``main`` (HEAD^ of #9343) the trigger read the CURRENT side's
+    ``display_quantum`` through ``source.get("display_quantum") if
+    isinstance(source, Mapping) else None``, so an absent
+    ``current_period_fact`` compared as ``None`` against
+    ``_STATED_DEFINITION_QUANTUM`` and the row was withheld. #9343 swapped
+    that read for ``_envelope_side_contradicts(...)``, which returns False
+    for a non-Mapping side -- the row then published through
+    ``_emit_result``. That is a loosening: a backstop must never be looser
+    than the one it replaces. This test pins the restored strictness.
+
+    The asymmetry with the predicate is deliberate and pinned here too:
+    ``_stated_definition_contradicted`` treats an absent side as
+    non-contradicting (it never withheld this row), while the ``_emit_result``
+    backstop withholds a row that carries no current envelope at all. An
+    absent PRIOR side stays non-contradicting -- HEAD^ never read the prior
+    side.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "prior_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+    }
+    assert "current_period_fact" not in row
+    assert _stated_definition_contradicted(row) is False, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] is None, emitted
+    assert emitted["withheld_reason"] == _WITHHELD_REASON, emitted
+
+
+@pytest.mark.parametrize(
+    ("present", "prior_value"),
+    [
+        pytest.param(False, None, id="absent_prior_side"),
+        pytest.param(True, "n/a", id="malformed_prior_side_non_mapping"),
+    ],
+)
+def test_emit_result_backstop_publishes_row_with_absent_or_malformed_prior_side(
+    present: bool, prior_value: Any
+) -> None:
+    """W15-F-FWA item 1: pin the ABSENT-PRIOR-SIDE half of the backstop asymmetry.
+
+    The ``_emit_result`` comment block and the ``_envelope_side_contradicts``
+    docstring both state that an absent PRIOR side stays non-contradicting --
+    the backstop is deliberately stricter on the CURRENT side only, because
+    ``main`` never read the prior side and withholding for its absence would be
+    a new tightening beyond the restored #9343 baseline. The neighbouring
+    ``test_emit_result_backstop_withholds_row_without_current_envelope`` pinned
+    the CURRENT half of that asymmetry; NOTHING pinned the PRIOR half, so the
+    W15-V-9343c review mutant d2 survived:
+
+    - d2 appended ``or not isinstance(filled.get("prior_period_fact"),
+      Mapping)`` to the backstop's prior-side read, so a row was withheld just
+      because its prior side is missing or malformed. This test FAILS under d2.
+    - d3 made the per-side check return True for a non-Mapping side, erasing
+      the deliberate difference between the predicate and the backstop's
+      CURRENT-side-only strictness. d3 did not survive: the neighbouring test
+      already fails under it. This test FAILS under d3 too: it asserts
+      ``_stated_definition_contradicted(row) is False``.
+
+    The fixture is the neighbouring test's, mirrored: a CLEAN current envelope
+    (unit / scale_power10 / display_quantum all matching the stated definition)
+    and a prior side that is either absent entirely (``present=False``) or
+    present but non-Mapping (``"n/a"``). Observed at the seed HEAD before this
+    test existed -- BOTH cases published ``value_text='24344'`` with
+    ``withheld_reason=None`` and the predicate returned False. The malformed
+    case is therefore NOT withheld on HEAD, so it is pinned as the same
+    invariant here rather than declined.
+    """
+    row = {
+        "key": RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        "state": "READY",
+        "value_text": "24344",
+        "value_decimal": Decimal("24344"),
+        "unit": "USD",
+        "scale_power10": 3,
+        "withheld_reason": None,
+        "current_period_fact": {
+            "unit": "USD",
+            "scale_power10": 3,
+            "display_quantum": "1_thousand",
+        },
+    }
+    if present:
+        row["prior_period_fact"] = prior_value
+        # Fixture echo, mirroring the CURRENT-side backstop test above.
+        assert row["prior_period_fact"] == prior_value
+    else:
+        assert "prior_period_fact" not in row
+    assert _stated_definition_contradicted(row) is False, row
+    emitted = _emit_result(row)
+    assert emitted["value_text"] == "24344", emitted
+    assert emitted["withheld_reason"] is None, emitted
+
+
 def _mutate_clean(facts: list[dict[str, Any]]) -> None:
     """The golden case, untouched."""
 
@@ -2324,7 +2474,7 @@ def _mutate_total_revenue_scale(facts: list[dict[str, Any]]) -> None:
 #: (W15-F-FUR item 2), hence ONE shared constant instead of per-param
 #: sets. Pinned so a row silently omitted by that filter fails HERE,
 #: instead of passing with a shrunken ``withheld_keys`` derived from
-#: ``document[\"results\"]``.
+#: ``document["results"]``.
 _EXPECTED_EMITTED_KEYS = {
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
@@ -2336,8 +2486,9 @@ _EXPECTED_EMITTED_KEYS = {
 
 # Each case pins the EXACT withheld set (result keys whose emitted row
 # carries ``value_text`` None), the EXACT emitted key set, and the
-# withheld_reason of every withheld row. The sets and reasons were derived by running the code on HEAD
-# (f98fe270) and reading the output, not guessed. They make this test
+# withheld_reason of every withheld row. The sets and reasons were derived
+# by running the code on seed 479e2c69 (#9318), the commit that pinned
+# them, and reading the output, not guessed. They make this test
 # discriminating: the old form only cross-checked availability and the
 # lead against the rows, so a screen that silently stopped withholding a
 # prior-side contradiction (defect D2) still passed -- the verdicts moved
@@ -2370,23 +2521,48 @@ _EXPECTED_EMITTED_KEYS = {
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
                 RESULT_KEY_ADVERTISING_NET_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
             },
             {
                 RESULT_KEY_ADVERTISING_REVENUE_CHANGE: _WITHHELD_REASON,
                 # The net row's own envelopes stay clean here; it withholds
                 # as a dependent of the withheld revenue-change constituent.
                 RESULT_KEY_ADVERTISING_NET_CHANGE: "dependency_suppressed",
+                # The ratio withholds as a dependent of its withheld numerator.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
             },
         ),
         (
             _mutate_total_revenue_unit,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
         (
             _mutate_total_revenue_scale,
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE},
-            {RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON},
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE,
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+            },
+            {
+                RESULT_KEY_TOTAL_REVENUE_CHANGE: _WITHHELD_REASON,
+                # The ratio withholds as a dependent of its withheld
+                # denominator total_revenue_change.
+                RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+                    "dependency_suppressed"
+                ),
+            },
         ),
     ],
     ids=[
@@ -2463,3 +2639,559 @@ def test_availability_lead_and_emitted_rows_agree_under_contradictions(
             "advertising-expense changes, but at least one of them emitted "
             "no value"
         )
+
+
+#: W15-F-FVA item 3 -- an INDEPENDENT oracle of the derived-row dependency
+#: mapping, hand-written from the build function (the net derivation is
+#: ``ar_change - ae_change`` of the two advertising change rows, engine
+#: near :1712-1715; the ratio's numerator is advertising_revenue_change
+#: and its denominator total_revenue_change, engine near :1792-1800).
+#: Deliberately NOT read from the engine table it checks below.
+_ORACLE_DERIVED_CONSTITUENTS = {
+    RESULT_KEY_ADVERTISING_NET_CHANGE: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+    ),
+    RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT: (
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+    ),
+}
+
+
+def test_no_published_derived_row_has_a_withheld_constituent() -> None:
+    """A derived row never publishes a value computed from a withheld row.
+
+    (a) the engine's private ``_DERIVED_ROW_CONSTITUENTS`` equals the
+    independent oracle above (read through the same function-local
+    ``import ... as mod`` pattern the private-name tests already use);
+    (b) the cascade holds over a grid: every single-fact contradiction of
+    ``display_quantum`` / ``unit`` / ``scale_power10`` -- the field names
+    the ``_mutate_*`` helpers use -- applied to each of the six PLNT
+    facts (6 facts x 3 fields = 18 grid points). At each point every
+    derived row that publishes a value must have every constituent also
+    publishing (or absent from the emitted document entirely).
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    assert mod._DERIVED_ROW_CONSTITUENTS == _ORACLE_DERIVED_CONSTITUENTS
+
+    # Execute the cascade's fixed-point claim: no derived key is itself a
+    # constituent, so one pass over the table reaches the fixed point.
+    _derived_keys = set(mod._DERIVED_ROW_CONSTITUENTS.keys())
+    _all_constituents: set[str] = set()
+    for _constituents in mod._DERIVED_ROW_CONSTITUENTS.values():
+        _all_constituents.update(_constituents)
+    assert _derived_keys.isdisjoint(_all_constituents), (
+        f"_DERIVED_ROW_CONSTITUENTS keys overlap with constituents "
+        f"({_derived_keys & _all_constituents}); the single-pass cascade "
+        "would no longer reach the fixed point"
+    )
+
+    base_facts = _plnt_facts()
+    for index in range(len(base_facts)):
+        fact_key = base_facts[index]["key"]
+        for field, value in (
+            ("display_quantum", "5_thousand"),
+            ("unit", "EUR"),
+            ("scale_power10", 6),
+        ):
+            facts = [dict(fact) for fact in base_facts]
+            _contradict(facts, fact_key, field, value)
+            document = project_economic_change(_plnt_case(facts=facts))
+            rows = {r["key"]: r for r in document["results"]}
+            for derived_key, constituents in (
+                _ORACLE_DERIVED_CONSTITUENTS.items()
+            ):
+                derived = rows.get(derived_key)
+                if derived is None or derived["value_text"] is None:
+                    continue
+                for constituent_key in constituents:
+                    constituent = rows.get(constituent_key)
+                    suppressed = constituent is not None and (
+                        constituent["value_text"] is None
+                    )
+                    assert not suppressed, (
+                        f"grid point fact[{index}]={fact_key} "
+                        f"field={field}: derived row {derived_key} "
+                        f"publishes {derived['value_text']!r} while "
+                        f"constituent {constituent_key} is withheld "
+                        f"({constituent['withheld_reason']!r})"
+                    )
+
+
+def test_screen_withheld_rows_are_recorded_in_degraded_dependencies() -> None:
+    """W15-F-FVA item 2: screen withholdings are recorded, ALWAYS.
+
+    The module docstring's dependency-local rule promises a suppressed
+    result is "recorded in ``degraded_dependencies``". The
+    stated-definition screen used to withhold rows without recording
+    them, so the all-six display_quantum contradiction reached
+    availability "unavailable" with an empty ``degraded_dependencies``
+    and died in the document's own contract self-check (HEAD c334b9ba:
+    CaseShapeError, engine :1473). Block 1 builds that case exactly as
+    the two quantum/unit DECLINED tests build it (mutate every fact of
+    ``_plnt_case``) and asserts (a) availability, (b) the EXACT set of
+    ``(dependency, reason)`` pairs the screen contributed -- every
+    emitted result key, once -- and (c) the module's own validator
+    accepts the recorded document. Block 2 pins one partial case, the
+    D2 ``_mutate_total_revenue_unit`` mutator: availability stays
+    "ready" and the list gains exactly the withheld rows' entries.
+
+    Reason vocabulary, measured (not guessed): five of the six rows
+    fail their OWN stated-definition check in the all-six quantum case
+    -- including ``advertising_net_change``, whose envelopes contradict
+    directly, exactly as in the committed d1 grid param -- so they
+    record ``result_envelope_contradicts_stated_definition``. Only the
+    ``_pct`` ratio is exempt from its own envelope check and is
+    withheld by the ``_DERIVED_ROW_CONSTITUENTS`` cascade, recording
+    ``dependency_suppressed``.
+    """
+    case = _plnt_case()
+    for fact in case["facts"]:
+        fact["display_quantum"] = "5_thousand"
+    document = project_economic_change(case)
+
+    # (a) every row withheld -> unavailable, never an empty ready.
+    assert document["availability"] == "unavailable"
+
+    # (b) the exact pairs the screen contributed: each of the six
+    # emitted result keys, once.
+    emitted_keys = {result["key"] for result in document["results"]}
+    assert emitted_keys == {
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    }
+    contributed = {
+        (entry["dependency"], entry["reason"])
+        for entry in document["degraded_dependencies"]
+    }
+    assert contributed == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_EXPENSE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_NET_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    assert len(document["degraded_dependencies"]) == 6
+
+    # (c) the module's own validator accepts the recorded document --
+    # the same call the self-check tests use.
+    _assert_document_matches_contract_shape(document)
+
+    # -- Block 2: the D2 total_revenue_unit partial case -------------
+    facts = [dict(fact) for fact in _plnt_facts()]
+    _mutate_total_revenue_unit(facts)
+    partial = project_economic_change(_plnt_case(facts=facts))
+    assert partial["availability"] == "ready"
+    pairs = {
+        (entry["dependency"], entry["reason"])
+        for entry in partial["degraded_dependencies"]
+    }
+    assert pairs == {
+        (RESULT_KEY_TOTAL_REVENUE_CHANGE, _WITHHELD_REASON),
+        (RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+         "dependency_suppressed"),
+    }
+    _assert_document_matches_contract_shape(partial)
+
+
+def test_make_ratio_result_refusals_and_omitted_derived_row_recording() -> None:
+    """Ruling A's two legs land differently in ``degraded_dependencies``.
+
+    Spec §8a (research/consumer_cyclical/v1/V1_PLNT_BOUNDARY_AND_FROZEN_SPEC.md):
+    (i) a ratio refused for a nonpositive denominator is emitted with its
+    ``withheld_reason`` and is not recorded (mutant (c) from the #9351 review,
+    which records ratio refusals, fails here); (ii) a derived row omitted for
+    a missing constituent is recorded as ``inputs_absent_result_omitted``,
+    not as the cascade's ``dependency_suppressed``.
+    """
+    # (i) All six PLNT facts, with current total revenue below the prior
+    # 340879: the change is negative, so the share ratio's denominator is
+    # nonpositive and the ratio is withheld.
+    facts = [dict(fact) for fact in _plnt_facts()]
+    for fact in facts:
+        if (
+            fact["metric"] == FACT_KEY_TOTAL_REVENUE
+            and fact["period_end"] == "2026-06-30"
+        ):
+            fact["value_text"] = "300000"
+    document = project_economic_change(_plnt_case(facts=facts))
+
+    assert document["availability"] == "ready", document
+    share = _result_by_key(
+        document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT
+    )
+    assert share["withheld_reason"] == "denominator_nonpositive", share
+    assert document["degraded_dependencies"] == [], (
+        "Ruling A: a WITHHELD ratio is an answer about present inputs "
+        "and is deliberately not a degraded dependency; mutant (c) "
+        "would record the ratio refusal here and fail this assertion",
+        document["degraded_dependencies"],
+    )
+
+    # (ii) Advertising revenue has only its current fact, so its change row
+    # is omitted, and the derived ``advertising_net_change`` row, missing a
+    # constituent, is omitted too.
+    partial_facts = [
+        _plnt_fact(
+            key=FACT_KEY_TOTAL_REVENUE,
+            period_role="current",
+            period_end="2026-06-30",
+            value_text="365223",
+            native_ref="src_plnt_q2_2026_ex991",
+        ),
+        _plnt_fact(
+            key=FACT_KEY_TOTAL_REVENUE,
+            period_role="prior",
+            period_end="2025-06-30",
+            value_text="340879",
+            native_ref="src_plnt_q2_2026_ex991",
+        ),
+        _plnt_fact(
+            key=FACT_KEY_ADVERTISING_REVENUE,
+            period_role="current",
+            period_end="2026-06-30",
+            value_text="32922",
+            native_ref="src_plnt_q2_2026_ex991",
+        ),
+        _plnt_fact(
+            key=FACT_KEY_ADVERTISING_EXPENSE,
+            period_role="current",
+            period_end="2026-06-30",
+            value_text="32922",
+            native_ref="src_plnt_q2_2026_ex991",
+        ),
+        _plnt_fact(
+            key=FACT_KEY_ADVERTISING_EXPENSE,
+            period_role="prior",
+            period_end="2025-06-30",
+            value_text="22777",
+            native_ref="src_plnt_q2_2026_ex991",
+        ),
+    ]
+    document = project_economic_change(_plnt_case(facts=partial_facts))
+    pairs = {
+        (entry["dependency"], entry["reason"])
+        for entry in document["degraded_dependencies"]
+    }
+    # ``_compose_changes`` keys its entry on the fact metric and the omission
+    # loop keys its entries on the result key, so both entries survive.
+    assert (
+        FACT_KEY_ADVERTISING_REVENUE,
+        "no_compatible_pair_for_comparison_basis",
+    ) in pairs, (
+        "_compose_changes records the omitted metric under the "
+        "metric key; expect ``advertising_revenue``, not "
+        "``advertising_revenue_change``",
+        pairs,
+    )
+    assert (
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        "inputs_absent_result_omitted",
+    ) in pairs
+    assert (
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        "dependency_suppressed",
+    ) not in pairs, (
+        "the cascade's own ``dependency_suppressed`` reason must NOT "
+        "reach ``degraded_dependencies``; the omission loop records "
+        "``inputs_absent_result_omitted`` instead",
+        pairs,
+    )
+
+
+def test_unpaired_fact_dedupes_screen_withheld_row_in_degraded_dependencies() -> None:
+    """Pin the screen recorder's dedupe on ``dependency``.
+
+    A CONSTRUCTION: ``total_revenue_change`` is a result key, not a V1 metric,
+    so admitting a fact under that metric name makes the ``_compose_changes``
+    entry for the unpaired fact collide with the screen's entry for the
+    ``total_revenue_change`` row withheld for a defective current
+    ``display_quantum``. In V1 the two vocabularies are disjoint. Mutant (d)
+    from the #9351 review (dedupe removed) makes the count 2. The first entry
+    wins: at HEAD the survivor is ``no_compatible_pair_for_comparison_basis``
+    and the screen's ``_DEFINITION_CONTRADICTED`` is dropped. The test pins
+    the count, not the reason.
+    """
+    # Leg 1: an unpaired fact under the result-key metric name.
+    unpaired = _plnt_fact(
+        key="total_revenue_change",
+        period_role="current",
+        period_end="2026-06-30",
+        value_text="24344",
+        native_ref="src_plnt_q2_2026_ex991",
+        metric="total_revenue_change",
+        # ``_plnt_fact`` derives ``kind`` only for V1 metrics; without it the
+        # admission gate refuses the fact (``fact_kind_outside_vocabulary``).
+        kind="revenue_line",
+    )
+
+    # Leg 2: a total-revenue pair whose current envelope fails the screen.
+    current = _plnt_fact(
+        key=FACT_KEY_TOTAL_REVENUE,
+        period_role="current",
+        period_end="2026-06-30",
+        value_text="365223",
+        native_ref="src_plnt_q2_2026_ex991",
+    )
+    # The pair still selects (``display_quantum`` is not a pairing key), so
+    # the change row is built ready and then withheld by the screen.
+    current["display_quantum"] = "5_thousand"
+    prior = _plnt_fact(
+        key=FACT_KEY_TOTAL_REVENUE,
+        period_role="prior",
+        period_end="2025-06-30",
+        value_text="340879",
+        native_ref="src_plnt_q2_2026_ex991",
+    )
+    facts = [unpaired, current, prior]
+
+    document = project_economic_change(_plnt_case(facts=facts))
+    deps_for_trc = [
+        entry
+        for entry in document["degraded_dependencies"]
+        if entry["dependency"] == "total_revenue_change"
+    ]
+    assert len(deps_for_trc) == 1, (
+        "dedupe should keep exactly one entry for the "
+        "``total_revenue_change`` dependency; mutant (d) (dedupe removed) "
+        "lets the screen recorder add a second entry",
+        deps_for_trc,
+    )
+
+
+def test_unpaired_fact_dedupes_emittable_keys_loop_in_degraded_dependencies() -> None:
+    """Pin the result-side recorders' dedupe on ``dependency``.
+
+    A CONSTRUCTION: ``advertising_revenue_change`` is a result key, not a V1
+    metric, so admitting an unpaired fact under that metric name makes the
+    ``_compose_changes`` entry collide with the ``_emittable_keys`` loop's
+    entry for the absent result. Mutant (no-dedupe-guard) makes the count 2.
+    The test pins the count, not the reason.
+    """
+    # Leg 1: an unpaired fact under the result-key metric name; no
+    # advertising-revenue pair means the result is never built.
+    unpaired = _plnt_fact(
+        key="advertising_revenue_change",
+        period_role="current",
+        period_end="2026-06-30",
+        value_text="289",
+        native_ref="src_plnt_q2_2026_ex991",
+        metric="advertising_revenue_change",
+        # ``_plnt_fact`` derives ``kind`` only for V1 metrics; without it the
+        # admission gate refuses the fact (``fact_kind_outside_vocabulary``).
+        kind="revenue_line",
+    )
+    facts = [unpaired]
+
+    document = project_economic_change(_plnt_case(facts=facts))
+    deps_for_arc = [
+        entry
+        for entry in document["degraded_dependencies"]
+        if entry["dependency"] == "advertising_revenue_change"
+    ]
+    assert len(deps_for_arc) == 1, (
+        "dedupe should keep exactly one entry for the "
+        "``advertising_revenue_change`` dependency; removing the "
+        "``_already_degraded`` guard lets the ``_emittable_keys`` loop "
+        "add a second entry",
+        deps_for_arc,
+    )
+
+
+def test_v1_fact_metrics_and_emittable_result_keys_are_disjoint_and_ordered() -> None:
+    """Pin the disjointness, uniqueness, and order of the two vocabularies.
+
+    A CONSTRUCTION: ``_V1_FACT_METRICS`` and ``_EMITTABLE_RESULT_KEYS`` are
+    the inputs to the result-side recorders' dedupe on ``dependency``; if
+    they overlap or drift, an admitted fact collides with a result key and
+    the dedupe cannot restore the one-fact-one-entry invariant. Mutant (m1)
+    adds ``"total_revenue_change"`` to ``_V1_FACT_METRICS`` (overlap); mutant
+    (m2) swaps two adjacent entries of ``_EMITTABLE_RESULT_KEYS`` (order).
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as _proj
+
+    assert _proj._V1_FACT_METRICS.isdisjoint(_proj._EMITTABLE_RESULT_KEYS), (
+        "fact metrics and emittable result keys must be disjoint; mutant "
+        "(m1) adds a result key to ``_V1_FACT_METRICS``",
+        _proj._V1_FACT_METRICS,
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
+    assert len(set(_proj._EMITTABLE_RESULT_KEYS)) == len(
+        _proj._EMITTABLE_RESULT_KEYS
+    ), (
+        "_EMITTABLE_RESULT_KEYS must have no duplicates",
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
+    assert list(_proj._EMITTABLE_RESULT_KEYS) == [
+        _proj.RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_NET_CHANGE,
+        _proj.RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        _proj.RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    ], (
+        "_EMITTABLE_RESULT_KEYS must list the six RESULT_KEY_* values in "
+        "definition order; mutant (m2) swaps two adjacent entries",
+        _proj._EMITTABLE_RESULT_KEYS,
+    )
+
+
+# ---------------------------------------------------------------------------
+# W15-B-C12C1: one malformed fact withholds itself, never kills the projection
+# ---------------------------------------------------------------------------
+
+
+def test_calendar_invalid_period_end_is_withheld_not_a_case_error() -> None:
+    """``2026-06-31`` passes ``_DATE_RE`` but names no day on a calendar.
+
+    Admission is regex-only, so the fact travelled into the document and the
+    contract's own ``format: date`` check raised ``CaseShapeError`` from the
+    backstop, losing the whole projection. The surviving-result assertions
+    mirror ``test_dependency_local_degradation_unparseable_value_text``
+    (advertising stays READY when one total_revenue side is refused).
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["period_end"] = "2026-06-31"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_period_end_missing_or_malformed"
+    ), reasons
+    assert _result_by_key(
+        document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE
+    )["value_text"] == "10141"
+
+
+def test_double_minus_scale_is_withheld_not_int_crash() -> None:
+    """``"--3".lstrip("-").isdigit()`` is True while ``int("--3")`` raises.
+
+    Stripping ALL leading minuses then calling ``int`` let the string pass
+    admission and crash the projection inside ``_envelope_scale``.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["scale_power10"] = "--3"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_scale_power10_missing_or_malformed"
+    ), reasons
+
+
+def test_superscript_scale_is_withheld() -> None:
+    """``"²"`` is a Unicode digit to ``str.isdigit`` and unusable by ``int``.
+
+    Same hole as the double minus: the gate asked the wrong predicate, so
+    the crash moved to ``int()`` and the document was lost.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["scale_power10"] = "\u00b2"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_scale_power10_missing_or_malformed"
+    ), reasons
+
+
+def test_single_minus_and_plain_digit_scale_strings_stay_admitted() -> None:
+    """Control: the tightened grammar must not refuse genuinely usable text.
+
+    ``"-3"`` and ``"6"`` were always readable by ``_envelope_scale`` and stay
+    admitted with their value preserved; no defaulting to 0, no refusal.
+    """
+    for scale in ("-3", "6"):
+        facts = _plnt_facts()
+        for f in facts:
+            if (
+                f["metric"] == FACT_KEY_TOTAL_REVENUE
+                and f["period_end"] == "2026-06-30"
+            ):
+                f["scale_power10"] = scale
+                break
+        document = project_economic_change(_plnt_case(facts=facts))
+        emitted = {f["key"]: f for f in document["facts"]}
+        assert "total_revenue_current" in emitted, scale
+        assert emitted["total_revenue_current"]["scale_power10"] == int(scale)
+        reasons = {d["reason"] for d in document["degraded_dependencies"]}
+        assert "fact_scale_power10_missing_or_malformed" not in reasons, scale
+
+
+def test_calendar_invalid_period_start_is_withheld_not_a_case_error() -> None:
+    """``2026-04-31`` passes ``_DATE_RE`` but April has thirty days.
+
+    Before the fix only ``period_end`` was checked against a calendar, so an
+    impossible start day reached the contract's ``format: date`` backstop and
+    raised ``CaseShapeError`` for the whole projection.
+    """
+    facts = _plnt_facts()
+    for f in facts:
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2026-06-30":
+            f["period_start"] = "2026-04-31"
+            break
+    document = project_economic_change(_plnt_case(facts=facts))
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert "total_revenue_current" not in emitted_fact_keys
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+        "fact_period_start_missing_or_malformed"
+    ), reasons
+    assert _result_by_key(
+        document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE
+    )["value_text"] == "10141"
+
+
+def test_non_ascii_decimal_digit_scale_is_withheld() -> None:
+    """``int()`` reads U+0663 as 3, so an unguarded ``\\d`` would publish it.
+
+    ``_SCALE_TEXT_RE`` spells ``[0-9]`` on purpose. These are category Nd
+    digits that ``\\d`` matches; each must be refused, not rebased to 3.
+    """
+    for scale in ("\u0663", "\u0969", "\uff13"):
+        facts = _plnt_facts()
+        for f in facts:
+            if (
+                f["metric"] == FACT_KEY_TOTAL_REVENUE
+                and f["period_end"] == "2026-06-30"
+            ):
+                f["scale_power10"] = scale
+                break
+        document = project_economic_change(_plnt_case(facts=facts))
+        emitted_fact_keys = {f["key"] for f in document["facts"]}
+        assert "total_revenue_current" not in emitted_fact_keys, scale
+        reasons = {
+            d["dependency"]: d["reason"]
+            for d in document["degraded_dependencies"]
+        }
+        assert reasons.get(FACT_KEY_TOTAL_REVENUE) == (
+            "fact_scale_power10_missing_or_malformed"
+        ), (scale, reasons)
