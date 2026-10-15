@@ -967,3 +967,16 @@ Current-owner Space preparation, October15: isolated generation5a5bc26d8f2c10a29
 
 
 October15 expanded follow-up: imported16 exact capacity/oversight source, schema, consumer and test files fromf7a767a1bb1f into this isolated Space/FMS branch.380 core and164 theme integration cases pass. Existing native curator admits only the retained reviewed PAC-3 worksheet: three sources, one program and three observations; all incumbent graph rows and graph identity remain. Two targets and620reported2025deliveries are separate; installed capacity is absent, no revenue/workshare inference. HistoricalOctober13cutoff excludes the newly known program. Raw source bytes are retained gzip with their verified blocks under capacity_integration_20261015. Army source-boundary and repaired semantic review remain accepted; the old broader core review stays unresolved on its original carrier and is not claimed as acceptance. Chris's current proportionate policy does not impose a new generic review wait on this reversible integration. No GAO/NASA fact is admitted. CI import closure repair and full paired-generation/browser qualification remain the next actions; this is not publication or installed acceptance. PR9066 remains independently frozen atba6ad0380375 with observer4372 forrun38796561318.
+
+### 2026-10-15 hosted merge dependency repair
+
+Hosted CI run 38796561318 at ba6ad038 tested merge 0cca7919 onto
+834fd4ada905. Its contract-delta job 116634374930 found nine introduced
+import-closure misses: five in govrev-program-ontology and four in
+group-linked-outsiders. The repair adds only those exact dependency paths
+to the existing manifest; commands, gates, packing limits and product bytes
+are unchanged. Local complete curated-closure census is empty. Native
+committed-proof verification accepts the existing 105-case proof unchanged.
+The same foreground observer (4372) remains responsible for the running
+pack results; this repair is not a green hosted check or release.
+Evidence: current_release_proof_20261015/ci-scope-repair/ below this program.
