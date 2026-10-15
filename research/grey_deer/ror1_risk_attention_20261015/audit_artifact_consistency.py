@@ -170,6 +170,39 @@ def audit(documents: Mapping[str, Any]) -> dict[str, Any]:
                     "cutoff and consumer receipt, this is not a historical forecast error."
                 ),
             })
+    # Optional sixth pinned source: the native verdict's observation clock
+    # may differ from a market-plane date derived from its build/processing day.
+    # Matching scores prove origin; no claim that a pre-close snapshot was stale.
+    world = _mapping(documents.get("world_state"))
+    if world and plane:
+        native = _mapping(world.get("verdict"))
+        plane_verdict = _mapping(plane.get("verdict"))
+        native_day = native.get("asof")
+        plane_day = plane.get("asof")
+        if native_day is not None:
+            native_day = _day(native_day, "world_state.verdict.asof")
+        src_score = _score(native.get("score"), "world_state.verdict.score")
+        projected_score = _score(plane_verdict.get("score"), "market_plane.verdict.score")
+        surviving_date = plane_verdict.get("source_session") or plane_verdict.get("asof")
+        if (native_day and plane_day and native_day != plane_day
+                and src_score is not None and projected_score == src_score
+                and surviving_date != native_day):
+            findings.append({
+                "code": "VERDICT_SOURCE_SESSION_LOST",
+                "classification": "confirmed_source_date_not_projected",
+                "native_verdict_session": native_day,
+                "plane_label_session": plane_day,
+                "world_produced_at": world.get("produced_at"),
+                "projected_verdict_score": projected_score,
+                "asserts_stale_at_production": False,
+                "note": (
+                    "The world-state verdict carried a distinct native session, "
+                    "but the market-plane verdict copy does not preserve it. "
+                    "The plane label may be the processing day; legal expected "
+                    "last-session and actual consumer clocks remain unverified."
+                ),
+            })
+
     freshness = _mapping(ms.get("freshness"))
     if freshness.get("any_input_stale") is True:
         ins = freshness.get("stale_inputs")
