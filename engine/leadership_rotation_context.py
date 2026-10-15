@@ -88,6 +88,7 @@ __all__ = [
     "earliest_observable_coordinate",
     "separate_from_legacy",
     "rolling_carry",
+    "fixed_minute_horizons",
     "decompose_trailing_change",
     "beta_only_residual",
     "pair_interpretation",
@@ -1869,3 +1870,213 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
         "research_estimate": research_block,
         "source_roots": sorted(roots),
     }
+
+
+# ---------------------------------------------------------------------------
+# Descriptive, source-qualified fixed minute horizons. Never a trading scorer,
+# a price source, a session classifier, or a producer/history control plane.
+# ---------------------------------------------------------------------------
+
+_FIXED_MINUTE_SCHEMA = "leadership_rotation_context.fixed_minute_horizons/v1"
+
+
+def _fixed_aware_utc(value):
+    """Unlike parse_time(), source-bar clocks must explicitly carry a zone."""
+    if isinstance(value, datetime):
+        dt = value
+    elif isinstance(value, str):
+        try:
+            dt = datetime.fromisoformat(value[:-1] + "+00:00" if value.endswith("Z") else value)
+        except ValueError:
+            return None
+    else:
+        return None
+    if dt.tzinfo is None or dt.utcoffset() is None:
+        return None
+    return dt.astimezone(timezone.utc)
+
+
+def _fixed_source_index(raw_rows, *, cutoff):
+    """Index admitted source revisions without interpolating absent minute bars.
+
+    A later correction unavailable at `cutoff` cannot replace the earlier
+    version. Malformed availability is a refusal for the WHOLE symbol, not an
+    invitation to silently rescue a previous price.
+    """
+    if not isinstance(raw_rows, (list, tuple)):
+        return {}, "missing_input"
+    revisions: dict[datetime, list[tuple[datetime, Mapping]]] = {}
+    for row in raw_rows:
+        if not isinstance(row, Mapping):
+            return {}, "invalid_source_row"
+        stamp = _fixed_aware_utc(row.get("bar_start_at"))
+        if stamp is None:
+            return {}, "invalid_source_clock"
+        available = _fixed_aware_utc(row.get("available_at"))
+        if available is None:
+            return {}, "availability_unknown"
+        if available <= cutoff:
+            revisions.setdefault(stamp, []).append((available, row))
+    return revisions, None
+
+
+def _fixed_endpoint_price(index, source_problem, stamp, *, source_id, venue_scope,
+                          price_basis, session_id):
+    if source_problem:
+        return None, source_problem
+    versions = index.get(stamp)
+    if not versions:
+        return None, "missing_exact_endpoint"
+    last_available = max(t for t, _ in versions)
+    latest = [row for t, row in versions if t == last_available]
+    if len(latest) > 1 and any(row != latest[0] for row in latest[1:]):
+        return None, "ambiguous_correction"
+    row = latest[0]
+    if (row.get("source_id") != source_id or row.get("venue_scope") != venue_scope
+            or row.get("price_basis") != price_basis or row.get("session_id") != session_id
+            or type(row.get("bar_seconds")) is not int or row["bar_seconds"] != 60):
+        return None, "incompatible_source_or_session"
+    # Vendor aggregate timestamps are the START of each minute; the sampled
+    # close cannot be causally known before that entire minute has ended.
+    from datetime import timedelta
+    if last_available < stamp + timedelta(minutes=1):
+        return None, "unfinalized_minute"
+    raw = row.get("close")
+    if not is_measured(raw) or float(raw) <= 0:
+        return None, "invalid_price"
+    return float(raw), None
+
+
+def fixed_minute_horizons(
+    *, bars_by_symbol, memberships, membership_version, endpoint, knowledge_cutoff,
+    session_id, source_id, venue_scope, price_basis, rights, venue_admitted=False,
+    use="display", benchmark="SPY", horizons=(5, 15, 30, 60),
+):
+    """Read-only EW group vs benchmark at EXACT common one-minute endpoints.
+
+    Inputs are already-source-qualified aggregate rows, not raw vendor prices.
+    `bar_start_at` + 60 seconds is the close-availability lower bound; per-row
+    `available_at` is the actually admitted first-available/correction clock.
+    A source with no real availability or venue receipt must not set
+    `venue_admitted=True`. Existing `admit_use` owns permission interpretation;
+    a Tiingo research-only capture cannot be promoted to customer display.
+
+    Partial matched cohorts may be described but NEVER ranked or called the
+    whole theme. There is no interpolation, carry, history, score, alert or I/O.
+    """
+    from datetime import timedelta
+
+    end = _fixed_aware_utc(endpoint)
+    cutoff = _fixed_aware_utc(knowledge_cutoff)
+    if end is None or cutoff is None:
+        raise ValueError("fixed minute horizon clocks must be timezone-aware")
+    if not isinstance(horizons, (list, tuple)) or not horizons or any(
+        type(h) is not int or h < 1 for h in horizons
+    ) or len(horizons) != len(set(horizons)):
+        raise ValueError("fixed minute horizons must be unique positive integer minutes")
+    if (not isinstance(membership_version, str) or not membership_version.strip()
+            or not isinstance(session_id, str) or not session_id.strip()
+            or not isinstance(source_id, str) or not source_id.strip()
+            or not isinstance(venue_scope, str) or not venue_scope.strip()
+            or not isinstance(price_basis, str) or not price_basis.strip()
+            or not isinstance(benchmark, str) or not benchmark.strip()
+            or not isinstance(memberships, Mapping)):
+        raise ValueError("source and membership identity must be explicit")
+
+    if any(not isinstance(group, str) or not group.strip() for group in memberships):
+        raise ValueError("fixed minute group identities must be nonempty strings")
+
+    source_state = None
+    permission = admit_use(rights, use)
+    if permission != "permitted":
+        source_state = "rights_" + permission
+    elif venue_admitted is not True:
+        source_state = "venue_unqualified"
+    elif cutoff < end + timedelta(minutes=1):
+        source_state = "endpoint_not_yet_final"
+
+    inputs = bars_by_symbol if isinstance(bars_by_symbol, Mapping) else {}
+    indexes: dict[str, tuple[dict, str | None]] = {}
+
+    def price(symbol, stamp):
+        if symbol not in indexes:
+            indexes[symbol] = _fixed_source_index(inputs.get(symbol), cutoff=cutoff)
+        index, problem = indexes[symbol]
+        return _fixed_endpoint_price(index, problem, stamp, source_id=source_id,
+                                     venue_scope=venue_scope, price_basis=price_basis,
+                                     session_id=session_id)
+
+    output = {
+        "schema": _FIXED_MINUTE_SCHEMA,
+        "scope": "display_only", "source_id": source_id,
+        "venue_scope": venue_scope, "price_basis": price_basis,
+        "session_id": session_id, "membership_version": membership_version,
+        "benchmark": benchmark, "endpoint_at": end.isoformat(),
+        "knowledge_cutoff_at": cutoff.isoformat(), "windows": [],
+    }
+    for horizon in sorted(horizons):
+        start = end - timedelta(minutes=horizon)
+        bm_return = None
+        bm_problem = source_state
+        if bm_problem is None:
+            b0, p0 = price(benchmark, start)
+            b1, p1 = price(benchmark, end)
+            bm_problem = p0 or p1
+            if bm_problem is None:
+                bm_return = b1 / b0 - 1
+                if not is_measured(bm_return):
+                    bm_return, bm_problem = None, "invalid_benchmark_return"
+        window = {"minutes": horizon, "benchmark_return_pct":
+                  (bm_return * 100 if bm_return is not None else None),
+                  "benchmark_reason": bm_problem, "groups": []}
+        for group_id in sorted(memberships):
+            expected = memberships[group_id]
+            valid_members = (isinstance(expected, (list, tuple)) and bool(expected)
+                             and all(isinstance(x, str) and x.strip() for x in expected)
+                             and len(expected) == len(set(expected)))
+            expected_n = len(expected) if isinstance(expected, (list, tuple)) else None
+            observed = []
+            excluded = []
+            first_exclusion_reason = None
+            if valid_members and bm_return is not None:
+                for symbol in sorted(expected):
+                    p0, x0 = price(symbol, start)
+                    p1, x1 = price(symbol, end)
+                    if x0 or x1:
+                        excluded.append(symbol)
+                        first_exclusion_reason = first_exclusion_reason or x0 or x1
+                    else:
+                        val = p1 / p0 - 1
+                        if is_measured(val):
+                            observed.append(val)
+                        else:
+                            excluded.append(symbol)
+                            first_exclusion_reason = first_exclusion_reason or "invalid_member_return"
+            if valid_members and bm_return is None:
+                excluded = sorted(expected)
+            matched_n = len(observed)
+            state = "unmeasured"
+            reason = ("invalid_membership" if not valid_members else
+                      bm_problem if bm_problem else
+                      first_exclusion_reason or "no_matched_members")
+            abs_return = rel_return = None
+            if matched_n:
+                absolute = sum(observed) / matched_n
+                relative = relative_wealth(absolute, bm_return)
+                if is_measured(absolute) and is_measured(relative):
+                    abs_return = absolute * 100
+                    rel_return = relative * 100
+                    state = "measured" if matched_n == expected_n else "partial"
+                    reason = None if state == "measured" else "partial_matched_cohort"
+                else:
+                    reason = "invalid_relative_return"
+            window["groups"].append({
+                "group_id": group_id, "state": state, "reason": reason,
+                "absolute_return_pct": abs_return,
+                "relative_wealth_pct": rel_return,
+                "matched_n": matched_n, "expected_n": expected_n,
+                "coverage_fraction": (matched_n / expected_n if valid_members else None),
+                "excluded_members": excluded,
+            })
+        output["windows"].append(window)
+    return output
