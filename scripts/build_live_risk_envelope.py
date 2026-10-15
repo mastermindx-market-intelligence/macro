@@ -385,6 +385,11 @@ def build_live_sources(
                     "is_warning": bool(radar_raw.get("is_warning")),
                     "is_loud": bool(radar_raw.get("is_loud")),
                 }
+                # Preserve the source clock (including explicit unknown) before
+                # the shared adapter qualifies it. A fresh live wrapper cannot
+                # turn yesterday's native Radar observation into today's warning.
+                if "asof" in radar_raw:
+                    radar_doc["asof"] = radar_raw["asof"]
 
     measured = (
         _market_state_read(ms_doc, L, stale_override=market_stale_override,
