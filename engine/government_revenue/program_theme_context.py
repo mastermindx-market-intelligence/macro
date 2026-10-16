@@ -60,6 +60,9 @@ class OwnerSnapshot:
   if self.owner_kind=='program_ontology':
    from engine.government_revenue.program_ontology import load_program_ontology_graph
    load_program_ontology_graph(payload)
+  elif self.owner_kind=='program_dossier':
+   from engine.government_revenue.program_dossier import is_valid_program_dossier_payload
+   if not is_valid_program_dossier_payload(payload):raise ValueError('program_dossier_owner_invalid')
   elif self.owner_kind=='defense_economics':
    from engine.government_revenue.defense_economics import validate_defense_economics_payload
    validate_defense_economics_payload(payload)

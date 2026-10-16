@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 from hashlib import sha256
 from datetime import datetime
 from collections.abc import Mapping
+import math
 try:
  from . import program_theme_context as t
 except ImportError:
@@ -119,8 +120,8 @@ _THEME_CASES={
   'Invalidation: no qualifying production award or delivery conversion appears, or disclosed costs/charges exceed the ramp benefit. Check contract scope and the next reported sales, margin and cash evidence separately.',
   '失效条件：未出现合格生产合同或交付转化，或披露的成本及费用超过扩产收益。分别核实合同范围，以及下一份报告中的销售、利润率与现金证据。'),
  'space':(
-  'Conditional: a verified space-program award could affect the issuer only after scope and business ownership are established. Development costs and schedule changes could offset revenue; production or sustainment terms could have a different margin/cash profile. The cited defense segments are issuer context, not space-program revenue. Program capture and conversion timing remain unknown.',
-  '条件情景：航天项目合同只有在范围及业务所有权核实后，才可能影响发行人。开发成本及进度变化可能抵销收入；生产或维护条款的利润与现金特征可能不同。所引国防分部仅属发行人背景，并非航天项目收入。项目获益及转化时间仍未知。',
+  'Conditional: a verified space-program award could affect the issuer only after scope and business ownership are established. Development costs and schedule changes could offset revenue; production or sustainment terms could have a different margin/cash profile. The cited reported segments are issuer context, not space-program revenue. Program capture and conversion timing remain unknown.',
+  '条件情景：航天项目合同只有在范围及业务所有权核实后，才可能影响发行人。开发成本及进度变化可能抵销收入；生产或维护条款的利润与现金特征可能不同。所引报告分部仅属发行人背景，并非航天项目收入。项目获益及转化时间仍未知。',
   'Invalidation: the program or retained business scope is not established, or disclosed cost/schedule changes undermine conversion. Confirm the exact program and current owner before interpreting the next financial report.',
   '失效条件：项目或保留业务范围未获确认，或披露的成本及进度变化削弱转化。解读下一份财报前，先核实具体项目及当前业务所有者。'),
  'nato_fms_demand':(
@@ -140,6 +141,10 @@ _THEME_CASES={
   '失效条件：已审查参与关系改变、已获资金积压未转化，或披露的成本／进度变化削弱利润或现金。核实下一期Marine积压分类及执行证据，不把全部分部金额归于Virginia。')}
 
 _FACT_LABELS={
+ 'issuer_space_gem63xl_unfavorable_eac':('unfavorable estimated completion-cost adjustment','不利完工成本估计调整'),
+ 'issuer_space_segment_sales':('sales','销售额'),'issuer_space_segment_sales_prior':('sales','销售额'),
+ 'issuer_space_segment_operating_profit':('operating profit','营业利润'),'issuer_space_segment_operating_profit_prior':('operating profit','营业利润'),
+ 'issuer_space_segment_margin':('margin','利润率'),'issuer_space_segment_margin_prior':('margin','利润率'),
  'defense_segment_sales':('sales','销售额'),'marine_segment_sales':('sales','销售额'),
  'defense_segment_operating_profit':('operating profit','营业利润'),'marine_segment_operating_profit':('operating profit','营业利润'),
  'defense_segment_margin':('margin','利润率'),'marine_segment_margin':('margin','利润率'),
@@ -148,6 +153,33 @@ _FACT_LABELS={
  'marine_total_backlog':('total backlog','积压总额'),
  'marine_estimated_potential_contract_value':('estimated potential contracts','估计潜在合同'),
  'marine_total_estimated_contract_value':('total estimated contracts','估计合同总额')}
+
+def _space_reported_comparison(resolved):
+ """Interpret only the complete, resolved NOC same-quarter segment comparison.
+
+No ratios or new financial facts are minted. Missing or incompatible operands
+leave the ordinary conditional story intact.
+ """
+ prefix='evt_cik0001133421_2026q2_results:issuer_space_segment_'
+ selected=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and str(node.get('fact_id','')).startswith(prefix)]
+ expected={metric+suffix:('2025Q2' if suffix else '2026Q2','percent' if metric=='margin' else 'USD_million') for metric in ('sales','operating_profit','margin') for suffix in ('','_prior')}
+ facts={node['fact_id'][len(prefix):]:node for node in selected}
+ if len(selected)!=6 or set(facts)!=set(expected):return None
+ for metric,(period,unit) in expected.items():
+  node=facts[metric]
+  if node.get('period')!=period or node.get('unit')!=unit or node.get('accounting_basis')!='issuer_reported_segment:Space Systems:reported':return None
+  if isinstance(node.get('value'),bool) or not isinstance(node.get('value'),(int,float)) or not math.isfinite(node['value']):return None
+ if not (facts['sales']['value']>facts['sales_prior']['value'] and facts['operating_profit']['value']<facts['operating_profit_prior']['value'] and facts['margin']['value']<facts['margin_prior']['value']):return None
+ comparison=(
+  'In the cited NOC Space Systems quarter, sales rose while operating profit and margin fell versus the prior-year quarter. Higher sales did not translate into higher segment profit. These reported segment comparisons do not establish program workshare, capacity, cash generation or shareholder capture.',
+  '所引NOC Space Systems季度销售额上升，但营业利润与利润率下降，比较基准为上年同期。销售额增长未转化为更高的分部利润。这些报告分部比较不能证明项目份额、产能、现金生成或股东获益。')
+ adverse=[node for rail,kind,node,_ in resolved if rail=='economics' and kind=='defense_economics' and node.get('fact_id')=='evt_cik0001133421_2026q2_results:issuer_space_gem63xl_unfavorable_eac']
+ if len(adverse)==1:
+  node=adverse[0];value=node.get('value')
+  qualified=(node.get('period')=='2026Q2' and node.get('unit')=='USD_million' and node.get('fact_class')=='reported_eac' and node.get('accounting_basis')=='issuer_reported_program_cost_estimate:GEM63XL:unfavorable_EAC' and not isinstance(value,bool) and isinstance(value,(int,float)) and math.isfinite(value) and value>0)
+  if qualified:
+   comparison=(comparison[0]+' The separately reported GEM63XL adjustment concerns estimated completion costs; its amount does not establish cash paid or HALO\'s financial effect.',comparison[1]+' 另行报告的GEM63XL调整涉及预计完工成本；该金额不能确认已支付现金或HALO的财务影响。')
+ return comparison
 
 def _theme_economic_story(theme_id,resolved):
  """Only successful CURRENT resolved references ground these conditional texts."""
@@ -164,7 +196,12 @@ def _theme_economic_story(theme_id,resolved):
  elif theme_id=='fleet_sustainment_upgrades':permitted=fms
  elif theme_id=='munitions_replenishment':permitted=budget and finance
  else:permitted=budget and finance and electric_boat
- return _THEME_CASES[theme_id] if permitted else None
+ if not permitted:return None
+ story=_THEME_CASES[theme_id]
+ if theme_id=='space':
+  comparison=_space_reported_comparison(resolved)
+  if comparison:return comparison+story[2:]
+ return story
 
 def _reported_baselines(resolved):
  """Exact admitted figures in original issuer/segment/period/unit scope.
