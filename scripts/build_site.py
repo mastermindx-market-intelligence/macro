@@ -7903,7 +7903,7 @@ def main() -> int:
     # a "results ready" flag, so the owner is told exactly when to return for the next step.
     try:
         from engine import experiments_registry
-        experiments_registry.build(site)
+        experiments_registry.build_published(site)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("experiments registry build failed: %s", e)
 
