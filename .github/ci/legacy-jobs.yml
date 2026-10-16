@@ -28154,6 +28154,10 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_trusted.py
       - lib/dataos/tiingo_reader.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - lib/dataos/tiingo_boats_tape.py
+      - lib/dataos/tiingo_workspace.py
+      - scripts/tiingo_research_query.py
       - lib/dataos/tiingo_views.py
       - scripts/tiingo_materialize.py
     timeout-minutes: 8
@@ -28238,6 +28242,8 @@ jobs:
       # safe direction — this job is still pytest + pyyaml only).
       - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
       - scripts/data_workspace.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - scripts/tiingo_research_query.py
       - site/factordata/factors.json
       - site/factordata/insider_signals.json
       # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py
