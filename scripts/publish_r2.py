@@ -590,6 +590,18 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
     if anchored != latest:
         return False, (f"SOURCE_ANCHOR_MISMATCH: local source claims {latest} "
                        f"but original SPY price rows end {anchored}")
+    # Source tip dates and the collector's revision clock do not prove historical
+    # coverage was retained. These are the *original* SPY Parquet index stats
+    # written by _anchor_summary, not claims from a fresh publisher file list.
+    local_rows = original_anchor.get("n_rows")
+    if local_rows is not None and (type(local_rows) is not int or local_rows <= 0):
+        return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: invalid local SPY row count"
+    local_first = original_anchor.get("first")
+    local_first_day = _read_date(local_first) if local_first is not None else None
+    if local_first is not None and (local_first_day is None
+                                    or not is_session(local_first_day)
+                                    or local_first_day > latest):
+        return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: invalid local SPY first date"
     missing = sessions_behind(latest, now)
     if missing > max_missing_sessions:
         return False, (f"SOURCE_STALE: local latest {latest} is {missing} completed "
@@ -635,6 +647,32 @@ def _massive_publish_tip_ok(local: object, remote: object | None, *,
         remote_anchor_day = _read_date(remote_anchor.get("last"))
         if remote_anchor_day != older or not is_session(remote_anchor_day):
             return False, "REMOTE_ANCHOR_MISMATCH: remote source latest lacks its SPY price rows"
+        # Massive is not an append-only per-file store: the general size guard
+        # does not protect it from an updated local snapshot that truncated
+        # older sessions while retaining the latest tip and a newer clock.
+        # Compare retained ORIGINAL price-index coverage whenever R2 supplies
+        # these collector fields. Legacy remote docs without the fields retain
+        # their existing date/revision admission behavior.
+        remote_rows = remote_anchor.get("n_rows")
+        if remote_rows is not None:
+            if type(remote_rows) is not int or remote_rows <= 0:
+                return False, "REMOTE_ANCHOR_HISTORY_UNVERIFIED: invalid remote SPY row count"
+            if local_rows is None:
+                return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: missing comparable local SPY rows"
+            if local_rows < remote_rows:
+                return False, (f"SOURCE_ANCHOR_HISTORY_REGRESSION: local SPY has {local_rows} "
+                               f"rows, remote original source has {remote_rows}")
+        remote_first = remote_anchor.get("first")
+        if remote_first is not None:
+            remote_first_day = _read_date(remote_first)
+            if (remote_first_day is None or not is_session(remote_first_day)
+                    or remote_first_day > older):
+                return False, "REMOTE_ANCHOR_HISTORY_UNVERIFIED: invalid remote SPY first date"
+            if local_first_day is None:
+                return False, "SOURCE_ANCHOR_HISTORY_UNVERIFIED: missing comparable SPY first date"
+            if local_first_day > remote_first_day:
+                return False, (f"SOURCE_ANCHOR_HISTORY_REGRESSION: local SPY first "
+                               f"{local_first_day} follows remote original {remote_first_day}")
         remote_update = _collector_update(recorded)
         if recorded.get("updated_at") is not None and remote_update is None:
             return False, "REMOTE_REVISION_UNVERIFIED: invalid original remote collector clock"

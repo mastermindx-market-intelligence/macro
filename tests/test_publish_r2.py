@@ -1567,3 +1567,86 @@ def test_massive_publisher_blocks_unclocked_newer_day_before_any_file_upload(
     assert pr2.publish(["massive_stock_day"], workers=1) == 1
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+
+# Original SPY price anchor contains historical coverage, not merely a tip day.
+# A newer collector timestamp cannot justify publishing fewer original rows
+# over the existing R2 source generation. These are synthetic manifests only.
+def _history_tip(day, rows, first="2021-07-06", updated="2026-10-16T01:00:00+00:00"):
+    tip = _tip(day)
+    tip["updated_at"] = updated
+    if rows is not None:
+        tip["anchor"]["n_rows"] = rows
+    if first is not None:
+        tip["anchor"]["first"] = first
+    return tip
+
+
+def _history_remote(day, rows, first="2021-07-06",
+                    updated="2026-10-15T01:00:00+00:00"):
+    out = _remote_tip(day)
+    out["store"] = _history_tip(day, rows, first, updated)
+    return out
+
+
+def test_massive_publisher_refuses_same_day_spy_history_shrink():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1226),
+        _history_remote("2026-10-14", 1326), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_newer_day_but_shrinking_spy_history():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1000),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_refuses_missing_local_rows_when_remote_has_original_count():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", None),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_UNVERIFIED" in reason
+
+
+def test_massive_publisher_refuses_receding_first_spy_price_date():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    ok, reason = _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1326, first="2022-01-03"),
+        _history_remote("2026-10-13", 1325), now=now)
+    assert ok is False
+    assert "SOURCE_ANCHOR_HISTORY_REGRESSION" in reason
+
+
+def test_massive_publisher_admits_genuine_extended_spy_history():
+    now = datetime(2026, 10, 16, 9, 0, tzinfo=timezone.utc)
+    assert _massive_publish_tip_ok(
+        _history_tip("2026-10-14", 1326),
+        _history_remote("2026-10-13", 1325), now=now) == (True, "source tip admitted")
+
+
+def test_massive_publisher_refuses_spy_history_shrink_before_any_fake_s3_upload(
+    tmp_path, monkeypatch,
+):
+    import scripts.publish_r2 as pr2
+    now = datetime.now(timezone.utc)
+    tip_day = expected_last_session(now).isoformat()
+    remote = _history_remote(tip_day, 1326,
+                             updated=(now - timedelta(hours=2)).isoformat())
+    s3 = _FakeS3(objects={"massive_stock_day/_manifest.json": json.dumps(remote).encode()})
+    _pr2, base = _wire_fake_store(tmp_path, monkeypatch, s3, "massive_stock_day")
+    local = json.loads((base / "_manifest.json").read_text())
+    local["updated_at"] = (now - timedelta(hours=1)).isoformat()
+    local["anchor"].update(first="2021-07-06", n_rows=1000)
+    (base / "_manifest.json").write_text(json.dumps(local))
+    assert pr2.publish(["massive_stock_day"], workers=1) == 1
+    assert s3.uploaded == []
+    assert s3.manifest_puts == []
