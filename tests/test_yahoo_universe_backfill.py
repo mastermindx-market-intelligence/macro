@@ -29,6 +29,9 @@ Pins (all network-free — the download layer is stubbed):
    lib/delisted_symbols.
 7. The run annotation is a BARE line-start print (a logger-prefixed annotation is
    silently dropped by GitHub Actions).
+8. Refreshes probe a short overlap window, preserve deep history when the basis is
+   stable, and escalate to period='max' on a true basis shift or no-overlap. A
+   failed full-history heal leaves the prior archive byte-identical.
 
 Run: TZ=UTC .venv/bin/python -m pytest tests/test_yahoo_universe_backfill.py -q
 """
@@ -970,8 +973,135 @@ def test_daily_consumer_requests_the_whole_archive_without_a_second_writer_or_bu
     assert tokens[tokens.index("--cap") + 1] == "400"
     assert tokens[tokens.index("--batch-size") + 1] == "160"
     assert tokens[tokens.index("--budget-s") + 1] == "480"
-    assert "--period" not in tokens, "keep the existing full-history adjustment basis"
+    assert "--period" not in tokens, "workflow must not override the owner's backfill period"
+    assert bf.REFRESH_PROBE_PERIOD == "1mo", "refresh probe is an owner-level contract"
     assert "|| echo" in command, "retain graceful degradation rather than hiding source failure"
+
+
+def test_refresh_all_basis_stable_uses_short_probe_and_preserves_deep_history(
+        tree, monkeypatch):
+    """Stable overlap must never pay for period=max or rewrite old complete years."""
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    new_raw = _bars(301)
+    old_store = yahoo_mod.extract_store_frame(old_raw, "AAA")
+    store.upsert("yahoo", "AAA", old_store)
+    before = store.read("yahoo", "AAA").copy(deep=True)
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        assert period == bf.REFRESH_PROBE_PERIOD
+        return _yf_response({"AAA": new_raw.iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+    after = store.read("yahoo", "AAA")
+
+    assert calls == [(["AAA"], "1mo")]
+    assert report["refresh_basis_shifted"] == 0
+    assert report["refresh_rebased"] == report["refresh_rebase_failed"] == 0
+    assert report["refreshed"] == 1
+    assert len(after) == 301
+    pd.testing.assert_frame_equal(
+        after.loc[before.index[:250]],
+        before.loc[before.index[:250]],
+        check_freq=False,
+    )
+
+
+def test_refresh_all_true_basis_shift_escalates_to_full_history_before_write(
+        tree, monkeypatch):
+    """A re-adjusted overlap is healed with max history, never short-spliced."""
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    rebased_raw = _bars(301, div_steps=(300,))
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    before_first = float(store.read("yahoo", "AAA")["close"].iloc[0])
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        frame = rebased_raw.iloc[-22:] if period == "1mo" else rebased_raw
+        return _yf_response({"AAA": frame})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+    after = store.read("yahoo", "AAA")
+
+    assert calls == [(["AAA"], "1mo"), (["AAA"], "max")]
+    assert report["refresh_basis_shifted"] == report["refresh_rebased"] == 1
+    assert report["refresh_rebase_failed"] == 0 and report["refreshed"] == 1
+    assert len(after) == 301
+    assert float(after["close"].iloc[0]) == pytest.approx(before_first * 0.99)
+
+
+def test_refresh_all_no_overlap_escalates_to_full_history(tree, monkeypatch):
+    """No overlap is unverifiable and therefore requires the same max-history heal."""
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    full_raw = _bars(1700, start="2020-01-01")
+    old_raw = full_raw.iloc[:300]
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        frame = full_raw.iloc[-22:] if period == "1mo" else full_raw
+        return _yf_response({"AAA": frame})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], "1mo"), (["AAA"], "max")]
+    assert report["refresh_basis_shifted"] == report["refresh_rebased"] == 1
+    assert report["refresh_rebase_failed"] == 0
+    assert len(store.read("yahoo", "AAA")) == 1700
+
+
+def test_refresh_all_failed_basis_heal_keeps_existing_archive_byte_identical(
+        tree, monkeypatch):
+    """A detected shift plus failed max heal is a deferred refresh, never a splice."""
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    rebased_raw = _bars(301, div_steps=(300,))
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    path = tree / "data" / "yahoo" / "AAA.parquet"
+    before = path.read_bytes()
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        if period == "max":
+            raise ConnectionError("full-history heal unavailable")
+        return _yf_response({"AAA": rebased_raw.iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], "1mo"), (["AAA"], "max")]
+    assert report["refresh_basis_shifted"] == 1
+    assert report["refresh_rebased"] == 0
+    assert report["refresh_rebase_failed"] == 1
+    assert report["refreshed"] == 0
+    assert path.read_bytes() == before
+    state = bf.load_state()
+    assert not (state.get("done", {}).get("AAA", {}).get("refreshed"))
 
 
 def test_refresh_all_does_not_report_a_stored_old_frame_as_current(tree, monkeypatch):
