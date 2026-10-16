@@ -236,6 +236,28 @@ filesystem write effects. The prior full synthetic eight-year batch
 unobserved under the explicit earlier permission refusal; no native source
 or GMI browser/API acceptance is implied.
 
+## C3 review-gap closure — October 15 continuation
+
+Independent bounded reviewer [PR #9444 comment 6204868983] found no blocking
+source defect in the single-audit batch exporter and checksum index, but
+identified two missing negative/ordering tests. Both are now asserted against
+the existing hermetic fixtures without changing producer logic:
+
+1. **Multi-year ordering boundaries:** the full eight-year 72-response
+   synthetic test directly contrasts default year-first and opt-in
+   industry-first row positions at the 2017→2018 annual boundary and
+   the first-industry 2024→second-industry 2017 grouping boundary.
+2. **Foreign generation refusal:** an immutable view with a deliberately
+   different `source_generation_id` is injected into the index builder,
+   which must refuse the mixed-generation candidate before any valid
+   complete index can be returned.
+
+Both exact affected tests passed locally (2/2), while the unchanged producer
+and preceding complete suite had already passed 50 native tests/65 subtests.
+The final changed head still owes exact-head hosted CI and independent review;
+these focused checks are not native original-source proof. No denied BEA source
+read, publication, storage or rights change was performed.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files

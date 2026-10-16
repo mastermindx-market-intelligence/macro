@@ -341,6 +341,30 @@ class TestCandidateHardening(unittest.TestCase):
             if candidate_view.industry_code_exact == "5241X":
                 self.assertEqual(candidate_view.jsonl_bytes, view.jsonl_bytes)
         self.assertEqual(seen_views, 138)
+        # Default remains year-first, while the new opt-in groups all years
+        # of one exact industry before moving to the next industry.
+        year_first = {}
+        for position, row in enumerate(bea.materialize_industry_inputs(candidate)):
+            if position in (0, 19181, 19182):
+                year_first[position] = (row["accounting_year"], row["industry_code_exact"])
+            if position == 19182:
+                break
+        self.assertEqual(year_first, {
+            0: (2017, "5241X"), 19181: (2017, "I137"),
+            19182: (2018, "5241X"),
+        })
+        industry_first = {}
+        for position, row in enumerate(
+                bea.materialize_industry_inputs(candidate, by_industry=True)):
+            if position in (0, 138, 139, 1111, 1112):
+                industry_first[position] = (row["accounting_year"], row["industry_code_exact"])
+            if position == 1112:
+                break
+        self.assertEqual(industry_first, {
+            0: (2017, "5241X"), 138: (2017, "5241X"),
+            139: (2018, "5241X"), 1111: (2024, "5241X"),
+            1112: (2017, "I001"),
+        })
 
     def test_source_tokens_preserve_case_without_aliasing(self):
         blob = change_table(original("ImMatCan"),
@@ -605,6 +629,11 @@ class TestCandidateBatchIndex(unittest.TestCase):
         with patch.object(bea, "iter_candidate_industry_views",
                           return_value=iter([first, first])):
             with self.assertRaisesRegex(bea.BEAGVCRefused, "duplicate"):
+                bea.build_candidate_industry_index(self.candidate)
+        foreign = replace(first, source_generation_id="1" * 64)
+        with patch.object(bea, "iter_candidate_industry_views",
+                          return_value=iter([foreign])):
+            with self.assertRaisesRegex(bea.BEAGVCRefused, "mixed candidate generations"):
                 bea.build_candidate_industry_index(self.candidate)
         original_encode = bea._encoded
 
