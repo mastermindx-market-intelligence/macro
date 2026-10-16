@@ -1,0 +1,134 @@
+{
+  "schema": "paper.library_recovery_quality_acceptance.v1",
+  "status": "SOURCE_VERIFIED_REVIEW_AND_RELEASE_PENDING",
+  "base_head": "e24c5917f8da8aab8cec5a39792d1064b419ea21",
+  "capability": "Library Recovery quality reaches a native optional-depth disclosure containing the actual supplied owner assessments, preserving market identity and incomplete confirmation.",
+  "repair": [
+    "Reuse existing ref-fold and panel materials; add a stable summary destination and incumbent Library mapping.",
+    "Render only supplied assessment mappings with complete nonempty bilingual label/read/stance strings; preserve turn-board order and verbatim text, escaped as text.",
+    "Show partial coverage and explain that the cross-market read does not change the selected research market."
+  ],
+  "not_changed": [
+    "No engine/classifier, owner payload, data I/O, qualification, CSS, controller or catalogue approval change.",
+    "Legacy tiles and hover reads remain. The disclosure is optional study depth inside existing legacy research."
+  ],
+  "verification": {
+    "python_red": {
+      "passed": 3,
+      "failed": 2,
+      "scope": "Five new source-render cases; both supplied-positive cases lack destination on original source."
+    },
+    "browser_red": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "No native Recovery quality link on original source."
+    },
+    "python_green": {
+      "passed": 41,
+      "failed": 0,
+      "files": [
+        "tests/test_intl_workspace_integration.py",
+        "tests/test_intl_library_mount.py"
+      ],
+      "new_cases": 5,
+      "warnings": 14,
+      "warning_scope": "Inherited pytest temp-directory cleanup warnings."
+    },
+    "browser_green": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "widths": [
+        320,
+        1440
+      ],
+      "width_states": 8,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "claims": [
+        "Native Enter focuses summary and opens enclosing disclosures.",
+        "Actual JP repair-attempt and HK failed-rebound owner reads remain visible; AU without assessment excluded.",
+        "Native Space collapses/reopens; Back retains exact Library/JP/3m/local URL and raw localized query.",
+        "No document horizontal overflow."
+      ]
+    },
+    "browser_nojs": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "Distinct320px default English/Dark fallback. Native link focuses closed summary; native Space opens it and exposes incomplete-confirmation read without page JavaScript."
+    },
+    "design_added_lines": {
+      "blocking": 0,
+      "inherited": 25368
+    },
+    "agentos": {
+      "exit_code": 0,
+      "records": 1735,
+      "errors": 0,
+      "warnings": 146,
+      "warning_scope": "Inherited AgentOS warnings; no new schema error."
+    },
+    "visual_evidence_guard": {
+      "exit_code": 0,
+      "scope": "Final product diff and eight canonical captures."
+    },
+    "diff_check": {
+      "exit_code": 0
+    }
+  },
+  "visual_evidence": {
+    "manifest": "mockups/evidence/paper-international-library/recovery-quality/manifest.json",
+    "manifest_sha256": "47cd2fec34b55449b83038429e709fe7ffdf285f0e508563ebbb109fc57153be",
+    "captures": 8,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": [
+      1440,
+      390
+    ],
+    "parent_viewed": [
+      "dark/en/1440",
+      "light/zh/1440",
+      "dark/en/390",
+      "light/zh/390"
+    ],
+    "dark_treatment": "Existing restrained translucent reference fold and calm hairlines; no extra first-level module.",
+    "light_treatment": "Existing research-canvas reference fold and hairlines; no new styling system.",
+    "parent_assessment": "Viewed owner reads and partial-coverage note are readable with wrapping; focused native summary is distinct. Parent inspection is not independent review.",
+    "inherited_findings": [
+      "live_config.js404 on isolated fixture",
+      "Four mobile wide-element measurements with no document overflow",
+      "Floating launcher overlap outside new disclosure remains"
+    ],
+    "scope": "Full pages with route targeted to open Recovery quality. Narrow Library groups are collapsed at rest; browser tests activate actual search result."
+  },
+  "data_scope": "Synthetic supplied owner assessments computed by existing pure owner function. No real source qualification. Library metrics remain empty/data_state unknown. Incomplete language rows omitted; their original tile handling is unchanged. Other absent fixture panels are not product regressions.",
+  "harness_failure": "Initial Node command could not resolve Playwright; no browser ran. Retained separately; existing bundled package path used with same installed Chrome.",
+  "source_sha256": {
+    "lib/intl_library_mount.py": "5689c95196c8f107dc7499c2b249cb36de061969c7baad3e9cf7eca1a3fb8c76",
+    "templates/intl.html.j2": "a3829f4c9e9c2f1fe39f24dcfee63e3598e79fed996ad962e9cf9b4c453e984a",
+    "templates/intl_recovery_quality.html.j2": "cc8095189d157d0bfab1cf1b50706f47a294ebabefc23259d29c5bb02ad0d03f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+    "engine/intl_recovery_quality.py": "135b778c40277b0ec815d99fd5e01eb8d54d9e31c6c95b48f6898de0d17e79e7",
+    "config/intl_library_catalogue.json": "efb38991184357909b1f8c55c6753efad4f2e8b56616d2d526d9318e8a94895c",
+    "tests/test_intl_workspace_integration.py": "f5b110934359640d9d8409ab826b25fc818475ea6a9997b35127a05d67ba0db2",
+    "tests/intl_workspace_page.test.cjs": "2e5d9d87db8176923b97d9ec41c630d6000680c2c5947a76b5cfebeb57c2b334"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/library-recovery-quality-20261014-r1",
+  "independent_review": "PENDING; original ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED preserved; no replacement or alternate reviewer.",
+  "release": "NOT_DEPLOYED; current-head CI unobserved; no PR/CI reads or ready/merge/autoarm/deploy.",
+  "holds": "All original Chrome live-tab/Codex-app/nativezoom, pending appattachmentcell44, qualification/EFFECT_UNKNOWN, frozen reviews/T03k, rights/Saved/migration/release remain. IW2 exclusively owns ALL Terminal804 surfaces. No cross-chat message."
+}

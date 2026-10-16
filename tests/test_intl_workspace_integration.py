@@ -6,6 +6,7 @@ import sys
 
 import pandas as pd
 import pytest
+from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
 from engine import i18n, intl_inputs
@@ -15,6 +16,10 @@ from lib import store
 from lib.intl_library_mount import render_international_pages
 
 ROOT = Path(__file__).resolve().parents[1]
+# Reuse compiled templates across cases, as the production builder does. Keep
+# source reload checks enabled; view models and rendered HTML are never cached.
+RENDER_ENV = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                         autoescape=False, auto_reload=True)
 
 
 def synthetic_qualified_workspace(state="qualified"):
@@ -54,20 +59,143 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown"):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None, risk_desk=None, heatmap=None, rotation_ranks=None, records=None, workspace_payload=None, chart_sources=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
           "built": "fixture", "records": [], "summary": summary, "rankings": {},
           "heatmap": [], "periphery": None, "sector_board": [], "setups": {},
           "global_regime_html": '<section id="fixture-owner-fragment">Existing research</section>'}
+    if records is not None:
+        vm["records"] = records
+        vm["latest"]["records"] = records
+    if rotation_ranks is not None:
+        vm["rotation_ranks"] = rotation_ranks
+    if heatmap is not None:
+        vm["heatmap"] = heatmap
+    if perf is not None:
+        vm["perf"] = perf
+    if cgl is not None:
+        vm["CGL"] = cgl
+    if turn_board is not None:
+        vm["turn_board"] = turn_board
+    if rates is not None:
+        vm["rates"] = rates
+    if risk_desk is not None:
+        vm["risk_desk"] = risk_desk
     if workspace:
-        vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
-    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+        vm["intl_workspace"] = workspace_payload if workspace_payload is not None else (_workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state))
+    env = RENDER_ENV
     env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
     catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
-    pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue)
+    pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue, chart_sources=chart_sources)
     return pages[1] if mode == "stocks" else pages[0]
+
+
+
+def library_recovery_fixture():
+    """Supplied synthetic owner assessments; no data I/O or qualification."""
+    from engine.intl_recovery_quality import apply_recovery_naming
+    states = {
+        "JP": dict(state="recovery", above_ma20=True, macd_state="bull", mom20_pct=8.2),
+        "HK": dict(state="recovery", above_ma20=False, macd_state="bear", mom20_pct=-1.0),
+        "AU": dict(state="uptrend", state_en="Uptrend", state_zh="上升趋势",
+                   stance_en="Trend intact", stance_zh="趋势完好", mom20_pct=2.0),
+    }
+    apply_recovery_naming(states)
+    names = {"JP": ("Japan", "日本"), "HK": ("Hong Kong", "香港"), "AU": ("Australia", "澳大利亚")}
+    return [dict(s, cc=cc, name=names[cc][0], name_zh=names[cc][1], flag="",
+                 since=None, peak_date=None, ext_pctile=None, dd_pct=None)
+            for cc, s in states.items()]
+
+
+@pytest.mark.parametrize("kind,expected", [
+    ("absent", []), ("empty", []), ("no_assessment", []),
+    ("partial_bilingual", ["HK"]), ("complete", ["JP", "HK"]),
+])
+def test_library_recovery_destination_preserves_supplied_assessments(kind, expected):
+    rows = library_recovery_fixture()
+    if kind == "absent": rows = None
+    elif kind == "empty": rows = []
+    elif kind == "no_assessment": rows = [rows[2]]
+    elif kind == "partial_bilingual": rows[0]["recovery_assessment"].pop("read_zh")
+    original = deepcopy(rows)
+    soup = BeautifulSoup(render_fixture(turn_board=rows), "html.parser")
+    tool = soup.select_one('[data-im-library-tool="recovery_quality"]')
+    targets = soup.select('#intl-recovery-quality')
+    assert len(targets) == int(bool(expected))
+    assert bool(tool.select('a[href="#intl-recovery-quality"]')) == bool(expected)
+    if expected:
+        detail = targets[0].find_parent('details')
+        assert detail is not None and not detail.has_attr('open')
+        assert [n['data-recovery-market'] for n in detail.select('[data-recovery-market]')] == expected
+        assert 'Partial coverage' in detail.get_text() and '部分覆盖' in detail.get_text()
+        for row in rows:
+            if row['cc'] not in expected: continue
+            entry = detail.select_one('[data-recovery-market="'+row['cc']+'"]')
+            assert row['name'] in entry.get_text() and row['name_zh'] in entry.get_text()
+            for field in ('read_en','read_zh','label_en','label_zh','stance_en','stance_zh'):
+                assert row['recovery_assessment'][field] in entry.get_text()
+    from lib.intl_library_mount import attach_public_library
+    catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
+    bound = attach_public_library(_workspace_overviews(None), catalogue=catalogue,
+                                  macro_html=str(soup), stocks_rendered=True)
+    entry = next(t for t in bound["library"]["tools"] if t["presentation_key"] == "recovery_quality")
+    assert entry["data_state"] == "unknown" and entry["metrics"] == []
+    assert rows == original
+    assert not BeautifulSoup(render_fixture(mode="stocks", turn_board=rows), 'html.parser').select('#intl-recovery-quality')
+
+
+def library_trade_fixture():
+    """Existing CGL render shape with explicit synthetic, non-qualified values."""
+    from tests.test_contagion_card_render import _minimal_pressure_block
+    return {"schema": "contagion_links.v1", "as_of": "synthetic:fixture",
+            "pressure": {"jp": _minimal_pressure_block()},
+            "severity": {}, "gaps": ["synthetic:missing-link"]}
+
+
+@pytest.mark.parametrize("cgl,available", [
+    (None, False), ({}, False),
+    ({"schema": "contagion_links.v1", "pressure": {}, "gaps": []}, True),
+    (library_trade_fixture(), True),
+])
+def test_library_trade_link_follows_rendered_panel_without_qualifying_data(cgl, available):
+    original = deepcopy(cgl)
+    soup = BeautifulSoup(render_fixture(cgl=cgl), "html.parser")
+    target = soup.select("#intl-trade-supply-links")
+    tool = soup.select_one('[data-im-library-tool="trade_supply_links"]')
+    assert len(target) == int(available)
+    assert bool(tool.select('a[href="#intl-trade-supply-links"]')) == available
+    assert "model context" in tool.get_text().lower()
+    assert "公司敞口" in tool.get_text()
+    from lib.intl_library_mount import attach_public_library
+    catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
+    bound = attach_public_library(_workspace_overviews(None), catalogue=catalogue,
+                                  macro_html=str(soup), stocks_rendered=True)
+    entry = next(t for t in bound["library"]["tools"] if t["presentation_key"] == "trade_supply_links")
+    assert entry["route_state"] == ("available" if available else "unavailable")
+    assert entry["data_state"] == "unknown" and entry["metrics"] == []
+    assert entry["interpretation_notice"] == "model_context_not_company_exposure"
+    assert cgl == original
+    assert not BeautifulSoup(render_fixture(mode="stocks", cgl=cgl), "html.parser").select("#intl-trade-supply-links")
+
+
+def render_history_fixture(history_sources=None):
+    """Real page with isolated synthetic EOD and explicit test-only History permissions."""
+    from tempfile import TemporaryDirectory
+    from unittest.mock import patch
+    from scripts import build_intl
+    from tests.test_intl_eod_publication import _setup, EVALUATED
+    from tests.test_intl_history_mount import fixture as history_fixture
+    _, args = history_fixture()
+    with TemporaryDirectory(prefix="intl-history-layout-") as directory:
+        data_root = Path(directory)
+        frame, _ = _setup(data_root)
+        workspace = build_intl._publication_workspace(
+            frame, data_root=data_root, evaluated_at=EVALUATED,
+            history_sources=args["sources"] if history_sources is None else history_sources)
+        with patch(__name__ + "._workspace_overviews", return_value=workspace):
+            return render_fixture()
 
 
 @pytest.fixture(autouse=True)
@@ -149,6 +277,17 @@ def test_library_does_not_change_ordinary_stock_page_output():
     assert render_fixture("stocks") == render_fixture("stocks", workspace=False)
 
 
+def test_mounted_workspace_inherits_the_shared_canvas_without_legacy_palette():
+    mounted = render_fixture()
+    assert '<body class="page-intl intl-workspace-page">' in mounted
+    assert "--bg:#0a0c11" not in mounted
+    assert "--bg:#e8ebf1" not in mounted
+    for legacy in (render_fixture(workspace=False), render_fixture("stocks")):
+        assert "--bg:#0a0c11" in legacy
+        assert "--bg:#e8ebf1" in legacy
+        assert '<body class="page-intl intl-workspace-page">' not in legacy
+
+
 def test_stocks_mode_does_not_inherit_macro_workspace_or_hide_stock_tools():
     html = render_fixture("stocks")
     assert 'data-im-workspace' not in html
@@ -181,6 +320,63 @@ def test_synthetic_denial_exercises_slot_only_presentation():
     html = render_fixture(state="denied")
     assert html.count("data-im-market-denied") == 7
     assert "synthetic:visual-fixture" not in html and "Nikkei 225" not in html
+
+
+def _compass_risk():
+    return {"score": 54, "label_en": "Neutral", "label_zh": "中性", "tone": "flat",
+            "coverage_pct": 100., "n_available": 10, "breadth_above_200d": "7/10",
+            "median_mom_3m": 3.9, "top_drags": [
+                {"flag": "🇺🇸", "name": "United States", "name_zh": "美国"}]}
+
+
+def _render_compass(risk):
+    perf = {"risk_appetite": deepcopy(risk), "global_read": None, "rrg": None,
+            "correlation": None, "leaderboard": []}
+    return render_fixture(perf=perf)
+
+
+@pytest.mark.parametrize("missing", ["perf", "risk", "empty", "score", "score_key"])
+def test_missing_world_risk_reading_is_unavailable_not_neutral(missing):
+    risk = _compass_risk()
+    if missing == "perf":
+        html = render_fixture()
+    else:
+        if missing == "risk":
+            risk = None
+        elif missing == "empty":
+            risk = {}
+        else:
+            # Retained labels/coverage cannot turn an absent reading into a signal.
+            risk["score"] = None
+            risk["top_drags"] = []
+            if missing == "score_key":
+                risk.pop("score")
+        html = _render_compass(risk)
+    compass = BeautifulSoup(html, "html.parser").select_one(".wc-left")
+    assert compass.select_one(".wc-verdict .l-en").get_text() == "Unavailable"
+    assert compass.select_one(".wc-verdict .l-zh").get_text() == "暂无数据"
+    assert compass.select_one(".wc-gnum").get_text() == "—"
+    assert compass.select_one(".wc-gauge-fill") is None
+    assert compass.select_one(".wc-substance") is None
+    assert not compass.select_one(".wc-gside").has_attr("data-tip-en")
+
+
+@pytest.mark.parametrize("score,label_en,label_zh,tone", [
+    (0, "Risk-off", "风险规避", "down"),
+    (54, "Neutral", "中性", "flat"),
+    (72, "Split tape", "市场分化", "warn"),
+])
+def test_real_world_risk_readings_preserve_engine_verdict(score, label_en, label_zh, tone):
+    risk = _compass_risk()
+    risk.update(score=score, label_en=label_en, label_zh=label_zh, tone=tone)
+    html = _render_compass(risk)
+    compass = BeautifulSoup(html, "html.parser").select_one(".wc-left")
+    assert compass.select_one(".wc-verdict .l-en").get_text() == label_en
+    assert compass.select_one(".wc-verdict .l-zh").get_text() == label_zh
+    assert compass.select_one(".wc-gnum").get_text() == str(score)
+    assert compass.select_one(".wc-gauge-fill") is not None
+    assert "Dragged by" in compass.select_one(".wc-substance").get_text()
+    assert "Weighs 10 markets" in compass.select_one(".wc-gside")["data-tip-en"]
 
 
 if __name__ == "__main__":

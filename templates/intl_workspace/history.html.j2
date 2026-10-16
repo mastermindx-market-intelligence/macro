@@ -40,10 +40,22 @@
         {% if s.points %}
         <details class="intl-history__observations">
           <summary>{{ words('Inspect dated observations','查看带日期的观测') }} ({{ s.points|length }})</summary>
-          <table><caption>{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
+          <div class="tbl-scroll intl-history__observations-scroll" role="region" tabindex="0" aria-labelledby="im-history-table-caption-{{ loop.index0 }}">
+          <table><caption id="im-history-table-caption-{{ loop.index0 }}">{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
             <thead><tr><th scope="col">{{ words('Observation','观测日期') }}</th><th scope="col">{{ words('Growth score','增长评分') }}</th><th scope="col">{{ words('Inflation score','通胀评分') }}</th></tr></thead>
             <tbody>{% for point in s.points %}<tr><th scope="row">{{ point.observation_at|e }}</th><td>{{ point.growth_score|e if point.growth_score is not none else words('Unavailable','不可用') }}</td><td>{{ point.inflation_score|e if point.inflation_score is not none else words('Unavailable','不可用') }}</td></tr>{% endfor %}</tbody>
           </table>
+          </div>
+        </details>
+        {% endif %}
+        {% if s.snapshot_compare.eligible %}
+        <details class="intl-history__snapshot">
+          <summary>{{ words('Compare two supplied observations','比较两条已提供的观测') }}</summary>
+          <p class="intl-history__muted">{{ words('Two observations from the current reconstruction. These are classifier scores, not investment returns, and not what was known at the time.','两条观测均来自当前重建。这些是分类器评分，不是投资回报，也不代表当时已知的信息。') }}</p>
+          <dl>{% for point in [s.snapshot_compare.left, s.snapshot_compare.right] %}<div>
+            <dt>{{ point.observation_at|e }}</dt>
+            <dd>{{ words('Growth score','增长评分') }}: <span data-im-snapshot-growth>{{ point.growth_score|e }}</span> · {{ words('Inflation score','通胀评分') }}: <span data-im-snapshot-inflation>{{ point.inflation_score|e }}</span></dd>
+          </div>{% endfor %}</dl>
         </details>
         {% endif %}
         {% if s.source_reference or s.acquisition_at %}<details class="intl-history__evidence"><summary>{{ words('Reconstruction evidence','重建依据') }}</summary><dl>
@@ -55,6 +67,9 @@
         {% if s.events.records %}<ol class="intl-history__timeline">
           {% for event in s.events.records %}<li><time>{{ event.event_date|e }}</time><p>{{ words(event.text_en,event.text_zh) }}</p><small>{{ words('Recomputed change','重新计算的变化') }} · {{ event.evidence_ref|e }}</small></li>{% endfor %}
         </ol><p class="intl-history__muted">{{ words('Only the changes attached to this market are included. This is not a complete alert history.','仅包含此市场附带的变化记录，并非完整提醒历史。') }}</p>
+        {% elif s.events.status == 'denied' %}<p>{{ words('Attached changes withheld.','附带变化记录未披露。') }}</p>
+        {% elif s.events.status == 'unknown' %}<p>{{ words('Disclosure of attached changes is unknown.','附带变化记录的披露状态未知。') }}</p>
+        {% elif s.events.reason == 'wrong_market' %}<p>{{ words('Supplied changes do not match this market.','已提供的变化记录与此市场不匹配。') }}</p>
         {% else %}<p>{{ words('No qualified changes supplied for this market.','此市场尚未提供符合条件的变化记录。') }}</p>{% endif %}
         <aside class="intl-history__boundary"><h4>{{ words('Original-known history unavailable','当时已知的历史不可用') }}</h4><p>{{ words('Immutable original vintages and first-known times have not been supplied.','尚未提供不可变的原始版本及首次获知时间。') }}</p>
           <p>{{ words('No linked revision records are available. This does not establish that the source was never revised.','暂无关联的修订记录。这不代表来源从未修订。') }}</p></aside>
@@ -64,7 +79,22 @@
           {% if s.track_record.sample_dates %}<p>{{ words('Sample dates','样本日期') }}: {{ s.track_record.sample_dates|join(' · ')|e }}</p>{% endif %}
           {% if s.track_record.qualification_notes %}<p>{{ s.track_record.qualification_notes|e }}</p>{% endif %}
           <p class="intl-history__muted">{{ words('Counts are source-reported. No success rate is inferred.','数量由来源报告，未据此推算成功率。') }}</p>
-        {% else %}<p>{{ words('A qualified forward record is unavailable. A failed read does not establish an empty record.','暂无符合条件的前瞻记录。读取失败不代表记录为空。') }}</p>{% endif %}
+        {% else %}
+          <p>{{ words('A qualified forward record is unavailable.','暂无符合条件的前瞻记录。') }}</p>
+          {% if s.track_record.status == 'denied' %}<p>{{ words('Forward record withheld.','前瞻记录未披露。') }}</p>
+          {% elif s.track_record.status == 'unknown' %}<p>{{ words('Forward-record disclosure is unknown.','前瞻记录的披露状态未知。') }}</p>
+          {% else %}
+            {% set track_reasons = {
+              'not_supplied': ['No forward record supplied.','未提供前瞻记录。'],
+              'wrong_market': ['The supplied forward record does not match this market.','已提供的前瞻记录与此市场不匹配。'],
+              'read_health_failed': ['The forward record could not be read. A failed read does not establish an empty record.','无法读取前瞻记录。读取失败不代表记录为空。'],
+              'read_health_missing': ['The forward-record source is missing.','缺少前瞻记录来源。'],
+              'read_health_invalid': ['The forward-record source is invalid.','前瞻记录来源无效。'],
+              'read_health_unsupported': ['The forward-record source is unsupported.','不支持此前瞻记录来源。'] } %}
+            {% set track_reason = track_reasons.get(s.track_record.reason) %}
+            {% if track_reason %}<p>{{ words(track_reason[0],track_reason[1]) }}</p>{% endif %}
+          {% endif %}
+        {% endif %}
         </section>
       </article>
       {% endfor %}

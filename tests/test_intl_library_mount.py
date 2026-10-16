@@ -59,6 +59,19 @@ def test_stock_destination_is_ordinary_route_and_requires_successful_render():
                 if t["presentation_key"] == "country_sectors_stocks")["target"] is None
 
 
+@pytest.mark.parametrize("destination", [
+    '<!-- <h2 id="intl-trade-supply-links">Text only</h2> -->',
+    '<h2 id="intl-trade-supply-links">A</h2><h2 id="intl-trade-supply-links">B</h2>',
+    '<h2 id="intl-trade-supply-links" id="intl-trade-supply-links">Duplicate attribute</h2>',
+])
+def test_trade_link_does_not_advertise_ambiguous_or_text_only_target(destination):
+    result = mount(destination)
+    tool = next(t for t in result["library"]["tools"] if t["presentation_key"] == "trade_supply_links")
+    assert tool["route_state"] == "unavailable" and tool["target"] is None
+    assert tool["data_state"] == "unknown" and tool["metrics"] == []
+    assert "intl-trade-supply-links" not in result["config"]["anchor_ids"]
+
+
 def test_changed_copy_needs_matching_public_copy_decision():
     changed = deepcopy(CATALOGUE)
     changed["bindings"]["tools"][0]["label_en"] = "Unapproved change"

@@ -1,0 +1,162 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en.png",
+    "sha256": "328c03f3a55fd57ed4fe11af9a64430dd1b683dc0d5c25629629a86a4006acf7",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t0.00%\tUnavailable\t\u2014\tUnavailable\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 40,
+        "y": 263.171875,
+        "width": 673,
+        "height": 189.5,
+        "top": 263.171875,
+        "right": 713,
+        "bottom": 452.671875,
+        "left": 40
+      },
+      "table": {
+        "x": 59,
+        "y": 330.265625,
+        "width": 647.09375,
+        "height": 68.09375,
+        "top": 330.265625,
+        "right": 706.09375,
+        "bottom": 398.359375,
+        "left": 59
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en.png",
+    "sha256": "64c1694db2745677d0dc47817a9288a1b7cc3d89e5840a758774ae2d0e486f36",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t0.00%\tUnavailable\t\u2014\tUnavailable\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 40,
+        "y": 263.171875,
+        "width": 673,
+        "height": 189.5,
+        "top": 263.171875,
+        "right": 713,
+        "bottom": 452.671875,
+        "left": 40
+      },
+      "table": {
+        "x": 59,
+        "y": 330.265625,
+        "width": 647.09375,
+        "height": 68.09375,
+        "top": 330.265625,
+        "right": 706.09375,
+        "bottom": 398.359375,
+        "left": 59
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh.png",
+    "sha256": "0f43740c92d1535210e3185424310f6a07c280072c9385dd8478061272bb6101",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t0.00%\t\u4e0d\u53ef\u7528\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 207.3125,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 207.375,
+        "left": 20
+      },
+      "table": {
+        "x": 39,
+        "y": 67.15625,
+        "width": 464.875,
+        "height": 68.09375,
+        "top": 67.15625,
+        "right": 503.875,
+        "bottom": 135.25,
+        "left": 39
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh-last-column.png",
+    "sha256": "f49568db49e9a2589058912debd19b6735477a67f53f8fb74551e361e61b5300",
+    "keyboard_scroll": {
+      "left": 153,
+      "max": 153,
+      "focused": true
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh.png",
+    "sha256": "ad2da10c4efd472ac2d0b0530beee8bd850e1add738e48eaa3569335e4e7406e",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t0.00%\t\u4e0d\u53ef\u7528\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 207.3125,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 207.375,
+        "left": 20
+      },
+      "table": {
+        "x": 39,
+        "y": 67.15625,
+        "width": 464.875,
+        "height": 68.09375,
+        "top": 67.15625,
+        "right": 503.875,
+        "bottom": 135.25,
+        "left": 39
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh-last-column.png",
+    "sha256": "a8de1481f86e35a6de9a1ceac3e11c35029a2765a840d3121e8e0151f8af7723",
+    "keyboard_scroll": {
+      "left": 153,
+      "max": 153,
+      "focused": true
+    }
+  }
+]

@@ -92,8 +92,8 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.intl-risk__value--up { color: var(--up); }
-.intl-risk__value--down { color: var(--down); }
+.intl-risk__value--up { color: var(--ink-up, var(--up)); }
+.intl-risk__value--down { color: var(--ink-down, var(--down)); }
 .intl-risk__contribution { margin-block-start: calc(var(--fs-body) / 2); }
 .intl-risk__arithmetic { color: var(--muted); font-size: var(--fs-sm); }
 .intl-risk__exposure {

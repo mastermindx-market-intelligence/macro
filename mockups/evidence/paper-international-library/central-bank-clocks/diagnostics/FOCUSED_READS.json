@@ -1,0 +1,170 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en.png",
+    "sha256": "94d3af21faabf421e14d1241306f217f13f720ac851dbf7d3cd801a276f87d47",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t3.50%\nObserved: 2026-10-13\nDaily\n\tHolding\t\u2014\tFlat\nObserved: 2026-10-07\n\t\u2014",
+      "\ud83c\uddef\ud83c\uddf5 Bank of Japan\t0.10%\nObserved: 2026-09-01\nMonthly\n\tHolding\t\u2014\tAdding\nObserved: 2026-09-30\n\t\u2014",
+      "\ud83c\uddec\ud83c\udde7 Bank of England\t4.00%\nObserved: 2026-06-01\nMonthly \u00b7 Stale\n\tHolding\t\u2014\tUnavailable\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 40,
+        "y": 157.171875,
+        "width": 673,
+        "height": 385.953125,
+        "top": 157.171875,
+        "right": 713,
+        "bottom": 543.125,
+        "left": 40
+      },
+      "table": {
+        "x": 59,
+        "y": 224.265625,
+        "width": 765.890625,
+        "height": 246.734375,
+        "top": 224.265625,
+        "right": 824.890625,
+        "bottom": 471,
+        "left": 59
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en.png",
+    "sha256": "542a5d46898820dd1fc126982aff49f60931aacc3b808b9b9b8bc716e3dcfd68",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 Federal Reserve (FOMC)\t3.50%\nObserved: 2026-10-13\nDaily\n\tHolding\t\u2014\tFlat\nObserved: 2026-10-07\n\t\u2014",
+      "\ud83c\uddef\ud83c\uddf5 Bank of Japan\t0.10%\nObserved: 2026-09-01\nMonthly\n\tHolding\t\u2014\tAdding\nObserved: 2026-09-30\n\t\u2014",
+      "\ud83c\uddec\ud83c\udde7 Bank of England\t4.00%\nObserved: 2026-06-01\nMonthly \u00b7 Stale\n\tHolding\t\u2014\tUnavailable\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 40,
+        "y": 157.171875,
+        "width": 673,
+        "height": 385.953125,
+        "top": 157.171875,
+        "right": 713,
+        "bottom": 543.125,
+        "left": 40
+      },
+      "table": {
+        "x": 59,
+        "y": 224.265625,
+        "width": 765.890625,
+        "height": 246.734375,
+        "top": 224.265625,
+        "right": 824.890625,
+        "bottom": 471,
+        "left": 59
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh.png",
+    "sha256": "694206d2eca6209afaaa84895c29e362ba323a51db29773f163af7d364e8a5c1",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t3.50%\n\u89c2\u6d4b\u65e5\uff1a 2026-10-13\n\u65e5\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6301\u5e73\n\u89c2\u6d4b\u65e5\uff1a 2026-10-07\n\t\u2014",
+      "\ud83c\uddef\ud83c\uddf5 \u65e5\u672c\u94f6\u884c\t0.10%\n\u89c2\u6d4b\u65e5\uff1a 2026-09-01\n\u6708\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6269\u8868\n\u89c2\u6d4b\u65e5\uff1a 2026-09-30\n\t\u2014",
+      "\ud83c\uddec\ud83c\udde7 \u82f1\u683c\u5170\u94f6\u884c\t4.00%\n\u89c2\u6d4b\u65e5\uff1a 2026-06-01\n\u6708\u5ea6 \u00b7 \u9648\u65e7\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 403.765625,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 403.828125,
+        "left": 20
+      },
+      "table": {
+        "x": 39,
+        "y": 67.15625,
+        "width": 646.328125,
+        "height": 246.734375,
+        "top": 67.15625,
+        "right": 685.328125,
+        "bottom": 313.890625,
+        "left": 39
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh-last-column.png",
+    "sha256": "1a617ae0044ae697ac223cade2af250025a5dac575611190928266a3a4aa329c",
+    "keyboard_scroll": {
+      "left": 334,
+      "max": 334,
+      "focused": true
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh.png",
+    "sha256": "18449f8c51917a2b086b70c42ae3bf37b012bd9de2891dbfaff23950c050e4ed",
+    "cells": [
+      "\ud83c\uddfa\ud83c\uddf8 \u7f8e\u8054\u50a8\uff08FOMC\uff09\t3.50%\n\u89c2\u6d4b\u65e5\uff1a 2026-10-13\n\u65e5\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6301\u5e73\n\u89c2\u6d4b\u65e5\uff1a 2026-10-07\n\t\u2014",
+      "\ud83c\uddef\ud83c\uddf5 \u65e5\u672c\u94f6\u884c\t0.10%\n\u89c2\u6d4b\u65e5\uff1a 2026-09-01\n\u6708\u5ea6\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u6269\u8868\n\u89c2\u6d4b\u65e5\uff1a 2026-09-30\n\t\u2014",
+      "\ud83c\uddec\ud83c\udde7 \u82f1\u683c\u5170\u94f6\u884c\t4.00%\n\u89c2\u6d4b\u65e5\uff1a 2026-06-01\n\u6708\u5ea6 \u00b7 \u9648\u65e7\n\t\u6309\u5175\u4e0d\u52a8\t\u2014\t\u4e0d\u53ef\u7528\t\u2014"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 403.765625,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 403.828125,
+        "left": 20
+      },
+      "table": {
+        "x": 39,
+        "y": 67.15625,
+        "width": 646.328125,
+        "height": 246.734375,
+        "top": 67.15625,
+        "right": 685.328125,
+        "bottom": 313.890625,
+        "left": 39
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh-last-column.png",
+    "sha256": "fb860782618e53a04895cd23d0600f00b2afd3f3ec1fcf032826fe631a3ac504",
+    "keyboard_scroll": {
+      "left": 334,
+      "max": 334,
+      "focused": true
+    }
+  }
+]

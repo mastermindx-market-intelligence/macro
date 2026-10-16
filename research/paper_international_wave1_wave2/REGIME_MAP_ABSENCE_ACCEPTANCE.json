@@ -1,0 +1,55 @@
+{
+  "base_head": "09d4d3851b70bcefb43d05748b03ff0e16214357",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Existing Growth/Inflation Library destination; preserve missing axes without invented coordinates. Actual pure owner projection over explicit synthetic records, not live publication or classifier calibration.",
+  "repair": [
+    "Plot only finite, non-boolean supplied pairs within owner score bounds [-1,1]. Real zero remains at centre; boundary positions preserved.",
+    "Retain unplotted countries and each available coordinate in a native keyboard disclosure, with honest plotted count.",
+    "Restore native Library destination focus; escape newly displayed owner text."
+  ],
+  "tests": {
+    "render_unique_pass": 11,
+    "browser_unique_pass": 4,
+    "browser_width_states": 8,
+    "red_render_cases": 10,
+    "red_browser_cases": 1,
+    "red_scope": "Five invalid-pair counterexamples; mixed/empty coverage and destination. Three valid-position controls failed only on missing new coverage count, not their existing coordinates.",
+    "counts_overlap": true,
+    "warnings": "14 inherited pytest cleanup warnings"
+  },
+  "visual": {
+    "canonical": 8,
+    "focused": 8,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "parent": "Eight actual focused source captures viewed: zero and boundary positions retained, partial coordinate text wraps inside narrow panel, native summary focus visible; canonical dark luminance and light material retained.",
+    "manifest_sha256": "5898f6c1508320f88d3115fcbc6670ddb182cba7b535340f44527a786860b9e4",
+    "reuse": "Final owner-text escaping produces byte-identical fixture HTML; captures reused.",
+    "limits": "No live publication, independent review, speech or native zoom acceptance."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "6ff98ae6f0273ce0ef8b986378f72a81932ee6dd3fc62eaa3d48aa41d9dc7bf7",
+    "tests/test_intl_regime_map_absence_render.py": "1a839f54dfcca930080a55e3439d9b2349b663687d53ef772bb0e7fa22ed845c",
+    "tests/test_intl_workspace_integration.py": "067c6e3285112f53ddeb7806982f27820284bea1833934abef92591feed3468b",
+    "tests/intl_workspace_page.test.cjs": "b4f636bdd4fea8acd2c3caf240493a1d1cf50a2e7d4916c8bf81e34dd7f6029d"
+  },
+  "owners_unchanged": {
+    "engine/intl_compare.py": "78bf103cae23d6dba49cd9d6cd9d408c55e470add889c9d404577323fe24deb5",
+    "engine/intl_regime.py": "d7d4cb5af6a71e9381045297d807bb6db76af592aca34b0fd1b64f4c0a74949b",
+    "engine/intl_run.py": "8db309d67394247a1a7569fd92eb2e0ccaa7539aa4f466f7148c78eb864d4730",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/regime-map-absence-20261014-r1"
+}

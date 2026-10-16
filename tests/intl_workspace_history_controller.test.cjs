@@ -112,11 +112,59 @@ test('Escape cancels staged context and restores focus to the initiating control
  assert.equal((await p.evaluate(()=>handle.getState())).horizon,'1m');
  assert.equal(await p.evaluate(()=>document.activeElement.getAttribute('data-im-action')),'set_horizon');
 });
+for(const lang of ['en','zh']) test(`IME Escape preserves the staged Scenario inputs ${lang}`,async t=>{
+ const p=await setup(t);await p.evaluate(lang=>document.documentElement.lang=lang,lang);
+ await calculate(p);await p.locator('[data-im-action="set_horizon"]').selectOption('3m');
+ const field=p.locator('#im-scenario-local');await field.fill('12');
+ const state=await p.evaluate(()=>handle.getState()),url=p.url();
+ for(const composing of [{isComposing:true},{keyCode:229}]) {
+  const prevented=await field.evaluate((input,composing)=>{
+   const event=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true,...composing});
+   input.dispatchEvent(event);return event.defaultPrevented;
+  },composing);
+  assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),true,'IME cancellation must not cancel context review');
+  assert.equal(await field.inputValue(),'12','candidate assumptions must survive IME cancellation');
+  assert.equal(await field.evaluate(input=>input===document.activeElement),true);
+  assert.equal(prevented,false,'leave the composition keystroke to the input method');
+  assert.deepEqual(await p.evaluate(()=>handle.getState()),state);assert.equal(p.url(),url);
+ }
+ await field.press('Escape');
+ assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),false);
+ assert.equal(await field.inputValue(),'5','ordinary Escape still restores the original assumptions');
+ assert.equal(await p.evaluate(()=>document.activeElement.getAttribute('data-im-action')),'set_horizon');
+ assert.deepEqual(await p.evaluate(()=>handle.getState()),state);assert.equal(p.url(),url);
+});
 test('Escape cancels reset without clearing assumptions',async t=>{
  const p=await setup(t);await calculate(p);await p.locator('[data-im-scenario-action="request_reset"]').click();
  await p.keyboard.press('Escape');assert.equal(await p.locator('[data-im-scenario-confirm-reset]').isVisible(),false);
  assert.equal(await p.locator('#im-scenario-local').inputValue(),'5');
 });
+for (const [action, attempted, retained, stateKey] of [
+ ['set_horizon','3m','1m','horizon'],
+ ['set_basis','local','usd_unhedged','currency_basis'],
+ ['select_market','KR','JP','selected_market'],
+]) for (const decision of ['cancel_reset','confirm_reset']) {
+ test(`reset confirmation restores a refused ${action} control before ${decision}`,async t=>{
+  const p=await setup(t);await calculate(p);
+  const old=await p.evaluate(()=>handle.getState()),url=p.url();
+  await p.locator('[data-im-scenario-action="request_reset"]').click();
+  const selector=action==='select_market'?'[data-im-history-panel] [data-im-action="select_market"]':`[data-im-action="${action}"]`;
+  await p.locator(selector).selectOption(attempted);
+  assert.equal(await p.locator(selector).inputValue(),retained,'refused input must show the committed research value');
+  assert.equal((await p.evaluate(()=>handle.getState()))[stateKey],retained);
+  assert.equal(p.url(),url);
+  assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),false);
+  assert.equal(await p.locator('[data-im-scenario-confirm-reset]').isVisible(),true);
+  assert.equal(await p.locator('#im-scenario-local').inputValue(),'5');
+  assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),true);
+  await p.locator(`[data-im-scenario-action="${decision}"]`).click();
+  assert.deepEqual(await p.evaluate(()=>handle.getState()),old);
+  assert.equal(p.url(),url);
+  assert.equal(await p.locator(selector).inputValue(),retained);
+  assert.equal(await p.locator('#im-scenario-local').inputValue(),decision==='cancel_reset'?'5':'');
+  assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),decision==='cancel_reset');
+ });
+}
 test('browser Back stages changed context, restores URL, and cancel keeps original context',async t=>{
  const p=await setup(t);await p.locator('[data-im-action="set_horizon"]').selectOption('3m');await calculate(p);
  await p.goBack();await p.waitForFunction(()=>document.querySelector('[data-im-scenario-confirm-context]').hidden===false);

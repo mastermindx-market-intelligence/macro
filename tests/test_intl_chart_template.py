@@ -34,9 +34,10 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert html.count('data-im-chart-cohort="c0"') == 1
     assert 'viewBox="0 0 640 220"' in html and 'width="100%"' in html
     assert 'role="img"' in html and 'aria-labelledby=' in html
-    assert '<title id="im-test-chart-c0-title">' in html
-    assert '<desc id="im-test-chart-c0-desc">' in html
-    assert 'Rebased market performance' in html
+    assert '<summary id="im-test-chart-c0-title">' in html
+    assert '<figcaption id="im-test-chart-c0-desc">' in html
+    assert 'aria-labelledby="im-test-chart-heading im-test-chart-c0-title"' in html
+    assert 'aria-describedby="im-test-chart-intro im-test-chart-c0-desc"' in html
     assert 'Same starting point. Different paths.' in html
     assert '相同起点，不同走势。' in html
     assert 'data-im-chart-series="JP"' in html
@@ -45,10 +46,15 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert 'data-im-chart-table-market="JP"' in html
     assert 'data-im-chart-table-market="GB"' in html
     assert 'no missing price or FX value was filled' in html
+    assert 'Line and point styles identify markets. Unobserved dates break the series' in html
+    assert '线型和点形用于区分市场。未观测日期中断曲线' in html
     assert 'data-im-chart-benchmark-unavailable' in html
     assert 'data-im-chart-selection-unavailable hidden' in html
-    assert '<text x="4" y="' in html
-    assert '<line x1="0" y1="6" x2="17" y2="6"' in html
+    assert 'data-im-chart-baseline-label' in html
+    assert 'Horizontal dashed reference line: 100.' in html
+    assert '水平虚线基准：100。' in html
+    assert '<text x="4" y="' not in html
+    assert '<line x1="0" y1="6" x2="31" y2="6"' in html
     assert '>2025-12-18</time>' in html
 
 
@@ -107,7 +113,9 @@ def test_discontinuous_isolated_observation_is_drawn_as_a_point(inputs):
     geom = build_chart_geometry(admitted)
     japan = next(p for p in geom["cohorts"][0]["paths"] if p["market_id"] == "JP")
     assert any(part["count"] == 1 for part in japan["segments"])
-    assert '<circle data-im-chart-series="JP"' in _render(geom)
+    html = _render(geom)
+    assert '<g data-im-chart-series="JP" data-im-chart-point' in html
+    assert 'data-im-chart-point-key' in html
 
 def test_chart_responsive_intrinsic_aspect_has_no_mobile_letterbox(inputs):
     """The same viewBox must retain geometry without a forced 220px phone box."""

@@ -241,7 +241,11 @@ def test_history_panel_is_one_shared_catalogue_not_per_horizon_pair():
     assert len(result['histories']) == 1
     assert len(result['histories'][0]['sections']) == 2
     assert [attrs['data-im-history-market'] for _, attrs in nodes if 'data-im-history-slot' in attrs] == ['JP', 'KR']
-    assert html.count('0.4375') == 1
+    # The same qualified observation is legitimately shown once in the
+    # history table and once in Snapshot Compare. A global numeric count
+    # mislabels that independent reading as a duplicate History catalogue.
+    assert html.count('<td>0.4375</td>') == 1
+    assert html.count('data-im-snapshot-growth>0.4375</span>') == 1
     assert html.count('data-im-generation="' + GENERATION + '"') == 1
 
 

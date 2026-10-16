@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en-last-column.png",
+    "sha256": "01b3577759503f0485c99d14cbb048e9e2bddff5d569c5ac2e55f3fee6e44700",
+    "keyboard_scroll": {
+      "left": 131,
+      "max": 131,
+      "focused": true
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en-last-column.png",
+    "sha256": "ce44837060f524a0966af5bd4afb4ce67042f402dc3a9b14410f46cd40646d77",
+    "keyboard_scroll": {
+      "left": 131,
+      "max": 131,
+      "focused": true
+    }
+  }
+]

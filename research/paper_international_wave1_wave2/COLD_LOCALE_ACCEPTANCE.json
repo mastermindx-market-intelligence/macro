@@ -1,0 +1,63 @@
+{
+  "schema": "paper.cold_locale_acceptance.v1",
+  "status": "LOCAL_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "base_commit": "a92657f60fb573ed3280d24e613a4fb7492278a5",
+  "procedure_pin": "1d5d1c05bc621193eae72a6c3d31d6a26036bd9f",
+  "problem": "A fresh Chinese International page shows English view, basis, Macro and Risk options until a language roundtrip. The publication optimizer defers theme.js after the workspace entry, so the entry reads html.lang before theme boot synchronizes it.",
+  "causal_evidence": "Actual publication optimizer over the full History fixture: saved Chinese and browser-detected Chinese fail on baseline entry; raw script order and saved English controls pass. Initial head bootstrap already selects data-lang.",
+  "repair": "Use the bootstrap-selected data-lang for initial option labels, falling back to html.lang. Retain the existing language-change listener. No controller or theme change.",
+  "regression": {
+    "new_cases": 6,
+    "matrix": "raw/published script order x saved English over Chinese browser, saved Chinese over English browser, browser Chinese without saved language",
+    "causal_red": "4PASS2FAIL; both failures are published Chinese option-label mismatch",
+    "final_page_entry": "44PASS0FAIL0SKIP across intl_workspace_page.test.cjs and intl_workspace_legacy_navigation.test.cjs; includes6 new cases, counts not additive",
+    "controller_ablation": "Original controller with repaired entry passed both published Chinese cases. Existing MutationObserver already repaints scenario context; proposed controller change exactly removed. Filename CONTROLLER_RED_CAUSAL.log is historical and contains2PASS, not a red result."
+  },
+  "rendered": {
+    "cases": 8,
+    "matrix": "Dark/Light x EN/ZH x1440/320",
+    "options_checked_per_case": 256,
+    "assets": 26,
+    "page_overflow": false,
+    "scenario_context": "Localized on first load without language roundtrip",
+    "parent_viewed": [
+      "final-cold-dark-zh-320.png",
+      "final-cold-light-en-1440.png"
+    ]
+  },
+  "dark_treatment": "Existing dark instrument surfaces unchanged; initial option labels now follow the selected language.",
+  "light_treatment": "Existing light research surfaces unchanged; initial option labels now follow the selected language.",
+  "rejected_evidence": [
+    "Initial RED.log has6 failures:4 caused by a History-disabled harness fixture and2 genuine Chinese failures; only corrected RED_CAUSAL.log establishes the regression.",
+    "CONTROLLER_RED.log has a scratch __dirname setup failure.",
+    "GREEN.log and RENDERED.json used an intermediate controller candidate. Final accepted checks use baseline controller bytes.",
+    "Broad intermediate CLOSURE.log was stopped after ablation narrowed scope; session30371 exit1 from owned root48402/child49608 SIGTERM. It is not a complete accepted suite."
+  ],
+  "served_workflow": {
+    "receipt": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/macro-risk-history-20261014-r1/SERVED_WORKFLOW.json",
+    "sha256": "e4390d09636b7fa0c6fe33117df653cc2c8e6c1c1a8c8484cca4f2f6145f9c0f",
+    "scope": "Existing Chrome profile completed Macro/Policy-Risk-History context and return navigation. ECB observation2026-10-09 and source qualification visible; Risk and History absence honest. Old duplicate Risk copy/empty disclosure and cold Chinese mismatch reproduced on served bytes. Repaired source is not deployed."
+  },
+  "independent_review": "PENDING under retained original Fabric support-publication policy refusal. No new worker, retry, replacement reviewer, alternate carrier or ledger acceptance. Parent verification is not independent acceptance.",
+  "limits": [
+    "Synthetic History permission and retained publication are not current rights or live source qualification.",
+    "Floating launcher overlap remains inherited and open; no full visual accessibility acceptance.",
+    "Native200percent zoom, Auto full workflow, Saved, Paper parity, protected release and deployment remain incomplete.",
+    "All IW2 Terminal804 custody, frozen-effect, migration, rights and platform holds remain."
+  ],
+  "source_sha256": {
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "site/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "tests/intl_workspace_page.test.cjs": "467e607fbb05c375f239103b390dc6f93cbdebe941a11f98d138268e3d1a58fc"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/cold-locale-20261014-r1",
+  "evidence_sha256": {
+    "RED_CAUSAL.log": "310452b84df46268da120bb47ea9e165141d2062bb07b27666cdc51925645c1d",
+    "CONTROLLER_RED_CAUSAL.log": "7ee6b2feb79279cffd78d7d68955d2793b4ff44b99cb0403fc3d53429fc72484",
+    "FINAL_PAGE_ENTRY.log": "625cdad9b2d6b9dc07cd9dcd0b17d490654b8c8c70caac9683162ec986cdd02a",
+    "FINAL_RENDERED.json": "806191606054682941d1a72da5cbf3e10e5e3ad0f79a7b1f1657bd944d99cf1c",
+    "rendered_final.py": "f77043bd864305575d3f722a0dd51ece15e21445d66cdca0a4d035180ba47f5c",
+    "CHECKS.json": "31e03ea98c4111186196686ccc9b23aba567d7e98feb546b5d49200f0304afd7"
+  },
+  "mechanical_checks": "Design, visual mechanical and whitespace checks pass; AgentOS0errors146inheritedwarnings. Template/site parity115pairs passed before evidence-only records; paired entry assets remain byte-identical."
+}

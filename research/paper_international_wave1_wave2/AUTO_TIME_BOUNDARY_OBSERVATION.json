@@ -1,0 +1,122 @@
+{
+  "status": "ACCEPTED_SCOPED_PARENT_OBSERVATION",
+  "created_at": "2026-10-14T07:27:54.237760+00:00",
+  "source_head": "2aae6530bbc257da6d54f36b04f7d034457e3742",
+  "source_tree": "bafb5dbd4afa3f0316a23debce768d768bb8c0fe",
+  "product_changed": false,
+  "deployed": false,
+  "scope": "Actual publisher-optimized retained synthetic International full page, current source assets, isolated headless Chrome and virtual UTC browser clock. No live browser or OS clock interaction.",
+  "new_claims": [
+    "Across 06:58 to 07:01 and 18:58 to 19:01 Auto does not change theme or emit themechange. This is an observed one-time-selection/boot implementation, not acceptance of a continuous scheduler requirement.",
+    "Explicit invocation of the existing setThemeAuto entry selects the new hour theme exactly once without replacing Scenario input or Inspector payload/focus, changing URL/context/generation, or changing displayed History text.",
+    "The manual +5/-3 draft and +1.85% result survive; Escape follows field to ledger to read to exact origin; returning to Scenario preserves the draft."
+  ],
+  "cases": [
+    {
+      "boundary": "07:00",
+      "before": "dark",
+      "after_reapplication": "light",
+      "lang": "en",
+      "width": 1440,
+      "boundary_and_reapplication_checks": "PASS",
+      "status": "PASS_SCOPED",
+      "clock": {
+        "hour": 7,
+        "minute": 1
+      },
+      "theme_after_clock_crossing": "dark",
+      "theme_events_after_reapply": [
+        "light"
+      ],
+      "draft_result": "1.85%",
+      "same_nodes_focus_context": true,
+      "source_history_unchanged": true
+    },
+    {
+      "boundary": "19:00",
+      "before": "light",
+      "after_reapplication": "dark",
+      "lang": "zh",
+      "width": 320,
+      "boundary_and_reapplication_checks": "PASS",
+      "status": "PASS_SCOPED",
+      "clock": {
+        "hour": 19,
+        "minute": 1
+      },
+      "theme_after_clock_crossing": "light",
+      "theme_events_after_reapply": [
+        "dark"
+      ],
+      "draft_result": "1.85%",
+      "same_nodes_focus_context": true,
+      "source_history_unchanged": true
+    }
+  ],
+  "historical_fixture": {
+    "path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/macro-risk-history-20261014-r1/admitted.final.html",
+    "sha256": "306105a5f491914851e11f513f06e8598e4e76e5ec58f8a50360369e32f8b512",
+    "optimized_sha256": "7f78318071e3a820d4ce6b77b9348d55caf929dbaa724995b864a892674924fc"
+  },
+  "assets": {
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+    "templates/intl_workspace.css": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+    "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+    "templates/intl_workspace_risk.css": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+    "templates/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+    "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+    "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+    "templates/intl_workspace_scenario.js": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "templates/intl_workspace_entry.js": "2ecaf80b2b99fb425eb4ccc200c2030fdb563accf39dfaad30ef6ab8938cd223",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+    "templates/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "templates/terminal_overlay.js": "bb582bd6205f44687650a82d5731bbc03766995a3eb3e5676ad6930f8a2748e3",
+    "templates/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+  },
+  "reproduction": {
+    "script": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/auto-boundary-20261014-r1/journey.py",
+    "script_sha256": "5b9af867c4bed11bba8afc89fec5c7cdcc37e1aefdde4a21b4cc08bed3c2d408",
+    "result_sha256": "8e5ac6da062b270983b6b3ba4ef8bffce0224f5238c630fe7e9c654597052ef4",
+    "log_sha256": "447722eaaec589c7b5ef867f4d28cba5a65b77a45bdcce5699ffd3b2591a6152",
+    "command": "python3 /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/auto-boundary-20261014-r1/journey.py",
+    "exit_code": 0
+  },
+  "rejected_harness_runs": [
+    {
+      "prefix": "INITIAL_",
+      "cause": "Tried the hidden inline ledger summary in enhanced modal instead of visible Evidence control; neither case reached time boundary."
+    },
+    {
+      "prefix": "ORIGIN_LOCATOR_",
+      "cause": "Assumed one Escape from a field closes modal; selector expected payload already restored to origin. Boundary/reapplication assertions completed but final journey did not."
+    },
+    {
+      "prefix": "ESCAPE_EXPECTATION_",
+      "cause": "Saved exact trigger confirms first Escape leaves modal open and returns to field trigger in ledger, per existing inspectorBack contract. Corrected traversal to three explicitly checked steps; no product fix."
+    }
+  ],
+  "clarifications": [
+    "RESULT.json source_history_unchanged means retained History DOM text equality only, not a new source-reader or data-file immutability test.",
+    "Explicit reapplication used the existing function while modal stayed open; this does not claim the settings UI can be reached behind a modal.",
+    "Two final distinct cases only. Failed harness attempts and partial boundary assertions are not additional passed journeys."
+  ],
+  "independent_review": "NOT_EXECUTED; original Fabric support-publication policy refusal retained; no replacement review requested",
+  "remaining": [
+    "No continuous Auto scheduler requirement decided or implemented.",
+    "No screen-reader speech, native zoom, actual OS IME, independent visual review, current source rights, authenticated live acceptance or deployment.",
+    "All existing custody, qualification, frozen-effect, rights, Saved, migration, review, browser and release holds persist."
+  ]
+}

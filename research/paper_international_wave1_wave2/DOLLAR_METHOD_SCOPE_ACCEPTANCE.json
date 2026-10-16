@@ -1,0 +1,394 @@
+{
+  "base_head": "150e6fbe07ebccdccfa313b961aab39b2022b339",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "NOT_OBSERVED",
+  "capability": "Dollar descriptions identify residual-model categories rather than market causes. Method, computation clock and independent five-day index-point units retain their own scope.",
+  "source_hashes": {
+    "templates/intl.html.j2": "9ad39d497b18cde1490e59d3a50e992b8f9bf5bfd2371acfd1f1a7577579a93d",
+    "engine/forex_dollar.py": "83704866ea0ddf152b7cd9ec4f44e290552546ccc142d001b197e2bff6aa9535",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "tests/test_intl_dollar_method_render.py": "7c02a96b31890f889dc98bd9c7103b5105a02b48608b3c6a7b57b3bb38e40b28",
+    "tests/test_intl_dollar_absence_render.py": "0eabddd785c2a5223745444164679443042dc54d35d35f86ef3758f0c0531b85",
+    "tests/intl_workspace_page.test.cjs": "c705e942b297b4c13aed856f2c8f6a9ac9ba521d440f9d45158fd8e4365248f7"
+  },
+  "verification": {
+    "red": "10 method/clock render FAIL1independent-signal PASS;1browser FAIL. Separate2actual-owner index-unit render FAIL.",
+    "green_python": "22PASS14inheritedwarnings before unit correction;4targetedPASS20deselected14warnings after.24unique cases covered; counts overlap, not26.",
+    "green_browser": "8method/absence cases PASS before independent tag correction, whose no-tag fixtures are unchanged by that edit;4final flag cases PASS.12unique browsercases,24width states320/1440.",
+    "canonical": "8final1440/390 Dark/Light EN/ZH captures.12focused images include4existing-LENS native Enter/Escape interactions."
+  },
+  "owner_counterexamples": [
+    {
+      "drift": -0.003,
+      "output": {
+        "beta": 0.0027,
+        "r2": 0.001,
+        "residual_20d": -0.0581,
+        "residual_20d_z": -4.025,
+        "regime": "mixed",
+        "regime_60d": "mixed",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:27.768791+00:00"
+      }
+    },
+    {
+      "drift": -0.001,
+      "output": {
+        "beta": 0.0071,
+        "r2": 0.007,
+        "residual_20d": -0.02214,
+        "residual_20d_z": -2.015,
+        "regime": "mixed",
+        "regime_60d": "mixed",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:27.932276+00:00"
+      }
+    },
+    {
+      "drift": -0.0003,
+      "output": {
+        "beta": 0.0087,
+        "r2": 0.011,
+        "residual_20d": -0.00955,
+        "residual_20d_z": -0.923,
+        "regime": "rates-driven",
+        "regime_60d": "mixed",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:28.157865+00:00"
+      }
+    },
+    {
+      "drift": 0,
+      "output": {
+        "beta": 0.0093,
+        "r2": 0.013,
+        "residual_20d": -0.00416,
+        "residual_20d_z": -0.408,
+        "regime": "rates-driven",
+        "regime_60d": "rates-driven",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:28.271922+00:00"
+      }
+    },
+    {
+      "drift": 0.0003,
+      "output": {
+        "beta": 0.01,
+        "r2": 0.015,
+        "residual_20d": 0.00123,
+        "residual_20d_z": 0.122,
+        "regime": "rates-driven",
+        "regime_60d": "rates-driven",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:28.365160+00:00"
+      }
+    },
+    {
+      "drift": 0.001,
+      "output": {
+        "beta": 0.0116,
+        "r2": 0.02,
+        "residual_20d": 0.01382,
+        "residual_20d_z": 1.345,
+        "regime": "safety-driven",
+        "regime_60d": "safety-driven",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:28.473882+00:00"
+      }
+    },
+    {
+      "drift": 0.003,
+      "output": {
+        "beta": 0.016,
+        "r2": 0.029,
+        "residual_20d": 0.04978,
+        "residual_20d_z": 3.901,
+        "regime": "safety-driven",
+        "regime_60d": "safety-driven",
+        "safety_bid_today": false,
+        "ols_window_days": 120,
+        "z_window_days": 252,
+        "regime_thresholds": {
+          "rates_driven": "|z| < 1",
+          "safety_driven": "z >= 1 (positive residual \u2014 DXY up more than rates explain)",
+          "mixed": "z <= -1 (negative residual \u2014 risk-appetite, DXY soft vs rates)"
+        },
+        "weights_used": {
+          "eur2y": 1.0
+        },
+        "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 1.0}.",
+        "gaps": [
+          "smile_decomp: jpy_2y absent \u2014 re-weighted to available",
+          "smile_decomp: gbp_2y absent \u2014 re-weighted to available"
+        ],
+        "display_only": true,
+        "built": "2026-10-14T14:09:28.614887+00:00"
+      }
+    }
+  ],
+  "signal_units": {
+    "scope": "actual owner on synthetic six observations; no provider I/O",
+    "dxy_start": 120.0,
+    "dxy_end": 121.2,
+    "actual_percent_change": 1.0,
+    "output": {
+      "state": "quiet",
+      "tier1": {
+        "em_stress_state": "unknown",
+        "hottest_region": null,
+        "regional_oas": {
+          "asia": null,
+          "latam": null,
+          "emea": null
+        }
+      },
+      "tier2": {
+        "hot_count": 0,
+        "legs": {
+          "safety_bid_flag": {
+            "dxy_5d_chg": 1.2,
+            "dgs2_5d_chg": -4.5,
+            "safety_bid": true,
+            "hot": false,
+            "note": "DXY up & 2y yield down = safe-haven demand, not hot for K-of-N"
+          }
+        }
+      },
+      "safety_bid": true,
+      "gaps": [
+        "tier1: regional OAS BAMLEMRACRPIASIAOAS absent",
+        "tier1: regional OAS BAMLEMRLCRPILAOAS absent",
+        "tier1: regional OAS BAMLEMRECRPIEMEAOAS absent",
+        "tier2: BAMLH0A0HYM2 (US HY OAS) absent",
+        "tier2: KRE or SPY insufficient data for RS",
+        "tier2: _MOVE absent from yahoo store",
+        "tier2: SOFR or IORB absent"
+      ],
+      "state_logic": "quiet: tier1 calm | contained: tier1>=strained, 0 tier2 hot | watching: 1 tier2 hot | transmitting: >=2 tier2 hot with tier1>=strained",
+      "built": "2026-10-14T14:16:35.962545+00:00"
+    }
+  },
+  "manifest_sha256": "4d2ae0aaf6fc66435e8ed7100f3f1e17f92c0d392d49049a00a96864952bdb7f",
+  "parent_review": {
+    "state": "PARENT_SOURCE_ACCEPTED_WITH_RETAINED_VISUAL_LIMIT",
+    "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+    "images_viewed": [
+      "cards-1440-dark-en.png",
+      "method-1440-dark-en.png",
+      "header-1440-dark-en.png",
+      "cards-1440-light-en.png",
+      "method-1440-light-en.png",
+      "header-1440-light-en.png",
+      "cards-390-dark-zh.png",
+      "method-390-dark-zh.png",
+      "header-390-dark-zh.png",
+      "cards-390-light-zh.png",
+      "method-390-light-zh.png",
+      "header-390-light-zh.png"
+    ],
+    "findings": [
+      "All12focused images were viewed. Header, residual category, unit tag and independently labelled clocks are legible in1440EN and390ZH Dark/Light. Existing distinct material treatments retained; no card clipping observed.",
+      "The expanded desktop LENS text is readable. On390ZH the inherited floating launcher obscures the right side of several lower method lines in both themes. This is retained as an actual visual limitation, not a PASS for unobstructed mobile reading.",
+      "Existing LENS Enter/Escape and viewport containment succeeded in4states. These checks do not detect or clear launcher occlusion. No native zoom, screen-reader or live acceptance claim."
+    ],
+    "scope": "Actual owner calculations on synthetic observations; no independent reviewer, production delivery or statistical/market validation."
+  },
+  "capture_limits": {
+    "console_error_count": 1,
+    "by_viewport": {
+      "desktop": {
+        "document_height_px": 3895,
+        "elements_wider_than_viewport": 0,
+        "horizontal_overflow": false
+      },
+      "mobile": {
+        "document_height_px": 5393,
+        "elements_wider_than_viewport": 4,
+        "horizontal_overflow": false
+      }
+    }
+  },
+  "limits": [
+    "No provider acquisition, engine calculation/threshold/weight changes, new freshness or qualification contract.",
+    "Mobile Chinese LENS has inherited floating-launcher occlusion; unobstructed mobile method reading is not accepted.",
+    "No served repaired bytes, native zoom, speech, physical touch or complete accessibility proof.",
+    "Independent review remains pending after original policy refusal; all custody, frozen-effect, rights, Saved, migration and release holds retained."
+  ],
+  "next_boundary": {
+    "state": "DISTINCT_OWNER_COUNTEREXAMPLES_NO_FUNDING_REPAIR_YET",
+    "engine_sha256": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "funding_block_sha256": "3400a096fe240743e453903265c8e5b981a7d71dce1c4180447f9d007a63863c",
+    "cases": [
+      {
+        "case": "absent",
+        "actual_owner_corridor": null,
+        "owner_gaps": [
+          "tier1: regional OAS BAMLEMRACRPIASIAOAS absent",
+          "tier1: regional OAS BAMLEMRLCRPILAOAS absent",
+          "tier1: regional OAS BAMLEMRECRPIEMEAOAS absent",
+          "tier2: BAMLH0A0HYM2 (US HY OAS) absent",
+          "tier2: KRE or SPY insufficient data for RS",
+          "tier2: _MOVE absent from yahoo store",
+          "tier2: SOFR or IORB absent",
+          "tier2: DXY or DGS2 absent for safety-bid flag"
+        ],
+        "swap_lines_bn": null,
+        "text": "Dollar Funding \u7f8e\u5143\u878d\u8d44 Calm \u5e73\u9759 Money-market spreads normal \u8d27\u5e01\u5e02\u573a\u606f\u5dee\u6b63\u5e38 Ignore \u5ffd\u7565 \u2014 no funding stress \u2014\u2014\u65e0\u878d\u8d44\u538b\u529b",
+        "classes": [
+          "ird-hchip",
+          "state-ok"
+        ]
+      },
+      {
+        "case": "not_triggered",
+        "actual_owner_corridor": {
+          "value": -0.01,
+          "last5_all_positive": false,
+          "hot": false,
+          "threshold": "SOFR-IORB > 0 for 5 consecutive days",
+          "caveat": "Quarter-end spikes (late Dec/Mar/Jun/Sep) are technical \u2014 not structural funding stress; verify calendar proximity."
+        },
+        "owner_gaps": [
+          "tier1: regional OAS BAMLEMRACRPIASIAOAS absent",
+          "tier1: regional OAS BAMLEMRLCRPILAOAS absent",
+          "tier1: regional OAS BAMLEMRECRPIEMEAOAS absent",
+          "tier2: BAMLH0A0HYM2 (US HY OAS) absent",
+          "tier2: KRE or SPY insufficient data for RS",
+          "tier2: _MOVE absent from yahoo store",
+          "tier2: DXY or DGS2 absent for safety-bid flag"
+        ],
+        "swap_lines_bn": null,
+        "text": "Dollar Funding \u7f8e\u5143\u878d\u8d44 Calm \u5e73\u9759 Money-market spreads normal \u8d27\u5e01\u5e02\u573a\u606f\u5dee\u6b63\u5e38 Ignore \u5ffd\u7565 \u2014 no funding stress \u2014\u2014\u65e0\u878d\u8d44\u538b\u529b",
+        "classes": [
+          "ird-hchip",
+          "state-ok"
+        ]
+      },
+      {
+        "case": "triggered",
+        "actual_owner_corridor": {
+          "value": 0.02,
+          "last5_all_positive": true,
+          "hot": true,
+          "threshold": "SOFR-IORB > 0 for 5 consecutive days",
+          "caveat": "Quarter-end spikes (late Dec/Mar/Jun/Sep) are technical \u2014 not structural funding stress; verify calendar proximity."
+        },
+        "owner_gaps": [
+          "tier1: regional OAS BAMLEMRACRPIASIAOAS absent",
+          "tier1: regional OAS BAMLEMRLCRPILAOAS absent",
+          "tier1: regional OAS BAMLEMRECRPIEMEAOAS absent",
+          "tier2: BAMLH0A0HYM2 (US HY OAS) absent",
+          "tier2: KRE or SPY insufficient data for RS",
+          "tier2: _MOVE absent from yahoo store",
+          "tier2: DXY or DGS2 absent for safety-bid flag"
+        ],
+        "swap_lines_bn": null,
+        "text": "Dollar Funding \u7f8e\u5143\u878d\u8d44 Under stress \u538b\u529b\u4e2d Money-market spreads normal \u8d27\u5e01\u5e02\u573a\u606f\u5dee\u6b63\u5e38 Watch \u5173\u6ce8 \u2014 funding stress building \u2014\u2014\u878d\u8d44\u538b\u529b\u79ef\u7d2f\u4e2d",
+        "classes": [
+          "ird-hchip",
+          "state-warn"
+        ]
+      }
+    ],
+    "scope": "actual owner on synthetic data; no provider I/O, qualification, production or inherited-engine repair",
+    "next_action": "Preserve missing corridor as unavailable, distinguish a supplied false threshold from a blanket calm market verdict, and avoid a normal-spreads statement when hot is true. Disclose swap-line availability and its exact billion-dollar unit independently; builder converts SWPT millions by1000. Preserve source thresholds/caveat and do not invent clocks."
+  }
+}

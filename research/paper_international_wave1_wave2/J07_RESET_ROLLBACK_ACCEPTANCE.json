@@ -1,0 +1,76 @@
+{
+  "schema": "paper.j07.reset_rollback_acceptance.v1",
+  "status": "SOURCE_ACCEPTED_RELEASE_HELD",
+  "base_head": "1c4b124b8d67ea8e277709831e2c3fc3b601d62e",
+  "program_status": "INCOMPLETE",
+  "source_sha256": {
+    "templates/intl_workspace.js": "d12c415bc5c49a2e43a14f8489da1a947f1ba1cfd0cca59efd55b0a792cfd65b",
+    "site/intl_workspace.js": "d12c415bc5c49a2e43a14f8489da1a947f1ba1cfd0cca59efd55b0a792cfd65b",
+    "templates/intl_workspace.css": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+    "site/intl_workspace.css": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+    "tests/intl_workspace_history_controller.test.cjs": "2db396a06430232f4a35bcba33c940e8a133dfc216b5ff0dc4836c4959704a3a"
+  },
+  "problem": "Changing a native context selector while Scenario reset confirmation is open leaves the refused value displayed, contrary to committed state/URL.",
+  "repair": "Repaint committed controls on refused propose_context. Copy the already-preserved canonical Overview CSS to its stale derived site copy.",
+  "checks": [
+    {
+      "name": "New browser regression before repair",
+      "result": "6 FAIL at retained-value assertion; horizon/basis/market x cancel/confirm reset",
+      "evidence_sha256": "cb924f2b42d92a6f53126a962a69c88adc181a7cb3e70378c8e4e697b9ac1989"
+    },
+    {
+      "name": "Affected history controller, draft, arithmetic",
+      "result": "119 PASS,0fail,0skip",
+      "evidence_sha256": "42a8ca06ad8e2b2856a5ea5aca6aaec768e7b2d2527c3be598975877d88174dc"
+    },
+    {
+      "name": "Full 11-file controller browser regression",
+      "result": "184 PASS,0fail,0skip",
+      "evidence_sha256": "2b2cd162d66cffc7539aa8e5ef3847214122abbbdf221e4cc034496b5be9c3bd"
+    },
+    {
+      "name": "Repaired full-page scenarios",
+      "result": "12 PASS; desktop1440 EN/dark and320 ZH/light,200percent text scaling",
+      "evidence_sha256": "39bbee881a74d18b12f28ab1791893743e9810ceb68fc3fa7b9340ea92057d3a"
+    },
+    {
+      "name": "Template/site sync",
+      "result": "114 pairs match; fixed inherited CSS divergence by exact canonical copy",
+      "evidence_sha256": "c965b0e36f71de2bc5c85b54700a90b52ed063d82ce434bf1d31833d704e0825"
+    }
+  ],
+  "prior_supporting_proof": {
+    "result": "120 assertions across8 full-page cases on unchanged pre-repair candidate",
+    "assets": "26 SHA256 values matched base commit",
+    "scope": "Synthetic missing-data composition; not native browser zoom"
+  },
+  "live_observation": {
+    "url": "https://www.mastermind-x.com/intl.html?view=history&market=JP&horizon=1m&basis=usd_unhedged&return_basis=price",
+    "result": "Signed-in existing-profile manual calculation, invalid handling, context cancellation, reset and theme/locale transitions observed; live rollback defect remains unrepaired until publication",
+    "proof_sha256": "c364d19460073fe256191e4dd5e39e22498b2f892749398244259d403a4617d7",
+    "anonymous": "Fresh anonymous context had200HTML but401on5Intlcontrollers; does not establish signed-in failure"
+  },
+  "reviews": [
+    {
+      "run_id": "paper-01a1101f-j07-browser-review-20261013-r1",
+      "result_sha256": "bcac79ff990c08b7e6353cf3daf16c4eda9c6239894614b8ba8d7463b50b57a0",
+      "parent_sha256": "7fd5e2ad634ddc43d42ec0a1f62926eaf65b6d40583873a4d874991ee27a6a87",
+      "scope": "Bounded test challenges accepted with explicit corrections; no final artifact execution."
+    },
+    {
+      "run_id": "paper-01a1101f-j07-reset-rollback-review-20261013-r1",
+      "result_sha256": "c27a1c170ef68053ec3387e402874da4864814cdd1044f393e04c8ff2a0004bf",
+      "parent_sha256": "bd8984b506a6fb711b456a234d3c67b488792f0e1ffa6621cc0b2cd2f8da7c3b",
+      "scope": "Static APPROVE_SCOPED plus parent actual red/green and full-page checks; paint-body limitation resolved by parent."
+    }
+  ],
+  "external_evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j07-live-20261013-r1",
+  "limits": [
+    "Source and local rendered repair acceptance only; repaired bytes not live.",
+    "No full-journey Paper/parity/accessibility, native200percentzoom, lawful source qualification or genuine IntlSaved acceptance.",
+    "No PRready/merge/autoarm/deploy, migrations, rights changes or frozen-operation retries.",
+    "IW2 retains all PR804 source/capture/server/push/CI custody.",
+    "Both new Fabric runs terminalrc0/REMOTE_CLEANED and revieweraccepted; usage receipts missing.",
+    "Original frozen qualifier/reviews and releaseholds unchanged."
+  ]
+}

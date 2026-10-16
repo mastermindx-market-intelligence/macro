@@ -60,6 +60,30 @@ test('native picker and remove use the reducer and language/resize add no histor
  assert.deepEqual(await p.evaluate(()=>({state:h.getState(),history:history.length,url:location.href})),before);
  await p.locator(active+' [data-im-compare-remove="0"]').click();assert.deepEqual(await rows(p),[0,1,2,3,4,5,6]);
 }));
+for(const lang of ['en','zh']) for(const failure of ['pin limit','history failure']) {
+ test(`native picker clears refused selection after ${failure} ${lang}`,async()=>fixture(async p=>{
+  await p.evaluate(lang=>document.documentElement.lang=lang,lang);
+  const picker=p.locator(active+' [data-im-compare-pin]');
+  for(const slot of (failure==='pin limit'?['0','1','2','3']:['0','1'])) await picker.selectOption(slot);
+  const before=await p.evaluate(()=>({state:h.getState(),url:location.href,history:history.length}));
+  const beforeRows=await rows(p);
+  await picker.focus();
+  if(failure==='history failure') await p.evaluate(()=>{window.originalPush=history.pushState;history.pushState=()=>{throw Error('synthetic history failure')};});
+  try { await picker.selectOption('4'); }
+  finally { if(failure==='history failure') await p.evaluate(()=>history.pushState=originalPush); }
+  assert.deepEqual(await p.evaluate(()=>({state:h.getState(),url:location.href,history:history.length})),before);
+  assert.deepEqual(await rows(p),beforeRows);
+  assert.equal(await picker.inputValue(),'','a refused add must not look like a committed selection');
+  assert.equal(await picker.evaluate(n=>n===document.activeElement),true);
+  if(failure==='pin limit') {
+   assert.match(await p.locator('[data-im-issues]').textContent(),lang==='zh'?/已达固定上限/:/Pin limit reached/);
+   await p.locator(active+' [data-im-compare-remove="3"]').click();
+  }
+  await picker.selectOption('4');
+  assert.equal(await picker.inputValue(),'');
+  assert.equal(await p.evaluate(()=>h.getState().compare_markets.includes('AU')),true);
+ }));
+}
 for(const [name,mutation] of [
  ['duplicate slot',()=>document.querySelector('[data-im-compare-slot="1"]').dataset.imCompareSlot='0'],
  ['wrong cohort',()=>document.querySelector('[data-im-compare-slot="1"]').dataset.imCompareCohortId='c1'],

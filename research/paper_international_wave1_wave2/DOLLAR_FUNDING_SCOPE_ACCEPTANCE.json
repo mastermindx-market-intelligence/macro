@@ -1,0 +1,115 @@
+{
+  "base_head": "7573ed1f6a74e8bf9cd068d12cd652411edd64b5",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Dollar funding distinguishes missing corridor, supplied threshold result and independent swap balance; displays basis points and correct Chinese amount units. Shared desk build is not an observation date.",
+  "source_hashes": {
+    "templates/intl.html.j2": "aa16a0075572ecf843409a7c3284a44427de14060bed3f246968155777ff5da5",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "tests/test_intl_dollar_funding_render.py": "29d173fb7c55c7c03e4280ab66daf24119313b6514a2d1ee29fe01aad60e6262",
+    "tests/intl_workspace_page.test.cjs": "4959662db36c8fe6f1d9a77a1620a90ce110fc97be8791b50511cd3289231279"
+  },
+  "verification": {
+    "red": "10originalfunding renderFAIL;2shared-clock renderFAIL;1originalbrowserFAIL;1additional price-color renderFAIL after actual visual discovery.",
+    "green": "12PythonPASS plus1targetedcolorPASS,13unique cases;14inheritedwarnings each. Initial4browsercandidate cases failed through nonexistent anchor; corrected real route and explicit visibility checks pass1+3=4unique cases,8widthstates320/1440. After removing price-direction colors,2affectedLightcases pass again with new caution/info assertions. Counts overlap; still4uniquecases.",
+    "canonical": "8finalcaptures1440/390DarkLightENZH;8focused parent images.",
+    "reuse": {
+      "base_head": "7573ed1f6a74e8bf9cd068d12cd652411edd64b5",
+      "unchanged_sections": {
+        "dollar_chip": "211177eb4e675cd625948b83db47a3297c48a93f05ad89cea7033be0e1ba2611",
+        "dollar_panel": "c995a33fea4d59ef16474f8c050033c5804088fca40d388e4a134037708b38d3"
+      },
+      "owner_and_builder_unchanged": true,
+      "reuse_scope": "Previously accepted Dollar card/header content and its method LENS source are unchanged. Funding and shared desk footer are new; whole-page source differs. No old screenshot is restamped."
+    }
+  },
+  "harness_correction": {
+    "initial": "GREEN_BROWSER.log retains4semantic failures through nonexistent intl-risk-legacy anchor; not accepted rendered proof",
+    "correction": "Use existing intl-dollar-conditions anchor, assert funding chip isVisible, retain semantic and geometry assertions; add diagnostic text to failures",
+    "corrected_first": "CORRECTED_ROUTE_ONE.log darkEnglish PASS; remaining3 cases running separately; do not sum as5unique cases",
+    "corrected_remaining": "CORRECTED_ROUTE_REMAINING.log remaining3PASS;4unique cases8width states, no repeated accepted cases"
+  },
+  "parent_review": {
+    "state": "PARENT_SOURCE_ACCEPTED",
+    "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+    "viewed_final": [
+      "funding-1440-dark-en.png",
+      "funding-1440-light-en.png",
+      "funding-390-dark-zh.png",
+      "funding-390-light-zh.png"
+    ],
+    "findings": [
+      "Dark and Light retain readable hierarchy and caution border; threshold text uses the existing neutral info class in both languages.",
+      "Displayed +2.0bp and $1.2bn/12.0\u4ebf\u7f8e\u5143 match supplied fixture values.",
+      "EN and ZH rule text wraps within the card without clipping."
+    ],
+    "reused_views": [
+      {
+        "file": "desk-clock-1440-dark-en.png",
+        "sha256": "95368bba0e4566624ade34ec7a96421c003b2cc92d5edd39fb5e59325713acfd",
+        "reason": "Byte-identical to previously parent-viewed clock image."
+      },
+      {
+        "file": "desk-clock-1440-light-en.png",
+        "sha256": "30a742e927201bec4d7c923f65601175a31e027d95b74cb5895d51c2604deb26",
+        "reason": "Byte-identical to previously parent-viewed clock image."
+      },
+      {
+        "file": "desk-clock-390-dark-zh.png",
+        "sha256": "ab2195056f416805d2cd01e61a972fe683e581c2ee5c7db45bc56757c4148878",
+        "reason": "Byte-identical to previously parent-viewed clock image."
+      },
+      {
+        "file": "desk-clock-390-light-zh.png",
+        "sha256": "035631af1d2c669c1d0b032dcf008d22e163f79752d38ad74b76be157b7e1f56",
+        "reason": "Byte-identical to previously parent-viewed clock image."
+      }
+    ],
+    "limits": [
+      "Scoped parent render review only; not independent design approval or served acceptance.",
+      "Retained mobile LENS overlap belongs to the next distinct repair."
+    ]
+  },
+  "color_correction": {
+    "finding": "Triggered funding header inherits red/green price-direction tokens and switches green in Chinese. This is a Boolean threshold, not a market-price direction.",
+    "rejected_images": "before-directional-color-correction",
+    "repair": "Existing state-caut border plus info text; no new palette/CSS.",
+    "acceptance": "Previous functional cases remain bounded; visual acceptance withheld until final recapture."
+  },
+  "manifest_sha256": "02158c9e998c7784fb246a45c32e26e403cb4486d23ae3e942a1e16e41df7da6",
+  "capture_limits": {
+    "console_error_count": 1,
+    "by_viewport": {
+      "desktop": {
+        "document_height_px": 3792,
+        "elements_wider_than_viewport": 0,
+        "horizontal_overflow": false
+      },
+      "mobile": {
+        "document_height_px": 5222,
+        "elements_wider_than_viewport": 4,
+        "horizontal_overflow": false
+      }
+    }
+  },
+  "limits": [
+    "No owner calculation, threshold, data acquisition, clock, freshness or qualification contract invented.",
+    "Isolated source fixtures, not deployed behavior, nativezoom, speech, physical touch or complete accessibility.",
+    "Independent review and all original release, frozen-effect, rights, Saved, migration, browser and IW2 custody holds remain."
+  ],
+  "next": {
+    "state": "SOURCE_CAUSE_IDENTIFIED_NOT_YET_REPAIRED",
+    "evidence": "dollar-method-scope-20261014-r1/method-390-{dark,light}-zh.png show actual floating stub over LENS text",
+    "source_hashes": {
+      "templates/theme.js": "5862cfc9505a71727b2395e20ab34451ab3ca7cc67fa7163d8a6bfa8f7c59294",
+      "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+      "site/theme.js": "80c7061d17e8718283adcd4913ca5becddf43a3a232e5624b6cedd7ff8c09f79",
+      "site/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2"
+    },
+    "cause": "theme.js existing mobile LENS lock hides only #mmb-root; actual resting launcher is #mmb-boot with z-index2147483000. Boot stub is not inside mmb-root.",
+    "next_action": "Use actual isolated-browser LENS open/close to reproduce boot-stub occlusion. Extend existing sheet modality to the boot stub in canonical theme.css, retaining loaded-root behavior and restoration. Prefer moving the existing hide rule out of injected CSS so runtime-style budget shrinks; sync existing site copies. No assistant activation, credential use, original signed-in browser or release change.",
+    "limits": "This proves only the retained LENS collision cause, not every launcher overlap, native zoom, real-client deployment or global browser acceptance."
+  }
+}

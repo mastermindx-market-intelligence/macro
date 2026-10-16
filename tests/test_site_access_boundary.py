@@ -84,6 +84,57 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_international_workspace_presentation_public_without_data_grants():
+    """Anonymous International HTML cannot enhance if any one script/CSS is 401.
+
+    Only the nine exact, committed presentation assets are admitted here. No
+    API, source-price JSON, user Saved body or future asset family is public.
+    """
+    assets = {
+        "/intl_workspace.css",
+        "/intl_workspace_macro.css",
+        "/intl_workspace_risk.css",
+        "/intl_workspace_history.css",
+        "/intl_workspace_state.js",
+        "/intl_library_search.js",
+        "/intl_workspace_scenario.js",
+        "/intl_workspace.js",
+        "/intl_workspace_entry.js",
+    }
+    assert len(assets) == 9
+    exact = POLICY["public"]["exact"]
+    prefixes = POLICY["public"]["prefixes"]
+    assert all(exact.count(asset) == 1 for asset in assets)
+    assert assets <= _caddy_public_exclusions()
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY,
+                          flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, f"{name}: missing International presentation"
+    for asset in assets:
+        source = ROOT / "templates" / asset.lstrip("/")
+        emitted = SITE / asset.lstrip("/")
+        assert source.is_file() and emitted.is_file(), asset
+        assert source.read_bytes() == emitted.read_bytes(), asset
+
+    # A healthy browser shell is not redistribution, Saved or API entitlement.
+    withheld = (
+        "/intl_workspace/private.json",
+        "/intl_prices.json",
+        "/data/intl/index.json",
+        "/api/intl/qualifications",
+        "/saved/research.json",
+    )
+    for candidate in withheld:
+        assert candidate not in exact
+        assert not any(candidate.startswith(p.rstrip("/") + "/") for p in prefixes)
+    assert not any(p.rstrip("/") == "/intl_workspace" for p in prefixes)
+
+
 def test_market_memory_callback_assets_load_before_session_exchange():
     """OAuth returns before its code becomes a session; UI-only assets must load."""
     assets = {"/market_memory_intent.js", "/market_memory_retained.js",

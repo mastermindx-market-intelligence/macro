@@ -481,3 +481,343 @@ def test_local_destinations_remain_exact_real_actions(destination):
     section, registry, _ = packet()
     section["exposure_boundary"]["destination"] = {"destination": destination}
     assert collect(render(section, registry)).hrefs == [destination]
+
+
+@pytest.mark.parametrize('quality', ['unknown', 'denied'])
+def test_currency_channel_without_disclosable_evidence_has_no_empty_disclosure(quality):
+    section, registry, _ = packet()
+    channel = section['currency_channels'][0]
+    for key in ('local_return', 'usd_return', 'fx_return_usd_per_local', 'fx_contribution_pp'):
+        channel[key] = {'value': None, 'quality': quality, 'reason': 'not_supplied', 'window': None}
+    channel['endpoint_policy'] = None
+    channel['input_evidence_refs'] = []
+    html = render(section, registry)
+    block = html.split('data-im-risk-channel="0"', 1)[1].split('data-im-risk-channel=', 1)[0]
+    assert 'class="intl-risk__evidence"' not in block
+    assert 'Evidence unavailable' in block and '依据不可用' in block
+
+
+@pytest.mark.parametrize('retained', ['window', 'source_reference'])
+def test_currency_channel_retains_disclosable_metadata_without_numeric_values(retained):
+    section, registry, _ = packet()
+    channel = section['currency_channels'][0]
+    window = copy.deepcopy(channel['endpoint_policy'])
+    refs = copy.deepcopy(channel['input_evidence_refs'])
+    for key in ('local_return', 'usd_return', 'fx_return_usd_per_local', 'fx_contribution_pp'):
+        channel[key] = {'value': None, 'quality': 'denied', 'reason': 'value_denied', 'window': None}
+    channel['endpoint_policy'] = window if retained == 'window' else None
+    channel['input_evidence_refs'] = refs if retained == 'source_reference' else []
+    html = render(section, registry)
+    block = html.split('data-im-risk-channel="0"', 1)[1].split('data-im-risk-channel=', 1)[0]
+    assert 'class="intl-risk__evidence"' in block
+    assert (window['start'] if retained == 'window' else refs[0]['source_reference']) in block
+    assert 'data-im-risk-value' not in block
+
+
+@pytest.mark.parametrize('reason', ['qualification_unknown', 'support_unavailable', 'not_supplied'])
+def test_unavailable_currency_copy_does_not_repeat_identical_localized_reason(reason):
+    section, registry, _ = packet()
+    section['currency_channels'][0]['local_return'] = {
+        'value': None, 'quality': 'unknown', 'reason': reason, 'window': None,
+    }
+    html = render(section, registry)
+    card = html.split('data-im-risk-card="local"', 1)[1].split('data-im-risk-card="fx"', 1)[0]
+    assert card.count('>Unavailable</span>') == 1
+    assert card.count('>不可用</span>') == 1
+    if reason == 'not_supplied':
+        assert '>Not supplied</span>' in card and '>未提供</span>' in card
+
+
+BREADTH_CLOCK_CASES = ('distinct', 'same', 'zero', 'stale', 'value_denied',
+                       'metadata_denied', 'metadata_unknown', 'missing_observation',
+                       'missing_membership', 'absent')
+
+
+def breadth_clock_input(kind, market='JP'):
+    """Synthetic native field input; grants here are test-only."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    key = 'JP.constituent_breadth_50d'
+    measure, support = source['measures'][key], source['field_support'][key]
+    measure['instrument']['market_id'] = market
+    support['market_id'] = market
+    measure.update(observation_at='2026-10-05', calculation_at='2026-10-06')
+    support['membership_asof'] = '2026-09-30'
+    if kind == 'same':
+        support['membership_asof'] = measure['observation_at']
+    elif kind == 'zero':
+        measure['value'] = 0
+        support['above_count'] = 0
+    elif kind == 'stale':
+        measure['quality'] = 'stale'
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'missing_observation':
+        measure['observation_at'] = None
+    elif kind == 'missing_membership':
+        support['membership_asof'] = None
+    elif kind == 'absent':
+        return None, None
+    return measure, support
+
+
+@pytest.mark.parametrize('kind', BREADTH_CLOCK_CASES)
+def test_breadth_render_preserves_separate_admitted_observation_and_membership_clocks(kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = breadth_clock_input(kind, market)
+    key = market + '.constituent_breadth_50d'
+    source = dict(registry=registry, measures={key: measure} if measure else {},
+                  field_support={key: support} if support else {})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    article = BeautifulSoup(render(section, registry), 'html.parser')
+    cell = article.select_one(f'[data-im-risk-row="{market}"] td:last-child')
+    visible = kind in ('distinct', 'same', 'zero', 'stale', 'value_denied')
+    supported = visible and kind != 'value_denied'
+    observation = cell.select_one('[data-im-breadth-observation]')
+    membership = cell.select_one('[data-im-breadth-membership]')
+    assert (observation is not None) == visible
+    assert (membership is not None) == supported
+    if visible:
+        assert observation.get_text() == 'Observation观测 2026-10-05'
+    if supported:
+        date = '2026-10-05' if kind == 'same' else '2026-09-30'
+        assert membership.get_text() == 'Membership as of成员名单截至日期 ' + date
+        assert cell.select_one('[data-im-risk-value]').get_text() == ('0' if kind == 'zero' else '+61')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+        assert '2026-09-30' not in cell.get_text()
+    # The calculation clock is not substituted for either displayed source clock.
+    assert '2026-10-06' not in cell.get_text()
+    assert '2026-10-07' not in cell.get_text()
+    assert source == before
+
+
+def render_breadth_clock_fixture():
+    """Full publication/mount with native synthetic breadth inputs for six markets."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('distinct', 'zero', 'stale', 'value_denied', 'metadata_denied', 'missing_membership')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        key = case['market'] + '.constituent_breadth_50d'
+        measures[key], support[key] = breadth_clock_input(case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases)
+
+
+ANNUAL_CLOCK_CASES = ('actual', 'estimate', 'projection', 'zero', 'stale',
+                      'no_calculation', 'value_denied', 'metadata_denied',
+                      'metadata_unknown', 'missing_observation', 'absent')
+
+
+def annual_clock_input(kind, market='JP'):
+    """Synthetic annual measure with distinct field year, vintage and clocks."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    key = 'JP.annual_current_account'
+    measure, support = source['measures'][key], source['field_support'][key]
+    measure['instrument']['market_id'] = market
+    support.update(market_id=market, vintage='2026-07-30')
+    measure.update(observation_at='2026-08-21', calculation_at='2026-08-22T05:00:00+00:00')
+    if kind in ('estimate', 'projection'):
+        support['observation_type'] = kind
+        if kind == 'projection':
+            support['field_year'] = 2027
+            measure['period'].update(start='2027-01-01', end='2028-01-01')
+    elif kind == 'zero':
+        measure['value'] = 0
+    elif kind == 'stale':
+        measure.update(quality='stale', value=-1.25)
+    elif kind == 'no_calculation':
+        measure['calculation_at'] = None
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'missing_observation':
+        measure.update(quality='missing', value=None, observation_at=None)
+    elif kind == 'absent':
+        return None, None
+    return measure, support
+
+
+@pytest.mark.parametrize('kind', ANNUAL_CLOCK_CASES)
+def test_annual_render_distinguishes_field_year_vintage_observation_and_calculation(kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = annual_clock_input(kind, market)
+    key = market + '.annual_current_account'
+    source = dict(registry=registry, measures={key: measure} if measure else {},
+                  field_support={key: support} if support else {})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    cell = BeautifulSoup(render(section, registry), 'html.parser').select_one(f'[data-im-risk-row="{market}"] td:nth-of-type(3)')
+    metadata = kind not in ('metadata_denied', 'metadata_unknown', 'absent')
+    for attr, key, labels in (
+        ('observation', 'observation_at', 'Observation观测'),
+        ('calculation', 'calculation_at', 'Calculation time计算时间'),
+    ):
+        node = cell.select_one(f'[data-im-annual-{attr}]')
+        expected = measure[key] if metadata else None
+        assert (node is not None) == (expected is not None)
+        if expected is not None:
+            assert node.get_text() == labels + ' ' + expected
+    supported = metadata and kind not in ('value_denied', 'missing_observation')
+    if supported:
+        assert 'Field year字段年份 ' + str(support['field_year']) in cell.get_text()
+        assert 'Vintage版本 2026-07-30' in cell.get_text()
+        label = {'actual': 'Actual实际', 'estimate': 'Estimate估计', 'projection': 'Projection预测'}[support['observation_type']]
+        assert label in cell.get_text()
+        value = cell.select_one('[data-im-risk-value]').get_text()
+        assert value == ('0' if kind == 'zero' else '-1.25' if kind == 'stale' else '+3.4')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+        assert '2026-07-30' not in cell.get_text()
+    if kind == 'missing_observation':
+        assert 'Missing data' in cell.get_text()
+        assert '2026-08-21' not in cell.get_text()
+    if not metadata:
+        assert '2026-08' not in cell.get_text()
+    assert source == before
+
+
+def render_annual_clock_fixture():
+    """Existing publication/mount path with explicit synthetic annual inputs."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('actual', 'projection', 'no_calculation', 'stale', 'value_denied', 'missing_observation', 'metadata_denied')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        key = case['market'] + '.annual_current_account'
+        measures[key], support[key] = annual_clock_input(case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases)
+
+
+PRESSURE_EVIDENCE_FIELDS = ('country_credit_change', 'annual_current_account', 'constituent_breadth_50d')
+PRESSURE_EVIDENCE_CASES = ('supplied', 'stale', 'value_denied', 'metadata_denied',
+                           'metadata_unknown', 'invalid_support', 'missing',
+                           'empty', 'source_only', 'evidence_only', 'hostile')
+
+
+def pressure_evidence_input(field, kind, market='JP'):
+    """Explicit synthetic native records; no production disclosure grant."""
+    from tests.test_intl_workspace_risk_pressure import inputs
+    source = inputs()
+    measure = source['measures']['JP.' + field]
+    support = source['field_support']['JP.' + field]
+    measure['instrument']['market_id'] = market
+    support['market_id'] = market
+    measure['source_reference'] = 'source:' + market + ':' + field + ':' + 'x' * 96
+    measure['evidence_key'] = 'evidence:' + market + ':' + field
+    support['method_ref'] = 'method:' + market + ':' + field
+    if kind == 'stale':
+        measure['quality'] = 'stale'
+    elif kind == 'value_denied':
+        measure['value_permission'] = 'denied'
+    elif kind.startswith('metadata_'):
+        measure['metadata'] = kind.removeprefix('metadata_')
+    elif kind == 'invalid_support':
+        support['market_id'] = 'WRONG'
+    elif kind in ('missing', 'empty', 'source_only', 'evidence_only'):
+        measure.update(quality='missing', value=None)
+        if kind in ('empty', 'evidence_only'):
+            measure['source_reference'] = None
+        if kind in ('empty', 'source_only'):
+            measure['evidence_key'] = None
+    elif kind == 'hostile':
+        measure['source_reference'] = 'https://example.invalid/<img src=x onerror=alert(1)>'
+        measure['evidence_key'] = 'javascript:alert(1) <script> & "evidence"'
+        support['method_ref'] = '<svg onload=alert(1)> & method'
+        if field == 'constituent_breadth_50d':
+            support['membership_ref'] = '<iframe src=evil> & members'
+    return measure, support
+
+
+@pytest.mark.parametrize('field', PRESSURE_EVIDENCE_FIELDS)
+@pytest.mark.parametrize('kind', PRESSURE_EVIDENCE_CASES)
+def test_pressure_evidence_discloses_only_native_retained_references(field, kind):
+    from bs4 import BeautifulSoup
+    from lib.intl_workspace_risk_pressure import build_pressure_rows
+    section, registry, _ = packet()
+    market = registry['markets'][0]['market_id']
+    measure, support = pressure_evidence_input(field, kind, market)
+    key = market + '.' + field
+    source = dict(registry=registry, measures={key: measure}, field_support={key: support})
+    before = copy.deepcopy(source)
+    section['pressure_rows'] = build_pressure_rows(**source)
+    index = PRESSURE_EVIDENCE_FIELDS.index(field) + 2
+    article = BeautifulSoup(render(section, registry), 'html.parser')
+    cell = article.select_one(f'[data-im-risk-row="{market}"] td:nth-of-type({index})')
+    evidence = cell.select_one('details.intl-risk__evidence')
+    visible = kind not in ('metadata_denied', 'metadata_unknown', 'invalid_support', 'empty')
+    assert (evidence is not None) == visible
+    supported = kind in ('supplied', 'stale', 'hostile')
+    if visible:
+        expected = [measure[k] for k in ('source_reference', 'evidence_key') if measure[k]]
+        if supported:
+            expected.append(support['method_ref'])
+            if field == 'constituent_breadth_50d':
+                expected.append(support['membership_ref'])
+        assert [dd.get_text() for dd in evidence.select('dd')] == expected
+        assert evidence.select_one('summary .l-en') is not None
+        assert evidence.select_one('summary .l-zh') is not None
+        assert evidence.select('a,script,img,svg,iframe') == []
+        assert not evidence.has_attr('open')
+        if not supported:
+            assert support['method_ref'] not in evidence.get_text()
+    else:
+        assert measure['source_reference'] is None or measure['source_reference'] not in cell.get_text()
+    if supported:
+        value = cell.select_one('[data-im-risk-value]')
+        assert value.get_text() == ('0' if field == 'country_credit_change' else '+3.4' if field == 'annual_current_account' else '+61')
+        assert ('Stale data' in cell.get_text()) == (kind == 'stale')
+    else:
+        assert cell.select_one('[data-im-risk-value]') is None
+    assert source == before
+
+
+def render_pressure_evidence_fixture():
+    """Native projection and full mount; seven distinct synthetic disclosure states."""
+    from unittest.mock import patch
+    from engine.intl_inputs import countries
+    from lib.intl_risk_mount import attach_risks
+    from tests.test_intl_workspace_integration import render_history_fixture
+    kinds = ('supplied', 'value_denied', 'metadata_denied', 'metadata_unknown',
+             'invalid_support', 'empty', 'source_only')
+    cases = [dict(market=market, kind=kind) for market, kind in zip(countries(), kinds)]
+    assert len(cases) == len(kinds)
+    measures, support = {}, {}
+    for case in cases:
+        for field in PRESSURE_EVIDENCE_FIELDS:
+            key = case['market'] + '.' + field
+            measures[key], support[key] = pressure_evidence_input(field, case['kind'], case['market'])
+    def mount(workspace, **kwargs):
+        return attach_risks(workspace, **{**kwargs, 'measures': measures, 'field_support': support})
+    with patch('scripts.build_intl.attach_risks', side_effect=mount):
+        html = render_history_fixture(history_sources={})
+    return dict(html=html, cases=cases, fields=PRESSURE_EVIDENCE_FIELDS)

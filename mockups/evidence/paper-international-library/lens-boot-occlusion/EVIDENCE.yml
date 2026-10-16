@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/theme.js
+- templates/theme.css
+- site/theme.js
+- site/theme.css
+manifest: mockups/evidence/paper-international-library/lens-boot-occlusion/manifest.json

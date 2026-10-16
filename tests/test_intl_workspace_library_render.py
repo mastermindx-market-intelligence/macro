@@ -3,6 +3,7 @@ import json
 from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
+from bs4 import BeautifulSoup
 
 import pytest
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -190,6 +191,62 @@ def test_partial_payload_renders_only_supplied_metadata():
     assert "Leadership rotation" not in html and "领涨轮动" not in html
     assert "Check the recovery" not in html and "检查修复" not in html
     assert html.count("data-im-library-order=") == 1
+
+
+def omitted_group_payload(kind="denied"):
+    """Native projection of synthetic restricted metadata; never a live grant."""
+    from lib.intl_library_view import build_intl_library_view
+    from tests.test_intl_library_view import all_permitted
+    context, workspace, routes = all_permitted()
+    for tool in routes["bindings"]["tools"]:
+        if kind == "all" or tool["group_id"] == "leaders":
+            key = tool["presentation_key"]
+            if kind == "missing":
+                workspace["families"].pop(key)
+            else:
+                workspace["families"][key]["metadata"] = "unknown" if kind == "unknown" else "denied"
+    return build_intl_library_view(context, workspace, routes)
+
+
+@pytest.mark.parametrize("kind", ["denied", "unknown", "missing", "all"])
+def test_omitted_groups_are_readable_without_empty_headings_or_controls(kind):
+    payload = omitted_group_payload(kind)
+    before = copy.deepcopy(payload)
+    soup = BeautifulSoup(render(payload), "html.parser")
+    placeholders = soup.select("[data-im-library-group-unavailable]")
+    assert len(placeholders) == (6 if kind == "all" else 1)
+    for node in placeholders:
+        assert node.select_one(".l-en").get_text(strip=True) == "Tool group unavailable for this view."
+        assert node.select_one('.l-zh[lang="zh"]').get_text(strip=True) == "此视图的工具分组暂不可用。"
+        assert not node.select("h3, button, a, [data-im-library-group]")
+    assert not soup.select('[data-im-library-group=""], [data-im-group=""]')
+    assert all(h.get_text(strip=True) for h in soup.select("h3"))
+    assert len(soup.select("[data-im-library-tool]")) == (0 if kind == "all" else 15)
+    assert "Find the leaders" not in soup.get_text()
+    assert "Performance & currency" not in soup.get_text()
+    assert not soup.select("script[data-im-library-catalogue]")
+    assert soup.select_one("[data-im-library-search]").has_attr("disabled")
+    if kind == "all":
+        assert "No tool descriptions are available for this view." in soup.get_text()
+        assert "Tool descriptions are available." not in soup.get_text()
+    else:
+        assert soup.select_one('[data-im-library-tool="country_sectors_stocks"] a')["href"] == "/intl_stocks.html"
+    assert payload == before
+
+
+def render_omitted_group_page(all_omitted=False):
+    """Full native page with a synthetic reduced public-copy decision."""
+    from unittest.mock import patch
+    from lib.intl_library_view import build_public_intl_library_view
+    from tests.test_intl_workspace_integration import render_fixture
+    def restricted_copy(context, *, route_bindings, public_copy_decision):
+        decision = copy.deepcopy(public_copy_decision)
+        excluded = {t["presentation_key"] for t in route_bindings["bindings"]["tools"]
+                    if all_omitted or t["group_id"] == "leaders"}
+        decision["approved_tool_keys"] = [k for k in decision["approved_tool_keys"] if k not in excluded]
+        return build_public_intl_library_view(context, route_bindings=route_bindings, public_copy_decision=decision)
+    with patch("lib.intl_library_mount.build_public_intl_library_view", side_effect=restricted_copy):
+        return render_fixture()
 
 
 def test_bilingual_pairs_and_css_prefix_are_preserved():
