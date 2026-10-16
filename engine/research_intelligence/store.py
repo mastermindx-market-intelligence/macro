@@ -19,6 +19,7 @@ from engine.research_vault.r2_store import StrictConditionalWriteStore, Versione
 
 from .extractor import PROMPT_VERSION, SYSTEM_PROMPT, build_prompt, parse_model_output
 from .schema import SCHEMA, validate_rio
+from .selection import build_selector_prompt, source_context_receipt, validate_source_context_receipt
 
 ARTIFACT_SCHEMA = "mastermind.research_intelligence.artifact.v1"
 POINTER_SCHEMA = "mastermind.research_intelligence.pointer.v1"
@@ -41,6 +42,7 @@ _SUCCESS_FIELDS = frozenset(
         "prompt_version",
         "prompt_contract_sha256",
         "prompt_sha256",
+        "source_context",
     }
 )
 
@@ -319,6 +321,11 @@ def _normalize_successful_analysis(
         "prompt_sha256": _receipt_hash(analysis.get("prompt_sha256"), field="prompt_sha256"),
     }
     try:
+        receipt["source_context"] = validate_source_context_receipt(
+            analysis["source_context"], expected_content_sha256=receipt["document"]["content_sha256"])
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("analysis_receipt_invalid", "source-context receipt is invalid") from exc
+    try:
         rio = validate_rio(analysis["rio"])
     except (TypeError, ValueError) as exc:
         raise ResearchIntelligenceInvalid("rio_invalid", "submitted RIO violates schema") from exc
@@ -354,7 +361,13 @@ def _verify_source_and_receipt(
             "source body does not match the prompt and RIO content identity",
         )
 
-    system, user = build_prompt(prompt_document, analyzed_body)
+    try:
+        system, user, catalog = build_selector_prompt(prompt_document, analyzed_body)
+        expected_context = source_context_receipt(catalog)
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("analysis_receipt_mismatch", "source context cannot be recomputed") from exc
+    if receipt["source_context"] != expected_context:
+        raise ResearchIntelligenceInvalid("analysis_receipt_mismatch", "source-context receipt does not match the exact body")
     expected_contract_sha256 = _sha256_text(PROMPT_VERSION + "\n" + SYSTEM_PROMPT)
     expected_prompt_sha256 = _sha256_text(system + "\n" + user)
     if (
@@ -557,6 +570,11 @@ def _normalize_stored_receipt(value: Any) -> dict[str, Any]:
         ),
         "prompt_sha256": _receipt_hash(value.get("prompt_sha256"), field="prompt_sha256"),
     }
+    try:
+        receipt["source_context"] = validate_source_context_receipt(
+            value["source_context"], expected_content_sha256=receipt["document"]["content_sha256"])
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("artifact_invalid", "stored source-context receipt is invalid") from exc
     expected_contract_sha256 = _sha256_text(PROMPT_VERSION + "\n" + SYSTEM_PROMPT)
     if (
         receipt["prompt_version"] != PROMPT_VERSION
