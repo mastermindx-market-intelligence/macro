@@ -1036,6 +1036,12 @@ def test_russell_same_run_cache_is_saved_before_unrelated_git_push_failure():
     save, saver = one(collect, "save qualified Russell close cache before market git push")
     push, _ = one(collect, "push market data (survives a job-cap cancel; alarm-bounded git ops)")
     assert c < readiness < save < push
+    assert "started_at=$(date -u" in collect[c].get("run", "")
+    assert '>> "$GITHUB_OUTPUT"' in collect[c].get("run", "")
+    assert gate.get("env", {}).get("RUSSELL_COLLECT_STARTED_AT") == (
+        "${{ steps.collectors.outputs.started_at }}"
+    )
+    assert 'receipt.get("last_run")' in str(gate.get("run", ""))
     assert gate.get("id") == "russell_cache_ready"
     assert "data/run_status.json" in str(gate.get("run", ""))
     assert "russell_breadth" in str(gate.get("run", ""))
@@ -1071,6 +1077,11 @@ def test_russell_same_run_cache_is_saved_before_unrelated_git_push_failure():
         ("malformed_clock", False),
         ("cache_missing", False),
         ("receipt_missing", False),
+        ("old_source_same_session", False),
+        ("old_status_same_session", False),
+        ("missing_run_marker", False),
+        ("malformed_run_marker", False),
+        ("malformed_last_run", False),
     ],
 )
 def test_russell_same_run_handoff_executes_original_gate_hermetically(
@@ -1102,8 +1113,19 @@ def test_russell_same_run_handoff_executes_original_gate_hermetically(
         checked = last_close - timedelta(seconds=1)
     if case == "clock_in_future":
         checked = now + timedelta(days=1)
+    if case in ("old_source_same_session", "old_status_same_session"):
+        checked = now - timedelta(minutes=4)
     raw_stamp = checked.isoformat() if case != "malformed_clock" else "???"
+    run_started = now - timedelta(minutes=3)
+    if case == "old_status_same_session":
+        run_started = now - timedelta(minutes=1)
+    last_run = now - timedelta(minutes=1)
+    if case == "old_status_same_session":
+        last_run = now - timedelta(minutes=5)
+    if case == "malformed_last_run":
+        last_run = "?"
     status = {
+        "last_run": last_run.isoformat() if isinstance(last_run, datetime) else last_run,
         "sources": {
             "russell_breadth": {
                 "status": "failed" if case == "source_failed" else "ok",
@@ -1124,7 +1146,12 @@ def test_russell_same_run_handoff_executes_original_gate_hermetically(
         (data / "run_status.json").write_text(json.dumps(status))
     output = tmp_path / "gate-output"
     env = {**os.environ, "GITHUB_OUTPUT": str(output),
-           "PYTHONPATH": str(ROOT)}
+           "PYTHONPATH": str(ROOT),
+           "RUSSELL_COLLECT_STARTED_AT": run_started.isoformat()}
+    if case == "missing_run_marker":
+        del env["RUSSELL_COLLECT_STARTED_AT"]
+    elif case == "malformed_run_marker":
+        env["RUSSELL_COLLECT_STARTED_AT"] = "?"
     proc = subprocess.run(
         [sys.executable, "-c", script], cwd=tmp_path,
         env=env, capture_output=True, text=True, timeout=15,

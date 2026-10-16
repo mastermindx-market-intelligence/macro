@@ -119,3 +119,55 @@ full CI after branch update, natural nightly acceptance, QLedger GH001
 resolution, engine push auth, F3 thematic candidate creation, B4 entry
 permission or served authenticated customer experience. The patch only
 makes the qualified source cache independently survive a later Git failure.
+
+
+### Original-run receipt identity refinement (October 16 follow-up)
+
+The first publication candidate was proven **insufficient** against five
+additional test-first cases: a source's `checked_at` from a prior collection
+**on the very same trading day** could pass `status=ok + last_date +
+after-market-close`, permitting an old source to be re-keyed under tonight's
+cache ID. The original workflow needed an actual **current-run timestamp
+relationship**, not merely an EOD date. The five new cases initially failed
+(`qualified=true` instead of false), providing genuine falsification.
+
+The incumbent `run collectors` step now emits its one `started_at` output
+**before** invoking `scripts.collect`. The same already-owned `data/run_status`
+record provides `last_run` (written before the per-source `checked_at` at the
+end of the producer). The qualified cache may be saved only when:
+
+`completed_cash_close <= this_step.started_at <= run_status.last_run
+<= russell_breadth.checked_at <= current_UTC_time`
+
+Every stamp must parse and the source must remain `ok` with the matching
+completed-session `last_date`, a real cache file, and the source's completed
+close-coverage guard. Missing/malformed timestamps **fail closed**. The new
+work uses existing process step outputs and run-status clocks, not a new
+identity, clock, lifecycle, registry, or separate data plane.
+
+New native test coverage: old source checked with newer run-status;
+old run-status checked before the current collector start; missing current
+step marker; malformed current step marker; malformed `last_run`. All five
+were red before the corrected source and green afterward. The original
+handoff-order test now asserts that the collector captures `started_at`
+and that the gate reads this exact original step output and native `last_run`.
+
+Final combined on this local candidate:
+`tests/test_daily_collect_commit_path.py`,
+`tests/test_russell_breadth.py`,
+`tests/test_breadth_split_seam.py`,
+`tests/test_universe_split_seam.py`,
+`tests/test_closes_panel_freshness.py`, and
+`tests/test_workflow_file_size.py`: **120 passed**, five pre-existing
+environment/deprecation warnings, no failing assertions. Workflow YAML
+parsing, test import compilation and whitespace diff checks completed.
+
+**Unchanged acceptance boundary:** the PR is Draft, source-only.
+No observed normal hosted runner has yet used the new gate to save a
+qualified cache; no current-run restored cache, Prophet source panel or
+authenticated page is accepted. Independent exact-head CI and reviewer
+approval remain necessary before merge. Natural workflow proof—not a
+manual rerun to force green—is still owed. Half-day close cutoffs remain
+conservative because the original handoff uses a 16:00 ET cutoff;
+this does not promote a preclose source but can withhold a valid early
+close until after 16:00.
