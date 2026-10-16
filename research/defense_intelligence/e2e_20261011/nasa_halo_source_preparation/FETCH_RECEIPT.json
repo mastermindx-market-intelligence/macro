@@ -1,0 +1,10 @@
+{
+  "source_url": "https://oig.nasa.gov/wp-content/uploads/2026/06/interim-memo-ml-26-002-nasas-management-of-programs-and-projects-after-mission-termination-artemis-campaign-systems.pdf",
+  "observed_at": "2026-10-14T16:42:02.075248+00:00",
+  "action": "single public first-party source read, no authentication",
+  "status": 200,
+  "final_url": "https://oig.nasa.gov/wp-content/uploads/2026/06/interim-memo-ml-26-002-nasas-management-of-programs-and-projects-after-mission-termination-artemis-campaign-systems.pdf",
+  "content_type": "application/pdf",
+  "bytes": 1432774,
+  "sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+}

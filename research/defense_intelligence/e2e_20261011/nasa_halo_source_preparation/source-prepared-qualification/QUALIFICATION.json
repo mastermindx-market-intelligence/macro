@@ -1,0 +1,13 @@
+{
+  "scope": "source-prepared generation; NASA1.4 reader exists but HALO NOT admitted to canonical graph",
+  "proof_receipt_sha256": "e29ac56e842ffab00204d348fdedf01ae80dafefe468518a3534e0b7b51b913e",
+  "checks": "68boundary/explicitphase;105candidatecases104passed1skipped;CIclosurepass",
+  "original_canonical_program_graph_sha256": "596d7e93071c8121c86f1f7f272d01653c4bdd16e833a1ec8c548b1ce9a62abb",
+  "ledger_rows": 655,
+  "ledger_sha256": "ebb8434c6019d925021c98949b615a3d75a70b41e424e87d173652dabd1b4f2f",
+  "review_original_id": "defense-nasa-origin-independent-review-01a13300-a",
+  "independent_review_verdict": null,
+  "release": "HELD original review return unknown; no canonical HALO admission",
+  "interrupted_local_proof": "50dots noXMLnoReceipt after Desktop restart; recovered run retained separately",
+  "not_product_acceptance": true
+}

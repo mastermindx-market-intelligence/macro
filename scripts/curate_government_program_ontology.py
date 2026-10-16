@@ -82,12 +82,13 @@ _IDEMPOTENT_CONTENT_KINDS = {"public_capacity_assertion", "public_oversight_asse
 #: worksheet must not mint a duplicate review_coverage row (the loader refuses
 #: duplicate ids). Other scopes keep their historical append behavior.
 _IDEMPOTENT_COVERAGE_SCOPES = {"public_capacity", "public_oversight"}
-#: Explicit migration ladder for --schema-version (no downgrade from 1.3).
+#: Explicit migration ladder for --schema-version (no downgrade from an admitted version).
 _SCHEMA_VERSION_RANK = {
     "1.0.0": 0,
     "1.1.0": 1,
     po.PUBLIC_CAPACITY_VERSION: 2,
     po.PUBLIC_OVERSIGHT_VERSION: 3,
+    po.NASA_OVERSIGHT_VERSION: 4,
 }
 _LOGICAL_TARGET_KINDS = {"program", "capability", "platform"}
 _GRAPH_ID_RE = re.compile(
@@ -545,10 +546,10 @@ def curate_worksheet(
         if target_kind not in _TARGET_KIND_TO_COLLECTION or not isinstance(candidate_row, dict):
             rejected.append({"row": row, "reason": "worksheet_inconsistent"})
             continue
-        if target_kind == "public_capacity_assertion" and working.get("schema_version") not in (po.PUBLIC_CAPACITY_VERSION, po.PUBLIC_OVERSIGHT_VERSION):
+        if target_kind == "public_capacity_assertion" and working.get("schema_version") not in po.PUBLIC_CAPACITY_VERSIONS:
             rejected.append({"row": row, "reason": "public_capacity_schema_migration_required"})
             continue
-        if target_kind == "public_oversight_assertion" and working.get("schema_version") != po.PUBLIC_OVERSIGHT_VERSION:
+        if target_kind == "public_oversight_assertion" and working.get("schema_version") not in po.PUBLIC_OVERSIGHT_VERSIONS:
             rejected.append({"row": row, "reason": "public_oversight_schema_migration_required"})
             continue
         if _forbidden_keys_present(candidate_row):

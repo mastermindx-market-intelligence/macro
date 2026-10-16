@@ -55,6 +55,10 @@ PUBLIC_CAPACITY_KEYS = frozenset({
 #: verdict, readiness state, issuer allocation or investment ranking, which is
 #: why an oversight row carries a quoted excerpt and its hash and NO quantity.
 PUBLIC_OVERSIGHT_VERSION = "1.3.0"
+# 1.4 adds one exact official oversight origin; earlier contracts stay closed.
+NASA_OVERSIGHT_VERSION = "1.4.0"
+PUBLIC_OVERSIGHT_VERSIONS = frozenset({PUBLIC_OVERSIGHT_VERSION, NASA_OVERSIGHT_VERSION})
+PUBLIC_CAPACITY_VERSIONS = PUBLIC_OVERSIGHT_VERSIONS | {PUBLIC_CAPACITY_VERSION}
 PUBLIC_OVERSIGHT_COLLECTION = "public_oversight_assertions"
 PUBLIC_OVERSIGHT_FINDING_KINDS = frozenset({
     "cost", "schedule", "production_constraint", "contract_process", "protest_status",
@@ -143,7 +147,7 @@ def allowed_claim_scopes(version: Any) -> frozenset[str]:
     Older artifacts keep the exact prior scope surface, so an old version
     still fail-closes on the newer scope names.
     """
-    if version == PUBLIC_OVERSIGHT_VERSION:
+    if version in PUBLIC_OVERSIGHT_VERSIONS:
         return CLAIM_SCOPE_ENUM | {"public_capacity", "public_oversight"}
     if version == PUBLIC_CAPACITY_VERSION:
         return CLAIM_SCOPE_ENUM | {"public_capacity"}
@@ -350,7 +354,7 @@ def coverage_scopes_for(graph: Mapping[str, Any]) -> frozenset[str]:
     extra: set[str] = set()
     if graph.get("schema_version") == PUBLIC_CAPACITY_VERSION:
         extra.add("public_capacity")
-    if graph.get("schema_version") == PUBLIC_OVERSIGHT_VERSION:
+    if graph.get("schema_version") in PUBLIC_OVERSIGHT_VERSIONS:
         extra |= {"public_capacity", "public_oversight"}
     return COVERAGE_SCOPE_ENUM | extra
 
@@ -520,7 +524,7 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
             # published 1.0/1.1 global allowlist remains unchanged.
             source_url = row.get("source_url")
             army_capacity_source = (
-                raw.get("schema_version") in (PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION)
+                raw.get("schema_version") in PUBLIC_CAPACITY_VERSIONS
                 and evidence_class == "official_contract_announcement"
                 and source_host == "www.army.mil"
                 and isinstance(source_url, str) and source_url == source_url.strip()
@@ -532,7 +536,20 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
                 and all(isinstance(scope, str) for scope in scopes)
                 and set(scopes) <= {"program_identity", "public_capacity"}
             )
-            if not army_capacity_source and (source_host is None or (source_host not in PUBLISHER_HOST_ALLOWLIST and not (evidence_class == "official_alliance_policy" and source_host == "www.nato.int"))):
+            nasa_oversight_source = (
+                raw.get("schema_version") == NASA_OVERSIGHT_VERSION
+                and evidence_class == "official_acquisition_report"
+                and source_host == "oig.nasa.gov"
+                and isinstance(source_url, str) and source_url == source_url.strip()
+                and not any(ord(char) <= 0x20 or ord(char) == 0x7f for char in source_url)
+                and source_url.startswith("https://")
+                and urlparse(source_url).netloc == "oig.nasa.gov"
+                and source_url == row.get("retrieved_from_url")
+                and isinstance(scopes, list) and bool(scopes)
+                and all(isinstance(scope, str) for scope in scopes)
+                and set(scopes) <= {"program_identity", "public_oversight"}
+            )
+            if not army_capacity_source and not nasa_oversight_source and (source_host is None or (source_host not in PUBLISHER_HOST_ALLOWLIST and not (evidence_class == "official_alliance_policy" and source_host == "www.nato.int"))):
                 ctx.err("publisher_host_refused", row_key)
         if not _text(row.get("retrieved_from_url")):
             ctx.err("publisher_host_refused", row_key)
@@ -741,7 +758,7 @@ def load_program_ontology_graph(
     check_reference_types(raw, "<top_level>")
     if malformed_refs:
         raise OntologyInputError(["ontology_row_shape_invalid"], malformed_refs)
-    oversight_enabled = raw.get("schema_version") == PUBLIC_OVERSIGHT_VERSION
+    oversight_enabled = raw.get("schema_version") in PUBLIC_OVERSIGHT_VERSIONS
     # 1.3 is strictly additive over 1.2: the capacity collection stays present
     # AND fully validated below; the oversight collection joins the required
     # top-level shape. Any older version carrying the newer collection (or the
@@ -752,7 +769,7 @@ def load_program_ontology_graph(
         ctx.err("ontology_shape_invalid", "<top_level>")
     if raw.get("contract") != CONTRACT:
         ctx.err("ontology_contract_invalid", "<top_level>")
-    if raw.get("schema_version") not in {SCHEMA_VERSION, "1.1.0", PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION}:
+    if raw.get("schema_version") not in {SCHEMA_VERSION, "1.1.0"} | PUBLIC_CAPACITY_VERSIONS:
         ctx.err("ontology_schema_version_invalid", "<top_level>")
     graph_id = _text(raw.get("graph_id"))
     if graph_id is None or _GRAPH_ID.fullmatch(graph_id) is None:
@@ -811,7 +828,11 @@ def load_program_ontology_graph(
         if row_id is None or _PROGRAM_ID.fullmatch(row_id) is None:
             ctx.err("ontology_row_shape_invalid", key)
         phase = _text(row.get("phase"))
-        if phase not in PHASE_ENUM:
+        # A historical oversight source can establish program identity without
+        # establishing a current lifecycle phase. Only 1.4 admits explicit null;
+        # empty strings and malformed values retain the original refusal.
+        unasserted_phase = raw.get("schema_version") == NASA_OVERSIGHT_VERSION and "phase" in row and row["phase"] is None
+        if phase not in PHASE_ENUM and not unasserted_phase:
             ctx.err("ontology_row_shape_invalid", key)
         if row.get("budget_program_keys") != []:
             ctx.err("ontology_row_shape_invalid", key)
@@ -1562,7 +1583,7 @@ def current_public_capacity_rows(
     graph: Mapping[str, Any], program_id: str, *, analysis_as_of: datetime | None,
 ) -> list[dict[str, Any]]:
     """Literal public observations, never totals, utilization or readiness estimates."""
-    if graph.get("schema_version") not in (PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION):
+    if graph.get("schema_version") not in PUBLIC_CAPACITY_VERSIONS:
         return []
     if any(row.get("action") == "block" and row.get("subject_type") == "program"
            and row.get("subject_id") == program_id
@@ -1590,7 +1611,7 @@ def current_public_oversight_rows(
     publication date travel with the row as source METADATA; currency here is
     decided solely by the row's own known_at/valid_from/valid_to claim clocks,
     exactly like every other content-addressed rail."""
-    if graph.get("schema_version") != PUBLIC_OVERSIGHT_VERSION:
+    if graph.get("schema_version") not in PUBLIC_OVERSIGHT_VERSIONS:
         return []
     if any(row.get("action") == "block" and row.get("subject_type") == "program"
            and row.get("subject_id") == program_id

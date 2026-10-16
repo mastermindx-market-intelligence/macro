@@ -1,0 +1,29 @@
+{
+  "run_id": "defense-nasa-halo-source-review-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "retained_sha256": "30a8abf2f83789a9a517e49517d7ce59571a2152fece8ae5b58974494ac26d4b",
+  "retained_bytes": 3677,
+  "verdict": "ACCEPT_BOUNDED_SOURCE_REVIEW_AFTER_PROSE_CORRECTIONS",
+  "not_uncorrected_first_pass_review": true,
+  "accepted_claims": [
+    "contract_type_change",
+    "stop_work",
+    "contract_value_basis",
+    "projection_is_conditional",
+    "not_complete_audit",
+    "management_alternative",
+    "public_release"
+  ],
+  "corrections": [
+    "The stop-work order and reported contract change are historical observations, not conditional on the agency architectural response. Only the completion projection is conditional.",
+    "Discontinued-path is not retained: a stop-work order does not by itself prove formal contract termination.",
+    "The historical source may remain historical context after publication; it cannot silently become current October status.",
+    "Retain reported contract value rather than introducing contract-face-value as an accounting label."
+  ],
+  "parent_replay": "All seven exact term pairs and extracted page hashes independently rechecked; PDF pages10-11 visually checked before delegation.",
+  "scope": "Public historical HALO source preparation only; not canonical ingestion, issuer/program identity, capacity admission or A33 acceptance.",
+  "canonical_admission": false,
+  "broader_review_unchanged": true,
+  "adjudicated_at": "2026-10-14T16:55:21.394480+00:00"
+}

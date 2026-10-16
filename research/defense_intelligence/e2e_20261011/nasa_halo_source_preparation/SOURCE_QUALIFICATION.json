@@ -1,0 +1,96 @@
+{
+  "document_id": "NASA-OIG:ML-26-002",
+  "publication_date": "2026-06-24",
+  "house_observed_at": "2026-10-14T16:42:02.075248+00:00",
+  "source_url": "https://oig.nasa.gov/wp-content/uploads/2026/06/interim-memo-ml-26-002-nasas-management-of-programs-and-projects-after-mission-termination-artemis-campaign-systems.pdf",
+  "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6",
+  "text_sha256": "e0692f6160ddf263bfe6693ae00ce54c7b538be3966d3c5f683b84feec0ac9fd",
+  "extraction_tool": "pdftotext version 26.06.0",
+  "rendered_pages_visually_checked": [
+    10,
+    11
+  ],
+  "claims": [
+    {
+      "claim_key": "contract_type_change",
+      "page": 10,
+      "text_sha256": "b588bf31ee397cf1fb865453231e780217554fb48080d00169d81f2198fb4d06",
+      "verified_terms": [
+        "September 2024",
+        "cost-plus-award-fee contract"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "stop_work",
+      "page": 10,
+      "text_sha256": "b588bf31ee397cf1fb865453231e780217554fb48080d00169d81f2198fb4d06",
+      "verified_terms": [
+        "in April 2026",
+        "stop work order"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "contract_value_basis",
+      "page": 10,
+      "text_sha256": "b588bf31ee397cf1fb865453231e780217554fb48080d00169d81f2198fb4d06",
+      "verified_terms": [
+        "$1.9 billion",
+        "value of the contract"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "projection_is_conditional",
+      "page": 11,
+      "text_sha256": "688f850e327bd90de9b33c7b872eb85396199496f6b8f543c367424ee73e4369",
+      "verified_terms": [
+        "If Northrop Grumman was to continue HALO to completion",
+        "July 2031"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "not_complete_audit",
+      "page": 13,
+      "text_sha256": "c34f4757de9cfb45c04f69ea03b931141e28065f3f29b92563e30bd0a3293d10",
+      "verified_terms": [
+        "We have not yet completed the audit",
+        "March 2026 through June 2026"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "management_alternative",
+      "page": 15,
+      "text_sha256": "23150270aa9038754299738d3a4c575491c40e6be6bca83237960d9b02d7ef00",
+      "verified_terms": [
+        "outdated architectural",
+        "assumptions"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    },
+    {
+      "claim_key": "public_release",
+      "page": 16,
+      "text_sha256": "30b8e2b9e02c60927afb4c691daab6ec44205c0d2baeaf4af6ddcbf9ac7ee226",
+      "verified_terms": [
+        "not identified any information that should not be",
+        "publicly released"
+      ],
+      "pdf_sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6"
+    }
+  ],
+  "scope": "Public civilian HALO contract history and oversight context; source preparation only",
+  "limits": [
+    "Report is an interim memorandum, not a completed audit or legal verdict",
+    "Contract value is not recognized NOC revenue, cash receipts or remaining backlog",
+    "2031/2032 dates are OIG counterfactual projections conditional on continuation, not current launch dates",
+    "Agency response emphasizes architecture changed; no causal/efficacy conclusion",
+    "No current as-of-October status inferred from a June report",
+    "No program or issuer graph identity minted; exact legal entity and native contract ID still need qualification",
+    "Separate GAO403 quarantine remains unchanged"
+  ],
+  "canonical_admission": false
+}

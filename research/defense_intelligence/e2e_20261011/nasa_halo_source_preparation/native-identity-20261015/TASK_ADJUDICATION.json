@@ -1,0 +1,13 @@
+{
+  "run_id": "defense-halo-native-id-census-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "retained_result_sha256": "1c43650fa61a7d98e5ee42aa88b9deffec60a482a31670543673112c16918bfa",
+  "task_accepted": false,
+  "verdict": "NOT_ACCEPTED_CONSTRAINT_BREACH",
+  "reasons": [
+    "worker exceeded eight-request bound",
+    "worker attempted a non-primary forum outside scope"
+  ],
+  "ledger_accept_called": false,
+  "candidate_disposition": "Parent separately verified the narrow native link through two bounded official API requests; this is not worker task acceptance."
+}

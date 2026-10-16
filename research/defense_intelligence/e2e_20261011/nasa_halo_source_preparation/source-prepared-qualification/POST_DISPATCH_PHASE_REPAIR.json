@@ -1,0 +1,16 @@
+{
+  "review_packet_unchanged": true,
+  "material_delta_after_dispatch": [
+    {
+      "path": "engine/government_revenue/program_ontology.py",
+      "before": "row.get(\"phase\") is None",
+      "after": "\"phase\" in row and row[\"phase\"] is None",
+      "reason": "explicit-null contract must not accept omitted phase"
+    }
+  ],
+  "regression": "missing-phase-regression.log: missing key admitted before repair",
+  "repaired": "final-boundary-tests.log: 68 passed including omitted/null/legacy/input-negative and actual EN/ZH consumer cases",
+  "source_sha256": "fdf751de728fb1b672612afca7aab4c027237f409e7f72eb14baf1b275d928fd",
+  "test_sha256": "1c1b94759033916f7918b3c3aa4a93352f3ec7cdba5f0047aa7a75eddfdf0f4e",
+  "independent_review_claim": false
+}

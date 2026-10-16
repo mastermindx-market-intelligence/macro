@@ -1,0 +1,10 @@
+{
+  "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_NNH15CN76C_8000_-NONE-_-NONE-/",
+  "retrieved_at": "2026-10-15T20:31:34.855260+00:00",
+  "status": 200,
+  "bytes": 9742,
+  "sha256": "dd70be2daf64edb09efbdb0cac85f82a699a89ca687a3b2deaed672680b94c0e",
+  "request_number": 1,
+  "limit": 2,
+  "scope": "parent independent read-only verification; not admission"
+}

@@ -1171,7 +1171,7 @@
     function sectionWhatIsThis(d){
       var pi=obj(d.program_identity)?d.program_identity:{};
       if(pi.state!=='reviewed')return'<p class="inspect-value">'+esc(gapCopyFor(pi.state))+'</p>';
-      var meta=[pi.phase?tr('Phase: ','阶段：')+text(pi.phase):'',pi.sponsor_agency?tr('Sponsor: ','主管机构：')+text(pi.sponsor_agency):''].filter(Boolean).join(' · ');
+      var meta=[tr('Phase: ','阶段：')+(pi.phase?text(pi.phase):tr('not established by reviewed sources','已复核来源尚未确立')),pi.sponsor_agency?tr('Sponsor: ','主管机构：')+text(pi.sponsor_agency):''].filter(Boolean).join(' · ');
       var out='<p class="inspect-value"><strong>'+esc(text(pi.name))+'</strong></p>';
       if(meta)out+='<p class="inspect-value">'+esc(meta)+'</p>';
       out+='<p class="inspect-value">'+esc(pi.latest_platform_name?tr('Latest block in the reviewed record: ','已核验记录中的最新型别：')+text(pi.latest_platform_name):tr('No platform/block variant is yet in the reviewed record.','已核验记录中尚无型别/批次变体。'))+'</p>';

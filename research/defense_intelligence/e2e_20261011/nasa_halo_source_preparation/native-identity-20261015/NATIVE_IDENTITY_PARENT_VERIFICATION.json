@@ -1,0 +1,22 @@
+{
+  "state": "PARENT_VERIFIED_NATIVE_HALO_CONTRACT_LINK_NOT_ADMITTED",
+  "verified_at": "2026-10-15T20:35:01.558220+00:00",
+  "piid": "NNH15CN76C",
+  "award_id": "CONT_AWD_NNH15CN76C_8000_-NONE-_-NONE-",
+  "current_recorded_legal_name": "NORTHROP GRUMMAN SYSTEMS CORPORATION",
+  "current_recorded_uei": "Q11ZHUFBW741",
+  "transaction_action_date": "2025-06-03",
+  "transaction_description": "REMOVAL OF CLAUSES/DRDS IAW EO 14173 AND 14168 - GATEWAY HALO CONTRACT",
+  "verified_sources": [
+    "PARENT_AWARD_DETAIL.json",
+    "PARENT_TRANSACTION_RESULT.json"
+  ],
+  "query_caveat": [
+    "For searches, time period start and end dates are currently limited to an earliest date of 2007-10-01.  For data going back to 2000-10-01, use either the Custom Award Download feature on the website or one of our download or bulk_download API endpoints as listed on https://api.usaspending.gov/docs/endpoints. ",
+    "The following filters from the request were not used: {'keyword_search'}. See https://api.usaspending.gov/docs/endpoints for a list of appropriate filters"
+  ],
+  "claim_limit": "Positive transaction establishes a HALO-labelled action on this PIID. API warning prevents search-completeness claims. Current recipient does not prove historical ownership; no revenue, backlog, cash, capacity or current operational status inferred.",
+  "source_admission_gap": "NASA OIG exact origin is outside ontology v1.3 publisher contract; retain boundary until a qualified versioned domain extension.",
+  "canonical_admission": false,
+  "issuer_ownership_edges_added": 0
+}

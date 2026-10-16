@@ -1,0 +1,37 @@
+# Bounded HALO Source-Preparation Review — Disposition: ACCEPT WITH LIMITS
+
+## 1. Concrete errors against the supplied pages
+
+**None material.** All seven `verified_terms` pairs match the exact extracted text on the cited pages (10, 11, 13, 15, 16). The qualifiers in the `limits` block correctly mirror the report's own caveats:
+
+- Page 10 verbatim: "Then in September 2024 ... NASA converted HALO to a cost-plus-award-fee contract" + "in April 2026, the Agency issued a stop work order" + "value of the contract had risen to $1.9 billion" — all three claim-1/2/3 term sets collapse to contiguous spans on page 10.
+- Page 11, conditional projection language preserved verbatim: "If Northrop Grumman was to continue HALO to completion" and "until July 2031" (gateway "at least 2032" follows but is correctly noted only as a derivative of the same conditional).
+- Page 13, audit-status language preserved: "March 2026 through June 2026" and "We have not yet completed the audit."
+- Page 15, agency pushback language preserved: "outdated architectural assumptions."
+- Page 16, release-clearance language preserved: "have not identified any information that should not be publicly released." Lori Glaze signed 2026.06.18, consistent with `publication_date: 2026-06-24`.
+
+## 2. Exact supported claims (classification)
+
+| claim_key | page | disposition |
+|---|---|---|
+| contract_type_change | 10 | **SUPPORTED** |
+| stop_work | 10 | **SUPPORTED** |
+| contract_value_basis | 10 | **SUPPORTED** (value $1.9B as of April 2026 stop-work; not revenue) |
+| projection_is_conditional | 11 | **SUPPORTED** ("If ..." / July 2031) |
+| not_complete_audit | 13 | **SUPPORTED** |
+| management_alternative | 15 | **SUPPORTED** (Agency: outdated assumptions) |
+| public_release | 16 | **SUPPORTED** |
+
+No corrections required against an exact page. No `WITHHOLD` classifications.
+
+## 3. Limits honored / preserved
+
+The packet correctly keeps the publication clock (June 24, 2026) **separate** from `house_observed_at` (Oct 14, 2026) — no current as-of-October status is smuggled in. The $1.9B figure is correctly framed as the OIG-reported stop-work-time contract value, **not** recognized NOC revenue, cash receipt, or remaining backlog. The 2031/2032 dates are correctly labeled OIG counterfactual projections conditional on continued performance, not current schedule. The Agency response citing Ignition Day architectural change is preserved verbatim, so no causal/efficacy conclusion is implied. No program or issuer graph identity is minted; no native contract ID is admitted; GAO403 quarantine is explicitly out of scope.
+
+## 4. Investor interpretation (2–3 sentences, with uncertainty)
+
+Per ML-26-002 (June 24, 2026), HALO was a sole-source Northrop Grumman cost-plus-award-fee module subject to an April 2026 NASA stop work order with an OIG-reported value of $1.9B at stop-work, and an OIG counterfactual completion projection no earlier than 2031 — all conditional on the architectural reformulation noted in NASA's response. Investors should treat the $1.9B figure as **historical contract-face-value oversight context, not revenue, cash, or backlog**, and the 2031/2032 dates as a discontinued-path OIG projection, not a current program schedule. Any current operational read of HALO requires a post-June-2026 source.
+
+## 5. Disposition
+
+**ACCEPT** this bounded source-preparation packet for ingestion as **public historical HALO oversight context only**. Do not chain it to Space Systems quarterly financials, do not reassign it to the issuer/source graph, and do not let it carry forward beyond its `publication_date`. The earlier broader capacity review is not touched.

@@ -1,0 +1,603 @@
+                          NASA OFFICE OF INSPECTOR GENERAL
+
+                                             OFFICE OF AUDITS
+                                          SUITE 8U71, 300 E ST SW
+                                         WASHINGTON, DC 20546-0001
+
+
+
+
+                                                      June 24, 2026
+
+
+
+TO:                 Lori Glaze
+                    Acting Associate Administrator for Exploration Systems Development
+                    Mission Directorate
+
+SUBJECT:            Interim Memorandum, NASA’s Management of Programs and Projects after
+                    Mission Termination—Canceled or Repurposed Artemis Campaign Systems
+                    (Report No. ML-26-002; Assignment No. A-26-06-00-SARD)
+
+
+The Office of Inspector General (OIG) initiated an audit in March 2026 examining NASA’s management
+of developed assets for programs and projects terminated prior to launch or operations. Within the
+scope of this audit are four Artemis systems—with a combined current contract value of $5.9 billion—
+that the Agency recently announced plans to cancel or repurpose: the Space Launch System (SLS)
+Exploration Upper Stage (EUS), SLS Universal Stage Adapter (USA), Mobile Launcher 2 (ML-2), and
+Gateway’s Habitation and Logistics Outpost (HALO). Collectively, these four systems have experienced
+billions of dollars in cost increases and years of schedule delays.
+
+In February 2026, NASA announced that it was reformulating the Artemis campaign in accordance
+with the President’s National Space Policy to return American astronauts to the Moon and establish
+an enduring lunar presence. 1 To this end, the Agency intends to increase its cadence of missions by
+standardizing the SLS two-stage, heavy-lift rocket and adding a new mission to low Earth orbit before
+sending astronauts to the Moon’s surface in 2028. To achieve its goal of one crewed lunar landing
+mission per year, NASA is no longer planning to upgrade the SLS to a more powerful configuration
+utilizing the EUS, USA, and ML-2. Further, rather than utilizing the Gateway as a staging location
+for lunar surface missions, NASA plans to shift its efforts to building a permanent Moon base.
+
+
+
+
+1   Executive Order 14369, Ensuring American Space Superiority (December 18, 2025).
+Given the substantial investment, evolving changes to the Artemis campaign, and urgency of the
+current fiscal year budget cycle, we are issuing this interim memorandum to document the cost,
+schedule, and development posture of these systems as well as the projected cost and schedule to
+complete them if NASA had not reformulated the Artemis campaign. These projections are not intended
+to serve as comprehensive cost and schedule estimates. Rather, they illustrate potential outcomes
+based on available historical cost and schedule data provided by NASA. Details about our methodology
+and associated limitations are outlined in Enclosure I. We believe the timely dissemination of this
+information will be valuable for the Agency, Administration, Congress, and the public as NASA
+contemplates the future of Artemis.
+
+
+
+
+                                                 2
+Background
+In 2015, Congress directed NASA to design a more powerful upper stage for use in upgraded variants
+of its SLS heavy-lift rocket. NASA selected The Boeing Company to design and manufacture the EUS,
+and in February 2017, the Agency incorporated EUS work into its existing SLS Core Stages contract with
+Boeing. 2 The scope of work included design and delivery of one EUS, one interstage to connect the EUS
+to the SLS Core Stage, and associated test articles. This added $962 million to the contract and set a
+delivery date for the first EUS in March 2021. In March 2026, NASA issued a stop work order to Boeing
+suspending further work on the EUS. By this time, the EUS portion of the contract value had more than
+doubled to almost $2 billion while the delivery date for the upper stage was unspecified. 3
+
+
+Performance
+As we reported in August 2024, Boeing and NASA faced cost and schedule challenges related to the
+EUS. 4 In 2018, NASA deprioritized work on the EUS to focus on the first Core Stage delivery. By
+December 2019, NASA had spent approximately $516 million (54 percent) of the $962 million originally
+allocated on the contract for EUS development. Additional factors led to further cost and schedule
+increases, including changing Artemis mission profiles, maintaining the workforce longer than planned,
+manufacturing issues, and supply chain challenges.
+
+
+
+2   The SLS Core Stages contract uses a hybrid cost-plus-award-fee/cost-plus-incentive-fee structure. A cost-plus-award-fee
+    contract is a cost-reimbursement contract that provides for a fee consisting of (a) a base amount fixed at inception of the
+    contract and (b) an award amount based upon a judgmental evaluation by the government of the contract performance.
+    A cost-plus-incentive-fee contract is a cost-reimbursement contract that provides for an initially negotiated fee to be
+    adjusted later by a formula based on the relationship of total allowable costs to total target costs.
+3   The SLS Core Stages contract is composed of multiple contract line item numbers (CLIN) used to identify the tasks to be
+    performed and the costs estimated to complete those tasks. In February 2020, NASA added CLIN 10 to track EUS costs.
+    We only considered CLIN 10 and associated award fees when determining the contract value for EUS, even though additional
+    EUS work may have been comingled within other CLINs. As of May 2026, no date was listed in the contract’s delivery
+    schedule corresponding with NASA’s final acceptance of EUS flight hardware.
+4   NASA OIG, NASA’s Management of Space Launch System Block 1B Development (IG-24-015, August 8, 2024).
+
+
+                                                                 3
+To this end, NASA’s evaluations of Boeing’s performance in 2024 and 2025 reflected continued
+challenges, with the Agency ultimately awarding Boeing an “unsatisfactory” rating for its evaluation
+period ending in May 2025. NASA noted significant weaknesses related to EUS production efficiency,
+including unrealistic production schedules and the lack of a clear plan for improvement. This included
+a significant weakness related to the Agency’s limited confidence in Boeing’s internal systems for task
+scheduling and project management.
+
+In its March 2026 financial management report, Boeing estimated work on the first EUS would cost
+$2.9 billion by the time it was complete, including any fees earned. At that time, NASA’s deterministic,
+or best case, schedule completion date was August 2028.
+
+
+Projected Cost and Schedule to Complete
+If Boeing was to continue work on the EUS through delivery of the first flight unit and associated test
+articles, in our judgment, costs would continue to grow and the schedule would continue to slip. Based
+on Boeing’s historical cost and schedule data, we project contract costs would have grown to
+$3.7 billion—nearly $750 million higher than Boeing’s latest estimate at completion in March 2026.
+We also project delivery of the first flight-ready EUS would have been delayed until November 2028,
+approximately 7.5 years later than originally planned. Figure 1 depicts Boeing’s historical estimate at
+completion and our projected cost and schedule for completing the EUS.
+
+Figure 1: NASA OIG Projection of EUS Cost and Schedule at Completion
+
+
+
+
+Source: NASA OIG presentation of data from Boeing monthly financial management reports and OIG projections. See
+Enclosure I for additional information on our projection methodology.
+
+
+
+
+                                                            4
+Background
+In June 2017, NASA contracted with Dynetics, Inc. to design, build, and test the USA. The cost-plus-
+award-fee contract required delivery and integration of the first USA with the SLS by August 2021.
+While the first USA was valued at $131 million, the contract also included options to allow NASA to
+order up to six additional adapters for future missions. 5 In May 2022, NASA added $9 million to the
+contract for the design, build, and test of the first Payload Separation System—a mechanism within each
+USA used to physically release co-manifested payloads once the SLS reaches orbit. 6 In February 2026,
+NASA announced that it would no longer use the USA and issued a stop work order. By this time, the
+contract value for the first USA and Payload Separation System had grown by nearly 170 percent to
+almost $353 million, and the delivery and integration schedule for the adapter had been delayed by
+7 years to September 2028. 7
+
+
+Performance
+The USA contract’s cost and schedule estimates grew beyond original estimates due to both NASA-
+directed modifications and Dynetics’ performance issues. By 2025, the total contract value had
+increased by $203 million due to NASA-directed contract modifications. These changes included effects
+on the USA due to SLS Program revisions, the incorporation of the Payload Separation System, and other
+design requirement changes. For example, in 2019, NASA increased the contract value by $76 million to
+extend the contract by 2 years and fund mass-reduction initiatives, a development and qualification test
+plan, and five additional Payload Separation System segments for service life extension testing.
+
+
+
+5   The $131 million contract value for the first USA includes associated indefinite-delivery, indefinite-quantity task orders and
+    available award-fee pool. The total potential contract value including all options at time of award was $222 million with a
+    final delivery and integration date for all seven adapters of August 2028.
+6   An additional $10 million was added to the potential contract value to allow for six additional Payload Separation Systems
+    and training.
+7   As of May 2026, the total potential contract value, including all options for the six additional USAs and Payload Separation
+    Systems, was $486 million.
+
+
+                                                                  5
+Further, according to NASA, in 2024, Dynetics began experiencing significant performance issues.
+These included ineffective communication with the Agency, an unreliable estimate at completion and
+inaccurate project schedule, ineffective management of a primary subcontractor responsible for critical
+hardware, and the absence of an integrated risk management approach. As a result, NASA modified the
+contract multiple times to address $62 million in cost overruns by Dynetics. Although NASA rated
+Dynetics’ performance as “very good” in 2024, two evaluations in 2025 affirmed the Agency’s increasing
+dissatisfaction with the contractor’s performance when they lowered Dynetics’ rating to “good” and
+then “unsatisfactory.”
+
+
+Projected Cost and Schedule to Complete
+In our judgment, if the USA contract was to continue to completion for the first USA and Payload
+Separation System, the overall contract costs would have continued to grow and the delivery schedule
+would have been even further delayed. Based on trends in Dynetics’ monthly financial management
+reports over the past 9 years, we project costs for the first USA and Payload Separation System would
+have climbed to $497 million (nearly 4 times more than planned), and approximately $133 million higher
+than Dynetics’ latest estimate at completion. Similarly, we project the adapter would not have been
+delivered to NASA until May 2030, approximately 9 years behind the original schedule. Further,
+according to SLS Program officials and the contract, after delivery of the first adapter, NASA included an
+additional 3 years for post-delivery vehicle integration, testing, launch operations support, and post-
+launch analysis. Figure 2 depicts Dynetics’ historical estimate at completion and our projected cost and
+schedule for completing the USA.
+
+Figure 2: NASA OIG Projection of USA Cost and Schedule at Completion
+
+
+
+
+Source: NASA OIG presentation of data from Dynetics’ monthly financial management reports and OIG projections. See
+Enclosure I for additional information on our projection methodology.
+
+
+                                                            6
+Background
+In June 2019, NASA contracted with Bechtel National, Inc. to design, build, and test the ML-2. Originally
+valued at $383 million, the cost-plus-award-fee contract required delivery of the launcher to NASA by
+March 2023. 8 NASA increased the contract value multiple times over the next several years, with the
+largest one in August 2022 for more than $400 million to align with Bechtel’s latest estimate at
+completion. In February 2026, NASA issued a stop work order to Bechtel to suspend all work on the
+ML-2. By this time, the ML-2 contract value had grown by 314 percent to almost $1.6 billion, and its
+delivery schedule had been delayed by over 3 years to May 2026.
+
+
+Performance
+As we reported in June 2022 and again in August 2024, Bechtel’s performance was a significant driver of
+cost and schedule growth. 9 Bechtel underestimated the scope and complexity of the ML-2, and due to
+the structure of the contract, NASA had to assume the additional costs required for the launcher’s
+development. In addition, Bechtel’s reluctance to utilize NASA expertise, failure to track risks, challenges
+with managing the launcher’s weight, and lack of a certified earned value management system impacted
+the contractor’s cost, schedule, and performance.
+
+NASA’s management practices also contributed to the contract’s cost increases and schedule delays.
+Due to schedule pressures, NASA decided to award the ML-2 contract while the EUS—the main driver
+requiring a second mobile launcher—was early in its design cycle and lacked finalized requirements,
+impacting the contract approach and independent government cost estimate. Further, NASA lacked an
+
+
+
+
+8   The $383 million contract value for the ML-2 includes $23 million in available award fees.
+9   NASA OIG, NASA’s Management of the Mobile Launcher 2 Contract (IG-22-012, June 9, 2022) and NASA’s Management of the
+    Mobile Launcher 2 Project (IG-24-016, August 27, 2024).
+
+
+                                                                 7
+official ML-2 project cost and schedule baseline for the first 5 years of the ML-2 contract, which limited
+visibility into the information needed for Congress and others to better hold the Agency accountable. 10
+The Agency also had limited leverage to incentivize Bechtel to improve and sustain its performance—
+relying primarily on the contract’s award fee process. Our prior ML-2 audits questioned nearly $6 million
+in award fees NASA provided to Bechtel despite the contractor’s performance weaknesses. 11 While
+Bechtel’s performance somewhat improved after starting construction on the ML-2, for the period
+ending in September 2025, NASA rated the contractor’s performance as only “satisfactory” and
+cited numerous management deficiencies involving subcontractor oversight, supply scheduling, and
+workflow efficiency.
+
+
+Projected Cost and Schedule to Complete
+If Bechtel was to continue the ML-2 to completion, in our judgment, the overall contract costs would
+have been significantly higher and the delivery schedule would have been further delayed. Based on
+trends in Bechtel’s monthly financial management reports over the past 3 years since construction
+began, we project the ML-2 contract’s cost could have climbed to $2 billion (5 times more than
+planned), and over $140 million higher than Bechtel’s latest estimate at completion in February 2026.
+Similarly, the launcher would not be ready for delivery to NASA until December 2026, a delay of more
+than 3.5 years. 12 Notably, NASA would still need to perform verification and validation testing after
+delivery to ensure the launcher operated as expected prior to using it for any Artemis launches. This
+process could take 1 to 2 years, meaning the ML-2 would likely not have been operational until at least
+2028. Figure 3 depicts Bechtel’s historical estimate at completion and our projected cost and schedule
+for completing the ML-2.
+
+
+
+
+10 In June 2024, NASA established an Agency Baseline Commitment—the cost and schedule baseline committed to Congress
+
+  and the Office of Management and Budget against which a project is measured—and estimated ML-2 project costs at
+  $1.8 billion with delivery of the launcher in September 2027.
+11 IG-22-012 and IG-24-016.
+
+12 In our 2024 report (IG-24-016), we projected that if cost and schedule growth trends continued, contract costs could reach
+
+  as high as $2.5 billion and the launcher would be delivered in August 2027. Our updated projection reflects Bechtel’s relative
+  performance improvements since starting the construction phase.
+
+
+                                                               8
+Figure 3: NASA OIG Projection of ML-2 Cost and Schedule at Completion
+
+
+
+
+Source: NASA OIG presentation of data from Bechtel monthly financial management reports and OIG projections. See
+Enclosure I for additional information on our projection methodology.
+
+
+
+
+                                                            9
+Background
+In July 2019, NASA sole-sourced the acquisition of Gateway’s HALO to Northrop Grumman Innovation
+Systems, later awarding the company $187 million to complete the preliminary design of the module. 13
+Two years later, NASA converted HALO to a firm-fixed-price contract with a combined contract value of
+$1.3 billion through delivery of the module in May 2025 and subsequent launch preparations. 14 Then in
+September 2024, citing difficulties administering a development project with a firm-fixed-price contract
+type, NASA converted HALO to a cost-plus-award-fee contract, increasing the combined value of the
+contract to $1.8 billion and delaying delivery of the module to October 2026. However, in April 2026, the
+Agency issued a stop work order to Northrop Grumman for its work on the HALO contract. By then, the
+value of the contract had risen to $1.9 billion and Northrop Grumman was working to address corrosion
+throughout HALO’s primary structure, which would significantly impact the project’s schedule.
+
+
+Performance
+In November 2020, we reported that NASA’s acquisition of the HALO module before fully defining the
+Gateway’s requirements added significant costs to the development effort and increased the risk of
+future schedule delays and additional cost increases. 15 One major requirement change was NASA’s
+decision in February 2020 to launch HALO with Gateway’s Power and Propulsion Element on one rocket,
+
+
+
+
+13 A sole-source acquisition is a contract for the purchase of supplies or services that is entered into or proposed to be entered
+
+  into by an agency after soliciting and negotiating with only one source. NASA selected Northrop Grumman because it was
+  deemed to be the only contractor that could build the module in the time frame required due to its existing production
+  capability and the maturity of critical subsystems.
+14 A firm-fixed-price contract provides a price that is not subject to any adjustment based on the contractor’s cost experience
+
+  in performing the contract, placing maximum risk and full responsibility on the contractor for all costs and resulting profit or
+  loss. The combined value includes $337 million in costs associated with HALO work prior to the conversion to a firm-fixed-
+  price structure.
+15 NASA OIG, NASA’s Management of the Gateway Program for Artemis Missions (IG-21-004, November 10, 2020).
+
+
+
+
+                                                                10
+raising concerns that the two elements together would be too heavy to launch on any commercially
+available rocket. 16
+
+Furthermore, driven by the necessity to meet Artemis launch schedules, the Gateway Program worked
+toward unrealistic schedules throughout the life cycle of HALO. 17 For example, NASA‘s firm-fixed-price
+contract with Northrop Grumman aimed for a November 2024 launch readiness date despite multiple
+schedule analyses showing a less than 1 percent likelihood of success. Two years later, the Gateway
+Program’s independent Standing Review Board found a 0 percent likelihood of meeting the launch
+readiness date, which had since slipped to October 2025. 18 The Board noted that the Gateway
+Program’s “lack of schedule realism may be driving suboptimal engineering decisions during
+development.”
+
+Compounding these problems, Northrop Grumman and its network of subcontractors faced numerous
+performance issues during HALO’s development. For example, in 2025, the Northrop Grumman
+subcontractor responsible for manufacturing HALO’s primary structure discovered widespread corrosion
+throughout the module. 19 As a result, Northrop Grumman’s estimated delivery date slipped 6 months to
+July 2028 and the corrosion mitigation became an emerging program risk.
+
+To NASA’s credit, the Agency was accurately critical of Northrop Grumman’s management of its HALO
+subcontractors. In the first HALO award fee evaluation report, in May 2025, NASA criticized the
+contractor’s “reactive” schedule approach and ineffective subcontractor management. NASA evaluators
+added that the Agency “lacks confidence” in Northrop Grumman’s schedule data following consistent
+schedule slips across nearly all major hardware items. As of April 2026, NASA was still evaluating
+whether the HALO module could be repurposed for lunar surface applications.
+
+
+Projected Cost and Schedule to Complete
+If Northrop Grumman was to continue HALO to completion, in our judgment, the overall contract costs
+would have continued to rise and the delivery schedule would have been further delayed. Based on
+trends in Northrop Grumman’s monthly schedule reporting data over the past 1.5 years since the
+contract was converted to cost-plus, we project the HALO would not have been delivered to NASA until
+July 2031, a 6-year delay. Moreover, given the additional time to integrate the HALO module with the
+Power and Propulsion Element pre-launch, as well as the approximately 10 months needed to reach its
+designated lunar orbit, we estimate that Gateway would not have been operational until at least 2032.
+Due to the projected end date far into the future and limited availability of contractor monthly financial
+management reports, we were unable to perform a complete cost projection for HALO.
+
+
+
+
+16 In February 2021, NASA selected SpaceX to launch the co-manifested Gateway elements on a Falcon Heavy rocket from
+
+  Kennedy Space Center.
+17 NASA originally planned for the initial Gateway elements to be available in 2024 to potentially dock with a spacecraft as
+
+  part of the first Artemis lunar landing mission.
+18 A Standing Review Board is composed of independent experts from within and outside of NASA who assess a program’s
+
+  or project’s programmatic and technical approach, risk posture, and progress against the cost and schedule baseline.
+19 As of May 2026, NASA was still finalizing a root cause analysis report.
+
+
+
+
+                                                                11
+Conclusion
+NASA’s reformulation of the Artemis campaign to meet the President’s National Space Policy and
+increase its cadence of missions by standardizing the SLS heavy-lift rocket resulted in the termination
+or repurposing of several Artemis-related systems, including the EUS, USA, ML-2, and HALO. Over
+the course of their life cycles, the combined contract values for these efforts ballooned from nearly
+$2.8 billion to $5.9 billion and NASA extended their contracted delivery dates by up to 7 years. However,
+our projections indicate that if NASA allowed work to continue to completion, the systems would have
+cost more and taken longer than what was on contract. While NASA is currently evaluating potential
+alternative uses for the hardware investments, decisions regarding whether, and to what extent, the
+hardware can be repurposed are not finalized.
+
+Though we are not making any recommendations, the information collected and presented in this
+memorandum will be included in our audit of NASA’s terminated missions where we will assess the
+Agency’s management of developed assets and the impacts of their cancellation on associated
+workforce, contractors, and international partners. We provided the Agency an opportunity to comment
+on a draft of this interim memorandum. Management’s response is reproduced in Enclosure II, and
+technical comments provided by management have been incorporated as appropriate.
+
+If you have any questions about this memorandum, please contact me or Ray Tolomeo, Science and
+Aeronautics Research Audits Director, at 202-358-7227 or raymond.tolomeo@nasa.gov.
+
+
+
+
+Brian Mullins
+Deputy Assistant Inspector General for Audits
+
+
+cc:             Joel Montalbano
+                Acting Associate Administrator for Space Operations Mission Directorate
+
+                Greg Stover
+                Acting Associate Administrator for Space Technology Mission Directorate
+
+
+
+
+                                                   12
+                                                                                            Enclosure I
+
+
+
+
+               Enclosure I: Scope and Methodology
+We performed this review from March 2026 through June 2026 as part of a broader audit examining
+NASA’s management of developed assets for programs and projects terminated prior to launch or
+operations. We have not yet completed the audit.
+
+In this interim memorandum, we focused on four Artemis systems—EUS, USA, ML-2, and HALO—that
+the Agency announced plans to cancel or repurpose as part of a broader reformulation of the Artemis
+campaign. For each system, we evaluated its cost, schedule, and development posture as well as the
+estimated cost and schedule at completion if it had continued at similar performance levels.
+
+To perform this review, we examined documentation for each system across a range of time frames.
+
+EUS. Documentation reviewed included select contract modifications between February 2017 and
+May 2026, conformed contracts from April 2023 and May 2026, contractor monthly financial
+management reports from February 2020 through March 2026, project schedule data for 62 out of
+70 months between April 2020 through January 2026, and award fee performance evaluation reports
+from 2024 and 2025.
+
+USA. Documentation reviewed included the original contract from June 2017, select contract
+modifications between September 2018 and September 2025, the conformed contract from
+February 2026, contractor monthly financial management reports for 76 out of 104 months between
+July 2017 and February 2026, project schedule data from December 2017 through January 2026, and
+award fee performance evaluation reports from 2024 and 2025.
+
+ML-2. Documentation reviewed included select contract modifications between November 2019 and
+May 2026, the conformed contract from April 2019, contractor monthly financial management reports
+and project schedule data from August 2023 through February 2026, and award fee performance
+evaluation reports from October 2023 through September 2025.
+
+HALO. Documentation reviewed included the original contract from September 2015, select contract
+modifications between November 2015 and March 2026, conformed contracts from September 2024
+and March 2026, contractor monthly financial management reports from October 2024 through
+February 2026, project schedule data from October 2024 through February 2026, and award fee
+performance evaluation reports from 2024 and 2025.
+
+While we reviewed program and project status and risk documentation, we did not interview
+NASA officials.
+
+
+Assessment of Data Reliability
+We used computer-processed data for this audit. To describe the cost of the four Artemis systems,
+we reviewed and analyzed NASA cost data from the Agency’s financial accounting system, contract
+files, and contractor monthly financial management reports. We concluded that the data was
+sufficiently reliable for our purposes.
+
+To forecast completion dates for each of the four canceled or repurposed Artemis systems, we obtained
+the contractors’ integrated master schedule files, which are the primary project schedule data source
+provided to NASA for project management and decision-making. We did not perform electronic testing
+
+                                                  13
+                                                                                               Enclosure I
+
+
+
+or validation of the schedule files. We collaborated with the OIG’s Office of Data Analytics and used the
+NASA Schedule Analysis Tool to forecast project completion dates using task data from the contractor
+schedules. Although forecasts depend on the accuracy and completeness of the historical schedule data
+maintained by the contractors, we determined that the NASA Schedule Analysis Tool forecasts were
+sufficiently reliable for the purposes of this interim memorandum.
+
+Finally, to forecast total project costs at our forecasted completion dates, we used the contractors’
+historical estimates at completion. Using contractor monthly financial management reports, we
+compiled a database of contractor-reported estimates at completion for each project and performed
+electronic testing of the database for completeness and consistency. We then applied an exponential
+smoothing model to historical growth in contractor-provided estimates at completion to project future
+costs. Each projection required unique assumptions to account for differences in contract structures,
+procurement histories, and data availability.
+
+Due to the extended projected completion date for HALO and limited availability of historical contractor
+monthly financial management reports, we were unable to develop a complete cost projection for that
+project. Although our projections depend on the accuracy and completeness of contractor-reported cost
+data and the assumptions underlying each forecasting model, we determined the resulting cost
+projections were sufficiently reliable for the purposes of this memorandum, except HALO, for which
+data limitations precluded a complete forecast.
+
+
+Prior Coverage
+The four NASA OIG reports mentioned in this memorandum can be found below. Reports can also be
+accessed at https://oig.nasa.gov/audits/.
+
+NASA’s Management of the Mobile Launcher 2 Project (IG-24-016, August 27, 2024)
+
+NASA’s Management of Space Launch System Block 1B Development (IG-24-015, August 8, 2024)
+
+NASA’s Management of the Mobile Launcher 2 Contract (IG-22-012, June 9, 2022)
+
+NASA’s Management of the Gateway Program for Artemis Missions (IG-21-004, November 10, 2020)
+
+
+
+
+                                                   14
+                                                                                                      Enclosure II
+
+
+
+                    Enclosure II: Management’s Comments
+                    National Aeronautics and Space Administration
+
+                    Mary W. Jackson NASA Headquarters
+                    Washington, DC 20546-0001
+
+
+
+
+Reply to Attn of:   Exploration Systems Development Mission Directorate
+
+
+                    TO:            Deputy Assistant Inspector General for Audits
+
+                    FROM:          Acting Associate Administrator for Exploration Systems Development
+                                   Mission Directorate
+
+                    SUBJECT:       Agency Response to OIG Draft Interim Memorandum, “Terminated Projects:
+                                   Cancelled or Repurposed Artemis Campaign Systems” (A-26-06-00-SARD)
+
+
+                    The National Aeronautics and Space Administration (NASA) appreciates the opportunity to
+                    review and comment on the Office of Inspector General (OIG) draft interim memorandum,
+                    “Terminated Projects: Cancelled or Repurposed Artemis Campaign Systems” (A-26-06-00-
+                    SARD), received June 3, 2026. The Agency values the OIG’s role in independently assessing
+                    cost, performance, and long-term program risks, particularly during this period of strategic
+                    refocusing cadence under the President’s National Space Policy.
+
+                    NASA’s Ignition Day was the public announcement and strategic rollout of a restructured
+                    Artemis campaign, outlining a streamlined, affordability-focused architecture designed to
+                    enable a sustainable annual cadence of crewed lunar landings. These strategic updates align
+                    with the President’s direction to sustain American leadership in space and to build an
+                    enduring presence on the lunar surface. The OIG’s observations regarding historical cost and
+                    schedule performance help underscore why a streamlined architectural approach is beneficial
+                    for long-term mission success.
+
+                    The interim memorandum documents substantial growth from the original baseline cost and
+                    schedule for all four systems, and NASA agrees that each system has experienced significant
+                    challenges due to contractor performance issues, evolving mission requirements, supply
+                    chain constraints, and workforce management complexities. However, these challenges must
+                    be understood within the broader architectural evolution of the Artemis campaign since these
+                    systems’ inception, including the shift toward standardized mission designs—exemplified by
+                    the Artemis II reference mission—that are central to establishing a disciplined and repeatable
+                    cadence. As the campaign matured, foundational assumptions regarding staging, co-
+                    manifested payloads, and launch vehicle configurations changed materially. While the OIG’s
+                    projections indicate that continuing these systems would likely increase total lifecycle cost,
+                    NASA stresses that these projections rely on past performance under outdated architectural
+                    assumptions that do not reflect the Ignition Day principles of discipline, affordability,
+                    simplification, and speed.
+
+                                                              15
+                                                                                    Enclosure II
+
+
+
+
+The Agency acknowledges the OIG’s examples where evolving requirements contributed to
+cost and schedule growth. NASA is enhancing internal controls to lock requirements earlier
+in the development cycle and applying lessons learned to drive future procurements toward
+firm-fixed-price structures where practicable and to leverage commercial offerings. Through
+the Artemis reformulation, the Agency has reprioritized investments to systems that directly
+support the annual landing cadence and surface sustainability strategy.
+
+NASA notes that the challenges summarized in the memorandum—cost growth, schedule
+slips, contractor performance issues, and evolving mission requirements—reinforce the
+rationale behind the decisions publicly announced during Ignition Day to streamline the
+Artemis architecture, modernize acquisition practices, and align programs with the Nation’s
+objectives for sustained lunar presence.
+
+The Agency looks forward to supporting the OIG’s continued audit work on terminated
+missions and remains committed to transparency, responsible stewardship, and advancing
+America’s leadership in lunar exploration.
+
+We have reviewed the draft memorandum for information that should not be publicly
+released. As a result of this review, we have not identified any information that should not be
+publicly released.
+
+Once again, thank you for the opportunity to review and comment on the subject draft
+memorandum. If you have any questions or require additional information regarding this
+response, please contact Christine Solga at (202) 309-6059.
+
+
+Lori Glaze
+                       Digitally signed by Lori Glaze
+                       Date: 2026.06.18 17:05:25
+                       -04'00'
+
+Dr. Lori S. Glaze
+Associate Administrator for Exploration Systems Development Mission Directorate
+
+
+
+
+                                                    16
+

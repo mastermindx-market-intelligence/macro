@@ -1,0 +1,192 @@
+{
+  "contract": "government_program_ontology_review_worksheet.v1",
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-10-15T20:47:58+00:00",
+  "reviewer": "Assigned principal 01a13300: retained accepted NASA source semantics plus parent-verified native award link; isolated preparation only, not independent acceptance",
+  "coverage": [
+    {
+      "scope": "program_identity",
+      "subject_type": "program",
+      "subject_id": "acq-program:gateway-halo"
+    },
+    {
+      "scope": "public_oversight",
+      "subject_type": "program",
+      "subject_id": "acq-program:gateway-halo"
+    }
+  ],
+  "rows": [
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:dd70be2daf64",
+        "evidence_class": "official_contract_announcement",
+        "sha256": "dd70be2daf64edb09efbdb0cac85f82a699a89ca687a3b2deaed672680b94c0e",
+        "source_url": "https://www.usaspending.gov/award/CONT_AWD_NNH15CN76C_8000_-NONE-_-NONE-",
+        "retrieved_from_url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_NNH15CN76C_8000_-NONE-_-NONE-/",
+        "retrieved_at": "2026-10-15T20:31:35+00:00",
+        "known_at": "2026-10-15T20:31:35+00:00",
+        "claim_scopes": [
+          "program_identity"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:ea1deaaca37a",
+        "evidence_class": "official_contract_announcement",
+        "sha256": "ea1deaaca37ac98c6b5c9b7af71ed649446bfae3076647c7995776374c6d80c5",
+        "source_url": "https://www.usaspending.gov/award/CONT_AWD_NNH15CN76C_8000_-NONE-_-NONE-",
+        "retrieved_from_url": "https://api.usaspending.gov/api/v2/search/spending_by_transaction/",
+        "retrieved_at": "2026-10-15T20:32:32+00:00",
+        "known_at": "2026-10-15T20:32:32+00:00",
+        "claim_scopes": [
+          "program_identity"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:3c779a29e49f",
+        "evidence_class": "official_acquisition_report",
+        "sha256": "3c779a29e49f8d68d659072d1cfd948c89391585c5182b6767527d40aa8eebd6",
+        "source_url": "https://oig.nasa.gov/wp-content/uploads/2026/06/interim-memo-ml-26-002-nasas-management-of-programs-and-projects-after-mission-termination-artemis-campaign-systems.pdf",
+        "retrieved_from_url": "https://oig.nasa.gov/wp-content/uploads/2026/06/interim-memo-ml-26-002-nasas-management-of-programs-and-projects-after-mission-termination-artemis-campaign-systems.pdf",
+        "retrieved_at": "2026-10-14T16:42:03+00:00",
+        "known_at": "2026-10-14T16:42:03+00:00",
+        "claim_scopes": [
+          "program_identity",
+          "public_oversight"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "program",
+      "identity_disposition": "new_identity",
+      "candidate_row": {
+        "id": "acq-program:gateway-halo",
+        "revision": 1,
+        "name": "Gateway Habitation and Logistics Outpost (HALO)",
+        "aliases": [
+          "Gateway HALO",
+          "HALO"
+        ],
+        "source_identities": [
+          {
+            "system": "contract_announcement",
+            "native_identifier": "NNH15CN76C",
+            "evidence_ref": "ev:ea1deaaca37a"
+          }
+        ],
+        "phase": null,
+        "sponsor_agency": "National Aeronautics and Space Administration",
+        "budget_program_keys": [],
+        "verification_state": "reviewed",
+        "known_at": "2026-10-15T20:47:58+00:00",
+        "valid_from": "2026-10-15T20:47:58+00:00",
+        "valid_to": null,
+        "evidence_refs": [
+          "ev:dd70be2daf64",
+          "ev:ea1deaaca37a",
+          "ev:3c779a29e49f"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_oversight_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:gateway-halo",
+        "finding_kind": "contract_process",
+        "reported_by": "oversight_body",
+        "report_series": "NASA Office of Inspector General interim memorandum",
+        "report_document_id": "ML-26-002",
+        "report_edition": "Published June 24, 2026; interim, not a completed audit",
+        "published_on": "2026-06-24",
+        "period_label": "September 2024 contract change and April 2026 stop-work observation, reported June 24 2026",
+        "summary": "NASA OIG reported the historical conversion to cost-plus-award-fee and an April 2026 stop-work order. The reported $1.9 billion is contract value, not recognized revenue, remaining backlog or cash. The interim memorandum does not establish current October status or formal contract termination.",
+        "excerpt": "Then in\nSeptember 2024, citing difficulties administering a development project with a firm-fixed-price contract\ntype, NASA converted HALO to a cost-plus-award-fee contract, increasing the combined value of the\ncontract to $1.8 billion and delaying delivery of the module to October 2026. However, in April 2026, the\nAgency issued a stop work order to Northrop Grumman for its work on the HALO contract. By then, the\nvalue of the contract had risen to $1.9 billion and Northrop Grumman was working to address corrosion\nthroughout HALO’s primary structure, which would significantly impact the project’s schedule.",
+        "excerpt_sha256": "561a81cd761bb874cf5e4ef0a75476f90d14e919389dbe90e3435bd059904a72",
+        "page": 10,
+        "printed_page_label": "10",
+        "known_at": "2026-10-15T20:47:58+00:00",
+        "valid_from": "2026-10-15T20:47:58+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:3c779a29e49f"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-oversight:d4225804ba9d657f4ad4c477"
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_oversight_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:gateway-halo",
+        "finding_kind": "schedule",
+        "reported_by": "oversight_body",
+        "report_series": "NASA Office of Inspector General interim memorandum",
+        "report_document_id": "ML-26-002",
+        "report_edition": "Published June 24, 2026; interim, not a completed audit",
+        "published_on": "2026-06-24",
+        "period_label": "Counterfactual completion projections in the June 24 2026 interim memorandum",
+        "summary": "Only if HALO continued to completion, OIG projected July 2031 delivery and Gateway operation no earlier than 2032. These are counterfactual projections, not current delivery or launch dates. The agency response contests the architectural assumptions; the audit was not complete.",
+        "excerpt": "If Northrop Grumman was to continue HALO to completion, in our judgment, the overall contract costs\nwould have continued to rise and the delivery schedule would have been further delayed. Based on\ntrends in Northrop Grumman’s monthly schedule reporting data over the past 1.5 years since the\ncontract was converted to cost-plus, we project the HALO would not have been delivered to NASA until\nJuly 2031, a 6-year delay. Moreover, given the additional time to integrate the HALO module with the\nPower and Propulsion Element pre-launch, as well as the approximately 10 months needed to reach its\ndesignated lunar orbit, we estimate that Gateway would not have been operational until at least 2032.\nDue to the projected end date far into the future and limited availability of contractor monthly financial\nmanagement reports, we were unable to perform a complete cost projection for HALO.",
+        "excerpt_sha256": "d6c2d46359be65ec4659769467ee9c87ac8d502972ce264184e95ad19384bb47",
+        "page": 11,
+        "printed_page_label": "11",
+        "known_at": "2026-10-15T20:47:58+00:00",
+        "valid_from": "2026-10-15T20:47:58+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:3c779a29e49f"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-oversight:79f9691e6929b5ef888c6b4c"
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_oversight_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:gateway-halo",
+        "finding_kind": "schedule",
+        "reported_by": "quoted_program_office",
+        "report_series": "NASA Office of Inspector General interim memorandum",
+        "report_document_id": "ML-26-002",
+        "report_edition": "Published June 24, 2026; interim, not a completed audit",
+        "published_on": "2026-06-24",
+        "period_label": "NASA management response to the interim memorandum, as published June 24 2026",
+        "summary": "NASA management said the projections for the systems covered by the memorandum relied on past performance under outdated architectural assumptions. This is the agency response, not independent validation of the revised architecture or evidence that the earlier stop-work observation was conditional.",
+        "excerpt": "While the OIG’s\n                    projections indicate that continuing these systems would likely increase total lifecycle cost,\n                    NASA stresses that these projections rely on past performance under outdated architectural\n                    assumptions that do not reflect the Ignition Day principles of discipline, affordability,\n                    simplification, and speed.",
+        "excerpt_sha256": "6e044431ef9e232d4d1550ddd66c6920e4e9e89b1190a47d66a4ba6d8ad908ed",
+        "page": 15,
+        "printed_page_label": "15",
+        "known_at": "2026-10-15T20:47:58+00:00",
+        "valid_from": "2026-10-15T20:47:58+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:3c779a29e49f"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-oversight:f5cdab700f1ead9f461fd9f4"
+      }
+    }
+  ]
+}

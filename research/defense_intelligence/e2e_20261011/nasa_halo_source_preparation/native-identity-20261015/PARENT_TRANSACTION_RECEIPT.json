@@ -1,0 +1,10 @@
+{
+  "url": "https://api.usaspending.gov/api/v2/search/spending_by_transaction/",
+  "retrieved_at": "2026-10-15T20:32:31.108715+00:00",
+  "status": 200,
+  "bytes": 992,
+  "sha256": "ea1deaaca37ac98c6b5c9b7af71ed649446bfae3076647c7995776374c6d80c5",
+  "request_number": 2,
+  "limit": 2,
+  "scope": "parent read-only exact transaction identity verification; no data admission"
+}
