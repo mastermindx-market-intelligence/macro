@@ -1,7 +1,7 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-10-14",
-  "built_at": "2026-10-15T05:14:01.310936+00:00",
+  "asof": "2026-10-15",
+  "built_at": "2026-10-16T04:21:01.423110+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
@@ -487,13 +487,14 @@
     ],
     "coverage": {
       "last_obs": "2026-10-14",
-      "expected_last_session": "2026-10-14",
-      "sessions_behind": 0,
+      "expected_last_session": "2026-10-15",
+      "sessions_behind": 1,
       "window_sessions": 20,
       "missing_recent": [
         "2026-09-24",
         "2026-10-12",
-        "2026-10-13"
+        "2026-10-13",
+        "2026-10-15"
       ],
       "missing_in_regime": [
         "2026-10-12",
@@ -504,36 +505,28 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 271.984074,
-      "alloc_frac": 0.906614,
-      "flow_1d_bn": -4.691915,
-      "flow_5d_bn": -2.451032,
-      "state": "cutting",
+      "alloc_bn": 276.811372,
+      "alloc_frac": 0.922705,
+      "flow_1d_bn": 4.827298,
+      "flow_5d_bn": 2.958561,
+      "state": "adding",
       "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.649311,
-      "z": -0.437429,
-      "flow_1d": -0.38722,
-      "flow_5d": -0.412429,
+      "score": 0.63301,
+      "z": -0.464783,
+      "flow_1d": -0.016301,
+      "flow_5d": -0.492808,
       "state": "cutting",
       "flow_window_n": 5,
       "cta_near_flat": false
     },
-    "agreement": "aligned_cutting",
+    "agreement": "split",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-10-16",
-        "vc_alloc_bn": 188.717583,
-        "vc_flow_bn": 0.871373,
-        "cta_score": 2.011965,
-        "cta_flow": 0.101946,
-        "spx_close": 5842.470215
-      },
       {
         "date": "2024-10-17",
         "vc_alloc_bn": 189.680925,
@@ -4525,12 +4518,20 @@
         "cta_score": 0.649311,
         "cta_flow": -0.38722,
         "spx_close": 7718.939941
+      },
+      {
+        "date": "2026-10-15",
+        "vc_alloc_bn": 276.811372,
+        "vc_flow_bn": 4.827298,
+        "cta_score": 0.63301,
+        "cta_flow": -0.016301,
+        "spx_close": 7744.060059
       }
     ]
   },
   "vol": {
-    "rv21": 0.099917,
-    "rv63": 0.110301,
+    "rv21": 0.098382,
+    "rv63": 0.108377,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
@@ -6594,43 +6595,35 @@
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-10-13",
+    "vs_asof": "2026-10-14",
     "items": [
       {
         "key": "vc_state",
-        "from": "adding",
-        "to": "cutting",
-        "note_en": "Vol-control funds: adding → cutting",
-        "note_zh": "波动率控制基金：加仓 → 减仓",
+        "from": "cutting",
+        "to": "adding",
+        "note_en": "Vol-control funds: cutting → adding",
+        "note_zh": "波动率控制基金：减仓 → 加仓",
         "display_only": true
       },
       {
         "key": "agreement",
-        "from": "split",
-        "to": "aligned_cutting",
-        "note_en": "Systematic agreement: Split → Aligned cutting",
-        "note_zh": "系统化机构一致性：分歧 → 一致减仓",
-        "display_only": true
-      },
-      {
-        "key": "cor1m_regime",
-        "from": "dispersion",
-        "to": "normal",
-        "note_en": "Correlation regime: Dispersion (stock-picker's market) → Normal correlation",
-        "note_zh": "相关性机制：分散（选股市场） → 正常相关性",
+        "from": "aligned_cutting",
+        "to": "split",
+        "note_en": "Systematic agreement: Aligned cutting → Split",
+        "note_zh": "系统化机构一致性：一致减仓 → 分歧",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "state": {
       "gamma_regime": "long",
-      "vc_state": "adding",
+      "vc_state": "cutting",
       "cta_state": "cutting",
-      "agreement": "split",
+      "agreement": "aligned_cutting",
       "rv_cross_state": "calm",
-      "cor1m_regime": "dispersion"
+      "cor1m_regime": "normal"
     }
   }
 }
