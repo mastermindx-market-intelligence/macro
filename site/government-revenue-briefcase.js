@@ -708,7 +708,8 @@
         var change = event.change || {};
         var evidence = event.evidence || {};
         var authority = event.authority || {};
-        var amount = primaryAmountFact(event);
+        var amountValue = primaryAmount(event);
+        var amount = amountValue === '' ? {} : primaryAmountFact(event);
         rows.push([
           payload.contract, meta.bundle_id, meta.schema_version, meta.event_contract,
           meta.as_of, meta.known_at, payload.query.filters.mode, payload.query.filters.truth,
@@ -716,7 +717,7 @@
           event.event_id, event.record_id, event.version, event.kind, event.state,
           event.title_original, event.title_zh,
           agency.department_name || agency.name || '', event.primary_ticker,
-          change.type, change.known_at, primaryDate(event), primaryAmount(event),
+          change.type, change.known_at, primaryDate(event), amountValue,
           evidence.mapping_class, evidence.source_class, firstReceiptUrl(event),
           authority.tier, authority.context_only, authority.can_rank, authority.can_size,
           meta.limitations,
@@ -725,7 +726,7 @@
         ]);
       });
       var bundle = (meta.bundle_id || 'unversioned').replace(/[^A-Za-z0-9._-]/g, '_');
-      var day = (meta.as_of || 'undated').replace(/[^0-9-]/g, '');
+      var day = (String(meta.as_of || '').match(/^\d{4}-\d{2}-\d{2}/) || [])[0] || 'undated';
       return {
         contract: EXPORT_CONTRACT,
         media_type: 'text/csv;charset=utf-8',

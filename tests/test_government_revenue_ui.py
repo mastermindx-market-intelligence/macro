@@ -55,6 +55,8 @@ def _run_runtime(
     real_dossiers_js: bool = False,
     source_receipt_candidates: list[dict] | None = None,
     history_flow: bool = False,
+    history_query: str = "Alpha",
+    restored_query: str | None = None,
     async_mode_rows: dict | None = None,
 ) -> dict:
     """Run the page's real IIFE against a deliberately tiny browser DOM stub."""
@@ -77,6 +79,8 @@ def _run_runtime(
         var BUDGET_MODULE_STATUS = %(budget_module_status)s;
         var COMPANY_BRIDGE_STUB = %(company_bridge_stub)s;
         var HISTORY_FLOW = %(history_flow)s;
+        var HISTORY_QUERY = %(history_query)s;
+        var RESTORED_QUERY = %(restored_query)s;
         var ASYNC_MODE_ROWS = %(async_mode_rows)s;
         var bridgeCalls = [];
         var SOURCE_RECEIPT_CANDIDATES = %(source_receipt_candidates)s;
@@ -115,6 +119,7 @@ def _run_runtime(
         function locate(url){var next=new URL(url,location.href);location.href=next.href;location.pathname=next.pathname;location.search=next.search;location.hash=next.hash}
         var history = {state:null,replaceState:function(snapshot,title,url){this.state=snapshot;locate(url);historyEntries[historyIndex]={state:snapshot,url:location.href}},pushState:function(snapshot,title,url){this.state=snapshot;locate(url);historyEntries=historyEntries.slice(0,historyIndex+1);historyEntries.push({state:snapshot,url:location.href});historyIndex++},go:function(delta){historyIndex+=delta;var entry=historyEntries[historyIndex];this.state=entry.state;locate(entry.url);(winListeners.popstate||[]).forEach(function(fn){fn({state:entry.state})})}};
         var navigator = {clipboard:null};
+        if(RESTORED_QUERY!==null){history.state={governmentRevenue:{schema:1,q:RESTORED_QUERY,truth:'all'}};historyEntries[0].state=history.state}
         var window = {addEventListener:function(name,fn){(winListeners[name]=winListeners[name]||[]).push(fn)},location:location, history:history, navigator:navigator, innerWidth:1440,
           MDXAuth:{enabled:function(){return true},onChange:function(cb){cb(null,"INITIAL_SESSION")}}};
         // R6: when requested, load the REAL shipped government-revenue-dossiers.js
@@ -166,7 +171,7 @@ def _run_runtime(
             var tickerRoutes=TICKER_ROUTES===null?null:TICKER_ROUTES.map(function(ticker){return runtime.openTickerFilmstrip(ticker)});
             var historyFlow=null;
             if(HISTORY_FLOW){
-              node('deskSearch').value='Alpha';node('deskSearch').fire('input');
+              node('deskSearch').value=HISTORY_QUERY;node('deskSearch').fire('input');
               var before={selection:runtime.currentSelection(),query:node('deskSearch').value,queue:node('queueList').innerHTML,url:location.href};
               node('companyMode').fire('click');
               var navigated={selection:runtime.currentSelection(),url:location.href,entries:historyEntries.length};
@@ -179,7 +184,7 @@ def _run_runtime(
             // Everything below is language-sensitive, so snapshot it BEFORE the
             // langchange re-render swaps the whole desk into Chinese.
             var result = {currentUrl:location.href,historyFlow:historyFlow,initial:initial, afterRetry:afterRetry,
-              fetchCalls:fetchCalls, freshness:freshness,
+              fetchCalls:fetchCalls, freshness:freshness, searchQuery:node('deskSearch').value,
               bundlesMatch:runtime.workspaceBundleMatches(PAYLOAD.procurement_workspace, FULL_WORKSPACE),
               rows:runtime.workspaceRows(), tickerStates:tickerStates, tickerRoutes:tickerRoutes,
               selection:runtime.currentSelection(), inspectorHtml:node('inspector').innerHTML,
@@ -226,6 +231,8 @@ def _run_runtime(
         "budget_module_status": json.dumps(budget_module_status) if budget_module_status is not None else "null",
         "company_bridge_stub": json.dumps(company_bridge_stub),
         "history_flow": json.dumps(history_flow),
+        "history_query": json.dumps(history_query),
+        "restored_query": json.dumps(restored_query),
         "async_mode_rows": json.dumps(async_mode_rows),
         "source_receipt_candidates": json.dumps(source_receipt_candidates),
         "dossiers_js": (
@@ -2219,3 +2226,39 @@ def test_async_source_rail_preserves_direct_record_url(tmp_path: Path, mode: str
     assert out["selection"]["mode"]==mode
     assert out["selection"]["selected"]==mode+":requested"
     assert "item="+mode+"%3Arequested" in out["currentUrl"]
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_filtered_candidate_deep_link_never_selects_a_substitute(tmp_path: Path, lang: str) -> None:
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[{"ticker":"ONE","name":"One Co."},{"ticker":"TWO","name":"Two Co."}],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    candidates=[{"id":"candidate:"+ticker.lower(),"kind":"candidate","tickers":[ticker],"title":ticker,"subtitle":"","candidate":{}} for ticker in ["ONE","TWO"]]
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=candidates,location_search="?mode=candidates&item=candidate%3Atwo&ticker=ONE",lang=lang)
+    assert out["selection"]["selected"] == ""
+    assert "candidate:two" in out["inspectorHtml"]
+    assert "candidate:one" not in out["inspectorHtml"]
+    assert ("excluded by your filters" if lang=="en" else "被当前筛选排除") in out["inspectorHtml"]
+
+
+@needs_node
+@pytest.mark.parametrize("restore", [False, True])
+def test_search_and_history_keep_the_export_query_limit(tmp_path: Path, restore: bool) -> None:
+    query="a"*120+"excluded suffix"
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=not restore,history_query=query,restored_query=query if restore else None)
+    assert out["searchQuery"] == query[:120]
+    assert "a"*120 not in out["currentUrl"]
+    if not restore:
+        assert out["historyFlow"]["before"]["query"] == query[:120]
+        assert out["historyFlow"]["back"]["query"] == query[:120]
+
+
+@needs_node
+def test_search_preserves_space_while_typing_a_multiword_query(tmp_path: Path) -> None:
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=True,history_query="Alpha ")
+    assert out["historyFlow"]["before"]["query"] == "Alpha "
+    assert out["historyFlow"]["back"]["query"] == "Alpha"
