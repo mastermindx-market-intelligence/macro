@@ -176,7 +176,7 @@ next_actions:
   Incumbent alone owns base refresh and final merge; no whole-CI rerun or check waiver.
 - After qualified A1 landing, bind both production probes and verify normal deployment, API/DOM/visuals and
   natural owner progression.
-- Reconcile actual qualified landing and newest continuity with preparedcb274/newmain9db/tree7b77;
+- Reconcile actual qualified landing and newest continuity; newer main668 has a separately prepared A1 conflict repair, so old preparedcb274/main9db composition is historical only;
   integrate the same follow-on, open its single PR and prove actual consumer adoption.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
@@ -191,15 +191,13 @@ prs:
 - 6651
 ---
 
-## Current checkpoint — 2026-10-15T21:50Z
+## Current checkpoint — 2026-10-16 conflict preparation
 
-A1 PR6651 OPENb4ff0d721ab8. OriginalCI38801265500/attempt1 TERMINALPASS; original final12007237637 digest/canonicalgate validates127jobs/351semantic commandstepsPASS, zero blocked/inherited. Canonical binding reader at21:47 returns27checks and INCOMPLETE ci-authority: original workflow38801258721/check116650577511 cancelled, newer38801303047/check116650737614 successful, active maincontext successful. The inactive pilot context is separate. No local deduplication, waiver or rerun. Original incumbent38811385852 completed without a specific A1 annotation. Current source/terminal/authority evidence is in a1-current-release.json.
+PR6651 remains OPEN at b4ff0d721ab8 as observed03:22Z. New protected main668374308a3298a68541e253573fafa16b4f9818 creates four actual conflicts: CI input lists, admin styles, updater and admin server tests. Prepared local preview6ac4f94366a4 resolves them and fixes one additional semantic test mismatch; no A1 carrier/ref/remote or controller changed. The unreferenced preview commits MUST NEVER be pushed. Its reproducible conflict-tree patch and qualification are retained in research/evidence/eval-os-tier-query-20261014/a1-668-conflict-preparation-20261016.json and the adjacent resolved-preview.patch.
 
-Smallest proposed repair: rerun only original cancelled authority workflow once after fresh head/workflow checks. Chris was asked once for an exception to explicit no-rerun instruction; answer pending, no effect performed. Original Fabric eval-b4-authority-triage-01a1333d-c1 completed MiniMax/ubuntu1 and was consumed but NOT_ACCEPTED: it confused the literal authority job with inactive pilot context and incorrectly predicted filtering. Original result/adjudication retained; no replacement or independent approval claim.
+All320 composed job definitions/limits and both parents' path memberships are retained, including previously accepted A1 additive tests. A real new39-input A1 closure gap was repaired with exact paths. The combined affected suite initially had357passed/one failed: theme.css was in both restart expectation lists. A1 caches its derived token response; preserving its positive restart case and adding a disjointness regression corrects the incoming negative case. The regression failed before repair, then61affected checks passed (overlapping the earlier357). The three focused CI controls pass; full curated closure has zero misses, and strict probes select136/135/129jobs at5752/5560/5503weight in10packs each, with no ceiling changes or breaches. Original Fabric eval-a1-668-updater-01a1333d-c1 was consumed and deterministically accepted with prose qualifiers: the parent proved exact restart-language union (91/86 finite inputs ->99, shared admin wildcard unchanged) and shell syntax. This is implementation assistance, not independent review.
 
-Followon runtime3528080/updater9cb/probe2edbb/source7f1dc unchanged. Currentmain9db produces clean A1cfab/preparedfollowon7b77, incoming capability-broker definitions retained,320jobs/17A1 and12followon files unchanged from prior preparation. Four native caller/sink modules do not directly import the new registration source; no runtime/production claim. Reconcile actual qualified landing and newest continuity before same-followon integration/singlePR; reuse accepted proof.
-
-After qualified A1 landing bind17fileprobe ANDassetprojector and prove deployment/assets/authAPI-DOM/eightvisualstates/naturalowner/comprehension. Followon separately owes12files/updatercopy/API-admin/numeric-log/CLI/Discovery adoption. Preserve26NEVERPUSH, originalFabricIDs/unknowns/refusals/capacity. One-timebaseexception7e consumed; incumbent alone refreshes/merges. All completion flags false.
+The existing one-time request to rerun only cancelled authority workflow38801258721 remains unanswered. No rerun or source/control bypass occurred. Original b4 CI38801265500 passed127jobs/351semantic steps; the canonical authority gate remains unresolved on its last observation. This preparation does not grant another manual base integration or qualify deployment. Reconcile actual source/custody/capacity before an ordinary same-carrier correction; incumbent alone refreshes and merges. Follow-on runtime3528080/updater9cb/probe2edbb/source7f1dc are unchanged. Final17-file/asset bindings, deployment, authenticated API/DOM, eight visual states, natural owner progression and follow-on adoption remain owed; all completion flags are false.
 
 ## 2026-10-15 A1 repair published
 

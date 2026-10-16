@@ -1,6 +1,6 @@
 {
   "schema": "eval_os.current_release.v1",
-  "updated_at": "2026-10-15T21:50:48.659784+00:00",
+  "updated_at": "2026-10-16T03:22:17.373901+00:00",
   "a1_pr": 6651,
   "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
   "published_at": "2026-10-15T20:21:22.130224+00:00",
@@ -618,5 +618,36 @@
     "proposal": "One normal rerun of only original cancelled authority workflow, after fresh head and workflow identity checks. No pack rerun, manual integration, controller modification or waiver.",
     "authorization": "REQUESTED exception to user no-rerun restriction; awaiting actual Chris answer. No rerun performed.",
     "fabric_triage": "Original eval-b4-authority-triage-01a1333d-c1 consumed; NOT_ACCEPTED due material confusion of literal ci-authority with inactive pilot context. No release approval."
+  },
+  "latest_source_observation": {
+    "at": "2026-10-16T03:22:17.373901+00:00",
+    "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+    "state": "open",
+    "merged": false,
+    "mergeable_state": "dirty",
+    "no_rerun_approval_received": true
+  },
+  "prepared_conflict_repair": {
+    "current_main": "668374308a3298a68541e253573fafa16b4f9818",
+    "preview_only_NEVER_PUSH": "6ac4f94366a492aecea016cfa4b6134b23eb215b",
+    "evidence": "a1-668-conflict-preparation-20261016.json",
+    "reproduction_patch": "a1-668-resolved-preview.patch",
+    "original_A1_carrier_unchanged": true,
+    "ordinary_same_carrier_application_pending": true,
+    "no_second_manual_base_integration_authorized": true,
+    "qualification_summary": {
+      "focused_controls_pass": 3,
+      "closure_misses": 0,
+      "strict_jobs": [
+        136,
+        135,
+        129
+      ],
+      "strict_breaches": [],
+      "initial_affected_tests_pass": 357,
+      "initial_affected_tests_fail": 1,
+      "repaired_subset_pass": 61,
+      "counts_overlap": true
+    }
   }
 }
