@@ -47,3 +47,75 @@ Existing #7200 repairs sibling S&P breadth downloads (owns shared `collectors/br
 This correction makes Russell's collector **fail visibly** rather than silently mint a refreshed green result from incomplete prices, and avoids losing its recoverable historical cache. It does not by itself turn a partial vendor response into fresh prices. Next consumer-critical requirement is a verified data-source path capable of meeting the current-session Russell coverage threshold, then a naturally scheduled run that produces a qualified price panel across the **whole** Prophet universe, B4 entry evidence and served result. Do not unblock trades, relabel old prices or infer trading profitability from passing fixture tests.
 
 Mission remains **OPEN**. No automatic publisher, account permission, protected-main merge, live alert, operator trade or hosted job dispatch was performed by this local implementation.
+
+## Oct 16: exact same-run cache handoff after unrelated market-push failure
+
+The next natural nightly exposed a second concrete source/transport boundary. Run
+`38830626430`, collect job `116748357565`, successfully restored a Russell
+cache and reported `russell_breadth -> ok` with an October 15 price row. Its later
+`push market data` was rejected by GitHub GH001 because
+`data/qledger/claims.jsonl` was 100.29 MB (>100 MB GitHub blob limit).
+Since collect originally used a combined `actions/cache@v4`, the cache's
+post-save was skipped after that late failure. The engine job `116798926386`
+read `russell-closes-38830626430` with an **exact-key-only**
+`actions/cache/restore@v4` and received **Cache not found**. The board it built
+at 04:21 UTC had `universe_sources.missing=["russell_breadth"]` and zero
+Russell names; the prior qualified board included 1,356 net-new Russell names.
+The missing engine handoff is an independently proven transport failure
+separate from Yahoo's partial price problem. The same night's engine also
+had a Git push authorization failure and the existing options PIT close
+integrity gate failed. Those effects remain with their original owners.
+
+### Bounded fix on the SAME PR carrier
+
+The original Russell `collect` cache step changes from combined
+`actions/cache@v4` to `actions/cache/restore@v4`, with its historic
+`restore-keys: russell-closes-` **only on the collector producer**. The
+run's new exact cache key is saved explicitly via `actions/cache/save@v4`
+**after** the registered `run collectors` step and **before** the market
+Git push. A native `data/run_status.json` source status guard requires:
+
+- `sources.russell_breadth.status == "ok"`,
+- actual `last_date` equals the existing NYSE expected completed session,
+- `checked_at` is parseable, after that completed session's ET cash close
+  and not in the future,
+- a nonempty cache file exists.
+
+The same PR's collector code is what enforces the >=80% true completed
+session closes for its full Russell request. Cold partial backfills remain
+recoverable but the source guard REFUSES to re-key them as a fresh completed
+source. A failure/missing source produces `qualified=false`, a visible
+warning and NO same-run cache; no false readiness is created.
+
+**Deliberately unchanged:** the ENGINE continues to request
+`russell-closes-${{ github.run_id }}` with **NO restore-keys**. A broad
+prefix on the engine would silently import prior sessions and violate
+`tests/test_daily_collect_commit_path.py`'s historical contract. Both
+new steps are `continue-on-error: true` so a cache-service problem
+cannot veto the market-data checkpoint. A collected source's health and a
+cache's transport availability remain separately disclosed.
+
+### Additional verification and non-claims
+
+- Native red workflow test: the original transport had no qualified
+  pre-push save; expected absence failed before workflow edits.
+- Repaired original `test_gitignored_russell_cache_uses_the_collect_jobs_exact_same_run_key`
+  to preserve exact-key engine and the new producer restore/save split.
+- New test locks the collector/gate/save/push order and exact cache key.
+- Eight hermetic negative/positive cases execute the **actual embedded
+  workflow gate source** (not a differently implemented mimic): qualified,
+  source failed, prior source session, record before close, future/malformed
+  clock, missing cache and missing source receipt.
+- Original market-data anti-veto test correctly rejected the new unguarded
+  gate, after which the workflow adopted the required nonfatal idiom.
+- Full `tests/test_daily_collect_commit_path.py`: 42 passed.
+- GitHub Actions/cache v4's `save-always` post-step is known not to work
+  reliably after a job failure (deprecated upstream). The explicit
+  `actions/cache/save@v4` is the supported native mechanism, not a new
+  cache owner.
+
+**Still unproven:** deployed workflow, real Actions cache save/readback,
+full CI after branch update, natural nightly acceptance, QLedger GH001
+resolution, engine push auth, F3 thematic candidate creation, B4 entry
+permission or served authenticated customer experience. The patch only
+makes the qualified source cache independently survive a later Git failure.
