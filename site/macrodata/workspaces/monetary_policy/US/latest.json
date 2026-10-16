@@ -192,8 +192,8 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "monetary_policy-US-feed05675cb7187e"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "monetary_policy-US-4bbee34ba69a30b5"
   },
   "drivers": {
     "balance_sheet": [
@@ -314,11 +314,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-16T04:21:06Z",
+    "built_at": "2026-10-16T15:03:32Z",
     "calculation_as_of": "2026-10-14",
-    "code_version": "217a9c2adeabd7745e3088bb606de413b575025d",
-    "content_sha256": "4bbee34ba69a30b5b30f5eb6b76f5647f2e3ef53b267305e80778f1a9c5ae0cb",
-    "generation_id": "monetary_policy-US-4bbee34ba69a30b5",
+    "code_version": "8c2e7e5e0c471bbac7fe7e0dd7ad4595231b78d0",
+    "content_sha256": "2a4c972116b1d00ce66db97dbe4872a988ee8ffc4f6bd35f770ba5c894423fd2",
+    "generation_id": "monetary_policy-US-2a4c972116b1d00c",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
