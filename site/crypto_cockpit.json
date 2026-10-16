@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-15",
-  "generated_at": "2026-10-16T00:07:25+00:00",
+  "as_of": "2026-10-16",
+  "generated_at": "2026-10-16T17:39:50+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 81597.68,
-    "change_24h_pct": 0.04,
+    "price": 81946.9,
+    "change_24h_pct": 0.43,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
     "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
     "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与期货持仓。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 12,
-    "exposure_pct": 39,
+    "master_score": 16,
+    "exposure_pct": 41,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "integrity_ok": true,
-    "final_exposure_pct": 39,
+    "final_exposure_pct": 41,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-15"
+        "as_of": "2026-10-16"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [

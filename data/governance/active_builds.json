@@ -1,31 +1,35 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-10-16T03:43:01.580663+00:00",
+  "generated_at": "2026-10-16T14:48:24.544214+00:00",
   "base": {
-    "sha": "d3977efdbb96fe6fe20e533a1e47d540bf7be777"
+    "sha": "5e96c97e26f25fb449da6e7de55e142dbd333ac8"
   },
   "merged_days": 14,
   "merged_truncated": true,
   "open_prs_truncated": true,
   "open_prs": [
     {
-      "number": 9502,
-      "title": "press: qualify retained FDA releases through the official-feed planner",
-      "head_ref": "claude/ssd-mmx-press-fda-source-20261015-a1726db06b7c0c07",
-      "updated_at": "2026-10-16T03:37:01Z",
-      "is_draft": false,
+      "number": 9504,
+      "title": "research(gmi): review 46 additional microtheme activity source pointers without admission",
+      "head_ref": "sol/gmi-micro-activity-addendum-20261016-001",
+      "updated_at": "2026-10-16T09:41:17Z",
+      "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 6,
+      "files_count": 10,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
-        "engine/press/fda_document.py",
-        "engine/press/official_feed_candidate.py",
-        "research/agentic_media/public_intelligence_20261011/fda_source_phase/installed_consumer.py",
-        "tests/test_press_fda_candidate.py",
-        "tests/test_press_fda_document.py"
+        "engine/theme_graph/membership_evidence.py",
+        "research/theme_graph/micro_member_research_addendum_20261016/RESEARCH_REVIEW.md",
+        "research/theme_graph/micro_member_research_addendum_20261016/SOURCE_SPOTCHECKS.md",
+        "research/theme_graph/micro_member_research_addendum_20261016/intake.tsv",
+        "research/theme_graph/micro_member_research_addendum_20261016/negative_intake.tsv",
+        "research/theme_graph/micro_member_research_addendum_20261016/research_addendum.json",
+        "research/theme_graph/micro_member_research_addendum_20261016/scope_holds.tsv",
+        "scripts/explain_theme_overlap.py",
+        "tests/test_theme_graph_micro_member_addendum.py"
       ],
       "protected_paths_touched": []
     },
@@ -33,16 +37,17 @@
       "number": 9501,
       "title": "Add inactive native Provider Control capacity V2 producer",
       "head_ref": "claude/ssd-finite-capacity-v2-20261016-e9e27f965da7ee86",
-      "updated_at": "2026-10-16T03:40:56Z",
-      "is_draft": false,
+      "updated_at": "2026-10-16T04:13:31Z",
+      "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 2,
+      "files_count": 3,
       "files_truncated": false,
       "files_error": false,
       "files": [
         "engine/provider_capacity_v2.py",
-        "scripts/build_provider_capacity_v2.py"
+        "scripts/build_provider_capacity_v2.py",
+        "tests/test_provider_capacity_v2_cli.py"
       ],
       "protected_paths_touched": []
     },
@@ -170,8 +175,8 @@
       "head_ref": "claude/defense-evidence-navigation-20261015",
       "updated_at": "2026-10-16T03:21:26Z",
       "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 100,
       "files_truncated": true,
       "files_error": false,
@@ -285,7 +290,7 @@
       "number": 9497,
       "title": "fix(research-vault): allow bounded catalog CAS in local store",
       "head_ref": "claude/ssd-rv-local-catalog-01a13301-ec959e668e03ab49",
-      "updated_at": "2026-10-16T03:34:51Z",
+      "updated_at": "2026-10-16T05:01:05Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -302,7 +307,7 @@
       "number": 9495,
       "title": "Prophet: restore detailed opportunity cards and connected setup workspace",
       "head_ref": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
-      "updated_at": "2026-10-16T03:02:41Z",
+      "updated_at": "2026-10-16T08:43:24Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -375,43 +380,6 @@
       "protected_paths_touched": []
     },
     {
-      "number": 9492,
-      "title": "feat(options): implement offline identity-link research offset",
-      "head_ref": "claude/ssd-fable-p3-har-kernel-20261015-4101249d9e26919b",
-      "updated_at": "2026-10-16T02:42:09Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "scripts/options_pilot_identity_offset.py",
-        "tests/test_options_pilot_identity_offset.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 9491,
-      "title": "feat(gmi): non-admitting Data OS identity preflight for microtheme research",
-      "head_ref": "sol/gmi-m1-admission-preflight-20261015-001",
-      "updated_at": "2026-10-16T00:38:07Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "engine/theme_graph/membership_evidence.py",
-        "research/theme_graph/M1_CURRENT_IDENTITY_HINT_PREFLIGHT_2026-10-15.md",
-        "scripts/explain_theme_overlap.py",
-        "tests/test_theme_graph_micro_membership_research.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 9490,
       "title": "fix(govrev): reconcile two skipped legacy publisher runs",
       "head_ref": "claude/defense-publisher-runtime-20261015",
@@ -437,7 +405,7 @@
       "number": 9489,
       "title": "fix(codex): bind incumbent quota guard and prevent foreground CI watches",
       "head_ref": "sol/web-execution-codex-nonblocking-ci-20261015-c3-010",
-      "updated_at": "2026-10-16T00:25:28Z",
+      "updated_at": "2026-10-16T09:23:08Z",
       "is_draft": true,
       "merge_state": "CLEAN",
       "merge_state_raw": "CLEAN",
@@ -455,7 +423,7 @@
       "number": 9488,
       "title": "Compose fresh server authentication with Options source-use checks",
       "head_ref": "claude/options-fresh-auth-20261015",
-      "updated_at": "2026-10-16T03:12:42Z",
+      "updated_at": "2026-10-16T05:47:01Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -566,8 +534,8 @@
       "head_ref": "claude/ssd-rv-original-tail-source-01a13301-cc41ceb0afd05c6d",
       "updated_at": "2026-10-15T23:57:53Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "BLOCKED",
+      "merge_state_raw": "BLOCKED",
       "files_count": 12,
       "files_truncated": false,
       "files_error": false,
@@ -593,19 +561,23 @@
       "number": 9484,
       "title": "fix(russell): fail closed on incomplete completed-session closes and preserve last-good cache",
       "head_ref": "sol/web-rotation-russell-close-truth-20261015-sol",
-      "updated_at": "2026-10-15T23:55:42Z",
+      "updated_at": "2026-10-16T09:51:54Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 5,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        ".github/workflows/daily.yml",
         "collectors/russell_breadth.py",
         "research/ROTATION_RUSSELL_COMPLETED_CLOSE_REPAIR_2026-10-15.md",
+        "tests/test_daily_collect_commit_path.py",
         "tests/test_russell_breadth.py"
       ],
-      "protected_paths_touched": []
+      "protected_paths_touched": [
+        ".github/workflows/daily.yml"
+      ]
     },
     {
       "number": 9483,
@@ -669,7 +641,7 @@
       "number": 9476,
       "title": "research: select a pinned producer in the existing ingest workflow",
       "head_ref": "claude/ssd-rv-pinned-workflow-01a13301-666b56bbc6b4330a",
-      "updated_at": "2026-10-16T03:12:39Z",
+      "updated_at": "2026-10-16T04:41:53Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -727,7 +699,7 @@
       "number": 9461,
       "title": "fix(options): fail AD-1 when publication retries are exhausted",
       "head_ref": "claude/ssd-fable-ad1-publish-truth-20261015-1799d6cc68321422",
-      "updated_at": "2026-10-16T03:36:31Z",
+      "updated_at": "2026-10-16T07:53:22Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -802,24 +774,6 @@
       ]
     },
     {
-      "number": 9455,
-      "title": "fix(api): bound overlapping daily brief reads per process",
-      "head_ref": "claude/ssd-mmx-press-serving-admission-20261015-0825dfa9704bce9b",
-      "updated_at": "2026-10-16T03:23:15Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "app/prophet_daily_brief.py",
-        "research/agentic_media/public_intelligence_20261011/serving_admission_phase/installed_probe.py",
-        "tests/test_prophet_daily_brief_api.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 9454,
       "title": "fix(data): prevent mixed-cadence intraday stores before sector minute pilot",
       "head_ref": "sol/web-rotation-minute-cadence-safety-20261015",
@@ -857,10 +811,10 @@
       "number": 9450,
       "title": "fix(qledger): refuse known oversized committed legacy blob before Git push",
       "head_ref": "sol/w2-legacy-qledger-gh001-local-preflight-20261015",
-      "updated_at": "2026-10-15T11:46:27Z",
+      "updated_at": "2026-10-16T09:48:56Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "BLOCKED",
+      "merge_state_raw": "BLOCKED",
       "files_count": 3,
       "files_truncated": false,
       "files_error": false,
@@ -1046,14 +1000,15 @@
       "number": 9437,
       "title": "[E3-FMT] Correct R3 respondent-role development gold without spending holdout",
       "head_ref": "research/e3fmt-r3-respondent-truth-20261014",
-      "updated_at": "2026-10-15T05:20:42Z",
+      "updated_at": "2026-10-16T09:26:50Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
+      "files_count": 4,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        ".github/ci/legacy-jobs.yml",
         "agentos/decisions/DEC-E3FMT-R3-RESPONDENT-ROLE-SOURCE-TRUTH.md",
         "research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r3.json",
         "tests/test_tfg1_r3_source_truth.py"
@@ -1124,7 +1079,7 @@
       "number": 9430,
       "title": "[FABRIC] Reclaim only an accepted worker worktree without force or fleet GC",
       "head_ref": "sol/fabric-exact-accepted-worktree-gc-20261014",
-      "updated_at": "2026-10-16T00:14:19Z",
+      "updated_at": "2026-10-16T09:58:02Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1141,7 +1096,7 @@
       "number": 9428,
       "title": "fix(risk-response): preserve native deterioration through envelope, UI and chat",
       "head_ref": "sol/web-macro-risk-response-20261014-c1",
-      "updated_at": "2026-10-15T23:51:17Z",
+      "updated_at": "2026-10-16T09:57:54Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1280,7 +1235,7 @@
       "number": 9420,
       "title": "[C15][DRAFT/HOLD] Source-free same-candidate 30m paired entry utility",
       "head_ref": "sol/web-macro-c15-paired-utility-20261015-sol-001",
-      "updated_at": "2026-10-15T17:49:47Z",
+      "updated_at": "2026-10-16T09:38:22Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1627,8 +1582,8 @@
       "head_ref": "sol/w2-collect-publish-headroom-20261014",
       "updated_at": "2026-10-16T00:03:56Z",
       "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "BLOCKED",
+      "merge_state_raw": "BLOCKED",
       "files_count": 2,
       "files_truncated": false,
       "files_error": false,
@@ -1789,8 +1744,8 @@
       "head_ref": "claude/ssd-f04-identity-parse-reuse-70a73ae749cd9e16",
       "updated_at": "2026-10-15T19:56:09Z",
       "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "BLOCKED",
+      "merge_state_raw": "BLOCKED",
       "files_count": 4,
       "files_truncated": false,
       "files_error": false,
@@ -1920,111 +1875,6 @@
       "protected_paths_touched": []
     },
     {
-      "number": 9196,
-      "title": "feat(rotation): source-clocked intraday comparisons and grounded leadership",
-      "head_ref": "sol/web-rotation-intraday-session-research-20261013",
-      "updated_at": "2026-10-16T03:21:54Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 87,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml",
-        "agentos/discoveries/DSC-HEATMAP-INTRADAY-ROW-COUNT-ALIASES-TIME.md",
-        "agentos/discoveries/DSC-SECTOR-DAILY-STORES-OMIT-OPEN.md",
-        "engine/neuralweb/market_packet.py",
-        "engine/sp500_heatmap.py",
-        "research/rotation_intelligence/intraday_sessions_20261013/CI_DESIGN_RATCHET_RECOVERY.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/CLOSING_SESSION_DELTA_2026-10-14.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/CONTINUATION_SOURCE_DELTA.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/FINAL_BACKEND_REVIEW.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/HARDENING_2026-10-14.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/RESEARCH_AND_IMPLEMENTATION.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/REVIEW_R1_ADJUDICATION.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/REVIEW_R2_ADJUDICATION.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/SOURCE_COVERAGE_2026-10-14.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/UI_DELIVERY.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/UI_REVIEW_ADJUDICATION.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/WEBKIT_CLEARING_REPAIR.md",
-        "research/rotation_intelligence/intraday_sessions_20261013/agentos_validation.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/atomic_mode_counterexamples.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/capture_intraday_view.py",
-        "research/rotation_intelligence/intraday_sessions_20261013/ci_wiring_receipt.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/clock_integration_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_delivery_replay.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_delivery_replay.py",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_point_exclusions.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_point_witness.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_red_summary.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_retention_replay.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_stamp_distribution.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/closing_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/comparison_green.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/comparison_red.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/controls.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/cross_browser_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/daily_store_census.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/final_qualification.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/green.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/grounding_green.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/grounding_red.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/hardening_final_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/hardening_green.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/hardening_red_summary.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/independent_retention_review_r3.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/independent_review_r1_status.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/independent_review_r1_verdict.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/independent_review_r2_verdict.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/independent_ui_review_r1.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/integrated_final.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/measurement_controls.py",
-        "research/rotation_intelligence/intraday_sessions_20261013/producer_grounding_replay.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/producer_grounding_replay_hardened.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/public_display_source_census.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/pulse_clock_green.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/pulse_clock_red.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/red.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/replay_observation_pair.py",
-        "research/rotation_intelligence/intraday_sessions_20261013/retained_full_quote_census.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/review_r2_remedy_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/review_remedy_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/terminal_clock_witness.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_integrated_tests.txt",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/1440-dark-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/1440-dark-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/1440-light-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/1440-light-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/390-dark-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/390-dark-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/390-light-zh-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/390-light-zh-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/browser_report.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/1440-dark-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/1440-dark-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/1440-light-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/1440-light-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/390-dark-en-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/390-dark-en-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/390-light-zh-page.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/390-light-zh-panel.png",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_proof/webkit/browser_report.json",
-        "research/rotation_intelligence/intraday_sessions_20261013/ui_reviewed_tests.txt",
-        "scripts/build_basket_pulse.py",
-        "templates/sector_central.html.j2",
-        "tests/test_build_basket_pulse.py",
-        "tests/test_market_packet.py",
-        "tests/test_sector_intraday_comparison.py",
-        "tests/test_sp500_heatmap_intraday_clock.py"
-      ],
-      "protected_paths_touched": [
-        ".github/workflows/ci.yml",
-        "engine/neuralweb/market_packet.py"
-      ]
-    },
-    {
       "number": 9195,
       "title": "Research: V28-V33 daily StochRSI and 2D RSI-MACD nested-washout entry assessment",
       "head_ref": "research/defensive-nested-v28-v33-20261013",
@@ -2053,10 +1903,10 @@
       "number": 9193,
       "title": "fix(r2) [DRAFT/HOLD]: NYSE tip audit and pre-upload stale-source publication guard",
       "head_ref": "sol/factor-atlas-r2-tip-integrity-20261013-c1",
-      "updated_at": "2026-10-16T00:19:27Z",
+      "updated_at": "2026-10-16T09:52:31Z",
       "is_draft": true,
-      "merge_state": "DIRTY",
-      "merge_state_raw": "DIRTY",
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
       "files_count": 5,
       "files_truncated": false,
       "files_error": false,
@@ -2683,11 +2533,11 @@
       "number": 9081,
       "title": "Ground Research Vault intelligence and qualify comparisons",
       "head_ref": "claude/research-vault-intelligence-20261013",
-      "updated_at": "2026-10-16T01:14:06Z",
+      "updated_at": "2026-10-16T04:11:54Z",
       "is_draft": false,
       "merge_state": "CLEAN",
       "merge_state_raw": "CLEAN",
-      "files_count": 29,
+      "files_count": 36,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -2700,7 +2550,13 @@
         "engine/research_intelligence/schema.py",
         "engine/research_intelligence/selection.py",
         "engine/research_intelligence/store.py",
+        "engine/research_intelligence/vault_head.py",
+        "engine/research_vault/dev_reading_order_qualify.py",
         "engine/research_vault/evaluation_runner.py",
+        "engine/research_vault/fulltext.py",
+        "engine/research_vault/fulltext_store.py",
+        "engine/research_vault/fulltext_writer.py",
+        "engine/research_vault/ingest.py",
         "engine/research_vault/retrieval_eval.py",
         "engine/research_vault/sidecar.py",
         "engine/research_vault/subjects.py",
@@ -2717,6 +2573,7 @@
         "tests/test_research_vault.py",
         "tests/test_research_vault_evaluation_runner.py",
         "tests/test_research_vault_page.py",
+        "tests/test_research_vault_reading_order_v2.py",
         "tests/test_research_vault_retrieval_eval.py",
         "tests/test_research_vault_strict_store.py",
         "tests/test_research_vault_subjects.py"
@@ -2871,6 +2728,88 @@
         "research/market_memory/e2e_20261012/MASTERPLAN.md"
       ],
       "protected_paths_touched": []
+    },
+    {
+      "number": 9035,
+      "title": "Rotation intelligence: Meta-CEO forensic audit and connected decision architecture",
+      "head_ref": "sol/web-rotation-intelligence-architecture-20261012",
+      "updated_at": "2026-10-16T10:00:11Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 5,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/ROTATION-INTELLIGENCE-META-CEO-2026-10-12.md",
+        "research/ROTATION_INTELLIGENCE_META_CEO_ARCHITECTURE_2026-10-12.md",
+        "research/rotation_intelligence/DONOR_BREADTH_RECEIPT_CANDIDATE_2026-10-13.md",
+        "research/rotation_intelligence/INTEGRATION_DELTA_2026-10-13.md",
+        "research/rotation_intelligence/OCTOBER_CANDIDATE_FORENSICS_2026-10-13.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 9031,
+      "title": "docs(fabric): propose optional management layers and direct bounded delegation",
+      "head_ref": "sol/fabric-adaptive-delegation-proposal-20261012",
+      "updated_at": "2026-10-13T08:34:57Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 2,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-10-12-adaptive-delegation-proposal.md",
+        "research/FABRIC_ADAPTIVE_DELEGATION_CEO_PROPOSAL_2026-10-12.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8978,
+      "title": "docs(meta-ceo): make bounded Fabric delegation the Codex-first operating contract",
+      "head_ref": "sol/codex-fabric-meta-ceo-adoption-20261012",
+      "updated_at": "2026-10-13T03:33:24Z",
+      "is_draft": false,
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
+      "files_count": 7,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/CODEX_META_CEO_FABRIC.md",
+        "scripts/fabric_harness_attribution.py",
+        "tests/test_fabric_harness_attribution.py",
+        "tests/test_meta_ceo_fabric_contract.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8925,
+      "title": "P0B receipts: digest-only tier with browser-free --refresh-digests",
+      "head_ref": "claude/p0b-receipt-digest-refresh",
+      "updated_at": "2026-10-12T06:09:39Z",
+      "is_draft": true,
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
+      "files_count": 6,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "config/house_law_checks.yml",
+        "docs/HOUSE_LAW_CI_GUARD_SUITE.md",
+        "scripts/check_p0b_receipt_closure.py",
+        "tests/test_check_p0b_receipt_closure.py",
+        "tests/test_stock_dashboard_first_frame.py"
+      ],
+      "protected_paths_touched": [
+        "scripts/check_p0b_receipt_closure.py"
+      ]
     }
   ],
   "collisions": [
@@ -3040,6 +2979,17 @@
       "any_protected": false
     },
     {
+      "pr_a": 9438,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "shared_count": 3,
+      "any_protected": false
+    },
+    {
       "pr_a": 9340,
       "pr_b": 9124,
       "shared_files": [
@@ -3105,16 +3055,6 @@
     },
     {
       "pr_a": 9499,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 9499,
       "pr_b": 9111,
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
@@ -3136,16 +3076,6 @@
     {
       "pr_a": 9498,
       "pr_b": 9216,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 9498,
-      "pr_b": 9196,
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
         ".github/workflows/ci.yml"
@@ -3305,16 +3235,6 @@
     },
     {
       "pr_a": 9486,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 9486,
       "pr_b": 9177,
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
@@ -3329,6 +3249,26 @@
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
         ".github/workflows/ci.yml"
+      ],
+      "shared_count": 2,
+      "any_protected": true
+    },
+    {
+      "pr_a": 9486,
+      "pr_b": 9081,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/research_vault/ingest.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9484,
+      "pr_b": 9256,
+      "shared_files": [
+        ".github/workflows/daily.yml",
+        "tests/test_daily_collect_commit_path.py"
       ],
       "shared_count": 2,
       "any_protected": true
@@ -3365,26 +3305,6 @@
     },
     {
       "pr_a": 9216,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 9216,
-      "pr_b": 9111,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 9196,
       "pr_b": 9111,
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
@@ -3514,7 +3434,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9499,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3523,7 +3443,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9498,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3532,7 +3452,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9495,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3541,7 +3461,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9494,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3550,16 +3470,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
-      "pr_b": 9492,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9488,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3568,7 +3479,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9487,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3577,7 +3488,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9486,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3586,7 +3497,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9479,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3595,7 +3506,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9461,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3604,7 +3515,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9444,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3613,7 +3524,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9438,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3622,7 +3533,16 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
+      "pr_b": 9437,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9504,
       "pr_b": 9436,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3631,7 +3551,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9423,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3640,7 +3560,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9406,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3649,7 +3569,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9340,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3658,7 +3578,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9241,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3667,7 +3587,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9230,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3676,7 +3596,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9216,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3685,7 +3605,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9198,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3694,16 +3614,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3712,7 +3623,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9177,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3721,7 +3632,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9137,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3730,7 +3641,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9125,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3739,7 +3650,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9124,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3748,7 +3659,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9112,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3757,7 +3668,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9111,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3766,7 +3677,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9105,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3775,7 +3686,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9103,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3784,7 +3695,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9081,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3793,8 +3704,26 @@
       "any_protected": false
     },
     {
-      "pr_a": 9502,
+      "pr_a": 9504,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9504,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9504,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3813,15 +3742,6 @@
     {
       "pr_a": 9499,
       "pr_b": 9494,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9499,
-      "pr_b": 9492,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3876,6 +3796,15 @@
     {
       "pr_a": 9499,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9499,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4036,6 +3965,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9499,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9499,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9498,
       "pr_b": 9495,
       "shared_files": [
@@ -4047,15 +3994,6 @@
     {
       "pr_a": 9498,
       "pr_b": 9494,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9498,
-      "pr_b": 9492,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4110,6 +4048,15 @@
     {
       "pr_a": 9498,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9498,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4263,6 +4210,24 @@
     {
       "pr_a": 9498,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9498,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9498,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4289,15 +4254,6 @@
     },
     {
       "pr_a": 9495,
-      "pr_b": 9492,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9495,
       "pr_b": 9488,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4353,6 +4309,15 @@
     {
       "pr_a": 9495,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9495,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4442,15 +4407,6 @@
     },
     {
       "pr_a": 9495,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9495,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4540,8 +4496,17 @@
       "any_protected": false
     },
     {
-      "pr_a": 9494,
-      "pr_b": 9492,
+      "pr_a": 9495,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9495,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4605,6 +4570,15 @@
     {
       "pr_a": 9494,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9494,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4677,15 +4651,6 @@
     {
       "pr_a": 9494,
       "pr_b": 9198,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9494,
-      "pr_b": 9196,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4792,8 +4757,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 9492,
-      "pr_b": 9488,
+      "pr_a": 9494,
+      "pr_b": 8978,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4801,233 +4766,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 9492,
-      "pr_b": 9487,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9486,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9479,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9461,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9444,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9438,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9436,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9423,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9406,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9340,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9241,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9230,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9216,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9198,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9193,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9177,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9137,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9125,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9124,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9112,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9111,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9105,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9103,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9081,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9492,
-      "pr_b": 9074,
+      "pr_a": 9494,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5099,6 +4839,15 @@
     },
     {
       "pr_a": 9488,
+      "pr_b": 9437,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9488,
       "pr_b": 9436,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5154,15 +4903,6 @@
     {
       "pr_a": 9488,
       "pr_b": 9198,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9488,
-      "pr_b": 9196,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5251,6 +4991,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9488,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9488,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9487,
       "pr_b": 9486,
       "shared_files": [
@@ -5289,6 +5047,15 @@
     {
       "pr_a": 9487,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9487,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5387,15 +5154,6 @@
     },
     {
       "pr_a": 9487,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9487,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5440,6 +5198,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9487,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9487,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9486,
       "pr_b": 9479,
       "shared_files": [
@@ -5469,6 +5245,15 @@
     {
       "pr_a": 9486,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9486,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5603,7 +5388,7 @@
     },
     {
       "pr_a": 9486,
-      "pr_b": 9081,
+      "pr_b": 9074,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5612,12 +5397,30 @@
     },
     {
       "pr_a": 9486,
-      "pr_b": 9074,
+      "pr_b": 8978,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
       "any_protected": false
+    },
+    {
+      "pr_a": 9486,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9484,
+      "pr_b": 9450,
+      "shared_files": [
+        ".github/workflows/daily.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": true
     },
     {
       "pr_a": 9479,
@@ -5640,6 +5443,15 @@
     {
       "pr_a": 9479,
       "pr_b": 9438,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9479,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5712,15 +5524,6 @@
     {
       "pr_a": 9479,
       "pr_b": 9198,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9479,
-      "pr_b": 9196,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5820,6 +5623,24 @@
     {
       "pr_a": 9479,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9479,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9479,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5882,6 +5703,15 @@
     },
     {
       "pr_a": 9461,
+      "pr_b": 9437,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9461,
       "pr_b": 9436,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5946,15 +5776,6 @@
     {
       "pr_a": 9461,
       "pr_b": 9198,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9461,
-      "pr_b": 9196,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6054,6 +5875,24 @@
     {
       "pr_a": 9461,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9461,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9461,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6152,6 +5991,15 @@
     },
     {
       "pr_a": 9444,
+      "pr_b": 9437,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9444,
       "pr_b": 9436,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6224,15 +6072,6 @@
     },
     {
       "pr_a": 9444,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9444,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6324,6 +6163,33 @@
     {
       "pr_a": 9444,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9444,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9444,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9438,
+      "pr_b": 9437,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6404,15 +6270,6 @@
     },
     {
       "pr_a": 9438,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9438,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6504,6 +6361,204 @@
     {
       "pr_a": 9438,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9438,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9436,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9423,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9406,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9340,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9241,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9230,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9216,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9198,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9193,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9177,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9137,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9124,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9112,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9111,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9105,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9103,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9081,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9437,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6575,15 +6630,6 @@
     },
     {
       "pr_a": 9436,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9436,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6675,6 +6721,24 @@
     {
       "pr_a": 9436,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9436,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9436,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6755,15 +6819,6 @@
     },
     {
       "pr_a": 9423,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9423,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6855,6 +6910,24 @@
     {
       "pr_a": 9423,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9423,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9423,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6908,15 +6981,6 @@
     },
     {
       "pr_a": 9406,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9406,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -7008,6 +7072,24 @@
     {
       "pr_a": 9406,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9406,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9406,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7052,15 +7134,6 @@
     },
     {
       "pr_a": 9340,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9340,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -7134,6 +7207,24 @@
     {
       "pr_a": 9340,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9340,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9340,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7277,15 +7368,6 @@
     },
     {
       "pr_a": 9241,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9241,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -7377,6 +7459,24 @@
     {
       "pr_a": 9241,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9241,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9241,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7403,15 +7503,6 @@
     },
     {
       "pr_a": 9230,
-      "pr_b": 9196,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9230,
       "pr_b": 9193,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -7503,6 +7594,24 @@
     {
       "pr_a": 9230,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9230,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9230,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7609,8 +7718,17 @@
       "any_protected": false
     },
     {
-      "pr_a": 9198,
-      "pr_b": 9196,
+      "pr_a": 9216,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9216,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7708,8 +7826,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 9196,
-      "pr_b": 9193,
+      "pr_a": 9198,
+      "pr_b": 8978,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7717,80 +7835,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 9196,
-      "pr_b": 9177,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9137,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9125,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9124,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9112,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9105,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9103,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9081,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 9196,
-      "pr_b": 9074,
+      "pr_a": 9198,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7888,6 +7934,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9193,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9193,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9177,
       "pr_b": 9137,
       "shared_files": [
@@ -7960,6 +8024,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9177,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9177,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9137,
       "pr_b": 9125,
       "shared_files": [
@@ -8032,6 +8114,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9137,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9137,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9125,
       "pr_b": 9105,
       "shared_files": [
@@ -8043,6 +8143,24 @@
     {
       "pr_a": 9125,
       "pr_b": 9081,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9125,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9125,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8068,6 +8186,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9124,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9124,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9112,
       "pr_b": 9105,
       "shared_files": [
@@ -8086,6 +8222,24 @@
       "any_protected": false
     },
     {
+      "pr_a": 9112,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9112,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9111,
       "pr_b": 9105,
       "shared_files": [
@@ -8097,6 +8251,24 @@
     {
       "pr_a": 9111,
       "pr_b": 9081,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9111,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9111,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8124,6 +8296,24 @@
     {
       "pr_a": 9105,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9105,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9105,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8140,8 +8330,71 @@
       "any_protected": false
     },
     {
+      "pr_a": 9103,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9103,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 9081,
       "pr_b": 9074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9081,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9081,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9074,
+      "pr_b": 8978,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 9074,
+      "pr_b": 8925,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8978,
+      "pr_b": 8925,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8150,6 +8403,21 @@
     }
   ],
   "recent_merged": [
+    {
+      "number": 9505,
+      "title": "Market Memory: source-linked historical earnings calls and bounded text",
+      "merged_at": "2026-10-16T11:13:16Z"
+    },
+    {
+      "number": 9503,
+      "title": "fix(render): recognize deferred Government Revenue Candidate Radar loader",
+      "merged_at": "2026-10-16T09:59:21Z"
+    },
+    {
+      "number": 9502,
+      "title": "press: qualify retained FDA releases through the official-feed planner",
+      "merged_at": "2026-10-16T05:00:23Z"
+    },
     {
       "number": 9500,
       "title": "fix(ci): rotate refresh opportunities across evaluation cycles",
@@ -8164,6 +8432,16 @@
       "number": 9493,
       "title": "feat(dataos): expose Tiingo statement comparisons through Data and Lab",
       "merged_at": "2026-10-16T02:04:07Z"
+    },
+    {
+      "number": 9492,
+      "title": "feat(options): implement offline identity-link research offset",
+      "merged_at": "2026-10-16T04:25:46Z"
+    },
+    {
+      "number": 9491,
+      "title": "feat(gmi): non-admitting Data OS identity preflight for microtheme research",
+      "merged_at": "2026-10-16T09:18:35Z"
     },
     {
       "number": 9485,
@@ -8254,6 +8532,11 @@
       "number": 9459,
       "title": "fix(market-memory): preserve return language across profile hydration",
       "merged_at": "2026-10-15T18:59:37Z"
+    },
+    {
+      "number": 9455,
+      "title": "fix(api): bound overlapping daily brief reads per process",
+      "merged_at": "2026-10-16T05:46:46Z"
     },
     {
       "number": 9453,
@@ -9279,6 +9562,11 @@
       "number": 9199,
       "title": "feat(entry-radar): observe sealed identity snapshots at the actual read time",
       "merged_at": "2026-10-15T03:06:09Z"
+    },
+    {
+      "number": 9196,
+      "title": "feat(rotation): source-clocked intraday comparisons and grounded leadership",
+      "merged_at": "2026-10-16T06:35:17Z"
     },
     {
       "number": 9194,
@@ -10614,41 +10902,6 @@
       "number": 8856,
       "title": "fix(thetadata): a store on an unmounted volume stops the resolver chain instead of falling through (D16a)",
       "merged_at": "2026-10-11T22:55:36Z"
-    },
-    {
-      "number": 8855,
-      "title": "feat(leader-radar): deep corrections and recovery panel (WP2)",
-      "merged_at": "2026-10-11T22:11:07Z"
-    },
-    {
-      "number": 8854,
-      "title": "feat(grey-deer): W2 observed-move primitives per the frozen pullback preregistration",
-      "merged_at": "2026-10-11T19:57:44Z"
-    },
-    {
-      "number": 8853,
-      "title": "SNI E1+E2 evidence packs + S0 frozen protocols",
-      "merged_at": "2026-10-11T21:59:48Z"
-    },
-    {
-      "number": 8852,
-      "title": "research(grey-deer): O8/T22 pullback preregistration, frozen before outcome inspection",
-      "merged_at": "2026-10-11T19:01:12Z"
-    },
-    {
-      "number": 8851,
-      "title": "fix(greeks): V01 \u2014 the IV inversion refuses inside MIN_T; the kernel declares its conventions and applicability",
-      "merged_at": "2026-10-11T21:23:33Z"
-    },
-    {
-      "number": 8850,
-      "title": "docs(sni): records-3 ledger fold (#8843 landed, #8837 repair 3)",
-      "merged_at": "2026-10-11T18:54:14Z"
-    },
-    {
-      "number": 8849,
-      "title": "fix(hk_fundamentals): stop trusting the vendor \"HKD\" label \u2014 suppress mixed-currency PE/PB",
-      "merged_at": "2026-10-11T19:15:05Z"
     }
   ]
 }

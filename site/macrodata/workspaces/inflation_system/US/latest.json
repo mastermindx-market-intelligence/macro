@@ -397,17 +397,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "cpi_headline_core:core_cpi_mom_pct:ebb00d34b7e51364",
-      "cpi_headline_core:core_cpi_yoy_pct:908928238da3c26e",
-      "cpi_headline_core:headline_cpi_mom_pct:e5c3b870b53c0d1f",
-      "cpi_headline_core:headline_cpi_yoy_pct:c1acb497e5917998",
-      "cpi_sticky_flexible_proxies:flexible_cpi_annualized_3m_pct:3ee65eea91f805c6",
-      "cpi_sticky_flexible_proxies:sticky_cpi_annualized_3m_pct:6943e1c5e03faa8b"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native source values changed: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "inflation_system-US-769ac673c59a33b8"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
+    "predecessor_generation_id": "inflation_system-US-3fcc93c88a659b2f"
   },
   "drivers": {
     "balance_sheet": [
@@ -528,11 +521,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-16T04:21:06Z",
+    "built_at": "2026-10-16T15:03:32Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "217a9c2adeabd7745e3088bb606de413b575025d",
-    "content_sha256": "3fcc93c88a659b2fae5fd7f00365a638b5def0710b4e03b7cff2636784624265",
-    "generation_id": "inflation_system-US-3fcc93c88a659b2f",
+    "code_version": "8c2e7e5e0c471bbac7fe7e0dd7ad4595231b78d0",
+    "content_sha256": "6bc7b337037e99ecb6a5d9957a8d85558f6ac99be9e4578f5bf747970a5ed66c",
+    "generation_id": "inflation_system-US-6bc7b337037e99ec",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },

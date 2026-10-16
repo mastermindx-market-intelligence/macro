@@ -7513,3 +7513,5 @@
 {"date": "2026-10-14", "ticker": "BBY", "score": 10.0, "percentile": 0.40963855421686746, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "DEI", "score": 0.0, "percentile": 0.060240963855421686, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "CNS", "score": 0.0, "percentile": 0.060240963855421686, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "ORLY", "score": 55.0, "percentile": 0.8734939759036144, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "PTGX", "score": 33.0, "percentile": 0.5843373493975904, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

@@ -332,7 +332,7 @@
           "equity_blind": false
         }
       ],
-      "asof": "2026-10-14"
+      "asof": "2026-10-15"
     },
     "dollar": {
       "usd_dir": "strengthening",
@@ -356,7 +356,7 @@
       "fx_stress": {
         "dominant": "em_crisis_capital_flight",
         "top_key": "em_crisis_capital_flight",
-        "top_val": 57.7
+        "top_val": 59.1
       }
     },
     "shadow": {
