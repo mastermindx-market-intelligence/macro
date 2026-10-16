@@ -4,7 +4,7 @@ No external network, real credential, production receipts or live storage.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import json
 
 import pytest
@@ -377,6 +377,84 @@ class _StreamResponse:
         yield self.payload
     def close(self):
         self.closed = True
+
+
+def test_historical_window_audit_refuses_valid_200_rows_outside_requested_dates():
+    good = article(id=91001)
+    old = article(
+        id=91002, publishedDate="2026-07-18T08:00:00Z",
+        crawlDate="2026-07-18T08:10:00Z",
+    )
+    result = tn.audit_requested_publication_window(
+        [good, old], start_date=date(2026, 10, 9),
+        end_date=date(2026, 10, 10), received_at=NOW,
+    )
+    assert result == {
+        "sample_rows": 2,
+        "within_window_rows": 1,
+        "before_window_rows": 1,
+        "after_window_rows": 0,
+        "invalid_rows": 0,
+        "window_status": "publication_dates_outside_requested_window",
+        "no_out_of_window_or_malformed_rows": False,
+        "historical_availability": "not_proven",
+        "publication_clock_basis": "publisher_or_tiingo_discovery_fallback",
+        "only_validates_requested_publication_date_bounds": True,
+    }
+    assert "Chipmaker" not in json.dumps(result)
+    assert "reuters" not in json.dumps(result)
+    assert "91002" not in json.dumps(result)
+
+
+def test_historical_window_audit_accepts_bounds_without_claiming_completeness():
+    result = tn.audit_requested_publication_window(
+        [article(id=91003)], start_date=date(2026, 10, 9),
+        end_date=date(2026, 10, 9), received_at=NOW,
+    )
+    assert result["within_window_rows"] == 1
+    assert result["window_status"] == "published_date_window_observed"
+    assert result["no_out_of_window_or_malformed_rows"] is True
+    assert result["historical_availability"] == "not_proven"
+
+
+def test_historical_window_audit_rejects_malformed_empty_and_future_windows():
+    kwargs = dict(start_date=date(2026, 10, 9),
+                  end_date=date(2026, 10, 9), received_at=NOW)
+    bad = tn.audit_requested_publication_window(
+        [article(id=False)], **kwargs
+    )
+    assert bad["window_status"] == "malformed_vendor_row"
+    assert bad["invalid_rows"] == 1
+    assert not bad["no_out_of_window_or_malformed_rows"]
+
+    empty = tn.audit_requested_publication_window([], **kwargs)
+    assert empty["window_status"] == "empty_response"
+    assert not empty["no_out_of_window_or_malformed_rows"]
+
+    future = tn.audit_requested_publication_window(
+        [article()], start_date=date(2026, 10, 8),
+        end_date=date(2026, 10, 8), received_at=NOW
+    )
+    assert future["after_window_rows"] == 1
+    assert future["window_status"] == "publication_dates_outside_requested_window"
+    assert not future["no_out_of_window_or_malformed_rows"]
+
+
+@pytest.mark.parametrize("invalid_start,invalid_end", [
+    ("2026-10-09", date(2026, 10, 10)),
+    (date(2026, 10, 9), datetime(2026, 10, 10, tzinfo=UTC)),
+    (date(2026, 10, 10), date(2026, 10, 9)),
+])
+def test_historical_window_audit_refuses_invalid_bounds(invalid_start, invalid_end):
+    with pytest.raises(ValueError, match="publication_window_invalid"):
+        tn.audit_requested_publication_window(
+            [], start_date=invalid_start, end_date=invalid_end, received_at=NOW
+        )
+    with pytest.raises(ValueError, match="publication_window_invalid"):
+        tn.audit_requested_publication_window(
+            (), start_date=date(2026, 10, 9),
+            end_date=date(2026, 10, 9), received_at=NOW,
+        )
 
 
 def test_aggregate_ticker_coverage_is_case_safe_and_no_raw_content_is_reported():

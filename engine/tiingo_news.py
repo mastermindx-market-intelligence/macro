@@ -8,7 +8,7 @@ inferred from a present-day download. See https://www.tiingo.com/documentation/n
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import json
 import re
 from time import monotonic
@@ -209,6 +209,56 @@ def audit_ticker_coverage(
         "case_stranded_matched_rows": stranded_case,
         "no_unique_match_rows": tagged - matched,
         "diagnostic_basis": "caller_universe_display_candidate_not_identity_grant",
+    }
+
+
+def audit_requested_publication_window(
+    rows: list[object], *, start_date: date, end_date: date, received_at: datetime
+) -> dict:
+    """Refuse a false historical date-window qualification from a 200 response.
+
+    This pure reader guards only the vendor publishedDate envelope. Tiingo may
+    substitute discovery time for publishedDate; even all in-window rows prove
+    neither first availability, licensed history, completeness nor corrections.
+    No story content, IDs, source URLs or credentials appear in the receipt.
+    """
+    when = _received(received_at)
+    if (type(rows) is not list or type(start_date) is not date
+            or type(end_date) is not date or start_date > end_date):
+        raise ValueError("publication_window_invalid")
+    good = bad = before = after = 0
+    for raw in rows:
+        try:
+            item = normalize_article(raw, received_at=when)
+        except TiingoArticleError:
+            bad += 1
+            continue
+        published_date = date.fromisoformat(item["published_at"][:10])
+        if published_date < start_date:
+            before += 1
+        elif published_date > end_date:
+            after += 1
+        else:
+            good += 1
+    if before or after:
+        status = "publication_dates_outside_requested_window"
+    elif bad:
+        status = "malformed_vendor_row"
+    elif not rows:
+        status = "empty_response"
+    else:
+        status = "published_date_window_observed"
+    return {
+        "sample_rows": len(rows),
+        "within_window_rows": good,
+        "before_window_rows": before,
+        "after_window_rows": after,
+        "invalid_rows": bad,
+        "window_status": status,
+        "no_out_of_window_or_malformed_rows": bool(good and not (bad or before or after)),
+        "historical_availability": "not_proven",
+        "publication_clock_basis": PUBLICATION_TIME_BASIS,
+        "only_validates_requested_publication_date_bounds": True,
     }
 
 
