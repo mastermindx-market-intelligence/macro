@@ -6211,6 +6211,7 @@
   function release(restoreFocus) {
     var old = active; active = null;
     if (!old) return;
+    clearSections();                       // generated navigation/ids/hidden state leave with the dialog
     // Restore only to the original live node. A replaced source is never resurrected.
     old.moved.forEach(function (pair) {
       if (old.row.isConnected && old.row.contains(old.details) && pair.owner.isConnected &&
@@ -6446,6 +6447,101 @@
     renderBrowse();
     if (btn && !btn.disabled && dialog.contains(btn) && btn.getClientRects().length) btn.focus({preventScroll: true});
   }
+  /* ── Setup sections inside the already-open candidate detail (Paper LKU-0 / 8OM-0) ──
+     The template has already grouped the SAME supplied content into structure / evidence /
+     research / sources bodies marked data-pvs-section. Only AFTER the native dialog opens
+     does this owner add one labelled tablist with connected tabs/panels over those existing
+     groups; without JS every group stays visible inline. Bodies without the markers — Plan
+     records, legacy and other callers — get nothing at all. Generated ids, roles, hidden
+     state and the bar itself are removed on release so the exact original nodes return home
+     intact. Nothing here supplies, infers or fetches data, assessments, plans or permission. */
+  var SECTION_NAMES = ['structure', 'evidence', 'research', 'sources'];
+  var SECTION_LABELS = {structure: ['Structure & timing', '结构与时机'], evidence: ['Evidence', '证据'],
+    research: ['Context', '背景'], sources: ['Sources', '来源']};
+  var sections = null, sectionSeq = 0;
+  /* Outermost known groups only, in the template's published order; a group that is already
+     hidden is not content the reader can see, so it never becomes a panel. */
+  function sectionPanels(owner) {
+    var panels = [];
+    SECTION_NAMES.forEach(function (name) {
+      var el = owner.querySelector('[data-pvs-section="' + name + '"]');
+      if (el && owner.contains(el) && !el.hasAttribute('hidden') &&
+          !panels.some(function (p) { return p === el || p.contains(el); })) panels.push(el);
+    });
+    return panels;
+  }
+  function mountSections() {
+    clearSections();
+    if (!active || active.moved.length !== 1) return;
+    var body = active.moved[0].node;
+    if (!body.classList || !body.classList.contains('pv-setup-body')) return;   // Plan/legacy bodies stay whole
+    var panels = sectionPanels(body);
+    if (panels.length < 2) return;               // an unmarked or single-group body needs no navigation
+    var bar = node('div', 'pvs-section-tabs');
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', 'Setup sections · 形态分区');
+    var refs = [], base = 'pvs-sec-' + (++sectionSeq);   // unique per dialog mount, never reused
+    panels.forEach(function (panel) {
+      var name = panel.getAttribute('data-pvs-section'), label = SECTION_LABELS[name] || [name, name];
+      if (name === 'evidence') {
+        var cautionCount = panel.querySelectorAll('.pvs-opportunity-cautions li').length;
+        if (cautionCount) label = ['Evidence · ' + cautionCount + (cautionCount === 1 ? ' caution' : ' cautions'),
+          '证据 · ' + cautionCount + ' 项注意'];
+      }
+      var tab = bilingual(node('button', 'pvs-section-tab'), label[0], label[1]);
+      tab.type = 'button';
+      tab.setAttribute('role', 'tab');
+      tab.id = base + '-' + name;
+      tab.setAttribute('aria-controls', base + '-' + name + '-panel');
+      var was = {id: panel.getAttribute('id'), role: panel.getAttribute('role'),
+        labelledby: panel.getAttribute('aria-labelledby'), index: panel.getAttribute('tabindex')};
+      panel.id = base + '-' + name + '-panel';
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.setAttribute('tabindex', '0');
+      var ref = {tab: tab, panel: panel, was: was};
+      refs.push(ref);
+      bar.append(tab);
+      tab.addEventListener('click', function () { selectSection(refs.indexOf(ref), true); });
+    });
+    function selectSection(index, focusTab) {
+      if (!sections || sections.bar !== bar || !active || active.moved[0].node !== body) return;
+      refs.forEach(function (ref, i) {
+        var on = i === index;
+        ref.tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        ref.tab.setAttribute('tabindex', on ? '0' : '-1');   // one roving stop on the tablist
+        if (on) ref.panel.removeAttribute('hidden');
+        else ref.panel.setAttribute('hidden', '');
+      });
+      if (focusTab && refs[index]) refs[index].tab.focus({preventScroll: true});
+    }
+    bar.addEventListener('keydown', function (e) {
+      var at = 0;
+      refs.forEach(function (r, i) { if (r.tab.getAttribute('aria-selected') === 'true') at = i; });
+      var to = e.key === 'ArrowRight' ? at + 1 : e.key === 'ArrowLeft' ? at - 1 :
+               e.key === 'Home' ? 0 : e.key === 'End' ? refs.length - 1 : null;
+      if (to === null) return;                 // other keys, and arrows elsewhere, stay untouched
+      e.preventDefault();
+      selectSection(Math.max(0, Math.min(refs.length - 1, to)), true);
+    });
+    sections = {bar: bar, refs: refs};
+    var grid = body.querySelector(':scope > .pvs-grid');   // below the identity and the source clock
+    (grid && grid.parentNode === body ? grid : panels[0]).before(bar);
+    selectSection(0, false);                 // Structure first — every candidate, every open
+  }
+  function clearSections() {
+    if (!sections) return;
+    var gone = sections; sections = null;
+    gone.bar.remove();
+    gone.refs.forEach(function (ref) {
+      var panel = ref.panel, was = ref.was;   // restore exactly what the source published
+      if (was.id === null) panel.removeAttribute('id'); else panel.setAttribute('id', was.id);
+      if (was.role === null) panel.removeAttribute('role'); else panel.setAttribute('role', was.role);
+      if (was.labelledby === null) panel.removeAttribute('aria-labelledby'); else panel.setAttribute('aria-labelledby', was.labelledby);
+      if (was.index === null) panel.removeAttribute('tabindex'); else panel.setAttribute('tabindex', was.index);
+      panel.removeAttribute('hidden');        // inline fallback shows every group again
+    });
+  }
   function returnToCandidate() {
     if (!journey || !journeyUsable(journey, false)) { clearJourney(); return false; }
     var j = journey, want = j.mode || 'candidates';
@@ -6527,6 +6623,7 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    mountSections();                      // sections exist only while the native dialog holds the body
     mountBrowse(wasOpen);
     mountJourney();
     return true;
