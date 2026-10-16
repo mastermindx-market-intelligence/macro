@@ -1,0 +1,526 @@
+ticker,as_of,horizon,mode,endpoint,state,positive,mature,global_sessions_available,observed_candidate_sessions,missing_candidate_sessions,unknown_state_sessions,complete_observation
+LFUS,2026-08-18,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+FIX,2026-08-18,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+AMG,2026-08-18,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+AMAT,2026-08-20,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+MPWR,2026-08-20,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+HUBG,2026-08-27,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+SNDK,2026-08-28,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+TPR,2026-08-28,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+INDV,2026-08-31,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+FORM,2026-09-03,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+BAC,2026-09-04,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+NVDA,2026-09-04,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+PWR,2026-09-04,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+WDC,2026-09-10,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+GOOG,2026-09-14,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+ROST,2026-09-16,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+COCO,2026-09-16,3,raw,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+ACMR,2026-09-17,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+URBN,2026-09-30,3,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",True,3,3,0,0,True
+KEYS,2026-09-30,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+TGT,2026-09-30,3,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+LFUS,2026-08-18,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+FIX,2026-08-18,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+AMG,2026-08-18,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+AMAT,2026-08-20,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+MPWR,2026-08-20,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+HUBG,2026-08-27,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+SNDK,2026-08-28,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+TPR,2026-08-28,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+INDV,2026-08-31,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+FORM,2026-09-03,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+BAC,2026-09-04,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+NVDA,2026-09-04,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+PWR,2026-09-04,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+WDC,2026-09-10,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+GOOG,2026-09-14,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+ROST,2026-09-16,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+COCO,2026-09-16,3,raw,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+ACMR,2026-09-17,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+URBN,2026-09-30,3,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",True,3,3,0,0,True
+KEYS,2026-09-30,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+TGT,2026-09-30,3,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+LFUS,2026-08-18,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+FIX,2026-08-18,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+AMG,2026-08-18,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+AMAT,2026-08-20,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+MPWR,2026-08-20,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+HUBG,2026-08-27,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+SNDK,2026-08-28,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+TPR,2026-08-28,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+INDV,2026-08-31,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+FORM,2026-09-03,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+BAC,2026-09-04,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+NVDA,2026-09-04,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+PWR,2026-09-04,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+WDC,2026-09-10,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+GOOG,2026-09-14,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+ROST,2026-09-16,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+COCO,2026-09-16,3,valid,technical,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+ACMR,2026-09-17,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+URBN,2026-09-30,3,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",True,3,3,0,0,True
+KEYS,2026-09-30,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+TGT,2026-09-30,3,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+LFUS,2026-08-18,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+FIX,2026-08-18,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+AMG,2026-08-18,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+AMAT,2026-08-20,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+MPWR,2026-08-20,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+HUBG,2026-08-27,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+SNDK,2026-08-28,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+TPR,2026-08-28,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+INDV,2026-08-31,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+FORM,2026-09-03,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+BAC,2026-09-04,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+NVDA,2026-09-04,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+PWR,2026-09-04,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+WDC,2026-09-10,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+GOOG,2026-09-14,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+ROST,2026-09-16,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+COCO,2026-09-16,3,valid,buy_tier,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+ACMR,2026-09-17,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+URBN,2026-09-30,3,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",True,3,3,0,0,True
+KEYS,2026-09-30,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+TGT,2026-09-30,3,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+LFUS,2026-08-18,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+FIX,2026-08-18,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+AMG,2026-08-18,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+AMAT,2026-08-20,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+MPWR,2026-08-20,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+HUBG,2026-08-27,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+SNDK,2026-08-28,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+TPR,2026-08-28,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+INDV,2026-08-31,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+FORM,2026-09-03,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+BAC,2026-09-04,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+NVDA,2026-09-04,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+PWR,2026-09-04,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,2,1,0,False
+WDC,2026-09-10,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+GOOG,2026-09-14,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+ROST,2026-09-16,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+COCO,2026-09-16,3,valid,availability,OBSERVED_NONCONVERSION,,True,3,3,0,0,True
+ACMR,2026-09-17,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+URBN,2026-09-30,3,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",True,3,3,0,0,True
+KEYS,2026-09-30,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,1,2,0,False
+TGT,2026-09-30,3,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,3,0,3,0,False
+LFUS,2026-08-18,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+FIX,2026-08-18,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMG,2026-08-18,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMAT,2026-08-20,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+MPWR,2026-08-20,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+HUBG,2026-08-27,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+SNDK,2026-08-28,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+TPR,2026-08-28,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+INDV,2026-08-31,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+FORM,2026-09-03,5,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,5,5,0,0,True
+BAC,2026-09-04,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+NVDA,2026-09-04,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+PWR,2026-09-04,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+WDC,2026-09-10,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+GOOG,2026-09-14,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+ROST,2026-09-16,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+COCO,2026-09-16,5,raw,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+ACMR,2026-09-17,5,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,0,5,0,False
+URBN,2026-09-30,5,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,5,raw,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,5,raw,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+FIX,2026-08-18,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMG,2026-08-18,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMAT,2026-08-20,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+MPWR,2026-08-20,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+HUBG,2026-08-27,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+SNDK,2026-08-28,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+TPR,2026-08-28,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+INDV,2026-08-31,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+FORM,2026-09-03,5,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,5,5,0,0,True
+BAC,2026-09-04,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+NVDA,2026-09-04,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+PWR,2026-09-04,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+WDC,2026-09-10,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+GOOG,2026-09-14,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+ROST,2026-09-16,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+COCO,2026-09-16,5,raw,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+ACMR,2026-09-17,5,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,0,5,0,False
+URBN,2026-09-30,5,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,5,raw,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,5,raw,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+FIX,2026-08-18,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMG,2026-08-18,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMAT,2026-08-20,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+MPWR,2026-08-20,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+HUBG,2026-08-27,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+SNDK,2026-08-28,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+TPR,2026-08-28,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+INDV,2026-08-31,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+FORM,2026-09-03,5,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,5,5,0,0,True
+BAC,2026-09-04,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+NVDA,2026-09-04,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+PWR,2026-09-04,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+WDC,2026-09-10,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+GOOG,2026-09-14,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+ROST,2026-09-16,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+COCO,2026-09-16,5,valid,technical,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+ACMR,2026-09-17,5,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,0,5,0,False
+URBN,2026-09-30,5,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,5,valid,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,5,valid,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+FIX,2026-08-18,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMG,2026-08-18,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMAT,2026-08-20,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+MPWR,2026-08-20,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+HUBG,2026-08-27,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+SNDK,2026-08-28,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+TPR,2026-08-28,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+INDV,2026-08-31,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+FORM,2026-09-03,5,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,5,5,0,0,True
+BAC,2026-09-04,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+NVDA,2026-09-04,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+PWR,2026-09-04,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+WDC,2026-09-10,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+GOOG,2026-09-14,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+ROST,2026-09-16,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+COCO,2026-09-16,5,valid,buy_tier,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+ACMR,2026-09-17,5,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,0,5,0,False
+URBN,2026-09-30,5,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,5,valid,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,5,valid,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+FIX,2026-08-18,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMG,2026-08-18,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+AMAT,2026-08-20,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+MPWR,2026-08-20,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+HUBG,2026-08-27,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+SNDK,2026-08-28,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+TPR,2026-08-28,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+INDV,2026-08-31,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+FORM,2026-09-03,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+BAC,2026-09-04,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+NVDA,2026-09-04,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+PWR,2026-09-04,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,2,3,0,False
+WDC,2026-09-10,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+GOOG,2026-09-14,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,1,4,0,False
+ROST,2026-09-16,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+COCO,2026-09-16,5,valid,availability,OBSERVED_NONCONVERSION,,True,5,5,0,0,True
+ACMR,2026-09-17,5,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,5,0,5,0,False
+URBN,2026-09-30,5,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,5,valid,availability,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,5,valid,availability,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,10,raw,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+FIX,2026-08-18,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+AMG,2026-08-18,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+AMAT,2026-08-20,10,raw,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+MPWR,2026-08-20,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+HUBG,2026-08-27,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+SNDK,2026-08-28,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,7,3,0,False
+TPR,2026-08-28,10,raw,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+INDV,2026-08-31,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+FORM,2026-09-03,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,10,10,0,0,True
+BAC,2026-09-04,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+NVDA,2026-09-04,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,5,5,0,False
+PWR,2026-09-04,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",True,10,4,6,0,False
+WDC,2026-09-10,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",True,10,10,0,0,True
+GOOG,2026-09-14,10,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+ROST,2026-09-16,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,10,10,0,0,True
+COCO,2026-09-16,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",True,10,8,2,0,False
+ACMR,2026-09-17,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,10,3,7,0,False
+URBN,2026-09-30,10,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,10,raw,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,10,raw,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,10,raw,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+FIX,2026-08-18,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+AMG,2026-08-18,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+AMAT,2026-08-20,10,raw,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+MPWR,2026-08-20,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+HUBG,2026-08-27,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+SNDK,2026-08-28,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,7,3,0,False
+TPR,2026-08-28,10,raw,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+INDV,2026-08-31,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+FORM,2026-09-03,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,10,10,0,0,True
+BAC,2026-09-04,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+NVDA,2026-09-04,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,5,5,0,False
+PWR,2026-09-04,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",True,10,4,6,0,False
+WDC,2026-09-10,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",True,10,10,0,0,True
+GOOG,2026-09-14,10,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+ROST,2026-09-16,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,10,10,0,0,True
+COCO,2026-09-16,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",True,10,8,2,0,False
+ACMR,2026-09-17,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,10,3,7,0,False
+URBN,2026-09-30,10,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,10,raw,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,10,raw,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,10,valid,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+FIX,2026-08-18,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+AMG,2026-08-18,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+AMAT,2026-08-20,10,valid,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+MPWR,2026-08-20,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+HUBG,2026-08-27,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+SNDK,2026-08-28,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,7,3,0,False
+TPR,2026-08-28,10,valid,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+INDV,2026-08-31,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+FORM,2026-09-03,10,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,10,10,0,0,True
+BAC,2026-09-04,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+NVDA,2026-09-04,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,5,5,0,False
+PWR,2026-09-04,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+WDC,2026-09-10,10,valid,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+GOOG,2026-09-14,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+ROST,2026-09-16,10,valid,technical,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+COCO,2026-09-16,10,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",True,10,8,2,0,False
+ACMR,2026-09-17,10,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,3,7,0,False
+URBN,2026-09-30,10,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,10,valid,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,10,valid,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,10,valid,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+FIX,2026-08-18,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+AMG,2026-08-18,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+AMAT,2026-08-20,10,valid,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+MPWR,2026-08-20,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+HUBG,2026-08-27,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+SNDK,2026-08-28,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,7,3,0,False
+TPR,2026-08-28,10,valid,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+INDV,2026-08-31,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+FORM,2026-09-03,10,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,10,10,0,0,True
+BAC,2026-09-04,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+NVDA,2026-09-04,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,5,5,0,False
+PWR,2026-09-04,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+WDC,2026-09-10,10,valid,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+GOOG,2026-09-14,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+ROST,2026-09-16,10,valid,buy_tier,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+COCO,2026-09-16,10,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",True,10,8,2,0,False
+ACMR,2026-09-17,10,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,3,7,0,False
+URBN,2026-09-30,10,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,10,valid,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,10,valid,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+FIX,2026-08-18,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+AMG,2026-08-18,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+AMAT,2026-08-20,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+MPWR,2026-08-20,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+HUBG,2026-08-27,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,6,4,0,False
+SNDK,2026-08-28,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,7,3,0,False
+TPR,2026-08-28,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+INDV,2026-08-31,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+FORM,2026-09-03,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+BAC,2026-09-04,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,2,8,0,False
+NVDA,2026-09-04,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,5,5,0,False
+PWR,2026-09-04,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,4,6,0,False
+WDC,2026-09-10,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+GOOG,2026-09-14,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,1,9,0,False
+ROST,2026-09-16,10,valid,availability,OBSERVED_NONCONVERSION,,True,10,10,0,0,True
+COCO,2026-09-16,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,8,2,0,False
+ACMR,2026-09-17,10,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,10,3,7,0,False
+URBN,2026-09-30,10,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,10,valid,availability,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,10,valid,availability,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,12,raw,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+FIX,2026-08-18,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+AMG,2026-08-18,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,8,4,0,False
+AMAT,2026-08-20,12,raw,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+MPWR,2026-08-20,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+HUBG,2026-08-27,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,6,6,0,False
+SNDK,2026-08-28,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,9,3,0,False
+TPR,2026-08-28,12,raw,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+INDV,2026-08-31,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,4,8,0,False
+FORM,2026-09-03,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,12,12,0,0,True
+BAC,2026-09-04,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+NVDA,2026-09-04,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",True,12,7,5,0,False
+PWR,2026-09-04,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",True,12,5,7,0,False
+WDC,2026-09-10,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",True,12,12,0,0,True
+GOOG,2026-09-14,12,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+ROST,2026-09-16,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,11,11,0,0,False
+COCO,2026-09-16,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,10,3,7,0,False
+URBN,2026-09-30,12,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,12,raw,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,12,raw,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,12,raw,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+FIX,2026-08-18,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+AMG,2026-08-18,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,8,4,0,False
+AMAT,2026-08-20,12,raw,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+MPWR,2026-08-20,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+HUBG,2026-08-27,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,6,6,0,False
+SNDK,2026-08-28,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,9,3,0,False
+TPR,2026-08-28,12,raw,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+INDV,2026-08-31,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,4,8,0,False
+FORM,2026-09-03,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,12,12,0,0,True
+BAC,2026-09-04,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+NVDA,2026-09-04,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",True,12,7,5,0,False
+PWR,2026-09-04,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",True,12,5,7,0,False
+WDC,2026-09-10,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",True,12,12,0,0,True
+GOOG,2026-09-14,12,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+ROST,2026-09-16,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,11,11,0,0,False
+COCO,2026-09-16,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,10,3,7,0,False
+URBN,2026-09-30,12,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,12,raw,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,12,raw,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,12,valid,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+FIX,2026-08-18,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+AMG,2026-08-18,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,8,4,0,False
+AMAT,2026-08-20,12,valid,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+MPWR,2026-08-20,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+HUBG,2026-08-27,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,6,6,0,False
+SNDK,2026-08-28,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,9,3,0,False
+TPR,2026-08-28,12,valid,technical,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+INDV,2026-08-31,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,4,8,0,False
+FORM,2026-09-03,12,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,12,12,0,0,True
+BAC,2026-09-04,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+NVDA,2026-09-04,12,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",True,12,7,5,0,False
+PWR,2026-09-04,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,5,7,0,False
+WDC,2026-09-10,12,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,12,12,0,0,True
+GOOG,2026-09-14,12,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+ROST,2026-09-16,12,valid,technical,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,12,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,12,valid,technical,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,12,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,12,valid,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,12,valid,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,12,valid,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+FIX,2026-08-18,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+AMG,2026-08-18,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,8,4,0,False
+AMAT,2026-08-20,12,valid,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+MPWR,2026-08-20,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+HUBG,2026-08-27,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,6,6,0,False
+SNDK,2026-08-28,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,9,3,0,False
+TPR,2026-08-28,12,valid,buy_tier,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+INDV,2026-08-31,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,4,8,0,False
+FORM,2026-09-03,12,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",True,12,12,0,0,True
+BAC,2026-09-04,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+NVDA,2026-09-04,12,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",True,12,7,5,0,False
+PWR,2026-09-04,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,5,7,0,False
+WDC,2026-09-10,12,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",True,12,12,0,0,True
+GOOG,2026-09-14,12,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+ROST,2026-09-16,12,valid,buy_tier,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,12,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,12,valid,buy_tier,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,12,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,12,valid,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,12,valid,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,12,valid,availability,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+FIX,2026-08-18,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+AMG,2026-08-18,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,8,4,0,False
+AMAT,2026-08-20,12,valid,availability,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+MPWR,2026-08-20,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+HUBG,2026-08-27,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,6,6,0,False
+SNDK,2026-08-28,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,9,3,0,False
+TPR,2026-08-28,12,valid,availability,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+INDV,2026-08-31,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,4,8,0,False
+FORM,2026-09-03,12,valid,availability,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+BAC,2026-09-04,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,2,10,0,False
+NVDA,2026-09-04,12,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",True,12,7,5,0,False
+PWR,2026-09-04,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,5,7,0,False
+WDC,2026-09-10,12,valid,availability,OBSERVED_NONCONVERSION,,True,12,12,0,0,True
+GOOG,2026-09-14,12,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,12,1,11,0,False
+ROST,2026-09-16,12,valid,availability,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,12,valid,availability,RIGHT_CENSORED,,False,11,8,3,0,False
+ACMR,2026-09-17,12,valid,availability,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,12,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,12,valid,availability,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,12,valid,availability,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+FIX,2026-08-18,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-18"", ""entry_status"": ""hold"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 19, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""9eacc0ecf2c201b15e5a19c8c12a09973629e300"", ""source_commit_at"": ""2026-09-22T00:40:10-07:00"", ""tier"": ""T1""}",True,20,3,17,0,False
+AMG,2026-08-18,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,12,8,0,False
+AMAT,2026-08-20,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,15,5,0,False
+MPWR,2026-08-20,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,2,18,0,False
+HUBG,2026-08-27,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,6,14,0,False
+SNDK,2026-08-28,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,13,7,0,False
+TPR,2026-08-28,20,raw,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+INDV,2026-08-31,20,raw,technical,RIGHT_CENSORED,,False,19,4,15,0,False
+FORM,2026-09-03,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",False,18,13,5,0,False
+BAC,2026-09-04,20,raw,technical,RIGHT_CENSORED,,False,17,2,15,0,False
+NVDA,2026-09-04,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",False,17,9,8,0,False
+PWR,2026-09-04,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",False,17,5,12,0,False
+WDC,2026-09-10,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",False,14,14,0,0,False
+GOOG,2026-09-14,20,raw,technical,RIGHT_CENSORED,,False,12,1,11,0,False
+ROST,2026-09-16,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,11,11,0,0,False
+COCO,2026-09-16,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,10,3,7,0,False
+URBN,2026-09-30,20,raw,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,20,raw,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,20,raw,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+FIX,2026-08-18,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-18"", ""entry_status"": ""hold"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 19, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""9eacc0ecf2c201b15e5a19c8c12a09973629e300"", ""source_commit_at"": ""2026-09-22T00:40:10-07:00"", ""tier"": ""T1""}",True,20,3,17,0,False
+AMG,2026-08-18,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,12,8,0,False
+AMAT,2026-08-20,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,15,5,0,False
+MPWR,2026-08-20,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,2,18,0,False
+HUBG,2026-08-27,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,6,14,0,False
+SNDK,2026-08-28,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,13,7,0,False
+TPR,2026-08-28,20,raw,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+INDV,2026-08-31,20,raw,buy_tier,RIGHT_CENSORED,,False,19,4,15,0,False
+FORM,2026-09-03,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",False,18,13,5,0,False
+BAC,2026-09-04,20,raw,buy_tier,RIGHT_CENSORED,,False,17,2,15,0,False
+NVDA,2026-09-04,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",False,17,9,8,0,False
+PWR,2026-09-04,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 9, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",False,17,5,12,0,False
+WDC,2026-09-10,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 10, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T1""}",False,14,14,0,0,False
+GOOG,2026-09-14,20,raw,buy_tier,RIGHT_CENSORED,,False,12,1,11,0,False
+ROST,2026-09-16,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 8, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,11,11,0,0,False
+COCO,2026-09-16,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 7, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,10,3,7,0,False
+URBN,2026-09-30,20,raw,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,20,raw,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,20,raw,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+FIX,2026-08-18,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,3,17,0,False
+AMG,2026-08-18,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,12,8,0,False
+AMAT,2026-08-20,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,15,5,0,False
+MPWR,2026-08-20,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,2,18,0,False
+HUBG,2026-08-27,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,6,14,0,False
+SNDK,2026-08-28,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,13,7,0,False
+TPR,2026-08-28,20,valid,technical,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+INDV,2026-08-31,20,valid,technical,RIGHT_CENSORED,,False,19,4,15,0,False
+FORM,2026-09-03,20,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",False,18,13,5,0,False
+BAC,2026-09-04,20,valid,technical,RIGHT_CENSORED,,False,17,2,15,0,False
+NVDA,2026-09-04,20,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",False,17,9,8,0,False
+PWR,2026-09-04,20,valid,technical,RIGHT_CENSORED,,False,17,5,12,0,False
+WDC,2026-09-10,20,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,14,14,0,0,False
+GOOG,2026-09-14,20,valid,technical,RIGHT_CENSORED,,False,12,1,11,0,False
+ROST,2026-09-16,20,valid,technical,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,20,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,20,valid,technical,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,20,valid,technical,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,20,valid,technical,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,20,valid,technical,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+FIX,2026-08-18,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,3,17,0,False
+AMG,2026-08-18,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,12,8,0,False
+AMAT,2026-08-20,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,15,5,0,False
+MPWR,2026-08-20,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,2,18,0,False
+HUBG,2026-08-27,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,6,14,0,False
+SNDK,2026-08-28,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,13,7,0,False
+TPR,2026-08-28,20,valid,buy_tier,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+INDV,2026-08-31,20,valid,buy_tier,RIGHT_CENSORED,,False,19,4,15,0,False
+FORM,2026-09-03,20,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-11"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 5, ""signal_asof"": ""2026-09-09"", ""source_commit"": ""19d1832d779f32d2a46e342088f87fc7bc5c9d49"", ""source_commit_at"": ""2026-09-14T17:17:15-07:00"", ""tier"": ""T2""}",False,18,13,5,0,False
+BAC,2026-09-04,20,valid,buy_tier,RIGHT_CENSORED,,False,17,2,15,0,False
+NVDA,2026-09-04,20,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",False,17,9,8,0,False
+PWR,2026-09-04,20,valid,buy_tier,RIGHT_CENSORED,,False,17,5,12,0,False
+WDC,2026-09-10,20,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-30"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-30"", ""source_commit"": ""9a1d89052537c168d83260ff1f4781f4428fcc7e"", ""source_commit_at"": ""2026-10-01T22:06:16-07:00"", ""tier"": ""T1""}",False,14,14,0,0,False
+GOOG,2026-09-14,20,valid,buy_tier,RIGHT_CENSORED,,False,12,1,11,0,False
+ROST,2026-09-16,20,valid,buy_tier,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,20,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-09-25"", ""entry_status"": ""bounce_wait"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 7, ""signal_asof"": ""2026-09-25"", ""source_commit"": ""99f440526ca112999404829290d017374c31f893"", ""source_commit_at"": ""2026-09-30T22:00:34-07:00"", ""tier"": ""T2""}",False,11,8,3,0,False
+ACMR,2026-09-17,20,valid,buy_tier,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,20,valid,buy_tier,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,20,valid,buy_tier,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,20,valid,buy_tier,RIGHT_CENSORED,,False,3,0,3,0,False
+LFUS,2026-08-18,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+FIX,2026-08-18,20,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-09-21"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": true, ""sessions"": 20, ""signal_asof"": ""2026-09-17"", ""source_commit"": ""f426902719ce03a4866317052b74a67b36ecb826"", ""source_commit_at"": ""2026-09-23T01:43:17-07:00"", ""tier"": ""T1""}",True,20,3,17,0,False
+AMG,2026-08-18,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,12,8,0,False
+AMAT,2026-08-20,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,15,5,0,False
+MPWR,2026-08-20,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,2,18,0,False
+HUBG,2026-08-27,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,6,14,0,False
+SNDK,2026-08-28,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,13,7,0,False
+TPR,2026-08-28,20,valid,availability,OBSERVATION_GAP_OR_UNKNOWN_STATE,,True,20,17,3,0,False
+INDV,2026-08-31,20,valid,availability,RIGHT_CENSORED,,False,19,4,15,0,False
+FORM,2026-09-03,20,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-09-24"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 13, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""49b379eed634895cd1031532856f21de526b2ca0"", ""source_commit_at"": ""2026-09-26T02:01:16-07:00"", ""tier"": ""T1""}",False,18,13,5,0,False
+BAC,2026-09-04,20,valid,availability,RIGHT_CENSORED,,False,17,2,15,0,False
+NVDA,2026-09-04,20,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-09-23"", ""entry_status"": ""buy_now"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 11, ""signal_asof"": ""2026-09-22"", ""source_commit"": ""969883bc9733eaa81af6dbdcd6841fd363b6aeda"", ""source_commit_at"": ""2026-09-25T00:53:18-07:00"", ""tier"": ""T1""}",False,17,9,8,0,False
+PWR,2026-09-04,20,valid,availability,RIGHT_CENSORED,,False,17,5,12,0,False
+WDC,2026-09-10,20,valid,availability,RIGHT_CENSORED,,False,14,14,0,0,False
+GOOG,2026-09-14,20,valid,availability,RIGHT_CENSORED,,False,12,1,11,0,False
+ROST,2026-09-16,20,valid,availability,RIGHT_CENSORED,,False,11,11,0,0,False
+COCO,2026-09-16,20,valid,availability,RIGHT_CENSORED,,False,11,8,3,0,False
+ACMR,2026-09-17,20,valid,availability,RIGHT_CENSORED,,False,10,3,7,0,False
+URBN,2026-09-30,20,valid,availability,OBSERVED_CONVERSION,"{""date"": ""2026-10-05"", ""entry_status"": ""partial"", ""lane"": ""buy"", ""provisional"": false, ""sessions"": 3, ""signal_asof"": ""2026-10-05"", ""source_commit"": ""7e468dbc1f1571574f07f7dbd138cfceb0f6f062"", ""source_commit_at"": ""2026-10-06T00:15:31-07:00"", ""tier"": ""T2""}",False,3,3,0,0,False
+KEYS,2026-09-30,20,valid,availability,RIGHT_CENSORED,,False,3,1,2,0,False
+TGT,2026-09-30,20,valid,availability,RIGHT_CENSORED,,False,3,0,3,0,False

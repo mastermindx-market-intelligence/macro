@@ -1,0 +1,783 @@
+{
+  "b03_pool_present_at_first_exposure": 3,
+  "b1_identity_unresolved": 2,
+  "b1_no_exact_source_relation": 13,
+  "b1_proven_not_yet_anchored_in_selected_cohort": 0,
+  "b1_retrospective_exact_associations": 6,
+  "decisions": [
+    {
+      "explanation": "Build B03 preservation with existing watch-source composition; do not require predictive alpha.",
+      "id": "D1",
+      "ruling": "YES_DESCRIPTIVE"
+    },
+    {
+      "explanation": "Keep H12; historical proxy support is source-version and coverage sensitive.",
+      "id": "D2",
+      "ruling": "YES_QUALIFIED_ACCRUAL_NOT_VALIDATED"
+    },
+    {
+      "explanation": "Keep T2 A/B/C and H5; strict source/independence/episode qualification precedes confirmation.",
+      "id": "D3",
+      "ruling": "CONDITIONAL_YES_AS_FROZEN"
+    },
+    {
+      "explanation": "Native source rows have conditional paths; the legacy full exposure is not certified.",
+      "id": "D4",
+      "ruling": "ROW_CONDITIONAL_NOT_FAMILY_BLANKET_READY"
+    },
+    {
+      "explanation": "Use B04 and source owners; do not replace unknown negatives with zero.",
+      "id": "D5",
+      "ruling": "SOURCE_IDENTITY_VERSION_ORIGIN_COVERAGE_REPAIR"
+    },
+    {
+      "explanation": "No robust incremental signal beyond RS/proximity/rank is demonstrated.",
+      "id": "D6",
+      "ruling": "NOT_ESTABLISHED"
+    },
+    {
+      "explanation": "Separate stale-alert interval, clean witness, origination, Git publication, reader and fill.",
+      "id": "D7",
+      "ruling": "LATENCY_MEASURED_ALPHA_LOSS_UNKNOWN"
+    },
+    {
+      "explanation": "Predictive ranking, entry, sizing and leader promotion remain research only.",
+      "id": "D8",
+      "ruling": "PRESERVATION_AND_MEASUREMENT_ONLY"
+    }
+  ],
+  "emergence": {
+    "extended_window_first": {
+      "guarded_H12": {
+        "median_observed_sessions_to_conversion": 8.5,
+        "n_baselines": 22,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 11,
+        "n_horizon_mature": 16,
+        "n_mature_observed_conversions": 2,
+        "n_observed_conversions": 4,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.125,
+        "total_observed_candidate_sessions": 133,
+        "true_conversion_risk_bounds": [
+          0.125,
+          0.8125
+        ]
+      },
+      "matched_H12_date_sector_entry_state": {
+        "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+        "control_weight_effective_n": 19.19987016148665,
+        "date_cluster_bootstrap_capture_difference_95ci": [
+          -0.10909090909090911,
+          0.08
+        ],
+        "date_concentration": {
+          "counts": {
+            "2026-08-18": 1,
+            "2026-08-20": 2,
+            "2026-08-27": 1,
+            "2026-08-28": 2,
+            "2026-08-31": 1,
+            "2026-09-03": 1,
+            "2026-09-04": 1,
+            "2026-09-08": 2,
+            "2026-09-10": 1,
+            "2026-09-11": 1
+          },
+          "kish_effective_clusters": 8.894736842105264,
+          "max_share": 0.15384615384615385
+        },
+        "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+        "feature_balance": {
+          "alignment_quality": {
+            "control_mean": 36.308324175824175,
+            "exposed_mean": 30.615384615384617,
+            "mean_standardized_difference": -0.20845455532424412,
+            "pairs": 13
+          },
+          "alpha": {
+            "control_mean": 1.0189441391941392,
+            "exposed_mean": 1.3353846153846154,
+            "mean_standardized_difference": 0.3683514544872461,
+            "pairs": 13
+          },
+          "ext_z": {
+            "control_mean": -0.7075281385281385,
+            "exposed_mean": -1.3954545454545455,
+            "mean_standardized_difference": -0.631661344668755,
+            "pairs": 11
+          },
+          "off_high": {
+            "control_mean": -20.292939560439564,
+            "exposed_mean": -23.523076923076925,
+            "mean_standardized_difference": -0.29516115960898975,
+            "pairs": 13
+          },
+          "sector_rank_fraction": {
+            "control_mean": 0.23031454442344307,
+            "exposed_mean": 0.1651616569017144,
+            "mean_standardized_difference": -0.28255300499655456,
+            "pairs": 13
+          },
+          "setup": {
+            "control_mean": 1.2862481684981686,
+            "exposed_mean": 1.4030769230769229,
+            "mean_standardized_difference": 0.11482435805734233,
+            "pairs": 13
+          },
+          "signal_proximity": {
+            "control_mean": null,
+            "exposed_mean": null,
+            "mean_standardized_difference": null,
+            "pairs": 0
+          },
+          "vol_ann_pct": {
+            "control_mean": 43.158736263736266,
+            "exposed_mean": 46.107692307692304,
+            "mean_standardized_difference": 0.2558537340784704,
+            "pairs": 13
+          }
+        },
+        "mean_unobserved_or_unknown_followup_sessions": {
+          "control": 3.601831501831502,
+          "exposed": 4.846153846153846
+        },
+        "n_control_unique_tickers": 29,
+        "n_dates": 10,
+        "n_matched_exposed": 13,
+        "observed_capture_controls": 0.16923076923076924,
+        "observed_capture_difference": -0.015384615384615385,
+        "observed_capture_exposed": 0.15384615384615385,
+        "observed_capture_odds_ratio": 0.8925619834710743,
+        "observed_capture_relative_risk": 0.9090909090909091,
+        "sector_concentration": {
+          "counts": {
+            "Consumer Discretionary": 1,
+            "Financials": 2,
+            "Health Care": 1,
+            "Industrials": 2,
+            "Information Technology": 7
+          },
+          "kish_effective_clusters": 2.864406779661017,
+          "max_share": 0.5384615384615384
+        },
+        "true_conversion_difference_identification_bounds": [
+          -0.6177655677655678,
+          0.676923076923077
+        ],
+        "unmatched_tickers": [
+          "LFUS",
+          "FIX",
+          "GOOG"
+        ]
+      },
+      "n_indexed_tickers": 22
+    },
+    "extended_window_latest": {
+      "guarded_H12": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 21,
+        "n_complete_followups": 5,
+        "n_gapped_or_unknown_no_observed_conversion": 9,
+        "n_horizon_mature": 15,
+        "n_mature_observed_conversions": 3,
+        "n_observed_conversions": 5,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.2,
+        "total_observed_candidate_sessions": 131,
+        "true_conversion_risk_bounds": [
+          0.2,
+          0.8
+        ]
+      },
+      "matched_H12_date_sector_entry_state": {
+        "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+        "control_weight_effective_n": 18.943977089672455,
+        "date_cluster_bootstrap_capture_difference_95ci": [
+          -0.021978021978021976,
+          0.373015873015873
+        ],
+        "date_concentration": {
+          "counts": {
+            "2026-08-18": 1,
+            "2026-08-20": 2,
+            "2026-08-27": 1,
+            "2026-08-28": 2,
+            "2026-08-31": 1,
+            "2026-09-03": 1,
+            "2026-09-04": 3,
+            "2026-09-10": 1
+          },
+          "kish_effective_clusters": 6.545454545454546,
+          "max_share": 0.25
+        },
+        "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+        "feature_balance": {
+          "alignment_quality": {
+            "control_mean": 34.18345238095238,
+            "exposed_mean": 31.883333333333336,
+            "mean_standardized_difference": -0.09055166502071821,
+            "pairs": 12
+          },
+          "alpha": {
+            "control_mean": 1.055904761904762,
+            "exposed_mean": 1.3316666666666668,
+            "mean_standardized_difference": 0.30587860397550576,
+            "pairs": 12
+          },
+          "ext_z": {
+            "control_mean": -1.1000892857142857,
+            "exposed_mean": -1.73375,
+            "mean_standardized_difference": -0.5547262116157882,
+            "pairs": 8
+          },
+          "off_high": {
+            "control_mean": -19.6905753968254,
+            "exposed_mean": -21.616666666666664,
+            "mean_standardized_difference": -0.14772710733394848,
+            "pairs": 12
+          },
+          "sector_rank_fraction": {
+            "control_mean": 0.21978761278089787,
+            "exposed_mean": 0.17273297133216026,
+            "mean_standardized_difference": -0.1792689126553034,
+            "pairs": 12
+          },
+          "setup": {
+            "control_mean": 1.2725019841269842,
+            "exposed_mean": 1.3233333333333335,
+            "mean_standardized_difference": 0.03145807622433062,
+            "pairs": 12
+          },
+          "signal_proximity": {
+            "control_mean": null,
+            "exposed_mean": null,
+            "mean_standardized_difference": null,
+            "pairs": 0
+          },
+          "vol_ann_pct": {
+            "control_mean": 43.96267857142857,
+            "exposed_mean": 42.93333333333334,
+            "mean_standardized_difference": 0.006996966133545074,
+            "pairs": 12
+          }
+        },
+        "mean_unobserved_or_unknown_followup_sessions": {
+          "control": 3.138293650793651,
+          "exposed": 4.416666666666667
+        },
+        "n_control_unique_tickers": 29,
+        "n_dates": 8,
+        "n_matched_exposed": 12,
+        "observed_capture_controls": 0.1369047619047619,
+        "observed_capture_difference": 0.11309523809523811,
+        "observed_capture_exposed": 0.25,
+        "observed_capture_odds_ratio": 2.101449275362319,
+        "observed_capture_relative_risk": 1.8260869565217392,
+        "sector_concentration": {
+          "counts": {
+            "Consumer Discretionary": 1,
+            "Financials": 2,
+            "Health Care": 1,
+            "Industrials": 2,
+            "Information Technology": 6
+          },
+          "kish_effective_clusters": 3.130434782608696,
+          "max_share": 0.5
+        },
+        "true_conversion_difference_identification_bounds": [
+          -0.4287698412698413,
+          0.6964285714285715
+        ],
+        "unmatched_tickers": [
+          "LFUS",
+          "FIX",
+          "GOOG"
+        ]
+      },
+      "n_indexed_tickers": 21
+    },
+    "parent_window_latest": {
+      "guarded_H12": {
+        "median_observed_sessions_to_conversion": 7,
+        "n_baselines": 18,
+        "n_complete_followups": 4,
+        "n_gapped_or_unknown_no_observed_conversion": 8,
+        "n_horizon_mature": 13,
+        "n_mature_observed_conversions": 2,
+        "n_observed_conversions": 3,
+        "n_observed_nonconversions": 3,
+        "n_right_censored_no_observed_conversion": 4,
+        "observed_capture_fraction": 0.15384615384615385,
+        "total_observed_candidate_sessions": 116,
+        "true_conversion_risk_bounds": [
+          0.15384615384615385,
+          0.7692307692307693
+        ]
+      },
+      "matched_H12_date_sector_entry_state": {
+        "bootstrap_status": "SMALL_DATE_CLUSTER_DESCRIPTIVE_INTERVAL",
+        "control_weight_effective_n": 18.42925970056468,
+        "date_cluster_bootstrap_capture_difference_95ci": [
+          -0.031746031746031744,
+          0.3333333333333333
+        ],
+        "date_concentration": {
+          "counts": {
+            "2026-08-18": 1,
+            "2026-08-20": 2,
+            "2026-08-27": 1,
+            "2026-08-28": 2,
+            "2026-08-31": 1,
+            "2026-09-03": 1,
+            "2026-09-04": 3
+          },
+          "kish_effective_clusters": 5.761904761904762,
+          "max_share": 0.2727272727272727
+        },
+        "estimand": "OBSERVED_CAPTURE_YIELD_NOT_TRUE_CONVERSION_RISK",
+        "feature_balance": {
+          "alignment_quality": {
+            "control_mean": 30.950129870129874,
+            "exposed_mean": 27.09090909090909,
+            "mean_standardized_difference": -0.14040514156759232,
+            "pairs": 11
+          },
+          "alpha": {
+            "control_mean": 1.0243961038961038,
+            "exposed_mean": 1.2527272727272727,
+            "mean_standardized_difference": 0.24997429881811042,
+            "pairs": 11
+          },
+          "ext_z": {
+            "control_mean": -1.0008163265306123,
+            "exposed_mean": -1.662857142857143,
+            "mean_standardized_difference": -0.5689317619313384,
+            "pairs": 7
+          },
+          "off_high": {
+            "control_mean": -18.53062770562771,
+            "exposed_mean": -20.363636363636363,
+            "mean_standardized_difference": -0.13500884554613904,
+            "pairs": 11
+          },
+          "sector_rank_fraction": {
+            "control_mean": 0.22799516807875184,
+            "exposed_mean": 0.18720746749749176,
+            "mean_standardized_difference": -0.144865624098225,
+            "pairs": 11
+          },
+          "setup": {
+            "control_mean": 1.2434112554112553,
+            "exposed_mean": 1.3354545454545454,
+            "mean_standardized_difference": 0.0694153791237252,
+            "pairs": 11
+          },
+          "signal_proximity": {
+            "control_mean": null,
+            "exposed_mean": null,
+            "mean_standardized_difference": null,
+            "pairs": 0
+          },
+          "vol_ann_pct": {
+            "control_mean": 43.357012987012986,
+            "exposed_mean": 42.08181818181818,
+            "mean_standardized_difference": -0.0017453107379043916,
+            "pairs": 11
+          }
+        },
+        "mean_unobserved_or_unknown_followup_sessions": {
+          "control": 3.1054112554112554,
+          "exposed": 4.818181818181818
+        },
+        "n_control_unique_tickers": 28,
+        "n_dates": 7,
+        "n_matched_exposed": 11,
+        "observed_capture_controls": 0.10389610389610389,
+        "observed_capture_difference": 0.07792207792207793,
+        "observed_capture_exposed": 0.18181818181818182,
+        "observed_capture_odds_ratio": 1.9166666666666667,
+        "observed_capture_relative_risk": 1.7500000000000002,
+        "sector_concentration": {
+          "counts": {
+            "Consumer Discretionary": 1,
+            "Financials": 2,
+            "Health Care": 1,
+            "Industrials": 2,
+            "Information Technology": 5
+          },
+          "kish_effective_clusters": 3.4571428571428573,
+          "max_share": 0.45454545454545453
+        },
+        "true_conversion_difference_identification_bounds": [
+          -0.4904761904761905,
+          0.7142857142857143
+        ],
+        "unmatched_tickers": [
+          "LFUS",
+          "FIX"
+        ]
+      },
+      "n_indexed_tickers": 18
+    }
+  },
+  "emergence_baselines_for_pool_census": 21,
+  "historical_discovery_cutoff_inclusive": "2026-10-06",
+  "ignition": {
+    "H5_controls": {
+      "dates": 19,
+      "entry_states": {
+        "bounce_wait": 39,
+        "buy_now": 28,
+        "buy_soon": 11,
+        "extended": 15,
+        "hold": 13,
+        "partial": 30,
+        "topping": 1,
+        "wait_pullback": 1
+      },
+      "excess_sector": {
+        "max": 0.35966516931647075,
+        "mean": 0.005424287668557067,
+        "median": -0.00133704490960318,
+        "min": -0.1380552713854012,
+        "observed": 138,
+        "positive": 68,
+        "positive_rate": 0.4927536231884058,
+        "wilson95": [
+          0.41067407358413544,
+          0.5752256766255107
+        ]
+      },
+      "excess_spy": {
+        "max": 0.3944297616293875,
+        "mean": -0.0012742025025245644,
+        "median": -0.009723818630032077,
+        "min": -0.1292884689838606,
+        "observed": 138,
+        "positive": 56,
+        "positive_rate": 0.4057971014492754,
+        "wilson95": [
+          0.32749750977344794,
+          0.48919924295194994
+        ]
+      },
+      "large_loss_descriptive": {
+        "le_minus_10pct": 4,
+        "le_minus_5pct": 23,
+        "observed": 138
+      },
+      "mae_close_excess_sector": {
+        "max": 0.0,
+        "mean": -0.023384029115774328,
+        "median": -0.015365834017071478,
+        "min": -0.1774086827308642,
+        "observed": 138,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          1.734723475976807e-18,
+          0.027082764465572957
+        ]
+      },
+      "mae_close_excess_spy": {
+        "max": 0.0,
+        "mean": -0.029093206272655776,
+        "median": -0.023406414417200816,
+        "min": -0.16635668785009738,
+        "observed": 138,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          1.734723475976807e-18,
+          0.027082764465572957
+        ]
+      },
+      "mfe": {
+        "max": 0.47264995021418255,
+        "mean": 0.02964553770083648,
+        "median": 0.012378011876714279,
+        "min": 0.0,
+        "observed": 138,
+        "positive": 97,
+        "positive_rate": 0.7028985507246377,
+        "wilson95": [
+          0.6219982697434201,
+          0.7728087243864923
+        ]
+      },
+      "n": 138,
+      "ret": {
+        "max": 0.3924230653781604,
+        "mean": -0.0016841564783742062,
+        "median": -0.00838052430717312,
+        "min": -0.13070945306268011,
+        "observed": 138,
+        "positive": 58,
+        "positive_rate": 0.42028985507246375,
+        "wilson95": [
+          0.34118808558585945,
+          0.5037091667202463
+        ]
+      },
+      "sectors": 11,
+      "tickers": 138
+    },
+    "H5_exposed": {
+      "dates": 4,
+      "entry_states": {
+        "blocked": 1,
+        "bounce_wait": 2,
+        "buy_now": 2
+      },
+      "excess_sector": {
+        "max": 0.06890389193862001,
+        "mean": 0.043614180643694954,
+        "median": 0.04630145828825505,
+        "min": 0.02352041400309346,
+        "observed": 5,
+        "positive": 5,
+        "positive_rate": 1.0,
+        "wilson95": [
+          0.5655175352168251,
+          1.0
+        ]
+      },
+      "excess_spy": {
+        "max": 0.05666035672125125,
+        "mean": 0.036627291974390054,
+        "median": 0.034404909857465915,
+        "min": 0.008594679359325008,
+        "observed": 5,
+        "positive": 5,
+        "positive_rate": 1.0,
+        "wilson95": [
+          0.5655175352168251,
+          1.0
+        ]
+      },
+      "large_loss_descriptive": {
+        "le_minus_10pct": 0,
+        "le_minus_5pct": 0,
+        "observed": 5
+      },
+      "mae_close_excess_sector": {
+        "max": 0.0,
+        "mean": -0.00755883213345363,
+        "median": 0.0,
+        "min": -0.03779416066726815,
+        "observed": 5,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.43448246478317476
+        ]
+      },
+      "mae_close_excess_spy": {
+        "max": 0.0,
+        "mean": -0.013470473096272362,
+        "median": -0.003567764869254586,
+        "min": -0.051396157692198186,
+        "observed": 5,
+        "positive": 0,
+        "positive_rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.43448246478317476
+        ]
+      },
+      "mfe": {
+        "max": 0.06493262805330535,
+        "mean": 0.043439149476124594,
+        "median": 0.05444905956537793,
+        "min": 0.013704106393715554,
+        "observed": 5,
+        "positive": 5,
+        "positive_rate": 1.0,
+        "wilson95": [
+          0.5655175352168251,
+          1.0
+        ]
+      },
+      "n": 5,
+      "ret": {
+        "max": 0.05821133301275161,
+        "mean": 0.0370489940560174,
+        "median": 0.05444905956537793,
+        "min": -0.0034932437883167244,
+        "observed": 5,
+        "positive": 4,
+        "positive_rate": 0.8,
+        "wilson95": [
+          0.37553462976252533,
+          0.9637758913675698
+        ]
+      },
+      "sectors": 5,
+      "tickers": 5
+    },
+    "fixed_first_ticker_flag_counts": {
+      "0": 118,
+      "1": 20,
+      "2": 5
+    },
+    "same_date_first_ticker": {
+      "excess_sector": {
+        "date_weighted": {
+          "bootstrap95": [
+            0.024245460824452926,
+            0.06027729766043931
+          ],
+          "caution": "Few overlapping date blocks; conditional descriptive interval, not post-selection-valid confirmation.",
+          "date_blocks": 4,
+          "mean": 0.042261379242446113,
+          "positive_date_differences": 4,
+          "sign_test_one_sided_exploratory": 0.0625,
+          "t95": [
+            0.008927348072683763,
+            0.07559541041220846
+          ]
+        },
+        "issuer_weighted_gap": 0.03838077772895941,
+        "matched_treated": 5
+      },
+      "excess_spy": {
+        "date_weighted": {
+          "bootstrap95": [
+            0.02745835617931288,
+            0.0673378759674677
+          ],
+          "caution": "Few overlapping date blocks; conditional descriptive interval, not post-selection-valid confirmation.",
+          "date_blocks": 4,
+          "mean": 0.0473981160733903,
+          "positive_date_differences": 4,
+          "sign_test_one_sided_exploratory": 0.0625,
+          "t95": [
+            0.008212632943327504,
+            0.0865835992034531
+          ]
+        },
+        "issuer_weighted_gap": 0.042479846142434594,
+        "matched_treated": 5
+      },
+      "mae_close_excess_spy": {
+        "date_weighted": {
+          "bootstrap95": [
+            -0.0008725943028539147,
+            0.029296144751671978
+          ],
+          "caution": "Few overlapping date blocks; conditional descriptive interval, not post-selection-valid confirmation.",
+          "date_blocks": 4,
+          "mean": 0.014242750353388503,
+          "positive_date_differences": 3,
+          "sign_test_one_sided_exploratory": 0.3125,
+          "t95": [
+            -0.0157095490748489,
+            0.0441950497816259
+          ]
+        },
+        "issuer_weighted_gap": 0.018668934710721723,
+        "matched_treated": 5
+      },
+      "mfe": {
+        "date_weighted": {
+          "bootstrap95": [
+            0.010880139374112216,
+            0.036253044651019604
+          ],
+          "caution": "Few overlapping date blocks; conditional descriptive interval, not post-selection-valid confirmation.",
+          "date_blocks": 4,
+          "mean": 0.024023722440209734,
+          "positive_date_differences": 4,
+          "sign_test_one_sided_exploratory": 0.0625,
+          "t95": [
+            -0.0012442058162188512,
+            0.04929165069663832
+          ]
+        },
+        "issuer_weighted_gap": 0.020106033799138688,
+        "matched_treated": 5
+      },
+      "ret": {
+        "date_weighted": {
+          "bootstrap95": [
+            0.02745835617931288,
+            0.06726653450007265
+          ],
+          "caution": "Few overlapping date blocks; conditional descriptive interval, not post-selection-valid confirmation.",
+          "date_blocks": 4,
+          "mean": 0.04736244533969276,
+          "positive_date_differences": 4,
+          "sign_test_one_sided_exploratory": 0.0625,
+          "t95": [
+            0.008267791914847257,
+            0.08645709876453828
+          ]
+        },
+        "issuer_weighted_gap": 0.04245130955547658,
+        "matched_treated": 5
+      }
+    },
+    "strict_primary": {
+      "proven_eligible_episodes": 0,
+      "reason": "No complete joint T2 event identity, decision clock, independent family event lineage and registered ownership-age limit in the diagnostic ledger.",
+      "status": "NOT_ESTIMABLE"
+    }
+  },
+  "macro_analytical_pin": "731a23fb64b9f6f1a321c77618f927f1a58d2d41",
+  "operational": {
+    "clean_source_witness_to_origination_seconds": {
+      "maximum": 6545.846493,
+      "median": 4862.304365,
+      "minimum": 2567.245737,
+      "n": 6
+    },
+    "forward_receipts": 25,
+    "nvda": {
+      "B4_reason": "Legacy entry_status / stale alert is not canonical current Entry Availability proof",
+      "alert_first_git_at": "2026-09-25T02:20:03-07:00",
+      "alert_generated_at": "2026-09-25T09:02:33Z",
+      "alert_to_clean_source_witness_seconds": 113661.485866,
+      "alert_to_git_seconds": 1050.0,
+      "alert_to_plan_git_seconds": 118112.0,
+      "clean_source_witness_to_origination_seconds": 4361.534518,
+      "executable_fill_at": null,
+      "fill_reason": "No trade fill receipt; final-plan later regular-session bars above no-chase ceiling in inherited source audit",
+      "first_current_B4_open_at": null,
+      "origination_receipt_at": "2026-09-26T17:49:36.020384+00:00",
+      "origination_to_plan_git_seconds": 88.979616,
+      "plan_first_git_at": "2026-09-26T10:51:05-07:00",
+      "preserved_clean_source_clock": "2026-09-26T16:36:54.485866+00:00",
+      "reader_visible_at": null,
+      "reader_visible_reason": "No matching historical production-reader receipt in committed sources inspected"
+    },
+    "receipt_count": 27
+  },
+  "parallel_owners": [
+    "B04/D5 and native source owners",
+    "A2 source/publication freshness"
+  ],
+  "parent_head": "770918cb266b5d884978e31d61670b4efd789eaf",
+  "parent_pr": 8495,
+  "primary_next_action": "Implement corrected existing source composition and truthful observation continuity after current carrier reconciliation.",
+  "primary_next_owner": "R6 B03",
+  "production_effects": false,
+  "proposed_not_adopted_accrual_schedule": {
+    "disclosure_cycles_and_cross_block_origins_required": true,
+    "enrollment_blocks": 2,
+    "promotion_threshold": null,
+    "scheduled_US_trading_sessions_per_block": 60
+  },
+  "prospective_confirmation_from_this_package": false,
+  "prospective_gate": "S0 after 2026-10-06, operational/source contract and existing evidence-class/row remedies accepted; observed-as-run separated from public replay.",
+  "ranking_authority": false,
+  "research_pr": 8531,
+  "rp1_empirical_overlap": "NOT_ESTIMABLE_NO_EXACT_JOINABLE_RP1_OBJECTS",
+  "status": "COMPLETED_BOUNDED_DISCOVERY_RESEARCH",
+  "strict_primary_qualified_episode_count": null,
+  "strict_primary_reason": "NOT_ESTIMABLE; complete source/identity/version/independence qualification was not established, not proof of zero eligible events.",
+  "trading_authority": false
+}
