@@ -398,3 +398,30 @@
   html[data-lang="zh"] #theme-context-hero.tc-rotating { --tc-blob-a:rgba(69,184,115,.07); }
   /* zh 红涨绿跌 (operator ruling 2026-07-21): heat-pill.heating = bullish momentum → red bg in zh */
   html[data-lang="zh"] .heat-pill.heating { background:rgba(211,11,11,.09); }
+  /* intraday-observation:style-start */
+  .si-intra { margin:12px 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text); }
+  .si-intra-head { display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px; }
+  .si-intra h2 { font-size:18px;line-height:1.3;margin:0 0 4px;letter-spacing:-.02em; }
+  .si-intra-head p,.si-intra-foot,.si-intra-empty { font-size:12px;line-height:1.5;margin:0;color:var(--muted); }
+  .si-intra button { min-height:40px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);padding:8px 12px;font:inherit;font-size:12px;cursor:pointer; }
+  .si-intra-cols,.si-intra-row summary { display:grid;grid-template-columns:minmax(130px,1fr) repeat(3,minmax(72px,96px));align-items:center;gap:12px; }
+  .si-intra-cols { color:var(--muted);font-size:11px;padding:0 6px 8px; }
+  .si-intra-cols>span:not(:first-child) { text-align:right; }
+  .si-intra-row { border-top:1px solid var(--line); }
+  .si-intra-row summary { min-height:46px;list-style:none;cursor:pointer;padding:9px 6px;font-size:13px; }
+  .si-intra-row summary::-webkit-details-marker { display:none; }
+  .si-intra-name { overflow-wrap:anywhere;line-height:1.35; }
+  .si-intra-value { font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;font-size:12px; }
+  .si-intra .up { color:var(--up); }.si-intra .dn { color:var(--down); }
+  .si-intra-row summary:hover { background:var(--panel2); }.si-intra summary:focus-visible,.si-intra button:focus-visible { outline:2px solid var(--link);outline-offset:2px; }
+  .si-intra-detail { padding:2px 6px 14px;color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+  .si-intra-detail p { margin:4px 0; }.si-intra-foot { border-top:1px solid var(--line);margin-top:12px;padding-top:12px; }
+  .si-intra-missing { display:flex;justify-content:space-between;gap:12px;padding:11px 6px;border-top:1px solid var(--line);font-size:12px; }.si-intra-missing>span:last-child { color:var(--muted);text-align:right; }
+  html[data-theme="light"] .si-intra { background:var(--panel);box-shadow:var(--card-shadow); }
+  @media(max-width:640px) { .si-intra {padding:14px 12px;}.si-intra h2 {font-size:16px;}.si-intra-cols,.si-intra-row summary {grid-template-columns:minmax(80px,1fr) repeat(3,minmax(52px,64px));gap:6px;}.si-intra-value {font-size:11px;}.si-intra-missing {flex-direction:column;gap:4px;}.si-intra-missing>span:last-child {text-align:left;} }
+  .si-intra-name::before { content:"\203A";display:inline-block;margin-right:7px;color:var(--muted);transition:transform .12s; }
+  .si-intra-row[open] .si-intra-name::before { transform:rotate(90deg); }
+  .si-intra-sr { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+  @media(prefers-reduced-motion:reduce) { .si-intra-name::before {transition:none;} }
+  /* intraday-observation:style-end */
+
