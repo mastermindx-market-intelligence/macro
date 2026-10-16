@@ -1,14 +1,14 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-16T17:23:40.178284+00:00",
-  "posts_seen": 12,
-  "seen_total": 295,
+  "as_of": "2026-10-16T21:06:52.979910+00:00",
+  "posts_seen": 13,
+  "seen_total": 296,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-16-president-trump-returns-to-georgia-with-a-record-of-results",
+      "id": "wh-2026-10-16-trump-vance-administration-leads-nationwide-coalition-in-fighting-war-on-fraud",
       "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
