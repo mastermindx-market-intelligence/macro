@@ -13700,6 +13700,8 @@ jobs:
       - research/theme_graph/microtheme_membership_candidates_2026-10-08.json
       # Research-only addendum, including the original TSV evidence inputs.
       - "research/theme_graph/micro_member_research_addendum_20261016/**"
+      # Read-only 103+46 composition; no graph/member admission.
+      - research/theme_graph/MICRO_CURATOR_READINESS_2026-10-16.md
       - engine/theme_graph/ontology_inventory.py
       - engine/theme_graph/proposal_worklist.py
       - engine/theme_graph/security_navigation.py
@@ -13718,6 +13720,7 @@ jobs:
       - tests/test_theme_graph_local_plane.py
       - tests/test_theme_graph_micro_membership_research.py
       - tests/test_theme_graph_micro_member_addendum.py
+      - tests/test_theme_graph_micro_curator_readiness.py
       - tests/test_theme_graph_materialize.py
       - tests/test_theme_graph_membership_lifecycle.py
       - collectors/equity_earnings.py
@@ -13781,7 +13784,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
