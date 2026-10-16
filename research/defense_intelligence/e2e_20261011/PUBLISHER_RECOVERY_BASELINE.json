@@ -347,6 +347,28 @@
       "publisher_job_name": "publish",
       "disposition": "no_publication_effect",
       "evidence_sha256": "4949b2ccff4a0d6ec888bf2d9c090a00adc7b3eb17de29c242e230ff23d0a25b"
+    },
+    {
+      "run_id": 38825742392,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 116732670936,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "999c5ad456e029f95873419529b5fa891b44f3a98b178af66acd08d695d8ed49",
+      "evidence_path": "research/defense_intelligence/e2e_20261011/publisher_runtime_reconciliation_20261015/run-38825742392-attempt-1.json"
+    },
+    {
+      "run_id": 38808680586,
+      "run_attempt": 1,
+      "operation_scope": "govrev_publisher",
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "publisher_job_id": 116676061955,
+      "publisher_job_name": "refresh",
+      "disposition": "no_publication_effect",
+      "evidence_sha256": "22b680c8b2db9990302b0569579ea61668663e3894fa5ee7f888cdec07e61d58",
+      "evidence_path": "research/defense_intelligence/e2e_20261011/publisher_runtime_reconciliation_20261015/run-38808680586-attempt-1.json"
     }
   ],
   "legacy_never_started_workflow_whitelist": [
