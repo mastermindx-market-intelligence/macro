@@ -627,5 +627,67 @@ class TestCandidateBatchIndex(unittest.TestCase):
             self.assertEqual(json.loads(result.manifest_bytes)["industry_count"], 138)
 
 
+class TestStagedCandidateByteComparison(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.candidate = bind(fixture())
+        cls.index = bea.build_candidate_industry_index(cls.candidate)
+        cls.staged = {view.industry_code_exact: view.jsonl_bytes
+                      for view in bea.iter_candidate_industry_views(cls.candidate)}
+
+    def compare(self, staged=None, index=None, expected=None):
+        return bea.compare_candidate_staged_view_bytes(
+            self.index if index is None else index,
+            self.staged if staged is None else staged,
+            expected_index_sha256=self.index.sha256 if expected is None else expected,
+        )
+
+    def test_all_staged_bytes_equal_but_never_admitted(self):
+        checked = self.compare()
+        self.assertTrue(checked.byte_equality_verified)
+        self.assertEqual(checked.industry_files_checked, 138)
+        self.assertEqual(checked.rows_checked, 19182)
+        self.assertEqual(checked.index_sha256, self.index.sha256)
+        self.assertEqual(checked.source_generation_id, self.candidate.generation_id)
+        self.assertFalse(checked.dataos_native_admitted)
+        self.assertFalse(checked.may_publish)
+
+    def test_missing_extra_changed_bytes_or_index_hash_refuse(self):
+        removed = dict(self.staged); removed.pop("5241X")
+        with self.assertRaises(bea.BEAGVCRefused):
+            self.compare(staged=removed)
+        added = dict(self.staged); added["NOT_ON_SOURCE_AXIS"] = b"x\n"
+        with self.assertRaises(bea.BEAGVCRefused):
+            self.compare(staged=added)
+        changed = dict(self.staged); changed["5241X"] += b" "
+        with self.assertRaises(bea.BEAGVCRefused):
+            self.compare(staged=changed)
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "digest mismatch"):
+            self.compare(expected="1" * 64)
+        forged = replace(self.index, sha256="2" * 64)
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "digest mismatch"):
+            self.compare(index=forged)
+
+    def test_forged_native_publication_claim_and_path_refuse(self):
+        manifest = json.loads(self.index.manifest_bytes)
+        manifest["may_publish"] = True
+        raw = encoded(manifest)
+        forged = bea.BEAGVCCandidateIndustryIndex(raw, digest(raw))
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "native authority"):
+            self.compare(index=forged, expected=forged.sha256)
+        manifest["may_publish"] = False
+        manifest["views"][0]["relative_storage_path_proposed_only"] = "../escape"
+        raw = encoded(manifest)
+        forged = bea.BEAGVCCandidateIndustryIndex(raw, digest(raw))
+        with self.assertRaisesRegex(bea.BEAGVCRefused, "path mismatch"):
+            self.compare(index=forged, expected=forged.sha256)
+
+    def test_comparison_never_writes_or_fetches(self):
+        with patch("pathlib.Path.write_bytes", side_effect=AssertionError("write")), \
+             patch("pathlib.Path.write_text", side_effect=AssertionError("write")), \
+             patch("urllib.request.urlopen", side_effect=AssertionError("network")):
+            self.assertEqual(self.compare().industry_files_checked, 138)
+
+
 if __name__ == "__main__":
     unittest.main()

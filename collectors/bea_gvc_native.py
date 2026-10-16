@@ -690,3 +690,100 @@ def build_candidate_industry_index(
     if len(payload) > MAX_METADATA_BYTES:
         raise BEAGVCRefused("candidate batch index metadata exceeds bound")
     return BEAGVCCandidateIndustryIndex(payload, _sha(payload))
+
+
+@dataclass(frozen=True)
+class BEAGVCCandidateByteCheck:
+    """Byte equality only; never a native rights, clock or publication receipt."""
+
+    index_sha256: str
+    source_generation_id: str
+    industry_files_checked: int
+    rows_checked: int
+    byte_equality_verified: bool = True
+    dataos_native_admitted: bool = False
+    may_publish: bool = False
+
+
+def compare_candidate_staged_view_bytes(
+    index: BEAGVCCandidateIndustryIndex,
+    staged_view_bytes: Mapping[str, bytes],
+    *,
+    expected_index_sha256: str,
+) -> BEAGVCCandidateByteCheck:
+    """Fail closed on a full owner-supplied candidate batch's exact staged bytes.
+
+    The expected index digest must come from an independent trusted candidate
+    receipt, not the staged file payload. This does not authenticate that trust,
+    read an original L0 response, install a store or grant production rights.
+    """
+    if type(index) is not BEAGVCCandidateIndustryIndex:
+        raise BEAGVCRefused("exact immutable candidate batch index required")
+    observed = _sha(index.manifest_bytes) if type(index.manifest_bytes) is bytes else None
+    if observed is None or observed != _digest(index.sha256) or observed != _digest(expected_index_sha256):
+        raise BEAGVCRefused("candidate batch index digest mismatch")
+    manifest = _json(index.manifest_bytes, MAX_METADATA_BYTES)
+    if type(manifest) is not dict or _encoded(manifest) != index.manifest_bytes:
+        raise BEAGVCRefused("noncanonical candidate batch index")
+    if (manifest.get("schema") != "mastermind.bea_gvc_l1_candidate_index/v1"
+            or manifest.get("dataset_id") != L1_DATASET
+            or manifest.get("candidate_state") != "BYTE_VERIFIED_NOT_INSTALLED"
+            or manifest.get("dataos_native_admitted") is not False
+            or manifest.get("may_publish") is not False
+            or manifest.get("native_ingested_at", "MISSING") is not None
+            or manifest.get("native_revision_seq", "MISSING") is not None
+            or manifest.get("publisher_edition_date") != EDITION_DATE
+            or manifest.get("publication_precision") != "DAY"):
+        raise BEAGVCRefused("candidate batch index claims unsupported native authority")
+    years = _years(manifest.get("accounting_years"))
+    if (manifest.get("source_response_count") != len(years) * len(TABLES)
+            or type(manifest.get("industry_count")) is not int
+            or manifest["industry_count"] != 138
+            or type(manifest.get("row_count")) is not int
+            or manifest["row_count"] != 138 * 139 * len(years)):
+        raise BEAGVCRefused("candidate batch population or source scope mismatch")
+    generation = _digest(manifest.get("source_generation_id"))
+    _digest(manifest.get("source_lineage_sha256"))
+    _digest(manifest.get("producer_code_sha256"))
+    entries = manifest.get("views")
+    if type(entries) is not list or len(entries) != 138:
+        raise BEAGVCRefused("incomplete candidate batch index entries")
+    if not isinstance(staged_view_bytes, Mapping):
+        raise BEAGVCRefused("caller-supplied staged industry byte map required")
+    codes: set[str] = set()
+    fields = {"industry_code_exact", "relative_storage_path_proposed_only",
+              "jsonl_sha256", "jsonl_bytes", "row_count"}
+    for entry in entries:
+        if type(entry) is not dict or set(entry) != fields:
+            raise BEAGVCRefused("malformed candidate view index entry")
+        code = entry["industry_code_exact"]
+        if type(code) is not str or not _CODE.fullmatch(code) or code in codes:
+            raise BEAGVCRefused("duplicate or unsafe candidate industry code")
+        codes.add(code)
+        expected_path = (
+            "data/bea/gvc/may2026/industry_inputs/"
+            f"industry_{code}.jsonl"
+        )
+        if (entry["relative_storage_path_proposed_only"] != expected_path
+                or type(entry["row_count"]) is not int
+                or entry["row_count"] != len(years) * 139
+                or type(entry["jsonl_bytes"]) is not int
+                or not 0 < entry["jsonl_bytes"] <= MAX_INDUSTRY_VIEW_BYTES):
+            raise BEAGVCRefused("candidate view index shape or path mismatch")
+        _digest(entry["jsonl_sha256"])
+    if set(staged_view_bytes) != codes:
+        raise BEAGVCRefused("staged view set differs from complete candidate index")
+    for entry in entries:
+        blob = staged_view_bytes[entry["industry_code_exact"]]
+        if (type(blob) is not bytes
+                or len(blob) != entry["jsonl_bytes"]
+                or not blob.endswith(b"\n") or b"\r" in blob
+                or blob.count(b"\n") != entry["row_count"]
+                or _sha(blob) != entry["jsonl_sha256"]):
+            raise BEAGVCRefused("staged candidate industry bytes differ from index")
+    return BEAGVCCandidateByteCheck(
+        index_sha256=observed,
+        source_generation_id=generation,
+        industry_files_checked=len(entries),
+        rows_checked=manifest["row_count"],
+    )

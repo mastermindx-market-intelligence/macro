@@ -204,6 +204,38 @@ index refusals. The underlying eight-year batch generator is independently
 covered for 153,456 rows. No real original BEA file read or prohibited source
 inspection occurred in this phase.
 
+## Owner-supplied staged-byte equality check — October 15 continuation
+
+`compare_candidate_staged_view_bytes(index, staged_view_bytes,
+expected_index_sha256=...)` verifies one complete caller-supplied 138-industry
+candidate batch against a separately trusted expected **candidate index digest**.
+It checks canonical/immutable index bytes, source generation and L0 lineage
+digest syntax, May-2026 DAY edition, exact proposed L1 relative paths, full
+industry/commodity/year counts, correct LF-ended JSONL framing, each byte
+length and each SHA-256. Missing, extra, mutated or incorrectly framed files,
+forged index digests, duplicate/unsafe source identifiers and forged native
+publication claims fail closed. It uses only supplied in-memory bytes; no
+source collection, filesystem write, original-source read, authority mutation,
+or subscriber-serving effect is possible through this function.
+
+Successful output is the explicitly named `BEAGVCCandidateByteCheck` with
+`byte_equality_verified=true`, **`dataos_native_admitted=false`** and
+**`may_publish=false`**. This check cannot authenticate the caller's
+`expected_index_sha256` trust, L0 original rights, original response
+availability, native UTC ingestion, correction lineage, deployment, or
+GMI authentication. The *existing* Data OS owner must obtain an independently
+accepted expected index digest, compare actual staged files, then separately
+perform the source-admission/atomic-install/revision steps before production.
+It is a pure byte-integrity comparator, not a second source or control plane.
+
+Hermetic evidence: **50 native tests / 65 subtests passed** after this
+addition. Negative tests cover incomplete/extra views, tampered bytes,
+untrusted index digest, forged publishing flag/path, and absence of network or
+filesystem write effects. The prior full synthetic eight-year batch
+(138 × 1,112 rows) remains covered. Real 2017 Use-source axes remain
+unobserved under the explicit earlier permission refusal; no native source
+or GMI browser/API acceptance is implied.
+
 ## Original-source verification attempt — not a pass
 
 The new candidate-transform exercise read 72 retained original response files
