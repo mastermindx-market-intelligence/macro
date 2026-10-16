@@ -842,3 +842,48 @@ def test_tp2_stale_calibration_is_disclosed_only_after_original_evaluation():
         observation=observation,calibration=changed,
         view_asof_ns=golden["evaluation_ns"]+1)
     assert after["state"]=="CALIBRATION_STALE_SOURCE_GENERATION"
+
+
+# An original R0 private source record cannot expose future source identity or
+# future authority/correction status by raising different errors BEFORE T.
+# Earlier v0 leaked future metadata through an authority/ticker/RTH check
+# performed before the original decision's availability gate.
+@pytest.mark.parametrize(("altered","value"),[
+    ("rank_trade_alert_authority", True),
+    ("ticker", "UNQUALIFIED$$"),
+    ("source_schema", "changed-after-original-decision"),
+    ("start_ns", 1),
+])
+def test_r0_future_unavailable_original_cannot_leak_other_metadata(altered,value):
+    from engine.tp2_r0_research_context import project_tp2_r0_observation
+    original=merged_r0_body()
+    cutoff=original["decision_ns"]-1
+    baseline=project_tp2_r0_observation(source_context=original,view_asof_ns=cutoff)
+    changed=copy.deepcopy(original)
+    changed[altered]=value
+    result=project_tp2_r0_observation(source_context=changed,view_asof_ns=cutoff)
+    assert result == baseline
+    assert result["state"]=="R0_CONTEXT_NOT_YET_KNOWABLE"
+    assert result["ticker"] is None and result["source_manifest_sha256"] is None
+    assert result["observed_proxy"] is None
+
+
+def test_r0_future_request_ticker_constraint_stays_silent_until_source_known():
+    from engine.tp2_r0_research_context import project_tp2_r0_observation
+    original=merged_r0_body()
+    cutoff=original["decision_ns"]-1
+    result=project_tp2_r0_observation(source_context=original,view_asof_ns=cutoff,
+                                     expected_ticker="QQQ")
+    assert result["state"]=="R0_CONTEXT_NOT_YET_KNOWABLE"
+    assert result["ticker"] is None
+
+
+def test_r0_current_bad_authority_still_fails_after_cutoff():
+    from engine.tp2_r0_research_context import (
+        TP2R0Refusal, project_tp2_r0_observation,
+    )
+    original=merged_r0_body()
+    original["rank_trade_alert_authority"]=True
+    with pytest.raises(TP2R0Refusal,match="authority"):
+        project_tp2_r0_observation(
+            source_context=original,view_asof_ns=original["decision_ns"]+1)

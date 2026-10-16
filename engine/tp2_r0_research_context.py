@@ -121,7 +121,17 @@ def project_tp2_r0_observation(*, source_context, view_asof_ns,
     if source_context is None:
         return _hold(now, "R0_CONTEXT_NOT_SUPPLIED")
     m = source_context
-    if not isinstance(m, dict) or set(m) != _PRIVATE_KEYS:
+    if not isinstance(m, dict):
+        raise TP2R0Refusal("R0 source shape/exact fields invalid")
+    # Knowability MUST precede source-dependent identity/authority/error
+    # checking. Even a private research status code can reveal a future
+    # revised ticker, basis or access decision before the source first
+    # existed. The caller's decision clock is only a withholding bound,
+    # never proof of original receipt or a route to source authorization.
+    decision = _clock(m.get("decision_ns"), "decision_ns")
+    if decision > now:
+        return _hold(now, "R0_CONTEXT_NOT_YET_KNOWABLE")
+    if set(m) != _PRIVATE_KEYS:
         raise TP2R0Refusal("R0 source shape/exact fields invalid")
     if (m["schema"] != _SOURCE_SCHEMA
             or m["source_schema"] != "equity.pressure_response.tp1_context/v0"
@@ -151,17 +161,12 @@ def project_tp2_r0_observation(*, source_context, view_asof_ns,
     ).timestamp()) * 1_000_000_000
     start = _clock(m["start_ns"], "start_ns")
     end = _clock(m["end_ns"], "end_ns")
-    decision = _clock(m["decision_ns"], "decision_ns")
     if (start < expected_open_ns or start % _MINUTE_NS
             or not start < end <= expected_open_ns + 390*_MINUTE_NS
             or (end-start) % _MINUTE_NS
             or not 1 <= (end-start)//_MINUTE_NS <= 5
             or decision < end):
         raise TP2R0Refusal("R0 original RTH source window/decision invalid")
-    if decision > now:
-        # Before decision neither minute/quote digest nor ticker even exists
-        # in an as-seen research presentation.
-        return _hold(now, "R0_CONTEXT_NOT_YET_KNOWABLE")
     _clock(m["source_quote_age_limit_ns"], "source_quote_age_limit_ns")
     for k in ("source_manifest_sha256", "source_manifest_name_sha256",
               "source_watermark_receipt_sha256",
