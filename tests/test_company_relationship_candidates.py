@@ -246,6 +246,7 @@ def test_product_integration_cannot_claim_deliveries(lifecycle):
 @pytest.mark.parametrize("kind,lifecycle,disposition,bilateral", [
     ("supplier_roster", "listed", "roster_observation_only", False),
     ("framework_agreement", "in_force", "framework_candidate_no_deliveries", True),
+    ("equity_ownership", "reported", "equity_interest_candidate", False),
     ("administrative_party", "appointed", "administrative_role_only", False),
     ("anonymous_counterparty", "announced", "counterparty_unresolved", False),
     ("thematic_similarity", "observed", "non_relationship_observation", False),
@@ -258,6 +259,7 @@ def test_manual_taxonomy_preserves_disposition_without_role_or_quantity_upgrade(
     sentences = {
         "supplier_roster": "Aurora lists Boreal in its Widget supplier roster.",
         "framework_agreement": "Aurora and Boreal signed a Widget framework agreement; no deliveries are stated.",
+        "equity_ownership": "Aurora reported a 49% equity interest in Boreal Widget; no deliveries are stated.",
         "administrative_party": "Aurora appointed Boreal as trustee for Widget notes.",
         "anonymous_counterparty": "Aurora plans Widget for an unnamed customer.",
         "thematic_similarity": "Aurora and Boreal share a Widget theme.",
@@ -597,3 +599,228 @@ def test_research_witness_refuses_changed_capture_from_foreign_directory(tmp_pat
     assert result["admission"] == "NOT_ADMITTED"
     assert result["historical_system_replay"] is False
     assert "outcomes" not in result  # No CLI semantic view is derived from replacement bytes.
+
+
+def test_equity_ownership_is_a_manual_directed_interest_not_an_operating_weight():
+    # No source-control, current-contract, source-purpose or accounting claim is
+    # inferred from an exact source span or an analyst-selected lifecycle.
+    span = (
+        "<p>Aurora reported a 49% equity interest in Boreal Widget; "
+        "Boreal revenues and deliveries were not disclosed.</p>"
+    )
+    source = "SYNTHETIC ownership-only issuer disclosure.\n" + span
+    candidate = make_candidate(source=source, span=span)
+    candidate["document"]["published_date"] = "2023-11-07"
+    candidate["assertion"].update(kind="equity_ownership", lifecycle="reported")
+    result = inspect(candidate, source=source)
+    assert result["inspection_status"] == "INSPECTABLE"
+    view = result["current_candidate_view"]
+    assert view["assertion"]["kind"] == "equity_ownership"
+    assert view["disposition"] == "equity_interest_candidate"
+    assert view["scope"] == "owner_investee_only"
+    assert view["bilateral_candidate"] is False
+    assert view["assertion"]["magnitude"] is None
+    assert all(view[key] is None for key in (
+        "canonical_subject_id", "canonical_object_id", "shipments",
+        "revenue", "economic_weight", "theme_membership",
+    ))
+    assert result["support"]["semantic_adjudication"] == "NOT_PERFORMED"
+    assert result["annotation_trust"]["manual_assertions"] == "caller_supplied_not_authenticated"
+    assert all(result["gaps"][key] for key in ("native_adoption", "time", "identity", "rights"))
+    assert result["admission"] == "NOT_ADMITTED"
+    assert result["graph1_projection"] is None
+    assert not any(result["authority"].values())
+    assert result["content_boundary"]["public_export"] == "NOT_AUTHORIZED"
+
+    for reported_weight in (49, "49%", {"equity_interest_pct": 49}):
+        altered = deepcopy(candidate)
+        altered["assertion"]["magnitude"] = reported_weight
+        assert_refused(inspect(altered, source=source), "QUANTITY_MUST_BE_NULL")
+    for invented_lifecycle in ("completed_deliveries", "controls_operations", "in_force"):
+        altered = deepcopy(candidate)
+        altered["assertion"]["lifecycle"] = invented_lifecycle
+        assert_refused(inspect(altered, source=source), "LIFECYCLE_UNSUPPORTED")
+
+    # Source date/receipt alone is not a native historical system timestamp.
+    earlier = inspect(candidate, source=source, as_of="2023-11-01T00:00:00Z")
+    assert_refused(earlier, "AS_OF_REGISTRY_REQUIRED")
+    assert earlier["current_candidate_view"] is None and earlier["support"] is None
+
+
+# Ownership-specific cross-consumer controls: synthetic input, no source admission.
+def _ownership_boundary_candidate(lifecycle="reported"):
+    wording = {
+        "announced": "Aurora announced a planned equity interest in Boreal Widget.",
+        "reported": "Aurora reported a 49% equity interest in Boreal Widget.",
+        "ended": "Aurora reported that its equity interest in Boreal Widget ended.",
+        "disputed": "Aurora disputed its reported equity interest in Boreal Widget.",
+    }
+    span = "<p>" + wording[lifecycle] + "</p>"
+    source = "SYNTHETIC ownership boundary.\r\n" + span + "\r\nEnd."
+    value = make_candidate(source=source, span=span)
+    value["assertion"].update(kind="equity_ownership", lifecycle=lifecycle)
+    return value, source
+
+
+def _assert_ownership_boundary(result):
+    assert result["inspection_status"] == "INSPECTABLE"
+    assert result["admission"] == "NOT_ADMITTED"
+    assert result["authority"] == {key: False for key in ("rank", "gate", "size", "trade", "prediction")}
+    assert result["graph1_projection"] is None
+    assert result["support"]["semantic_adjudication"] == "NOT_PERFORMED"
+    assert result["temporal"]["historical_system_replay"] is False
+    assert result["content_boundary"]["public_export"] == "NOT_AUTHORIZED"
+    assert set(result["annotation_trust"].values()) == {"caller_supplied_not_authenticated"}
+    view = result["current_candidate_view"]
+    assert view["disposition"] == "equity_interest_candidate"
+    assert view["scope"] == "owner_investee_only"
+    assert view["bilateral_candidate"] is False
+    assert view["assertion"]["magnitude"] is None
+    assert all(view[key] is None for key in (
+        "canonical_subject_id", "canonical_object_id", "shipments",
+        "revenue", "economic_weight", "theme_membership",
+    ))
+    assert all(result["gaps"][key] for key in ("native_adoption", "time", "identity", "rights"))
+
+
+@pytest.mark.parametrize("lifecycle", ["announced", "reported", "ended", "disputed"])
+def test_ownership_each_manual_lifecycle_retains_unadmitted_boundary(lifecycle):
+    value, source = _ownership_boundary_candidate(lifecycle)
+    original = deepcopy(value)
+    result = inspect(value, source=source)
+    _assert_ownership_boundary(result)
+    assert value == original
+    assert result["current_candidate_view"]["assertion"]["lifecycle"] == lifecycle
+    assert inspect(value, source=source) == result
+
+
+@pytest.mark.parametrize("include_support_text", [False, True])
+def test_ownership_reversed_labels_are_not_verified_direction(include_support_text):
+    # The deliberately manual inspector checks source-local anchors, not truth.
+    # A reversed manual assertion must never become an authenticated graph edge.
+    forward, source = _ownership_boundary_candidate()
+    reverse = deepcopy(forward)
+    reverse["assertion"].update(subject_label="Boreal", object_label="Aurora")
+    for supplied in (forward, reverse):
+        result = inspect(supplied, source=source, include_support_text=include_support_text)
+        _assert_ownership_boundary(result)
+        assert result["current_candidate_view"]["assertion"] == supplied["assertion"]
+        assert ("replayed_value_text" in result["support"]) is include_support_text
+        assert result["source_provenance"]["source_credibility"] == "not_verified"
+
+
+def test_ownership_business_alias_does_not_supply_absent_legal_party():
+    value, source = _ownership_boundary_candidate()
+    value["assertion"]["object_label"] = "Boreal Legal Subsidiary LLC"
+    value["identity_annotations"] = {"subject_id": "UNTRUSTED-OWNER", "object_id": "UNTRUSTED-ALIAS"}
+    result = inspect(value, source=source)
+    assert_refused(result, "SOURCE_LOCAL_LABEL_UNSUPPORTED")
+    assert result["source_provenance"] is None and result["support"] is None
+
+
+@pytest.mark.parametrize("relation", ["corrects", "contradicts"])
+def test_ownership_review_preserves_repeats_and_unresolved_revision(relation):
+    from engine.company_intelligence import relationship_candidates as subject
+
+    original, old_source = _ownership_boundary_candidate()
+    revision, new_source = _ownership_boundary_candidate("disputed")
+    revision["candidate_id"] = "synthetic:ownership:revision"
+    revision["document"]["version"] = "synthetic-v2"
+    revision["revision"] = {"relation": relation, "supersedes_candidate_id": original["candidate_id"]}
+    entries = [
+        {"case_id": "original", "candidate": original, "source": old_source},
+        {"case_id": "repeat", "candidate": deepcopy(original), "source": old_source},
+        {"case_id": "revision", "candidate": revision, "source": new_source},
+    ]
+    request = {"schema": subject.REVIEW_SET_SCHEMA, "review_set_id": "synthetic-ownership", "cases": entries}
+    before = deepcopy(request)
+    result = subject.inspect_review_set(request)
+    assert request == before
+    assert result["review_status"] == "INSPECTED"
+    assert result["denominators"] == {
+        "requested_cases": 3, "supplied_source_cases": 3, "unique_supplied_source_byte_digests": 2,
+        "inspectable_cases": 3, "refused_cases": 0, "unavailable_cases": 0, "not_known_as_of_cases": 0,
+    }
+    repeats = result["reconciliation"]["repeated_input_references"]
+    assert len(repeats) == 1 and repeats[0]["case_ids"] == ["original", "repeat"]
+    assert repeats[0]["independent_corroboration"] == "NOT_ESTABLISHED"
+    assert result["reconciliation"]["candidate_collisions"] == []
+    links = result["reconciliation"]["revision_links"]
+    assert len(links) == 1 and links[0]["case_id"] == "revision"
+    assert links[0]["resolution"] == "UNRESOLVED_NO_AUTOMATIC_SELECTION"
+    assert links[0]["target_case_ids"] == ["original", "repeat"]
+    by_id = {entry["case_id"]: entry for entry in entries}
+    for row in result["cases"]:
+        supplied = by_id[row["case_id"]]
+        assert row["inspection"] == inspect(supplied["candidate"], source=supplied["source"])
+        _assert_ownership_boundary(row["inspection"])
+    reordered = {**request, "cases": list(reversed(entries))}
+    assert subject.inspect_review_set(reordered) == result
+    assert result["admission"] == "NOT_ADMITTED" and result["graph1_projection"] is None
+    assert not any(result["authority"].values())
+
+
+@pytest.mark.parametrize("kind,lifecycle,sentence", [
+    ("product_integration", "planned", "Aurora plans Widget integration into Boreal systems."),
+    ("supplier_roster", "listed", "Aurora lists Boreal in its Widget supplier roster."),
+    ("market_correlation", "observed", "Aurora and Boreal exhibit Widget market correlation."),
+])
+def test_ownership_review_does_not_collapse_other_relationship_species(kind, lifecycle, sentence):
+    from engine.company_intelligence import relationship_candidates as subject
+
+    ownership, source = _ownership_boundary_candidate()
+    other_source = "SYNTHETIC separate evidence. " + sentence
+    other = make_candidate(source=other_source, span=sentence)
+    other["candidate_id"] = "synthetic:other:relation"
+    other["assertion"].update(kind=kind, lifecycle=lifecycle)
+    result = subject.inspect_review_set({
+        "schema": subject.REVIEW_SET_SCHEMA, "review_set_id": "synthetic-mixed-kinds",
+        "cases": [
+            {"case_id": "ownership", "candidate": ownership, "source": source},
+            {"case_id": "other", "candidate": other, "source": other_source},
+        ],
+    })
+    assert result["review_status"] == "INSPECTED"
+    assert result["denominators"]["inspectable_cases"] == 2
+    assert result["denominators"]["unique_supplied_source_byte_digests"] == 2
+    rows = {row["case_id"]: row["inspection"] for row in result["cases"]}
+    _assert_ownership_boundary(rows["ownership"])
+    assert rows["other"] == inspect(other, source=other_source)
+    assert rows["other"]["current_candidate_view"]["assertion"]["kind"] == kind
+    assert result["reconciliation"]["candidate_collisions"] == []
+    assert result["reconciliation"]["repeated_input_references"] == []
+    assert result["reconciliation"]["revision_links"] == []
+    assert result["graph1_projection"] is None and not any(result["authority"].values())
+
+
+@pytest.mark.parametrize("include_support_text", [False, True])
+def test_ownership_future_row_excludes_labels_before_replay(monkeypatch, include_support_text):
+    value, source = _ownership_boundary_candidate()
+    value = with_temporal(value)
+    value["identity_annotations"] = {"subject_id": "UNSEEN-OWNER", "object_id": "UNSEEN-INVESTEE"}
+
+    def forbidden_replay(*args, **kwargs):
+        pytest.fail("future ownership must be excluded before semantic replay")
+
+    monkeypatch.setattr("engine.company_intelligence.relationship_candidates.replay_receipt", forbidden_replay)
+    result = inspect(value, source=source, as_of="2024-02-26T09:59:59Z",
+                     registry=synthetic_registry(), include_support_text=include_support_text)
+    assert result["inspection_status"] == "NOT_KNOWN_AS_OF"
+    assert result["current_candidate_view"] is None and result["source_provenance"] is None
+    assert result["support"] is None and result["refusal"] is None
+    for token in ("Aurora", "Boreal", "UNSEEN-OWNER", "UNSEEN-INVESTEE"):
+        assert token not in json.dumps(result)
+    assert result["admission"] == "NOT_ADMITTED" and result["graph1_projection"] is None
+    assert not any(result["authority"].values())
+
+
+def test_ownership_cli_runs_existing_file_consumer_without_magnitude_upgrade(tmp_path):
+    value, source = _ownership_boundary_candidate()
+    code, result = run_cli(tmp_path, candidate=value, source=source)
+    assert code == 0
+    _assert_ownership_boundary(result)
+    assert "replayed_value_text" not in result["support"]
+    value["assertion"]["magnitude"] = {"reported_ownership_interest_pct": 49}
+    code, refused = run_cli(tmp_path, candidate=value, source=source)
+    assert code == 2
+    assert_refused(refused, "QUANTITY_MUST_BE_NULL")
