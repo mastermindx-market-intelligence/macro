@@ -10,6 +10,50 @@ import json
 import sys
 from pathlib import Path
 
+
+def _read_bounded_reference(path: Path) -> tuple[list[dict], str]:
+    """Read, verify and parse exactly ONE captured bounded Parquet byte snapshot.
+
+    The digest is a caller-supplied content identifier, not runtime installation,
+    security/issuer admission, provenance certification or a source-rights grant.
+    """
+    import hashlib
+    import os
+    import stat
+
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    limit = 4_000_000
+    initial = path.lstat()
+    if not stat.S_ISREG(initial.st_mode) or not 0 < initial.st_size <= limit:
+        raise ValueError("unsafe or oversized Data OS reference")
+    flags = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
+    fd = os.open(path, flags)
+    try:
+        opened = os.fstat(fd)
+        sig = lambda x: (x.st_dev, x.st_ino, x.st_size, x.st_mtime_ns, x.st_ctime_ns)
+        if not stat.S_ISREG(opened.st_mode) or sig(opened) != sig(initial):
+            raise ValueError("Data OS reference changed before read")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(limit + 1)
+        after = os.fstat(fd)
+        if sig(after) != sig(opened) or len(raw) != opened.st_size:
+            raise ValueError("Data OS reference changed during read")
+    finally:
+        os.close(fd)
+    # Every parse and SHA calculation uses the SAME captured bytes, not a later
+    # path read which could have changed between the two observations.
+    try:
+        frame = pq.ParquetFile(pa.BufferReader(raw))
+        if not 0 < frame.metadata.num_rows <= 100_000 or frame.metadata.num_columns > 64:
+            raise ValueError("Data OS reference exceeds record or column bounds")
+        rows = frame.read().to_pylist()
+    except (OSError, ValueError, pa.ArrowException) as exc:
+        raise ValueError("Data OS reference Parquet is unreadable or unbounded") from exc
+    return rows, hashlib.sha256(raw).hexdigest()
+
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine.theme_graph.membership_evidence import (
     build_overlap_evidence, render_markdown,
@@ -44,22 +88,16 @@ def main(argv: list[str] | None = None) -> int:
         document = _load(source)
         if args.microtheme_research is not None:
             if identity_mode:
-                import hashlib
-                import stat
                 try:
-                    import pyarrow.parquet as pq
+                    import pyarrow  # noqa: F401 - explicit optional runtime requirement
                 except ImportError as exc:
                     raise ValueError("Data OS parquet reader unavailable") from exc
                 inputs = []
                 for name in (args.issuer_reference, args.security_reference):
                     target = Path(name)
-                    info = target.lstat()
-                    if not stat.S_ISREG(info.st_mode) or info.st_size > 4_000_000:
-                        raise ValueError("unsafe or oversized Data OS reference")
                     if output is not None and output.resolve() == target.resolve():
                         raise ValueError("output cannot overwrite a Data OS reference")
-                    raw = target.read_bytes()
-                    inputs.append((pq.read_table(target).to_pylist(), hashlib.sha256(raw).hexdigest()))
+                    inputs.append(_read_bounded_reference(target))
                 report = build_microtheme_identity_preflight(
                     document, issuer_rows=inputs[0][0], security_rows=inputs[1][0],
                     issuer_snapshot_sha256=inputs[0][1], security_snapshot_sha256=inputs[1][1],

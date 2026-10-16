@@ -445,3 +445,44 @@ def test_m1_cli_valid_legacy_input_refuses_identity_flag_before_loading(
     error = json.loads(result.stderr)
     assert error["code"] == "OVERLAP_EVIDENCE_UNAVAILABLE"
     assert "requires both Data OS files" in error["message"]
+
+
+def test_m1_parquet_digest_and_parser_use_the_same_captured_bytes(
+    tmp_path, monkeypatch
+):
+    """Kill the path-reopened-after-hash mutation: provenance must cover parsed bytes."""
+    from scripts import explain_theme_overlap as cli
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+    source = tmp_path / "current-issuer.parquet"
+    pq.write_table(pa.Table.from_pylist([{
+        "issuer_id": "ISS:US-XNAS-MU", "legal_name": "Micron Technology Inc", "status": "active",
+    }]), source)
+    original_bytes = source.read_bytes()
+    original_loader = pq.ParquetFile
+
+    def mutate_live_path_after_snapshot(snapshot, *args, **kwargs):
+        assert isinstance(snapshot, pa.BufferReader), "parquet parser reopened a path"
+        pq.write_table(pa.Table.from_pylist([{
+            "issuer_id": "ISS:US-XNYS-PL", "legal_name": "Planet Labs", "status": "active",
+        }]), source)
+        return original_loader(snapshot, *args, **kwargs)
+
+    monkeypatch.setattr(pq, "ParquetFile", mutate_live_path_after_snapshot)
+    records, sha = cli._read_bounded_reference(source)
+    assert records[0]["issuer_id"] == "ISS:US-XNAS-MU"
+    assert sha == hashlib.sha256(original_bytes).hexdigest()
+    assert source.read_bytes() != original_bytes
+
+
+def test_m1_source_reader_refuses_symlinks_oversize_and_invalid_parquet(tmp_path):
+    from scripts import explain_theme_overlap as cli
+    invalid = tmp_path / "corrupt.parquet"
+    invalid.write_bytes(b"not a parquet file")
+    link = tmp_path / "redirect.parquet"
+    link.symlink_to(invalid)
+    oversize = tmp_path / "large.parquet"
+    oversize.write_bytes(b"X" * 4_000_001)
+    for path in (invalid, link, oversize):
+        with pytest.raises((ValueError, OSError)):
+            cli._read_bounded_reference(path)
