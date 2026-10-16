@@ -10663,3 +10663,10 @@
 {"id":"ob-2026-10-16-560486385b","from":"posting","to":"posted","at":"2026-10-16T17:57:09Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad26575839da4fdc6129c3e","external_url":null,"at":"2026-10-16T17:57:02Z","booked_at":"2026-10-16T17:57:02Z"}}
 {"id":"ob-2026-10-16-a662e4ab75","from":"approved","to":"posting","at":"2026-10-16T17:57:09Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-16-a662e4ab75","from":"posting","to":"posted","at":"2026-10-16T17:57:10Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad26576839da4fdc6129c6c","external_url":null,"at":"2026-10-16T17:57:02Z","booked_at":"2026-10-16T17:57:02Z"}}
+{"id":"ob-2026-10-16-6fc07de64e","from":"queued","to":"approved","at":"2026-10-16T18:02:42Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-16-83b2421232","from":"queued","to":"approved","at":"2026-10-16T18:02:42Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-16-93377b9452","from":"queued","to":"approved","at":"2026-10-16T18:02:43Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-16-6fc07de64e","from":"approved","to":"quarantined","at":"2026-10-16T18:02:43Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-16-83b2421232","from":"approved","to":"posting","at":"2026-10-16T18:02:44Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-16-83b2421232","from":"posting","to":"posted","at":"2026-10-16T18:02:46Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad266c5238ad5651ea999e0","external_url":null,"at":"2026-10-16T18:02:41Z","booked_at":"2026-10-16T18:02:41Z"}}
+{"id":"ob-2026-10-16-93377b9452","from":"approved","to":"quarantined","at":"2026-10-16T18:02:46Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
