@@ -1,0 +1,19 @@
+test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity) ... FAIL
+test_legacy_entry_still_serializes_without_new_composition_claims (__main__.ConstructionSerialization.test_legacy_entry_still_serializes_without_new_composition_claims) ... ok
+
+======================================================================
+FAIL: test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 18, in test_corrected_entry_must_retain_composition_and_calibration_identity
+    self.assertEqual(entry.get('composition'), out['composition'],
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     'Current serializer loses construction and applicability before grading')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != {'status': 'COMPLETE', 'freshness': 'not_[876 chars].v1'} : Current serializer loses construction and applicability before grading
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.062s
+
+FAILED (failures=1)
+{"tests": 2, "failures": 1, "errors": 0, "source_unchanged": true, "ledger_io": false, "synthetic_only": true}
