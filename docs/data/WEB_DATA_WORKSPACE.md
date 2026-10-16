@@ -238,3 +238,9 @@ existing Tiingo reader/archive dependencies and
 current host binding and launcher integrity controls. Verify one actual bounded
 comparison and its refusal behavior from the export before selecting it, then
 verify the same action through the installed command.
+
+## Historical transcript source projection
+
+`history_dossier` can optionally compose exact `stored_report_date` call metadata using paired `transcripts_ref`/`transcripts_version`. `history_transcript` retrieves bounded original paragraph fragments by same-version source row and metadata digest. Neither operation uses a new root, collector, cache, model, role resolver or transcript store. `DataWorkspace._file` supplies and revalidates every descriptor; full-file content hashes are not inferred from statv1 tokens or selected-record hashes.
+
+The body reader intentionally does not call Terminal transcript intake or the held TFG/Q&A compiler: source speaker text remains an unverified label and the output claims no roles, original availability, historical issuer mapping or market causation. An offline catalogue is a bounded metadata projection only. The current full source remains under its existing owner. Current Data & Lab statement comparisons, Lab runs and legacy history must remain separately verified during release selection.
