@@ -204,9 +204,11 @@ on:
       # SSR page builder + its render test + the page template.
       - "engine/research_vault/**"
       - "scripts/ingest_research.py"
+      - "tests/test_research_vault_generation_cli.py"
       - "scripts/build_research_vault.py"
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
+      - "tests/test_research_vault_generation_evidence.py"
       # Research Vault (RV W2) serving API + download gate: quota ledger, view
       # rate-limit, watermark, the app/research.py router + its security tests.
       - "app/research.py"
@@ -3378,6 +3380,7 @@ on:
       - "tests/test_sector_nav_links.py"
       - "tests/test_site_semantics_refs.py"
       - "tests/test_sp500_heatmap_caps.py"
+      - "tests/test_sp500_heatmap_intraday_clock.py"
       - "tests/test_stage_analysis_page.py"
       - "tests/test_stocktable_data.py"
       - "tests/test_template_items_footgun.py"

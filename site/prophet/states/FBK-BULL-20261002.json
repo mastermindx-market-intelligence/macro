@@ -14,7 +14,7 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 47.0,
-    "overlay": 46.9
+    "overlay": 47.0
   },
   "geometry": {
     "dist_to_stop_r": -2.513,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",

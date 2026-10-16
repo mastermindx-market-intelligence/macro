@@ -13,23 +13,27 @@ class: build
 blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
-  - engine/research_codegen/
   - engine/research_factory/codegen_boundary.py
+  - engine/research_codegen/
   - research/research_factory_codegen/
+  - scripts/research_codegen_qualification/runtime/
 waves:
   - {id: SOURCE, title: "Contracts and connected source on original carriers", status: in_progress}
   - {id: RUNTIME, title: "Fixed Linux canary and actual containment qualification", status: in_progress}
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Repair the actual PR9077 workstream conflict and PR9099 import-closure omissions
-  on their original branches. Consume the two original Fabric reviews through
-  same-operation recovery, then run the prepared v4 canary through normal admission.
+  Finish protected product delivery on PR9463 after separating unchanged runtime
+  source onto its held draft carrier; verify actual authenticated publication.
+  Preserve all original review/refusal identities and the pending Chris decision.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
   - research/research_factory_codegen/2026-10-12/SOURCE_ACCEPTANCE.md
+  - research/research_factory_codegen/2026-10-14/CONTRACTS_SOURCE_ACCEPTANCE.md
+  - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
   - research/RESEARCH_CODEGEN_STATIC_SCREEN_SOURCE_2026_10_13.md
+  - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
   - Reuse accepted checks and reviews until their relevant source or requirements change.
@@ -47,22 +51,46 @@ landmines:
 
 Current checkpoint — 2026-10-15 (Vancouver).
 
-Strict transport cleanup #9190 merged at d99c8f129f2d559db814fb6059f7eade03bd40d5;
-static validation #9100 merged at f94050a358c3665a8a1b8cf97b87dc8eab4acaf6.
-Fence #9077 remains on its original branch; its prior CI lost its hosted runner.
-Capture #9099 now has a concrete eight-job import-closure omission to repair.
+Fence9077, capture9099, strict transport9190 and structural validation9100 are
+merged. Capture9099 merged as1c35abcd198df30366fe08b4dd714d9ec2b359ef. Its four
+implementation/test files match current main exactly. Product carrier9463 now
+integrates main86db1b0487ec. The former combined headbfd14315a594 passed all
+selected CI checks in38780929145; the original observer completed and its log
+was consumed. No live/idle observer is claimed for that completed run.
 
-Combined source is pushed at f70550addb18da7a43c50f82164c5a5a4e8f2378 on the existing
-rf-contracts-fresh carrier. Cgroup corrections passed 64 affected checks; the joined
-runtime suite passed 617 tests and 67 subtests with three Linux-only skips. Mount-table
-source passed 80 checks; its original worker output remains unaccepted. The archive
-scanner repair passed the actual pinned archive scan and private staging verification.
-V4 is prepared but undispatched. Its privileged installer has one existing scoped
-review pending recovery; neither stale controller logs nor missing local processes
-prove remote termination. Fabric Integration received one batched same-operation
-recovery request for that review and the mount-table review. No workers were replayed.
+Release scopes are being separated without replacing workers or reviews.
+PR9463 owns the reviewed dormant contracts, causal captured-input bridge,
+Trial Ledger/Vault changes, read-only synthetic diagnostics, existing admin UI
+and deployment closure. The accepted accounting source hashes are unchanged.
+Runtime installer, canary, host observers and fixed-workload plans/frontend
+are preserved byte-for-byte in the admitted rf-runtime-review-01a1333c SSD
+worktree with their own draft release carrier. The runtime-only review gate
+therefore no longer freezes independent product publication. No runtime source
+is admitted or installed by this separation; general transport remains dormant.
 
-Use the existing programme evidence under
-/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c for retained
-results. Historical receipts remain history; this short checkpoint owns the current
-next action. The programme is incomplete and has no current Chris-only gate.
+The new factory/frontend42checks and runtime658tests/67subtests (four platform
+skips) remain valid. The isolated source test commands retain the previous
+process separation for smoke-module loading and payload unit tests. Product
+integration after removal passes19connected/admin/token checks. Required CI
+and exact source-scope checks qualify the narrowed release before arming.
+The actual local authenticated admin browser already passed synthetic good and
+refused diagnostics, unsigned401, theme/language and logout; production proof
+is still owed after normal deployment. Evidence:
+/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
+
+Chris authorized quarantine and two-file source release for
+rf-fixed-workload-plans-01a1333c-v1; its run/lease/unknown termination/refused
+read remain unchanged. Fresh source is implemented and preserved on the runtime
+carrier. Its separate reviewrf-fixed-workload-source-review-01a1333c-v1 ended
+rc75 before provider execution on the broker-assigned account's host-local
+cooldown. Exact484-byte result consumed; no quality verdict, retry or account
+switch. Fabric Integration owns the already-requested source diagnosis.
+
+The original archive-order and mountinfo reviews remain unknown/refused. Their
+specific quarantine/review-release question is pending Chris, not inferred from
+the source-file grant. The concrete proposal is in the existing evidence folder:
+runtime-release/physical-qualification/ORIGINAL_REVIEW_QUARANTINE_PROPOSAL.md.
+Frozen v4 remains undispatched. Trusted host/resource mapping, complete helper
+census, cleanup, candidate admission, real pilot and scientific/prospective
+acceptance remain unfinished. Reuse accepted evidence; green CI or source
+publication does not complete the programme.

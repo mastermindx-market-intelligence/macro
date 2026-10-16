@@ -18,7 +18,9 @@ _HEX=re.compile(r'[a-f0-9]{64}\Z')
 
 def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
                     manifest_sha256: str, macro_ref: str | None=None,
-                    macro_sha256: str | None=None, reveal_outcomes: bool=False) -> dict:
+                    macro_sha256: str | None=None, reveal_outcomes: bool=False,
+                    filings_ref: str | None=None, filings_sha256: str | None=None,
+                    filings_offset: int=0) -> dict:
     from engine.neuralweb.market_memory_history import HistoricalExperienceError
     from engine.neuralweb.market_memory_history_archive import read_day_from_reader
     from engine.neuralweb.market_memory_history_dossier import compose_daily_dossier
@@ -27,7 +29,10 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
     )
     if (type(manifest_sha256) is not str or not _HEX.fullmatch(manifest_sha256)
             or type(reveal_outcomes) is not bool
-            or (macro_ref is None)!=(macro_sha256 is None)):
+            or (macro_ref is None)!=(macro_sha256 is None)
+            or (filings_ref is None)!=(filings_sha256 is None)
+            or type(filings_offset) is not int or not 0 <= filings_offset <= 250000
+            or (filings_ref is None and filings_offset != 0)):
         raise WorkspaceError('INVALID_HISTORY_BINDING')
     root,parts=workspace._split_ref(ref)
     if parts[-1]!='manifest.json':raise WorkspaceError('HISTORY_MANIFEST_REF_REQUIRED')
@@ -39,6 +44,12 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
         if not macro_parts[-1].endswith('.json'):
             raise WorkspaceError('HISTORY_MACRO_JSON_REF_REQUIRED')
         if type(macro_sha256) is not str or not _HEX.fullmatch(macro_sha256):
+            raise WorkspaceError('INVALID_HISTORY_BINDING')
+    if filings_ref is not None:
+        _, filing_parts = workspace._split_ref(filings_ref)
+        if filing_parts[-1] != 'earnings_8k_dates.parquet':
+            raise WorkspaceError('HISTORY_FILING_SOURCE_REF_REQUIRED')
+        if type(filings_sha256) is not str or not _HEX.fullmatch(filings_sha256):
             raise WorkspaceError('INVALID_HISTORY_BINDING')
     prefix=root.alias+':'+('/'.join(parts[:-1])+'/' if len(parts)>1 else '')
     source_files=[]
@@ -65,11 +76,18 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
             chronology=read_macro_chronology_bytes(read_bound(macro_ref,MAX_BYTES),expected_sha256=macro_sha256)
             macro=select_macro_date(chronology,date)
             macro.update(status='OBSERVED' if macro['total_events'] else 'NO_OBSERVATION',sha256=macro_sha256)
-        result=compose_daily_dossier(market,macro)
+        filings = None
+        if filings_ref is not None:
+            from engine.neuralweb.market_memory_history_filings import MAX_SOURCE_BYTES, read_filing_date
+            filings = read_filing_date(read_bound(filings_ref, MAX_SOURCE_BYTES), date,
+                expected_sha256=filings_sha256, offset=filings_offset)
+        result=compose_daily_dossier(market,macro,filings=filings)
     except HistoricalExperienceError:
         raise WorkspaceError('HISTORY_SOURCE_OR_CONTRACT_INVALID') from None
     request={'ref':ref,'manifest_sha256':manifest_sha256,'date':date,
              'macro_ref':macro_ref,'macro_sha256':macro_sha256,'reveal_outcomes':reveal_outcomes}
+    if filings_ref is not None:
+        request.update(filings_ref=filings_ref, filings_sha256=filings_sha256, filings_offset=filings_offset)
     receipt_input={'query':request,'sources':[{'ref':r['ref'],'file_version':r['file_version'],
                     'content_sha256':r['content_sha256']} for r in source_files]}
     digest=hashlib.sha256(json.dumps(receipt_input,sort_keys=True,allow_nan=False,separators=(',',':')).encode()).hexdigest()
