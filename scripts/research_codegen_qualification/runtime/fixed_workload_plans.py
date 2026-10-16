@@ -25,14 +25,15 @@ RUNTIME = "rf-runsc"
 WHOLE_ATTEMPT_SECONDS = 120.0
 CLEANUP_RESERVE_SECONDS = 30.0
 SERIAL_SEVEN_ATTEMPT_SECONDS = 840.0
+REQUIRED_TRANSPORT_SHA256 = "b6d36717ad3630d127b16fe9e117d9401bea1136880e28d19f0d18061933c633"
 
 
 class WorkloadPlanRefused(ValueError):
     """Input is outside the closed trusted-workload contract."""
 
 
-def build_workload_plan(case_id, source_bytes):
-    """Return a fixed plan only for the exact case and committed source bytes."""
+def _fixed_fields(case_id, source_bytes):
+    """Validate inert input and return fields without consulting a lifecycle."""
     if type(case_id) is not str or case_id not in SOURCE_PINS:
         raise WorkloadPlanRefused("unknown fixed workload case")
     size, digest = SOURCE_PINS[case_id]
@@ -41,7 +42,7 @@ def build_workload_plan(case_id, source_bytes):
         raise WorkloadPlanRefused("fixed workload source type or size mismatch")
     if hashlib.sha256(source_bytes).hexdigest() != digest:
         raise WorkloadPlanRefused("fixed workload source digest mismatch")
-    return transport.TransportPlan(
+    return dict(
         operation_id="rf-containment-" + case_id + "-01a1333c-v1",
         image=IMAGE,
         docker_binary="/usr/bin/docker",
@@ -54,16 +55,28 @@ def build_workload_plan(case_id, source_bytes):
     )
 
 
+def build_workload_plan(case_id, source_bytes):
+    """Return a fixed plan only for the exact case and committed source bytes."""
+    return transport.TransportPlan(**_fixed_fields(case_id, source_bytes))
+
+
 def describe_workload(case_id, source_bytes):
     """Return source/plan identity and outstanding obligations, never payload."""
     plan = build_workload_plan(case_id, source_bytes)
+    return _describe_plan(case_id, plan, transport)
+
+
+def _describe_plan(case_id, plan, lifecycle):
     size, digest = SOURCE_PINS[case_id]
     return {
         "case_id": case_id,
         "source_sha256": digest,
         "source_bytes": size,
         "operation_id": plan.operation_id,
-        "plan_sha256": transport.plan_identity(plan),
+        "plan_sha256": lifecycle.plan_identity(plan),
+        # This pure factory declares a requirement; the execution composition
+        # must load those exact bytes before claiming a verified lifecycle.
+        "required_transport_sha256": REQUIRED_TRANSPORT_SHA256,
         "runtime": RUNTIME,
         "whole_attempt_seconds": WHOLE_ATTEMPT_SECONDS,
         "cleanup_reserve_seconds": CLEANUP_RESERVE_SECONDS,

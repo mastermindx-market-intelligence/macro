@@ -43,6 +43,18 @@ uncertain create cannot be replaced or guessed, a prior receipt prevents reuse,
 and a permission refusal freezes subsequent commands. Cleanup success preserves
 any workload failure. There is no automatic seven-case campaign or retry loop.
 
+The constructor requires an explicit `transport_path` and uses the incumbent
+loader to verify and compile the exact pinned bytes. The execution plan,
+orchestrator and absence parser come from that verified module; descriptions
+and every receipt phase record its digest. The pure plan factory declares the
+required digest without claiming it observed source files. Host binding values
+are checked and copied before effects, and operation identity is read-only.
+Direct create calls require the frontend's exclusive receipt and CID sink.
+The longest cleanup path has four seven-second command ceilings within the
+30-second reserve; an admitted caller still owes external supervision of blocked
+I/O and executor settlement. This frontend does not supply cross-process custody
+or authorize a replacement attempt under a new receipt path.
+
 These two helpers are excluded from the frozen v4 canary capsule. Their tests
 use inert source bytes and fake Docker responses; source success does not
 qualify the host or grant physical execution.

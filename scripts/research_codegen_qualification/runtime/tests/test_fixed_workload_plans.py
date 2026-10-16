@@ -54,6 +54,7 @@ def test_exact_source_fixed_plan_and_description(case):
     assert description["source_bytes"] == len(raw)
     assert description["operation_id"] == plan.operation_id
     assert description["plan_sha256"] == transport.plan_identity(plan)
+    assert description["required_transport_sha256"] == plans.REQUIRED_TRANSPORT_SHA256
     assert description["runtime"] == "rf-runsc"
     assert description["whole_attempt_seconds"] == 120
     assert description["cleanup_reserve_seconds"] == 30
