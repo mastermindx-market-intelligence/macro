@@ -14,7 +14,7 @@
     "progress": 14.1,
     "pace": 12.6,
     "retention": 50.0,
-    "overlay": 52.9
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": 1.185,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
