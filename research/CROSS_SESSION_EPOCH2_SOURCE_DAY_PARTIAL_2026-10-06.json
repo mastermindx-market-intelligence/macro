@@ -400,15 +400,22 @@
       "reuters_first_mirror_at_utc": "2026-10-06T12:46:00Z",
       "prior_ukmto_warning": "UKMTO 156-26 incident 05 Oct16:37Z released Oct5; UKMTO 157-26 incident dated Oct5 (time TBC), official warning file/product dated Oct6. Vessel identities NOT given in either notice. India MEA describes MT On Peace attacked earlier Oct6; do not collapse identities or substitute event date.",
       "earliest_public_clock": "NO_LATER_THAN_2026-10-06T10:47:00Z_POSSIBLY_EARLIER_OMANI_OFFICIAL_OR_MEAX",
-      "disposition": "CANDIDATE_SOURCE_CLOCK_AFTER_ACTIVATION_BUT_EVENT_IDENTITY_AND_NOVELTY_UNRESOLVED",
-      "reason": "Prior exclusion as Oct5 duplicate lacked proof of vessel identity, and conflicts with India government Oct6 statement saying attack occurred earlier on Oct6. The Maritime Executive Oct6 explicitly notes date discrepancy between earlier UKMTO tanker notice and Indian/Omani official Tuesday report. Preserve Oct6 candidate and materiality as unresolved. Earliest verifiable press upper bound Moneycontrol Oct6 16:17 IST=10:47Z; original government/Oman reporting may be earlier. No U.S./HSI outcomes read.",
+      "disposition": "CANDIDATE_CONFLICTING_PRIMARY_INCIDENT_DATES_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "reason": "Oct8 Panama Maritime Authority official flag-state statement for IMO 9893204 says the On Peace reported being struck Oct5 at 19:30 UTC while sailing Sitrah to Fujairah, contrasting with India MEA original Oct6 statement using \"earlier today\". UKMTO #156 incident Oct5 16:37 UTC is NOT same reported time, #157 incident Oct5 time TBC could be same but no vessel identifier. This later retrospective correction cannot be inserted into information set as known on Oct6. First Oct6 public identified-vessel upper bound remains 10:47Z, not a proven new Oct6 physical incident. Freeze disputed chronology and source materiality. No market outcome use.",
       "parent_cluster": "hormuz-oil-tanker-attacks-oct5-to-oct6-identity-unresolved",
       "market_outcomes_read": false,
       "primary_official_url": "https://www.mea.gov.in/press-releases?dtl%2F41848%2FStatement_on_the_attack_on_a_commercial_vessel_MT_On_Peace_off_the_coast_of_Oman=",
       "official_text_quoted_via_embassy_listing": "India MEA official Oct6 statement: vessel MT On Peace (IMO 9893204) was attacked earlier today; source https://www.indemb-oman.gov.in/whats-new/ and official MEA release. Original HTML returns 403 in web preview; embassy indexed statement dated Oct6.",
       "first_verified_press_publication_local": "2026-10-06T16:17:00+05:30",
       "first_verified_press_upper_bound_utc": "2026-10-06T10:47:00Z",
-      "first_verified_press_source": "https://www.moneycontrol.com/news/india/india-condemns-attack-on-panama-flagged-ship-off-oman-11-indian-crew-members-injured-14045820.html"
+      "first_verified_press_source": "https://www.moneycontrol.com/news/india/india-condemns-attack-on-panama-flagged-ship-off-oman-11-indian-crew-members-injured-14045820.html",
+      "panama_flag_state_primary_url": "https://www.amp.gob.pa/noticias/notas-de-prensa/amp-informa-sobre-el-incidente-sufrido-por-la-nave-on-peace/",
+      "panama_flag_state_statement_published_day": "2026-10-08",
+      "panama_flag_state_reported_incident_time_utc": "2026-10-05T19:30:00Z",
+      "panama_flag_state_vessel_imo": "9893204",
+      "india_mea_statement_reported_incident_day": "2026-10-06",
+      "incident_date_dispute": "CONFLICTING_OFFICIAL_SOURCES_PANAMA_OCT5_VS_INDIA_OCT6",
+      "first_public_clock": "NO_LATER_THAN_2026-10-06T10:47:00Z_FOR_IDENTIFIED_ON_PEACE_MEAX_REPORT; OCT5_UNNAMED_UKMTO_156_157_IDENTITY_NOT_PROVEN"
     },
     {
       "id": "20261006-ukmto-157-late-warning-of-oct5-tanker",
@@ -432,6 +439,24 @@
       "ukmto_original_social_post_identifier": "2107444098806546566",
       "ukmto_original_social_post_snowflake_utc": "2026-10-06T12:13:22.230Z",
       "social_clock_proof": "Official @UK_MTO original X URL and ID in DailyJournal source media links, X Snowflake time decoded by ((tweet_id>>22)+1288834974657), corroborated by news site showing date/local posting time. URL not directly rendered in web reader (403), so post timestamp is a conditional platform-ID provenance upper bound, not independently retrieved website publication or original industry distribution time."
+    },
+    {
+      "id": "20261006-israel-katz-gaza-military-readiness-order",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Israel/Gaza",
+      "headline": "Israeli defense minister orders higher IDF readiness in Gaza on Oct6 in anticipation of Hamas activity on Oct7 anniversary",
+      "source_url": "https://www.timesofisrael.com/liveblog_entry/katz-says-military-on-alert-ahead-of-possible-hamas-attacks-on-oct-7-anniversary/",
+      "first_verified_publication_local": "2026-10-06T09:47:00+03:00",
+      "first_verified_publication_upper_bound_utc": "2026-10-06T06:47:00Z",
+      "source_attribution": "The Times of Israel direct liveblog 09:47 Israel DST Oct6 quotes original Israeli Defense Minister Israel Katz public statement; original minister/IDF release may have been earlier",
+      "later_corroborating_source": "https://www.jpost.com/israel-news/defense-news/article-910754",
+      "later_corroborating_local": "2026-10-06T11:45:00+03:00",
+      "related_public_source": "https://www.gov.il/en/pages/spoke-start061026",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T06:47:00Z_ORIGINAL_KATZ_OFFICE_RELEASE_UNRESOLVED",
+      "disposition": "CANDIDATE_POST_ACTIVATION_OFFICIAL_READINESS_ORDER_MATERIALITY_AND_FIRST_SOURCE_UNRESOLVED",
+      "reason": "Distinct official operational instruction to increase military readiness in Gaza based on warning of possible Hamas attacks on Oct7; not mere commemoration or routine Gaza strike. ToI published 09:47 Israel local=06:47Z after Epoch2 activation 04:31:47Z, original Katz statement may precede and novel operational level versus baseline readiness requires blinded appraisal. Prime minister Oct6 cabinet warning relates to same general anniversary threat and should not become a separate independent event without distinct policy. No post-Oct6 realized attacks/market outcomes may affect selection.",
+      "parent_cluster": "gaza-israel-oct7-anniversary-threat-alert-2026",
+      "market_outcomes_read": false
     }
   ],
   "channel_coverage": {
@@ -550,6 +575,14 @@
       "post_utc": "2026-10-08T14:54:26.784Z",
       "is_original_first_publication": false,
       "reason": "Public official X post date/time provides witnessed latest-public-by bound only. The warning PDF may have been sent to industry or published earlier."
+    },
+    {
+      "at_utc": "2026-10-16T09:51:41.069530Z",
+      "target_id": "20261006-india-confirms-on-peace-tanker-12-injured",
+      "prior_disposition": "CANDIDATE_SOURCE_CLOCK_AFTER_ACTIVATION_BUT_EVENT_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "new_disposition": "CANDIDATE_CONFLICTING_PRIMARY_INCIDENT_DATES_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "new_primary_conflict": "Panama AMP flag-state official Oct8 says On Peace hit Oct5 19:30Z; India MEA Oct6 says struck earlier today; do not use Oct8 retrospective to claim it was publicly known Oct6",
+      "source_url": "https://www.amp.gob.pa/noticias/notas-de-prensa/amp-informa-sobre-el-incidente-sufrido-por-la-nave-on-peace/"
     }
   ],
   "discoveries": [
@@ -597,6 +630,13 @@
         "20261006-ukmto-157-late-warning-of-oct5-tanker"
       ],
       "description": "Original UKMTO 157 PDF and Oct6 issue-day chain; unlike incident-list date, product day belongs Oct6 disclosure cohort. Original Indian MEA contradicts prior Oct5 duplicate assumption for MT On Peace."
+    },
+    {
+      "at_utc": "2026-10-16T09:51:41.069530Z",
+      "added_ids": [
+        "20261006-israel-katz-gaza-military-readiness-order"
+      ],
+      "description": "Independent original news-source review found Israeli military readiness order overlooked by Reuters/UKMTO-only recall. Source after activation but original first issue and materiality unresolved; source only."
     }
   ],
   "worker_reconciliation": {

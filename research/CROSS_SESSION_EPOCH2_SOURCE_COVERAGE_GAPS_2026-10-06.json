@@ -8,8 +8,8 @@
   "source_day_utc": "2026-10-06",
   "epoch2_activation_at_utc": "2026-10-06T04:31:47Z",
   "observed_candidate_file": "/Volumes/Mastermind/evidence/pattern-analysis-epoch2-oct6-20261012/source-only-manual-candidates.json",
-  "observed_candidate_sha256": "0bee9c8b0001897b20c1dbf498144a9b163dea3efbdb1110dbb838fe80f71287",
-  "observed_candidate_count": 24,
+  "observed_candidate_sha256": "fb9c301bf5e2cb3d8aeb567ffe988cd299f78d05f7be2e7d281a7cfd0fa30df5",
+  "observed_candidate_count": 25,
   "candidate_dispositions": {
     "exclude_or_late": 11,
     "unresolved_or_conditional": 12,
@@ -99,7 +99,7 @@
       "UKMTO 159 issued Oct8"
     ]
   },
-  "last_source_reconciliation_at_utc": "2026-10-16T09:34:19.187285Z",
+  "last_source_reconciliation_at_utc": "2026-10-16T09:51:41.069530Z",
   "remaining_source_gaps": [
     "Full Oct6 Reuters/wire/official day census with a verifiable channel coverage receipt",
     "UKMTO original Oct6 day issue archive, including negative coverage of other warning/advisory types",
@@ -112,7 +112,9 @@
     "Oct6 U.S. B-1 UK base withdrawal reconfirms Oct5 source; no new event credit",
     "Oct5 UKMTO warning 157 vs Oct6 casualty disclosure on On Peace same incident; dedup and no reanchor",
     "Original India MEA/Omani and UKMTO public post UTC times for MT On Peace, 156, 157; independently verify ship identity/incident date disagreement before any materiality or admission",
-    "UKMTO all-warning and advisory issue-history negative completeness not proven by sequence alone"
+    "UKMTO all-warning and advisory issue-history negative completeness not proven by sequence alone",
+    "Resolve conflict between Panama maritime flag-state retrospective Oct5 19:30Z On Peace and India MEA Oct6 earlier-today claim without lookahead, confirm whether UKMTO #157 is same IMO or other vessel",
+    "Verify original exact Katz/IDF first publication and pre-Oct6 readiness level/materiality, keeping same anniversary-threat parent cluster"
   ],
   "source_discovery_sweep": {
     "method": "Existing Macro RSS architecture using read-only Google News index historical queries, no new ingestion control plane",
@@ -158,5 +160,9 @@
       "159-26": "2026-10-08T14:54:26.784Z"
     },
     "X_post_timestamps_not_first_issue_times": true
+  },
+  "material_source_conflicts": {
+    "panama_flag_state_vs_india_mea_on_peace": "PANAMA_OCT5_1930Z_INCIDENT_REPORTED_OCT8_VS_INDIA_OCT6_EARLIER_TODAY_KNOWABLE_OCT6",
+    "israel_katz_gaza_readiness": "TOI_09:47_ISRAEL_LOCAL_OCT6_IS_06:47Z_FIRST_KNOWN_UPPER_BOUND_ORIGINAL_PRESS_RELEASE_UNRESOLVED"
   }
 }
