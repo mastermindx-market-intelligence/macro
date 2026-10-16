@@ -457,6 +457,23 @@
       "reason": "Distinct official operational instruction to increase military readiness in Gaza based on warning of possible Hamas attacks on Oct7; not mere commemoration or routine Gaza strike. ToI published 09:47 Israel local=06:47Z after Epoch2 activation 04:31:47Z, original Katz statement may precede and novel operational level versus baseline readiness requires blinded appraisal. Prime minister Oct6 cabinet warning relates to same general anniversary threat and should not become a separate independent event without distinct policy. No post-Oct6 realized attacks/market outcomes may affect selection.",
       "parent_cluster": "gaza-israel-oct7-anniversary-threat-alert-2026",
       "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-israel-katz-west-bank-pa-war-contingency-order",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Israel/West Bank/Palestinian Authority",
+      "headline": "Israeli Defense Minister Katz publicly details IDF readiness order and contingency plan for possible armed confrontation involving Palestinian Authority forces",
+      "source_url": "https://www.timesofisrael.com/liveblog_entry/katz-to-ministers-idf-preparing-for-possibility-of-war-with-palestinian-authority/",
+      "first_verified_publication_local": "2026-10-06T14:33:00+03:00",
+      "first_verified_publication_upper_bound_utc": "2026-10-06T11:33:00Z",
+      "original_official_source": "Israeli defense minister office statement at Oct6 weekly cabinet meeting; original full transcript/issue time not independently fetched",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T11:33:00Z; EARLIER_OFFICIAL_ISSUE_UNRESOLVED",
+      "disposition": "CANDIDATE_POST_ACTIVATION_OFFICIAL_WEST_BANK_CONTINGENCY_NOVELTY_UNRESOLVED",
+      "reason": "Source-specific public disclosure Oct6 14:33 Israel summer time=11:33 UTC described IDF instructed to prepare for possible war scenario with Palestinian Authority security forces and a detailed contingency plan. This is a *conditional military plan/statement*, not actual initiation of war or verified PA attack. Katz threatened full-scale war on the PA in September, so October6 incremental material operational novelty must be assessed against earlier threats on frozen source-only information. Separate West Bank scenario from morning Gaza anniversary readiness, but link parent broad Israeli security cabinet cluster to avoid artificial independence. No US/HSI market outcomes read.",
+      "related_prior_statement": "Katz September 2026 public threat of full-scale war if Palestinian Authority attacks, reported by The Times of Israel",
+      "parent_cluster": "israel-west-bank-pa-contingency-security-posture-2026",
+      "related_same_day_cluster": "gaza-israel-oct7-anniversary-threat-alert-2026",
+      "market_outcomes_read": false
     }
   ],
   "channel_coverage": {
@@ -637,6 +654,14 @@
         "20261006-israel-katz-gaza-military-readiness-order"
       ],
       "description": "Independent original news-source review found Israeli military readiness order overlooked by Reuters/UKMTO-only recall. Source after activation but original first issue and materiality unresolved; source only."
+    },
+    {
+      "at_utc": "2026-10-16T09:56:20.872030Z",
+      "added_ids": [
+        "20261006-israel-katz-west-bank-pa-war-contingency-order"
+      ],
+      "description": "Oct6 ToI original liveblog 14:33 local: official West Bank PA contingency briefing, conditional risk plan; September prior warning makes novelty unresolved.",
+      "disposition": "NOT_CERTIFIED"
     }
   ],
   "worker_reconciliation": {

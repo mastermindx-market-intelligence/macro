@@ -8,11 +8,11 @@ The prior `CROSS_SESSION_EPOCH2_SOURCE_DAY_OPEN_2026-10-06.json` remains an immu
 
 ## Evidence snapshot and hashes
 
-- `CROSS_SESSION_EPOCH2_SOURCE_DAY_PARTIAL_2026-10-06.json` - SHA256 `fb9c301bf5e2cb3d8aeb567ffe988cd299f78d05f7be2e7d281a7cfd0fa30df5`
-- `CROSS_SESSION_EPOCH2_SOURCE_COVERAGE_GAPS_2026-10-06.json` - SHA256 `98becd8fb5eb42b2e02879f153a4700f436149fc1bc5e07c36dc47e61c9b7e32`
+- `CROSS_SESSION_EPOCH2_SOURCE_DAY_PARTIAL_2026-10-06.json` - SHA256 `5a6c4c55f5ff7b5a52863468b89cda6baadf10c7107771a3f986fab722ca12ca`
+- `CROSS_SESSION_EPOCH2_SOURCE_COVERAGE_GAPS_2026-10-06.json` - SHA256 `9ee41cb5f6891e5f0509d4fdc656d1dc344ac231b675c0d1f34addce304c102b`
 - `CROSS_SESSION_EPOCH2_UKMTO_ISSUE_VS_INCIDENT_2026-10-06.json` - SHA256 `af82e5f92ea9e0e7ec159acced51adbbb1958222829a82ccb067a41d1e07f64f`
 
-The candidate snapshot includes 25 candidate/exclusion/confounded source rows, 16 clock/provenance corrections, and nine independent worker-group adjudications. The accompanying coverage worksheet explicitly records gaps in mandatory Reuters/wire original-publication coverage, UKMTO warnings/advisories and first-source issues. It is not a negative-coverage proof of missing events. Google News and GDELT discoveries were used only for recall, never as first-public clock or complete-source certificates.
+The candidate snapshot includes 26 candidate/exclusion/confounded source rows, 16 clock/provenance corrections, and nine independent worker-group adjudications. The accompanying coverage worksheet explicitly records gaps in mandatory Reuters/wire original-publication coverage, UKMTO warnings/advisories and first-source issues. It is not a negative-coverage proof of missing events. Google News and GDELT discoveries were used only for recall, never as first-public clock or complete-source certificates.
 
 ## Critical chronology and exclusion controls
 
@@ -21,6 +21,8 @@ The candidate snapshot includes 25 candidate/exclusion/confounded source rows, 1
 - Bulgarian Black Sea twin-ship attack and separate Odesa rapeseed-oil vessel strike have original local/official Oct6 publication evidence but may share a campaign cluster; no count inflation. Zelenskiy and Saudi pipeline first-public/original-materiality decisions remain source-only and confounded by earlier news. Moscow drone campaign first publication predates activation; no later-source reanchoring.
 
 Additional original-source chronology (October 16 reconciliation): the Panama Maritime Authority retrospectively dates MT On Peace (IMO 9893204) strike to October 5 at 19:30 UTC, conflicting with the India MEA October 6 statement saying "earlier today". This conflict cannot be projected back as an October 6 known fact. A distinct October 6 Israeli defense-minister military-readiness order in Gaza has a 06:47Z Times of Israel first-public upper bound, but the originating statement clock and materiality are unresolved. Neither is admitted.
+
+One further October 6 official-change candidate: Israel Katz detailed a conditional West Bank/Palestinian Authority war contingency at the cabinet meeting (independently observed 14:33 IDT = 11:33 UTC). Earlier September threats and original ministerial issue time make novelty and first-public clock unresolved; this is not a claim that any new war began.
 
 ## Before any scientific outcome access
 
