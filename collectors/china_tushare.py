@@ -51,9 +51,10 @@ _MODULES = (
     "tushare_moneyflow",   # sector moneyflow (china_radar)
     "tushare_margin",      # per-name margin (crowding froth, normalized by circ_mv)
     "tushare_chips",       # chip distribution
-    "tushare_broker",      # broker seats
-    "tushare_forecast",    # earnings guidance
-    "tushare_history",     # grid backfill (bounded by _GRID_DAYS)
+    "tushare_broker",          # broker seats
+    "tushare_forecast",        # earnings guidance
+    "tushare_fund_portfolio",  # CIE-12 public-fund holdings accrual (ann_date PIT)
+    "tushare_history",          # grid backfill (bounded by _GRID_DAYS)
 )
 
 
@@ -71,7 +72,7 @@ class ChinaTushareAdapter(Adapter):
         if not tushare_client.enabled():
             raise RuntimeError("TUSHARE_TOKEN absent — gated tushare plane skipped")
         # Other China adapters in the same collect process also use this shared client.
-        # Diagnose only failures produced inside THIS adapter's seven-module window; a
+        # Diagnose only failures produced inside THIS adapter's module window; a
         # stale ConnectionError from an earlier consumer must not relabel an import or
         # entitlement miss here as a transport outage. Auth remains latched separately.
         tushare_client.clear_transport_error()
