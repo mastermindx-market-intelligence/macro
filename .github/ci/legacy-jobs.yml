@@ -17794,7 +17794,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2 numpy pandas requests
+        run: pip install pytest pyyaml jinja2 numpy pandas requests beautifulsoup4
       - name: press validator, planner, writer, orchestrator, admin and property suites
         run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_official_feed_candidate.py tests/test_press_markup_safety.py tests/test_press_official_staging.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
@@ -28245,6 +28245,10 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_trusted.py
       - lib/dataos/tiingo_reader.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - lib/dataos/tiingo_boats_tape.py
+      - lib/dataos/tiingo_workspace.py
+      - scripts/tiingo_research_query.py
       - lib/dataos/tiingo_views.py
       - scripts/tiingo_materialize.py
     timeout-minutes: 8
@@ -28329,6 +28333,8 @@ jobs:
       # safe direction — this job is still pytest + pyyaml only).
       - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
       - scripts/data_workspace.py
+      # Tiingo comparison action: preserve the complete reader import closure.
+      - scripts/tiingo_research_query.py
       - site/factordata/factors.json
       - site/factordata/insider_signals.json
       # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py

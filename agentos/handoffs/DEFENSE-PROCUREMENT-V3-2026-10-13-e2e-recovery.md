@@ -51,7 +51,7 @@ do_not_redo:
   - Historical PR7186 row-cap repair.
   - Accepted evidence unless its actual source, input or contract changes.
   - Uncertain Fabric operations through a new identity, account or carrier.
-prs: [7175, 9066, 9490, 9496]
+prs: [7175, 9066, 9490, 9496, 9498, 9499]
 decisions: []
 ---
 
@@ -991,3 +991,8 @@ Source478258 repairs production-observed FMS deep links, Back/Forward and source
 ### October16 installed Space release and FMS persistence composition
 
 PR9496 merged at1c430d9 and its five qualified API/page/data artifacts were observed installed. Financial successor5a completed12 acknowledged conditional writes and complete10-event readback, with no unknown effect. The actual signed-in Space/PAC-3 and local saved-view journeys are retained in `current_main_product_20261015/release/`. Ten live mobile timing bounds leave the precise three-second target unverified. FMS persistence sourcee7a554 reuses the unchanged accepted protocol review, passes73 composition tests, CI closure and a fresh full105-case proof. PR9498 remains the next dependent release; original review returns and other acceptance obligations remain open.
+### October16 current navigation repair and release frontier
+
+PR9496 is merged at1c430 and its installed Space/PAC-3 bytes and real signed-in journey were verified. Financial5a publication completed with12 acknowledged writes and exact complete10-event readback; do not replay. Evidence remains on PR9499 under `current_main_product_20261015/release/` and `fms_persistence_proof_20261016/`.
+
+PR9498 sourcee4de35bdf5d707ff075758de8e1e3980db88a685 repairs the four independently reproduced navigation/export findings and the sole original CI failure.112 affected cases, the native full proof and targeted CUA observations pass; exact sealed evidence is in `navigation_export_20261016/review_repair/`. Normal CI/merge and installed signed-in downloads remain next. PR9499 must incorporate this repaired source before its own proof and release. All original uncertain/refused review returns remain on their original carriers. The prepared155mm next-stage condition is not yet adopted.

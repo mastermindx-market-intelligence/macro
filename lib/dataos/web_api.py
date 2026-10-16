@@ -218,6 +218,13 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
         return workspace.read(**_fields(args,
             {"ref", "columns", "time_column", "start", "end", "equals", "offset", "limit", "expected_version"},
             {"ref"}))
+    if action == "tiingo_compare_statements":
+        from lib.dataos.tiingo_workspace import compare_statements
+        return compare_statements(workspace, **_fields(args,
+            {"root", "vendor_symbol", "as_reported_capture", "restated_capture",
+             "start", "end", "observed_before", "acknowledge_hindsight", "offset", "limit"},
+            {"root", "vendor_symbol", "as_reported_capture", "restated_capture",
+             "start", "end", "observed_before", "acknowledge_hindsight"}))
     if action == "history_dossier":
         from lib.dataos.web_history import history_dossier
         return history_dossier(workspace, **_fields(args,
@@ -236,7 +243,15 @@ def dispatch(workspace: DataWorkspace, request: dict, *, config_path: Path) -> d
     if action == "capabilities":
         _fields(args, set())
         return workspace._result(action=action,
-            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run", "history_dossier"],
+            actions=["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run", "history_dossier", "tiingo_compare_statements"],
+            tiingo_statement_comparison={
+                "root": "existing_host_bound_canonical_tiingo_archive_only",
+                "capture_selection": "exact_day_and_receipt_id_or_source_sha256_per_dimension",
+                "max_rows_per_capture": 20000, "max_keys_per_page": 50,
+                "max_response_bytes": MAX_RESPONSE_BYTES,
+                "mode": "RETROSPECTIVE_EXPLORATORY", "point_in_time_eligible": False,
+                "network": False, "writes": False, "credentials": False,
+            },
             supported_formats=["parquet", "csv", "json", "jsonl", "ndjson"],
             unsupported_formats="metadata only; use the existing owner decoder",
             max_response_bytes=MAX_RESPONSE_BYTES, max_rows_per_read=200,
