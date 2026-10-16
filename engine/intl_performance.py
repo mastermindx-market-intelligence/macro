@@ -125,18 +125,25 @@ def _bench_series_fresh(
             intl_closes = intl_inputs._intl_closes()
         except Exception:  # noqa: BLE001 — missing clock stays unqualified
             intl_closes = None
-    # Qualification uses the exchange-local *date*, not a timestamp interpreted
-    # in another market's zone. Zero-valued observations are still observations:
-    # Series.any() would accidentally erase their clock.
+    # Only positive, finite close prices from configured primary equity
+    # indexes can advance the US comparison clock. The input frame also has FX,
+    # and a later FX-only or malformed (zero/negative/infinite) index bar is not
+    # a new equity close. A flat *positive* price series remains admissible.
+    # Compare exchange-local dates, not instants in unrelated time zones.
     newest_intl: pd.Timestamp | None = None
     if (intl_closes is not None and not intl_closes.empty
             and isinstance(intl_closes.index, pd.DatetimeIndex)
             and not intl_closes.index.hasnans
             and not intl_closes.index.has_duplicates
             and intl_closes.index.is_monotonic_increasing):
-        dated = intl_closes.dropna(how="all")
-        if not dated.empty:
-            newest_intl = pd.Timestamp(dated.index[-1])
+        primary_names = {country["index"] for country in intl_inputs.countries().values()}
+        columns = [col for col in intl_closes.columns if col in primary_names]
+        prices = intl_closes[columns].select_dtypes(include="number")
+        if not prices.empty:
+            valid_prices = prices.where(np.isfinite(prices) & prices.gt(0))
+            observed = valid_prices.dropna(how="all")
+            if not observed.empty:
+                newest_intl = pd.Timestamp(observed.index[-1])
     if newest_intl is None:
         return None, "US benchmark withheld: international observation clock unavailable"
 

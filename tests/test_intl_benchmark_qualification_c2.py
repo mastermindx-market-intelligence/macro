@@ -105,10 +105,11 @@ def test_r10_benchmark_five_business_day_boundary(monkeypatch, primary_date, qua
     assert (note is None) == qualified
 
 
-def test_r10_zero_international_observation_still_has_a_clock(monkeypatch):
-    # Clock extraction must not use Series.any(); zero is not the same as absent.
-    frame = pd.DataFrame({"^N225": [0.0]},
-                         index=pd.DatetimeIndex(["2026-10-14"]))
+def test_r10_flat_positive_index_observation_still_has_a_clock(monkeypatch):
+    # Zero return is valid, but a zero *price level* is not an index close.
+    # Repeated positive closes prove a real dated observation, without a gain.
+    frame = pd.DataFrame({"^N225": [100.0, 100.0]},
+                         index=pd.DatetimeIndex(["2026-10-13", "2026-10-14"]))
     primary = _prices("2026-10-14")
     monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
     monkeypatch.setattr(P.store, "read",
@@ -172,3 +173,48 @@ def test_r10_non_numeric_benchmark_prices_fail_closed(monkeypatch):
                         lambda area, ticker: primary if area == "yahoo" and ticker == "^GSPC" else None)
     series, note = P._bench_series_fresh(_intl_frame())
     assert series is None and "withheld" in note
+
+
+@pytest.mark.parametrize("bad_index_price", [0.0, -2.0, float("inf"), float("-inf")])
+@pytest.mark.parametrize("late_fx_only", [False, True])
+def test_r10_invalid_trailing_index_close_cannot_advance_clock(
+        monkeypatch, bad_index_price, late_fx_only):
+    # Actual _intl_closes carries primary equity indexes and FX legs. The US
+    # comparator's date must come from a *valid equity close*, not a zero/inf
+    # pseudo-bar nor an FX-only update on a later calendar day.
+    fx = P.intl_inputs.countries()["JP"]["fx"]
+    columns = {"^N225": [110.0, bad_index_price]}
+    if late_fx_only:
+        columns[fx] = [145.0, 146.0]
+    frame = pd.DataFrame(columns, index=pd.DatetimeIndex([
+        "2026-10-09", "2026-10-26"]))
+    primary = _prices("2026-10-09")
+    monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
+    monkeypatch.setattr(P.store, "read",
+                        lambda area, ticker: primary if area == "yahoo" and ticker == "^GSPC" else None)
+    result, note = P._bench_series_fresh(frame)
+    assert result is not None and result.equals(primary["close"])
+    assert note is None
+
+
+def test_r10_valid_later_primary_close_really_advances_clock(monkeypatch):
+    frame = pd.DataFrame({"^N225": [110.0, 112.0]},
+                         index=pd.DatetimeIndex(["2026-10-09", "2026-10-26"]))
+    primary = _prices("2026-10-09")
+    monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
+    monkeypatch.setattr(P.store, "read",
+                        lambda area, ticker: primary if area == "yahoo" and ticker == "^GSPC" else None)
+    result, note = P._bench_series_fresh(frame)
+    assert result is None and "2026-10-26" in note
+
+
+def test_r10_fx_only_clock_is_not_an_equity_benchmark_comparison(monkeypatch):
+    fx = P.intl_inputs.countries()["JP"]["fx"]
+    frame = pd.DataFrame({fx: [145.0]},
+                         index=pd.DatetimeIndex(["2026-10-14"]))
+    primary = _prices("2026-10-14")
+    monkeypatch.setattr(P, "_pcfg", lambda: {"benchmark": "^GSPC"})
+    monkeypatch.setattr(P.store, "read",
+                        lambda area, ticker: primary if area == "yahoo" and ticker == "^GSPC" else None)
+    result, note = P._bench_series_fresh(frame)
+    assert result is None and "clock unavailable" in note
