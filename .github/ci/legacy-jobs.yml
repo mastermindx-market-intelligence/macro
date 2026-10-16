@@ -27,6 +27,31 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  bea-gvc-current-descriptive-consumer:
+    # GMI leaf projection: synthetic source proof only, no public route or
+    # source/rights admission. The incumbent Data OS registry remains the gate.
+    if: ${{ false }}
+    gate: code
+    paths:
+      - "engine/market_ontology/bea_gvc_current.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/__init__.py"
+      - "lib/__init__.py"
+      - "tests/test_bea_gvc_current_descriptive.py"
+      - "tests/__init__.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install hermetic GMI source/read-gate tests
+        run: pip install pytest pyyaml
+      - name: GMI BEA current-descriptive source and product refusal gates
+        run: PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bea_gvc_current_descriptive.py -q
+
   company-intelligence-private-runtime:
     if: ${{ false }}
     gate: code
