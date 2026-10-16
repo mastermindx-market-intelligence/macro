@@ -72,11 +72,11 @@ MILESTONE_KIND_ENUM = frozenset({"budget_event", "contract_event", "delivery_eve
 TEMPORAL_KIND_ENUM = frozenset({"date", "window"})
 EVIDENCE_CLASS_ENUM = frozenset({
     "official_budget_exhibit", "official_acquisition_report", "official_contract_announcement",
-    "official_program_page", "congressional_research", "issuer_disclosure",
+    "official_program_page", "congressional_research", "issuer_disclosure", "official_alliance_policy",
 })
 CLAIM_SCOPE_ENUM = frozenset({
     "program_identity", "capability_need", "role", "milestone",
-    "program_capability_link", "program_event_link", "ownership_context",
+    "program_capability_link", "program_event_link", "ownership_context", "policy_context",
 })
 #: Per-kind required coverage scope (freeze SS3.1a, exhaustive).
 REQUIRED_CLAIM_SCOPES: dict[str, tuple[str, ...]] = {
@@ -375,8 +375,23 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
         if evidence_class not in EVIDENCE_CLASS_ENUM:
             ctx.err("ontology_row_shape_invalid", row_key)
         scopes = row.get("claim_scopes")
+        # 1.0 remains strict; 1.1 admits alliance policy only as context.
+        if raw.get("schema_version") == "1.0.0" and (
+            evidence_class == "official_alliance_policy"
+            or (isinstance(scopes, list) and "policy_context" in scopes)
+        ):
+            ctx.err("ontology_row_shape_invalid", row_key)
+        if evidence_class == "official_alliance_policy":
+            if scopes != ["policy_context"]:
+                ctx.err("alliance_policy_scope_refused", row_key)
+            source = urlparse(str(row.get("source_url") or ""))
+            if (source.scheme != "https" or source.hostname != "www.nato.int"
+                or source.username or source.password
+                or row.get("retrieved_from_url") != row.get("source_url")):
+                ctx.err("alliance_policy_publisher_refused", row_key)
         if (
             not isinstance(scopes, list) or not scopes
+            or any(not isinstance(scope, str) for scope in scopes)
             or len(scopes) != len(set(scopes))
             or any(scope not in CLAIM_SCOPE_ENUM for scope in scopes)
         ):
@@ -400,7 +415,7 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
         else:
             if pin or basis:
                 ctx.err("ontology_row_shape_invalid", row_key)
-            if source_host is None or source_host not in PUBLISHER_HOST_ALLOWLIST:
+            if source_host is None or (source_host not in PUBLISHER_HOST_ALLOWLIST and not (evidence_class == "official_alliance_policy" and source_host == "www.nato.int")):
                 ctx.err("publisher_host_refused", row_key)
         if not _text(row.get("retrieved_from_url")):
             ctx.err("publisher_host_refused", row_key)
@@ -591,11 +606,29 @@ def load_program_ontology_graph(
         raise OntologyInputError(["ontology_not_mapping"], ["<top_level>"])
 
     ctx = _Ctx()
+    # Refuse malformed reference types before any cross-reference set operation.
+    malformed_refs: list[str] = []
+    def check_reference_types(value: Any, row_key: str) -> None:
+        if isinstance(value, Mapping):
+            for key, child in value.items():
+                if key == "evidence_ref" and not isinstance(child, str):
+                    malformed_refs.append(row_key)
+                elif key in {"evidence_refs", "claim_scopes"} and (not isinstance(child, list) or any(not isinstance(item, str) for item in child)):
+                    malformed_refs.append(row_key)
+                else:
+                    check_reference_types(child, row_key)
+        elif isinstance(value, list):
+            for child in value:
+                key = str(child.get("id") or child.get("link_id") or row_key) if isinstance(child, Mapping) else row_key
+                check_reference_types(child, key)
+    check_reference_types(raw, "<top_level>")
+    if malformed_refs:
+        raise OntologyInputError(["ontology_row_shape_invalid"], malformed_refs)
     if set(raw) != _TOP_LEVEL_SET:
         ctx.err("ontology_shape_invalid", "<top_level>")
     if raw.get("contract") != CONTRACT:
         ctx.err("ontology_contract_invalid", "<top_level>")
-    if raw.get("schema_version") != SCHEMA_VERSION:
+    if raw.get("schema_version") not in {SCHEMA_VERSION, "1.1.0"}:
         ctx.err("ontology_schema_version_invalid", "<top_level>")
     graph_id = _text(raw.get("graph_id"))
     if graph_id is None or _GRAPH_ID.fullmatch(graph_id) is None:
@@ -610,6 +643,29 @@ def load_program_ontology_graph(
         ctx.err("invalid_authority_block", "<top_level>")
 
     evidence_index = _validate_evidence(raw, ctx)
+
+    policy_ids = {key for key, row in evidence_index.items()
+                  if row.get("evidence_class") == "official_alliance_policy"}
+    def refuse_policy_attribution(value: Any, row_key: str) -> None:
+        if isinstance(value, Mapping):
+            for key, child in value.items():
+                if key == "evidence_ref" and child in policy_ids:
+                    ctx.err("alliance_policy_noncontext_use", row_key)
+                elif key == "evidence_refs" and isinstance(child, list) and policy_ids.intersection(item for item in child if isinstance(item, str)):
+                    ctx.err("alliance_policy_noncontext_use", row_key)
+                else:
+                    refuse_policy_attribution(child, row_key)
+        elif isinstance(value, list):
+            for child in value:
+                refuse_policy_attribution(child, row_key)
+    for collection in TOP_LEVEL_KEYS:
+        if collection == "evidence":
+            continue
+        rows = raw.get(collection)
+        if isinstance(rows, list):
+            for row in rows:
+                if isinstance(row, Mapping):
+                    refuse_policy_attribution(row, str(row.get("id") or row.get("link_id") or collection))
 
     programs = _rows(raw, "programs", ctx)
     capabilities = _rows(raw, "capabilities", ctx)
