@@ -445,8 +445,8 @@ def run(events_paths: list[Path], out: Path, as_of: str | None = None) -> dict[s
             adapter[f"adapter:{exc.code}"] += 1
             continue
         except (KeyError, TypeError, ValueError) as exc:
-            # An owner crash on a contract-valid event (the range projection reads a
-            # ``bound`` the v1 range shape forbids) is counted by class, never fatal.
+            # An owner crash on a contract-valid event is counted by class, never fatal
+            # (DEC:NEWS-IMPACT-W3-PRODUCER-STAGE2).
             adapter[f"adapter_crash:{type(exc).__name__}"] += 1
             continue
         adapter["ok"] += len(produced)

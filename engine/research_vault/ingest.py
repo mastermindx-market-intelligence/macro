@@ -1151,7 +1151,8 @@ def _corpus_row_count(corpus_path: str | Path) -> int:
 
 def run(store, corpus_path: str | Path, now: datetime | None = None,
         dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY,
-        generation_identity: dict | None = None, generation_clock=None) -> dict:
+        generation_identity: dict | None = None, generation_clock=None,
+        generation_evidence=None) -> dict:
     """Run one ingestion pass. Idempotent + never-raise-per-item.
 
     Restores the canonical corpus from the store (source of truth), lists new
@@ -1339,6 +1340,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # precedes every remote mutable write; an interrupted BUILDING remains owned
     # by its original operation. This does not establish all-writer settlement.
     generation_session = None
+    if generation_evidence is not None and (dry_run or generation_identity is None):
+        summary["error"] = "generation_evidence_requires_explicit_producer"
+        return summary
     if not dry_run:
         if generation_identity is None and "producer_generation" in cat:
             summary["error"] = "generation_writer_unqualified"
@@ -1348,7 +1352,7 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                 from engine.research_vault.producer_generation_writer import (
                     ProducerGenerationSession, FencedProducerStore)
                 generation_session = ProducerGenerationSession.begin(
-                    store, cat, generation_identity, now=now)
+                    store, cat, generation_identity, now=now, evidence=generation_evidence)
                 store = FencedProducerStore(store, generation_session)
             except Exception as exc:
                 summary["error"] = "generation_start_failed"
@@ -1466,8 +1470,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             if (not dry_run and checkpoint_every > 0
                     and summary["ingested"] % checkpoint_every == 0):
                 conn.commit()
+                publication_kwargs = {}
+                if generation_session is not None:
+                    catalog_mod.prepare_publication(cat, now=now)
+                    prepared = generation_session.prepare_catalog(cat)
+                    generation_session.record_publication(
+                        corpus_path, pending_receipts, catalog_bytes=prepared)
+                    publication_kwargs["prepared_bytes"] = prepared
                 if publish_corpus(store, corpus_path):
-                    if catalog_mod.publish(store, cat, now=now).published:
+                    if catalog_mod.publish(store, cat, now=now, **publication_kwargs).published:
                         _flush_receipts(store, pending_receipts)
                 log.info("research_vault: checkpoint at %d ingested",
                          summary["ingested"])
@@ -1567,12 +1578,19 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # would permanently strand documents that never became visible (Defect 4).
     if not dry_run:
         _t = time.monotonic()
+        publication_kwargs = {}
+        if generation_session is not None:
+            catalog_mod.prepare_publication(cat, now=now)
+            prepared = generation_session.prepare_catalog(cat)
+            generation_session.record_publication(
+                corpus_path, pending_receipts, catalog_bytes=prepared)
+            publication_kwargs["prepared_bytes"] = prepared
         summary["corpus_published"] = publish_corpus(store, corpus_path)
         timing_s["corpus_publish_s"] = time.monotonic() - _t
         summary["catalog_published"] = False
         if summary["corpus_published"]:
             _catalog_t = time.monotonic()
-            published = catalog_mod.publish(store, cat, now=now)
+            published = catalog_mod.publish(store, cat, now=now, **publication_kwargs)
             timing_s["catalog_publish_s"] = time.monotonic() - _catalog_t
             summary["catalog_bytes"] = published.data
             summary["catalog_published"] = published.published

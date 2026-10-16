@@ -528,14 +528,36 @@ def test_adapter_counts_accepted_and_a_flagged_event_does_not_stop_the_run(tmp_p
     assert all(r["shadow"] is False for r in evidence_rows)
 
 
-def test_adapter_owner_crash_on_a_contract_valid_range_is_counted_not_fatal(tmp_path):
-    # The v1 range shape carries no ``bound``; the owner adapter's range projection reads
-    # one. Stage two contains that crash per event and keeps the rest of the batch.
+def test_a_contract_valid_range_becomes_prophet_evidence(tmp_path):
+    # The v1 range shape carries no ``bound``; since ni-prophet-adapter-2 the adapter
+    # projects bound "exact" (DEC:NEWS-IMPACT-ADAPTER-RANGE-BOUND), so no event crashes.
     ranged = t1("g1", 1, incremental_amount=qrange(40_000_000, 60_000_000, "incremental"))
     assert_valid(ranged)
     report, log, views, evidence_rows = run_rows(tmp_path, [row(ranged, "c1"), row(t3("g2", 2), "c2")])
     assert len(log["records"]) == 2 and report["n_views"] == 2
-    assert report["adapter"] == {"adapter_crash:KeyError": 1, "ok": 1}
+    assert report["adapter"] == {"ok": 2}
+    assert [r["case_id"] for r in evidence_rows] == ["c1", "c2"]
+    ranges = [q for q in evidence_rows[0]["evidence"]["quantities"] if q["form"] == "range"]
+    assert [(q["slot"], q["bound"]) for q in ranges] == [("incremental_amount", "exact")]
+
+
+@pytest.mark.parametrize("error", [KeyError, TypeError, ValueError])
+def test_adapter_owner_crash_is_counted_by_class_not_fatal(tmp_path, monkeypatch, error):
+    # An owner crash on one event is counted by class; the rest of the batch still projects.
+    real = pf.adapt_batch
+    calls = []
+
+    def crash_first(candidates):
+        calls.append(len(candidates))
+        if len(calls) == 1:
+            raise error("synthetic")
+        return real(candidates)
+
+    monkeypatch.setattr(pf, "adapt_batch", crash_first)
+    report, log, views, evidence_rows = run_rows(tmp_path, [row(t1("k1", 1), "c1"), row(t3("k2", 2), "c2")])
+    assert calls == [1, 1]
+    assert len(log["records"]) == 2 and report["n_views"] == 2
+    assert report["adapter"] == {f"adapter_crash:{error.__name__}": 1, "ok": 1}
     assert [r["case_id"] for r in evidence_rows] == ["c2"]
 
 

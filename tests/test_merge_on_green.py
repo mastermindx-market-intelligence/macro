@@ -6503,6 +6503,55 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
     )
 
 
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
+    """Evaluation coverage is insufficient when only one refresh slot is free.
+
+    With span=100/cap=100 the old order never moves; span=80/cap=100
+    visits only four first positions. Every ordinary PR must get a turn at
+    the front even when all prior update attempts prove conflicted.
+    """
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(span):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        assert {pull["number"] for pull in ordered} == set(range(1, span + 1))
+        assert len(ordered) == span
+        reached.add(ordered[0]["number"])
+    assert reached == set(range(1, span + 1))
+
+
+@pytest.mark.parametrize("span,cap,buckets", [(80, 100, 12), (100, 100, 15), (100, 25, 16)])
+def test_refresh_attempt_window_reaches_whole_backlog_without_larger_budget(span, cap, buckets):
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(buckets):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        reached.update(pull["number"] for pull in ordered[:MOG.MAX_REFRESHES_PER_SWEEP])
+    assert reached == set(range(1, span + 1))
+    assert MOG.MAX_REFRESHES_PER_SWEEP == 8
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+
+
+def test_rotation_phase_preserves_repair_lease_and_trigger_priority():
+    ordinary = [_pull(number) for number in range(1, 78)]
+    repair = _pull(500, labels=("merge-on-green", "main-red-repair"))
+    lease = _pull(600)
+    hot = _pull(700)
+    hot["head"]["sha"] = "f" * 40
+    for bucket in (0, 4, 8, 79, 500):
+        ordered = MOG.sweep_order(
+            ordinary + [repair, lease, hot], cap=100,
+            refresh_lease_number=600, trigger_head_sha="F" * 40,
+            now=bucket * MOG.ROTATION_BUCKET_SECONDS,
+        )
+        assert [pull["number"] for pull in ordered[:3]] == [500, 600, 700]
+
+
 def test_a_main_red_repair_pull_request_is_never_deferred_by_the_cap():
     """The circuit breaker admits exactly ONE repair per sweep when main is red, so
     a repair pushed outside the cap defers the whole repo with it."""
