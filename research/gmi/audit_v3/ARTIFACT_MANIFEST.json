@@ -1,0 +1,111 @@
+{
+  "scope": "Final research/documentation and audit-only probes for PR #8324; no product implementation changes",
+  "excludes": "This manifest itself, to avoid a recursive digest",
+  "artifacts": [
+    {
+      "path": "docs/superpowers/plans/2026-10-03-gmi-theme-subtheme-end-to-end-completion.md",
+      "bytes": 79060,
+      "sha256": "dea256b5260ddb19746e3cace45338ed03720520aebd1dea03de5c5dc67fc703"
+    },
+    {
+      "path": "research/gmi/ASTRA_CEO_GMI_HANDOFF_2026-10-03.md",
+      "bytes": 8206,
+      "sha256": "936fa76a1f0041ded98a7398d82645c119a7f61c6c8cbad15fe5bd42dabecec4"
+    },
+    {
+      "path": "research/gmi/GMI_AUDIT_CHECKPOINT_2026-10-03.md",
+      "bytes": 5032,
+      "sha256": "e47379555015580141df0a251328856e456e2837483f2d8224c611b5448a0341"
+    },
+    {
+      "path": "research/gmi/GMI_RESEARCH_AND_EVALUATION_AUDIT_V3_2026-10-03.md",
+      "bytes": 43086,
+      "sha256": "76a2399e7288be3da95dce3e68accf719243809a64ac393704a18931af1af33a"
+    },
+    {
+      "path": "research/gmi/GMI_THEME_SUBTHEME_DEEP_RESEARCH_BLUEPRINT_2026-10-03.md",
+      "bytes": 10498,
+      "sha256": "d9fe181447ca3339a53dd23be9a173a2aab83c1e2b26131fbe3f087986aaac11"
+    },
+    {
+      "path": "research/gmi/GMI_THEME_SUBTHEME_NORMAL_PRO_AUDIT_2026-10-03.md",
+      "bytes": 27943,
+      "sha256": "019f9000b165216037e9378eee98a0a5a3cf2ea3fa43dfb2869ec75de39998a3"
+    },
+    {
+      "path": "research/gmi/audit_v3/CARRIER_CENSUS.json",
+      "bytes": 25182,
+      "sha256": "d5803ccb01812c48e1f41eafca21b80514310beccbead8e492766a29f15164e3"
+    },
+    {
+      "path": "research/gmi/audit_v3/CONSUMER_AND_ECONOMIC_AUDIT.md",
+      "bytes": 31382,
+      "sha256": "c493bca96bba101ba0a6404bcf79eaa1ec2599008ad1d1a1d665f28bd50d8f95"
+    },
+    {
+      "path": "research/gmi/audit_v3/CONSUMER_SOURCE_MANIFEST.json",
+      "bytes": 18869,
+      "sha256": "686366bece441d3b2a6a39798697134c83a0497096835b121b03dc8017ed40d8"
+    },
+    {
+      "path": "research/gmi/audit_v3/GRAPH_AND_TEMPORAL_AUDIT.md",
+      "bytes": 35119,
+      "sha256": "b0f7faf8b7611ac31abde39ed879ea409d0c3e94eddd1360908e600d184ba3b4"
+    },
+    {
+      "path": "research/gmi/audit_v3/GRAPH_BOUNDARY_REPRODUCTIONS.json",
+      "bytes": 5326,
+      "sha256": "303c0e2d15f6ebb5f82bc1720347d8998f03ceb50b3c73d3f718f1413e6e5581"
+    },
+    {
+      "path": "research/gmi/audit_v3/GRAPH_SOURCE_MANIFEST.json",
+      "bytes": 24184,
+      "sha256": "10387a52737894f39be0105df9b57617a60b8ff173feb374fed0aeaeea0d67b5"
+    },
+    {
+      "path": "research/gmi/audit_v3/INPUT_LATEST_REPORT_2026-10-03.md",
+      "bytes": 65630,
+      "sha256": "ba9a28e88836ac9d0f5b385612f8985f87d22af8e92f6c9e9a4ad6475f29c21f"
+    },
+    {
+      "path": "research/gmi/audit_v3/PROPHET_BOUNDARY_REPRODUCTION.json",
+      "bytes": 1419,
+      "sha256": "c2aab9b51c6b1ce2704dfd8d0a1677f48d52018021e7f18ed827a69d146c93e7"
+    },
+    {
+      "path": "research/gmi/audit_v3/README.md",
+      "bytes": 6392,
+      "sha256": "d0d3e6d057befb3a938d0fa152f70187d3749abe966f99e58d273c4ee3270ac5"
+    },
+    {
+      "path": "research/gmi/audit_v3/REVIEW_AND_VERIFICATION.json",
+      "bytes": 3235,
+      "sha256": "e3551f7620d264c0991af28c0b299d62080863203c13c386111f048f9f55a2b0"
+    },
+    {
+      "path": "research/gmi/audit_v3/SOURCE_RECHECK.json",
+      "bytes": 3030,
+      "sha256": "06de896f6b1da913f73be306e0b846faac93f0eeaa8bf17c7befe6151300488c"
+    },
+    {
+      "path": "research/gmi/audit_v3/W2_RANK_INVARIANCE_CHECK.json",
+      "bytes": 388,
+      "sha256": "3137067f4754812119ba256996bd1f31b33c50357c14ca92aa6419cd37f51358"
+    },
+    {
+      "path": "research/gmi/audit_v3/graph_boundary_probe.py",
+      "bytes": 12189,
+      "sha256": "2f30b839468ec638d8093d1a8c57678022899213e54c005fefbb6e1438aa4313"
+    },
+    {
+      "path": "research/gmi/audit_v3/prophet_boundary_probe.py",
+      "bytes": 2422,
+      "sha256": "052600099031484061f376db18b82b2cf1c746371ac965279c9f54d5cb3def2c"
+    },
+    {
+      "path": "research/gmi/audit_v3/w2_rank_invariance_probe.py",
+      "bytes": 1388,
+      "sha256": "d3d092b9d4a250a48e3fcdb6d83ef2fc13685eef72da45e0160c885ccc83fc23"
+    }
+  ]
+}
