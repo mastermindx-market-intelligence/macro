@@ -32,6 +32,8 @@ Each Monte Carlo rate is checked against its declared closed-form probability wi
 
 The consequence is narrow but important: pretending dependent sector/date observations are IID can grossly inflate apparent significance. This does not say the real market has these exact correlations or that the native test fails at these rates. The native estimator, selection process, nuisance fits and generator still need their own size/power evidence.
 
+A separate principal-side arithmetic check explicitly summed all 435,600 covariance entries of the 660-observation panel in each declared world. Dividing the covariance sum by the squared panel size reproduced the variance-inflation factors 1, 7 and 20.53333333333333 within 1e-12. This is an independent calculation method, not independent reviewer approval or a fitted-market result.
+
 ### Deterministic witnesses
 
 The checks cover: asynchronous member extrema; defensive beta without alpha; relative wealth versus return difference; rolling-window carry without new leadership; mechanical confirmation lead; missing-breadth identification bounds; stock splits versus fund creation; duplicate thematic exposures; future labels versus future features; non-monotonic horizon effects; success-only selection changing the estimand; and common-terminal policy accounting in which delayed entry legitimately wins.
@@ -40,14 +42,15 @@ The illustrative cost and bill values are synthetic assumptions, not current spr
 
 ## 3. Bounded research-child review
 
-Both children used the installed M2 shell Fabric adapter under the original Web task-local root/parent `rotation-intelligence-census-20261016-sol-c1`. That label is not represented as a native provider thread or Runtime Job. Both returned terminal with retained results; no watcher or follow-on child was authorized.
+All three children used the installed M2 shell Fabric adapter under the original Web task-local root/parent `rotation-intelligence-census-20261016-sol-c1`. That label is not represented as a native provider thread or Runtime Job. They are terminal; no watcher or follow-on child is active. Exit status and quality acceptance remain distinct.
 
 | Child | Retained result SHA-256 | Principal disposition |
 |---|---|---|
 | `rotation-arch-20261016-c1-contracts` | `6b54cec7c310bedd6253744da02759576122e468b944ec455e9fe5a05fb9744e` | Useful source map; independently verified selected symbols. No blanket acceptance: the return miscounted the ResearchEstimate identity fields |
 | `rotation-arch-20261016-c1-science` | `69796366003fcb58bf7d1f5bfa1a657b6bc091c5bf332043b32469eed22ae37b` | Consultation partially useful; several claims rejected. Its two optional document fetches failed, so it did not establish native-source review |
+| `rotation-arch-20261016-c1-final-review` | `238a484d368bcbed31e21a59cd6a69d9d39a3373b8d93c6f82aaa934fa97a122` | Terminal rc=1; provider reported HTTP 403 / final response unconfirmed. No substantive review verdict exists; not accepted, not replayed or moved to another provider |
 
-The direct source check confirmed **eleven**, not ten, ResearchEstimate identity fields and confirmed the causal/smoothed/uniform fallback distinctions in `quad_vector.build` at the design pin. The principal also read the native V2.1 preregistration; its existing family, verdict, source, size, power and look rules remain unchanged.
+The direct source check confirmed **eleven**, not ten, ResearchEstimate identity fields and confirmed the causal/smoothed/uniform fallback distinctions in `quad_vector.build` at the design pin. The principal also read native V1 and V2.1 protocol sections; their existing family, verdict, source, size, power and look rules remain unchanged.
 
 ### Accepted methodological insights
 
@@ -62,17 +65,32 @@ Retain all eligible origins rather than only eventual successful rotations; comp
 - Unsupported numerical spread/cost estimates and universal power/sample-size claims were not adopted.
 - Arbitrary lead/lag shuffling is not a universal valid placebo for persistent financial series.
 - Trade costs are charged once per actual trade; long-only baselines do not acquire fictional borrow or duplicate round trips.
+- Native A2's fixed five-session delay is not proof that all native economic comparisons are unfair: V1 already specifies common-origin and initial-origin policy comparisons. The exact statistic must be examined.
 
-A completed worker process is not a quality verdict or independent release approval. The raw returns remain in M2 evidence storage at `/Volumes/Mastermind/research/rotation-intelligence-census-20261016-sol-c1`. Only reviewed conclusions are incorporated into this package.
+A completed worker process is not a quality verdict or independent release approval. The raw returns remain in M2 evidence storage at `/Volumes/Mastermind/research/rotation-intelligence-census-20261016-sol-c1`. Only reviewed conclusions are incorporated into this package. The final provider refusal is preserved; a later review needs a genuinely resolved admission boundary, not a new ID used to evade it.
 
-## 4. Publication and final package checks
+## 4. Published-package verification
 
-The original report hash and local scientific executions above are verified. The final remote package readback, internal-link check, fresh external design review and repository-check observation are recorded in the subsequent PR closeout receipt; they must not be inferred from this initial record. No merge, installation, forecast promotion or production release is claimed here.
+The ten-file package at `bef72353eb1b8085cb04f34c9ffe78acee778ecd` was fetched from exact GitHub content references into M2 evidence storage. The original assessment, scientific script and scientific result hashes matched the independently retained local originals. All ten files were present; all 17 relative Markdown links resolved, including the existing programme workstream. No production paths were changed.
 
-## 5. Remaining gates and recovery frontier
+The **published** script was executed on M2 Python 3.14.7. Every scientific output matched the Python 3.13.5 result to 1e-12; only interpreter metadata was excluded from numerical equality. The script hash remained exact. AST inspection confirmed only the declared standard-library imports and no product imports. This is remote execution of actual published bytes, not a claim based solely on local files.
 
-The complete architecture/research documents and synthetic results are the current deliverable. The next native scientific act remains target reconciliation and dated LR-W6/V3 registration with actual size/power qualification, followed only then by a permitted real-data read. Source/identity metadata qualification and mechanism specification can proceed independently without opening held outcomes.
+The M2 receipt is `published-package-verification/publication-verification.json` beneath the evidence path above. It records exact blobs, sizes, SHA-256 digests, link checks and reproduction. Later documentation-only changes do not invalidate the unchanged scientific execution evidence; they require their own source/diff/link readback.
 
-The broader allocation project is not complete. Existing natural-consumption, conditional-issuance, operator/visual proof, data-source and release obligations are not closed by this package. No trade, credential change, live engine edit or market-outcome read is reported.
+The added [NATIVE_PROTOCOL_CROSSWALK.md](NATIVE_PROTOCOL_CROSSWALK.md) then reconciled the broader allocation proposal against native V1/V2.1. The native study covers seven fixed pairs, not an all-sector allocator; price-only arms and excluded economic-simulation scope cannot be silently widened. Native P2 is falsification-only, and a new split inside inspected history is not fresh confirmatory evidence. This is a material architecture clarification, not a canonical protocol amendment. The crosswalk governs interpretation of the earlier supplement's shorthand about submitting broader work through LR-W6.
 
-Before extending source scope, read the exact current branch/PR and writer state once. Preserve original immutable evidence and negative results. Do not rerun the initial census merely because an unrelated protected file changes. Final research publication and its fresh verification belong to PR #9507 and the existing programme discussion, not another memory or task store.
+Final document-delta readback and final-head CI observations are recorded in the PR receipt after this commit, avoiding a self-referential claim that a document has verified its own future commit.
+
+## 5. Repository and release state
+
+At the observed `bef723...` head, grader-manifest, capability-broker, self-mod-fence, fence-pack and active `ci-authority/main` had passed; ci-plan and contract-delta were still running. The red `ci-authority/codex/merge-queue-pilot` check was inspected once. Its own output reported **zero authority hits**, `allowed=true`, `reason=ordinary_change`, and `context_active=false` / `context_reason=inactive_base_context`. The PR targets main, not that pilot branch. This explains the observed context-specific rejection; it does not authorize suppressing the check or declare all required CI green.
+
+The branch remains DRAFT/HOLD. There is no complete independent final design review, formal approval, accepted full CI conclusion, merge or automatic merge instruction. No release settings, branch protection or shared workflows were changed to remove a gate. The actual new-head check state must be read at the next release decision; earlier checks are not copied onto later commits.
+
+## 6. Remaining gates and recovery frontier
+
+The architecture/research documents, protocol crosswalk and synthetic results are the current published deliverable. There are two complementary research tracks under incumbent owners: **finish native LR-W6 statistical repair without changing its question**, and **qualify the broader sector/industry/theme/cash allocation proposal with its own explicit target, population and accounting through the existing evaluation/registry owners**. The latter is not an alternate route to open native held outcomes.
+
+Source/identity metadata qualification and mechanism specification can proceed independently. Product implementation remains deferred. The broader allocation project is not complete: native and broader-study qualification, data-source readiness, natural-consumption, conditional-issuance, operator/visual proof and release obligations remain distinct. No trade, credential change, live engine edit or market-outcome read is reported.
+
+Before extending source scope, read the exact current branch/PR and writer state once. Preserve original immutable evidence and negative results. Do not rerun the initial census merely because an unrelated protected file changes. Research publication and recovery belong to PR #9507 and the existing programme discussion, not another memory or task store.
