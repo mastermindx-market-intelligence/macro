@@ -1,0 +1,13 @@
+{
+  "state": "INTENT_RECORDED_NOT_EXECUTED",
+  "id": "usitc-2026-10-13-337-ta-1473",
+  "pdf_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+  "sidecar_sha256": "fe21f6027db1ba98f674ed0f938c1d3bf0a7656a3b7736392f54f5c162ce7da5",
+  "script_sha256": "0cb324131e2f8f065f083d78677f013db1701817a92ba276b7c590f009d095b6",
+  "at": "2026-10-14T17:31:41.845584+00:00",
+  "planned_effect": "Two conditional creates in existing private Research inbox; no provider, producer dispatch, catalog or Press staging write.",
+  "review_run": "mmx-press-usitc-cat-facts-20261014-001",
+  "acceptance": "Parent accepted bounded fact census with excluded commentary recorded; seven-point final sidecar reviewed against both original pages.",
+  "validation": "29 original-source/ingest/planner checks, bad-hash refusal,10consumer controls,20renderer checks,19portable-report controls PASS; local fixtures only.",
+  "rule": "Execute this exact script once. Unknown effect remains on this original carrier; never replay or alias known-complete source."
+}
